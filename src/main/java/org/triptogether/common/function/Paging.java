@@ -1,4 +1,4 @@
-package org.study.travelproject.common.function;
+package org.triptogether.common.function;
 
 import lombok.Data;
 

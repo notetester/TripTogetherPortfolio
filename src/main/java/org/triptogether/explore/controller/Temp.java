@@ -1,4 +1,4 @@
-package org.study.travelproject.explore.controller;
+package org.triptogether.explore.controller;
 
 public class Temp {
 }

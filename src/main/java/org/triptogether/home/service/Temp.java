@@ -1,4 +1,4 @@
-package org.study.travelproject.home.service;
+package org.triptogether.home.service;
 
 public class Temp {
 }

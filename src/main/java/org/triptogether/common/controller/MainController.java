@@ -1,4 +1,4 @@
-package org.study.travelproject.common.controller;
+package org.triptogether.common.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

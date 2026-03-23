@@ -1,4 +1,4 @@
-package org.study.travelproject.myPage.vo;
+package org.triptogether.myPage.vo;
 
 public class Temp {
 }

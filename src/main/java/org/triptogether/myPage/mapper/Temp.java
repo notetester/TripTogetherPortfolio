@@ -1,4 +1,4 @@
-package org.study.travelproject.myPage.mapper;
+package org.triptogether.myPage.mapper;
 
 public class Temp {
 }

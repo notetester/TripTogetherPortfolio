@@ -1,4 +1,4 @@
-package org.study.travelproject.admin.service;
+package org.triptogether.admin.service;
 
 public class Temp {
 }

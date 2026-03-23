@@ -1,4 +1,4 @@
-package org.study.travelproject.myPage.function;
+package org.triptogether.myPage.function;
 
 public class Temp {
 }

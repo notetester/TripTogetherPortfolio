@@ -1,4 +1,4 @@
-package org.study.travelproject.home.controller;
+package org.triptogether.home.controller;
 
 public class Temp {
 }

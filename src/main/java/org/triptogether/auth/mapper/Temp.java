@@ -1,4 +1,4 @@
-package org.study.travelproject.auth.mapper;
+package org.triptogether.auth.mapper;
 
 public class Temp {
 }
