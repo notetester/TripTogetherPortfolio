@@ -1,0 +1,50 @@
+/* =============================================
+   TRIPTOGETHER - 헤더 (공통)
+   common/header.css
+   ============================================= */
+
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 로고 */
+.logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--blue), #C9A8E0);
+  border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; font-size: 18px; color: #fff;
+}
+.logo-text {
+  font-size: 20px; font-weight: 600;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 네비게이션 */
+nav { display: flex; align-items: center; gap: 4px; }
+.nb {
+  background: none; border: none; padding: 8px 14px; border-radius: 8px;
+  font-family: inherit; font-size: 14px; font-weight: 500; color: var(--gray-700);
+  cursor: pointer; transition: all .2s;
+}
+.nb:hover  { background: var(--gray-100); color: var(--blue); }
+.nb.active { color: var(--blue); background: var(--blue-light); font-weight: 600; }
+
+/* 우측 영역 */
+.hr { display: flex; align-items: center; gap: 10px; }
+.lang-sel {
+  padding: 6px 12px; border-radius: 8px; border: 1px solid var(--gray-200);
+  font-family: inherit; font-size: 13px; color: var(--gray-700);
+  background: #fff; cursor: pointer;
+}
+.btn-out {
+  padding: 7px 16px; border-radius: 8px; border: 1px solid var(--gray-200);
+  font-family: inherit; font-size: 14px; font-weight: 500; color: var(--gray-700);
+  background: #fff; cursor: pointer; transition: all .2s;
+}
+.btn-out:hover { border-color: var(--blue); color: var(--blue); }

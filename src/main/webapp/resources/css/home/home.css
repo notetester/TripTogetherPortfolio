@@ -1,0 +1,272 @@
+/* =============================================
+   TRIPTOGETHER - 홈 페이지
+   home/home.css
+   ============================================= */
+
+/* ===== 히어로 ===== */
+.hero {
+  position: relative;
+  height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1714412192114-61dca8f15f68?w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+}
+.hero-ov {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,.65), rgba(0,0,0,.35));
+}
+.hero-c {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+  padding: 24px;
+  max-width: 700px;
+}
+.hero-c h1 {
+  font-size: clamp(2.2rem, 6vw, 3.8rem);
+  font-weight: 600;
+  margin-bottom: 16px;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.hero-c p {
+  font-size: 1.15rem;
+  opacity: .9;
+  margin-bottom: 32px;
+}
+.hero-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===== 히어로 버튼 ===== */
+.btn-pri {
+  padding: 13px 26px;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--blue);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all .2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+.btn-pri:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.2); }
+
+.btn-sec {
+  padding: 13px 26px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,.5);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all .2s;
+}
+.btn-sec:hover { background: rgba(255,255,255,.25); transform: translateY(-2px); }
+
+/* ===== 피처 섹션 ===== */
+.feat-sec {
+  background: var(--gray-50);
+  padding: 72px 24px;
+}
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 32px;
+}
+.feat-card {
+  text-align: center;
+  padding: 32px 24px;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s, box-shadow .2s;
+}
+.feat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.feat-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 20px;
+}
+.fi-b { background: #eff6ff; }
+.fi-p { background: #f5f3ff; }
+.fi-g { background: #f0fdf4; }
+.feat-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+.feat-card p  { font-size: 14px; color: var(--gray-600); line-height: 1.7; }
+
+/* ===== 여행지 카드 ===== */
+.dc {
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s, box-shadow .2s;
+}
+.dc:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.dc-iw { overflow: hidden; }
+.dc-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform .4s;
+}
+.dc:hover .dc-img { transform: scale(1.05); }
+.dc-b { padding: 20px; }
+.dc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.dc-name { font-size: 18px; font-weight: 600; }
+.dc-ctry { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+.dc-rat  { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 500; color: var(--gray-700); }
+.dc-rev  { color: var(--gray-400); font-size: 12px; font-weight: 400; }
+.dc-desc { font-size: 13px; color: var(--gray-600); line-height: 1.6; margin-bottom: 12px; }
+.dc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ===== 여행 코스 카드 ===== */
+.tc {
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s, box-shadow .2s;
+}
+.tc:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.tc-iw { overflow: hidden; position: relative; }
+.tc-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform .4s;
+}
+.tc:hover .tc-img { transform: scale(1.05); }
+.tc-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,.6);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+.tc-b { padding: 20px; }
+.tc-title { font-size: 17px; font-weight: 600; margin-bottom: 12px; }
+.tc-foot { display: flex; justify-content: space-between; align-items: center; }
+.tc-auth  { font-size: 13px; color: var(--gray-500); }
+.tc-likes { display: flex; align-items: center; gap: 4px; font-size: 14px; color: var(--gray-500); }
+
+/* ===== 커뮤니티 카드 ===== */
+.comm-g {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+}
+.cc {
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s, box-shadow .2s;
+}
+.cc:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.cc-iw { position: relative; overflow: hidden; }
+.cc-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  transition: transform .4s;
+}
+.cc:hover .cc-img { transform: scale(1.05); }
+.cc-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--blue);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.cc-b { padding: 20px; }
+.cc-title { font-size: 17px; font-weight: 600; margin-bottom: 14px; }
+.cc-foot  { display: flex; justify-content: space-between; align-items: center; }
+.cc-auth  { display: flex; align-items: center; gap: 10px; }
+.cc-av {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.cc-an    { font-size: 14px; font-weight: 500; }
+.cc-dt    { font-size: 12px; color: var(--gray-400); }
+.cc-stats { display: flex; gap: 14px; color: var(--gray-500); font-size: 14px; }
+.cc-stats span { display: flex; align-items: center; gap: 4px; }
+
+/* ===== 푸터 ===== */
+.site-footer {
+  background: var(--gray-800);
+  padding: 32px 24px;
+  margin-top: 24px;
+}
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-logo { display: flex; align-items: center; gap: 10px; }
+.footer-copy { font-size: 13px; color: var(--gray-400); }
+
+/* ===== 반응형 ===== */
+@media (max-width: 768px) {
+  .hero { height: 420px; }
+  .hero-c h1 { font-size: 2rem; }
+  .comm-g { grid-template-columns: 1fr; }
+  .footer-inner { flex-direction: column; text-align: center; }
+}
