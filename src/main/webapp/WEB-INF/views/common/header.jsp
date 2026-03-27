@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <header>
     <div class="hi">
         <div class="logo" onclick="location.href='${pageContext.request.contextPath}/'">
