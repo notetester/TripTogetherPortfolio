@@ -1,0 +1,250 @@
+package org.triptogether.community.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.triptogether.community.mapper.CommunityMapper;
+import org.triptogether.community.vo.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class CommunityServiceImpl implements CommunityService {
+
+    private final CommunityMapper communityMapper;
+
+    @Value("${file.upload.path}")
+    private String uploadPath;
+
+    // ===== 목록 =====
+
+    @Override
+    public List<CommunityPostDto> getPostList(CommunitySearchDto search) {
+        return communityMapper.selectPostList(search);
+    }
+
+    @Override
+    public int getTotalCount(CommunitySearchDto search) {
+        return communityMapper.selectTotalCount(search);
+    }
+
+    @Override
+    public int getTotalPage(CommunitySearchDto search) {
+        int totalCount = communityMapper.selectTotalCount(search);
+        return (int) Math.ceil((double) totalCount / search.getPageSize());
+    }
+
+    // ===== 상세 =====
+
+    @Override
+    public CommunityPostDto getPost(Long postId) {
+        return communityMapper.selectPost(postId);
+    }
+
+    @Override
+    public List<CommunityPostImageDto> getImageList(Long postId) {
+        return communityMapper.selectImageList(postId);
+    }
+
+    @Override
+    public List<String> getTagList(Long postId) {
+        return communityMapper.selectTagList(postId);
+    }
+
+    @Override
+    public List<CommunityCommentDto> getCommentList(Long postId) {
+        return communityMapper.selectCommentList(postId);
+    }
+
+    @Override
+    public String getTipCategory(Long postId) {
+        return communityMapper.selectTipCategory(postId);
+    }
+
+    @Override
+    public boolean isSolved(Long postId) {
+        Integer result = communityMapper.selectIsSolved(postId);
+        return result != null && result == 1;
+    }
+
+    @Override
+    public List<CommunityPostDto> getRelatedList(Long postId) {
+        return communityMapper.selectRelatedList(postId);
+    }
+
+    // ===== 조회수 =====
+
+    @Override
+    public void increaseViewCount(Long postId) {
+        communityMapper.updateViewCount(postId);
+    }
+
+    // ===== 글쓰기 =====
+
+    @Override
+    @Transactional
+    public Long writePost(CommunityWriteDto writeDto, Long userIdx) {
+
+        // 1. COMMUNITY_POST INSERT
+        CommunityPostDto post = new CommunityPostDto();
+        post.setUserIdx(userIdx);
+        post.setTitle(writeDto.getTitle());
+        post.setContent(writeDto.getContent());
+        communityMapper.insertPost(post);
+        Long postId = post.getPostId(); // useGeneratedKeys로 자동 주입
+
+        // 2. COMMUNITY_POST_DETAIL INSERT
+        communityMapper.insertPostDetail(postId, writeDto.getRegion(), writeDto.getPostType());
+
+        // 3. COMMUNITY_POST_IMAGE INSERT (이미지 파일 업로드)
+        if (writeDto.getImages() != null && !writeDto.getImages().isEmpty()) {
+            int sortOrder = 1;
+            for (MultipartFile file : writeDto.getImages()) {
+                if (file == null || file.isEmpty()) continue;
+                String savedUrl = saveFile(file);
+                if (savedUrl != null) {
+                    communityMapper.insertImage(postId, savedUrl, sortOrder++);
+                }
+            }
+        }
+
+        // 4. COMMUNITY_TAG UPSERT + COMMUNITY_POST_TAG INSERT
+        if (writeDto.getTags() != null && !writeDto.getTags().isEmpty()) {
+            String[] tagArr = writeDto.getTags().split(",");
+            for (String tagName : tagArr) {
+                tagName = tagName.trim();
+                if (tagName.isEmpty()) continue;
+                communityMapper.upsertTag(tagName);
+                Long tagId = communityMapper.selectTagId(tagName);
+                communityMapper.insertPostTag(postId, tagId);
+            }
+        }
+
+        // 5. COMMUNITY_POST_TIP INSERT (tip 유형)
+        if ("tip".equals(writeDto.getPostType())) {
+            String tipCategory = writeDto.getTipCategory() != null
+                    ? writeDto.getTipCategory() : "other";
+            communityMapper.insertPostTip(postId, tipCategory);
+        }
+
+        // 6. COMMUNITY_POST_QUESTION INSERT (question 유형)
+        if ("question".equals(writeDto.getPostType())) {
+            communityMapper.insertPostQuestion(postId);
+        }
+
+        // 7. 태그 공출현 업데이트
+        updateTagRelation(postId);
+
+        return postId;
+    }
+
+    // ===== 삭제 =====
+
+    @Override
+    @Transactional
+    public void deletePost(Long postId) {
+        // post_status = 'DELETED' 로 변경 (실제 삭제 X)
+        communityMapper.updatePostStatus(postId, "DELETED");
+    }
+
+    // ===== 태그 공출현 =====
+    @Override
+    public void updateTagRelation(Long postId) {
+        List<Long> tagIds = communityMapper.selectTagIdList(postId);
+        if (tagIds == null || tagIds.size() < 2) return;
+        // 태그 쌍마다 공출현 횟수 +1
+        for (int i = 0; i < tagIds.size(); i++) {
+            for (int j = i + 1; j < tagIds.size(); j++) {
+                communityMapper.upsertTagRelation(tagIds.get(i), tagIds.get(j));
+            }
+        }
+    }
+
+    // ===== 좋아요 =====
+
+    @Override
+    public boolean isLiked(Long postId, Long userIdx) {
+        return communityMapper.selectLikeCount(postId, userIdx) > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean toggleLike(Long postId, Long userIdx) {
+        if (isLiked(postId, userIdx)) {
+            // 좋아요 취소
+            communityMapper.deleteLike(postId, userIdx);
+            communityMapper.decreaseLikeCount(postId);
+            return false;
+        } else {
+            // 좋아요 추가
+            communityMapper.insertLike(postId, userIdx);
+            communityMapper.increaseLikeCount(postId);
+            return true;
+        }
+    }
+
+    @Override
+    public int getLikeCount(Long postId) {
+        return communityMapper.selectPostLikeCount(postId);
+    }
+
+    // ===== 댓글 =====
+
+    @Override
+    @Transactional
+    public void addComment(Long postId, Long userIdx, String content) {
+        communityMapper.insertComment(postId, userIdx, content);
+        communityMapper.increaseCommentCount(postId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteComment(Long commentId) {
+        // comment_status = 'DELETED' 로 변경 (실제 삭제 X)
+        communityMapper.updateCommentStatus(commentId, "DELETED");
+        Long postId = communityMapper.selectPostIdByCommentId(commentId);
+        if (postId != null) {
+            communityMapper.decreaseCommentCount(postId);
+        }
+    }
+
+    // ===== 신고 =====
+
+    @Override
+    public void reportPost(Long postId, Long userIdx) {
+        communityMapper.insertReport(postId, userIdx);
+    }
+
+    // ===== 파일 저장 유틸 =====
+
+    private String saveFile(MultipartFile file) {
+        try {
+            String dir = System.getProperty("user.dir").replace("\\", "/")
+                    + "/" + uploadPath + "/community/";
+            File dirFile = new File(dir);
+            if (!dirFile.exists()) dirFile.mkdirs();
+
+            String ext      = getExtension(file.getOriginalFilename());
+            String fileName = UUID.randomUUID().toString() + ext;
+            file.transferTo(new File(dir + fileName));
+
+            return "/upload/community/" + fileName;
+        } catch (IOException e) {
+            log.error("파일 저장 실패", e);
+            return null;
+        }
+    }
+
+    private String getExtension(String originalFilename) {
+        if (originalFilename == null || !originalFilename.contains(".")) return "";
+        return originalFilename.substring(originalFilename.lastIndexOf("."));
+    }
+}
