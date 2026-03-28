@@ -1,47 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TripTogether - 세계를 탐험하세요</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/reset.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/variables.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/layout.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/header.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/home/home.css">
-</head>
-<body>
 
-<!-- ===== 헤더 ===== -->
-<header>
-  <div class="hi">
-    <div class="logo" onclick="location.href='${pageContext.request.contextPath}/'">
-      <div class="logo-icon">&#127758;</div>
-      <span class="logo-text">TripTogether</span>
-    </div>
-    <nav>
-      <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'">여행지 탐색</button>
-      <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses'">여행 코스</button>
-      <button class="nb" onclick="location.href='${pageContext.request.contextPath}/assistant'">AI 도우미</button>
-      <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'">커뮤니티</button>
-      <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'">마이페이지</button>
-    </nav>
-    <div class="hr">
-      <select class="lang-sel">
-        <option value="ko">한국어</option>
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-        <option value="zh">中文</option>
-      </select>
-      <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/login'">로그인</button>
-    </div>
-  </div>
-</header>
+<c:set var="pageCSS" value="home/home.css"/>
+<%@ include file="../common/header.jsp" %>
+<body>
 
 <!-- ===== 히어로 섹션 ===== -->
 <section class="hero">
@@ -293,18 +255,7 @@
   </div>
 </section>
 
-<!-- ===== 푸터 ===== -->
-<footer class="site-footer">
-  <div class="si">
-    <div class="footer-inner">
-      <div class="footer-logo">
-        <div class="logo-icon" style="width:32px;height:32px;font-size:16px;">&#127758;</div>
-        <span class="logo-text" style="font-size:18px;">TripTogether</span>
-      </div>
-      <p class="footer-copy">&#169; 2026 TripTogether. AI 기반 여행 플랫폼</p>
-    </div>
-  </div>
-</footer>
+<%@ include file="../common/footer.jsp" %>
 
 </body>
 </html>
