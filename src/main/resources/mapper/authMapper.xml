@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.auth.mapper.AuthMapper">
+
+    <!-- ══════════════════════════════════════════
+         ResultMap
+    ══════════════════════════════════════════ -->
+
+    <resultMap id="userRM" type="org.triptogether.auth.vo.UsersVO">
+        <id  property="userIdx"        column="user_idx"/>
+        <result property="userId"           column="user_id"/>
+        <result property="userEmail"        column="user_email"/>
+        <result property="userPassword"     column="user_password"/>
+        <result property="passwordEnabled"  column="password_enabled"/>
+        <result property="emailVerified"    column="email_verified"/>
+        <result property="accountStatus"    column="account_status"/>
+        <result property="statusChangedAt"  column="status_changed_at"/>
+        <result property="nickname"         column="nickname"/>
+        <result property="nationality"      column="nationality"/>
+        <result property="preferredLang"    column="preferred_lang"/>
+        <result property="createdAt"        column="created_at"/>
+    </resultMap>
+
+    <resultMap id="socialRM" type="org.triptogether.auth.vo.UserSocialVO">
+        <id  property="socialIdx"       column="social_idx"/>
+        <result property="userIdx"          column="user_idx"/>
+        <result property="provider"         column="provider"/>
+        <result property="providerUserId"   column="provider_user_id"/>
+        <result property="linkedAt"         column="linked_at"/>
+    </resultMap>
+
+    <resultMap id="historyRM" type="org.triptogether.auth.vo.UserLoginHistoryVO">
+        <id  property="loginIdx"        column="login_idx"/>
+        <result property="userIdx"          column="user_idx"/>
+        <result property="authType"         column="auth_type"/>
+        <result property="loginMethod"      column="login_method"/>
+        <result property="loginIdentifier"  column="login_identifier"/>
+        <result property="success"          column="is_success"/>
+        <result property="failReason"       column="fail_reason"/>
+        <result property="ipAddress"        column="ip_address"/>
+        <result property="userAgent"        column="user_agent"/>
+        <result property="loginAt"          column="login_at"/>
+    </resultMap>
+
+    <!-- ══════════════════════════════════════════
+         USERS
+    ══════════════════════════════════════════ -->
+
+    <select id="findByUserId" resultMap="userRM">
+        SELECT * FROM USERS WHERE user_id = #{userId} AND account_status != 'DELETED'
+    </select>
+
+    <select id="findByEmail" resultMap="userRM">
+        SELECT * FROM USERS WHERE user_email = #{email} AND account_status != 'DELETED'
+    </select>
+
+    <select id="findByIdx" resultMap="userRM">
+        SELECT * FROM USERS WHERE user_idx = #{userIdx}
+    </select>
+
+    <select id="existsByUserId" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM USERS WHERE user_id = #{userId}
+    </select>
+
+    <select id="existsByEmail" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM USERS WHERE user_email = #{email}
+    </select>
+
+    <select id="existsByNickname" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM USERS WHERE nickname = #{nickname}
+    </select>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="userIdx" keyColumn="user_idx">
+        INSERT INTO USERS (
+            user_id, user_email, user_password, password_enabled,
+            email_verified, account_status,
+            nickname, nationality, preferred_lang
+        ) VALUES (
+            #{userId}, #{userEmail}, #{userPassword}, #{passwordEnabled},
+            false, 'ACTIVE',
+            #{nickname}, #{nationality}, #{preferredLang}
+        )
+    </insert>
+
+    <!-- ══════════════════════════════════════════
+         USER_SOCIAL
+    ══════════════════════════════════════════ -->
+
+    <select id="findSocialByProviderAndId" resultMap="socialRM">
+        SELECT * FROM USER_SOCIAL
+        WHERE provider = #{provider}
+          AND provider_user_id = #{providerUserId}
+    </select>
+
+    <select id="findSocialByUserIdxAndProvider" resultMap="socialRM">
+        SELECT * FROM USER_SOCIAL
+        WHERE user_idx = #{userIdx}
+          AND provider = #{provider}
+    </select>
+
+    <insert id="insertSocial">
+        INSERT INTO USER_SOCIAL (user_idx, provider, provider_user_id)
+        VALUES (#{userIdx}, #{provider}, #{providerUserId})
+    </insert>
+
+    <!-- ══════════════════════════════════════════
+         USER_LOGIN_HISTORY
+    ══════════════════════════════════════════ -->
+
+    <insert id="insertLoginHistory">
+        INSERT INTO USER_LOGIN_HISTORY (
+            user_idx, auth_type, login_method, login_identifier,
+            is_success, fail_reason, ip_address, user_agent
+        ) VALUES (
+            #{userIdx}, #{authType}, #{loginMethod}, #{loginIdentifier},
+            #{success}, #{failReason}, #{ipAddress}, #{userAgent}
+        )
+    </insert>
+
+</mapper>
