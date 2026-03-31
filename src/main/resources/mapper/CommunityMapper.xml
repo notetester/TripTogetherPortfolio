@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.community.mapper.CommunityMapper">
+
+    <!-- =============================================
+         ResultMap
+         ============================================= -->
+
+    <resultMap id="PostResultMap" type="org.triptogether.community.vo.CommunityPostDto">
+        <id     property="postId"       column="post_id"/>
+        <result property="userIdx"      column="user_idx"/>
+        <result property="nickname"     column="nickname"/>
+        <result property="title"        column="title"/>
+        <result property="content"      column="content"/>
+        <result property="region"       column="region"/>
+        <result property="postType"     column="post_type"/>
+        <result property="postStatus"   column="post_status"/>
+        <result property="viewCount"    column="view_count"/>
+        <result property="likeCount"    column="like_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="createdAt"    column="created_at"/>
+        <result property="updatedAt"    column="updated_at"/>
+        <result property="thumbUrl"     column="thumb_url"/>
+    </resultMap>
+
+    <resultMap id="ImageResultMap" type="org.triptogether.community.vo.CommunityPostImageDto">
+        <id     property="imageId"   column="image_id"/>
+        <result property="postId"    column="post_id"/>
+        <result property="imageUrl"  column="image_url"/>
+        <result property="sortOrder" column="sort_order"/>
+    </resultMap>
+
+    <resultMap id="CommentResultMap" type="org.triptogether.community.vo.CommunityCommentDto">
+        <id     property="commentId"     column="comment_id"/>
+        <result property="postId"        column="post_id"/>
+        <result property="userIdx"       column="user_idx"/>
+        <result property="nickname"      column="nickname"/>
+        <result property="content"       column="content"/>
+        <result property="commentStatus" column="comment_status"/>
+        <result property="likeCount"     column="like_count"/>
+        <result property="createdAt"     column="created_at"/>
+        <result property="updatedAt"     column="updated_at"/>
+    </resultMap>
+
+    <!-- =============================================
+         목록 조회
+         - region ENUM: asia/europe/africa/north_america/south_america/oceania/etc
+         - keyword: 태그명 + 제목 + 본문 동시 검색
+         - sort: latest/popular/views
+         - post_status = 'ACTIVE' 인 게시글만
+         ============================================= -->
+    <select id="selectPostList" resultMap="PostResultMap">
+        SELECT DISTINCT
+            cp.post_id,
+            cp.user_idx,
+            u.nickname,
+            cp.title,
+            cp.content,
+            cp.created_at,
+            cpd.region,
+            cpd.post_type,
+            cpd.post_status,
+            cpd.view_count,
+            cpd.like_count,
+            cpd.comment_count,
+            cpd.updated_at,
+            cpi.image_url AS thumb_url
+        FROM COMMUNITY_POST cp
+        JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
+        LEFT JOIN USERS u ON cp.user_idx = u.user_idx
+        LEFT JOIN COMMUNITY_POST_IMAGE cpi
+               ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
+        LEFT JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
+        LEFT JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
+        WHERE cpd.post_status = 'ACTIVE'
+        <if test="region != null and region != 'all'">
+            AND cpd.region = #{region}
+        </if>
+        <if test="type != null and type != 'all'">
+            AND cpd.post_type = #{type}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                ct.tag_name LIKE CONCAT('%', #{keyword}, '%')
+                OR cp.title   LIKE CONCAT('%', #{keyword}, '%')
+                OR cp.content LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        <choose>
+            <when test="sort == 'popular'">
+                ORDER BY cpd.like_count DESC, cp.created_at DESC
+            </when>
+            <when test="sort == 'views'">
+                ORDER BY cpd.view_count DESC, cp.created_at DESC
+            </when>
+            <otherwise>
+                ORDER BY cp.created_at DESC
+            </otherwise>
+        </choose>
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 전체 개수 (페이지네이션용) -->
+    <select id="selectTotalCount" resultType="int">
+        SELECT COUNT(DISTINCT cp.post_id)
+        FROM COMMUNITY_POST cp
+        JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
+        LEFT JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
+        LEFT JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
+        WHERE cpd.post_status = 'ACTIVE'
+        <if test="region != null and region != 'all'">
+            AND cpd.region = #{region}
+        </if>
+        <if test="type != null and type != 'all'">
+            AND cpd.post_type = #{type}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                ct.tag_name LIKE CONCAT('%', #{keyword}, '%')
+                OR cp.title   LIKE CONCAT('%', #{keyword}, '%')
+                OR cp.content LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+    </select>
+
+    <!-- =============================================
+         상세 조회
+         ============================================= -->
+    <select id="selectPost" resultMap="PostResultMap">
+        SELECT
+            cp.post_id,
+            cp.user_idx,
+            u.nickname,
+            cp.title,
+            cp.content,
+            cp.created_at,
+            cpd.region,
+            cpd.post_type,
+            cpd.post_status,
+            cpd.view_count,
+            cpd.like_count,
+            cpd.comment_count,
+            cpd.updated_at
+        FROM COMMUNITY_POST cp
+        JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
+        LEFT JOIN USERS u ON cp.user_idx = u.user_idx
+        WHERE cp.post_id = #{postId}
+          AND cpd.post_status = 'ACTIVE'
+    </select>
+
+    <!-- 이미지 목록 (sort_order 순) -->
+    <select id="selectImageList" resultMap="ImageResultMap">
+        SELECT image_id, post_id, image_url, sort_order
+        FROM COMMUNITY_POST_IMAGE
+        WHERE post_id = #{postId}
+        ORDER BY sort_order ASC
+    </select>
+
+    <!-- 태그 목록 -->
+    <select id="selectTagList" resultType="String">
+        SELECT ct.tag_name
+        FROM COMMUNITY_POST_TAG cpt
+        JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
+        WHERE cpt.post_id = #{postId}
+    </select>
+
+    <!-- 댓글 목록 (ACTIVE만, 등록순) -->
+    <select id="selectCommentList" resultMap="CommentResultMap">
+        SELECT
+            cc.comment_id,
+            cc.post_id,
+            cc.user_idx,
+            u.nickname,
+            cc.content,
+            cc.comment_status,
+            cc.like_count,
+            cc.created_at,
+            cc.updated_at
+        FROM COMMUNITY_COMMENT cc
+                 LEFT JOIN USERS u ON cc.user_idx = u.user_idx
+        WHERE cc.post_id = #{postId}
+          AND cc.comment_status = 'ACTIVE'
+        ORDER BY cc.created_at ASC
+    </select>
+
+    <!-- 팁 카테고리 -->
+    <select id="selectTipCategory" resultType="String">
+        SELECT tip_category
+        FROM COMMUNITY_POST_TIP
+        WHERE post_id = #{postId}
+    </select>
+
+    <!-- 질문 해결 여부 -->
+    <select id="selectIsSolved" resultType="Integer">
+        SELECT is_solved
+        FROM COMMUNITY_POST_QUESTION
+        WHERE post_id = #{postId}
+    </select>
+
+    <!-- =============================================
+         연관 태그 기반 추천 게시글
+         1. 현재 게시글의 태그 목록 조회
+         2. COMMUNITY_TAG_RELATION에서 연관도 높은 태그 찾기
+         3. 해당 태그를 가진 게시글 추천 (현재 글 제외, 최대 5개)
+         ============================================= -->
+    <select id="selectRelatedList" resultMap="PostResultMap">
+        SELECT
+            cp.post_id,
+            cp.user_idx,
+            u.nickname,
+            cp.title,
+            cp.created_at,
+            cpd.post_type,
+            cpd.like_count,
+            cpi.image_url AS thumb_url,
+            MAX(ctr.co_count) AS max_co_count
+        FROM COMMUNITY_POST cp
+                 JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
+                 LEFT JOIN USERS u ON cp.user_idx = u.user_idx
+                 LEFT JOIN COMMUNITY_POST_IMAGE cpi
+                           ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
+                 JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
+                 JOIN COMMUNITY_TAG_RELATION ctr
+                      ON (ctr.tag_id_a = cpt.tag_id OR ctr.tag_id_b = cpt.tag_id)
+        WHERE cpd.post_status = 'ACTIVE'
+          AND cp.post_id != #{postId}
+          AND cpt.tag_id IN (
+            SELECT tag_id FROM COMMUNITY_POST_TAG WHERE post_id = #{postId}
+            )
+        GROUP BY cp.post_id, cp.user_idx, u.nickname, cp.title,
+            cp.created_at, cpd.post_type, cpd.like_count, cpi.image_url
+        ORDER BY max_co_count DESC, cpd.like_count DESC, cp.created_at DESC
+            LIMIT 5
+    </select>
+    <!-- =============================================
+         조회수 증가
+         ============================================= -->
+    <update id="updateViewCount">
+        UPDATE COMMUNITY_POST_DETAIL
+        SET view_count = view_count + 1
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- =============================================
+         글쓰기
+         ============================================= -->
+
+    <!-- COMMUNITY_POST INSERT -->
+    <insert id="insertPost" useGeneratedKeys="true" keyProperty="postId">
+        INSERT INTO COMMUNITY_POST (user_idx, title, content, created_at)
+        VALUES (#{userIdx}, #{title}, #{content}, NOW())
+    </insert>
+
+    <!-- COMMUNITY_POST_DETAIL INSERT -->
+    <insert id="insertPostDetail">
+        INSERT INTO COMMUNITY_POST_DETAIL
+            (post_id, region, post_type, post_status, view_count, like_count, comment_count, updated_at)
+        VALUES
+            (#{postId}, #{region}, #{postType}, 'ACTIVE', 0, 0, 0, NOW())
+    </insert>
+
+    <!-- COMMUNITY_POST_IMAGE INSERT -->
+    <insert id="insertImage">
+        INSERT INTO COMMUNITY_POST_IMAGE (post_id, image_url, sort_order)
+        VALUES (#{postId}, #{imageUrl}, #{sortOrder})
+    </insert>
+
+    <!-- COMMUNITY_TAG UPSERT -->
+    <insert id="upsertTag">
+        INSERT INTO COMMUNITY_TAG (tag_name, use_count, created_at)
+        VALUES (#{tagName}, 1, NOW())
+        ON DUPLICATE KEY UPDATE use_count = use_count + 1
+    </insert>
+
+    <!-- 태그 ID 조회 -->
+    <select id="selectTagId" resultType="Long">
+        SELECT tag_id FROM COMMUNITY_TAG WHERE tag_name = #{tagName}
+    </select>
+
+    <!-- COMMUNITY_POST_TAG INSERT -->
+    <insert id="insertPostTag">
+        INSERT IGNORE INTO COMMUNITY_POST_TAG (post_id, tag_id)
+        VALUES (#{postId}, #{tagId})
+    </insert>
+
+    <!-- COMMUNITY_POST_TIP INSERT -->
+    <insert id="insertPostTip">
+        INSERT INTO COMMUNITY_POST_TIP (post_id, tip_category)
+        VALUES (#{postId}, #{tipCategory})
+    </insert>
+
+    <!-- COMMUNITY_POST_QUESTION INSERT -->
+    <insert id="insertPostQuestion">
+        INSERT INTO COMMUNITY_POST_QUESTION (post_id, is_solved)
+        VALUES (#{postId}, 0)
+    </insert>
+
+    <!-- =============================================
+         태그 공출현 관계 업데이트
+         게시글 등록 시 태그 쌍마다 co_count + 1
+         tag_id_a < tag_id_b 항상 유지 (중복 방지)
+         ============================================= -->
+    <insert id="upsertTagRelation">
+        INSERT INTO COMMUNITY_TAG_RELATION (tag_id_a, tag_id_b, co_count, updated_at)
+        VALUES (
+            LEAST(#{tagIdA}, #{tagIdB}),
+            GREATEST(#{tagIdA}, #{tagIdB}),
+            1,
+            NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+            co_count   = co_count + 1,
+            updated_at = NOW()
+    </insert>
+
+    <!-- 게시글의 태그 ID 목록 조회 (공출현 계산용) -->
+    <select id="selectTagIdList" resultType="Long">
+        SELECT tag_id
+        FROM COMMUNITY_POST_TAG
+        WHERE post_id = #{postId}
+    </select>
+
+    <!-- =============================================
+         삭제 (post_status = 'DELETED' 로 변경)
+         ============================================= -->
+    <update id="updatePostStatus">
+        UPDATE COMMUNITY_POST_DETAIL
+        SET post_status = #{status},
+            updated_at  = NOW()
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- =============================================
+         좋아요
+         ============================================= -->
+    <select id="selectLikeCount" resultType="int">
+        SELECT COUNT(*)
+        FROM COMMUNITY_POST_LIKE
+        WHERE post_id = #{postId}
+          AND user_idx = #{userIdx}
+    </select>
+
+    <select id="selectPostLikeCount" resultType="int">
+        SELECT like_count
+        FROM COMMUNITY_POST_DETAIL
+        WHERE post_id = #{postId}
+    </select>
+
+    <insert id="insertLike">
+        INSERT IGNORE INTO COMMUNITY_POST_LIKE (post_id, user_idx, created_at)
+        VALUES (#{postId}, #{userIdx}, NOW())
+    </insert>
+
+    <delete id="deleteLike">
+        DELETE FROM COMMUNITY_POST_LIKE
+        WHERE post_id = #{postId}
+          AND user_idx = #{userIdx}
+    </delete>
+
+    <update id="increaseLikeCount">
+        UPDATE COMMUNITY_POST_DETAIL
+        SET like_count = like_count + 1
+        WHERE post_id = #{postId}
+    </update>
+
+    <update id="decreaseLikeCount">
+        UPDATE COMMUNITY_POST_DETAIL
+        SET like_count = GREATEST(like_count - 1, 0)
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- =============================================
+         댓글
+         ============================================= -->
+    <insert id="insertComment">
+        INSERT INTO COMMUNITY_COMMENT
+            (post_id, user_idx, content, comment_status, like_count, created_at, updated_at)
+        VALUES
+            (#{postId}, #{userIdx}, #{content}, 'ACTIVE', 0, NOW(), NOW())
+    </insert>
+
+    <update id="updateCommentStatus">
+        UPDATE COMMUNITY_COMMENT
+        SET comment_status = #{status},
+            updated_at     = NOW()
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <select id="selectPostIdByCommentId" resultType="Long">
+        SELECT post_id FROM COMMUNITY_COMMENT WHERE comment_id = #{commentId}
+    </select>
+
+    <update id="increaseCommentCount">
+        UPDATE COMMUNITY_POST_DETAIL
+        SET comment_count = comment_count + 1
+        WHERE post_id = #{postId}
+    </update>
+
+    <update id="decreaseCommentCount">
+        UPDATE COMMUNITY_POST_DETAIL
+        SET comment_count = GREATEST(comment_count - 1, 0)
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- =============================================
+         신고
+         ============================================= -->
+    <insert id="insertReport">
+        INSERT IGNORE INTO COMMUNITY_REPORT
+            (post_id, user_idx, reason, status, created_at)
+        VALUES
+            (#{postId}, #{userIdx}, 'other', 'pending', NOW())
+    </insert>
+
+</mapper>
