@@ -25,9 +25,9 @@
 <%@ include file="../common/header.jsp" %>
 
 <%-- 비로그인 체크 --%>
-<%--<c:if test="${empty sessionScope.loginUser}">--%>
-<%--  <c:redirect url="/auth/login"/>--%>
-<%--</c:if>--%>
+<c:if test="${empty sessionScope.loginUser}">
+<c:redirect url="/auth/login"/>
+</c:if>
 
 <body>
 
@@ -91,8 +91,8 @@
               </span>
             </div>
           </div>
-          <input type="file" id="imgInput" name="images" accept="image/*" multiple
-                 style="display:none;" onchange="addImages(event)">
+ <input type="file" id="imgInput" accept="image/*" multiple
+       style="display:none;" onchange="addImages(event)">
           <p class="input-hint">JPG, PNG · 파일당 최대 10MB · 첫 번째 사진이 대표 이미지</p>
         </div>
 

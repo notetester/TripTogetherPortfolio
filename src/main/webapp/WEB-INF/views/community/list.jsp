@@ -228,9 +228,6 @@
 
 </div>
 
-<%-- 모바일 FAB --%>
-<button class="fab-write"
-        onclick="location.href='${pageContext.request.contextPath}/community/write'">&#43;</button>
 
 <%@ include file="../common/footer.jsp" %>
 </body>

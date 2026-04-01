@@ -110,7 +110,8 @@
           <div class="slider-track" id="sliderTrack">
             <c:forEach var="img" items="${imageList}">
               <div class="slide-item">
-                <img src="${img.imageUrl}" alt="${post.title}" loading="lazy">
+                <img src="${img.imageUrl}" alt="${post.title}" loading="lazy"
+     onclick="window.open('${img.imageUrl}', '_blank')">
               </div>
             </c:forEach>
           </div>

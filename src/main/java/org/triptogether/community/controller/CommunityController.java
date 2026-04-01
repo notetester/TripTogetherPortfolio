@@ -82,10 +82,10 @@ public class CommunityController {
        ============================================= */
     @GetMapping("/write")
     public String writeForm(HttpSession session) {
-// 테스트용 임시 주석
-//        if (session.getAttribute("loginUser") == null) {
-//            return "redirect:/auth/login";
-//        }
+
+       if (session.getAttribute("loginUser") == null) {
+           return "redirect:/auth/login";
+       }
         return "community/write";
     }
 
