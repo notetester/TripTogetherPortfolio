@@ -15,7 +15,9 @@
         <result property="userPassword"     column="user_password"/>
         <result property="passwordEnabled"  column="password_enabled"/>
         <result property="emailVerified"    column="email_verified"/>
+        <result property="emailLoginEnabled"   column="email_login_enabled"/>
         <result property="accountStatus"    column="account_status"/>
+        <result property="userRole"         column="user_role"/>
         <result property="statusChangedAt"  column="status_changed_at"/>
         <result property="nickname"         column="nickname"/>
         <result property="nationality"      column="nationality"/>
@@ -42,6 +44,17 @@
         <result property="ipAddress"        column="ip_address"/>
         <result property="userAgent"        column="user_agent"/>
         <result property="loginAt"          column="login_at"/>
+    </resultMap>
+
+    <resultMap id="verifyRM" type="org.triptogether.auth.vo.EmailVerificationVO">
+        <id  property="verifyIdx"   column="verify_idx"/>
+        <result property="userIdx"      column="user_idx"/>
+        <result property="email"        column="email"/>
+        <result property="token"        column="token"/>
+        <result property="purpose"      column="purpose"/>
+        <result property="expiredAt"    column="expired_at"/>
+        <result property="used"         column="used"/>
+        <result property="createdAt"    column="created_at"/>
     </resultMap>
 
     <!-- ══════════════════════════════════════════
@@ -72,17 +85,74 @@
         SELECT COUNT(*) > 0 FROM USERS WHERE nickname = #{nickname}
     </select>
 
+    <!-- 이메일로 아이디 찾기: 인증된 이메일만 허용 -->
+    <select id="findUserIdByEmail" resultType="String">
+        SELECT user_id FROM USERS
+        WHERE user_email      = #{email}
+          AND email_verified  = TRUE
+          AND account_status != 'DELETED'
+        LIMIT 1
+    </select>
+
+    <!-- ═══════════════════════════════════════
+     USERS - 등록 / 수정
+    ═══════════════════════════════════════ -->
+
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="userIdx" keyColumn="user_idx">
         INSERT INTO USERS (
             user_id, user_email, user_password, password_enabled,
-            email_verified, account_status,
+            email_verified, email_login_enabled, account_status, user_role,
             nickname, nationality, preferred_lang
         ) VALUES (
             #{userId}, #{userEmail}, #{userPassword}, #{passwordEnabled},
-            false, 'ACTIVE',
+            false, false, 'ACTIVE', 'USER',
             #{nickname}, #{nationality}, #{preferredLang}
         )
     </insert>
+
+    <update id="updateProfile">
+        UPDATE USERS
+        SET nickname      = #{nickname},
+            nationality   = #{nationality},
+            preferred_lang= #{preferredLang}
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE USERS
+        SET user_password   = #{encodedPassword},
+            password_enabled= TRUE
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="updateEmail">
+        UPDATE USERS
+        SET user_email     = #{email},
+            email_verified = #{emailVerified},
+            email_login_enabled = FALSE
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="updateEmailVerified">
+        UPDATE USERS
+        SET email_verified = #{emailVerified}
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="updateEmailLoginEnabled">
+        UPDATE USERS
+        SET email_login_enabled = #{enabled}
+        WHERE user_idx = #{userIdx}
+          AND email_verified = TRUE
+    </update>
+
+    <update id="resetPassword">
+        UPDATE USERS
+        SET user_password    = #{encodedPassword},
+            password_enabled = TRUE
+        WHERE user_idx = #{userIdx}
+    </update>
+
 
     <!-- ══════════════════════════════════════════
          USER_SOCIAL
@@ -100,10 +170,21 @@
           AND provider = #{provider}
     </select>
 
+    <select id="findSocialsByUserIdx" resultMap="socialRM">
+        SELECT * FROM USER_SOCIAL WHERE user_idx = #{userIdx}
+    </select>
+
+
     <insert id="insertSocial">
         INSERT INTO USER_SOCIAL (user_idx, provider, provider_user_id)
         VALUES (#{userIdx}, #{provider}, #{providerUserId})
     </insert>
+
+    <delete id="deleteSocial">
+        DELETE FROM USER_SOCIAL
+        WHERE user_idx = #{userIdx} AND provider = #{provider}
+    </delete>
+
 
     <!-- ══════════════════════════════════════════
          USER_LOGIN_HISTORY
@@ -118,5 +199,36 @@
             #{success}, #{failReason}, #{ipAddress}, #{userAgent}
         )
     </insert>
+
+    <!-- ═══════════════════════════════════════
+         EMAIL_VERIFICATION
+    ═══════════════════════════════════════ -->
+
+    <insert id="insertEmailVerification">
+        INSERT INTO EMAIL_VERIFICATION (user_idx, email, token, purpose, expired_at)
+        VALUES (#{userIdx}, #{email}, #{token}, #{purpose}, #{expiredAt})
+    </insert>
+
+    <select id="findValidToken" resultMap="verifyRM">
+        SELECT * FROM EMAIL_VERIFICATION
+        WHERE token      = #{token}
+          AND purpose    = #{purpose}
+          AND used       = FALSE
+          AND expired_at > NOW()
+        LIMIT 1
+    </select>
+
+    <update id="markTokenUsed">
+        UPDATE EMAIL_VERIFICATION SET used = TRUE WHERE verify_idx = #{verifyIdx}
+    </update>
+
+    <!-- 기존 미사용 토큰 모두 만료 처리 (동일 이메일+목적) -->
+    <update id="expireOldTokens">
+        UPDATE EMAIL_VERIFICATION
+        SET expired_at = NOW()
+        WHERE email   = #{email}
+          AND purpose = #{purpose}
+          AND used    = FALSE
+    </update>
 
 </mapper>

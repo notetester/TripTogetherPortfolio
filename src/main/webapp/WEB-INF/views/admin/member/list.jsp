@@ -1,0 +1,522 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="activeMenu" value="members"/>
+<c:set var="pageTitle"  value="회원 관리"/>
+<%@ include file="../layout.jsp" %>
+
+<div class="adm-content">
+
+    <%-- ══════════════════════════════════════════
+         검색 / 필터 바
+    ══════════════════════════════════════════ --%>
+    <div class="adm-card" style="margin-bottom:20px;">
+        <div class="adm-card-body">
+            <form id="searchForm" method="get" action="${pageContext.request.contextPath}/admin/members">
+                <div class="adm-filter-bar">
+
+                    <%-- 키워드 검색 --%>
+                    <div style="flex:1;min-width:220px;">
+                        <div class="adm-filter-label">검색</div>
+                        <div style="display:flex;gap:6px;">
+                            <select class="adm-select" name="searchType" style="width:100px;">
+                                <option value="all"      ${search.searchType=='all'     ?'selected':''}>전체</option>
+                                <option value="userId"   ${search.searchType=='userId'  ?'selected':''}>아이디</option>
+                                <option value="nickname" ${search.searchType=='nickname'?'selected':''}>닉네임</option>
+                                <option value="email"    ${search.searchType=='email'   ?'selected':''}>이메일</option>
+                            </select>
+                            <div class="adm-search-box" style="flex:1;">
+                                <span class="adm-search-ico">🔍</span>
+                                <input class="adm-input" type="text" name="keyword"
+                                       value="${search.keyword}" placeholder="검색어 입력...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <%-- 상태 필터 --%>
+                    <div>
+                        <div class="adm-filter-label">계정 상태</div>
+                        <select class="adm-select" name="status">
+                            <option value="ALL"     ${search.status=='ALL'    ?'selected':''}>전체</option>
+                            <option value="ACTIVE"  ${search.status=='ACTIVE' ?'selected':''}>활성</option>
+                            <option value="DORMANT" ${search.status=='DORMANT'?'selected':''}>휴면</option>
+                            <option value="DELETED" ${search.status=='DELETED'?'selected':''}>탈퇴</option>
+                        </select>
+                    </div>
+
+                    <%-- 권한 필터 --%>
+                    <div>
+                        <div class="adm-filter-label">권한</div>
+                        <select class="adm-select" name="role">
+                            <option value="ALL"   ${search.role=='ALL'  ?'selected':''}>전체</option>
+                            <option value="USER"  ${search.role=='USER' ?'selected':''}>일반</option>
+                            <option value="ADMIN" ${search.role=='ADMIN'?'selected':''}>관리자</option>
+                        </select>
+                    </div>
+
+                    <%-- 소셜 필터 --%>
+                    <div>
+                        <div class="adm-filter-label">소셜 연동</div>
+                        <select class="adm-select" name="provider">
+                            <option value="ALL"    ${search.provider=='ALL'   ?'selected':''}>전체</option>
+                            <option value="KAKAO"  ${search.provider=='KAKAO' ?'selected':''}>카카오</option>
+                            <option value="NAVER"  ${search.provider=='NAVER' ?'selected':''}>네이버</option>
+                            <option value="GOOGLE" ${search.provider=='GOOGLE'?'selected':''}>Google</option>
+                            <option value="NONE"   ${search.provider=='NONE'  ?'selected':''}>연동 없음</option>
+                        </select>
+                    </div>
+
+                    <%-- 가입일 범위 --%>
+                    <div>
+                        <div class="adm-filter-label">가입일</div>
+                        <div style="display:flex;gap:4px;align-items:center;">
+                            <input class="adm-input" type="date" name="dateFrom"
+                                   value="${search.dateFrom}" style="width:130px;">
+                            <span style="color:#475569;font-size:12px;">~</span>
+                            <input class="adm-input" type="date" name="dateTo"
+                                   value="${search.dateTo}" style="width:130px;">
+                        </div>
+                    </div>
+
+                    <%-- 정렬 --%>
+                    <div>
+                        <div class="adm-filter-label">정렬</div>
+                        <div style="display:flex;gap:6px;">
+                            <select class="adm-select" name="sortBy">
+                                <option value="createdAt"   ${search.sortBy=='createdAt'  ?'selected':''}>가입일</option>
+                                <option value="lastLoginAt" ${search.sortBy=='lastLoginAt'?'selected':''}>최근 로그인</option>
+                                <option value="nickname"    ${search.sortBy=='nickname'   ?'selected':''}>닉네임</option>
+                            </select>
+                            <select class="adm-select" name="sortDir">
+                                <option value="DESC" ${search.sortDir=='DESC'?'selected':''}>내림차순</option>
+                                <option value="ASC"  ${search.sortDir=='ASC' ?'selected':''}>오름차순</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <%-- 버튼 --%>
+                    <div style="display:flex;gap:6px;align-items:flex-end;">
+                        <button type="submit" class="adm-btn adm-btn-primary">🔍 검색</button>
+                        <a href="${pageContext.request.contextPath}/admin/members"
+                           class="adm-btn adm-btn-ghost">초기화</a>
+                    </div>
+
+                    <input type="hidden" name="page" value="1">
+                    <input type="hidden" name="size" value="${search.size}">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <%-- ══════════════════════════════════════════
+         회원 목록 테이블
+    ══════════════════════════════════════════ --%>
+    <div class="adm-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">
+                👥 회원 목록
+                <span style="font-size:12px;font-weight:400;color:#475569;">
+                    총 <strong style="color:#93c5fd;">${total}</strong>명
+                </span>
+            </div>
+            <select class="adm-select" style="width:80px;" id="sizeSelect"
+                    onchange="changeSize(this.value)">
+                <option value="10"  ${search.size==10 ?'selected':''}>10</option>
+                <option value="20"  ${search.size==20 ?'selected':''}>20</option>
+                <option value="50"  ${search.size==50 ?'selected':''}>50</option>
+                <option value="100" ${search.size==100?'selected':''}>100</option>
+            </select>
+        </div>
+
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>회원</th>
+                        <th>이메일</th>
+                        <th>상태</th>
+                        <th>권한</th>
+                        <th>소셜</th>
+                        <th>로그인</th>
+                        <th>가입일</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach items="${list}" var="m">
+                    <tr>
+                        <%-- 회원 정보 --%>
+                        <td>
+                            <div class="mem-id-cell">
+                                <div class="mem-av ${m.accountStatus == 'DORMANT' ? 'dormant' : m.accountStatus == 'DELETED' ? 'deleted' : ''}">
+                                    ${m.nickname.substring(0,1)}
+                                </div>
+                                <div>
+                                    <div class="mem-name">${m.nickname}</div>
+                                    <div class="mem-uid">
+                                        <c:choose>
+                                            <c:when test="${not empty m.userId}">@${m.userId}</c:when>
+                                            <c:otherwise><span style="color:#475569;">소셜 전용</span></c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <%-- 이메일 --%>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty m.userEmail}">
+                                    <span style="font-size:12px;">${m.userEmail}</span>
+                                    <c:if test="${m.emailVerified}">
+                                        <span style="color:#4ade80;font-size:10px;"> ✓</span>
+                                    </c:if>
+                                </c:when>
+                                <c:otherwise><span style="color:#475569;font-size:12px;">—</span></c:otherwise>
+                            </c:choose>
+                        </td>
+
+                        <%-- 상태 --%>
+                        <td>
+                            <span class="status-badge ${m.accountStatus}">${m.accountStatus}</span>
+                        </td>
+
+                        <%-- 권한 --%>
+                        <td>
+                            <span class="role-badge ${m.userRole}">${m.userRole}</span>
+                        </td>
+
+                        <%-- 소셜 연동 --%>
+                        <td>
+                            <div class="social-icons">
+                                <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('KAKAO')}">
+                                    <div class="social-icon-sm K" title="카카오">🟡</div>
+                                </c:if>
+                                <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('NAVER')}">
+                                    <div class="social-icon-sm N" title="네이버">N</div>
+                                </c:if>
+                                <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('GOOGLE')}">
+                                    <div class="social-icon-sm G" title="Google">G</div>
+                                </c:if>
+                                <c:if test="${empty m.linkedProviders}">
+                                    <span style="color:#475569;font-size:12px;">—</span>
+                                </c:if>
+                            </div>
+                        </td>
+
+                        <%-- 로그인 이력 --%>
+                        <td>
+                            <div style="font-size:12px;">
+                                <c:choose>
+                                    <c:when test="${m.lastLoginAt != null}">
+                                        <fmt:formatDate value="${m.lastLoginAt}" pattern="MM.dd HH:mm"/>
+                                    </c:when>
+                                    <c:otherwise><span style="color:#475569;">없음</span></c:otherwise>
+                                </c:choose>
+                            </div>
+                            <div style="font-size:10px;color:#475569;margin-top:1px;">
+                                ✅${m.loginSuccessCount} / ❌${m.loginFailCount}
+                            </div>
+                        </td>
+
+                        <%-- 가입일 --%>
+                        <td style="font-size:12px;color:#64748b;">
+                            <fmt:formatDate value="${m.createdAt}" pattern="yyyy.MM.dd"/>
+                        </td>
+
+                        <%-- 액션 --%>
+                        <td>
+                            <div style="display:flex;gap:4px;align-items:center;">
+                                <button class="adm-row-btn detail"
+                                        onclick="openDetail(${m.userIdx})">상세</button>
+                                <div class="action-menu-wrap">
+                                    <button class="adm-row-btn detail"
+                                            onclick="toggleMenu(this)">⋯</button>
+                                    <div class="action-menu">
+                                        <div style="font-size:10px;color:#475569;padding:4px 10px 6px;
+                                                    font-weight:700;text-transform:uppercase;letter-spacing:.06em;">
+                                            상태 변경
+                                        </div>
+                                        <c:if test="${m.accountStatus != 'ACTIVE'}">
+                                            <button class="action-menu-item"
+                                                    onclick="changeStatus(${m.userIdx},'ACTIVE',this)">
+                                                ✅ 활성화
+                                            </button>
+                                        </c:if>
+                                        <c:if test="${m.accountStatus != 'DORMANT'}">
+                                            <button class="action-menu-item"
+                                                    onclick="changeStatus(${m.userIdx},'DORMANT',this)">
+                                                😴 휴면 처리
+                                            </button>
+                                        </c:if>
+                                        <c:if test="${m.accountStatus != 'DELETED'}">
+                                            <button class="action-menu-item danger"
+                                                    onclick="changeStatus(${m.userIdx},'DELETED',this)">
+                                                🗑️ 탈퇴 처리
+                                            </button>
+                                        </c:if>
+                                        <div class="action-menu-sep"></div>
+                                        <div style="font-size:10px;color:#475569;padding:4px 10px 6px;
+                                                    font-weight:700;text-transform:uppercase;letter-spacing:.06em;">
+                                            권한 변경
+                                        </div>
+                                        <c:if test="${m.userRole != 'ADMIN'}">
+                                            <button class="action-menu-item"
+                                                    onclick="changeRole(${m.userIdx},'ADMIN',this)">
+                                                ⭐ 관리자 권한 부여
+                                            </button>
+                                        </c:if>
+                                        <c:if test="${m.userRole != 'USER'}">
+                                            <button class="action-menu-item danger"
+                                                    onclick="changeRole(${m.userIdx},'USER',this)">
+                                                👤 일반 유저로 변경
+                                            </button>
+                                        </c:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </c:forEach>
+
+                    <c:if test="${empty list}">
+                        <tr>
+                            <td colspan="8" style="text-align:center;padding:40px;color:#475569;">
+                                검색 결과가 없습니다.
+                            </td>
+                        </tr>
+                    </c:if>
+                </tbody>
+            </table>
+        </div>
+
+        <%-- 페이징 --%>
+        <c:if test="${paging.totalPage > 1}">
+            <div class="adm-paging">
+                <c:if test="${paging.prev}">
+                    <button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button>
+                </c:if>
+                <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p">
+                    <button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}"
+                            onclick="goPage(${p})">${p}</button>
+                </c:forEach>
+                <c:if test="${paging.next}">
+                    <button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button>
+                </c:if>
+                <span class="adm-page-info">${paging.currentPage} / ${paging.totalPage} 페이지</span>
+            </div>
+        </c:if>
+    </div>
+</div>
+
+<%-- ══════════════════════════════════════════
+     회원 상세 모달
+══════════════════════════════════════════ --%>
+<div class="adm-modal-overlay" id="detailModal">
+    <div class="adm-modal">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="modalTitle">회원 상세</div>
+            <button class="adm-modal-close" onclick="closeDetail()">✕</button>
+        </div>
+        <div class="adm-modal-body" id="modalBody">
+            <div style="text-align:center;padding:40px;color:#475569;">불러오는 중...</div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" onclick="closeDetail()">닫기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const ctx = '${pageContext.request.contextPath}';
+
+/* ── 페이지 이동 ── */
+function goPage(p) {
+    const form = document.getElementById('searchForm');
+    form.querySelector('[name=page]').value = p;
+    form.submit();
+}
+
+function changeSize(size) {
+    const form = document.getElementById('searchForm');
+    form.querySelector('[name=size]').value = size;
+    form.querySelector('[name=page]').value = 1;
+    form.submit();
+}
+
+/* ── 액션 메뉴 토글 ── */
+function toggleMenu(btn) {
+    const menu = btn.nextElementSibling;
+    document.querySelectorAll('.action-menu.open').forEach(m => {
+        if (m !== menu) m.classList.remove('open');
+    });
+    menu.classList.toggle('open');
+}
+
+/* ── 상태 변경 ── */
+async function changeStatus(userIdx, status, el) {
+    const labels = { ACTIVE:'활성화', DORMANT:'휴면 처리', DELETED:'탈퇴 처리' };
+    if (!confirm(`이 회원을 "${labels[status]}" 하시겠습니까?`)) return;
+
+    el.closest('.action-menu').classList.remove('open');
+
+    const res  = await fetch(`${ctx}/admin/members/${userIdx}/status`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({status})
+    });
+    const data = await res.json();
+    if (data.success) { adm_toast(data.message); setTimeout(()=>location.reload(), 800); }
+    else               adm_toast(data.message, 'error');
+}
+
+/* ── 권한 변경 ── */
+async function changeRole(userIdx, role, el) {
+    const labels = { ADMIN:'관리자 권한 부여', USER:'일반 유저로 변경' };
+    if (!confirm(`"${labels[role]}" 하시겠습니까?`)) return;
+
+    el.closest('.action-menu').classList.remove('open');
+
+    const res  = await fetch(`${ctx}/admin/members/${userIdx}/role`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({role})
+    });
+    const data = await res.json();
+    if (data.success) { adm_toast(data.message); setTimeout(()=>location.reload(), 800); }
+    else               adm_toast(data.message, 'error');
+}
+
+/* ── 회원 상세 모달 ── */
+async function openDetail(userIdx) {
+    document.getElementById('detailModal').classList.add('open');
+    document.getElementById('modalBody').innerHTML =
+        '<div style="text-align:center;padding:40px;color:#475569;">불러오는 중... ⏳</div>';
+
+    const res  = await fetch(`${ctx}/admin/members/${userIdx}`);
+    const data = await res.json();
+
+    if (!data.success) {
+        document.getElementById('modalBody').innerHTML =
+            `<div style="text-align:center;padding:40px;color:#f87171;">${data.message}</div>`;
+        return;
+    }
+
+    const m = data.member;
+    const h = data.history || [];
+
+    document.getElementById('modalTitle').textContent =
+        `${m.nickname} 님 상세 정보`;
+
+    // ── 탭 구조
+    document.getElementById('modalBody').innerHTML = `
+        <div class="adm-tabs">
+            <button class="adm-tab active" onclick="switchTab('info',this)">기본 정보</button>
+            <button class="adm-tab" onclick="switchTab('hist',this)">로그인 이력 (${h.length})</button>
+        </div>
+        <div id="tab-info">${buildInfoTab(m)}</div>
+        <div id="tab-hist" style="display:none;">${buildHistTab(h)}</div>
+    `;
+}
+
+function buildInfoTab(m) {
+    const fmt = (v) => v || '<span style="color:#475569">—</span>';
+    const date = (d) => d ? new Date(d).toLocaleString('ko-KR') : '—';
+    const bool = (v) => v
+        ? '<span style="color:#4ade80">✓ 예</span>'
+        : '<span style="color:#475569">✗ 아니오</span>';
+
+    const statusBadge = `<span class="status-badge ${m.accountStatus}">${m.accountStatus}</span>`;
+    const roleBadge   = `<span class="role-badge ${m.userRole}">${m.userRole}</span>`;
+
+    let socialHtml = '';
+    if (m.linkedProviders) {
+        m.linkedProviders.split(',').forEach(p => {
+            const map = { KAKAO:'🟡 카카오', NAVER:'N 네이버', GOOGLE:'G Google' };
+            socialHtml += `<span style="margin-right:8px;font-size:12px;color:#94a3b8;">${map[p.trim()]||p}</span>`;
+        });
+    } else {
+        socialHtml = '<span style="color:#475569;font-size:12px;">연동 없음</span>';
+    }
+
+    return `
+    <div class="detail-grid">
+        <div class="detail-item"><div class="detail-label">회원 번호</div><div class="detail-value">#${m.userIdx}</div></div>
+        <div class="detail-item"><div class="detail-label">아이디</div><div class="detail-value">${fmt(m.userId)}</div></div>
+        <div class="detail-item"><div class="detail-label">닉네임</div><div class="detail-value">${fmt(m.nickname)}</div></div>
+        <div class="detail-item"><div class="detail-label">이메일</div><div class="detail-value" style="font-size:12px;">${fmt(m.userEmail)}</div></div>
+        <div class="detail-item"><div class="detail-label">계정 상태</div><div class="detail-value">${statusBadge}</div></div>
+        <div class="detail-item"><div class="detail-label">권한</div><div class="detail-value">${roleBadge}</div></div>
+        <div class="detail-item"><div class="detail-label">국적</div><div class="detail-value">${fmt(m.nationality)}</div></div>
+        <div class="detail-item"><div class="detail-label">선호 언어</div><div class="detail-value">${fmt(m.preferredLang)}</div></div>
+        <div class="detail-item"><div class="detail-label">이메일 인증</div><div class="detail-value">${bool(m.emailVerified)}</div></div>
+        <div class="detail-item"><div class="detail-label">이메일 로그인</div><div class="detail-value">${bool(m.emailLoginEnabled)}</div></div>
+        <div class="detail-item"><div class="detail-label">비밀번호 로그인</div><div class="detail-value">${bool(m.passwordEnabled)}</div></div>
+        <div class="detail-item"><div class="detail-label">가입일</div><div class="detail-value" style="font-size:12px;">${date(m.createdAt)}</div></div>
+    </div>
+    <div class="detail-item" style="margin-top:12px;">
+        <div class="detail-label">소셜 연동</div>
+        <div class="detail-value" style="margin-top:4px;">${socialHtml}</div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">
+            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 성공</div>
+            <div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">${m.loginSuccessCount}</div>
+        </div>
+        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">
+            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 실패</div>
+            <div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">${m.loginFailCount}</div>
+        </div>
+        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">
+            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">최근 로그인</div>
+            <div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">
+                ${m.lastLoginAt ? new Date(m.lastLoginAt).toLocaleString('ko-KR') : '없음'}
+            </div>
+        </div>
+    </div>`;
+}
+
+function buildHistTab(history) {
+    if (!history.length) return '<div style="text-align:center;padding:32px;color:#475569;">로그인 이력이 없습니다.</div>';
+
+    const methodMap = {ID:'아이디',EMAIL:'이메일',KAKAO:'카카오',NAVER:'네이버',GOOGLE:'Google'};
+    let rows = '';
+    history.forEach(h => {
+        const ok = h.success;
+        rows += `
+        <tr>
+            <td>${new Date(h.loginAt).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+            <td>${methodMap[h.loginMethod]||h.loginMethod}</td>
+            <td class="${ok?'h-success':'h-fail'}">${ok?'✅ 성공':'❌ 실패'}</td>
+            <td>${h.failReason||'—'}</td>
+            <td style="font-size:11px;color:#475569;">${h.ipAddress||'—'}</td>
+        </tr>`;
+    });
+
+    return `
+    <div style="overflow-x:auto;max-height:340px;overflow-y:auto;">
+        <table class="history-table">
+            <thead><tr><th>시각</th><th>방법</th><th>결과</th><th>실패 사유</th><th>IP</th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+    </div>`;
+}
+
+function switchTab(tab, btn) {
+    document.querySelectorAll('#detailModal .adm-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-info').style.display = tab==='info' ? '' : 'none';
+    document.getElementById('tab-hist').style.display = tab==='hist' ? '' : 'none';
+}
+
+function closeDetail() {
+    document.getElementById('detailModal').classList.remove('open');
+}
+
+// 모달 외부 클릭 닫기
+document.getElementById('detailModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDetail();
+});
+</script>
+
+<%@ include file="../layout-close.jsp" %>

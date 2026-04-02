@@ -2,9 +2,12 @@ package org.triptogether.auth.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.triptogether.auth.vo.EmailVerificationVO;
 import org.triptogether.auth.vo.UserLoginHistoryVO;
 import org.triptogether.auth.vo.UserSocialVO;
 import org.triptogether.auth.vo.UsersVO;
+
+import java.util.List;
 
 @Mapper
 public interface AuthMapper {
@@ -31,8 +34,39 @@ public interface AuthMapper {
     /** nickname 중복 여부 */
     boolean existsByNickname(String nickname);
 
+    /** 이메일로 userId 반환 (아이디 찾기용 - 인증 완료 이메일만) */
+    String findUserIdByEmail(String email);
+
+    // ══════════════════════════════════════════
+    // USERS - 등록 / 수정
+    // ══════════════════════════════════════════
+
     /** 회원 가입 (insertId → userIdx 자동 세팅) */
     void insertUser(UsersVO user);
+
+    /** 프로필 기본정보 수정 (닉네임·국적·언어) */
+    void updateProfile(UsersVO user);
+
+    /** 비밀번호 변경 */
+    void updatePassword(@Param("userIdx") Long userIdx,
+                        @Param("encodedPassword") String encodedPassword);
+
+    /** 이메일 + 인증 상태 업데이트 */
+    void updateEmail(@Param("userIdx") Long userIdx,
+                     @Param("email") String email,
+                     @Param("emailVerified") boolean emailVerified);
+
+    /** 이메일 인증 여부만 업데이트 */
+    void updateEmailVerified(@Param("userIdx") Long userIdx,
+                             @Param("emailVerified") boolean emailVerified);
+
+    /** 이메일 로그인 활성화 토글 */
+    void updateEmailLoginEnabled(@Param("userIdx") Long userIdx,
+                                 @Param("enabled") boolean enabled);
+
+    /** 비밀번호 직접 리셋 (토큰 검증 후) */
+    void resetPassword(@Param("userIdx") Long userIdx,
+                       @Param("encodedPassword") String encodedPassword);
 
     // ─────────────────────────────────────────
     // USER_SOCIAL
@@ -48,8 +82,15 @@ public interface AuthMapper {
             @Param("userIdx") Long userIdx,
             @Param("provider") String provider);
 
+    /** 특정 유저의 소셜 연동 전체 조회 */
+    List<UserSocialVO> findSocialsByUserIdx(Long userIdx);
+
     /** 소셜 연동 추가 */
     void insertSocial(UserSocialVO social);
+
+    /** 소셜 연동 해제 */
+    void deleteSocial(@Param("userIdx") Long userIdx,
+                      @Param("provider") String provider);
 
     // ─────────────────────────────────────────
     // USER_LOGIN_HISTORY
@@ -57,4 +98,21 @@ public interface AuthMapper {
 
     /** 로그인 이력 저장 */
     void insertLoginHistory(UserLoginHistoryVO history);
+
+    // ══════════════════════════════════════════
+    // EMAIL_VERIFICATION
+    // ══════════════════════════════════════════
+
+    void insertEmailVerification(EmailVerificationVO ev);
+
+    /** 유효한 토큰 조회 (만료 전 + 미사용) */
+    EmailVerificationVO findValidToken(@Param("token") String token,
+                                       @Param("purpose") String purpose);
+
+    /** 토큰 사용 처리 */
+    void markTokenUsed(Long verifyIdx);
+
+    /** 동일 이메일+목적의 미사용 토큰 전체 만료 처리 (중복 발급 방지) */
+    void expireOldTokens(@Param("email") String email,
+                         @Param("purpose") String purpose);
 }

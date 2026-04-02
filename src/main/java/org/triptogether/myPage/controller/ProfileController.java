@@ -1,0 +1,186 @@
+package org.triptogether.myPage.controller;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.triptogether.auth.service.AuthServiceImpl;
+import org.triptogether.auth.vo.UsersVO;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/mypage")
+public class ProfileController {
+
+    private final AuthServiceImpl authService;
+
+    // ── 수정 전 비밀번호 확인 페이지 ──────────────
+    @GetMapping("/edit-confirm")
+    public String editConfirmPage(HttpSession session) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+        // 비밀번호 없는 계정(소셜 전용)은 바로 수정 페이지로
+        if (!user.isPasswordEnabled()) return "redirect:/mypage/edit";
+        return "mypage/edit-confirm";
+    }
+
+    @PostMapping("/edit-confirm")
+    @ResponseBody
+    public Map<String, Object> checkPassword(@RequestParam String password,
+                                              HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) { result.put("success", false); result.put("message", "로그인이 필요합니다."); return result; }
+
+        if (authService.checkPassword(user.getUserIdx(), password)) {
+            session.setAttribute("editVerified", true);
+            result.put("success", true);
+        } else {
+            result.put("success", false);
+            result.put("message", "비밀번호가 올바르지 않습니다.");
+        }
+        return result;
+    }
+
+    // ── 회원정보 수정 페이지 ──────────────────────
+    @GetMapping("/edit")
+    public String editPage(HttpSession session, Model model) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+
+        // 비밀번호 있는 계정은 확인 절차 거쳤는지 체크
+        if (user.isPasswordEnabled() && !Boolean.TRUE.equals(session.getAttribute("editVerified"))) {
+            return "redirect:/mypage/edit-confirm";
+        }
+
+        // 최신 정보를 DB에서 다시 조회
+        UsersVO freshUser = authService.getSocials(user.getUserIdx()) != null
+                ? refreshUser(user.getUserIdx()) : user;
+
+        model.addAttribute("user", freshUser);
+        model.addAttribute("socialLinkMap", authService.getSocialLinkMap(freshUser.getUserIdx()));
+        return "mypage/edit";
+    }
+
+    private UsersVO refreshUser(Long userIdx) {
+        // AuthMapper를 통해 최신 사용자 정보 조회 (서비스 통해서)
+        // AuthService에 getUserByIdx 추가하거나 AuthMapper 직접 주입
+        // 여기서는 AuthServiceImpl의 내부 접근을 통해 처리
+        return authService.getUserByIdx(userIdx);
+    }
+
+    // ── 기본 프로필 수정 ──────────────────────────
+    @PostMapping("/edit/profile")
+    @ResponseBody
+    public Map<String, Object> updateProfile(
+            @RequestParam String nickname,
+            @RequestParam String nationality,
+            @RequestParam String preferredLang,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) { result.put("success", false); return result; }
+
+        if (!nickname.equals(user.getNickname()) && authService.isNicknameDuplicate(nickname)) {
+            result.put("success", false); result.put("field", "nickname");
+            result.put("message", "이미 사용 중인 닉네임입니다."); return result;
+        }
+
+        UsersVO update = UsersVO.builder()
+                .userIdx(user.getUserIdx())
+                .nickname(nickname).nationality(nationality).preferredLang(preferredLang)
+                .build();
+        authService.updateProfile(update);
+
+        // 세션 갱신
+        user.setNickname(nickname); user.setNationality(nationality); user.setPreferredLang(preferredLang);
+        result.put("success", true); result.put("message", "프로필이 수정되었습니다.");
+        return result;
+    }
+
+    // ── 비밀번호 변경 ─────────────────────────────
+    @PostMapping("/edit/password")
+    @ResponseBody
+    public Map<String, Object> updatePassword(
+            @RequestParam String currentPassword,
+            @RequestParam String newPassword,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) { result.put("success", false); return result; }
+
+        if (user.isPasswordEnabled() && !authService.checkPassword(user.getUserIdx(), currentPassword)) {
+            result.put("success", false); result.put("field", "currentPassword");
+            result.put("message", "현재 비밀번호가 올바르지 않습니다."); return result;
+        }
+        if (newPassword.length() < 8) {
+            result.put("success", false); result.put("message", "새 비밀번호는 8자 이상이어야 합니다."); return result;
+        }
+        authService.updatePassword(user.getUserIdx(), newPassword);
+        user.setPasswordEnabled(true);
+        result.put("success", true); result.put("message", "비밀번호가 변경되었습니다.");
+        return result;
+    }
+
+    // ── 이메일 인증 메일 발송 ─────────────────────
+    @PostMapping("/edit/email/send")
+    @ResponseBody
+    public Map<String, Object> sendEmailVerification(
+            @RequestParam String email, HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) { result.put("success", false); return result; }
+
+        if (authService.isEmailDuplicate(email) &&
+                (user.getUserEmail() == null || !user.getUserEmail().equals(email))) {
+            result.put("success", false); result.put("message", "이미 사용 중인 이메일입니다."); return result;
+        }
+        authService.sendEmailVerification(user.getUserIdx(), email);
+        user.setUserEmail(email); user.setEmailVerified(false); user.setEmailLoginEnabled(false);
+        result.put("success", true); result.put("message", "인증 이메일을 발송했습니다. 메일을 확인해주세요.");
+        return result;
+    }
+
+    // ── 이메일 로그인 토글 ─────────────────────────
+    @PostMapping("/edit/email/login-toggle")
+    @ResponseBody
+    public Map<String, Object> toggleEmailLogin(
+            @RequestParam boolean enable, HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) { result.put("success", false); return result; }
+        if (!user.isEmailVerified()) {
+            result.put("success", false); result.put("message", "이메일 인증을 먼저 완료해주세요."); return result;
+        }
+        try {
+            authService.toggleEmailLogin(user.getUserIdx(), enable);
+            user.setEmailLoginEnabled(enable);
+            result.put("success", true);
+            result.put("message", enable ? "이메일 로그인이 활성화되었습니다." : "이메일 로그인이 비활성화되었습니다.");
+        } catch (IllegalStateException e) {
+            result.put("success", false); result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    // ── 수정 완료 후 확인 세션 제거 ─────────────────
+    @PostMapping("/edit/done")
+    public String editDone(HttpSession session) {
+        session.removeAttribute("editVerified");
+        return "redirect:/mypage";
+    }
+
+    // ── 유틸 ──────────────────────────────────────
+    private UsersVO loginUser(HttpSession session) {
+        return (UsersVO) session.getAttribute("loginUser");
+    }
+}
