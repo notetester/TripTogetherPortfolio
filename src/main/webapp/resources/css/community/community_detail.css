@@ -3,7 +3,7 @@
    community/community_detail.css
    ============================================= */
 
-.detail-wrap { max-width:1280px; margin:0 auto; padding:24px 24px 60px; }
+.detail-wrap { max-width:1280px; margin:0 auto; padding:24px 24px 60px; width:100%; box-sizing:border-box; }
 
 /* ===== 뒤로가기 ===== */
 .back-btn {
@@ -15,7 +15,7 @@
 .back-btn:hover { color:var(--blue); }
 
 /* ===== 레이아웃 ===== */
-.detail-container { display:grid; grid-template-columns:1fr 360px; gap:32px; align-items:start; }
+.detail-container { display:grid; grid-template-columns:1fr 360px; gap:32px; align-items:start; width:100%; min-width:0; }
 @media (max-width:1024px) { .detail-container { grid-template-columns:1fr; } }
 
 /* ===== 메인 ===== */
@@ -76,7 +76,21 @@
 .detail-slider { position:relative; overflow:hidden; background:var(--gray-800); }
 .slider-track  { display:flex; transition:transform .35s ease; }
 .slide-item    { flex:0 0 100%; }
-.slide-item img { width:100%; max-height:500px; object-fit:cover; display:block; }
+.slide-item {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  min-height:300px;
+  max-height:500px;
+}
+.slide-item img {
+  max-width:100%;
+  max-height:500px;
+  object-fit:contain;
+  display:block;
+  cursor:pointer;
+}
 .slider-btn {
   position:absolute; top:50%; transform:translateY(-50%);
   width:40px; height:40px; background:rgba(0,0,0,.5); color:#fff;

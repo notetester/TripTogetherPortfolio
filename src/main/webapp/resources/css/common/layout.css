@@ -422,3 +422,32 @@ body {
     transition: background .2s;
 }
 .chatbot-input button:hover { background: #1d4ed8; }
+
+/*콘텐츠가 없거나 부족할때 footer 의 layout 문제 해결*/
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.comm-body-wrap,
+.detail-wrap,
+.auth-wrap {
+    flex: 1;
+    min-width: 0;
+}
+/* ===== 푸터 ===== */
+.site-footer {
+    background: var(--gray-800);
+    padding: 32px 24px;
+    margin-top: 24px;
+}
+.footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.footer-logo { display: flex; align-items: center; gap: 10px; }
+.footer-copy { font-size: 13px; color: var(--gray-400); }

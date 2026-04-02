@@ -236,7 +236,7 @@ public class CommunityServiceImpl implements CommunityService {
             String fileName = UUID.randomUUID().toString() + ext;
             file.transferTo(new File(dir + fileName));
 
-            return "/upload/community/" + fileName;
+            return "/TripTogether/upload/community/" + fileName;
         } catch (IOException e) {
             log.error("파일 저장 실패", e);
             return null;
