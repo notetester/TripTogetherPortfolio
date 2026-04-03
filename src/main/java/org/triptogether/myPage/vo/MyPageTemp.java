@@ -1,4 +1,4 @@
 package org.triptogether.myPage.vo;
 
-public class Temp {
+public class MyPageTemp {
 }

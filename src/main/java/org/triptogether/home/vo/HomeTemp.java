@@ -1,4 +1,4 @@
 package org.triptogether.home.vo;
 
-public class Temp {
+public class HomeTemp {
 }

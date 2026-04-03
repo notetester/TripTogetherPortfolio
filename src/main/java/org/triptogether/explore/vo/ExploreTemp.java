@@ -1,4 +1,4 @@
 package org.triptogether.explore.vo;
 
-public class Temp {
+public class ExploreTemp {
 }
