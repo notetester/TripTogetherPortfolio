@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.explore.mapper.ExploreMapper">
+
+    <!-- =============================================
+         ResultMap - SPOT_TRAVEL + 실시간 집계
+         ============================================= -->
+    <resultMap id="SpotResultMap" type="org.triptogether.explore.vo.ExploreVO">
+        <id     property="spotIdx"     column="spot_idx"/>
+        <result property="spotId"      column="spot_id"/>
+        <result property="name"        column="name"/>
+        <result property="region"      column="region"/>
+        <result property="address"     column="address"/>
+        <result property="latitude"    column="latitude"/>
+        <result property="longitude"   column="longitude"/>
+        <result property="description" column="description"/>
+        <result property="ratingAvg"   column="rating_avg_real"/>
+        <result property="reviewCount" column="review_count_real"/>
+        <result property="likeCount"   column="like_count_real"/>
+        <result property="thumbUrl"    column="thumb_url"/>
+        <result property="tagsConcat"  column="tags_concat"/>
+    </resultMap>
+
+    <!-- =============================================
+         ResultMap - SPOT_REVIEW
+         ============================================= -->
+    <resultMap id="ReviewResultMap" type="org.triptogether.explore.vo.ReviewVO">
+        <id     property="reviewIdx"  column="review_idx"/>
+        <result property="reviewId"   column="review_id"/>
+        <result property="userIdx"    column="user_idx"/>
+        <result property="spotIdx"    column="spot_idx"/>
+        <result property="rating"     column="rating"/>
+        <result property="content"    column="content"/>
+        <result property="createdAt"  column="created_at"/>
+        <result property="nickname"   column="nickname"/>
+    </resultMap>
+
+    <!-- =============================================
+         공통 SELECT 컬럼 Fragment
+         rating_avg / review_count / like_count 모두 실시간 집계
+         ============================================= -->
+    <sql id="spotColumns">
+        st.spot_idx,
+        st.spot_id,
+        st.name,
+        st.region,
+        st.address,
+        st.latitude,
+        st.longitude,
+        st.description,
+        /* SPOT_REVIEW 실시간 평균 평점 */
+        COALESCE((
+            SELECT ROUND(AVG(sr.rating), 1)
+            FROM   SPOT_REVIEW sr
+            WHERE  sr.spot_idx = st.spot_idx
+        ), 0.0) AS rating_avg_real,
+        /* SPOT_REVIEW 실시간 리뷰 수 */
+        (
+            SELECT COUNT(*)
+            FROM   SPOT_REVIEW sr
+            WHERE  sr.spot_idx = st.spot_idx
+        ) AS review_count_real,
+        /* SPOT_LIKE 실시간 좋아요 수 */
+        (
+            SELECT COUNT(*)
+            FROM   SPOT_LIKE sl
+            WHERE  sl.spot_idx = st.spot_idx
+        ) AS like_count_real,
+        /* 대표 이미지 */
+        (
+            SELECT si.image_url
+            FROM   SPOT_IMAGE si
+            WHERE  si.spot_idx = st.spot_idx
+            ORDER  BY si.image_idx ASC
+            LIMIT  1
+        ) AS thumb_url,
+        /* 태그 (콤마 구분) */
+        (
+            SELECT GROUP_CONCAT(tl.tag_name ORDER BY tl.tag_name SEPARATOR ',')
+            FROM   SPOT_TAG      s_tag
+            JOIN   SPOT_TAG_LIST tl ON tl.tag_idx = s_tag.tag_idx
+            WHERE  s_tag.spot_idx = st.spot_idx
+        ) AS tags_concat
+    </sql>
+
+    <!-- =============================================
+         전체 / 지역별 / 테마별 목록
+         ============================================= -->
+    <select id="selectSpotList" resultMap="SpotResultMap">
+        SELECT DISTINCT
+            <include refid="spotColumns"/>
+        FROM SPOT_TRAVEL st
+        <if test="tab == 'theme' and theme != null and theme != ''">
+            JOIN SPOT_TAG      s_tag2 ON s_tag2.spot_idx = st.spot_idx
+            JOIN SPOT_TAG_LIST tl2    ON tl2.tag_idx     = s_tag2.tag_idx
+        </if>
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    st.name        LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.region   LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.address  LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.description LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+            <if test="tab == 'region' and region != null and region != ''">
+                AND st.region = #{region}
+            </if>
+            <if test="tab == 'theme' and theme != null and theme != ''">
+                AND tl2.tag_name = #{theme}
+            </if>
+        </where>
+        ORDER BY rating_avg_real DESC, review_count_real DESC
+        LIMIT  #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <!-- 전체 건수 -->
+    <select id="selectTotalCount" resultType="int">
+        SELECT COUNT(DISTINCT st.spot_idx)
+        FROM SPOT_TRAVEL st
+        <if test="tab == 'theme' and theme != null and theme != ''">
+            JOIN SPOT_TAG      s_tag2 ON s_tag2.spot_idx = st.spot_idx
+            JOIN SPOT_TAG_LIST tl2    ON tl2.tag_idx     = s_tag2.tag_idx
+        </if>
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    st.name        LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.region   LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.address  LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.description LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+            <if test="tab == 'region' and region != null and region != ''">
+                AND st.region = #{region}
+            </if>
+            <if test="tab == 'theme' and theme != null and theme != ''">
+                AND tl2.tag_name = #{theme}
+            </if>
+        </where>
+    </select>
+
+    <!-- =============================================
+         평점순 목록 (SPOT_REVIEW.rating AVG DESC)
+         ============================================= -->
+    <select id="selectRatingSpotList" resultMap="SpotResultMap">
+        SELECT
+            <include refid="spotColumns"/>
+        FROM SPOT_TRAVEL st
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    st.name   LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.region LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY rating_avg_real DESC, review_count_real DESC
+        LIMIT  #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <select id="selectRatingTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM SPOT_TRAVEL st
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    st.name   LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.region LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <!-- =============================================
+         좋아요순 목록 (SPOT_LIKE COUNT DESC)
+         ============================================= -->
+    <select id="selectLikesSpotList" resultMap="SpotResultMap">
+        SELECT
+            <include refid="spotColumns"/>
+        FROM SPOT_TRAVEL st
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    st.name   LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.region LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY like_count_real DESC, rating_avg_real DESC
+        LIMIT  #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <select id="selectLikesTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM SPOT_TRAVEL st
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    st.name   LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.region LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <!-- =============================================
+         지역 목록 / 태그 목록
+         ============================================= -->
+    <select id="selectRegionList" resultType="string">
+        SELECT DISTINCT region
+        FROM   SPOT_TRAVEL
+        WHERE  region IS NOT NULL AND region != ''
+        ORDER  BY region ASC
+    </select>
+
+    <select id="selectTagList" resultType="string">
+        SELECT tl.tag_name
+        FROM   SPOT_TAG_LIST tl
+        WHERE  EXISTS (
+            SELECT 1 FROM SPOT_TAG st WHERE st.tag_idx = tl.tag_idx
+        )
+        ORDER  BY tl.tag_name ASC
+    </select>
+
+    <!-- =============================================
+         상세 단건
+         ============================================= -->
+    <select id="selectSpotDetail" resultMap="SpotResultMap">
+        SELECT
+            <include refid="spotColumns"/>
+        FROM SPOT_TRAVEL st
+        WHERE st.spot_idx = #{spotIdx}
+    </select>
+
+    <select id="selectSpotTags" resultType="string">
+        SELECT tl.tag_name
+        FROM   SPOT_TAG      s_tag
+        JOIN   SPOT_TAG_LIST tl ON tl.tag_idx = s_tag.tag_idx
+        WHERE  s_tag.spot_idx = #{spotIdx}
+        ORDER  BY tl.tag_name ASC
+    </select>
+
+    <!-- =============================================
+         리뷰 (SPOT_REVIEW)
+         ============================================= -->
+    <select id="selectReviewList" resultMap="ReviewResultMap">
+        SELECT
+            sr.review_idx,
+            sr.review_id,
+            sr.user_idx,
+            sr.spot_idx,
+            sr.rating,
+            sr.content,
+            sr.created_at,
+            u.nickname
+        FROM   SPOT_REVIEW sr
+        JOIN   USERS u ON u.user_idx = sr.user_idx
+        WHERE  sr.spot_idx = #{spotIdx}
+        ORDER  BY sr.created_at DESC
+    </select>
+
+    <select id="selectMyReviewCount" resultType="int">
+        SELECT COUNT(*)
+        FROM   SPOT_REVIEW
+        WHERE  spot_idx = #{spotIdx}
+          AND  user_idx = #{userIdx}
+    </select>
+
+    <insert id="insertReview" useGeneratedKeys="true" keyProperty="reviewIdx">
+        INSERT INTO SPOT_REVIEW (spot_idx, user_idx, rating, content, created_at)
+        VALUES (#{spotIdx}, #{userIdx}, #{rating}, #{content}, NOW())
+    </insert>
+
+    <delete id="deleteReview">
+        DELETE FROM SPOT_REVIEW
+        WHERE  review_idx = #{reviewIdx}
+          AND  user_idx   = #{userIdx}
+    </delete>
+
+    <!-- =============================================
+         찜 (SPOT_FAVORITE)
+         ============================================= -->
+    <select id="selectFavoriteCount" resultType="int">
+        SELECT COUNT(*) FROM SPOT_FAVORITE
+        WHERE  spot_idx = #{spotIdx} AND user_idx = #{userIdx}
+    </select>
+
+    <insert id="insertFavorite">
+        INSERT IGNORE INTO SPOT_FAVORITE (user_idx, spot_idx, created_at)
+        VALUES (#{userIdx}, #{spotIdx}, NOW())
+    </insert>
+
+    <delete id="deleteFavorite">
+        DELETE FROM SPOT_FAVORITE
+        WHERE  user_idx = #{userIdx} AND spot_idx = #{spotIdx}
+    </delete>
+
+    <!-- =============================================
+         좋아요 (SPOT_LIKE)
+         ============================================= -->
+    <select id="selectLikeCount" resultType="int">
+        SELECT COUNT(*) FROM SPOT_LIKE
+        WHERE  spot_idx = #{spotIdx} AND user_idx = #{userIdx}
+    </select>
+
+    <insert id="insertLike">
+        INSERT IGNORE INTO SPOT_LIKE (user_idx, spot_idx, created_at)
+        VALUES (#{userIdx}, #{spotIdx}, NOW())
+    </insert>
+
+    <delete id="deleteLike">
+        DELETE FROM SPOT_LIKE
+        WHERE  user_idx = #{userIdx} AND spot_idx = #{spotIdx}
+    </delete>
+
+</mapper>
