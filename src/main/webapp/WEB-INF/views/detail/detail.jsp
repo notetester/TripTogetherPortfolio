@@ -264,17 +264,32 @@
   </c:if>
 
   <!-- 위치 -->
-  <c:if test="${not empty spot.latitude and not empty spot.longitude}">
+  <c:if test="${not empty spot.latitude and not empty spot.longitude and spot.latitude != 0 and spot.longitude != 0}">
     <div class="det-section">
-      <h2>&#128506; 위치</h2>
-      <div class="map-placeholder">
-        <span class="map-icon">&#128506;</span>
-        <span>${fn:escapeXml(spot.name)} — ${fn:escapeXml(spot.region)}</span>
-        <span style="font-size:12px;color:var(--gray-400)">
-          위도 <fmt:formatNumber value="${spot.latitude}"  pattern="#,##0.0000"/>,
-          경도 <fmt:formatNumber value="${spot.longitude}" pattern="#,##0.0000"/>
+      <h2>&#128506; 위치 &amp; 항공권</h2>
+
+      <!-- 항공권 가격 배너 -->
+      <div id="flightBanner" style="
+          display:flex; align-items:center; gap:10px;
+          background:linear-gradient(135deg,var(--blue-light),#f5f3ff);
+          border:1.5px solid #c7d2fe; border-radius:10px;
+          padding:12px 18px; margin-bottom:16px; font-size:14px;">
+        <span style="font-size:20px;">✈️</span>
+        <span id="flightText" style="color:var(--blue);font-weight:600;">
+          서울(ICN) → ${fn:escapeXml(spot.name)} 항공권 최저가 조회 중...
         </span>
       </div>
+
+      <!-- 지도 컨테이너 -->
+      <div id="googleMap" style="
+          width:100%; height:420px;
+          border-radius:10px; overflow:hidden;
+          border:1px solid var(--gray-200);
+          background:var(--gray-100);">
+      </div>
+      <p style="font-size:12px;color:var(--gray-400);margin-top:8px;text-align:right;">
+        마커를 클릭하면 서울에서의 항공 노선이 표시됩니다
+      </p>
     </div>
   </c:if>
 
@@ -612,6 +627,208 @@
 
 })();
 </script>
+
+<%-- ═══════════════════════════════════════════════════════
+     Google Maps + 항공권 가격 (위도/경도가 있는 경우만 로드)
+     ═══════════════════════════════════════════════════════ --%>
+<c:if test="${not empty spot.latitude and not empty spot.longitude and spot.latitude != 0 and spot.longitude != 0}">
+<script>
+/* ── 여행지 좌표 & 정보 (서버 → JS)
+     fmt:formatNumber 으로 로케일 독립적인 숫자 문자열 생성 후 parseFloat ── */
+const SPOT_LAT  = parseFloat('<fmt:formatNumber value="${spot.latitude}"  pattern="0.######" groupingUsed="false"/>');
+const SPOT_LNG  = parseFloat('<fmt:formatNumber value="${spot.longitude}" pattern="0.######" groupingUsed="false"/>');
+const SPOT_NAME = '<c:out value="${spot.name}" escapeXml="false"/>'.replace(/'/g, "\\'");
+const SPOT_IDX  = '${spot.spotIdx}';
+const CTX       = '${pageContext.request.contextPath}';
+
+/* 서울 (인천, 출발지) */
+const SEOUL_LAT = 37.5665;
+const SEOUL_LNG = 126.9780;
+
+let googleMap, destinationMarker, seoulMarker, routeLine, infoWindow;
+let flightPrice = null;
+
+/* ══════════════════════════════════════
+   1. 항공권 가격 비동기 조회
+   ══════════════════════════════════════ */
+function fetchFlightPrice() {
+  fetch(CTX + '/detail/' + SPOT_IDX + '/flight-price')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var banner = document.getElementById('flightText');
+      if (!banner) return;
+      if (data.success && data.price) {
+        flightPrice = data.price;
+        banner.textContent = '\u2708\uFE0F \uc11c\uc6b8(ICN) \u2192 ' + SPOT_NAME
+                           + ' \ud56d\uacf5\uad8c \ucd5c\uc800\uac00: ' + flightPrice;
+        if (infoWindow && destinationMarker) {
+          infoWindow.setContent(buildInfoContent(flightPrice));
+        }
+      } else if (data.success && data.iata) {
+        banner.textContent = '\u2708\uFE0F ' + SPOT_NAME + ' (' + data.iata
+                           + ') \ud56d\uacf5\uad8c \uac00\uaca9 \uc815\ubcf4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.';
+      } else {
+        banner.textContent = '\u2708\uFE0F ' + SPOT_NAME
+                           + ' \u2014 \ud56d\uacf5\uad8c \uc815\ubcf4\ub97c \ubd88\ub7ec\uc62c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.';
+      }
+    })
+    .catch(function() {
+      var banner = document.getElementById('flightText');
+      if (banner) banner.textContent = '\u2708\uFE0F \ud56d\uacf5\uad8c \uc815\ubcf4\ub97c \ubd88\ub7ec\uc62c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.';
+    });
+}
+
+/* ══════════════════════════════════════
+   2. 마커 InfoWindow 내용
+      ※ JSP EL 간섭을 피하기 위해 template literal 대신 문자열 연결 사용
+   ══════════════════════════════════════ */
+function buildInfoContent(price) {
+  var priceHtml = price
+    ? '<div style="font-size:14px;font-weight:600;color:#2563eb;">\ucd5c\uc800\uac00 ' + price + '</div>'
+      + '<div style="font-size:11px;color:#6b7280;margin-top:2px;">\uc11c\uc6b8(ICN) \ucd9c\ubc1c \uae30\uc900</div>'
+    : '<div style="font-size:13px;color:#6b7280;">\ud56d\uacf5\uad8c \uac00\uaca9 \uc870\ud68c \uc911...</div>';
+
+  return '<div style="font-family:\'Noto Sans KR\',sans-serif;padding:8px 6px;min-width:170px;">'
+       + '<div style="font-size:15px;font-weight:700;color:#1f2937;margin-bottom:6px;">'
+       + '\u2708\uFE0F ' + SPOT_NAME
+       + '</div>'
+       + priceHtml
+       + '</div>';
+}
+
+/* ══════════════════════════════════════
+   3. Google Maps 초기화 콜백 (async defer 로드 완료 후 호출됨)
+   ══════════════════════════════════════ */
+function initMap() {
+  /* 좌표 유효성 최종 확인 */
+  if (isNaN(SPOT_LAT) || isNaN(SPOT_LNG)) {
+    document.getElementById('googleMap').innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6b7280;font-size:14px;">'
+      + '\uc88c\ud45c \uc815\ubcf4\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.</div>';
+    return;
+  }
+
+  var destLatLng  = { lat: SPOT_LAT,  lng: SPOT_LNG  };
+  var seoulLatLng = { lat: SEOUL_LAT, lng: SEOUL_LNG };
+
+  /* 지도 생성 */
+  googleMap = new google.maps.Map(document.getElementById('googleMap'), {
+    center:            destLatLng,
+    zoom:              5,
+    mapTypeId:         'roadmap',
+    zoomControl:       true,
+    mapTypeControl:    false,
+    streetViewControl: false,
+    fullscreenControl: true
+  });
+
+  /* 두 지점 모두 포함하는 Bounds */
+  var bounds = new google.maps.LatLngBounds();
+  bounds.extend(new google.maps.LatLng(SPOT_LAT,  SPOT_LNG));
+  bounds.extend(new google.maps.LatLng(SEOUL_LAT, SEOUL_LNG));
+  googleMap.fitBounds(bounds, { top: 80, right: 60, bottom: 60, left: 60 });
+
+  /* InfoWindow */
+  infoWindow = new google.maps.InfoWindow({
+    content: buildInfoContent(flightPrice)
+  });
+
+  /* ── 여행지 마커 (빨간 원) ── */
+  destinationMarker = new google.maps.Marker({
+    position:  destLatLng,
+    map:       googleMap,
+    title:     SPOT_NAME,
+    icon: {
+      path:         google.maps.SymbolPath.CIRCLE,
+      scale:        14,
+      fillColor:    '#ef4444',
+      fillOpacity:  1,
+      strokeColor:  '#ffffff',
+      strokeWeight: 3
+    },
+    zIndex:    10,
+    animation: google.maps.Animation.DROP
+  });
+
+  /* ── 서울 마커 (파란 원) ── */
+  seoulMarker = new google.maps.Marker({
+    position:  seoulLatLng,
+    map:       googleMap,
+    title:     '\uc11c\uc6b8 (\ucd9c\ubc1c\uc9c0)',
+    icon: {
+      path:         google.maps.SymbolPath.CIRCLE,
+      scale:        11,
+      fillColor:    '#2563eb',
+      fillOpacity:  1,
+      strokeColor:  '#ffffff',
+      strokeWeight: 3
+    },
+    zIndex:    9,
+    animation: google.maps.Animation.DROP
+  });
+
+  /* 서울 라벨 마커 */
+  new google.maps.Marker({
+    position: { lat: SEOUL_LAT + 1.8, lng: SEOUL_LNG },
+    map:      googleMap,
+    icon:     { path: google.maps.SymbolPath.CIRCLE, scale: 0 },
+    label: {
+      text:       '\uc11c\uc6b8',
+      color:      '#1e40af',
+      fontSize:   '13px',
+      fontWeight: '700'
+    }
+  });
+
+  /* ── 대권 노선 Polyline (초기 투명) ── */
+  routeLine = new google.maps.Polyline({
+    path:          [seoulLatLng, destLatLng],
+    geodesic:      true,
+    strokeColor:   '#2563eb',
+    strokeOpacity: 0,
+    strokeWeight:  2.5,
+    icons: [{
+      icon:   { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 3 },
+      offset: '0',
+      repeat: '18px'
+    }],
+    map: googleMap
+  });
+
+  /* ── 여행지 마커 클릭: InfoWindow + 노선 페이드인 ── */
+  destinationMarker.addListener('click', function () {
+    infoWindow.open(googleMap, destinationMarker);
+
+    routeLine.setOptions({ strokeOpacity: 0 });
+    var opacity = 0;
+    var fadeIn = setInterval(function() {
+      opacity += 0.08;
+      routeLine.setOptions({ strokeOpacity: Math.min(opacity, 0.85) });
+      if (opacity >= 0.85) clearInterval(fadeIn);
+    }, 30);
+
+    destinationMarker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function() { destinationMarker.setAnimation(null); }, 1400);
+  });
+
+  /* 지도 클릭: InfoWindow 닫기 + 노선 숨김 */
+  googleMap.addListener('click', function () {
+    infoWindow.close();
+    routeLine.setOptions({ strokeOpacity: 0 });
+  });
+}
+</script>
+
+<!-- Google Maps JavaScript API (callback=initMap) -->
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&callback=initMap&loading=async&language=ko&region=KR"
+  async defer></script>
+
+<script>
+/* 항공권 가격 조회는 Maps 로드와 병렬 실행 */
+fetchFlightPrice();
+</script>
+</c:if>
 
 </body>
 </html>
