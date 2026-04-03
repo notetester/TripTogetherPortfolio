@@ -20,6 +20,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //마이페이지, 즐겨찾기, 좋아요 기능에 필터ㄱ
-        WebMvcConfigurer.super.addInterceptors(registry);
+        //WebMvcConfigurer.super.addInterceptors(registry);
+        // 관리자 페이지 접근 제한 (/admin/** 전체)
+        registry.addInterceptor(new AdminInterceptor())
+                .addPathPatterns("/admin/**");
     }
 }

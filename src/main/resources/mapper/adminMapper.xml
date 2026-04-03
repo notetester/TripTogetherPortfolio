@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminMapper">
+
+    <!-- ══════════════════════════════════════════
+         ResultMap
+    ══════════════════════════════════════════ -->
+
+    <resultMap id="memberRM" type="org.triptogether.admin.vo.AdminMemberVO">
+        <id  property="userIdx"            column="user_idx"/>
+        <result property="userId"              column="user_id"/>
+        <result property="userEmail"           column="user_email"/>
+        <result property="passwordEnabled"     column="password_enabled"/>
+        <result property="emailVerified"       column="email_verified"/>
+        <result property="emailLoginEnabled"   column="email_login_enabled"/>
+        <result property="accountStatus"       column="account_status"/>
+        <result property="userRole"            column="user_role"/>
+        <result property="statusChangedAt"     column="status_changed_at"/>
+        <result property="nickname"            column="nickname"/>
+        <result property="nationality"         column="nationality"/>
+        <result property="preferredLang"       column="preferred_lang"/>
+        <result property="createdAt"           column="created_at"/>
+        <result property="socialCount"         column="social_count"/>
+        <result property="linkedProviders"     column="linked_providers"/>
+        <result property="lastLoginAt"         column="last_login_at"/>
+        <result property="lastLoginMethod"     column="last_login_method"/>
+        <result property="loginSuccessCount"   column="login_success_count"/>
+        <result property="loginFailCount"      column="login_fail_count"/>
+    </resultMap>
+
+    <resultMap id="historyRM" type="org.triptogether.auth.vo.UserLoginHistoryVO">
+        <id  property="loginIdx"        column="login_idx"/>
+        <result property="userIdx"          column="user_idx"/>
+        <result property="authType"         column="auth_type"/>
+        <result property="loginMethod"      column="login_method"/>
+        <result property="loginIdentifier"  column="login_identifier"/>
+        <result property="success"          column="is_success"/>
+        <result property="failReason"       column="fail_reason"/>
+        <result property="ipAddress"        column="ip_address"/>
+        <result property="userAgent"        column="user_agent"/>
+        <result property="loginAt"          column="login_at"/>
+    </resultMap>
+
+    <!-- ══════════════════════════════════════════
+         회원 목록 — 동적 SQL
+    ══════════════════════════════════════════ -->
+
+    <!-- 공통 FROM + WHERE 절 (목록 / 카운트 재사용) -->
+    <sql id="memberSearchBase">
+        FROM USERS u
+        LEFT JOIN (
+            SELECT user_idx,
+                   COUNT(*)                                     AS social_count,
+                   GROUP_CONCAT(provider ORDER BY provider)    AS linked_providers
+            FROM USER_SOCIAL GROUP BY user_idx
+        ) s ON u.user_idx = s.user_idx
+        LEFT JOIN (
+            SELECT user_idx,
+                   MAX(login_at)                               AS last_login_at,
+                   SUBSTRING_INDEX(
+                       GROUP_CONCAT(login_method ORDER BY login_at DESC), ',', 1
+                   )                                           AS last_login_method,
+                   SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS login_success_count,
+                   SUM(CASE WHEN is_success = 0 THEN 1 ELSE 0 END) AS login_fail_count
+            FROM USER_LOGIN_HISTORY GROUP BY user_idx
+        ) h ON u.user_idx = h.user_idx
+        <where>
+            <!-- 상태 필터 -->
+            <if test="status != null and status != 'ALL'">
+                AND u.account_status = #{status}
+            </if>
+            <!-- 권한 필터 -->
+            <if test="role != null and role != 'ALL'">
+                AND u.user_role = #{role}
+            </if>
+            <!-- 소셜 필터 -->
+            <if test="provider != null and provider == 'NONE'">
+                AND s.user_idx IS NULL
+            </if>
+            <if test="provider != null and provider != 'ALL' and provider != 'NONE'">
+                AND FIND_IN_SET(#{provider}, IFNULL(s.linked_providers, '')) > 0
+            </if>
+            <!-- 가입일 범위 -->
+            <if test="dateFrom != null and dateFrom != ''">
+                AND DATE(u.created_at) &gt;= #{dateFrom}
+            </if>
+            <if test="dateTo != null and dateTo != ''">
+                AND DATE(u.created_at) &lt;= #{dateTo}
+            </if>
+            <!-- 키워드 검색 -->
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'userId'">
+                        AND u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'nickname'">
+                        AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'email'">
+                        AND u.user_email LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (u.user_id     LIKE CONCAT('%', #{keyword}, '%')
+                          OR u.nickname    LIKE CONCAT('%', #{keyword}, '%')
+                          OR u.user_email  LIKE CONCAT('%', #{keyword}, '%'))
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <select id="findMembers" resultMap="memberRM">
+        SELECT
+            u.user_idx, u.user_id, u.user_email,
+            u.password_enabled, u.email_verified, u.email_login_enabled,
+            u.account_status, u.user_role,
+            u.nickname, u.nationality, u.preferred_lang,
+            u.created_at, u.status_changed_at,
+            IFNULL(s.social_count, 0)     AS social_count,
+            s.linked_providers,
+            h.last_login_at, h.last_login_method,
+            IFNULL(h.login_success_count, 0) AS login_success_count,
+            IFNULL(h.login_fail_count,    0) AS login_fail_count
+        <include refid="memberSearchBase"/>
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'lastLoginAt'">h.last_login_at</when>
+            <when test="sortBy == 'nickname'">u.nickname</when>
+            <otherwise>u.created_at</otherwise>
+        </choose>
+        <choose>
+            <when test="sortDir == 'ASC'">ASC</when>
+            <otherwise>DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countMembers" resultType="int">
+        SELECT COUNT(*) <include refid="memberSearchBase"/>
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         회원 상세
+    ══════════════════════════════════════════ -->
+
+    <select id="findMemberDetail" resultMap="memberRM">
+        SELECT
+            u.*,
+            IFNULL(s.social_count, 0)        AS social_count,
+            s.linked_providers,
+            h.last_login_at, h.last_login_method,
+            IFNULL(h.login_success_count, 0) AS login_success_count,
+            IFNULL(h.login_fail_count,    0) AS login_fail_count
+        FROM USERS u
+        LEFT JOIN (
+            SELECT user_idx,
+                   COUNT(*) AS social_count,
+                   GROUP_CONCAT(provider ORDER BY provider) AS linked_providers
+            FROM USER_SOCIAL GROUP BY user_idx
+        ) s ON u.user_idx = s.user_idx
+        LEFT JOIN (
+            SELECT user_idx,
+                   MAX(login_at)  AS last_login_at,
+                   SUBSTRING_INDEX(GROUP_CONCAT(login_method ORDER BY login_at DESC),',',1) AS last_login_method,
+                   SUM(CASE WHEN is_success=1 THEN 1 ELSE 0 END) AS login_success_count,
+                   SUM(CASE WHEN is_success=0 THEN 1 ELSE 0 END) AS login_fail_count
+            FROM USER_LOGIN_HISTORY GROUP BY user_idx
+        ) h ON u.user_idx = h.user_idx
+        WHERE u.user_idx = #{userIdx}
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         상태 / 권한 변경
+    ══════════════════════════════════════════ -->
+
+    <update id="updateMemberStatus">
+        UPDATE USERS
+        SET account_status    = #{status},
+            status_changed_at = NOW()
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="updateMemberRole">
+        UPDATE USERS SET user_role = #{role} WHERE user_idx = #{userIdx}
+    </update>
+
+    <!-- ══════════════════════════════════════════
+         로그인 이력
+    ══════════════════════════════════════════ -->
+
+    <select id="findLoginHistory" resultMap="historyRM">
+        SELECT * FROM USER_LOGIN_HISTORY
+        WHERE user_idx = #{userIdx}
+        ORDER BY login_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         통계
+    ══════════════════════════════════════════ -->
+
+    <select id="getStats" resultType="org.triptogether.admin.vo.AdminStatsVO">
+        SELECT
+            COUNT(*)                                                          AS totalMembers,
+            SUM(CASE WHEN account_status = 'ACTIVE'  THEN 1 ELSE 0 END)     AS activeMembers,
+            SUM(CASE WHEN account_status = 'DORMANT' THEN 1 ELSE 0 END)     AS dormantMembers,
+            SUM(CASE WHEN account_status = 'DELETED' THEN 1 ELSE 0 END)     AS deletedMembers,
+            SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END)   AS todayNewMembers,
+            (SELECT COUNT(*) FROM USER_LOGIN_HISTORY
+             WHERE is_success = TRUE  AND DATE(login_at) = CURDATE())        AS todayLogins,
+            (SELECT COUNT(*) FROM USER_LOGIN_HISTORY
+             WHERE is_success = FALSE AND DATE(login_at) = CURDATE())        AS todayFailedLogins,
+            (SELECT COUNT(DISTINCT user_idx) FROM USER_SOCIAL
+             WHERE provider = 'KAKAO')                                        AS kakaoLinked,
+            (SELECT COUNT(DISTINCT user_idx) FROM USER_SOCIAL
+             WHERE provider = 'NAVER')                                        AS naverLinked,
+            (SELECT COUNT(DISTINCT user_idx) FROM USER_SOCIAL
+             WHERE provider = 'GOOGLE')                                       AS googleLinked
+        FROM USERS
+    </select>
+
+</mapper>

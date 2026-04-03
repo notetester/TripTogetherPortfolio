@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.service.AuthService;
+import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.SocialTempVO;
 import org.triptogether.auth.vo.UsersVO;
 
@@ -29,7 +30,7 @@ public class AuthController {
     // ════════════════════════════════════════════
 
     @GetMapping("/login")
-    public String loginPage(HttpSession session, Model model) {
+    public String loginPage(HttpSession session, Model model,@ModelAttribute("errorMsg") String errorMsg) {
         // 이미 로그인 중이면 홈으로
         if (session.getAttribute("loginUser") != null) return "redirect:/";
 
@@ -37,9 +38,9 @@ public class AuthController {
         String state = UUID.randomUUID().toString();
         session.setAttribute("oauthState", state);
 
-        model.addAttribute("naverAuthUrl", authService.getNaverAuthUrl(state));
-        model.addAttribute("kakaoAuthUrl", authService.getKakaoAuthUrl());
-        model.addAttribute("googleAuthUrl", authService.getGoogleAuthUrl(state));
+        model.addAttribute("kakaoAuthUrl", authService.getKakaoAuthUrl(false));
+        model.addAttribute("naverAuthUrl",  authService.getNaverAuthUrl(state, false));
+        model.addAttribute("googleAuthUrl", authService.getGoogleAuthUrl(state, false));
         return "auth/login";
     }
 
@@ -56,7 +57,13 @@ public class AuthController {
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
-        UsersVO user = authService.login(identifier, password, request);
+        LoginRequestContext context = LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build();
+
+        UsersVO user = authService.login(identifier, password, context);
+//        UsersVO user = authService.login(identifier, password, request);
 
         if (user != null) {
             session.setAttribute("loginUser", user);
@@ -161,6 +168,76 @@ public class AuthController {
     }
 
     // ════════════════════════════════════════════
+    // 아이디 찾기
+    // ════════════════════════════════════════════
+    @GetMapping("/find-id")
+    public String findIdPage() { return "auth/find-id"; }
+
+    @PostMapping("/find-id/send")
+    @ResponseBody
+    public Map<String, Object> sendFindId(@RequestParam String email) {
+        authService.sendFindIdEmail(email);
+        // 보안상 이메일 존재 여부 노출 안 함
+        return Map.of("success", true, "message", "해당 이메일로 아이디 확인 링크를 발송했습니다.");
+    }
+
+    @GetMapping("/find-id/verify")
+    public String verifyFindId(@RequestParam String token, Model model) {
+        String userId = authService.verifyFindIdToken(token);
+        if (userId == null) {
+            model.addAttribute("error", "링크가 만료되었거나 유효하지 않습니다.");
+        } else {
+            model.addAttribute("foundUserId", userId);
+        }
+        return "auth/find-id-result";
+    }
+
+    // ════════════════════════════════════════════
+    // 비밀번호 찾기 / 재설정
+    // ════════════════════════════════════════════
+    @GetMapping("/find-pw")
+    public String findPwPage() { return "auth/find-pw"; }
+
+    @PostMapping("/find-pw/send")
+    @ResponseBody
+    public Map<String, Object> sendResetPw(@RequestParam String identifier) {
+        authService.sendResetPasswordEmail(identifier);
+        return Map.of("success", true, "message", "비밀번호 재설정 링크를 이메일로 발송했습니다.");
+    }
+
+    @GetMapping("/reset-pw")
+    public String resetPwPage(@RequestParam String token, Model model) {
+        UsersVO user = authService.verifyResetToken(token);
+        if (user == null) {
+            model.addAttribute("error", "링크가 만료되었거나 유효하지 않습니다.");
+        } else {
+            model.addAttribute("token", token);
+            model.addAttribute("nickname", user.getNickname());
+        }
+        return "auth/reset-pw";
+    }
+
+    @PostMapping("/reset-pw")
+    @ResponseBody
+    public Map<String, Object> doResetPw(@RequestParam String token,
+                                         @RequestParam String newPassword) {
+        boolean ok = authService.resetPassword(token, newPassword);
+        if (ok) return Map.of("success", true, "redirect", "/auth/login");
+        return Map.of("success", false, "message", "링크가 만료되었습니다. 다시 시도해주세요.");
+    }
+
+    // ════════════════════════════════════════════
+    // 이메일 인증 (링크 클릭)
+    // ════════════════════════════════════════════
+    @GetMapping("/verify-email")
+    public String verifyEmail(@RequestParam String token, Model model) {
+        boolean ok = authService.verifyEmail(token);
+        model.addAttribute("success", ok);
+        if (!ok) model.addAttribute("error", "링크가 만료되었거나 유효하지 않습니다.");
+        return "auth/verify-email-result";
+    }
+
+    // ════════════════════════════════════════════
     // 카카오 OAuth
     // ════════════════════════════════════════════
 
@@ -168,7 +245,7 @@ public class AuthController {
     public String kakaoLogin(HttpSession session) {
         String state = UUID.randomUUID().toString();
         session.setAttribute("oauthState", state);
-        return "redirect:" + authService.getKakaoAuthUrl();
+        return "redirect:" + authService.getKakaoAuthUrl(false);
     }
 
     @GetMapping("/kakao/callback")
@@ -187,7 +264,7 @@ public class AuthController {
     public String naverLogin(HttpSession session) {
         String state = UUID.randomUUID().toString();
         session.setAttribute("oauthState", state);
-        return "redirect:" + authService.getNaverAuthUrl(state);
+        return "redirect:" + authService.getNaverAuthUrl(state,false);
     }
 
     @GetMapping("/naver/callback")
@@ -213,7 +290,7 @@ public class AuthController {
     public String googleLogin(HttpSession session) {
         String state = UUID.randomUUID().toString();
         session.setAttribute("oauthState", state);
-        return "redirect:" + authService.getGoogleAuthUrl(state);
+        return "redirect:" + authService.getGoogleAuthUrl(state,false);
     }
 
     @GetMapping("/google/callback")
@@ -223,6 +300,64 @@ public class AuthController {
                                   RedirectAttributes ra) {
         return handleSocialCallback(authService.handleGoogleCallback(code, request),
                 session, request, ra);
+    }
+
+    // ════════════════════════════════════════════
+    // 소셜 연동 (LINK 모드 - 마이페이지에서 시작)
+    // ════════════════════════════════════════════
+    @GetMapping("/link/kakao")
+    public String linkKakao(HttpSession session) {
+        requireLogin(session);
+        return "redirect:" + authService.getKakaoAuthUrl(true);
+    }
+
+    @GetMapping("/link/naver")
+    public String linkNaver(HttpSession session) {
+        requireLogin(session);
+        String state = UUID.randomUUID().toString();
+        session.setAttribute("oauthState", state);
+        return "redirect:" + authService.getNaverAuthUrl(state, true);
+    }
+
+    @GetMapping("/link/google")
+    public String linkGoogle(HttpSession session) {
+        requireLogin(session);
+        String state = UUID.randomUUID().toString();
+        session.setAttribute("oauthState", state);
+        return "redirect:" + authService.getGoogleAuthUrl(state, true);
+    }
+
+    // 연동 콜백
+    @GetMapping("/link/kakao/callback")
+    public String linkKakaoCallback(@RequestParam String code, HttpSession session, RedirectAttributes ra) {
+        return handleLinkCallback("KAKAO", () -> authService.extractKakaoInfo(code), session, ra);
+    }
+
+    @GetMapping("/link/naver/callback")
+    public String linkNaverCallback(@RequestParam String code, @RequestParam String state,
+                                    HttpSession session, RedirectAttributes ra) {
+        return handleLinkCallback("NAVER", () -> authService.extractNaverInfo(code, state), session, ra);
+    }
+
+    @GetMapping("/link/google/callback")
+    public String linkGoogleCallback(@RequestParam String code, HttpSession session, RedirectAttributes ra) {
+        return handleLinkCallback("GOOGLE", () -> authService.extractGoogleInfo(code), session, ra);
+    }
+
+    // 소셜 해제 (Ajax)
+    @PostMapping("/unlink")
+    @ResponseBody
+    public Map<String, Object> unlinkSocial(@RequestParam String provider, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        if (loginUser == null) { result.put("success", false); result.put("message", "로그인이 필요합니다."); return result; }
+        try {
+            authService.unlinkSocial(loginUser.getUserIdx(), provider);
+            result.put("success", true);
+        } catch (IllegalStateException e) {
+            result.put("success", false); result.put("message", e.getMessage());
+        }
+        return result;
     }
 
     // ════════════════════════════════════════════
@@ -289,5 +424,71 @@ public class AuthController {
         }
         ra.addFlashAttribute("errorMsg", "알 수 없는 오류가 발생했습니다.");
         return "redirect:/auth/login";
+    }
+
+    // ════════════════════════════════════════════
+    // 내부 유틸
+    // ════════════════════════════════════════════
+    private String handleLoginCallback(Object socialResult, HttpSession session,
+                                       HttpServletRequest request, RedirectAttributes ra) {
+        if (socialResult instanceof UsersVO user) {
+            session.setAttribute("loginUser", user); return "redirect:/";
+        }
+        if (socialResult instanceof SocialTempVO temp) {
+            session.setAttribute("socialTemp", temp); return "redirect:/auth/social/complete";
+        }
+        ra.addFlashAttribute("errorMsg", "소셜 로그인 중 오류가 발생했습니다.");
+        return "redirect:/auth/login";
+    }
+
+    @FunctionalInterface
+    interface InfoExtractor { String[] extract() throws Exception; }
+
+    private String handleLinkCallback(String provider, InfoExtractor extractor,
+                                      HttpSession session, RedirectAttributes ra) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        if (loginUser == null) return "redirect:/auth/login";
+        try {
+            String[] info = extractor.extract();
+            authService.linkSocial(loginUser.getUserIdx(), provider, info[0]);
+            ra.addFlashAttribute("successMsg", provider + " 계정이 연동되었습니다.");
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("errorMsg", e.getMessage());
+        } catch (Exception e) {
+            log.error("[{}] 연동 콜백 오류", provider, e);
+            ra.addFlashAttribute("errorMsg", "소셜 연동 중 오류가 발생했습니다.");
+        }
+        return "redirect:/mypage/edit";
+    }
+
+    private void requireLogin(HttpSession session) {
+        if (session.getAttribute("loginUser") == null)
+            throw new IllegalStateException("로그인이 필요합니다.");
+    }
+
+    private Map<String, Object> err(Map<String, Object> r, String field, String msg) {
+        r.put("success", false); r.put("field", field); r.put("message", msg); return r;
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        // 프록시/로드밸런서 환경 고려 (실무 필수)
+        String ip = request.getHeader("X-Forwarded-For");
+
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+
+        // 여러 IP가 들어올 경우 첫 번째 값만 사용
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+
+        return ip;
     }
 }
