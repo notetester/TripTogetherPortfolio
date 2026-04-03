@@ -196,11 +196,21 @@
               </div>
               <div class="post-card-title">${post.title}</div>
               <div class="post-card-content">${post.content}</div>
-              <div class="post-card-footer">
-                <span class="post-stat like-stat">&#10084; ${post.likeCount}</span>
-                <span class="post-stat">&#128172; ${post.commentCount}</span>
-                <span class="post-stat">&#128065; ${post.viewCount}</span>
-              </div>
+<div class="post-card-footer">
+  <span class="post-stat like-stat">&#10084; ${post.likeCount}</span>
+  <span class="post-stat">&#128172; ${post.commentCount}</span>
+  <span class="post-stat">&#128065; ${post.viewCount}</span>
+  <c:if test="${post.postType eq 'question'}">
+    <c:choose>
+      <c:when test="${post.isSolved}">
+        <span class="post-stat" style="color:#16a34a; font-weight:700;">&#10003; 해결됨</span>
+      </c:when>
+      <c:otherwise>
+        <span class="post-stat" style="color:#ea580c; font-weight:700;">&#8987; 미해결</span>
+      </c:otherwise>
+    </c:choose>
+  </c:if>
+</div>
             </div>
           </div>
         </c:forEach>

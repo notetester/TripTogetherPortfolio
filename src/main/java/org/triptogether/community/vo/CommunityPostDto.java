@@ -31,4 +31,7 @@ public class CommunityPostDto {
 
     // USERS JOIN (닉네임)
     private String  nickname;
+
+    // 질문 유형일 때만 사용 (null이면 질문 아님)
+    private Boolean isSolved;
 }
