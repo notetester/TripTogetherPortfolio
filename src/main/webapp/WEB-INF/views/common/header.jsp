@@ -25,7 +25,7 @@
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses'">여행 코스</button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/assistant'">AI 도우미</button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'">커뮤니티</button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage/edit-confirm'">마이페이지</button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'">마이페이지</button>
             <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">
                 <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'">관리자</button>
             </c:if>
