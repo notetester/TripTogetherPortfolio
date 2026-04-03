@@ -37,8 +37,23 @@ public interface CommunityService {
     void addComment(Long postId, Long userIdx, String content);
     void deleteComment(Long commentId);
 
+    // ===== 수정 =====
+    void editPost(Long postId, CommunityWriteDto writeDto, List<String> existingImages, Long userIdx);
+
     // ===== 태그 공출현 =====
     void updateTagRelation(Long postId);
+
+    // ===== 대댓글 =====
+    void addReply(Long postId, Long userIdx, String content, Long parentCommentId);
+
+    // ===== 질문 채택 =====
+    void acceptComment(Long postId, Long commentId);
+    Long getAcceptedCommentId(Long postId);
+
+    // ===== 댓글 좋아요 =====
+    boolean isCommentLiked(Long commentId, Long userIdx);
+    boolean toggleCommentLike(Long commentId, Long userIdx);
+    int getCommentLikeCount(Long commentId);
 
     // ===== 신고 =====
     void reportPost(Long postId, Long userIdx);

@@ -146,6 +146,66 @@ public class CommunityServiceImpl implements CommunityService {
         return postId;
     }
 
+    // ===== 수정 =====
+    @Override
+    @Transactional
+    public void editPost(Long postId, CommunityWriteDto writeDto,
+                         List<String> existingImages, Long userIdx) {
+
+        // 1. COMMUNITY_POST 제목/본문 수정
+        communityMapper.updatePost(postId, writeDto.getTitle(), writeDto.getContent());
+
+        // 2. COMMUNITY_POST_DETAIL 지역/유형 수정
+        communityMapper.updatePostDetail(postId, writeDto.getRegion(), writeDto.getPostType());
+
+        // 3. 이미지 처리 - 기존 이미지 전부 삭제 후 재등록
+        communityMapper.deleteImages(postId);
+
+        // 3-1. 기존 이미지 중 유지할 것 재등록
+        int sortOrder = 1;
+        if (existingImages != null) {
+            for (String imageUrl : existingImages) {
+                communityMapper.insertImage(postId, imageUrl, sortOrder++);
+            }
+        }
+
+        // 3-2. 새로 추가된 이미지 저장
+        if (writeDto.getImages() != null) {
+            for (MultipartFile file : writeDto.getImages()) {
+                if (file == null || file.isEmpty()) continue;
+                String savedUrl = saveFile(file);
+                if (savedUrl != null) {
+                    communityMapper.insertImage(postId, savedUrl, sortOrder++);
+                }
+            }
+        }
+
+        // 4. 태그 처리 - 기존 태그 전부 삭제 후 재등록
+        communityMapper.deletePostTags(postId);
+
+        if (writeDto.getTags() != null && !writeDto.getTags().isEmpty()) {
+            String[] tagArr = writeDto.getTags().split(",");
+            for (String tagName : tagArr) {
+                tagName = tagName.trim();
+                if (tagName.isEmpty()) continue;
+                communityMapper.upsertTag(tagName);
+                Long tagId = communityMapper.selectTagId(tagName);
+                communityMapper.insertPostTag(postId, tagId);
+            }
+        }
+
+        // 5. tip 카테고리 수정
+        if ("tip".equals(writeDto.getPostType())) {
+            String tipCategory = writeDto.getTipCategory() != null
+                    ? writeDto.getTipCategory() : "other";
+            communityMapper.upsertPostTip(postId, tipCategory);
+        }
+
+        // 6. 태그 공출현 업데이트
+        updateTagRelation(postId);
+    }
+
+
     // ===== 삭제 =====
 
     @Override
@@ -216,6 +276,51 @@ public class CommunityServiceImpl implements CommunityService {
         }
     }
 
+    // ===== 대댓글 =====
+    @Override
+    @Transactional
+    public void addReply(Long postId, Long userIdx, String content, Long parentCommentId) {
+        communityMapper.insertReply(postId, userIdx, content, parentCommentId);
+        communityMapper.increaseCommentCount(postId);
+    }
+
+    // ===== 질문 채택 =====
+    @Override
+    @Transactional
+    public void acceptComment(Long postId, Long commentId) {
+        communityMapper.acceptComment(postId, commentId);
+    }
+
+    @Override
+    public Long getAcceptedCommentId(Long postId) {
+        return communityMapper.selectAcceptedCommentId(postId);
+    }
+
+    // ===== 댓글 좋아요 =====
+    @Override
+    public boolean isCommentLiked(Long commentId, Long userIdx) {
+        return communityMapper.selectCommentLikeCount(commentId, userIdx) > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean toggleCommentLike(Long commentId, Long userIdx) {
+        if (isCommentLiked(commentId, userIdx)) {
+            communityMapper.deleteCommentLike(commentId, userIdx);
+            communityMapper.decreaseCommentLikeCount(commentId);
+            return false;
+        } else {
+            communityMapper.insertCommentLike(commentId, userIdx);
+            communityMapper.increaseCommentLikeCount(commentId);
+            return true;
+        }
+    }
+
+    @Override
+    public int getCommentLikeCount(Long commentId) {
+        return communityMapper.selectCommentLikeCountById(commentId);
+    }
+
     // ===== 신고 =====
 
     @Override
@@ -226,13 +331,21 @@ public class CommunityServiceImpl implements CommunityService {
     // ===== 파일 저장 유틸 =====
 
     private String saveFile(MultipartFile file) {
+        // 파일 형식 검증
+        String ext = getExtension(file.getOriginalFilename()).toLowerCase();
+        if (!ext.equals(".jpg") && !ext.equals(".jpeg")
+                && !ext.equals(".png") && !ext.equals(".gif")
+                && !ext.equals(".webp")) {
+            log.warn("허용되지 않는 파일 형식 업로드 시도: {}", ext);
+            return null;
+        }
+
         try {
             String dir = System.getProperty("user.dir").replace("\\", "/")
                     + "/" + uploadPath + "/community/";
             File dirFile = new File(dir);
             if (!dirFile.exists()) dirFile.mkdirs();
 
-            String ext      = getExtension(file.getOriginalFilename());
             String fileName = UUID.randomUUID().toString() + ext;
             file.transferTo(new File(dir + fileName));
 

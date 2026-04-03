@@ -58,9 +58,39 @@ public interface CommunityMapper {
     void increaseCommentCount(@Param("postId") Long postId);
     void decreaseCommentCount(@Param("postId") Long postId);
 
+    // ===== 수정 =====
+    void updatePost(@Param("postId") Long postId,
+                    @Param("title") String title,
+                    @Param("content") String content);
+    void updatePostDetail(@Param("postId") Long postId,
+                          @Param("region") String region,
+                          @Param("postType") String postType);
+    void deleteImages(@Param("postId") Long postId);
+    void deletePostTags(@Param("postId") Long postId);
+    void upsertPostTip(@Param("postId") Long postId,
+                       @Param("tipCategory") String tipCategory);
+
     // ===== 태그 공출현 =====
     void upsertTagRelation(@Param("tagIdA") Long tagIdA, @Param("tagIdB") Long tagIdB);
     List<Long> selectTagIdList(@Param("postId") Long postId);
+
+    // ===== 대댓글 =====
+    void insertReply(@Param("postId") Long postId,
+                     @Param("userIdx") Long userIdx,
+                     @Param("content") String content,
+                     @Param("parentCommentId") Long parentCommentId);
+
+    // ===== 질문 채택 =====
+    void acceptComment(@Param("postId") Long postId, @Param("commentId") Long commentId);
+    Long selectAcceptedCommentId(@Param("postId") Long postId);
+
+    // ===== 댓글 좋아요 =====
+    int selectCommentLikeCount(@Param("commentId") Long commentId, @Param("userIdx") Long userIdx);
+    int selectCommentLikeCountById(@Param("commentId") Long commentId);
+    void insertCommentLike(@Param("commentId") Long commentId, @Param("userIdx") Long userIdx);
+    void deleteCommentLike(@Param("commentId") Long commentId, @Param("userIdx") Long userIdx);
+    void increaseCommentLikeCount(@Param("commentId") Long commentId);
+    void decreaseCommentLikeCount(@Param("commentId") Long commentId);
 
     // ===== 신고 =====
     void insertReport(@Param("postId") Long postId, @Param("userIdx") Long userIdx);

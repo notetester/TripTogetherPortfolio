@@ -22,6 +22,7 @@
         <result property="commentCount" column="comment_count"/>
         <result property="createdAt"    column="created_at"/>
         <result property="updatedAt"    column="updated_at"/>
+        <result property="isSolved" column="is_solved"/>
         <result property="thumbUrl"     column="thumb_url"/>
     </resultMap>
 
@@ -42,6 +43,7 @@
         <result property="likeCount"     column="like_count"/>
         <result property="createdAt"     column="created_at"/>
         <result property="updatedAt"     column="updated_at"/>
+        <result property="parentCommentId" column="parent_comment_id"/>
     </resultMap>
 
     <!-- =============================================
@@ -66,7 +68,8 @@
             cpd.like_count,
             cpd.comment_count,
             cpd.updated_at,
-            cpi.image_url AS thumb_url
+            cpi.image_url AS thumb_url,
+            cpq.is_solved
         FROM COMMUNITY_POST cp
         JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
@@ -74,6 +77,7 @@
                ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
         LEFT JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
         LEFT JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
+        LEFT JOIN COMMUNITY_POST_QUESTION cpq ON cp.post_id = cpq.post_id
         WHERE cpd.post_status = 'ACTIVE'
         <if test="region != null and region != 'all'">
             AND cpd.region = #{region}
@@ -177,12 +181,15 @@
             cc.comment_status,
             cc.like_count,
             cc.created_at,
-            cc.updated_at
+            cc.updated_at,
+            cc.parent_comment_id
         FROM COMMUNITY_COMMENT cc
                  LEFT JOIN USERS u ON cc.user_idx = u.user_idx
         WHERE cc.post_id = #{postId}
           AND cc.comment_status = 'ACTIVE'
-        ORDER BY cc.created_at ASC
+        ORDER BY
+            COALESCE(cc.parent_comment_id, cc.comment_id),
+            cc.comment_id ASC
     </select>
 
     <!-- 팁 카테고리 -->
@@ -412,6 +419,122 @@
             (post_id, user_idx, reason, status, created_at)
         VALUES
             (#{postId}, #{userIdx}, 'other', 'pending', NOW())
+    </insert>
+
+    <!-- =============================================
+         댓글 좋아요
+         ============================================= -->
+
+    <!-- 댓글 좋아요 여부 확인 -->
+    <select id="selectCommentLikeCount" resultType="int">
+        SELECT COUNT(*)
+        FROM COMMUNITY_COMMENT_LIKE
+        WHERE comment_id = #{commentId}
+          AND user_idx   = #{userIdx}
+    </select>
+
+    <!-- 댓글 좋아요 수 조회 -->
+    <select id="selectCommentLikeCountById" resultType="int">
+        SELECT like_count
+        FROM COMMUNITY_COMMENT
+        WHERE comment_id = #{commentId}
+    </select>
+
+    <!-- 댓글 좋아요 INSERT -->
+    <insert id="insertCommentLike">
+        INSERT IGNORE INTO COMMUNITY_COMMENT_LIKE (comment_id, user_idx, created_at)
+    VALUES (#{commentId}, #{userIdx}, NOW())
+    </insert>
+
+    <!-- 댓글 좋아요 DELETE -->
+    <delete id="deleteCommentLike">
+        DELETE FROM COMMUNITY_COMMENT_LIKE
+        WHERE comment_id = #{commentId}
+          AND user_idx   = #{userIdx}
+    </delete>
+
+    <!-- 댓글 좋아요 수 증가 -->
+    <update id="increaseCommentLikeCount">
+        UPDATE COMMUNITY_COMMENT
+        SET like_count = like_count + 1
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 댓글 좋아요 수 감소 -->
+    <update id="decreaseCommentLikeCount">
+        UPDATE COMMUNITY_COMMENT
+        SET like_count = GREATEST(like_count - 1, 0)
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- =============================================
+     수정
+     ============================================= -->
+
+    <!-- COMMUNITY_POST 제목/본문 수정 -->
+    <update id="updatePost">
+        UPDATE COMMUNITY_POST
+        SET title   = #{title},
+            content = #{content}
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- COMMUNITY_POST_DETAIL 지역/유형 수정 -->
+    <update id="updatePostDetail">
+        UPDATE COMMUNITY_POST_DETAIL
+        SET region     = #{region},
+            post_type  = #{postType},
+            updated_at = NOW()
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 이미지 전체 삭제 -->
+    <delete id="deleteImages">
+        DELETE FROM COMMUNITY_POST_IMAGE
+        WHERE post_id = #{postId}
+    </delete>
+
+    <!-- 태그 연결 전체 삭제 -->
+    <delete id="deletePostTags">
+        DELETE FROM COMMUNITY_POST_TAG
+        WHERE post_id = #{postId}
+    </delete>
+
+    <!-- TIP 카테고리 UPSERT -->
+    <insert id="upsertPostTip">
+        INSERT INTO COMMUNITY_POST_TIP (post_id, tip_category)
+        VALUES (#{postId}, #{tipCategory})
+            ON DUPLICATE KEY UPDATE tip_category = #{tipCategory}
+    </insert>
+
+    <!-- =============================================
+         질문 채택
+         ============================================= -->
+
+    <!-- 댓글 채택 -->
+    <update id="acceptComment">
+        UPDATE COMMUNITY_POST_QUESTION
+        SET accepted_comment_id = #{commentId},
+            is_solved           = 1,
+            solved_at           = NOW()
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 채택된 댓글 ID 조회 -->
+    <select id="selectAcceptedCommentId" resultType="Long">
+        SELECT accepted_comment_id
+        FROM COMMUNITY_POST_QUESTION
+        WHERE post_id = #{postId}
+    </select>
+
+    <!-- 대댓글 INSERT -->
+    <insert id="insertReply">
+        INSERT INTO COMMUNITY_COMMENT
+        (post_id, user_idx, content, comment_status, like_count,
+         parent_comment_id, created_at, updated_at)
+        VALUES
+            (#{postId}, #{userIdx}, #{content}, 'ACTIVE', 0,
+             #{parentCommentId}, NOW(), NOW())
     </insert>
 
 </mapper>

@@ -25,10 +25,14 @@ public class UsersVO {
     private boolean passwordEnabled; // 비밀번호 로그인 가능 여부
 
     private boolean emailVerified;  // 이메일 인증 여부
+    /** 이메일 인증 완료 + 사용자 직접 활성화 시 이메일로도 로그인 가능 */
+    private boolean emailLoginEnabled;
 
     /** 계정 상태: ACTIVE / DORMANT / DELETED */
     @Builder.Default
     private String accountStatus = "ACTIVE";
+    @Builder.Default
+    private String userRole="USER";
 
     private LocalDateTime statusChangedAt;
 

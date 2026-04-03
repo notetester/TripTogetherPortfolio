@@ -6,16 +6,16 @@
   커뮤니티 상세 페이지
   Controller: GET /community/{postId}
   model 필요:
-    - post        : CommunityPostDto
-    - imageList   : List<CommunityPostImageDto> (imageUrl, sortOrder)
-    - tagList     : List<String>
-    - commentList : List<CommunityCommentDto>
-                    (commentId, userIdx, nickname, content, commentStatus, likeCount, createdAt)
-    - tipCategory : String (post_type='tip' 일 때만)
-    - isSolved    : Boolean (post_type='question' 일 때만)
-    - isLiked     : Boolean (로그인 사용자가 좋아요 눌렀는지)
-    - isOwner     : Boolean (로그인 사용자가 작성자인지)
-    - relatedList : List<CommunityPostDto> (관련 글, 최대 3개)
+    - post             : CommunityPostDto
+    - imageList        : List<CommunityPostImageDto>
+    - tagList          : List<String>
+    - commentList      : List<CommunityCommentDto>
+    - tipCategory      : String (tip일 때만)
+    - isSolved         : Boolean (question일 때만)
+    - isLiked          : Boolean
+    - isOwner          : Boolean
+    - relatedList      : List<CommunityPostDto>
+    - acceptedCommentId: Long (question일 때만)
 --%>
 <!DOCTYPE html>
 <html lang="ko">
@@ -37,14 +37,14 @@
 
       <%-- 작성자 바 --%>
       <div class="detail-author-bar">
-       <div class="detail-av">
-  <c:choose>
-    <c:when test="${not empty post.nickname}">
-      ${fn:substring(post.nickname, 0, 1)}
-    </c:when>
-    <c:otherwise>ME</c:otherwise>
-  </c:choose>
-</div>
+        <div class="detail-av">
+          <c:choose>
+            <c:when test="${not empty post.nickname}">
+              ${fn:substring(post.nickname, 0, 1)}
+            </c:when>
+            <c:otherwise>?</c:otherwise>
+          </c:choose>
+        </div>
         <div class="detail-author-info">
           <span class="detail-author-name">${post.nickname}</span>
           <span class="detail-date">
@@ -59,7 +59,6 @@
             <c:when test="${post.postType eq 'question'}">질문</c:when>
           </c:choose>
         </span>
-        <%-- 작성자 본인만 수정/삭제 표시 --%>
         <c:if test="${isOwner}">
           <div class="detail-actions">
             <button class="action-btn edit-btn"
@@ -111,7 +110,7 @@
             <c:forEach var="img" items="${imageList}">
               <div class="slide-item">
                 <img src="${img.imageUrl}" alt="${post.title}" loading="lazy"
-     onclick="window.open('${img.imageUrl}', '_blank')">
+                     onclick="window.open('${img.imageUrl}', '_blank')">
               </div>
             </c:forEach>
           </div>
@@ -136,7 +135,7 @@
         <div class="detail-tags">
           <c:forEach var="tag" items="${tagList}">
             <span class="detail-tag"
-                  onclick="location.href='${pageContext.request.contextPath}/community/list?tag=${tag}'">#${tag}</span>
+                  onclick="location.href='${pageContext.request.contextPath}/community/list?keyword=${tag}'">#${tag}</span>
           </c:forEach>
         </div>
       </c:if>
@@ -186,22 +185,32 @@
           </c:when>
           <c:otherwise>
             <c:forEach var="comment" items="${commentList}">
-              <c:if test="${comment.commentStatus eq 'ACTIVE'}">
-                <div class="comment-item">
-           <div class="comment-av">
-  <c:choose>
-    <c:when test="${not empty comment.nickname}">
-      ${fn:substring(comment.nickname, 0, 1)}
-    </c:when>
-    <c:otherwise>YO</c:otherwise>
-  </c:choose>
-</div>
+              <%-- 일반 댓글만 (대댓글 제외) --%>
+              <c:if test="${comment.commentStatus eq 'ACTIVE' and empty comment.parentCommentId}">
+                <div class="comment-item" id="comment_${comment.commentId}">
+                  <div class="comment-av">
+                    <c:choose>
+                      <c:when test="${not empty comment.nickname}">
+                        ${fn:substring(comment.nickname, 0, 1)}
+                      </c:when>
+                      <c:otherwise>?</c:otherwise>
+                    </c:choose>
+                  </div>
                   <div class="comment-body">
                     <div class="comment-top">
                       <span class="comment-author">${comment.nickname}</span>
+                      <c:if test="${comment.commentId eq acceptedCommentId}">
+                        <span class="accepted-badge">&#10003; 채택됨</span>
+                      </c:if>
                       <span class="comment-date">
                         <fmt:formatDate value="${comment.createdAt}" pattern="yyyy-MM-dd"/>
                       </span>
+                      <c:if test="${isOwner and post.postType eq 'question'
+                                   and not isSolved
+                                   and comment.commentId ne acceptedCommentId}">
+                        <button class="accept-btn"
+                                onclick="acceptComment(${post.postId}, ${comment.commentId})">채택하기</button>
+                      </c:if>
                       <c:if test="${not empty sessionScope.loginUser
                                     and sessionScope.loginUser.userIdx eq comment.userIdx}">
                         <button class="comment-delete-btn"
@@ -210,10 +219,91 @@
                     </div>
                     <div class="comment-text">${comment.content}</div>
                     <div class="comment-actions">
-                      <button class="comment-like-btn">&#10084; ${comment.likeCount}</button>
+                      <c:choose>
+                        <c:when test="${not empty sessionScope.loginUser}">
+                          <button class="comment-like-btn"
+                                  id="commentLike_${comment.commentId}"
+                                  onclick="toggleCommentLike(${comment.commentId}, this)">
+                            &#10084; <span id="commentLikeCount_${comment.commentId}">${comment.likeCount}</span>
+                          </button>
+                          <button class="reply-btn"
+                                  onclick="toggleReplyInput(${comment.commentId})">&#8618; 답글</button>
+                        </c:when>
+                        <c:otherwise>
+                          <button class="comment-like-btn"
+                                  onclick="location.href='${pageContext.request.contextPath}/auth/login'">
+                            &#10084; ${comment.likeCount}
+                          </button>
+                        </c:otherwise>
+                      </c:choose>
                     </div>
+                    <%-- 답글 입력창 (기본 숨김) --%>
+                    <c:if test="${not empty sessionScope.loginUser}">
+                      <div class="reply-input-wrap hidden" id="replyInput_${comment.commentId}">
+<textarea class="reply-textarea"
+          id="replyText_${comment.commentId}"
+          placeholder="답글을 입력하세요..." rows="2"
+          onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); submitReply(${post.postId}, ${comment.commentId});}"></textarea>
+                        <div class="reply-input-actions">
+                          <button class="reply-cancel-btn"
+                                  onclick="toggleReplyInput(${comment.commentId})">취소</button>
+                          <button class="reply-submit-btn"
+                                  onclick="submitReply(${post.postId}, ${comment.commentId})">등록</button>
+                        </div>
+                      </div>
+                    </c:if>
                   </div>
                 </div>
+
+                <%-- 대댓글 (해당 댓글의 자식만) --%>
+                <c:forEach var="reply" items="${commentList}">
+                  <c:if test="${reply.commentStatus eq 'ACTIVE'
+                                and reply.parentCommentId eq comment.commentId}">
+                    <div class="comment-item reply-item">
+                      <div class="reply-indent">&#8618;</div>
+                      <div class="comment-av reply-av">
+                        <c:choose>
+                          <c:when test="${not empty reply.nickname}">
+                            ${fn:substring(reply.nickname, 0, 1)}
+                          </c:when>
+                          <c:otherwise>?</c:otherwise>
+                        </c:choose>
+                      </div>
+                      <div class="comment-body">
+                        <div class="comment-top">
+                          <span class="comment-author">${reply.nickname}</span>
+                          <span class="comment-date">
+                            <fmt:formatDate value="${reply.createdAt}" pattern="yyyy-MM-dd"/>
+                          </span>
+                          <c:if test="${not empty sessionScope.loginUser
+                                        and sessionScope.loginUser.userIdx eq reply.userIdx}">
+                            <button class="comment-delete-btn"
+                                    onclick="deleteComment(${reply.commentId})">삭제</button>
+                          </c:if>
+                        </div>
+                        <div class="comment-text">${reply.content}</div>
+                        <div class="comment-actions">
+                          <c:choose>
+                            <c:when test="${not empty sessionScope.loginUser}">
+                              <button class="comment-like-btn"
+                                      id="commentLike_${reply.commentId}"
+                                      onclick="toggleCommentLike(${reply.commentId}, this)">
+                                &#10084; <span id="commentLikeCount_${reply.commentId}">${reply.likeCount}</span>
+                              </button>
+                            </c:when>
+                            <c:otherwise>
+                              <button class="comment-like-btn"
+                                      onclick="location.href='${pageContext.request.contextPath}/auth/login'">
+                                &#10084; ${reply.likeCount}
+                              </button>
+                            </c:otherwise>
+                          </c:choose>
+                        </div>
+                      </div>
+                    </div>
+                  </c:if>
+                </c:forEach>
+
               </c:if>
             </c:forEach>
           </c:otherwise>
@@ -225,8 +315,9 @@
         <c:choose>
           <c:when test="${not empty sessionScope.loginUser}">
             <div class="comment-input-box">
-              <textarea class="comment-textarea" id="commentText"
-                        placeholder="여행 이야기를 댓글로 나눠보세요..." rows="3"></textarea>
+<textarea class="comment-textarea" id="commentText"
+          placeholder="여행 이야기를 댓글로 나눠보세요..." rows="3"
+          onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); submitComment(${post.postId});}"></textarea>
               <button class="comment-submit-btn"
                       onclick="submitComment(${post.postId})">등록</button>
             </div>
@@ -344,6 +435,57 @@ function deletePost(postId) {
   })
   .then(function(res) {
     if (res.ok) location.href = CTX + '/community/list';
+  });
+}
+
+function acceptComment(postId, commentId) {
+  if (!confirm('이 댓글을 채택하시겠습니까? 채택 후에는 변경할 수 없어요.')) return;
+  fetch(CTX + '/community/' + postId + '/accept/' + commentId, {
+    method: 'POST',
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success) {
+      location.reload();
+    } else {
+      alert(data.message || '채택 중 오류가 발생했습니다.');
+    }
+  });
+}
+
+function toggleReplyInput(commentId) {
+  var wrap = document.getElementById('replyInput_' + commentId);
+  wrap.classList.toggle('hidden');
+  if (!wrap.classList.contains('hidden')) {
+    document.getElementById('replyText_' + commentId).focus();
+  }
+}
+
+function submitReply(postId, commentId) {
+  var text = document.getElementById('replyText_' + commentId).value.trim();
+  if (!text) return;
+  fetch(CTX + '/community/' + postId + '/comment/' + commentId + '/reply', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: 'content=' + encodeURIComponent(text)
+  })
+  .then(function(res) { if (res.ok) location.reload(); });
+}
+
+function toggleCommentLike(commentId, btn) {
+  fetch(CTX + '/community/comment/' + commentId + '/like', {
+    method: 'POST',
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    var countEl = document.getElementById('commentLikeCount_' + commentId);
+    countEl.textContent = data.likeCount;
+    btn.style.color = data.liked ? '#ef4444' : '';
   });
 }
 

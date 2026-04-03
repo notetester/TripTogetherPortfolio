@@ -1,8 +1,13 @@
 package org.triptogether.auth.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.SocialTempVO;
+import org.triptogether.auth.vo.UserSocialVO;
 import org.triptogether.auth.vo.UsersVO;
+
+import java.util.List;
+import java.util.Map;
 
 public interface AuthService {
 
@@ -12,6 +17,7 @@ public interface AuthService {
      * @return 로그인 성공 시 UsersVO, 실패 시 null (+ 히스토리 기록)
      */
     UsersVO login(String identifier, String password, HttpServletRequest request);
+    UsersVO login(String identifier, String password, LoginRequestContext context);
 
     // ─── 일반 회원가입 ──────────────────────────
     void register(UsersVO user);
@@ -21,10 +27,52 @@ public interface AuthService {
     boolean isEmailDuplicate(String email);
     boolean isNicknameDuplicate(String nickname);
 
+    // ── 아이디 찾기 ────────────────────────────
+    UsersVO getUserByIdx(Long userIdx);
+    
+    /** 이메일로 인증 코드 발송 → 인증 완료 시 userId 반환 */
+    void sendFindIdEmail(String email);
+
+    /** FIND_ID 토큰 검증 → userId 반환 (실패 시 null) */
+    String verifyFindIdToken(String token);
+
+    // ── 비밀번호 찾기 / 재설정 ─────────────────
+    /** 아이디 또는 이메일로 비밀번호 재설정 링크 발송 */
+    void sendResetPasswordEmail(String identifier);
+
+    /** RESET_PW 토큰 검증 → UsersVO 반환 (실패 시 null) */
+    UsersVO verifyResetToken(String token);
+
+    /** 토큰 검증 후 비밀번호 재설정 */
+    boolean resetPassword(String token, String newPassword);
+
+    // ── 프로필 수정 ────────────────────────────
+    /** 비밀번호 재확인 (수정 페이지 진입 전) */
+    boolean checkPassword(Long userIdx, String rawPassword);
+
+    /** 기본 프로필 수정 (닉네임·국적·언어) */
+    void updateProfile(UsersVO user);
+
+    /** 비밀번호 변경 */
+    void updatePassword(Long userIdx, String newRawPassword);
+
+    // ── 이메일 인증 ────────────────────────────
+    /** 이메일 인증 메일 발송 (VERIFY 목적) */
+    void sendEmailVerification(Long userIdx, String email);
+
+    /** VERIFY 토큰 검증 → 이메일 인증 처리 */
+    boolean verifyEmail(String token);
+
+    /** 이메일 로그인 활성화/비활성화 토글 */
+    void toggleEmailLogin(Long userIdx, boolean enable);
+
     // ─── 소셜 OAuth URL 생성 ────────────────────
     String getKakaoAuthUrl();
+    String getKakaoAuthUrl(boolean linkMode);
     String getNaverAuthUrl(String state);
+    String getNaverAuthUrl(String state, boolean linkMode);
     String getGoogleAuthUrl(String state);
+    String getGoogleAuthUrl(String state, boolean linkMode);
 
     // ─── 소셜 콜백 처리 ─────────────────────────
     /**
@@ -37,6 +85,13 @@ public interface AuthService {
     Object handleNaverCallback(String code, String state, HttpServletRequest request);
     Object handleGoogleCallback(String code, HttpServletRequest request);
 
+    // ════════════════════════════════════════════
+    // 소셜 연동용 콜백 처리 (링크 모드)
+    // ════════════════════════════════════════════
+    String[] extractKakaoInfo(String code) throws Exception;
+    String[] extractNaverInfo(String code, String state) throws Exception;
+    String[] extractGoogleInfo(String code) throws Exception;
+
     // ─── 소셜 신규 회원 등록 ─────────────────────
     /**
      * socialTemp + 추가 입력 정보(닉네임·국적·언어)로 신규 가입 완료
@@ -45,6 +100,13 @@ public interface AuthService {
                                    String nationality, String preferredLang,
                                    HttpServletRequest request);
 
-    // ─── 기존 계정에 소셜 연동 ──────────────────
+    // ─── 기존 계정에 소셜 연동 / 해제 ──────────────────
     void linkSocial(Long userIdx, String provider, String providerUserId);
+    void unlinkSocial(Long userIdx, String provider);
+
+    /** 특정 유저의 소셜 연동 목록 */
+    List<UserSocialVO> getSocials(Long userIdx);
+
+    /** provider → provider별 연동 여부 Map (KAKAO/NAVER/GOOGLE) */
+    Map<String, Boolean> getSocialLinkMap(Long userIdx);
 }
