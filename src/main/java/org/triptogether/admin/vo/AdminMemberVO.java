@@ -27,7 +27,7 @@ public class AdminMemberVO {
     private boolean       passwordEnabled;
     private boolean       emailVerified;
     private boolean       emailLoginEnabled;
-    private String        accountStatus;    // ACTIVE / DORMANT / DELETED
+    private String        accountStatus;    // ACTIVE / DORMANT / BLOCKED / DELETED
     private String        userRole;         // USER / ADMIN
     private String        nickname;
     private String        nationality;

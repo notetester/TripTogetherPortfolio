@@ -41,6 +41,7 @@
                             <option value="ACTIVE"  ${search.status=='ACTIVE'  ? 'selected' : ''}>활성</option>
                             <option value="DORMANT" ${search.status=='DORMANT' ? 'selected' : ''}>휴면</option>
                             <option value="DELETED" ${search.status=='DELETED' ? 'selected' : ''}>탈퇴</option>
+                            <option value="BLOCKED" ${search.status=='BLOCKED' ? 'selected' : ''}>차단</option>
                         </select>
                     </div>
 
@@ -247,6 +248,12 @@
                                             <button class="action-menu-item"
                                                     onclick="changeStatus(${m.userIdx}, 'DORMANT', this)">
                                                 😴 휴면 처리
+                                            </button>
+                                        </c:if>
+                                        <c:if test="${m.accountStatus != 'BLOCKED'}">
+                                            <button class="action-menu-item"
+                                                    onclick="changeStatus(${m.userIdx}, 'BLOCKED', this)">
+                                                ⛔ 차단 처리
                                             </button>
                                         </c:if>
                                         <c:if test="${m.accountStatus != 'DELETED'}">

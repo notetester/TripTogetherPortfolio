@@ -1,0 +1,141 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="activeMenu" value="inquiries"/>
+<c:set var="pageTitle" value="문의 관리"/>
+<%@ include file="../layout.jsp" %>
+
+<div class="adm-content">
+    <div class="adm-card" style="margin-bottom:20px;">
+        <div class="adm-card-body">
+            <form method="get" action="${pageContext.request.contextPath}/admin/inquiries">
+                <div class="adm-filter-bar">
+                    <div style="flex:1;min-width:220px;">
+                        <div class="adm-filter-label">검색</div>
+                        <div style="display:flex;gap:6px;">
+                            <select class="adm-select" name="searchType" style="width:110px;">
+                                <option value="all" ${search.searchType=='all'?'selected':''}>전체</option>
+                                <option value="title" ${search.searchType=='title'?'selected':''}>제목</option>
+                                <option value="content" ${search.searchType=='content'?'selected':''}>내용</option>
+                                <option value="nickname" ${search.searchType=='nickname'?'selected':''}>작성자</option>
+                            </select>
+                            <div class="adm-search-box" style="flex:1;">
+                                <span class="adm-search-ico">🔍</span>
+                                <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="검색어 입력...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="adm-filter-label">상태</div>
+                        <select class="adm-select" name="status">
+                            <option value="ALL" ${search.status=='ALL'?'selected':''}>전체</option>
+                            <option value="PENDING" ${search.status=='PENDING'?'selected':''}>대기</option>
+                            <option value="IN_PROGRESS" ${search.status=='IN_PROGRESS'?'selected':''}>처리중</option>
+                            <option value="COMPLETED" ${search.status=='COMPLETED'?'selected':''}>완료</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <div class="adm-filter-label">카테고리</div>
+                        <select class="adm-select" name="category">
+                            <option value="ALL" ${search.category=='ALL'?'selected':''}>전체</option>
+                            <option value="service" ${search.category=='service'?'selected':''}>서비스</option>
+                            <option value="payment" ${search.category=='payment'?'selected':''}>결제</option>
+                            <option value="account" ${search.category=='account'?'selected':''}>계정</option>
+                            <option value="bug" ${search.category=='bug'?'selected':''}>버그</option>
+                            <option value="etc" ${search.category=='etc'?'selected':''}>기타</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <div class="adm-filter-label">답변 여부</div>
+                        <select class="adm-select" name="answered">
+                            <option value="ALL" ${search.answered=='ALL'?'selected':''}>전체</option>
+                            <option value="ANSWERED" ${search.answered=='ANSWERED'?'selected':''}>답변 완료</option>
+                            <option value="UNANSWERED" ${search.answered=='UNANSWERED'?'selected':''}>미답변</option>
+                        </select>
+                    </div>
+
+                    <button class="adm-btn adm-btn-primary" type="submit">조회</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="adm-card">
+        <div class="adm-card-head">
+            <div class="adm-card-title">문의 목록</div>
+            <div style="font-size:12px;color:#64748b;">총 ${total}건</div>
+        </div>
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>작성자</th>
+                    <th>제목</th>
+                    <th>카테고리</th>
+                    <th>상태</th>
+                    <th>답변</th>
+                    <th>등록일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach items="${list}" var="item">
+                    <tr>
+                        <td>#${item.inquiryId}</td>
+                        <td>
+                            <div class="mem-name">${item.nickname}</div>
+                            <div class="mem-uid">@${item.userId}</div>
+                        </td>
+                        <td>
+                            <div class="mem-name">${item.title}</div>
+                            <div class="mem-uid">
+                                <c:if test="${item.privateFlag}">🔒 비공개 · </c:if>
+                                조회 ${item.viewCount}
+                            </div>
+                        </td>
+                        <td>${item.category}</td>
+                        <td><span class="status-badge ${item.status}">${item.status}</span></td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.answerId}">
+                                    <div class="mem-name">답변 완료</div>
+                                    <div class="mem-uid">${item.answerAdminNickname}</div>
+                                </c:when>
+                                <c:otherwise><span style="color:#64748b;">미답변</span></c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td><fmt:formatDate value="${item.createdAt}" pattern="yyyy.MM.dd HH:mm"/></td>
+                    </tr>
+                </c:forEach>
+                <c:if test="${empty list}">
+                    <tr><td colspan="7" style="text-align:center;padding:40px;color:#475569;">조회 결과가 없습니다.</td></tr>
+                </c:if>
+                </tbody>
+            </table>
+        </div>
+
+        <c:if test="${paging.totalPage > 1}">
+            <div class="adm-paging">
+                <c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if>
+                <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p">
+                    <button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>
+                </c:forEach>
+                <c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if>
+                <span class="adm-page-info">${paging.currentPage} / ${paging.totalPage} 페이지</span>
+            </div>
+        </c:if>
+    </div>
+</div>
+
+<script>
+function goPage(page) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', page);
+    location.href = '${pageContext.request.contextPath}/admin/inquiries?' + params.toString();
+}
+</script>
+
+<%@ include file="../layout-close.jsp" %>

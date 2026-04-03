@@ -47,6 +47,7 @@
     (function () {
         const ctx = '${pageContext.request.contextPath}';
         const loggedIn = ${not empty sessionScope.loginUser};
+        // JSP EL 이 boolean 리터럴(true/false)로 출력되므로 JS에서 그대로 사용 가능하다.
 
         let isOpen = false;
         let isTyping = false;

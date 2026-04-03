@@ -3,16 +3,19 @@ package org.triptogether.admin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.triptogether.admin.mapper.AdminMapper;
-import org.triptogether.admin.vo.AdminMemberVO;
-import org.triptogether.admin.vo.AdminSearchVO;
-import org.triptogether.admin.vo.AdminStatsVO;
+import org.triptogether.admin.vo.*;
 import org.triptogether.auth.vo.UserLoginHistoryVO;
-import org.triptogether.common.function.Paging;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 관리자 서비스 구현체.
+ *
+ * <p>컨트롤러는 화면 흐름만 담당하고,</p>
+ * <p>조회 조건 보정 / 허용값 검증 / 페이징 계산은 이 서비스에서 맡는다.</p>
+ */
 @Service
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
@@ -26,15 +29,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Map<String, Object> getMemberList(AdminSearchVO search) {
-        List<AdminMemberVO> list  = adminMapper.findMembers(search);
-        int                 total = adminMapper.countMembers(search);
-
-        Paging paging = new Paging(total, search.getPage(), search.getSize(), 10);
+        List<AdminMemberVO> list = adminMapper.findMembers(search);
+        int total = adminMapper.countMembers(search);
+        AdminPageVO paging = AdminPageVO.of(total, search.getPage(), search.getSize(), 10);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("list",   list);
+        result.put("list", list);
         result.put("paging", paging);
-        result.put("total",  total);
+        result.put("total", total);
         result.put("search", search);
         return result;
     }
@@ -51,15 +53,47 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void changeMemberStatus(Long userIdx, String status) {
-        List<String> allowed = List.of("ACTIVE", "DORMANT", "DELETED");
-        if (!allowed.contains(status)) throw new IllegalArgumentException("유효하지 않은 상태값: " + status);
+        List<String> allowed = List.of("ACTIVE", "DORMANT", "DELETED", "BLOCKED");
+        if (!allowed.contains(status)) {
+            throw new IllegalArgumentException("유효하지 않은 상태값: " + status);
+        }
         adminMapper.updateMemberStatus(userIdx, status);
     }
 
     @Override
     public void changeMemberRole(Long userIdx, String role) {
         List<String> allowed = List.of("USER", "ADMIN");
-        if (!allowed.contains(role)) throw new IllegalArgumentException("유효하지 않은 권한값: " + role);
+        if (!allowed.contains(role)) {
+            throw new IllegalArgumentException("유효하지 않은 권한값: " + role);
+        }
         adminMapper.updateMemberRole(userIdx, role);
+    }
+
+    @Override
+    public Map<String, Object> getInquiryList(AdminInquirySearchVO search) {
+        List<AdminInquiryVO> list = adminMapper.findInquiries(search);
+        int total = adminMapper.countInquiries(search);
+        AdminPageVO paging = AdminPageVO.of(total, search.getPage(), search.getSize(), 10);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("paging", paging);
+        result.put("total", total);
+        result.put("search", search);
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getLoginAuditList(AdminLoginAuditSearchVO search) {
+        List<AdminLoginAuditVO> list = adminMapper.findLoginAudits(search);
+        int total = adminMapper.countLoginAudits(search);
+        AdminPageVO paging = AdminPageVO.of(total, search.getPage(), search.getSize(), 10);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("paging", paging);
+        result.put("total", total);
+        result.put("search", search);
+        return result;
     }
 }
