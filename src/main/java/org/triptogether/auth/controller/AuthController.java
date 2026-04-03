@@ -255,12 +255,22 @@ public class AuthController {
     // ════════════════════════════════════════════
 
     @GetMapping("/verify-email")
-    public String verifyEmail(@RequestParam String token, Model model) {
+    public String verifyEmail(@RequestParam String token, Model model, HttpSession session) {
         boolean ok = authService.verifyEmail(token);
         model.addAttribute("success", ok);
-        if (!ok) {
+
+        if (ok) {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            if (loginUser != null) {
+                UsersVO freshUser = authService.getUserByIdx(loginUser.getUserIdx());
+                if (freshUser != null) {
+                    session.setAttribute("loginUser", freshUser);
+                }
+            }
+        } else {
             model.addAttribute("error", "링크가 만료되었거나 유효하지 않습니다.");
         }
+
         return "auth/verify-email-result";
     }
 
