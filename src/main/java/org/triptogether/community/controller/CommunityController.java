@@ -11,6 +11,7 @@ import org.triptogether.community.vo.*;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -72,6 +73,7 @@ public class CommunityController {
         model.addAttribute("isSolved",    communityService.isSolved(postId));
         model.addAttribute("isLiked",     loginUserIdx != null && communityService.isLiked(postId, loginUserIdx));
         model.addAttribute("isOwner",     loginUserIdx != null && loginUserIdx.equals(post.getUserIdx()));
+        model.addAttribute("acceptedCommentId", communityService.getAcceptedCommentId(postId));
         model.addAttribute("relatedList", communityService.getRelatedList(postId));
 
         return "community/detail";
@@ -142,6 +144,40 @@ public class CommunityController {
         model.addAttribute("tipCategory", communityService.getTipCategory(postId));
 
         return "community/write";
+    }
+
+    /* =============================================
+   POST /community/edit/{postId} - 수정 처리
+   ============================================= */
+    @PostMapping("/edit/{postId}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> edit(
+            @PathVariable Long postId,
+            @ModelAttribute CommunityWriteDto writeDto,
+            @RequestParam(required = false) List<String> existingImages,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (session.getAttribute("loginUser") == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(401).body(result);
+        }
+
+        try {
+            Long loginUserIdx = getLoginUserIdx(session);
+            communityService.editPost(postId, writeDto, existingImages, loginUserIdx);
+            result.put("success", true);
+            result.put("postId", postId);
+        } catch (Exception e) {
+            log.error("수정 오류", e);
+            result.put("success", false);
+            result.put("message", "수정 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(result);
+        }
+
+        return ResponseEntity.ok(result);
     }
 
     /* =============================================
@@ -249,6 +285,110 @@ public class CommunityController {
         result.put("success", true);
         return ResponseEntity.ok(result);
     }
+
+    /* =============================================
+   POST /community/{postId}/comment/{commentId}/reply - 대댓글 등록
+   ============================================= */
+    @PostMapping("/{postId}/comment/{commentId}/reply")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> addReply(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            @RequestParam String content,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (session.getAttribute("loginUser") == null) {
+            result.put("success", false);
+            return ResponseEntity.status(401).body(result);
+        }
+
+        try {
+            Long loginUserIdx = getLoginUserIdx(session);
+            communityService.addReply(postId, loginUserIdx, content, commentId);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("대댓글 등록 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+
+    /* =============================================
+   POST /community/{postId}/accept/{commentId} - 댓글 채택
+   ============================================= */
+    @PostMapping("/{postId}/accept/{commentId}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> acceptComment(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (session.getAttribute("loginUser") == null) {
+            result.put("success", false);
+            return ResponseEntity.status(401).body(result);
+        }
+
+        try {
+            // 작성자 본인만 채택 가능
+            Long loginUserIdx = getLoginUserIdx(session);
+            CommunityPostDto post = communityService.getPost(postId);
+            if (!loginUserIdx.equals(post.getUserIdx())) {
+                result.put("success", false);
+                result.put("message", "작성자만 채택할 수 있어요.");
+                return ResponseEntity.status(403).body(result);
+            }
+
+            communityService.acceptComment(postId, commentId);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("댓글 채택 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+
+    /* =============================================
+       POST /community/comment/{commentId}/like - 댓글 좋아요 토글
+       ============================================= */
+    @PostMapping("/comment/{commentId}/like")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> commentLike(
+            @PathVariable Long commentId,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (session.getAttribute("loginUser") == null) {
+            result.put("success", false);
+            return ResponseEntity.status(401).body(result);
+        }
+
+        try {
+            Long loginUserIdx = getLoginUserIdx(session);
+            boolean liked     = communityService.toggleCommentLike(commentId, loginUserIdx);
+            int likeCount     = communityService.getCommentLikeCount(commentId);
+
+            result.put("liked",     liked);
+            result.put("likeCount", likeCount);
+        } catch (Exception e) {
+            log.error("댓글 좋아요 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
 
     /* =============================================
        POST /community/{postId}/report - 신고
