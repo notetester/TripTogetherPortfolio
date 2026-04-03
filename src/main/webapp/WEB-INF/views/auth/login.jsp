@@ -8,7 +8,6 @@
 <div class="auth-wrap">
   <div class="auth-card">
 
-    <!-- 로고 -->
     <div class="auth-logo" onclick="location.href='${pageContext.request.contextPath}/'">
       <div class="auth-logo-icon">🌐</div>
       <span class="auth-logo-text">TripTogether</span>
@@ -17,13 +16,11 @@
     <h1 class="auth-title">다시 만나서 반가워요 👋</h1>
     <p class="auth-sub">계정에 로그인하고 여행을 시작하세요</p>
 
-    <!-- 에러 배너 (플래시) -->
     <c:if test="${not empty errorMsg}">
       <div class="auth-error-banner show">⚠️ ${errorMsg}</div>
     </c:if>
     <div class="auth-error-banner" id="loginError"></div>
 
-    <!-- ── 소셜 로그인 ── -->
     <div class="social-btns">
       <a href="${pageContext.request.contextPath}/auth/kakao" class="social-btn kakao">
         <span class="social-icon">🟡</span>
@@ -35,7 +32,6 @@
       </a>
       <a href="${pageContext.request.contextPath}/auth/google" class="social-btn google">
         <span class="social-icon">
-          <!-- Google G 아이콘 (SVG inline) -->
           <svg width="18" height="18" viewBox="0 0 48 48">
             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
             <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -49,13 +45,13 @@
 
     <div class="auth-divider">또는 계정으로 로그인</div>
 
-    <!-- ── 일반 로그인 폼 ── -->
     <form id="loginForm" onsubmit="return false;">
+      <input type="hidden" id="redirect" value="${redirect}">
+
       <div class="form-group">
         <label class="form-label" for="identifier">아이디 또는 이메일</label>
         <input class="form-input" type="text" id="identifier" name="identifier"
                placeholder="아이디 또는 이메일 입력" autocomplete="username" required>
-        <div class="field-msg" id="idMsg"></div>
       </div>
 
       <div class="form-group">
@@ -71,7 +67,10 @@
         <label class="checkbox-label">
           <input type="checkbox" id="rememberMe"> 로그인 상태 유지
         </label>
-        <a class="auth-link" href="#">비밀번호 찾기</a>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-id">아이디 찾기</a>
+          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-pw">비밀번호 찾기</a>
+        </div>
       </div>
 
       <button type="submit" class="btn-submit" id="loginBtn">로그인</button>
@@ -89,7 +88,6 @@
 (function () {
   const ctx = '${pageContext.request.contextPath}';
 
-  // 비밀번호 토글
   document.getElementById('pwToggle').addEventListener('click', function () {
     const pw = document.getElementById('password');
     const isText = pw.type === 'text';
@@ -97,10 +95,10 @@
     this.textContent = isText ? '👁' : '🙈';
   });
 
-  // 로그인 제출
   document.getElementById('loginForm').addEventListener('submit', async function () {
     const identifier = document.getElementById('identifier').value.trim();
     const password   = document.getElementById('password').value;
+    const redirect   = document.getElementById('redirect').value;
     const btn        = document.getElementById('loginBtn');
     const errorBanner = document.getElementById('loginError');
 
@@ -117,7 +115,7 @@
       const res = await fetch(ctx + '/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ identifier, password })
+        body: new URLSearchParams({ identifier, password, redirect })
       });
       const data = await res.json();
 
@@ -141,9 +139,10 @@
     banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  // Enter 키 제출
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+    if (e.key === 'Enter') {
+      document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+    }
   });
 })();
 </script>

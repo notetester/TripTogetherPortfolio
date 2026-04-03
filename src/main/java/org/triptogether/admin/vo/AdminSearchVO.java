@@ -14,7 +14,7 @@ public class AdminSearchVO {
     private String searchType;        // 검색 대상 (userId / nickname / email / all)
 
     // ── 회원 전용 필터 ──
-    private String status;            // 계정 상태 (ALL / ACTIVE / DORMANT / DELETED)
+    private String status;            // 계정 상태 (ALL / ACTIVE / DORMANT / BLOCKED / DELETED)
     private String role;              // 권한 (ALL / USER / ADMIN)
     private String provider;          // 소셜 필터 (ALL / KAKAO / NAVER / GOOGLE / NONE)
     private String dateFrom;          // 가입일 시작 (yyyy-MM-dd)

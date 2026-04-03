@@ -6,7 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 관리자 대시보드 통계 VO
+ * 관리자 대시보드 통계 VO.
+ *
+ * <p>현재 범위는 auth/admin 정리 단계이므로, 운영자가 가장 먼저 봐야 할</p>
+ * <ul>
+ *     <li>회원 수</li>
+ *     <li>오늘 로그인 현황</li>
+ *     <li>소셜 연동 현황</li>
+ *     <li>커뮤니티 / 문의 / 신고 개요</li>
+ * </ul>
+ * 만 담는다.
  */
 @Data
 @Builder
@@ -14,7 +23,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdminStatsVO {
 
-    // ── 회원 통계 ──
     private long totalMembers;
     private long activeMembers;
     private long dormantMembers;
@@ -23,12 +31,14 @@ public class AdminStatsVO {
     private long todayLogins;
     private long todayFailedLogins;
 
-    // ── 소셜 연동 통계 ──
     private long kakaoLinked;
     private long naverLinked;
     private long googleLinked;
 
-    // ── 향후 확장용 (게시판) ──
-    // private long totalPosts;
-    // private long todayPosts;
+    private long totalCommunityPosts;
+    private long activeCommunityPosts;
+    private long activeReports;
+    private long totalInquiries;
+    private long pendingInquiries;
+    private long completedInquiries;
 }

@@ -36,28 +36,62 @@
   </div>
 </div>
 <script>
-document.getElementById('sendBtn').addEventListener('click', async function () {
-  const identifier = document.getElementById('identifier').value.trim();
-  if (!identifier) {
-    document.getElementById('errorBanner').textContent = '⚠️ 아이디 또는 이메일을 입력해주세요.';
-    document.getElementById('errorBanner').classList.add('show'); return;
+(function(){
+  const ctx = '${pageContext.request.contextPath}';
+  const sendBtn = document.getElementById('sendBtn');
+  const successBanner = document.getElementById('successBanner');
+  const errorBanner = document.getElementById('errorBanner');
+  const identifierInput = document.getElementById('identifier');
+
+  function showError(message) {
+    errorBanner.textContent = '⚠️ ' + message;
+    errorBanner.classList.add('show');
   }
-  document.getElementById('errorBanner').classList.remove('show');
-  this.classList.add('loading'); this.disabled = true;
 
-  const res  = await fetch('${pageContext.request.contextPath}/auth/find-pw/send', {
-    method: 'POST',
-    headers: {'Content-Type':'application/x-www-form-urlencoded'},
-    body: new URLSearchParams({identifier})
+  function hideError() {
+    errorBanner.classList.remove('show');
+    errorBanner.textContent = '';
+  }
+
+  function showSuccess(message) {
+    successBanner.style.display = 'flex';
+    successBanner.textContent = '✅ ' + message;
+  }
+
+  sendBtn.addEventListener('click', async function () {
+    const identifier = identifierInput.value.trim();
+    if (!identifier) {
+      showError('아이디 또는 이메일을 입력해주세요.');
+      return;
+    }
+
+    hideError();
+    this.classList.add('loading');
+    this.disabled = true;
+
+    try {
+      const res = await fetch(ctx + '/auth/find-pw/send', {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({identifier})
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        showError(data.message || '비밀번호 재설정 요청 처리 중 오류가 발생했습니다.');
+        return;
+      }
+
+      showSuccess(data.message || '비밀번호 재설정 링크를 발송했습니다.');
+      this.textContent = '재발송';
+    } catch (e) {
+      showError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      this.classList.remove('loading');
+      this.disabled = false;
+    }
   });
-  const data = await res.json();
-
-  const banner = document.getElementById('successBanner');
-  banner.style.display = 'flex';
-  banner.textContent = '✅ ' + data.message;
-  this.classList.remove('loading'); this.disabled = false;
-  document.getElementById('sendBtn').textContent = '재발송';
-});
+})();
 </script>
 <%@ include file="../common/footer.jsp" %>
 </body></html>

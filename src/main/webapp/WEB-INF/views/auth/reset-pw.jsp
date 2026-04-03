@@ -121,7 +121,7 @@
     });
     const data=await res.json();
     if(data.success){
-      location.href='${pageContext.request.contextPath}'+data.redirect+'?resetOk=1';
+      location.href = data.redirect + '?resetOk=1';
     } else {
       errBanner.textContent='⚠️ '+(data.message||'오류가 발생했습니다.');
       errBanner.classList.add('show');
