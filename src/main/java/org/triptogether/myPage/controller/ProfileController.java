@@ -76,12 +76,6 @@ public class ProfileController {
         return "mypage/edit";
     }
 
-    private UsersVO refreshUser(Long userIdx) {
-        // AuthMapper를 통해 최신 사용자 정보 조회 (서비스 통해서)
-        // AuthService에 getUserByIdx 추가하거나 AuthMapper 직접 주입
-        // 여기서는 AuthServiceImpl의 내부 접근을 통해 처리
-        return authService.getUserByIdx(userIdx);
-    }
 
     // ── 기본 프로필 수정 ──────────────────────────
     @PostMapping("/edit/profile")
@@ -117,7 +111,7 @@ public class ProfileController {
     @PostMapping("/edit/password")
     @ResponseBody
     public Map<String, Object> updatePassword(
-            @RequestParam String currentPassword,
+            @RequestParam(required = false) String currentPassword,
             @RequestParam String newPassword,
             HttpServletRequest request,
             HttpSession session) {
@@ -188,8 +182,10 @@ public class ProfileController {
         }
 
         if (!freshUser.isEmailVerified()) {
+            session.setAttribute("loginUser", freshUser);
             result.put("success", false);
             result.put("message", "이메일 인증을 먼저 완료해주세요.");
+            result.put("emailVerified", false);
             return result;
         }
 
@@ -201,6 +197,7 @@ public class ProfileController {
             session.setAttribute("loginUser", freshUser);
 
             result.put("success", true);
+            result.put("emailVerified", freshUser.isEmailVerified());
             result.put("message", enable
                     ? "이메일 로그인이 활성화되었습니다."
                     : "이메일 로그인이 비활성화되었습니다.");

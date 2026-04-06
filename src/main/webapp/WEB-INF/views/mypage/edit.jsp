@@ -465,7 +465,16 @@ document.getElementById('sendVerifyBtn').addEventListener('click', async functio
   msg.className = 'field-msg '+(data.success?'success':'error');
   msg.textContent = data.message;
   this.classList.remove('loading'); this.disabled = false;
-  if (data.success) this.textContent = '재발송';
+  if (data.success) {
+    this.textContent = '재발송';
+    const badge = document.getElementById('emailStatusBadge');
+    if (badge) {
+      badge.className = 'email-status-badge unverified';
+      badge.textContent = '⚠ 미인증';
+    }
+    const sub = document.getElementById('emailLoginSub');
+    if (sub) sub.textContent = '이메일 인증 후 활성화 가능합니다';
+  }
 });
 
 // ── 이메일 로그인 토글 ──
@@ -483,6 +492,10 @@ if (emailToggle) {
 
     if (!data.success) {
       this.checked = !enable; // 롤백
+      if (data.emailVerified === false) {
+        const sub = document.getElementById('emailLoginSub');
+        if (sub) sub.textContent = '이메일 인증 후 활성화 가능합니다';
+      }
       return;
     }
 
