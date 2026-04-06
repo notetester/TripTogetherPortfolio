@@ -266,19 +266,7 @@
   <!-- 위치 -->
   <c:if test="${not empty spot.latitude and not empty spot.longitude and spot.latitude != 0 and spot.longitude != 0}">
     <div class="det-section">
-      <h2>&#128506; 위치 &amp; 항공권</h2>
-
-      <!-- 항공권 가격 배너 -->
-      <div id="flightBanner" style="
-          display:flex; align-items:center; gap:10px;
-          background:linear-gradient(135deg,var(--blue-light),#f5f3ff);
-          border:1.5px solid #c7d2fe; border-radius:10px;
-          padding:12px 18px; margin-bottom:16px; font-size:14px;">
-        <span style="font-size:20px;">✈️</span>
-        <span id="flightText" style="color:var(--blue);font-weight:600;">
-          서울(ICN) → ${fn:escapeXml(spot.name)} 항공권 최저가 조회 중...
-        </span>
-      </div>
+      <h2>&#128506; 위치</h2>
 
       <!-- 지도 컨테이너 -->
       <div id="googleMap" style="
@@ -287,9 +275,7 @@
           border:1px solid var(--gray-200);
           background:var(--gray-100);">
       </div>
-      <p style="font-size:12px;color:var(--gray-400);margin-top:8px;text-align:right;">
-        마커를 클릭하면 서울에서의 항공 노선이 표시됩니다
-      </p>
+
     </div>
   </c:if>
 
@@ -412,6 +398,26 @@
     </div>
 
   </div><!-- /리뷰 섹션 -->
+
+  <!-- ════════════════════════════════════════
+       AI 맞춤 여행지 추천 섹션 (로그인 사용자만)
+       ════════════════════════════════════════ -->
+  <c:if test="${isLoggedIn}">
+  <div class="det-section" id="aiRecommendSection">
+    <h2>&#x1F916; AI 맞춤 추천 여행지</h2>
+    <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">
+      회원님의 관심 여행지를 분석해 비슷한 취향의 여행지를 추천해드립니다.
+    </p>
+    <div id="recLoadingMsg" style="text-align:center;padding:32px;color:var(--gray-400);font-size:14px;">
+      <span style="font-size:24px;display:block;margin-bottom:8px;">&#x1F916;</span>
+      AI가 맞춤 여행지를 분석 중입니다...
+    </div>
+    <div class="spot-grid" id="recGrid" style="display:none;"></div>
+    <div id="recEmptyMsg" style="display:none;text-align:center;padding:32px;color:var(--gray-400);font-size:14px;">
+      아직 방문 기록이 부족합니다. 여행지를 더 둘러보시면 맞춤 추천을 드릴게요! ✈️
+    </div>
+  </div>
+  </c:if>
 
   <!-- 탐색 버튼 -->
   <div style="text-align:center;margin-top:32px;">
@@ -629,84 +635,102 @@
 </script>
 
 <%-- ═══════════════════════════════════════════════════════
-     Google Maps + 항공권 가격 (위도/경도가 있는 경우만 로드)
+     Google Maps (위도/경도가 있는 경우만 로드)
      ═══════════════════════════════════════════════════════ --%>
 <c:if test="${not empty spot.latitude and not empty spot.longitude and spot.latitude != 0 and spot.longitude != 0}">
 <script>
-/* ── 여행지 좌표 & 정보 (서버 → JS)
-     fmt:formatNumber 으로 로케일 독립적인 숫자 문자열 생성 후 parseFloat ── */
-const SPOT_LAT  = parseFloat('<fmt:formatNumber value="${spot.latitude}"  pattern="0.######" groupingUsed="false"/>');
-const SPOT_LNG  = parseFloat('<fmt:formatNumber value="${spot.longitude}" pattern="0.######" groupingUsed="false"/>');
-const SPOT_NAME = '<c:out value="${spot.name}" escapeXml="false"/>'.replace(/'/g, "\\'");
-const SPOT_IDX  = '${spot.spotIdx}';
-const CTX       = '${pageContext.request.contextPath}';
+/* ── 여행지 좌표 & 정보 ── */
+var SPOT_LAT  = parseFloat('<fmt:formatNumber value="${spot.latitude}"  pattern="0.######" groupingUsed="false"/>');
+var SPOT_LNG  = parseFloat('<fmt:formatNumber value="${spot.longitude}" pattern="0.######" groupingUsed="false"/>');
+var SPOT_NAME = '${fn:escapeXml(spot.name)}';
 
-/* 서울 (인천, 출발지) */
-const SEOUL_LAT = 37.5665;
-const SEOUL_LNG = 126.9780;
+/* 서울(인천) */
+var SEOUL_LAT = 37.5665;
+var SEOUL_LNG = 126.9780;
 
-let googleMap, destinationMarker, seoulMarker, routeLine, infoWindow;
-let flightPrice = null;
+var googleMap, destinationMarker, seoulMarker, routeLine, labelOverlay;
+var lineVisible = false;
 
 /* ══════════════════════════════════════
-   1. 항공권 가격 비동기 조회
+   1. 도시명 라벨 (OverlayView — 항상 표시)
    ══════════════════════════════════════ */
-function fetchFlightPrice() {
-  fetch(CTX + '/detail/' + SPOT_IDX + '/flight-price')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var banner = document.getElementById('flightText');
-      if (!banner) return;
-      if (data.success && data.price) {
-        flightPrice = data.price;
-        banner.textContent = '\u2708\uFE0F \uc11c\uc6b8(ICN) \u2192 ' + SPOT_NAME
-                           + ' \ud56d\uacf5\uad8c \ucd5c\uc800\uac00: ' + flightPrice;
-        if (infoWindow && destinationMarker) {
-          infoWindow.setContent(buildInfoContent(flightPrice));
-        }
-      } else if (data.success && data.iata) {
-        banner.textContent = '\u2708\uFE0F ' + SPOT_NAME + ' (' + data.iata
-                           + ') \ud56d\uacf5\uad8c \uac00\uaca9 \uc815\ubcf4\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.';
-      } else {
-        banner.textContent = '\u2708\uFE0F ' + SPOT_NAME
-                           + ' \u2014 \ud56d\uacf5\uad8c \uc815\ubcf4\ub97c \ubd88\ub7ec\uc62c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.';
-      }
-    })
-    .catch(function() {
-      var banner = document.getElementById('flightText');
-      if (banner) banner.textContent = '\u2708\uFE0F \ud56d\uacf5\uad8c \uc815\ubcf4\ub97c \ubd88\ub7ec\uc62c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.';
-    });
+function CityLabel(position, map) {
+  this.position_ = position;
+  this.div_      = null;
+  this.setMap(map);
+}
+
+function cityLabel_onAdd() {
+  var div = document.createElement('div');
+  div.style.cssText = [
+    'position:absolute',
+    'background:#fff',
+    'border:1.5px solid #ef4444',
+    'border-radius:7px',
+    'padding:4px 10px',
+    'box-shadow:0 2px 6px rgba(0,0,0,.20)',
+    'pointer-events:none',
+    'white-space:nowrap',
+    'text-align:center',
+    'transform:translateX(-50%)',
+    'font-size:13px',
+    'font-weight:700',
+    'color:#1f2937',
+    'font-family:"Noto Sans KR",sans-serif'
+  ].join(';');
+  div.textContent = SPOT_NAME;
+
+  /* 말풍선 꼬리 */
+  var tail = document.createElement('div');
+  tail.style.cssText = [
+    'position:absolute',
+    'bottom:-7px',
+    'left:50%',
+    'transform:translateX(-50%)',
+    'width:0',
+    'height:0',
+    'border-left:5px solid transparent',
+    'border-right:5px solid transparent',
+    'border-top:7px solid #ef4444'
+  ].join(';');
+  div.appendChild(tail);
+
+  this.div_ = div;
+  this.getPanes().floatPane.appendChild(div);
+}
+
+function cityLabel_draw() {
+  var pos = this.getProjection().fromLatLngToDivPixel(this.position_);
+  if (pos && this.div_) {
+    this.div_.style.left = pos.x + 'px';
+    this.div_.style.top  = (pos.y - 48) + 'px';
+  }
+}
+
+function cityLabel_onRemove() {
+  if (this.div_ && this.div_.parentNode) {
+    this.div_.parentNode.removeChild(this.div_);
+    this.div_ = null;
+  }
 }
 
 /* ══════════════════════════════════════
-   2. 마커 InfoWindow 내용
-      ※ JSP EL 간섭을 피하기 위해 template literal 대신 문자열 연결 사용
-   ══════════════════════════════════════ */
-function buildInfoContent(price) {
-  var priceHtml = price
-    ? '<div style="font-size:14px;font-weight:600;color:#2563eb;">\ucd5c\uc800\uac00 ' + price + '</div>'
-      + '<div style="font-size:11px;color:#6b7280;margin-top:2px;">\uc11c\uc6b8(ICN) \ucd9c\ubc1c \uae30\uc900</div>'
-    : '<div style="font-size:13px;color:#6b7280;">\ud56d\uacf5\uad8c \uac00\uaca9 \uc870\ud68c \uc911...</div>';
-
-  return '<div style="font-family:\'Noto Sans KR\',sans-serif;padding:8px 6px;min-width:170px;">'
-       + '<div style="font-size:15px;font-weight:700;color:#1f2937;margin-bottom:6px;">'
-       + '\u2708\uFE0F ' + SPOT_NAME
-       + '</div>'
-       + priceHtml
-       + '</div>';
-}
-
-/* ══════════════════════════════════════
-   3. Google Maps 초기화 콜백 (async defer 로드 완료 후 호출됨)
+   2. Google Maps 초기화
    ══════════════════════════════════════ */
 function initMap() {
-  /* 좌표 유효성 최종 확인 */
   if (isNaN(SPOT_LAT) || isNaN(SPOT_LNG)) {
     document.getElementById('googleMap').innerHTML =
       '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6b7280;font-size:14px;">'
       + '\uc88c\ud45c \uc815\ubcf4\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.</div>';
     return;
   }
+
+  /* google.maps 로드 후 OverlayView 상속 */
+  CityLabel.prototype = Object.create(google.maps.OverlayView.prototype);
+  CityLabel.prototype.constructor = CityLabel;
+  CityLabel.prototype.onAdd    = cityLabel_onAdd;
+  CityLabel.prototype.draw     = cityLabel_draw;
+  CityLabel.prototype.onRemove = cityLabel_onRemove;
 
   var destLatLng  = { lat: SPOT_LAT,  lng: SPOT_LNG  };
   var seoulLatLng = { lat: SEOUL_LAT, lng: SEOUL_LNG };
@@ -722,16 +746,11 @@ function initMap() {
     fullscreenControl: true
   });
 
-  /* 두 지점 모두 포함하는 Bounds */
+  /* 두 지점 포함 Bounds */
   var bounds = new google.maps.LatLngBounds();
   bounds.extend(new google.maps.LatLng(SPOT_LAT,  SPOT_LNG));
   bounds.extend(new google.maps.LatLng(SEOUL_LAT, SEOUL_LNG));
-  googleMap.fitBounds(bounds, { top: 80, right: 60, bottom: 60, left: 60 });
-
-  /* InfoWindow */
-  infoWindow = new google.maps.InfoWindow({
-    content: buildInfoContent(flightPrice)
-  });
+  googleMap.fitBounds(bounds, { top: 100, right: 60, bottom: 60, left: 60 });
 
   /* ── 여행지 마커 (빨간 원) ── */
   destinationMarker = new google.maps.Marker({
@@ -740,11 +759,11 @@ function initMap() {
     title:     SPOT_NAME,
     icon: {
       path:         google.maps.SymbolPath.CIRCLE,
-      scale:        14,
+      scale:        8,
       fillColor:    '#ef4444',
       fillOpacity:  1,
       strokeColor:  '#ffffff',
-      strokeWeight: 3
+      strokeWeight: 2
     },
     zIndex:    10,
     animation: google.maps.Animation.DROP
@@ -754,79 +773,177 @@ function initMap() {
   seoulMarker = new google.maps.Marker({
     position:  seoulLatLng,
     map:       googleMap,
-    title:     '\uc11c\uc6b8 (\ucd9c\ubc1c\uc9c0)',
+    title:     '\uc11c\uc6b8',
     icon: {
       path:         google.maps.SymbolPath.CIRCLE,
-      scale:        11,
+      scale:        7,
       fillColor:    '#2563eb',
       fillOpacity:  1,
       strokeColor:  '#ffffff',
-      strokeWeight: 3
+      strokeWeight: 2
     },
     zIndex:    9,
     animation: google.maps.Animation.DROP
   });
 
-  /* 서울 라벨 마커 */
+  /* 서울 라벨 */
   new google.maps.Marker({
-    position: { lat: SEOUL_LAT + 1.8, lng: SEOUL_LNG },
+    position: { lat: SEOUL_LAT + 1.6, lng: SEOUL_LNG },
     map:      googleMap,
     icon:     { path: google.maps.SymbolPath.CIRCLE, scale: 0 },
     label: {
       text:       '\uc11c\uc6b8',
       color:      '#1e40af',
-      fontSize:   '13px',
+      fontSize:   '12px',
       fontWeight: '700'
     }
   });
 
-  /* ── 대권 노선 Polyline (초기 투명) ── */
+  /* ── 도시명 라벨 (항상 표시) ── */
+  labelOverlay = new CityLabel(
+    new google.maps.LatLng(SPOT_LAT, SPOT_LNG),
+    googleMap
+  );
+
+  /* ── 대권 노선 Polyline (초기 숨김) ── */
   routeLine = new google.maps.Polyline({
     path:          [seoulLatLng, destLatLng],
     geodesic:      true,
     strokeColor:   '#2563eb',
     strokeOpacity: 0,
-    strokeWeight:  2.5,
+    strokeWeight:  2,
     icons: [{
       icon:   { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 3 },
       offset: '0',
-      repeat: '18px'
+      repeat: '16px'
     }],
     map: googleMap
   });
 
-  /* ── 여행지 마커 클릭: InfoWindow + 노선 페이드인 ── */
+  /* ── 여행지 마커 클릭: 노선 토글 ── */
   destinationMarker.addListener('click', function () {
-    infoWindow.open(googleMap, destinationMarker);
-
-    routeLine.setOptions({ strokeOpacity: 0 });
-    var opacity = 0;
-    var fadeIn = setInterval(function() {
-      opacity += 0.08;
-      routeLine.setOptions({ strokeOpacity: Math.min(opacity, 0.85) });
-      if (opacity >= 0.85) clearInterval(fadeIn);
-    }, 30);
-
+    if (lineVisible) {
+      routeLine.setOptions({ strokeOpacity: 0 });
+      lineVisible = false;
+    } else {
+      var opacity = 0;
+      var fadeIn = setInterval(function() {
+        opacity += 0.1;
+        routeLine.setOptions({ strokeOpacity: Math.min(opacity, 0.85) });
+        if (opacity >= 0.85) clearInterval(fadeIn);
+      }, 25);
+      lineVisible = true;
+    }
     destinationMarker.setAnimation(google.maps.Animation.BOUNCE);
-    setTimeout(function() { destinationMarker.setAnimation(null); }, 1400);
+    setTimeout(function() { destinationMarker.setAnimation(null); }, 1200);
   });
 
-  /* 지도 클릭: InfoWindow 닫기 + 노선 숨김 */
+  /* 지도 클릭 시 노선 닫기 */
   googleMap.addListener('click', function () {
-    infoWindow.close();
     routeLine.setOptions({ strokeOpacity: 0 });
+    lineVisible = false;
   });
 }
 </script>
 
-<!-- Google Maps JavaScript API (callback=initMap) -->
+<!-- Google Maps JavaScript API -->
 <script
   src="https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&callback=initMap&loading=async&language=ko&region=KR"
   async defer></script>
+</c:if>
 
+<%-- ═══════════════════════════════════════════════════════
+     체류 시간 기록 + AI 추천 (로그인 사용자만)
+     ═══════════════════════════════════════════════════════ --%>
+<c:if test="${isLoggedIn}">
 <script>
-/* 항공권 가격 조회는 Maps 로드와 병렬 실행 */
-fetchFlightPrice();
+(function() {
+  var CTX_REC   = '${pageContext.request.contextPath}';
+  var SPOT_IDX_REC = '${spot.spotIdx}';
+  var pageEnter = Date.now();
+
+  /* ── 페이지 이탈 시 체류 시간 전송 ── */
+  function sendViewLog() {
+    var staySeconds = Math.round((Date.now() - pageEnter) / 1000);
+    if (staySeconds < 2) return;
+    navigator.sendBeacon(
+      CTX_REC + '/recommend/view-log',
+      new Blob([JSON.stringify({ spotIdx: SPOT_IDX_REC, staySeconds: staySeconds })],
+               { type: 'application/json' })
+    );
+  }
+  window.addEventListener('beforeunload', sendViewLog);
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') sendViewLog();
+  });
+
+  /* ── 추천 카드 HTML 생성 ── */
+  function buildRecCard(spot) {
+    var thumb = spot.thumbUrl ||
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80';
+    var tags  = (spot.tags || []).slice(0, 3).map(function(t) {
+      return '<span class="spot-tag">' + escHtml(t) + '</span>';
+    }).join('');
+    var rating = (spot.ratingAvg || 0).toFixed(1);
+    var reason = spot.recReason ? '<p style="font-size:12px;color:var(--blue);margin-top:6px;">&#x1F916; ' + escHtml(spot.recReason) + '</p>' : '';
+
+    return '<div class="spot-card" style="cursor:pointer;" onclick="location.href=\'' +
+           CTX_REC + '/detail/' + spot.spotIdx + '\'">' +
+      '<div class="spot-card__img-wrap">' +
+        '<img class="spot-card__img" src="' + escHtml(thumb) + '" alt="' + escHtml(spot.spotName) + '"' +
+             ' onerror="this.src=\'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80\'">' +
+        (spot.region ? '<span class="spot-card__region-badge">' + escHtml(spot.region) + '</span>' : '') +
+      '</div>' +
+      '<div class="spot-card__body">' +
+        '<div class="spot-card__top">' +
+          '<div class="spot-card__name">' + escHtml(spot.spotName) + '</div>' +
+          '<div class="spot-card__rating"><span class="star">&#11088;</span>' + rating +
+            '<span class="spot-card__review-cnt">(' + (spot.reviewCount || 0) + ')</span></div>' +
+        '</div>' +
+        reason +
+        '<div class="spot-card__tags" style="margin-top:8px;">' + tags + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /* ── AI 추천 조회 ── */
+  function loadRecommendations() {
+    fetch(CTX_REC + '/recommend/spots')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var loadMsg  = document.getElementById('recLoadingMsg');
+        var grid     = document.getElementById('recGrid');
+        var emptyMsg = document.getElementById('recEmptyMsg');
+
+        if (!data.success || !data.spots || data.spots.length === 0) {
+          if (loadMsg)  loadMsg.style.display  = 'none';
+          if (emptyMsg) emptyMsg.style.display = 'block';
+          return;
+        }
+
+        var html = data.spots.map(buildRecCard).join('');
+        if (grid) {
+          grid.innerHTML = html;
+          grid.style.display = '';
+        }
+        if (loadMsg) loadMsg.style.display = 'none';
+      })
+      .catch(function() {
+        var loadMsg = document.getElementById('recLoadingMsg');
+        if (loadMsg) loadMsg.textContent = '추천 정보를 불러오지 못했습니다.';
+      });
+  }
+
+  /* 페이지 로드 후 1초 뒤 추천 조회 (지도 로딩과 충돌 방지) */
+  setTimeout(loadRecommendations, 1000);
+})();
 </script>
 </c:if>
 

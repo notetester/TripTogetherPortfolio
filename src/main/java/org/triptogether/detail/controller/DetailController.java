@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.auth.vo.UsersVO;
-import org.triptogether.detail.service.AmadeusService;
 import org.triptogether.explore.service.ExploreService;
 import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.explore.vo.ReviewVO;
@@ -25,7 +24,6 @@ import java.util.Map;
 public class DetailController {
 
     private final ExploreService exploreService;
-    private final AmadeusService amadeusService;
 
     @Value("${google.maps.api-key}")
     private String mapsApiKey;
@@ -40,7 +38,6 @@ public class DetailController {
 
         Long loginUserIdx = getLoginUserIdx(session);
         ExploreVO spot = exploreService.getSpotDetail(spotIdx, loginUserIdx);
-
         if (spot == null) return "redirect:/explore";
 
         List<ReviewVO> reviewList = exploreService.getReviewList(spotIdx);
@@ -55,36 +52,6 @@ public class DetailController {
         model.addAttribute("mapsApiKey",   mapsApiKey);
 
         return "detail/detail";
-    }
-
-    /* ============================================================
-       GET /detail/{spotIdx}/flight-price  →  항공권 최저가 조회 (AJAX)
-       ============================================================ */
-    @GetMapping("/{spotIdx}/flight-price")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> flightPrice(
-            @PathVariable Long spotIdx) {
-
-        Map<String, Object> result = new HashMap<>();
-        try {
-            ExploreVO spot = exploreService.getSpotDetail(spotIdx, null);
-            if (spot == null) {
-                result.put("success", false);
-                return ResponseEntity.ok(result);
-            }
-
-            String iata  = amadeusService.getIataCode(spot.getName());
-            String price = (iata != null) ? amadeusService.getLowestFlightPrice(iata) : null;
-
-            result.put("success",   true);
-            result.put("spotName",  spot.getName());
-            result.put("iata",      iata);
-            result.put("price",     price);          // null 이면 가격 없음
-        } catch (Exception e) {
-            log.error("flight-price 조회 오류", e);
-            result.put("success", false);
-        }
-        return ResponseEntity.ok(result);
     }
 
     /* ============================================================

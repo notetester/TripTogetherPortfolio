@@ -40,6 +40,10 @@
               data-tab="rating" role="tab">&#11088; 평점순</button>
       <button class="exp-tab-btn ${search.tab == 'likes'  ? 'active' : ''}"
               data-tab="likes"  role="tab">&#10084; 좋아요순</button>
+      <c:if test="${not empty sessionScope.loginUser}">
+      <button class="exp-tab-btn ${search.tab == 'ai' ? 'active' : ''}"
+              data-tab="ai"     role="tab">&#x1F916; AI 맞춤추천</button>
+      </c:if>
     </div>
   </div>
 </div>
@@ -199,6 +203,36 @@
       </c:choose>
     </div>
   </div>
+
+  <!-- ── AI 맞춤 추천 탭 (로그인 사용자만) ── -->
+  <c:if test="${not empty sessionScope.loginUser}">
+  <div id="tab-ai" class="tab-panel ${search.tab == 'ai' ? 'active' : ''}">
+    <div class="result-bar">
+      <p class="result-count">
+        &#x1F916; 회원님의 관심사를 분석한 <strong>AI 맞춤 추천</strong>
+      </p>
+    </div>
+    <!-- 로딩 상태 -->
+    <div id="aiLoadingMsg" style="text-align:center;padding:60px 24px;color:var(--gray-400);">
+      <div style="font-size:40px;margin-bottom:12px;">&#x1F916;</div>
+      <p style="font-size:15px;">AI가 회원님의 여행 취향을 분석 중입니다...</p>
+    </div>
+    <!-- 추천 카드 그리드 -->
+    <div class="spot-grid" id="aiGrid" style="display:none;"></div>
+    <!-- 빈 상태 -->
+    <div id="aiEmptyMsg" style="display:none;text-align:center;padding:60px 24px;color:var(--gray-400);">
+      <div style="font-size:40px;margin-bottom:12px;">✈️</div>
+      <p style="font-size:15px;">
+        아직 방문 기록이 부족합니다.<br>
+        여행지 상세 페이지를 더 둘러보시면 맞춤 추천을 드릴게요!
+      </p>
+      <button class="exp-tab-btn" style="margin-top:16px;background:#fff;border:1.5px solid var(--blue);color:var(--blue);"
+              onclick="document.querySelector('[data-tab=all]').click()">
+        전체 여행지 보기
+      </button>
+    </div>
+  </div>
+  </c:if>
 
   <!-- ── 페이지네이션 ── -->
   <c:if test="${totalPage > 1}">
@@ -402,6 +436,112 @@
 
   })();
 </script>
+
+<%-- AI 맞춤 추천 탭 로직 (로그인 사용자만) --%>
+<c:if test="${not empty sessionScope.loginUser}">
+<script>
+(function() {
+  var CTX_AI = '${pageContext.request.contextPath}';
+  var aiLoaded = false;
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function buildAiCard(spot) {
+    var thumb = spot.thumbUrl ||
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80';
+    var tags = (spot.tags || []).slice(0, 3).map(function(t) {
+      return '<span class="spot-tag">' + escHtml(t) + '</span>';
+    }).join('');
+    var rating = (spot.ratingAvg || 0).toFixed(1);
+    var reason = spot.recReason
+      ? '<p style="font-size:12px;color:var(--blue);margin:6px 0 0;">&#x1F916; ' + escHtml(spot.recReason) + '</p>'
+      : '';
+
+    return '<div class="spot-card" style="cursor:pointer;"' +
+      ' onclick="location.href=\'' + CTX_AI + '/detail/' + spot.spotIdx + '\'">' +
+      '<div class="spot-card__img-wrap">' +
+        '<img class="spot-card__img" src="' + escHtml(thumb) + '"' +
+          ' alt="' + escHtml(spot.spotName) + '"' +
+          ' onerror="this.src=\'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80\'">' +
+        (spot.region ? '<span class="spot-card__region-badge">' + escHtml(spot.region) + '</span>' : '') +
+      '</div>' +
+      '<div class="spot-card__body">' +
+        '<div class="spot-card__top">' +
+          '<div class="spot-card__name">' + escHtml(spot.spotName) + '</div>' +
+          '<div class="spot-card__rating"><span class="star">&#11088;</span>' + rating +
+            '<span class="spot-card__review-cnt">(' + (spot.reviewCount || 0) + ')</span></div>' +
+        '</div>' +
+        reason +
+        '<div class="spot-card__tags" style="margin-top:8px;">' + tags + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function loadAiRecommendations() {
+    if (aiLoaded) return;
+    aiLoaded = true;
+
+    fetch(CTX_AI + '/recommend/spots')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var loading = document.getElementById('aiLoadingMsg');
+        var grid    = document.getElementById('aiGrid');
+        var empty   = document.getElementById('aiEmptyMsg');
+
+        if (!data.success || !data.spots || data.spots.length === 0) {
+          if (loading) loading.style.display = 'none';
+          if (empty)   empty.style.display   = 'block';
+          return;
+        }
+        if (grid) {
+          grid.innerHTML   = data.spots.map(buildAiCard).join('');
+          grid.style.display = '';
+        }
+        if (loading) loading.style.display = 'none';
+      })
+      .catch(function() {
+        var loading = document.getElementById('aiLoadingMsg');
+        if (loading) loading.textContent = '추천 정보를 불러오지 못했습니다.';
+      });
+  }
+
+  /* AI 탭 클릭 시 추천 로드 */
+  var aiTabBtn = document.querySelector('[data-tab="ai"]');
+  if (aiTabBtn) {
+    aiTabBtn.addEventListener('click', function() {
+      /* 탭 전환은 기존 navigate()가 처리하지만,
+         AI 탭은 서버 렌더링 없이 프론트에서 직접 처리 */
+      document.querySelectorAll('.exp-tab-btn').forEach(function(b) {
+        b.classList.remove('active');
+      });
+      aiTabBtn.classList.add('active');
+
+      document.querySelectorAll('.tab-panel').forEach(function(p) {
+        p.classList.remove('active');
+      });
+      var aiPanel = document.getElementById('tab-ai');
+      if (aiPanel) aiPanel.classList.add('active');
+
+      /* 로딩 오버레이 없이 패널 내에서 로딩 표시 */
+      loadAiRecommendations();
+
+      /* URL에 tab=ai 반영 (뒤로가기 지원) */
+      history.pushState(null, '', window.location.pathname + '?tab=ai');
+    });
+  }
+
+  /* 페이지 진입 시 tab=ai면 자동 로드 */
+  if (new URLSearchParams(window.location.search).get('tab') === 'ai') {
+    loadAiRecommendations();
+  }
+})();
+</script>
+</c:if>
 
 </body>
 </html>
