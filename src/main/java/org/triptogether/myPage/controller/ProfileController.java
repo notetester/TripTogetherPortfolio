@@ -151,7 +151,13 @@ public class ProfileController {
                 (user.getUserEmail() == null || !user.getUserEmail().equals(email))) {
             result.put("success", false); result.put("message", "이미 사용 중인 이메일입니다."); return result;
         }
-        authService.sendEmailVerification(user.getUserIdx(), email, buildRequestContext(request));
+        boolean sent = authService.sendEmailVerification(user.getUserIdx(), email, buildRequestContext(request));
+        if (!sent) {
+            result.put("success", false);
+            result.put("message", "인증 이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.");
+            return result;
+        }
+
         user.setUserEmail(email); user.setEmailVerified(false); user.setEmailLoginEnabled(false);
         result.put("success", true); result.put("message", "인증 이메일을 발송했습니다. 메일을 확인해주세요.");
         return result;

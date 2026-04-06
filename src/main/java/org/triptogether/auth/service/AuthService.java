@@ -33,7 +33,7 @@ public interface AuthService {
     /** 인증된 이메일 기준으로 아이디 힌트 안내 메일 발송 */
     void sendFindIdEmail(String email, LoginRequestContext context);
 
-    /** FIND_ID 토큰 검증 → userId 반환 (실패 시 null) */
+    /** FIND_ID 토큰 검증 → 마스킹된 userId 힌트 반환 (실패 시 null) */
     String verifyFindIdToken(String token, LoginRequestContext context);
 
     // ── 비밀번호 찾기 / 재설정 ─────────────────
@@ -41,7 +41,7 @@ public interface AuthService {
     void sendResetPasswordEmail(String identifier, LoginRequestContext context);
 
     /** RESET_PW 토큰 검증 → UsersVO 반환 (실패 시 null) */
-    UsersVO verifyResetToken(String token);
+    UsersVO verifyResetToken(String token, LoginRequestContext context);
 
     /** 토큰 검증 후 비밀번호 재설정 */
     boolean resetPassword(String token, String newPassword, LoginRequestContext context);
@@ -58,7 +58,7 @@ public interface AuthService {
 
     // ── 이메일 인증 ────────────────────────────
     /** 이메일 인증 메일 발송 (VERIFY 목적) */
-    void sendEmailVerification(Long userIdx, String email, LoginRequestContext context);
+    boolean sendEmailVerification(Long userIdx, String email, LoginRequestContext context);
 
     /** VERIFY 토큰 검증 → 이메일 인증 처리 */
     boolean verifyEmail(String token, LoginRequestContext context);

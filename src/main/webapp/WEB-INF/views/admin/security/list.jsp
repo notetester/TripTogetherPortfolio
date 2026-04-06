@@ -40,6 +40,7 @@
                         <select class="adm-select" name="eventStage">
                             <option value="ALL" ${search.eventStage=='ALL'?'selected':''}>전체</option>
                             <option value="REQUEST" ${search.eventStage=='REQUEST'?'selected':''}>REQUEST</option>
+                            <option value="ISSUE" ${search.eventStage=='ISSUE'?'selected':''}>ISSUE</option>
                             <option value="VERIFY" ${search.eventStage=='VERIFY'?'selected':''}>VERIFY</option>
                             <option value="COMPLETE" ${search.eventStage=='COMPLETE'?'selected':''}>COMPLETE</option>
                         </select>

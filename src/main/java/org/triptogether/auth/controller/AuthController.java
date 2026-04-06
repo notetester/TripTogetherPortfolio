@@ -252,8 +252,15 @@ public class AuthController {
     }
 
     @GetMapping("/reset-pw")
-    public String resetPwPage(@RequestParam String token, Model model) {
-        UsersVO user = authService.verifyResetToken(token);
+    public String resetPwPage(@RequestParam String token,
+                              Model model,
+                              HttpServletRequest request) {
+        LoginRequestContext context = LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build();
+
+        UsersVO user = authService.verifyResetToken(token, context);
         if (user == null) {
             model.addAttribute("error", "링크가 만료되었거나 유효하지 않습니다.");
         } else {

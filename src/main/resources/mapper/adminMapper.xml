@@ -422,7 +422,7 @@
             s.is_success, s.fail_reason, s.detail_message,
             s.ip_address, s.user_agent, s.occurred_at
         <include refid="securityAuditSearchBase"/>
-        ORDER BY s.occurred_at DESC
+        ORDER BY s.occurred_at DESC, s.security_idx DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 

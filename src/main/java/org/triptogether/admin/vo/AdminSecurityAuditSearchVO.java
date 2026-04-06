@@ -13,7 +13,7 @@ public class AdminSecurityAuditSearchVO {
     private String keyword;
     private String success;     // ALL / SUCCESS / FAIL
     private String eventType;   // ALL / FIND_ID / FIND_PASSWORD / RESET_PASSWORD / PASSWORD_CHANGE / EMAIL_VERIFY / EMAIL_LOGIN_TOGGLE
-    private String eventStage;  // ALL / REQUEST / VERIFY / COMPLETE
+    private String eventStage;  // ALL / REQUEST / ISSUE / VERIFY / COMPLETE
     private int page = 1;
     private int size = 30;
 
