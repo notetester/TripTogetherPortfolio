@@ -10,6 +10,8 @@ import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.*;
 
 import jakarta.servlet.http.HttpSession;
+
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ public class CommunityController {
                        @RequestParam(defaultValue = "latest") String sort,
                        @RequestParam(defaultValue = "")       String keyword,
                        @RequestParam(defaultValue = "1")      int    page,
+                       HttpSession session,
                        Model model) {
 
         CommunitySearchDto search = new CommunitySearchDto();
@@ -46,7 +49,7 @@ public class CommunityController {
         model.addAttribute("totalCount",  communityService.getTotalCount(search));
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPage",   communityService.getTotalPage(search));
-
+        model.addAttribute("isAdmin", isAdminUser(session));
         return "community/list";
     }
 
@@ -73,6 +76,7 @@ public class CommunityController {
         model.addAttribute("isSolved",    communityService.isSolved(postId));
         model.addAttribute("isLiked",     loginUserIdx != null && communityService.isLiked(postId, loginUserIdx));
         model.addAttribute("isOwner",     loginUserIdx != null && loginUserIdx.equals(post.getUserIdx()));
+        model.addAttribute("isAdmin", isAdminUser(session));
         model.addAttribute("acceptedCommentId", communityService.getAcceptedCommentId(postId));
         model.addAttribute("relatedList", communityService.getRelatedList(postId));
 
@@ -107,6 +111,12 @@ public class CommunityController {
             result.put("message", "로그인이 필요합니다.");
             return ResponseEntity.status(401).body(result);
         }
+        if (isBlocked(session)) {
+            result.put("success", false);
+            result.put("message", "차단된 계정은 글을 작성할 수 없습니다.");
+            return ResponseEntity.status(403).body(result);
+        }
+
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
@@ -250,6 +260,11 @@ public class CommunityController {
             result.put("success", false);
             return ResponseEntity.status(401).body(result);
         }
+        if (isBlocked(session)) {
+            result.put("success", false);
+            result.put("message", "차단된 계정은 댓글을 작성할 수 없습니다.");
+            return ResponseEntity.status(403).body(result);
+        }
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
@@ -302,6 +317,11 @@ public class CommunityController {
         if (session.getAttribute("loginUser") == null) {
             result.put("success", false);
             return ResponseEntity.status(401).body(result);
+        }
+        if (isBlocked(session)) {
+            result.put("success", false);
+            result.put("message", "차단된 계정은 댓글을 작성할 수 없습니다.");
+            return ResponseEntity.status(403).body(result);
         }
 
         try {
@@ -420,9 +440,120 @@ public class CommunityController {
     }
 
     /* =============================================
-       로그인 사용자 userIdx 추출 유틸
-       로그인 담당자 UserDto의 getUserIdx() 메서드 호출
-       ============================================= */
+   POST /community/user/{userIdx}/block - 유저 차단
+   ============================================= */
+    @PostMapping("/user/{userIdx}/block")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> blockUser(
+            @PathVariable Long userIdx,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (!isAdminUser(session)) {
+            result.put("success", false);
+            result.put("message", "관리자만 차단할 수 있습니다.");
+            return ResponseEntity.status(403).body(result);
+        }
+
+        try {
+            communityService.blockUser(userIdx);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("유저 차단 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/user/{userIdx}/unblock")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> unblockUser(
+            @PathVariable Long userIdx,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (!isAdminUser(session)) {
+            result.put("success", false);
+            result.put("message", "관리자만 차단 해제할 수 있습니다.");
+            return ResponseEntity.status(403).body(result);
+        }
+
+        try {
+            communityService.unblockUser(userIdx);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("차단 해제 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+
+
+    /* 게시글 차단/해제 */
+    @PostMapping("/{postId}/block")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> blockPost(
+            @PathVariable Long postId, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdminUser(session)) {
+            result.put("success", false); return ResponseEntity.status(403).body(result);
+        }
+        communityService.blockPost(postId);
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/{postId}/unblock")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> unblockPost(
+            @PathVariable Long postId, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdminUser(session)) {
+            result.put("success", false); return ResponseEntity.status(403).body(result);
+        }
+        communityService.unblockPost(postId);
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* 댓글/대댓글 차단/해제 */
+    @PostMapping("/comment/{commentId}/block")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> blockComment(
+            @PathVariable Long commentId, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdminUser(session)) {
+            result.put("success", false); return ResponseEntity.status(403).body(result);
+        }
+        communityService.blockComment(commentId);
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/comment/{commentId}/unblock")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> unblockComment(
+            @PathVariable Long commentId, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdminUser(session)) {
+            result.put("success", false); return ResponseEntity.status(403).body(result);
+        }
+        communityService.unblockComment(commentId);
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+   로그인 사용자 userIdx 추출 유틸
+   로그인 담당자 UserDto의 getUserIdx() 메서드 호출
+   ============================================= */
     private Long getLoginUserIdx(HttpSession session) {
         Object loginUser = session.getAttribute("loginUser");
         if (loginUser == null) return null;
@@ -431,6 +562,28 @@ public class CommunityController {
         } catch (Exception e) {
             log.warn("loginUser userIdx 추출 실패", e);
             return null;
+        }
+    }
+
+    private boolean isAdminUser(HttpSession session) {
+        try {
+            Object loginUser = session.getAttribute("loginUser");
+            if (loginUser == null) return false;
+            Method method = loginUser.getClass().getMethod("getUserRole");
+            return "ADMIN".equals(method.invoke(loginUser));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isBlocked(HttpSession session) {
+        try {
+            Object loginUser = session.getAttribute("loginUser");
+            if (loginUser == null) return false;
+            Method method = loginUser.getClass().getMethod("getAccountStatus");
+            return "BLOCKED".equals(method.invoke(loginUser));
+        } catch (Exception e) {
+            return false;
         }
     }
 }

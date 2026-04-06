@@ -57,4 +57,16 @@ public interface CommunityService {
 
     // ===== 신고 =====
     void reportPost(Long postId, Long userIdx);
+
+    List<CommunityPostDto> getPopularPostList();
+
+    void blockUser(Long userIdx);
+
+    void unblockUser(Long userIdx);
+
+    void blockPost(Long postId);
+    void unblockPost(Long postId);
+    void blockComment(Long commentId);
+    void unblockComment(Long commentId);
+
 }

@@ -24,4 +24,6 @@ public class CommunityCommentDto {
 
     // NULL이면 일반 댓글, 값 있으면 대댓글
     private Long parentCommentId;
+
+    private String accountStatus;
 }

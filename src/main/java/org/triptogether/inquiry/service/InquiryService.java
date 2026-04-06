@@ -25,4 +25,8 @@ public interface InquiryService {
 
     // ===== 답변 등록 =====
     void writeAnswer(Long inquiryId, Long adminUserIdx, String content);
+
+    void updateInquiry(InquiryPostDto inquiry);
+    void deleteInquiry(Long inquiryId);
+
 }

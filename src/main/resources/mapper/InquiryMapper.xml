@@ -167,4 +167,20 @@
         WHERE inquiry_id = #{inquiryId}
     </update>
 
+    <!-- 수정 -->
+    <update id="updateInquiry">
+        UPDATE INQUIRY_POST
+        SET title      = #{title},
+        content    = #{content},
+        category   = #{category},
+        is_private = #{isPrivate},
+        updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <!-- 삭제 -->
+    <delete id="deleteInquiry">
+        DELETE FROM INQUIRY_POST
+        WHERE inquiry_id = #{inquiryId}
+    </delete>
 </mapper>

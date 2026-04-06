@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:set var="pageCSS" value="home/home.css"/>
 <%@ include file="../common/header.jsp" %>
@@ -37,11 +39,12 @@
         <h3>일정 자동 생성</h3>
         <p>여행 기간과 선호도만 입력하면 최적의 일정이 자동으로 생성됩니다</p>
       </div>
-      <div class="feat-card">
-        <div class="feat-icon fi-g">&#128172;</div>
-        <h3>커뮤니티</h3>
-        <p>전 세계 여행자들과 경험을 공유하고 유용한 정보를 얻으세요</p>
-      </div>
+ <div class="feat-card" style="cursor:pointer;"
+     onclick="location.href='${pageContext.request.contextPath}/community/list'">
+  <div class="feat-icon fi-g">&#128172;</div>
+  <h3>커뮤니티</h3>
+  <p>전 세계 여행자들과 경험을 공유하고 유용한 정보를 얻으세요</p>
+</div>
     </div>
   </div>
 </section>
@@ -181,79 +184,80 @@
       <button class="vm" onclick="location.href='${pageContext.request.contextPath}/community/list'">더보기 &#8594;</button>
     </div>
     <div class="comm-g">
-
-      <div class="cc" onclick="location.href='${pageContext.request.contextPath}/community/1'">
-        <div class="cc-iw">
-          <img class="cc-img" src="https://images.unsplash.com/photo-1691929607102-5284d991921f?w=600&q=80" alt="도쿄 후기">
-          <span class="cc-badge">여행후기</span>
-        </div>
-        <div class="cc-b">
-          <div class="cc-title">처음 가는 도쿄, 이것만은 꼭!</div>
-          <div class="cc-foot">
-            <div class="cc-auth">
-              <div class="cc-av">T</div>
-              <div>
-                <div class="cc-an">TravelBug</div>
-                <div class="cc-dt">2026.03.15</div>
-              </div>
-            </div>
-            <div class="cc-stats">
-              <span>&#10084; 456</span>
-              <span>&#128172; 89</span>
-            </div>
+      <c:choose>
+        <c:when test="${empty popularList}">
+          <div style="padding:40px;text-align:center;color:var(--gray-400);">
+            아직 게시글이 없습니다
           </div>
-        </div>
-      </div>
-
-      <div class="cc" onclick="location.href='${pageContext.request.contextPath}/community/2'">
-        <div class="cc-iw">
-          <img class="cc-img" src="https://images.unsplash.com/photo-1573481726566-9d98bb795fff?w=600&q=80" alt="산토리니">
-          <span class="cc-badge">사진</span>
-        </div>
-        <div class="cc-b">
-          <div class="cc-title">산토리니 일몰 사진 공유</div>
-          <div class="cc-foot">
-            <div class="cc-auth">
-              <div class="cc-av">P</div>
-              <div>
-                <div class="cc-an">PhotoTraveler</div>
-                <div class="cc-dt">2026.03.14</div>
+        </c:when>
+        <c:otherwise>
+          <c:forEach var="post" items="${popularList}">
+            <div class="cc-wrap ${post.accountStatus eq 'BLOCKED' ? 'post-blurred-wrap' : ''}" data-id="${post.postId}">
+              <div class="cc ${post.accountStatus eq 'BLOCKED' ? 'post-blurred' : ''}">
+                <div class="cc-iw">
+                  <c:choose>
+                    <c:when test="${not empty post.thumbUrl}">
+                      <img class="cc-img" src="${pageContext.request.contextPath}${post.thumbUrl}" alt="${post.title}">
+                    </c:when>
+                    <c:otherwise>
+                      <div class="cc-img" style="background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:40px;">✈️</div>
+                    </c:otherwise>
+                  </c:choose>
+                  <span class="cc-badge">
+                    <c:choose>
+                      <c:when test="${post.postType eq 'review'}">여행후기</c:when>
+                      <c:when test="${post.postType eq 'photo'}">사진</c:when>
+                      <c:when test="${post.postType eq 'tip'}">팁</c:when>
+                      <c:when test="${post.postType eq 'question'}">질문</c:when>
+                      <c:otherwise>${post.postType}</c:otherwise>
+                    </c:choose>
+                  </span>
+                </div>
+                <div class="cc-b">
+                  <div class="cc-title">${post.title}</div>
+                  <div class="cc-foot">
+                    <div class="cc-auth">
+                      <div class="cc-av">${fn:substring(post.nickname, 0, 1)}</div>
+                      <div>
+                        <div class="cc-an">${post.nickname}</div>
+                        <div class="cc-dt">
+                          <fmt:formatDate value="${post.createdAt}" pattern="yyyy.MM.dd"/>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="cc-stats">
+                      <span>&#10084; ${post.likeCount}</span>
+                      <span>&#128172; ${post.commentCount}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
+<c:choose>
+  <c:when test="${post.postStatus eq 'DORMANT'}">
+    <div class="post-blurred-overlay">🚫 차단된 게시글입니다.</div>
+  </c:when>
+  <c:when test="${post.accountStatus eq 'BLOCKED'}">
+    <div class="post-blurred-overlay">🚫 차단된 유저의 게시글입니다.</div>
+  </c:when>
+</c:choose>
             </div>
-            <div class="cc-stats">
-              <span>&#10084; 789</span>
-              <span>&#128172; 123</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="cc" onclick="location.href='${pageContext.request.contextPath}/community/3'">
-        <div class="cc-iw">
-          <img class="cc-img" src="https://images.unsplash.com/photo-1657788781951-d6beac09d66c?w=600&q=80" alt="발리">
-          <span class="cc-badge">여행후기</span>
-        </div>
-        <div class="cc-b">
-          <div class="cc-title">발리 7일 힐링 여행 후기</div>
-          <div class="cc-foot">
-            <div class="cc-auth">
-              <div class="cc-av">R</div>
-              <div>
-                <div class="cc-an">RelaxedTraveler</div>
-                <div class="cc-dt">2026.03.13</div>
-              </div>
-            </div>
-            <div class="cc-stats">
-              <span>&#10084; 234</span>
-              <span>&#128172; 45</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
+          </c:forEach>
+        </c:otherwise>
+      </c:choose>
     </div>
   </div>
 </section>
+
+<script>
+document.querySelectorAll('.cc-wrap[data-id]').forEach(function(wrap) {
+    if (!wrap.classList.contains('post-blurred-wrap')) {
+        wrap.style.cursor = 'pointer';
+        wrap.addEventListener('click', function() {
+            location.href = '${pageContext.request.contextPath}/community/' + this.getAttribute('data-id');
+        });
+    }
+});
+</script>
 
 <%@ include file="../common/footer.jsp" %>
 

@@ -178,3 +178,54 @@
 .empty-icon { font-size:48px; margin-bottom:16px; }
 .empty-state p { font-size:15px; margin-bottom:20px; }
 
+.post-blurred-wrap {
+  position: relative;
+  cursor: default;
+}
+
+.post-blurred {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.post-blurred-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.post-card-wrap {
+  position: relative;
+}
+
+.post-admin-delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background .15s;
+}
+.post-admin-delete-btn:hover { background: #ef4444; }

@@ -156,64 +156,75 @@
         </div>
       </c:when>
       <c:otherwise>
-        <c:forEach var="post" items="${postList}">
-          <div class="post-card"
-               onclick="location.href='${pageContext.request.contextPath}/community/${post.postId}'">
-            <%-- 이미지 --%>
-            <div class="post-card-img-wrap">
-              <c:choose>
-                <c:when test="${not empty post.thumbUrl}">
-                  <img class="post-card-img" src="${post.thumbUrl}" alt="${post.title}" loading="lazy">
-                </c:when>
-                <c:otherwise>
-                  <div class="post-card-img-placeholder"></div>
-                </c:otherwise>
-              </c:choose>
-              <span class="post-type-badge type-${post.postType}">
-                <c:choose>
-                  <c:when test="${post.postType eq 'review'}">여행후기</c:when>
-                  <c:when test="${post.postType eq 'photo'}">사진</c:when>
-                  <c:when test="${post.postType eq 'tip'}">여행팁</c:when>
-                  <c:when test="${post.postType eq 'question'}">질문</c:when>
-                </c:choose>
-              </span>
-            </div>
-            <%-- 본문 --%>
-            <div class="post-card-body">
-              <div class="post-card-author">
-              <div class="post-av">
-  <c:choose>
-    <c:when test="${not empty post.nickname}">
-      ${fn:substring(post.nickname, 0, 1)}
-    </c:when>
-    <c:otherwise>ME</c:otherwise>
-  </c:choose>
-</div>
-                <span class="post-author-name">${post.nickname}</span>
-                <span class="post-date">
-                  <fmt:formatDate value="${post.createdAt}" pattern="yyyy-MM-dd"/>
-                </span>
-              </div>
-              <div class="post-card-title">${post.title}</div>
-              <div class="post-card-content">${post.content}</div>
-<div class="post-card-footer">
-  <span class="post-stat like-stat">&#10084; ${post.likeCount}</span>
-  <span class="post-stat">&#128172; ${post.commentCount}</span>
-  <span class="post-stat">&#128065; ${post.viewCount}</span>
-  <c:if test="${post.postType eq 'question'}">
-    <c:choose>
-      <c:when test="${post.isSolved}">
-        <span class="post-stat" style="color:#16a34a; font-weight:700;">&#10003; 해결됨</span>
-      </c:when>
-      <c:otherwise>
-        <span class="post-stat" style="color:#ea580c; font-weight:700;">&#8987; 미해결</span>
-      </c:otherwise>
-    </c:choose>
+       <c:forEach var="post" items="${postList}">
+<div class="post-card-wrap ${post.accountStatus eq 'BLOCKED' or post.postStatus eq 'DORMANT' ? 'post-blurred-wrap' : ''}"
+     data-id="${post.postId}">
+  <c:if test="${isAdmin}">
+    <button class="post-admin-delete-btn" onclick="adminDeletePost(event, ${post.postId})">✕</button>
   </c:if>
-</div>
-            </div>
+  <div class="post-card ${post.accountStatus eq 'BLOCKED' or post.postStatus eq 'DORMANT' ? 'post-blurred' : ''}">
+      <%-- 이미지 --%>
+      <div class="post-card-img-wrap">
+        <c:choose>
+          <c:when test="${not empty post.thumbUrl}">
+            <img class="post-card-img" src="${pageContext.request.contextPath}${post.thumbUrl}" alt="${post.title}" loading="lazy">
+          </c:when>
+          <c:otherwise>
+            <div class="post-card-img" style="background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:48px;">✈️</div>
+          </c:otherwise>
+        </c:choose>
+        <span class="post-type-badge type-${post.postType}">
+          <c:choose>
+            <c:when test="${post.postType eq 'review'}">여행후기</c:when>
+            <c:when test="${post.postType eq 'photo'}">사진</c:when>
+            <c:when test="${post.postType eq 'tip'}">여행팁</c:when>
+            <c:when test="${post.postType eq 'question'}">질문</c:when>
+          </c:choose>
+        </span>
+      </div>
+      <%-- 본문 --%>
+      <div class="post-card-body">
+        <div class="post-card-author">
+          <div class="post-av">
+            <c:choose>
+              <c:when test="${not empty post.nickname}">${fn:substring(post.nickname, 0, 1)}</c:when>
+              <c:otherwise>ME</c:otherwise>
+            </c:choose>
           </div>
-        </c:forEach>
+          <span class="post-author-name">${post.nickname}</span>
+          <span class="post-date">
+            <fmt:formatDate value="${post.createdAt}" pattern="yyyy-MM-dd"/>
+          </span>
+        </div>
+        <div class="post-card-title">${post.title}</div>
+        <div class="post-card-content">${post.content}</div>
+        <div class="post-card-footer">
+          <span class="post-stat like-stat">&#10084; ${post.likeCount}</span>
+          <span class="post-stat">&#128172; ${post.commentCount}</span>
+          <span class="post-stat">&#128065; ${post.viewCount}</span>
+          <c:if test="${post.postType eq 'question'}">
+            <c:choose>
+              <c:when test="${post.isSolved}">
+                <span class="post-stat" style="color:#16a34a; font-weight:700;">&#10003; 해결됨</span>
+              </c:when>
+              <c:otherwise>
+                <span class="post-stat" style="color:#ea580c; font-weight:700;">&#8987; 미해결</span>
+              </c:otherwise>
+            </c:choose>
+          </c:if>
+        </div>
+      </div>
+    </div>
+<c:choose>
+  <c:when test="${post.postStatus eq 'DORMANT'}">
+    <div class="post-blurred-overlay">🚫 차단된 게시글입니다.</div>
+  </c:when>
+  <c:when test="${post.accountStatus eq 'BLOCKED'}">
+    <div class="post-blurred-overlay">🚫 차단된 유저의 게시글입니다.</div>
+  </c:when>
+</c:choose>
+  </div>
+</c:forEach>
       </c:otherwise>
     </c:choose>
   </div>
@@ -238,6 +249,29 @@
 
 </div>
 
+<script>
+document.querySelectorAll('.post-card-wrap[data-id]').forEach(function(wrap) {
+    if (!wrap.classList.contains('post-blurred-wrap')) {
+        wrap.style.cursor = 'pointer';
+        wrap.addEventListener('click', function() {
+            location.href = '${pageContext.request.contextPath}/community/' + this.getAttribute('data-id');
+        });
+    }
+});
+
+function adminDeletePost(event, postId) {
+    event.stopPropagation();
+    if (!confirm('이 게시글을 삭제하시겠습니까?')) return;
+    fetch('${pageContext.request.contextPath}/community/' + postId, {
+        method: 'DELETE',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(function(res) {
+        if (res.ok) location.reload();
+        else alert('삭제에 실패했습니다.');
+    });
+}
+</script>
 
 <%@ include file="../common/footer.jsp" %>
 </body>
