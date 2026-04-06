@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="pageCSS" value="mypage/mypage.css"/>
 <%@ include file="../common/header.jsp" %>
-
+<html lang="ko">
 <body>
 <div class="mypage-wrap">
   <div class="mypage-inner">

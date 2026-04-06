@@ -194,9 +194,18 @@ public class AuthController {
 
     @PostMapping("/find-id/send")
     @ResponseBody
-    public Map<String, Object> sendFindId(@RequestParam String email) {
-        authService.sendFindIdEmail(email);
-        return Map.of("success", true, "message", "해당 이메일로 아이디 확인 링크를 발송했습니다.");
+    public Map<String, Object> sendFindId(@RequestParam String email,
+                                          HttpServletRequest request) {
+
+        LoginRequestContext context = LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build();
+
+        authService.sendFindIdEmail(email, context);
+
+        return Map.of("success", true,
+                "message", "입력하신 정보와 일치하는 확인 가능한 계정이 있는 경우, 가입된 이메일 주소로 안내를 보내드렸습니다. 메일이 도착하지 않았다면 스팸함도 함께 확인해 주세요.");
     }
 
     @GetMapping("/find-id/verify")
@@ -221,9 +230,18 @@ public class AuthController {
 
     @PostMapping("/find-pw/send")
     @ResponseBody
-    public Map<String, Object> sendResetPw(@RequestParam String identifier) {
-        authService.sendResetPasswordEmail(identifier);
-        return Map.of("success", true, "message", "비밀번호 재설정 링크를 이메일로 발송했습니다.");
+    public Map<String, Object> sendResetPw(@RequestParam String identifier,
+                                           HttpServletRequest request) {
+
+        LoginRequestContext context = LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build();
+
+        authService.sendResetPasswordEmail(identifier, context);
+
+        return Map.of("success", true,
+                "message", "입력하신 정보와 일치하는 확인 가능한 계정이 있는 경우, 비밀번호 재설정 안내를 이메일로 보내드렸습니다. 메일이 도착하지 않았다면 스팸함도 함께 확인해 주세요.");
     }
 
     @GetMapping("/reset-pw")

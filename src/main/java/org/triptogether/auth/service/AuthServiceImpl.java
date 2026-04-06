@@ -202,27 +202,39 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void sendFindIdEmail(String email) {
-        // 해당 이메일로 인증된 계정이 있는지 확인
+    public void sendFindIdEmail(String email, LoginRequestContext context) {
         UsersVO user = authMapper.findByEmail(email);
-        if (user == null || !user.isEmailVerified()) {
-            // 보안상 이메일 존재 여부를 알려주지 않음 (정상 응답 처리)
+
+        if (user == null) {
+            recordRecoveryResult(null, "FIND_ID", email, false, "EMAIL_NOT_FOUND", context);
             return;
         }
 
-        authMapper.expireOldTokens(email, "FIND_ID");
-        String token = UUID.randomUUID().toString();
-        authMapper.insertEmailVerification(EmailVerificationVO.builder()
-                .userIdx(user.getUserIdx())
-                .email(email)
-                .token(token)
-                .purpose("FIND_ID")
-                .expiredAt(LocalDateTime.now().plusMinutes(30))
-                .build());
+        if (!user.isEmailVerified()) {
+            recordRecoveryResult(user.getUserIdx(), "FIND_ID", email, false, "EMAIL_NOT_VERIFIED", context);
+            return;
+        }
 
-        sendMail(email, "[TripTogether] 아이디 찾기 인증",
-                buildEmailHtml("아이디 찾기", "아래 버튼을 클릭하시면 가입하신 아이디를 확인할 수 있습니다.",
-                        baseUrl + "/auth/find-id/verify?token=" + token, "아이디 확인하기"));
+        if (user.getUserId() == null || user.getUserId().isBlank()) {
+            recordRecoveryResult(user.getUserIdx(), "FIND_ID", email, false, "USER_ID_NOT_FOUND", context);
+            return;
+        }
+
+        if (!isRecoverableAccountStatus(user.getAccountStatus())) {
+            recordRecoveryResult(user.getUserIdx(), "FIND_ID", email, false, "ACCOUNT_NOT_RECOVERABLE", context);
+            return;
+        }
+
+        String maskedUserId = maskUserId(user.getUserId());
+
+        sendMail(email, "[TripTogether] 아이디 안내",
+                buildInfoEmailHtml(
+                        "아이디 안내",
+                        "요청하신 계정의 로그인 아이디 힌트를 안내드립니다.",
+                        "회원님의 아이디 힌트는 <strong>" + maskedUserId + "</strong> 입니다.<br>정확한 아이디가 기억나지 않으시면 마이페이지에서 로그인 수단을 다시 확인해 주세요."
+                ));
+
+        recordRecoveryResult(user.getUserIdx(), "FIND_ID", email, true, null, context);
     }
 
     @Override
@@ -230,19 +242,48 @@ public class AuthServiceImpl implements AuthService {
         EmailVerificationVO ev = authMapper.findValidToken(token, "FIND_ID");
         if (ev == null) return null;
         authMapper.markTokenUsed(ev.getVerifyIdx());
-        return authMapper.findUserIdByEmail(ev.getEmail());
+
+        String userId = authMapper.findUserIdByEmail(ev.getEmail());
+        if (userId == null || userId.isBlank()) {
+            return null;
+        }
+        return maskUserId(userId);
     }
 
     // ════════════════════════════════════════════
     // 비밀번호 찾기 / 재설정
     // ════════════════════════════════════════════
     @Override
-    public void sendResetPasswordEmail(String identifier) {
-        UsersVO user = identifier.contains("@")
-                ? authMapper.findByEmail(identifier)
-                : authMapper.findByUserId(identifier);
+    public void sendResetPasswordEmail(String identifier, LoginRequestContext context) {
+        String normalizedIdentifier = identifier == null ? null : identifier.trim();
+        UsersVO user = normalizedIdentifier != null && normalizedIdentifier.contains("@")
+                ? authMapper.findByEmail(normalizedIdentifier)
+                : authMapper.findByUserId(normalizedIdentifier);
 
-        if (user == null || user.getUserEmail() == null) return;
+        if (user == null) {
+            recordRecoveryResult(null, "FIND_PASSWORD", normalizedIdentifier, false, "USER_NOT_FOUND", context);
+            return;
+        }
+
+        if (user.getUserEmail() == null || user.getUserEmail().isBlank()) {
+            recordRecoveryResult(user.getUserIdx(), "FIND_PASSWORD", normalizedIdentifier, false, "EMAIL_NOT_REGISTERED", context);
+            return;
+        }
+
+        if (!user.isEmailVerified()) {
+            recordRecoveryResult(user.getUserIdx(), "FIND_PASSWORD", normalizedIdentifier, false, "EMAIL_NOT_VERIFIED", context);
+            return;
+        }
+
+        if (!user.isPasswordEnabled()) {
+            recordRecoveryResult(user.getUserIdx(), "FIND_PASSWORD", normalizedIdentifier, false, "PASSWORD_RESET_NOT_ALLOWED", context);
+            return;
+        }
+
+        if (!isRecoverableAccountStatus(user.getAccountStatus())) {
+            recordRecoveryResult(user.getUserIdx(), "FIND_PASSWORD", normalizedIdentifier, false, "ACCOUNT_NOT_RECOVERABLE", context);
+            return;
+        }
 
         authMapper.expireOldTokens(user.getUserEmail(), "RESET_PW");
         String token = UUID.randomUUID().toString();
@@ -257,6 +298,8 @@ public class AuthServiceImpl implements AuthService {
         sendMail(user.getUserEmail(), "[TripTogether] 비밀번호 재설정",
                 buildEmailHtml("비밀번호 재설정", "아래 버튼을 클릭하시면 비밀번호를 재설정할 수 있습니다. 링크는 30분간 유효합니다.",
                         baseUrl + "/auth/reset-pw?token=" + token, "비밀번호 재설정하기"));
+
+        recordRecoveryResult(user.getUserIdx(), "FIND_PASSWORD", normalizedIdentifier, true, null, context);
     }
 
     @Override
@@ -688,8 +731,8 @@ public class AuthServiceImpl implements AuthService {
     // ════════════════════════════════════════════
     @Override
     public UsersVO completeSocialRegister(SocialTempVO temp, String nickname,
-                                           String nationality, String preferredLang,
-                                           HttpServletRequest request) {
+                                          String nationality, String preferredLang,
+                                          HttpServletRequest request) {
         // 회원 생성 (비밀번호 없음)
         UsersVO newUser = UsersVO.builder()
                 .userEmail(temp.getEmail())
@@ -918,6 +961,30 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    private String buildInfoEmailHtml(String title, String desc, String bodyHtml) {
+        return """
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family:'Apple SD Gothic Neo',sans-serif;background:#f3f4f6;margin:0;padding:40px 16px">
+              <div style="max-width:480px;margin:0 auto;background:#fff;border-radius:16px;
+                          box-shadow:0 4px 20px rgba(0,0,0,.08);overflow:hidden">
+                <div style="background:linear-gradient(135deg,#2563eb,#7c3aed);padding:28px 32px">
+                  <span style="font-size:22px;font-weight:700;color:#fff">🌐 TripTogether</span>
+                </div>
+                <div style="padding:32px">
+                  <h2 style="font-size:20px;font-weight:700;color:#1f2937;margin:0 0 12px">%s</h2>
+                  <p style="font-size:14px;color:#6b7280;line-height:1.7;margin:0 0 20px">%s</p>
+                  <div style="font-size:15px;color:#374151;line-height:1.8;background:#eff6ff;border:1px solid #bfdbfe;
+                              border-radius:12px;padding:18px 20px;">
+                    %s
+                  </div>
+                </div>
+              </div>
+            </body>
+            </html>
+            """.formatted(title, desc, bodyHtml);
+    }
+
     private String buildEmailHtml(String title, String desc, String link, String btnText) {
         return """
             <!DOCTYPE html>
@@ -990,6 +1057,57 @@ public class AuthServiceImpl implements AuthService {
                 .ipAddress(context.getIpAddress())
                 .userAgent(context.getUserAgent())
                 .build());
+    }
+
+    private void recordRecoveryResult(Long userIdx,
+                                      String method,
+                                      String identifier,
+                                      boolean success,
+                                      String failReason,
+                                      LoginRequestContext context) {
+        if (context == null) {
+            context = LoginRequestContext.builder().build();
+        }
+
+        recordHistory(LoginHistoryCommand.builder()
+                .userIdx(userIdx)
+                .authType("RECOVERY")
+                .loginMethod(method)
+                .loginIdentifier(identifier)
+                .success(success)
+                .failReason(failReason)
+                .ipAddress(context.getIpAddress())
+                .userAgent(context.getUserAgent())
+                .build());
+    }
+
+    private boolean isRecoverableAccountStatus(String accountStatus) {
+        if (accountStatus == null || accountStatus.isBlank()) {
+            return true;
+        }
+        return !"DELETED".equalsIgnoreCase(accountStatus)
+                && !"BLOCKED".equalsIgnoreCase(accountStatus);
+    }
+
+    private String maskUserId(String userId) {
+        if (userId == null || userId.isBlank()) {
+            return "";
+        }
+
+        int length = userId.length();
+        if (length <= 2) {
+            return "*".repeat(length);
+        }
+        if (length <= 4) {
+            return userId.substring(0, 1) + "*".repeat(length - 2) + userId.substring(length - 1);
+        }
+
+        int visibleFront = Math.min(3, Math.max(1, length / 3));
+        int visibleBack = length >= 7 ? 2 : 1;
+        int maskLength = Math.max(1, length - visibleFront - visibleBack);
+        return userId.substring(0, visibleFront)
+                + "*".repeat(maskLength)
+                + userId.substring(length - visibleBack);
     }
 
     private boolean isValidEmailFormat(String identifier) {

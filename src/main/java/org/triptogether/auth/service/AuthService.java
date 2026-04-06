@@ -29,16 +29,16 @@ public interface AuthService {
 
     // ── 아이디 찾기 ────────────────────────────
     UsersVO getUserByIdx(Long userIdx);
-    
-    /** 이메일로 인증 코드 발송 → 인증 완료 시 userId 반환 */
-    void sendFindIdEmail(String email);
+
+    /** 인증된 이메일 기준으로 아이디 힌트 안내 메일 발송 */
+    void sendFindIdEmail(String email, LoginRequestContext context);
 
     /** FIND_ID 토큰 검증 → userId 반환 (실패 시 null) */
     String verifyFindIdToken(String token);
 
     // ── 비밀번호 찾기 / 재설정 ─────────────────
-    /** 아이디 또는 이메일로 비밀번호 재설정 링크 발송 */
-    void sendResetPasswordEmail(String identifier);
+    /** 아이디 또는 이메일 기준으로 비밀번호 재설정 안내 메일 발송 */
+    void sendResetPasswordEmail(String identifier, LoginRequestContext context);
 
     /** RESET_PW 토큰 검증 → UsersVO 반환 (실패 시 null) */
     UsersVO verifyResetToken(String token);

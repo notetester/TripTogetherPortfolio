@@ -3,7 +3,7 @@
 
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
-
+<html lang="ko">
 <body>
 <div class="auth-wrap">
   <div class="auth-card wide">
