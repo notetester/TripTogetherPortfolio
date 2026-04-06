@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.triptogether.auth.vo.EmailVerificationVO;
 import org.triptogether.auth.vo.UserLoginHistoryVO;
+import org.triptogether.auth.vo.UserSecurityHistoryVO;
 import org.triptogether.auth.vo.UserSocialVO;
 import org.triptogether.auth.vo.UsersVO;
 
@@ -98,6 +99,9 @@ public interface AuthMapper {
 
     /** 로그인 이력 저장 */
     void insertLoginHistory(UserLoginHistoryVO history);
+
+    /** 계정 보안 / 복구 이벤트 이력 저장 */
+    void insertSecurityHistory(UserSecurityHistoryVO history);
 
     // ══════════════════════════════════════════
     // EMAIL_VERIFICATION

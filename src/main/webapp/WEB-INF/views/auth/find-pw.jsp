@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
+<html lang="ko">
 <body>
 <div class="auth-wrap">
   <div class="auth-card">
@@ -11,7 +12,7 @@
     </div>
 
     <h1 class="auth-title">비밀번호 찾기 🔐</h1>
-    <p class="auth-sub">가입한 아이디 또는 이메일을 입력하시면<br>비밀번호 재설정 링크를 보내드립니다.</p>
+    <p class="auth-sub">가입한 아이디 또는 이메일을 입력하시면<br>확인 가능한 계정이 있는 경우 비밀번호 재설정 안내를 보내드립니다.</p>
 
     <div id="successBanner" class="auth-error-banner"
          style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d;display:none;"></div>
@@ -22,7 +23,7 @@
       <input class="form-input" type="text" id="identifier"
              placeholder="아이디 또는 등록된 이메일 주소">
       <div class="field-msg info" style="display:block;">
-        ⚠️ 이메일이 등록되지 않은 계정은 재설정 링크를 받을 수 없습니다.
+        ⚠️ 인증된 이메일이 등록된 계정에 한해 비밀번호 재설정 안내를 받을 수 있습니다.
       </div>
     </div>
 
@@ -94,4 +95,5 @@
 })();
 </script>
 <%@ include file="../common/footer.jsp" %>
-</body></html>
+</body>
+</html>

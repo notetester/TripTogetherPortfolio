@@ -202,47 +202,141 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void sendFindIdEmail(String email) {
-        // 해당 이메일로 인증된 계정이 있는지 확인
-        UsersVO user = authMapper.findByEmail(email);
-        if (user == null || !user.isEmailVerified()) {
-            // 보안상 이메일 존재 여부를 알려주지 않음 (정상 응답 처리)
+    public void sendFindIdEmail(String email, LoginRequestContext context) {
+        String normalizedEmail = email == null ? null : email.trim();
+        UsersVO user = authMapper.findByEmail(normalizedEmail);
+
+        recordSecurityEvent(user != null ? user.getUserIdx() : null,
+                null,
+                "FIND_ID",
+                "REQUEST",
+                normalizedEmail,
+                normalizedEmail,
+                true,
+                null,
+                null,
+                context);
+
+        if (user == null) {
+            recordSecurityEvent(null, null, "FIND_ID", "ISSUE", normalizedEmail, normalizedEmail,
+                    false, "EMAIL_NOT_FOUND", null, context);
             return;
         }
 
-        authMapper.expireOldTokens(email, "FIND_ID");
+        if (!user.isEmailVerified()) {
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_ID", "ISSUE", normalizedEmail, normalizedEmail,
+                    false, "EMAIL_NOT_VERIFIED", null, context);
+            return;
+        }
+
+        if (user.getUserId() == null || user.getUserId().isBlank()) {
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_ID", "ISSUE", normalizedEmail, normalizedEmail,
+                    false, "USER_ID_NOT_FOUND", null, context);
+            return;
+        }
+
+        if (!isRecoverableAccountStatus(user.getAccountStatus())) {
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_ID", "ISSUE", normalizedEmail, normalizedEmail,
+                    false, "ACCOUNT_NOT_RECOVERABLE", null, context);
+            return;
+        }
+
+        authMapper.expireOldTokens(user.getUserEmail(), "FIND_ID");
         String token = UUID.randomUUID().toString();
         authMapper.insertEmailVerification(EmailVerificationVO.builder()
                 .userIdx(user.getUserIdx())
-                .email(email)
+                .email(user.getUserEmail())
                 .token(token)
                 .purpose("FIND_ID")
                 .expiredAt(LocalDateTime.now().plusMinutes(30))
                 .build());
 
-        sendMail(email, "[TripTogether] 아이디 찾기 인증",
-                buildEmailHtml("아이디 찾기", "아래 버튼을 클릭하시면 가입하신 아이디를 확인할 수 있습니다.",
-                        baseUrl + "/auth/find-id/verify?token=" + token, "아이디 확인하기"));
+        boolean sent = sendMail(normalizedEmail, "[TripTogether] 아이디 확인 요청 안내",
+                buildEmailHtml(
+                        "아이디 확인 요청",
+                        "아래 버튼을 클릭하시면 로그인 아이디 힌트를 확인할 수 있습니다. 링크는 30분간 유효합니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.",
+                        baseUrl + "/auth/find-id/verify?token=" + token,
+                        "아이디 힌트 확인하기"
+                ));
+
+        recordSecurityEvent(user.getUserIdx(), null, "FIND_ID", "ISSUE", normalizedEmail, normalizedEmail,
+                sent, sent ? null : "MAIL_SEND_FAILED", null, context);
     }
 
     @Override
-    public String verifyFindIdToken(String token) {
+    public String verifyFindIdToken(String token, LoginRequestContext context) {
         EmailVerificationVO ev = authMapper.findValidToken(token, "FIND_ID");
-        if (ev == null) return null;
+        if (ev == null) {
+            recordSecurityEvent(null, null, "FIND_ID", "VERIFY", null, null,
+                    false, "TOKEN_INVALID_OR_EXPIRED", null, context);
+            return null;
+        }
         authMapper.markTokenUsed(ev.getVerifyIdx());
-        return authMapper.findUserIdByEmail(ev.getEmail());
+
+        String userId = authMapper.findUserIdByEmail(ev.getEmail());
+        if (userId == null || userId.isBlank()) {
+            recordSecurityEvent(ev.getUserIdx(), null, "FIND_ID", "VERIFY", ev.getEmail(), ev.getEmail(),
+                    false, "USER_ID_NOT_FOUND", null, context);
+            return null;
+        }
+
+        recordSecurityEvent(ev.getUserIdx(), null, "FIND_ID", "VERIFY", ev.getEmail(), ev.getEmail(),
+                true, null, null, context);
+        recordSecurityEvent(ev.getUserIdx(), null, "FIND_ID", "COMPLETE", ev.getEmail(), ev.getEmail(),
+                true, null, null, context);
+        return maskUserId(userId);
     }
 
     // ════════════════════════════════════════════
     // 비밀번호 찾기 / 재설정
     // ════════════════════════════════════════════
     @Override
-    public void sendResetPasswordEmail(String identifier) {
-        UsersVO user = identifier.contains("@")
-                ? authMapper.findByEmail(identifier)
-                : authMapper.findByUserId(identifier);
+    public void sendResetPasswordEmail(String identifier, LoginRequestContext context) {
+        String normalizedIdentifier = identifier == null ? null : identifier.trim();
+        UsersVO user = normalizedIdentifier != null && normalizedIdentifier.contains("@")
+                ? authMapper.findByEmail(normalizedIdentifier)
+                : authMapper.findByUserId(normalizedIdentifier);
 
-        if (user == null || user.getUserEmail() == null) return;
+        recordSecurityEvent(user != null ? user.getUserIdx() : null,
+                null,
+                "FIND_PASSWORD",
+                "REQUEST",
+                normalizedIdentifier,
+                user != null ? user.getUserEmail() : null,
+                true,
+                null,
+                null,
+                context);
+
+        if (user == null) {
+            recordSecurityEvent(null, null, "FIND_PASSWORD", "ISSUE", normalizedIdentifier, null,
+                    false, "USER_NOT_FOUND", null, context);
+            return;
+        }
+
+        if (user.getUserEmail() == null || user.getUserEmail().isBlank()) {
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "ISSUE", normalizedIdentifier, null,
+                    false, "EMAIL_NOT_REGISTERED", null, context);
+            return;
+        }
+
+        if (!user.isEmailVerified()) {
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "ISSUE", normalizedIdentifier, user.getUserEmail(),
+                    false, "EMAIL_NOT_VERIFIED", null, context);
+            return;
+        }
+
+        if (!user.isPasswordEnabled()) {
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "ISSUE", normalizedIdentifier, user.getUserEmail(),
+                    false, "PASSWORD_RESET_NOT_ALLOWED", null, context);
+            return;
+        }
+
+        if (!isRecoverableAccountStatus(user.getAccountStatus())) {
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "ISSUE", normalizedIdentifier, user.getUserEmail(),
+                    false, "ACCOUNT_NOT_RECOVERABLE", null, context);
+            return;
+        }
 
         authMapper.expireOldTokens(user.getUserEmail(), "RESET_PW");
         String token = UUID.randomUUID().toString();
@@ -254,24 +348,47 @@ public class AuthServiceImpl implements AuthService {
                 .expiredAt(LocalDateTime.now().plusMinutes(30))
                 .build());
 
-        sendMail(user.getUserEmail(), "[TripTogether] 비밀번호 재설정",
+        boolean sent = sendMail(user.getUserEmail(), "[TripTogether] 비밀번호 재설정",
                 buildEmailHtml("비밀번호 재설정", "아래 버튼을 클릭하시면 비밀번호를 재설정할 수 있습니다. 링크는 30분간 유효합니다.",
                         baseUrl + "/auth/reset-pw?token=" + token, "비밀번호 재설정하기"));
+
+        recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "ISSUE", normalizedIdentifier, user.getUserEmail(),
+                sent, sent ? null : "MAIL_SEND_FAILED", null, context);
     }
 
     @Override
-    public UsersVO verifyResetToken(String token) {
+    public UsersVO verifyResetToken(String token, LoginRequestContext context) {
         EmailVerificationVO ev = authMapper.findValidToken(token, "RESET_PW");
-        if (ev == null) return null;
-        return authMapper.findByIdx(ev.getUserIdx());
+        if (ev == null) {
+            recordSecurityEvent(null, null, "FIND_PASSWORD", "VERIFY", null, null,
+                    false, "TOKEN_INVALID_OR_EXPIRED", null, context);
+            return null;
+        }
+
+        UsersVO user = authMapper.findByIdx(ev.getUserIdx());
+        if (user == null) {
+            recordSecurityEvent(ev.getUserIdx(), null, "FIND_PASSWORD", "VERIFY", ev.getEmail(), ev.getEmail(),
+                    false, "USER_NOT_FOUND", null, context);
+            return null;
+        }
+
+        recordSecurityEvent(ev.getUserIdx(), null, "FIND_PASSWORD", "VERIFY", ev.getEmail(), ev.getEmail(),
+                true, null, null, context);
+        return user;
     }
 
     @Override
-    public boolean resetPassword(String token, String newPassword) {
+    public boolean resetPassword(String token, String newPassword, LoginRequestContext context) {
         EmailVerificationVO ev = authMapper.findValidToken(token, "RESET_PW");
-        if (ev == null) return false;
+        if (ev == null) {
+            recordSecurityEvent(null, null, "RESET_PASSWORD", "COMPLETE", null, null,
+                    false, "TOKEN_INVALID_OR_EXPIRED", null, context);
+            return false;
+        }
         authMapper.markTokenUsed(ev.getVerifyIdx());
         authMapper.resetPassword(ev.getUserIdx(), bCryptPasswordEncoder.encode(newPassword));
+        recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "RESET_PASSWORD", "COMPLETE", ev.getEmail(), ev.getEmail(),
+                true, null, null, context);
         return true;
     }
 
@@ -291,15 +408,27 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void updatePassword(Long userIdx, String newRawPassword) {
+    public void updatePassword(Long userIdx, String newRawPassword, LoginRequestContext context) {
         authMapper.updatePassword(userIdx, bCryptPasswordEncoder.encode(newRawPassword));
+        UsersVO user = authMapper.findByIdx(userIdx);
+        recordSecurityEvent(userIdx, userIdx, "PASSWORD_CHANGE", "COMPLETE", user != null ? user.getUserId() : null,
+                user != null ? user.getUserEmail() : null, true, null, null, context);
+    }
+
+    public void recordPasswordChangeFailure(Long userIdx, LoginRequestContext context, String failReason) {
+        UsersVO user = authMapper.findByIdx(userIdx);
+        recordSecurityEvent(userIdx, userIdx, "PASSWORD_CHANGE", "COMPLETE", user != null ? user.getUserId() : null,
+                user != null ? user.getUserEmail() : null, false, failReason, null, context);
     }
 
     // ════════════════════════════════════════════
     // 이메일 인증
     // ════════════════════════════════════════════
     @Override
-    public void sendEmailVerification(Long userIdx, String email) {
+    public boolean sendEmailVerification(Long userIdx, String email, LoginRequestContext context) {
+        recordSecurityEvent(userIdx, userIdx, "EMAIL_VERIFY", "REQUEST", email, email,
+                true, null, null, context);
+
         authMapper.expireOldTokens(email, "VERIFY");
         // 이메일 변경 전 미인증 상태로 업데이트
         authMapper.updateEmail(userIdx, email, false);
@@ -313,27 +442,56 @@ public class AuthServiceImpl implements AuthService {
                 .expiredAt(LocalDateTime.now().plusMinutes(30))
                 .build());
 
-        sendMail(email, "[TripTogether] 이메일 인증",
+        boolean sent = sendMail(email, "[TripTogether] 이메일 인증",
                 buildEmailHtml("이메일 인증", "아래 버튼을 클릭하시면 이메일 인증이 완료됩니다.",
                         baseUrl + "/auth/verify-email?token=" + token, "이메일 인증 완료"));
+
+        recordSecurityEvent(userIdx, userIdx, "EMAIL_VERIFY", "ISSUE", email, email,
+                sent, sent ? null : "MAIL_SEND_FAILED", null, context);
+        return sent;
     }
 
     @Override
-    public boolean verifyEmail(String token) {
+    public boolean verifyEmail(String token, LoginRequestContext context) {
         EmailVerificationVO ev = authMapper.findValidToken(token, "VERIFY");
-        if (ev == null) return false;
-        authMapper.markTokenUsed(ev.getVerifyIdx());
-        authMapper.updateEmailVerified(ev.getUserIdx(), true);
-        return true;
+        if (ev == null) {
+            recordSecurityEvent(null, null, "EMAIL_VERIFY", "VERIFY", null, null,
+                    false, "TOKEN_INVALID_OR_EXPIRED", null, context);
+            return false;
+        }
+
+        recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "EMAIL_VERIFY", "VERIFY", ev.getEmail(), ev.getEmail(),
+                true, null, null, context);
+
+        try {
+            authMapper.markTokenUsed(ev.getVerifyIdx());
+            authMapper.updateEmailVerified(ev.getUserIdx(), true);
+            recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "EMAIL_VERIFY", "COMPLETE", ev.getEmail(), ev.getEmail(),
+                    true, null, null, context);
+            return true;
+        } catch (Exception e) {
+            recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "EMAIL_VERIFY", "COMPLETE", ev.getEmail(), ev.getEmail(),
+                    false, "EMAIL_VERIFY_UPDATE_FAIL", e.getMessage(), context);
+            return false;
+        }
     }
 
     @Override
-    public void toggleEmailLogin(Long userIdx, boolean enable) {
+    public void toggleEmailLogin(Long userIdx, boolean enable, LoginRequestContext context) {
         UsersVO user = authMapper.findByIdx(userIdx);
-        if (user == null || !user.isEmailVerified()) {
+        if (user == null) {
+            recordSecurityEvent(null, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE", null, null,
+                    false, "USER_NOT_FOUND", null, context);
+            throw new IllegalStateException("사용자 정보를 찾을 수 없습니다.");
+        }
+        if (!user.isEmailVerified()) {
+            recordSecurityEvent(userIdx, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE", user.getUserEmail(), user.getUserEmail(),
+                    false, "EMAIL_NOT_VERIFIED", enable ? "ENABLE" : "DISABLE", context);
             throw new IllegalStateException("이메일 인증이 완료되지 않았습니다.");
         }
         authMapper.updateEmailLoginEnabled(userIdx, enable);
+        recordSecurityEvent(userIdx, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE", user.getUserEmail(), user.getUserEmail(),
+                true, null, enable ? "ENABLE" : "DISABLE", context);
     }
 
     // ════════════════════════════════════════════
@@ -688,8 +846,8 @@ public class AuthServiceImpl implements AuthService {
     // ════════════════════════════════════════════
     @Override
     public UsersVO completeSocialRegister(SocialTempVO temp, String nickname,
-                                           String nationality, String preferredLang,
-                                           HttpServletRequest request) {
+                                          String nationality, String preferredLang,
+                                          HttpServletRequest request) {
         // 회원 생성 (비밀번호 없음)
         UsersVO newUser = UsersVO.builder()
                 .userEmail(temp.getEmail())
@@ -904,7 +1062,7 @@ public class AuthServiceImpl implements AuthService {
     // ════════════════════════════════════════════
     // 이메일 발송
     // ════════════════════════════════════════════
-    private void sendMail(String to, String subject, String html) {
+    private boolean sendMail(String to, String subject, String html) {
         try {
             var msg = mailSender.createMimeMessage();
             var helper = new MimeMessageHelper(msg, false, "UTF-8");
@@ -913,9 +1071,35 @@ public class AuthServiceImpl implements AuthService {
             helper.setSubject(subject);
             helper.setText(html, true);
             mailSender.send(msg);
+            return true;
         } catch (Exception e) {
             log.error("메일 발송 실패 to={}", to, e);
+            return false;
         }
+    }
+
+    private String buildInfoEmailHtml(String title, String desc, String bodyHtml) {
+        return """
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family:'Apple SD Gothic Neo',sans-serif;background:#f3f4f6;margin:0;padding:40px 16px">
+              <div style="max-width:480px;margin:0 auto;background:#fff;border-radius:16px;
+                          box-shadow:0 4px 20px rgba(0,0,0,.08);overflow:hidden">
+                <div style="background:linear-gradient(135deg,#2563eb,#7c3aed);padding:28px 32px">
+                  <span style="font-size:22px;font-weight:700;color:#fff">🌐 TripTogether</span>
+                </div>
+                <div style="padding:32px">
+                  <h2 style="font-size:20px;font-weight:700;color:#1f2937;margin:0 0 12px">%s</h2>
+                  <p style="font-size:14px;color:#6b7280;line-height:1.7;margin:0 0 20px">%s</p>
+                  <div style="font-size:15px;color:#374151;line-height:1.8;background:#eff6ff;border:1px solid #bfdbfe;
+                              border-radius:12px;padding:18px 20px;">
+                    %s
+                  </div>
+                </div>
+              </div>
+            </body>
+            </html>
+            """.formatted(title, desc, bodyHtml);
     }
 
     private String buildEmailHtml(String title, String desc, String link, String btnText) {
@@ -990,6 +1174,64 @@ public class AuthServiceImpl implements AuthService {
                 .ipAddress(context.getIpAddress())
                 .userAgent(context.getUserAgent())
                 .build());
+    }
+
+    private void recordSecurityEvent(Long userIdx,
+                                     Long actorUserIdx,
+                                     String eventType,
+                                     String eventStage,
+                                     String inputIdentifier,
+                                     String targetEmail,
+                                     boolean success,
+                                     String failReason,
+                                     String detailMessage,
+                                     LoginRequestContext context) {
+        if (context == null) {
+            context = LoginRequestContext.builder().build();
+        }
+
+        authMapper.insertSecurityHistory(UserSecurityHistoryVO.builder()
+                .userIdx(userIdx)
+                .actorUserIdx(actorUserIdx)
+                .eventType(eventType)
+                .eventStage(eventStage)
+                .inputIdentifier(inputIdentifier)
+                .targetEmail(targetEmail)
+                .success(success)
+                .failReason(failReason)
+                .detailMessage(detailMessage)
+                .ipAddress(context.getIpAddress())
+                .userAgent(context.getUserAgent())
+                .build());
+    }
+
+    private boolean isRecoverableAccountStatus(String accountStatus) {
+        if (accountStatus == null || accountStatus.isBlank()) {
+            return true;
+        }
+        return !"DELETED".equalsIgnoreCase(accountStatus)
+                && !"BLOCKED".equalsIgnoreCase(accountStatus);
+    }
+
+    private String maskUserId(String userId) {
+        if (userId == null || userId.isBlank()) {
+            return "";
+        }
+
+        int length = userId.length();
+        if (length <= 2) {
+            return "*".repeat(length);
+        }
+        if (length <= 4) {
+            return userId.substring(0, 1) + "*".repeat(length - 2) + userId.substring(length - 1);
+        }
+
+        int visibleFront = Math.min(3, Math.max(1, length / 3));
+        int visibleBack = length >= 7 ? 2 : 1;
+        int maskLength = Math.max(1, length - visibleFront - visibleBack);
+        return userId.substring(0, visibleFront)
+                + "*".repeat(maskLength)
+                + userId.substring(length - visibleBack);
     }
 
     private boolean isValidEmailFormat(String identifier) {

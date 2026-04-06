@@ -77,6 +77,26 @@
         <result property="loginAt" column="login_at"/>
     </resultMap>
 
+    <resultMap id="securityAuditRM" type="org.triptogether.admin.vo.AdminSecurityAuditVO">
+        <id property="securityIdx" column="security_idx"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="actorUserIdx" column="actor_user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="actorUserId" column="actor_user_id"/>
+        <result property="actorNickname" column="actor_nickname"/>
+        <result property="eventType" column="event_type"/>
+        <result property="eventStage" column="event_stage"/>
+        <result property="inputIdentifier" column="input_identifier"/>
+        <result property="targetEmail" column="target_email"/>
+        <result property="success" column="is_success"/>
+        <result property="failReason" column="fail_reason"/>
+        <result property="detailMessage" column="detail_message"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="userAgent" column="user_agent"/>
+        <result property="occurredAt" column="occurred_at"/>
+    </resultMap>
+
     <!-- ══════════════════════════════════════════
          회원 목록
     ══════════════════════════════════════════ -->
@@ -97,6 +117,7 @@
                    SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS login_success_count,
                    SUM(CASE WHEN is_success = 0 THEN 1 ELSE 0 END) AS login_fail_count
             FROM USER_LOGIN_HISTORY
+            WHERE auth_type IN ('PASSWORD', 'SOCIAL')
             GROUP BY user_idx
         ) h ON u.user_idx = h.user_idx
         <where>
@@ -194,6 +215,7 @@
                    SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS login_success_count,
                    SUM(CASE WHEN is_success = 0 THEN 1 ELSE 0 END) AS login_fail_count
             FROM USER_LOGIN_HISTORY
+            WHERE auth_type IN ('PASSWORD', 'SOCIAL')
             GROUP BY user_idx
         ) h ON u.user_idx = h.user_idx
         WHERE u.user_idx = #{userIdx}
@@ -231,8 +253,8 @@
             SUM(CASE WHEN account_status = 'DORMANT' THEN 1 ELSE 0 END) AS dormantMembers,
             SUM(CASE WHEN account_status = 'DELETED' THEN 1 ELSE 0 END) AS deletedMembers,
             SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) AS todayNewMembers,
-            (SELECT COUNT(*) FROM USER_LOGIN_HISTORY WHERE is_success = TRUE AND DATE(login_at) = CURDATE()) AS todayLogins,
-            (SELECT COUNT(*) FROM USER_LOGIN_HISTORY WHERE is_success = FALSE AND DATE(login_at) = CURDATE()) AS todayFailedLogins,
+            (SELECT COUNT(*) FROM USER_LOGIN_HISTORY WHERE auth_type IN ('PASSWORD', 'SOCIAL') AND is_success = TRUE AND DATE(login_at) = CURDATE()) AS todayLogins,
+            (SELECT COUNT(*) FROM USER_LOGIN_HISTORY WHERE auth_type IN ('PASSWORD', 'SOCIAL') AND is_success = FALSE AND DATE(login_at) = CURDATE()) AS todayFailedLogins,
             (SELECT COUNT(DISTINCT user_idx) FROM USER_SOCIAL WHERE provider = 'KAKAO') AS kakaoLinked,
             (SELECT COUNT(DISTINCT user_idx) FROM USER_SOCIAL WHERE provider = 'NAVER') AS naverLinked,
             (SELECT COUNT(DISTINCT user_idx) FROM USER_SOCIAL WHERE provider = 'GOOGLE') AS googleLinked,
@@ -351,6 +373,62 @@
     <select id="countLoginAudits" resultType="int">
         SELECT COUNT(*)
         <include refid="loginAuditSearchBase"/>
+    </select>
+
+
+    <!-- ══════════════════════════════════════════
+         보안 이력 감사
+    ══════════════════════════════════════════ -->
+
+    <sql id="securityAuditSearchBase">
+        FROM USER_SECURITY_HISTORY s
+        LEFT JOIN USERS u ON s.user_idx = u.user_idx
+        LEFT JOIN USERS au ON s.actor_user_idx = au.user_idx
+        <where>
+            <if test="success != null and success == 'SUCCESS'">
+                AND s.is_success = TRUE
+            </if>
+            <if test="success != null and success == 'FAIL'">
+                AND s.is_success = FALSE
+            </if>
+            <if test="eventType != null and eventType != 'ALL'">
+                AND s.event_type = #{eventType}
+            </if>
+            <if test="eventStage != null and eventStage != 'ALL'">
+                AND s.event_stage = #{eventStage}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    IFNULL(u.user_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(au.user_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(au.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(s.input_identifier, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(s.target_email, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(s.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+    </sql>
+
+    <select id="findSecurityAudits" resultMap="securityAuditRM">
+        SELECT
+            s.security_idx, s.user_idx, s.actor_user_idx,
+            u.user_id, u.nickname,
+            au.user_id AS actor_user_id,
+            au.nickname AS actor_nickname,
+            s.event_type, s.event_stage,
+            s.input_identifier, s.target_email,
+            s.is_success, s.fail_reason, s.detail_message,
+            s.ip_address, s.user_agent, s.occurred_at
+        <include refid="securityAuditSearchBase"/>
+        ORDER BY s.occurred_at DESC, s.security_idx DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countSecurityAudits" resultType="int">
+        SELECT COUNT(*)
+        <include refid="securityAuditSearchBase"/>
     </select>
 
 </mapper>

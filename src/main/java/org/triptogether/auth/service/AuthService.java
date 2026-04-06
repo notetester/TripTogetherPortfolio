@@ -29,22 +29,22 @@ public interface AuthService {
 
     // ── 아이디 찾기 ────────────────────────────
     UsersVO getUserByIdx(Long userIdx);
-    
-    /** 이메일로 인증 코드 발송 → 인증 완료 시 userId 반환 */
-    void sendFindIdEmail(String email);
 
-    /** FIND_ID 토큰 검증 → userId 반환 (실패 시 null) */
-    String verifyFindIdToken(String token);
+    /** 인증된 이메일 기준으로 아이디 힌트 안내 메일 발송 */
+    void sendFindIdEmail(String email, LoginRequestContext context);
+
+    /** FIND_ID 토큰 검증 → 마스킹된 userId 힌트 반환 (실패 시 null) */
+    String verifyFindIdToken(String token, LoginRequestContext context);
 
     // ── 비밀번호 찾기 / 재설정 ─────────────────
-    /** 아이디 또는 이메일로 비밀번호 재설정 링크 발송 */
-    void sendResetPasswordEmail(String identifier);
+    /** 아이디 또는 이메일 기준으로 비밀번호 재설정 안내 메일 발송 */
+    void sendResetPasswordEmail(String identifier, LoginRequestContext context);
 
     /** RESET_PW 토큰 검증 → UsersVO 반환 (실패 시 null) */
-    UsersVO verifyResetToken(String token);
+    UsersVO verifyResetToken(String token, LoginRequestContext context);
 
     /** 토큰 검증 후 비밀번호 재설정 */
-    boolean resetPassword(String token, String newPassword);
+    boolean resetPassword(String token, String newPassword, LoginRequestContext context);
 
     // ── 프로필 수정 ────────────────────────────
     /** 비밀번호 재확인 (수정 페이지 진입 전) */
@@ -54,17 +54,17 @@ public interface AuthService {
     void updateProfile(UsersVO user);
 
     /** 비밀번호 변경 */
-    void updatePassword(Long userIdx, String newRawPassword);
+    void updatePassword(Long userIdx, String newRawPassword, LoginRequestContext context);
 
     // ── 이메일 인증 ────────────────────────────
     /** 이메일 인증 메일 발송 (VERIFY 목적) */
-    void sendEmailVerification(Long userIdx, String email);
+    boolean sendEmailVerification(Long userIdx, String email, LoginRequestContext context);
 
     /** VERIFY 토큰 검증 → 이메일 인증 처리 */
-    boolean verifyEmail(String token);
+    boolean verifyEmail(String token, LoginRequestContext context);
 
     /** 이메일 로그인 활성화/비활성화 토글 */
-    void toggleEmailLogin(Long userIdx, boolean enable);
+    void toggleEmailLogin(Long userIdx, boolean enable, LoginRequestContext context);
 
     // ─── 소셜 OAuth URL 생성 ────────────────────
     String getKakaoAuthUrl();
