@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.myPage.mapper.MyPageMapper">
+
+    <resultMap id="CommunityResultMap" type="org.triptogether.myPage.vo.MyPageCommunityDto">
+        <id     property="postId"       column="post_id"/>
+        <result property="title"        column="title"/>
+        <result property="postType"     column="post_type"/>
+        <result property="region"       column="region"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="likeCount"    column="like_count"/>
+        <result property="viewCount"    column="view_count"/>
+        <result property="postStatus"   column="post_status"/>
+        <result property="createdAt"    column="created_at"/>
+    </resultMap>
+
+    <select id="selectMyCommunityList" resultMap="CommunityResultMap">
+        SELECT
+            cp.post_id,
+            cp.title,
+            cpd.post_type,
+            cpd.region,
+            cpd.comment_count,
+            cpd.like_count,
+            cpd.view_count,
+            cpd.post_status,
+            cp.created_at
+        FROM COMMUNITY_POST cp
+        JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
+        WHERE cp.user_idx = #{userIdx}
+          AND cpd.post_status = 'ACTIVE'
+        ORDER BY cp.created_at DESC
+        LIMIT 10
+    </select>
+
+    <select id="selectMyCommunityCount" resultType="int">
+        SELECT COUNT(*)
+        FROM COMMUNITY_POST cp
+        JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
+        WHERE cp.user_idx = #{userIdx}
+          AND cpd.post_status = 'ACTIVE'
+    </select>
+
+    <resultMap id="InquiryResultMap" type="org.triptogether.myPage.vo.MyPageInquiryDto">
+        <id     property="inquiryId" column="inquiry_id"/>
+        <result property="title"     column="title"/>
+        <result property="category"  column="category"/>
+        <result property="status"    column="status"/>
+        <result property="isPrivate" column="is_private"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="selectMyInquiryList" resultMap="InquiryResultMap">
+        SELECT
+            inquiry_id,
+            title,
+            category,
+            status,
+            is_private,
+            view_count,
+            created_at
+        FROM INQUIRY_POST
+        WHERE user_idx = #{userIdx}
+        ORDER BY created_at DESC
+        LIMIT 10
+    </select>
+
+    <select id="selectMyInquiryCount" resultType="int">
+        SELECT COUNT(*)
+        FROM INQUIRY_POST
+        WHERE user_idx = #{userIdx}
+    </select>
+
+</mapper>
