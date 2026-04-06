@@ -225,13 +225,22 @@ public class AuthServiceImpl implements AuthService {
             return;
         }
 
-        String maskedUserId = maskUserId(user.getUserId());
+        authMapper.expireOldTokens(user.getUserEmail(), "FIND_ID");
+        String token = UUID.randomUUID().toString();
+        authMapper.insertEmailVerification(EmailVerificationVO.builder()
+                .userIdx(user.getUserIdx())
+                .email(user.getUserEmail())
+                .token(token)
+                .purpose("FIND_ID")
+                .expiredAt(LocalDateTime.now().plusMinutes(30))
+                .build());
 
-        sendMail(email, "[TripTogether] 아이디 안내",
-                buildInfoEmailHtml(
-                        "아이디 안내",
-                        "요청하신 계정의 로그인 아이디 힌트를 안내드립니다.",
-                        "회원님의 아이디 힌트는 <strong>" + maskedUserId + "</strong> 입니다.<br>정확한 아이디가 기억나지 않으시면 마이페이지에서 로그인 수단을 다시 확인해 주세요."
+        sendMail(email, "[TripTogether] 아이디 확인 요청 안내",
+                buildEmailHtml(
+                        "아이디 확인 요청",
+                        "아래 버튼을 클릭하시면 로그인 아이디 힌트를 확인할 수 있습니다. 링크는 30분간 유효합니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.",
+                        baseUrl + "/auth/find-id/verify?token=" + token,
+                        "아이디 힌트 확인하기"
                 ));
 
         recordRecoveryResult(user.getUserIdx(), "FIND_ID", email, true, null, context);
