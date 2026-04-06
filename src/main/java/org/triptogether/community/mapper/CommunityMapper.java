@@ -94,4 +94,18 @@ public interface CommunityMapper {
 
     // ===== 신고 =====
     void insertReport(@Param("postId") Long postId, @Param("userIdx") Long userIdx);
+
+    // ===== 홈 인기 글 =====
+    List<CommunityPostDto> selectPopularPostList();
+
+    // ===== 유저 차단 =====
+    void blockUser(@Param("userIdx") Long userIdx);
+
+    void unblockUser(@Param("userIdx") Long userIdx);
+
+    // ===== 콘텐츠 차단 =====
+    void blockPost(@Param("postId") Long postId);
+    void unblockPost(@Param("postId") Long postId);
+    void blockComment(@Param("commentId") Long commentId);
+    void unblockComment(@Param("commentId") Long commentId);
 }

@@ -132,16 +132,61 @@
       </div>
     </c:if>
 
-    <%-- 하단 액션 버튼 --%>
-    <div class="inq-detail-actions">
-      <button class="inq-btn-cancel"
-              onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
-        목록으로
-      </button>
-      <c:if test="${isOwner and empty answer}">
-        <%-- 본인 & 미답변이면 삭제 추후 구현 가능 --%>
-      </c:if>
+<%-- 수정 폼 (PENDING + 본인/어드민만 표시) --%>
+<c:if test="${(isOwner or isAdmin) and inquiry.status eq 'PENDING'}">
+  <div class="inq-edit-form" id="editForm" style="display:none;">
+    <div class="inq-write-card">
+      <div class="inq-form-group">
+        <label class="inq-form-label">문의 유형</label>
+        <select class="inq-form-select" id="editCategory">
+          <option value="service" ${inquiry.category eq 'service' ? 'selected' : ''}>서비스 이용</option>
+          <option value="payment" ${inquiry.category eq 'payment' ? 'selected' : ''}>결제 / 환불</option>
+          <option value="account" ${inquiry.category eq 'account' ? 'selected' : ''}>계정 / 로그인</option>
+          <option value="bug"     ${inquiry.category eq 'bug'     ? 'selected' : ''}>오류 신고</option>
+          <option value="etc"     ${inquiry.category eq 'etc'     ? 'selected' : ''}>기타</option>
+        </select>
+      </div>
+      <div class="inq-form-group">
+        <label class="inq-form-label">제목</label>
+        <input class="inq-form-input" type="text" id="editTitle" value="${inquiry.title}">
+      </div>
+      <div class="inq-form-group">
+        <label class="inq-form-label">내용</label>
+        <textarea class="inq-form-textarea" id="editContent" rows="10">${inquiry.content}</textarea>
+      </div>
+      <div class="inq-form-group">
+        <label class="inq-private-toggle">
+          <input type="checkbox" id="editIsPrivate" ${inquiry.isPrivate == 1 ? 'checked' : ''}>
+          <span class="inq-toggle-slider"></span>
+          <span class="inq-toggle-label">비공개</span>
+        </label>
+      </div>
+      <div class="inq-write-actions">
+        <button class="inq-btn-cancel" id="editCancelBtn">취소</button>
+        <button class="inq-btn-submit" id="editSaveBtn">저장</button>
+      </div>
     </div>
+  </div>
+</c:if>
+
+<c:if test="${(isOwner or isAdmin) and inquiry.status eq 'COMPLETED'}">
+  <div style="font-size:13px; color:var(--gray-400); margin-bottom:8px;">
+    ⚠️ 답변이 완료된 글은 수정/삭제하실 수 없습니다.
+  </div>
+</c:if>
+
+<%-- 하단 액션 버튼 --%>
+<div class="inq-detail-actions">
+  <button class="inq-btn-cancel"
+          onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
+    목록으로
+  </button>
+  <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'PENDING'}">
+    <button class="inq-btn-cancel" id="editBtn">✏️ 수정</button>
+    <button class="inq-btn-submit" id="deleteBtn"
+            style="background:#ef4444;">🗑️ 삭제</button>
+  </c:if>
+</div>
 
   </div><%-- /inq-detail-inner --%>
 </div><%-- /inq-detail-wrap --%>
@@ -183,6 +228,91 @@
 })();
 </script>
 </c:if>
+
+<script>
+(function () {
+  var ctx = '${pageContext.request.contextPath}';
+  var inquiryId = ${inquiry.inquiryId};
+
+  var editBtn    = document.getElementById('editBtn');
+  var deleteBtn  = document.getElementById('deleteBtn');
+  var editForm   = document.getElementById('editForm');
+  var editCancel = document.getElementById('editCancelBtn');
+  var editSave   = document.getElementById('editSaveBtn');
+
+  if (!editBtn) return;
+
+  // 수정 버튼 - 폼 토글
+  editBtn.addEventListener('click', function () {
+    var isShown = editForm.style.display !== 'none';
+    editForm.style.display = isShown ? 'none' : 'block';
+    editBtn.textContent = isShown ? '✏️ 수정' : '✏️ 취소';
+  });
+
+  // 수정 취소
+  editCancel.addEventListener('click', function () {
+    editForm.style.display = 'none';
+    editBtn.textContent = '✏️ 수정';
+  });
+
+  // 수정 저장
+  editSave.addEventListener('click', async function () {
+    var title    = document.getElementById('editTitle').value.trim();
+    var content  = document.getElementById('editContent').value.trim();
+    var category = document.getElementById('editCategory').value;
+    var isPrivate = document.getElementById('editIsPrivate').checked ? 1 : 0;
+
+    if (!title)   { alert('제목을 입력해주세요.'); return; }
+    if (!content) { alert('내용을 입력해주세요.'); return; }
+
+    this.disabled = true;
+    this.classList.add('loading');
+
+    try {
+      var res  = await fetch(ctx + '/inquiry/' + inquiryId + '/edit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ title, content, category, isPrivate })
+      });
+      var data = await res.json();
+      if (data.success) {
+        location.reload();
+      } else {
+        alert(data.message || '수정에 실패했습니다.');
+        this.disabled = false;
+        this.classList.remove('loading');
+      }
+    } catch (e) {
+      alert('오류가 발생했습니다.');
+      this.disabled = false;
+      this.classList.remove('loading');
+    }
+  });
+
+  // 삭제
+  deleteBtn.addEventListener('click', async function () {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+    this.disabled = true;
+
+    try {
+      var res  = await fetch(ctx + '/inquiry/' + inquiryId + '/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
+      var data = await res.json();
+      if (data.success) {
+        location.href = ctx + '/inquiry/list';
+      } else {
+        alert(data.message || '삭제에 실패했습니다.');
+        this.disabled = false;
+      }
+    } catch (e) {
+      alert('오류가 발생했습니다.');
+      this.disabled = false;
+    }
+  });
+})();
+</script>
 
 <%@ include file="../common/footer.jsp" %>
 </body>

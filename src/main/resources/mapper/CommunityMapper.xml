@@ -24,6 +24,7 @@
         <result property="updatedAt"    column="updated_at"/>
         <result property="isSolved" column="is_solved"/>
         <result property="thumbUrl"     column="thumb_url"/>
+        <result property="accountStatus" column="account_status"/>
     </resultMap>
 
     <resultMap id="ImageResultMap" type="org.triptogether.community.vo.CommunityPostImageDto">
@@ -44,6 +45,7 @@
         <result property="createdAt"     column="created_at"/>
         <result property="updatedAt"     column="updated_at"/>
         <result property="parentCommentId" column="parent_comment_id"/>
+        <result property="accountStatus" column="account_status"/>
     </resultMap>
 
     <!-- =============================================
@@ -69,7 +71,8 @@
             cpd.comment_count,
             cpd.updated_at,
             cpi.image_url AS thumb_url,
-            cpq.is_solved
+            cpq.is_solved,
+        u.account_status
         FROM COMMUNITY_POST cp
         JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
@@ -78,7 +81,7 @@
         LEFT JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
         LEFT JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
         LEFT JOIN COMMUNITY_POST_QUESTION cpq ON cp.post_id = cpq.post_id
-        WHERE cpd.post_status = 'ACTIVE'
+        WHERE cpd.post_status IN ('ACTIVE', 'DORMANT')
         <if test="region != null and region != 'all'">
             AND cpd.region = #{region}
         </if>
@@ -111,9 +114,10 @@
         SELECT COUNT(DISTINCT cp.post_id)
         FROM COMMUNITY_POST cp
         JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
+        LEFT JOIN USERS u ON cp.user_idx = u.user_idx
         LEFT JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
         LEFT JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
-        WHERE cpd.post_status = 'ACTIVE'
+        WHERE cpd.post_status IN ('ACTIVE', 'DORMANT')
         <if test="region != null and region != 'all'">
             AND cpd.region = #{region}
         </if>
@@ -137,6 +141,7 @@
             cp.post_id,
             cp.user_idx,
             u.nickname,
+            u.account_status,
             cp.title,
             cp.content,
             cp.created_at,
@@ -182,11 +187,12 @@
             cc.like_count,
             cc.created_at,
             cc.updated_at,
-            cc.parent_comment_id
+            cc.parent_comment_id,
+            u.account_status
         FROM COMMUNITY_COMMENT cc
                  LEFT JOIN USERS u ON cc.user_idx = u.user_idx
         WHERE cc.post_id = #{postId}
-          AND cc.comment_status = 'ACTIVE'
+          AND cc.comment_status IN ('ACTIVE', 'BLOCKED')
         ORDER BY
             COALESCE(cc.parent_comment_id, cc.comment_id),
             cc.comment_id ASC
@@ -222,25 +228,52 @@
             cpd.post_type,
             cpd.like_count,
             cpi.image_url AS thumb_url,
-            MAX(ctr.co_count) AS max_co_count
+            SUM(ctr.co_count) AS total_co_count
         FROM COMMUNITY_POST cp
                  JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
                  LEFT JOIN USERS u ON cp.user_idx = u.user_idx
                  LEFT JOIN COMMUNITY_POST_IMAGE cpi
                            ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
-                 JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
+                 JOIN COMMUNITY_POST_TAG cpt_other ON cp.post_id = cpt_other.post_id
+                 JOIN COMMUNITY_POST_TAG cpt_mine ON cpt_mine.post_id = #{postId}
                  JOIN COMMUNITY_TAG_RELATION ctr
-                      ON (ctr.tag_id_a = cpt.tag_id OR ctr.tag_id_b = cpt.tag_id)
+                      ON (
+                          (ctr.tag_id_a = cpt_mine.tag_id AND ctr.tag_id_b = cpt_other.tag_id)
+                              OR
+                          (ctr.tag_id_b = cpt_mine.tag_id AND ctr.tag_id_a = cpt_other.tag_id)
+                          )
         WHERE cpd.post_status = 'ACTIVE'
           AND cp.post_id != #{postId}
-          AND cpt.tag_id IN (
-            SELECT tag_id FROM COMMUNITY_POST_TAG WHERE post_id = #{postId}
-            )
         GROUP BY cp.post_id, cp.user_idx, u.nickname, cp.title,
             cp.created_at, cpd.post_type, cpd.like_count, cpi.image_url
-        ORDER BY max_co_count DESC, cpd.like_count DESC, cp.created_at DESC
+        ORDER BY total_co_count DESC, cpd.like_count DESC, cp.created_at DESC
             LIMIT 5
     </select>
+
+
+    <!-- 홈 화면 커뮤니티 인기 글 (좋아요 순 상위 3개) -->
+    <select id="selectPopularPostList" resultMap="PostResultMap">
+        SELECT
+            cp.post_id,
+            cp.user_idx,
+            u.nickname,
+            cp.title,
+            cp.created_at,
+            cpd.post_type,
+            cpd.like_count,
+            cpd.comment_count,
+            u.account_status,
+            cpi.image_url AS thumb_url
+        FROM COMMUNITY_POST cp
+                 JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
+                 LEFT JOIN USERS u ON cp.user_idx = u.user_idx
+                 LEFT JOIN COMMUNITY_POST_IMAGE cpi
+                           ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
+        WHERE cpd.post_status IN ('ACTIVE', 'DORMANT')
+        ORDER BY cpd.like_count DESC, cp.created_at DESC
+            LIMIT 3
+    </select>
+
     <!-- =============================================
          조회수 증가
          ============================================= -->
@@ -537,4 +570,45 @@
              #{parentCommentId}, NOW(), NOW())
     </insert>
 
+    <!-- 유저 차단 -->
+    <update id="blockUser">
+        UPDATE USERS
+        SET account_status = 'BLOCKED'
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <!-- 유저 차단 해제 -->
+    <update id="unblockUser">
+        UPDATE USERS
+        SET account_status = 'ACTIVE'
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <!-- 게시글 차단 -->
+    <update id="blockPost">
+        UPDATE COMMUNITY_POST_DETAIL
+        SET post_status = 'DORMANT', updated_at = NOW()
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 게시글 차단 해제 -->
+    <update id="unblockPost">
+        UPDATE COMMUNITY_POST_DETAIL
+        SET post_status = 'ACTIVE', updated_at = NOW()
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 댓글/대댓글 차단 -->
+    <update id="blockComment">
+        UPDATE COMMUNITY_COMMENT
+        SET comment_status = 'BLOCKED', updated_at = NOW()
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 댓글/대댓글 차단 해제 -->
+    <update id="unblockComment">
+        UPDATE COMMUNITY_COMMENT
+        SET comment_status = 'ACTIVE', updated_at = NOW()
+        WHERE comment_id = #{commentId}
+    </update>
 </mapper>

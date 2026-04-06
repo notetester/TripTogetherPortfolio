@@ -360,4 +360,24 @@ public class CommunityServiceImpl implements CommunityService {
         if (originalFilename == null || !originalFilename.contains(".")) return "";
         return originalFilename.substring(originalFilename.lastIndexOf("."));
     }
+
+    @Override
+    public List<CommunityPostDto> getPopularPostList() {
+        return communityMapper.selectPopularPostList();
+    }
+
+    @Override
+    public void blockUser(Long userIdx) {
+        communityMapper.blockUser(userIdx);
+    }
+
+    @Override
+    public void unblockUser(Long userIdx) {
+        communityMapper.unblockUser(userIdx);
+    }
+
+    @Override public void blockPost(Long postId) { communityMapper.blockPost(postId); }
+    @Override public void unblockPost(Long postId) { communityMapper.unblockPost(postId); }
+    @Override public void blockComment(Long commentId) { communityMapper.blockComment(commentId); }
+    @Override public void unblockComment(Long commentId) { communityMapper.unblockComment(commentId); }
 }
