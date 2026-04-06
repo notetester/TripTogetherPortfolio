@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.auth.service.AuthServiceImpl;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.myPage.service.MyPageService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Map;
 public class ProfileController {
 
     private final AuthServiceImpl authService;
+    private final MyPageService myPageService;
 
     // ── 수정 전 비밀번호 확인 페이지 ──────────────
     @GetMapping("/edit-confirm")
@@ -177,6 +179,20 @@ public class ProfileController {
     public String editDone(HttpSession session) {
         session.removeAttribute("editVerified");
         return "redirect:/mypage";
+    }
+
+    // ── 마이페이지 메인 ──────────────────────────
+    @GetMapping("")
+    public String myPage(HttpSession session, Model model) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+
+        model.addAttribute("user",           user);
+        model.addAttribute("communityList",  myPageService.getMyCommunityList(user.getUserIdx()));
+        model.addAttribute("communityCount", myPageService.getMyCommunityCount(user.getUserIdx()));
+        model.addAttribute("inquiryList",    myPageService.getMyInquiryList(user.getUserIdx()));
+        model.addAttribute("inquiryCount",   myPageService.getMyInquiryCount(user.getUserIdx()));
+        return "mypage/index";
     }
 
     // ── 유틸 ──────────────────────────────────────

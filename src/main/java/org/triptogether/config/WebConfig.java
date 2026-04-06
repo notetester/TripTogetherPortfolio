@@ -47,7 +47,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns(
                         "/mypage/**",
-                        "/auth/link/**"
+                        "/auth/link/**",
+                        "/inquiry/**"
                 )
                 .excludePathPatterns(
                         "/mypage/temp",

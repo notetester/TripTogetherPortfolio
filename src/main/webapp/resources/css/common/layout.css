@@ -451,3 +451,13 @@ body {
 }
 .footer-logo { display: flex; align-items: center; gap: 10px; }
 .footer-copy { font-size: 13px; color: var(--gray-400); }
+
+.footer-inquiry-link {
+    color: var(--gray-400);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color .15s;
+}
+.footer-inquiry-link:hover {
+    color: #fff;
+}
