@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.auth.service.AuthServiceImpl;
+import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.myPage.service.MyPageService;
 
@@ -118,6 +119,7 @@ public class ProfileController {
     public Map<String, Object> updatePassword(
             @RequestParam String currentPassword,
             @RequestParam String newPassword,
+            HttpServletRequest request,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -125,13 +127,15 @@ public class ProfileController {
         if (user == null) { result.put("success", false); return result; }
 
         if (user.isPasswordEnabled() && !authService.checkPassword(user.getUserIdx(), currentPassword)) {
+            authService.recordPasswordChangeFailure(user.getUserIdx(), buildRequestContext(request), "WRONG_CURRENT_PASSWORD");
             result.put("success", false); result.put("field", "currentPassword");
             result.put("message", "현재 비밀번호가 올바르지 않습니다."); return result;
         }
         if (newPassword.length() < 8) {
+            authService.recordPasswordChangeFailure(user.getUserIdx(), buildRequestContext(request), "NEW_PASSWORD_TOO_SHORT");
             result.put("success", false); result.put("message", "새 비밀번호는 8자 이상이어야 합니다."); return result;
         }
-        authService.updatePassword(user.getUserIdx(), newPassword);
+        authService.updatePassword(user.getUserIdx(), newPassword, buildRequestContext(request));
         user.setPasswordEnabled(true);
         result.put("success", true); result.put("message", "비밀번호가 변경되었습니다.");
         return result;
@@ -141,7 +145,9 @@ public class ProfileController {
     @PostMapping("/edit/email/send")
     @ResponseBody
     public Map<String, Object> sendEmailVerification(
-            @RequestParam String email, HttpSession session) {
+            @RequestParam String email,
+            HttpServletRequest request,
+            HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
         UsersVO user = loginUser(session);
@@ -151,7 +157,7 @@ public class ProfileController {
                 (user.getUserEmail() == null || !user.getUserEmail().equals(email))) {
             result.put("success", false); result.put("message", "이미 사용 중인 이메일입니다."); return result;
         }
-        authService.sendEmailVerification(user.getUserIdx(), email);
+        authService.sendEmailVerification(user.getUserIdx(), email, buildRequestContext(request));
         user.setUserEmail(email); user.setEmailVerified(false); user.setEmailLoginEnabled(false);
         result.put("success", true); result.put("message", "인증 이메일을 발송했습니다. 메일을 확인해주세요.");
         return result;
@@ -161,7 +167,9 @@ public class ProfileController {
     @PostMapping("/edit/email/login-toggle")
     @ResponseBody
     public Map<String, Object> toggleEmailLogin(
-            @RequestParam boolean enable, HttpSession session) {
+            @RequestParam boolean enable,
+            HttpServletRequest request,
+            HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
         UsersVO user = loginUser(session);
@@ -186,7 +194,7 @@ public class ProfileController {
         }
 
         try {
-            authService.toggleEmailLogin(freshUser.getUserIdx(), enable);
+            authService.toggleEmailLogin(freshUser.getUserIdx(), enable, buildRequestContext(request));
 
             // 세션도 최신값 반영
             freshUser.setEmailLoginEnabled(enable);
@@ -225,6 +233,30 @@ public class ProfileController {
     }
 
     // ── 유틸 ──────────────────────────────────────
+    private LoginRequestContext buildRequestContext(HttpServletRequest request) {
+        return LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build();
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        return ip;
+    }
+
     private UsersVO loginUser(HttpSession session) {
         return (UsersVO) session.getAttribute("loginUser");
     }

@@ -34,7 +34,7 @@ public interface AuthService {
     void sendFindIdEmail(String email, LoginRequestContext context);
 
     /** FIND_ID 토큰 검증 → userId 반환 (실패 시 null) */
-    String verifyFindIdToken(String token);
+    String verifyFindIdToken(String token, LoginRequestContext context);
 
     // ── 비밀번호 찾기 / 재설정 ─────────────────
     /** 아이디 또는 이메일 기준으로 비밀번호 재설정 안내 메일 발송 */
@@ -44,7 +44,7 @@ public interface AuthService {
     UsersVO verifyResetToken(String token);
 
     /** 토큰 검증 후 비밀번호 재설정 */
-    boolean resetPassword(String token, String newPassword);
+    boolean resetPassword(String token, String newPassword, LoginRequestContext context);
 
     // ── 프로필 수정 ────────────────────────────
     /** 비밀번호 재확인 (수정 페이지 진입 전) */
@@ -54,17 +54,17 @@ public interface AuthService {
     void updateProfile(UsersVO user);
 
     /** 비밀번호 변경 */
-    void updatePassword(Long userIdx, String newRawPassword);
+    void updatePassword(Long userIdx, String newRawPassword, LoginRequestContext context);
 
     // ── 이메일 인증 ────────────────────────────
     /** 이메일 인증 메일 발송 (VERIFY 목적) */
-    void sendEmailVerification(Long userIdx, String email);
+    void sendEmailVerification(Long userIdx, String email, LoginRequestContext context);
 
     /** VERIFY 토큰 검증 → 이메일 인증 처리 */
-    boolean verifyEmail(String token);
+    boolean verifyEmail(String token, LoginRequestContext context);
 
     /** 이메일 로그인 활성화/비활성화 토글 */
-    void toggleEmailLogin(Long userIdx, boolean enable);
+    void toggleEmailLogin(Long userIdx, boolean enable, LoginRequestContext context);
 
     // ─── 소셜 OAuth URL 생성 ────────────────────
     String getKakaoAuthUrl();

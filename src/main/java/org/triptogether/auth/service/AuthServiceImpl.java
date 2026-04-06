@@ -203,25 +203,41 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void sendFindIdEmail(String email, LoginRequestContext context) {
-        UsersVO user = authMapper.findByEmail(email);
+        String normalizedEmail = email == null ? null : email.trim();
+        UsersVO user = authMapper.findByEmail(normalizedEmail);
+
+        recordSecurityEvent(user != null ? user.getUserIdx() : null,
+                null,
+                "FIND_ID",
+                "REQUEST",
+                normalizedEmail,
+                normalizedEmail,
+                true,
+                null,
+                null,
+                context);
 
         if (user == null) {
-            recordRecoveryResult(null, "FIND_ID", email, false, "EMAIL_NOT_FOUND", context);
+            recordSecurityEvent(null, null, "FIND_ID", "COMPLETE", normalizedEmail, normalizedEmail,
+                    false, "EMAIL_NOT_FOUND", null, context);
             return;
         }
 
         if (!user.isEmailVerified()) {
-            recordRecoveryResult(user.getUserIdx(), "FIND_ID", email, false, "EMAIL_NOT_VERIFIED", context);
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_ID", "COMPLETE", normalizedEmail, normalizedEmail,
+                    false, "EMAIL_NOT_VERIFIED", null, context);
             return;
         }
 
         if (user.getUserId() == null || user.getUserId().isBlank()) {
-            recordRecoveryResult(user.getUserIdx(), "FIND_ID", email, false, "USER_ID_NOT_FOUND", context);
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_ID", "COMPLETE", normalizedEmail, normalizedEmail,
+                    false, "USER_ID_NOT_FOUND", null, context);
             return;
         }
 
         if (!isRecoverableAccountStatus(user.getAccountStatus())) {
-            recordRecoveryResult(user.getUserIdx(), "FIND_ID", email, false, "ACCOUNT_NOT_RECOVERABLE", context);
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_ID", "COMPLETE", normalizedEmail, normalizedEmail,
+                    false, "ACCOUNT_NOT_RECOVERABLE", null, context);
             return;
         }
 
@@ -235,7 +251,7 @@ public class AuthServiceImpl implements AuthService {
                 .expiredAt(LocalDateTime.now().plusMinutes(30))
                 .build());
 
-        sendMail(email, "[TripTogether] 아이디 확인 요청 안내",
+        sendMail(normalizedEmail, "[TripTogether] 아이디 확인 요청 안내",
                 buildEmailHtml(
                         "아이디 확인 요청",
                         "아래 버튼을 클릭하시면 로그인 아이디 힌트를 확인할 수 있습니다. 링크는 30분간 유효합니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.",
@@ -243,19 +259,29 @@ public class AuthServiceImpl implements AuthService {
                         "아이디 힌트 확인하기"
                 ));
 
-        recordRecoveryResult(user.getUserIdx(), "FIND_ID", email, true, null, context);
+        recordSecurityEvent(user.getUserIdx(), null, "FIND_ID", "COMPLETE", normalizedEmail, normalizedEmail,
+                true, null, null, context);
     }
 
     @Override
-    public String verifyFindIdToken(String token) {
+    public String verifyFindIdToken(String token, LoginRequestContext context) {
         EmailVerificationVO ev = authMapper.findValidToken(token, "FIND_ID");
-        if (ev == null) return null;
+        if (ev == null) {
+            recordSecurityEvent(null, null, "FIND_ID", "VERIFY", null, null,
+                    false, "TOKEN_INVALID_OR_EXPIRED", null, context);
+            return null;
+        }
         authMapper.markTokenUsed(ev.getVerifyIdx());
 
         String userId = authMapper.findUserIdByEmail(ev.getEmail());
         if (userId == null || userId.isBlank()) {
+            recordSecurityEvent(ev.getUserIdx(), null, "FIND_ID", "VERIFY", ev.getEmail(), ev.getEmail(),
+                    false, "USER_ID_NOT_FOUND", null, context);
             return null;
         }
+
+        recordSecurityEvent(ev.getUserIdx(), null, "FIND_ID", "VERIFY", ev.getEmail(), ev.getEmail(),
+                true, null, null, context);
         return maskUserId(userId);
     }
 
@@ -269,28 +295,44 @@ public class AuthServiceImpl implements AuthService {
                 ? authMapper.findByEmail(normalizedIdentifier)
                 : authMapper.findByUserId(normalizedIdentifier);
 
+        recordSecurityEvent(user != null ? user.getUserIdx() : null,
+                null,
+                "FIND_PASSWORD",
+                "REQUEST",
+                normalizedIdentifier,
+                user != null ? user.getUserEmail() : null,
+                true,
+                null,
+                null,
+                context);
+
         if (user == null) {
-            recordRecoveryResult(null, "FIND_PASSWORD", normalizedIdentifier, false, "USER_NOT_FOUND", context);
+            recordSecurityEvent(null, null, "FIND_PASSWORD", "COMPLETE", normalizedIdentifier, null,
+                    false, "USER_NOT_FOUND", null, context);
             return;
         }
 
         if (user.getUserEmail() == null || user.getUserEmail().isBlank()) {
-            recordRecoveryResult(user.getUserIdx(), "FIND_PASSWORD", normalizedIdentifier, false, "EMAIL_NOT_REGISTERED", context);
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "COMPLETE", normalizedIdentifier, null,
+                    false, "EMAIL_NOT_REGISTERED", null, context);
             return;
         }
 
         if (!user.isEmailVerified()) {
-            recordRecoveryResult(user.getUserIdx(), "FIND_PASSWORD", normalizedIdentifier, false, "EMAIL_NOT_VERIFIED", context);
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "COMPLETE", normalizedIdentifier, user.getUserEmail(),
+                    false, "EMAIL_NOT_VERIFIED", null, context);
             return;
         }
 
         if (!user.isPasswordEnabled()) {
-            recordRecoveryResult(user.getUserIdx(), "FIND_PASSWORD", normalizedIdentifier, false, "PASSWORD_RESET_NOT_ALLOWED", context);
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "COMPLETE", normalizedIdentifier, user.getUserEmail(),
+                    false, "PASSWORD_RESET_NOT_ALLOWED", null, context);
             return;
         }
 
         if (!isRecoverableAccountStatus(user.getAccountStatus())) {
-            recordRecoveryResult(user.getUserIdx(), "FIND_PASSWORD", normalizedIdentifier, false, "ACCOUNT_NOT_RECOVERABLE", context);
+            recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "COMPLETE", normalizedIdentifier, user.getUserEmail(),
+                    false, "ACCOUNT_NOT_RECOVERABLE", null, context);
             return;
         }
 
@@ -308,7 +350,8 @@ public class AuthServiceImpl implements AuthService {
                 buildEmailHtml("비밀번호 재설정", "아래 버튼을 클릭하시면 비밀번호를 재설정할 수 있습니다. 링크는 30분간 유효합니다.",
                         baseUrl + "/auth/reset-pw?token=" + token, "비밀번호 재설정하기"));
 
-        recordRecoveryResult(user.getUserIdx(), "FIND_PASSWORD", normalizedIdentifier, true, null, context);
+        recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "COMPLETE", normalizedIdentifier, user.getUserEmail(),
+                true, null, null, context);
     }
 
     @Override
@@ -319,11 +362,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean resetPassword(String token, String newPassword) {
+    public boolean resetPassword(String token, String newPassword, LoginRequestContext context) {
         EmailVerificationVO ev = authMapper.findValidToken(token, "RESET_PW");
-        if (ev == null) return false;
+        if (ev == null) {
+            recordSecurityEvent(null, null, "RESET_PASSWORD", "COMPLETE", null, null,
+                    false, "TOKEN_INVALID_OR_EXPIRED", null, context);
+            return false;
+        }
         authMapper.markTokenUsed(ev.getVerifyIdx());
         authMapper.resetPassword(ev.getUserIdx(), bCryptPasswordEncoder.encode(newPassword));
+        recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "RESET_PASSWORD", "COMPLETE", ev.getEmail(), ev.getEmail(),
+                true, null, null, context);
         return true;
     }
 
@@ -343,15 +392,24 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void updatePassword(Long userIdx, String newRawPassword) {
+    public void updatePassword(Long userIdx, String newRawPassword, LoginRequestContext context) {
         authMapper.updatePassword(userIdx, bCryptPasswordEncoder.encode(newRawPassword));
+        UsersVO user = authMapper.findByIdx(userIdx);
+        recordSecurityEvent(userIdx, userIdx, "PASSWORD_CHANGE", "COMPLETE", user != null ? user.getUserId() : null,
+                user != null ? user.getUserEmail() : null, true, null, null, context);
+    }
+
+    public void recordPasswordChangeFailure(Long userIdx, LoginRequestContext context, String failReason) {
+        UsersVO user = authMapper.findByIdx(userIdx);
+        recordSecurityEvent(userIdx, userIdx, "PASSWORD_CHANGE", "COMPLETE", user != null ? user.getUserId() : null,
+                user != null ? user.getUserEmail() : null, false, failReason, null, context);
     }
 
     // ════════════════════════════════════════════
     // 이메일 인증
     // ════════════════════════════════════════════
     @Override
-    public void sendEmailVerification(Long userIdx, String email) {
+    public void sendEmailVerification(Long userIdx, String email, LoginRequestContext context) {
         authMapper.expireOldTokens(email, "VERIFY");
         // 이메일 변경 전 미인증 상태로 업데이트
         authMapper.updateEmail(userIdx, email, false);
@@ -368,24 +426,42 @@ public class AuthServiceImpl implements AuthService {
         sendMail(email, "[TripTogether] 이메일 인증",
                 buildEmailHtml("이메일 인증", "아래 버튼을 클릭하시면 이메일 인증이 완료됩니다.",
                         baseUrl + "/auth/verify-email?token=" + token, "이메일 인증 완료"));
+
+        recordSecurityEvent(userIdx, userIdx, "EMAIL_VERIFY", "REQUEST", email, email,
+                true, null, null, context);
     }
 
     @Override
-    public boolean verifyEmail(String token) {
+    public boolean verifyEmail(String token, LoginRequestContext context) {
         EmailVerificationVO ev = authMapper.findValidToken(token, "VERIFY");
-        if (ev == null) return false;
+        if (ev == null) {
+            recordSecurityEvent(null, null, "EMAIL_VERIFY", "COMPLETE", null, null,
+                    false, "TOKEN_INVALID_OR_EXPIRED", null, context);
+            return false;
+        }
         authMapper.markTokenUsed(ev.getVerifyIdx());
         authMapper.updateEmailVerified(ev.getUserIdx(), true);
+        recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "EMAIL_VERIFY", "COMPLETE", ev.getEmail(), ev.getEmail(),
+                true, null, null, context);
         return true;
     }
 
     @Override
-    public void toggleEmailLogin(Long userIdx, boolean enable) {
+    public void toggleEmailLogin(Long userIdx, boolean enable, LoginRequestContext context) {
         UsersVO user = authMapper.findByIdx(userIdx);
-        if (user == null || !user.isEmailVerified()) {
+        if (user == null) {
+            recordSecurityEvent(null, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE", null, null,
+                    false, "USER_NOT_FOUND", null, context);
+            throw new IllegalStateException("사용자 정보를 찾을 수 없습니다.");
+        }
+        if (!user.isEmailVerified()) {
+            recordSecurityEvent(userIdx, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE", user.getUserEmail(), user.getUserEmail(),
+                    false, "EMAIL_NOT_VERIFIED", enable ? "ENABLE" : "DISABLE", context);
             throw new IllegalStateException("이메일 인증이 완료되지 않았습니다.");
         }
         authMapper.updateEmailLoginEnabled(userIdx, enable);
+        recordSecurityEvent(userIdx, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE", user.getUserEmail(), user.getUserEmail(),
+                true, null, enable ? "ENABLE" : "DISABLE", context);
     }
 
     // ════════════════════════════════════════════
@@ -1068,23 +1144,30 @@ public class AuthServiceImpl implements AuthService {
                 .build());
     }
 
-    private void recordRecoveryResult(Long userIdx,
-                                      String method,
-                                      String identifier,
-                                      boolean success,
-                                      String failReason,
-                                      LoginRequestContext context) {
+    private void recordSecurityEvent(Long userIdx,
+                                     Long actorUserIdx,
+                                     String eventType,
+                                     String eventStage,
+                                     String inputIdentifier,
+                                     String targetEmail,
+                                     boolean success,
+                                     String failReason,
+                                     String detailMessage,
+                                     LoginRequestContext context) {
         if (context == null) {
             context = LoginRequestContext.builder().build();
         }
 
-        recordHistory(LoginHistoryCommand.builder()
+        authMapper.insertSecurityHistory(UserSecurityHistoryVO.builder()
                 .userIdx(userIdx)
-                .authType("RECOVERY")
-                .loginMethod(method)
-                .loginIdentifier(identifier)
+                .actorUserIdx(actorUserIdx)
+                .eventType(eventType)
+                .eventStage(eventStage)
+                .inputIdentifier(inputIdentifier)
+                .targetEmail(targetEmail)
                 .success(success)
                 .failReason(failReason)
+                .detailMessage(detailMessage)
                 .ipAddress(context.getIpAddress())
                 .userAgent(context.getUserAgent())
                 .build());

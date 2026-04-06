@@ -209,8 +209,15 @@ public class AuthController {
     }
 
     @GetMapping("/find-id/verify")
-    public String verifyFindId(@RequestParam String token, Model model) {
-        String userId = authService.verifyFindIdToken(token);
+    public String verifyFindId(@RequestParam String token,
+                               Model model,
+                               HttpServletRequest request) {
+        LoginRequestContext context = LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build();
+
+        String userId = authService.verifyFindIdToken(token, context);
         if (userId == null) {
             model.addAttribute("error", "링크가 만료되었거나 유효하지 않습니다.");
         } else {
@@ -261,7 +268,12 @@ public class AuthController {
     public Map<String, Object> doResetPw(@RequestParam String token,
                                          @RequestParam String newPassword,
                                          HttpServletRequest request) {
-        boolean ok = authService.resetPassword(token, newPassword);
+        LoginRequestContext context = LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build();
+
+        boolean ok = authService.resetPassword(token, newPassword, context);
         if (ok) {
             return Map.of("success", true, "redirect", request.getContextPath() + "/auth/login");
         }
@@ -273,8 +285,16 @@ public class AuthController {
     // ════════════════════════════════════════════
 
     @GetMapping("/verify-email")
-    public String verifyEmail(@RequestParam String token, Model model, HttpSession session) {
-        boolean ok = authService.verifyEmail(token);
+    public String verifyEmail(@RequestParam String token,
+                              Model model,
+                              HttpSession session,
+                              HttpServletRequest request) {
+        LoginRequestContext context = LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build();
+
+        boolean ok = authService.verifyEmail(token, context);
         model.addAttribute("success", ok);
 
         if (ok) {
