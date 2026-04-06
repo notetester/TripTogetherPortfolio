@@ -55,14 +55,20 @@ public class ProfileController {
         UsersVO user = loginUser(session);
         if (user == null) return "redirect:/auth/login";
 
+        // 항상 최신 사용자 정보를 DB에서 다시 조회
+        UsersVO freshUser = authService.getUserByIdx(user.getUserIdx());
+        if (freshUser == null) {
+            session.invalidate();
+            return "redirect:/auth/login";
+        }
+
         // 비밀번호 있는 계정은 확인 절차 거쳤는지 체크
-        if (user.isPasswordEnabled() && !Boolean.TRUE.equals(session.getAttribute("editVerified"))) {
+        if (freshUser.isPasswordEnabled() && !Boolean.TRUE.equals(session.getAttribute("editVerified"))) {
             return "redirect:/mypage/edit-confirm";
         }
 
-        // 최신 정보를 DB에서 다시 조회
-        UsersVO freshUser = authService.getSocials(user.getUserIdx()) != null
-                ? refreshUser(user.getUserIdx()) : user;
+        // 세션도 최신값으로 갱신
+        session.setAttribute("loginUser", freshUser);
 
         model.addAttribute("user", freshUser);
         model.addAttribute("socialLinkMap", authService.getSocialLinkMap(freshUser.getUserIdx()));
@@ -159,17 +165,40 @@ public class ProfileController {
 
         Map<String, Object> result = new HashMap<>();
         UsersVO user = loginUser(session);
-        if (user == null) { result.put("success", false); return result; }
-        if (!user.isEmailVerified()) {
-            result.put("success", false); result.put("message", "이메일 인증을 먼저 완료해주세요."); return result;
+        if (user == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return result;
         }
+
+        // 세션값이 아니라 DB 최신값으로 검사
+        UsersVO freshUser = authService.getUserByIdx(user.getUserIdx());
+        if (freshUser == null) {
+            result.put("success", false);
+            result.put("message", "사용자 정보를 찾을 수 없습니다.");
+            return result;
+        }
+
+        if (!freshUser.isEmailVerified()) {
+            result.put("success", false);
+            result.put("message", "이메일 인증을 먼저 완료해주세요.");
+            return result;
+        }
+
         try {
-            authService.toggleEmailLogin(user.getUserIdx(), enable);
-            user.setEmailLoginEnabled(enable);
+            authService.toggleEmailLogin(freshUser.getUserIdx(), enable);
+
+            // 세션도 최신값 반영
+            freshUser.setEmailLoginEnabled(enable);
+            session.setAttribute("loginUser", freshUser);
+
             result.put("success", true);
-            result.put("message", enable ? "이메일 로그인이 활성화되었습니다." : "이메일 로그인이 비활성화되었습니다.");
+            result.put("message", enable
+                    ? "이메일 로그인이 활성화되었습니다."
+                    : "이메일 로그인이 비활성화되었습니다.");
         } catch (IllegalStateException e) {
-            result.put("success", false); result.put("message", e.getMessage());
+            result.put("success", false);
+            result.put("message", e.getMessage());
         }
         return result;
     }
