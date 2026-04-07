@@ -69,6 +69,7 @@ public interface AuthService {
     // ─── 소셜 OAuth URL 생성 ────────────────────
     String getKakaoAuthUrl();
     String getKakaoAuthUrl(boolean linkMode);
+    String getKakaoLogoutUrl(String state);
     String getNaverAuthUrl(String state);
     String getNaverAuthUrl(String state, boolean linkMode);
     String getGoogleAuthUrl(String state);

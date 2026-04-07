@@ -17,7 +17,7 @@
     <div>
       <span class="provider-badge ${socialTemp.provider}">
         <c:choose>
-          <c:when test="${socialTemp.provider == 'KAKAO'}">🟡 카카오</c:when>
+          <c:when test="${socialTemp.provider == 'KAKAO'}"><span class="kakao-badge-mark">k</span>카카오</c:when>
           <c:when test="${socialTemp.provider == 'NAVER'}">N 네이버</c:when>
           <c:when test="${socialTemp.provider == 'GOOGLE'}">G Google</c:when>
         </c:choose>

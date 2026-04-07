@@ -43,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
     @Value("${oauth.kakao.client-secret}")   private String kakaoClientSecret;
     @Value("${oauth.kakao.redirect-uri}")    private String kakaoRedirectUri;
     @Value("${oauth.kakao.link-redirect-uri}")  private String kakaoLinkRedirectUri;
+    @Value("${oauth.kakao.logout-redirect-uri}") private String kakaoLogoutRedirectUri;
 
     // ──── Naver ────
     @Value("${oauth.naver.client-id}")       private String naverClientId;
@@ -512,6 +513,18 @@ public class AuthServiceImpl implements AuthService {
                 + "?client_id=" + kakaoClientId
                 + "&redirect_uri=" + encode(redirectUri)
                 + "&response_type=code";
+    }
+
+    @Override
+    public String getKakaoLogoutUrl(String state) {
+        StringBuilder url = new StringBuilder("https://kauth.kakao.com/oauth/logout")
+                .append("?client_id=").append(kakaoClientId)
+                .append("&logout_redirect_uri=").append(encode(kakaoLogoutRedirectUri));
+
+        if (state != null && !state.isBlank()) {
+            url.append("&state=").append(encode(state));
+        }
+        return url.toString();
     }
 
     @Override

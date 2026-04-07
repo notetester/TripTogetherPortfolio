@@ -248,7 +248,7 @@
 
         <!-- 카카오 -->
         <div class="social-link-item">
-          <div class="social-link-icon KAKAO">🟡</div>
+          <div class="social-link-icon KAKAO"><span class="kakao-mark-box">k</span></div>
           <div class="social-link-info">
             <div class="social-link-name">카카오</div>
             <div class="social-link-status ${socialLinkMap['KAKAO'] ? 'linked' : ''}">

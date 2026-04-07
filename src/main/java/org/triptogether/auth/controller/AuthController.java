@@ -94,6 +94,7 @@ public class AuthController {
         }
 
         session.setAttribute("loginUser", user);
+        session.removeAttribute("currentSocialProvider");
         result.put("success", true);
         result.put("redirect", resolveLoginRedirect(request, safeRedirect(redirect)));
         return result;
@@ -105,6 +106,31 @@ public class AuthController {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
+        String currentSocialProvider = (String) session.getAttribute("currentSocialProvider");
+        if ("KAKAO".equals(currentSocialProvider)) {
+            return "redirect:/auth/kakao/logout";
+        }
+
+        session.invalidate();
+        return "redirect:/";
+    }
+
+    @GetMapping("/kakao/logout")
+    public String kakaoLogout(HttpSession session) {
+        String state = UUID.randomUUID().toString();
+        session.setAttribute("kakaoLogoutState", state);
+        return "redirect:" + authService.getKakaoLogoutUrl(state);
+    }
+
+    @GetMapping("/kakao/logout/callback")
+    public String kakaoLogoutCallback(@RequestParam(required = false) String state, HttpSession session) {
+        String savedState = (String) session.getAttribute("kakaoLogoutState");
+
+        if (savedState != null && state != null && !savedState.equals(state)) {
+            log.warn("[Kakao Logout] state mismatch. saved={}, received={}", savedState, state);
+        }
+
+        session.removeAttribute("kakaoLogoutState");
         session.invalidate();
         return "redirect:/";
     }
@@ -155,6 +181,7 @@ public class AuthController {
 
         authService.register(newUser);
         session.setAttribute("loginUser", newUser);
+        session.removeAttribute("currentSocialProvider");
 
         result.put("success", true);
         result.put("redirect", request.getContextPath() + "/");
@@ -335,7 +362,7 @@ public class AuthController {
                                 HttpServletRequest request,
                                 HttpSession session,
                                 RedirectAttributes ra) {
-        return handleSocialCallback(authService.handleKakaoCallback(code, request), session, ra);
+        return handleSocialCallback("KAKAO", authService.handleKakaoCallback(code, request), session, ra);
     }
 
     // ════════════════════════════════════════════
@@ -360,7 +387,7 @@ public class AuthController {
             ra.addFlashAttribute("errorMsg", "잘못된 접근입니다.");
             return "redirect:/auth/login";
         }
-        return handleSocialCallback(authService.handleNaverCallback(code, state, request), session, ra);
+        return handleSocialCallback("NAVER", authService.handleNaverCallback(code, state, request), session, ra);
     }
 
     // ════════════════════════════════════════════
@@ -380,7 +407,7 @@ public class AuthController {
                                  HttpServletRequest request,
                                  HttpSession session,
                                  RedirectAttributes ra) {
-        return handleSocialCallback(authService.handleGoogleCallback(code, request), session, ra);
+        return handleSocialCallback("GOOGLE", authService.handleGoogleCallback(code, request), session, ra);
     }
 
     // ════════════════════════════════════════════
@@ -487,6 +514,7 @@ public class AuthController {
         UsersVO user = authService.completeSocialRegister(temp, nickname, nationality, preferredLang, request);
         session.removeAttribute("socialTemp");
         session.setAttribute("loginUser", user);
+        session.setAttribute("currentSocialProvider", temp.getProvider());
 
         result.put("success", true);
         result.put("redirect", request.getContextPath() + "/");
@@ -497,7 +525,8 @@ public class AuthController {
     // 내부 유틸
     // ════════════════════════════════════════════
 
-    private String handleSocialCallback(Object socialResult,
+    private String handleSocialCallback(String provider,
+                                        Object socialResult,
                                         HttpSession session,
                                         RedirectAttributes ra) {
         if (socialResult == null) {
@@ -506,6 +535,7 @@ public class AuthController {
         }
         if (socialResult instanceof UsersVO user) {
             session.setAttribute("loginUser", user);
+            session.setAttribute("currentSocialProvider", provider);
             return "redirect:/";
         }
         if (socialResult instanceof SocialTempVO temp) {

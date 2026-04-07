@@ -23,7 +23,7 @@
 
     <div class="social-btns">
       <a href="${pageContext.request.contextPath}/auth/kakao" class="social-btn kakao">
-        <span class="social-icon">🟡</span>
+        <span class="social-icon kakao-mark">k</span>
         카카오로 로그인
       </a>
       <a href="${pageContext.request.contextPath}/auth/naver" class="social-btn naver">
