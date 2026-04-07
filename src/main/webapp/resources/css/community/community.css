@@ -244,3 +244,28 @@
   padding: 2px 8px;
   border-radius: 20px;
 }
+
+.report-blurred-wrap {
+  position: relative;
+  cursor: pointer;
+}
+.report-blurred {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+}
+.report-blurred-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+  z-index: 10;
+  cursor: pointer;
+}

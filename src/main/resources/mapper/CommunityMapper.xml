@@ -87,10 +87,13 @@
         LEFT JOIN COMMUNITY_POST_QUESTION cpq ON cp.post_id = cpq.post_id
         WHERE 1=1
         <if test="adminMode">
-            AND cpd.post_status IN ('ACTIVE', 'DORMANT')
+            AND cpd.post_status IN ('ACTIVE', 'BLOCKED')
         </if>
         <if test="!adminMode">
-            AND cpd.post_status = 'ACTIVE'
+            AND (
+            cpd.post_status = 'ACTIVE'
+            OR (cpd.post_status = 'BLOCKED' AND cpd.report_count >= 3)
+            )
             AND (u.account_status IS NULL OR u.account_status != 'BLOCKED')
         </if>
         <if test="region != null and region != 'all'">
@@ -130,10 +133,13 @@
         LEFT JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
         WHERE 1=1
         <if test="adminMode">
-            AND cpd.post_status IN ('ACTIVE', 'DORMANT')
+            AND cpd.post_status IN ('ACTIVE', 'BLOCKED')
         </if>
         <if test="!adminMode">
-            AND cpd.post_status = 'ACTIVE'
+            AND (
+            cpd.post_status = 'ACTIVE'
+            OR (cpd.post_status = 'BLOCKED' AND cpd.report_count >= 3)
+            )
             AND (u.account_status IS NULL OR u.account_status != 'BLOCKED')
         </if>
         <if test="region != null and region != 'all'">
@@ -175,7 +181,7 @@
         JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
         WHERE cp.post_id = #{postId}
-          AND cpd.post_status IN ('ACTIVE', 'DORMANT')
+          AND cpd.post_status IN ('ACTIVE', 'BLOCKED')
     </select>
 
     <!-- 이미지 목록 (sort_order 순) -->
@@ -282,6 +288,7 @@
             cpd.post_type,
             cpd.like_count,
             cpd.comment_count,
+            cpd.report_count,
             u.account_status,
             cpi.image_url AS thumb_url
         FROM COMMUNITY_POST cp
@@ -289,7 +296,7 @@
                  LEFT JOIN USERS u ON cp.user_idx = u.user_idx
                  LEFT JOIN COMMUNITY_POST_IMAGE cpi
                            ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
-        WHERE cpd.post_status IN ('ACTIVE', 'DORMANT')
+        WHERE cpd.post_status IN ('ACTIVE', 'BLOCKED')
         ORDER BY cpd.like_count DESC, cp.created_at DESC
             LIMIT 3
     </select>
@@ -484,18 +491,16 @@
 
     <!-- 게시글 신고 횟수 조회 -->
     <select id="selectPostReportCount" resultType="int">
-        SELECT COUNT(*)
-        FROM COMMUNITY_REPORT
+        SELECT report_count
+        FROM COMMUNITY_POST_DETAIL
         WHERE post_id = #{postId}
-          AND post_id IS NOT NULL
     </select>
 
     <!-- 댓글 신고 횟수 조회 -->
     <select id="selectCommentReportCount" resultType="int">
-        SELECT COUNT(*)
-        FROM COMMUNITY_REPORT
+        SELECT report_count
+        FROM COMMUNITY_COMMENT
         WHERE comment_id = #{commentId}
-          AND comment_id IS NOT NULL
     </select>
 
     <!-- =============================================
@@ -631,7 +636,7 @@
     <!-- 게시글 차단 -->
     <update id="blockPost">
         UPDATE COMMUNITY_POST_DETAIL
-        SET post_status = 'DORMANT', updated_at = NOW()
+        SET post_status = 'BLOCKED', updated_at = NOW()
         WHERE post_id = #{postId}
     </update>
 
@@ -653,6 +658,20 @@
     <update id="unblockComment">
         UPDATE COMMUNITY_COMMENT
         SET comment_status = 'ACTIVE', updated_at = NOW()
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 게시글 신고 횟수 증가 -->
+    <update id="increasePostReportCount">
+        UPDATE COMMUNITY_POST_DETAIL
+        SET report_count = report_count + 1
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 댓글 신고 횟수 증가 -->
+    <update id="increaseCommentReportCount">
+        UPDATE COMMUNITY_COMMENT
+        SET report_count = report_count + 1
         WHERE comment_id = #{commentId}
     </update>
 </mapper>
