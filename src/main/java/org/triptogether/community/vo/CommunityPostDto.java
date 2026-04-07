@@ -36,4 +36,6 @@ public class CommunityPostDto {
     private Boolean isSolved;
 
     private String accountStatus; // 작성자 계정 상태
+
+    private int reportCount;
 }

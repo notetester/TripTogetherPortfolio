@@ -94,6 +94,9 @@ public interface CommunityMapper {
 
     // ===== 신고 =====
     void insertReport(@Param("postId") Long postId, @Param("userIdx") Long userIdx);
+    void reportComment(@Param("commentId") Long commentId, @Param("userIdx") Long userIdx);
+    int selectPostReportCount(@Param("postId") Long postId);
+    int selectCommentReportCount(@Param("commentId") Long commentId);
 
     // ===== 홈 인기 글 =====
     List<CommunityPostDto> selectPopularPostList();

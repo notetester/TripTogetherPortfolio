@@ -44,12 +44,12 @@ public class CommunityController {
         search.setKeyword(keyword);
         search.setPage(page);
         search.calcOffset();
+        search.setAdminMode(isAdminUser(session) && !"user".equals(session.getAttribute("viewMode")));
 
         model.addAttribute("postList",    communityService.getPostList(search));
         model.addAttribute("totalCount",  communityService.getTotalCount(search));
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPage",   communityService.getTotalPage(search));
-        model.addAttribute("isAdmin", isAdminUser(session));
         return "community/list";
     }
 
@@ -76,7 +76,6 @@ public class CommunityController {
         model.addAttribute("isSolved",    communityService.isSolved(postId));
         model.addAttribute("isLiked",     loginUserIdx != null && communityService.isLiked(postId, loginUserIdx));
         model.addAttribute("isOwner",     loginUserIdx != null && loginUserIdx.equals(post.getUserIdx()));
-        model.addAttribute("isAdmin", isAdminUser(session));
         model.addAttribute("acceptedCommentId", communityService.getAcceptedCommentId(postId));
         model.addAttribute("relatedList", communityService.getRelatedList(postId));
 
@@ -440,6 +439,35 @@ public class CommunityController {
     }
 
     /* =============================================
+   POST /community/comment/{commentId}/report - 댓글 신고
+   ============================================= */
+    @PostMapping("/comment/{commentId}/report")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> reportComment(
+            @PathVariable Long commentId,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (session.getAttribute("loginUser") == null) {
+            result.put("success", false);
+            return ResponseEntity.status(401).body(result);
+        }
+
+        try {
+            Long loginUserIdx = getLoginUserIdx(session);
+            communityService.reportComment(commentId, loginUserIdx);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("댓글 신고 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
    POST /community/user/{userIdx}/block - 유저 차단
    ============================================= */
     @PostMapping("/user/{userIdx}/block")
@@ -549,6 +577,23 @@ public class CommunityController {
         result.put("success", true);
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/admin/viewmode")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleViewMode(HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdminUser(session)) {
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
+        }
+        String current = (String) session.getAttribute("viewMode");
+        String next = "user".equals(current) ? "admin" : "user";
+        session.setAttribute("viewMode", next);
+        result.put("success", true);
+        result.put("viewMode", next);
+        return ResponseEntity.ok(result);
+    }
+
 
     /* =============================================
    로그인 사용자 userIdx 추출 유틸

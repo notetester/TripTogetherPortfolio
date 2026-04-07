@@ -29,6 +29,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final LoginInterceptor loginInterceptor;
     private final AdminInterceptor adminInterceptor;
+    private final AdminModeInterceptor adminModeInterceptor;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -58,5 +59,10 @@ public class WebConfig implements WebMvcConfigurer {
         // 관리자 전용 영역
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**");
+
+        // 전체 페이지 어드민모드 인터셉터
+        registry.addInterceptor(adminModeInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/resources/**", "/upload/**", "/api/**");
     }
 }

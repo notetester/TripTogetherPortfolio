@@ -27,8 +27,13 @@
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'">커뮤니티</button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'">마이페이지</button>
             <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">
-                <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'">관리자</button>
-            </c:if>
+    <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'">관리자</button>
+    <button class="admin-mode-btn ${isAdminMode ? 'admin' : 'user'}"
+            onclick="toggleViewMode()">
+        ${isAdminMode ? '🛡️ 관리자모드' : '👤 유저경험모드'}
+    </button>
+</c:if>
+
         </nav>
         <div class="hr">
             <label>
@@ -51,3 +56,18 @@
         </div>
     </div>
 </header>
+
+<c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">
+<script>
+function toggleViewMode() {
+    fetch('${pageContext.request.contextPath}/community/admin/viewmode', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) location.reload();
+    });
+}
+</script>
+</c:if>
