@@ -25,6 +25,8 @@
         <result property="isSolved" column="is_solved"/>
         <result property="thumbUrl"     column="thumb_url"/>
         <result property="accountStatus" column="account_status"/>
+        <result property="reportCount" column="report_count"/>
+
     </resultMap>
 
     <resultMap id="ImageResultMap" type="org.triptogether.community.vo.CommunityPostImageDto">
@@ -46,6 +48,7 @@
         <result property="updatedAt"     column="updated_at"/>
         <result property="parentCommentId" column="parent_comment_id"/>
         <result property="accountStatus" column="account_status"/>
+        <result property="reportCount" column="report_count"/>
     </resultMap>
 
     <!-- =============================================
@@ -72,7 +75,8 @@
             cpd.updated_at,
             cpi.image_url AS thumb_url,
             cpq.is_solved,
-        u.account_status
+            u.account_status,
+            cpd.report_count
         FROM COMMUNITY_POST cp
         JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
@@ -81,7 +85,14 @@
         LEFT JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
         LEFT JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
         LEFT JOIN COMMUNITY_POST_QUESTION cpq ON cp.post_id = cpq.post_id
-        WHERE cpd.post_status IN ('ACTIVE', 'DORMANT')
+        WHERE 1=1
+        <if test="adminMode">
+            AND cpd.post_status IN ('ACTIVE', 'DORMANT')
+        </if>
+        <if test="!adminMode">
+            AND cpd.post_status = 'ACTIVE'
+            AND (u.account_status IS NULL OR u.account_status != 'BLOCKED')
+        </if>
         <if test="region != null and region != 'all'">
             AND cpd.region = #{region}
         </if>
@@ -117,7 +128,14 @@
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
         LEFT JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
         LEFT JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
-        WHERE cpd.post_status IN ('ACTIVE', 'DORMANT')
+        WHERE 1=1
+        <if test="adminMode">
+            AND cpd.post_status IN ('ACTIVE', 'DORMANT')
+        </if>
+        <if test="!adminMode">
+            AND cpd.post_status = 'ACTIVE'
+            AND (u.account_status IS NULL OR u.account_status != 'BLOCKED')
+        </if>
         <if test="region != null and region != 'all'">
             AND cpd.region = #{region}
         </if>
@@ -151,12 +169,13 @@
             cpd.view_count,
             cpd.like_count,
             cpd.comment_count,
-            cpd.updated_at
+            cpd.updated_at,
+            cpd.report_count
         FROM COMMUNITY_POST cp
         JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
         WHERE cp.post_id = #{postId}
-          AND cpd.post_status = 'ACTIVE'
+          AND cpd.post_status IN ('ACTIVE', 'DORMANT')
     </select>
 
     <!-- 이미지 목록 (sort_order 순) -->
@@ -188,7 +207,8 @@
             cc.created_at,
             cc.updated_at,
             cc.parent_comment_id,
-            u.account_status
+            u.account_status,
+            cc.report_count
         FROM COMMUNITY_COMMENT cc
                  LEFT JOIN USERS u ON cc.user_idx = u.user_idx
         WHERE cc.post_id = #{postId}
@@ -454,6 +474,30 @@
             (#{postId}, #{userIdx}, 'other', 'pending', NOW())
     </insert>
 
+    <!-- 댓글 신고 INSERT -->
+    <insert id="reportComment">
+        INSERT IGNORE INTO COMMUNITY_REPORT
+        (comment_id, user_idx, reason, status, created_at)
+    VALUES
+        (#{commentId}, #{userIdx}, 'other', 'pending', NOW())
+    </insert>
+
+    <!-- 게시글 신고 횟수 조회 -->
+    <select id="selectPostReportCount" resultType="int">
+        SELECT COUNT(*)
+        FROM COMMUNITY_REPORT
+        WHERE post_id = #{postId}
+          AND post_id IS NOT NULL
+    </select>
+
+    <!-- 댓글 신고 횟수 조회 -->
+    <select id="selectCommentReportCount" resultType="int">
+        SELECT COUNT(*)
+        FROM COMMUNITY_REPORT
+        WHERE comment_id = #{commentId}
+          AND comment_id IS NOT NULL
+    </select>
+
     <!-- =============================================
          댓글 좋아요
          ============================================= -->
@@ -612,3 +656,4 @@
         WHERE comment_id = #{commentId}
     </update>
 </mapper>
+

@@ -326,6 +326,32 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public void reportPost(Long postId, Long userIdx) {
         communityMapper.insertReport(postId, userIdx);
+        // 신고 3회 이상이면 자동 차단
+        int reportCount = communityMapper.selectPostReportCount(postId);
+        if (reportCount >= 3) {
+            communityMapper.blockPost(postId);
+        }
+    }
+
+
+    @Override
+    public void reportComment(Long commentId, Long userIdx) {
+        communityMapper.reportComment(commentId, userIdx);
+        // 신고 3회 이상이면 자동 차단
+        int reportCount = communityMapper.selectCommentReportCount(commentId);
+        if (reportCount >= 3) {
+            communityMapper.blockComment(commentId);
+        }
+    }
+
+    @Override
+    public int getPostReportCount(Long postId) {
+        return communityMapper.selectPostReportCount(postId);
+    }
+
+    @Override
+    public int getCommentReportCount(Long commentId) {
+        return communityMapper.selectCommentReportCount(commentId);
     }
 
     // ===== 파일 저장 유틸 =====

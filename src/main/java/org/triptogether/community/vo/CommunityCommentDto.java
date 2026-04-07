@@ -26,4 +26,6 @@ public class CommunityCommentDto {
     private Long parentCommentId;
 
     private String accountStatus;
+
+    private int reportCount;
 }

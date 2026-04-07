@@ -192,56 +192,69 @@
         </c:when>
         <c:otherwise>
           <c:forEach var="post" items="${popularList}">
-            <div class="cc-wrap ${post.accountStatus eq 'BLOCKED' ? 'post-blurred-wrap' : ''}" data-id="${post.postId}">
-              <div class="cc ${post.accountStatus eq 'BLOCKED' ? 'post-blurred' : ''}">
-                <div class="cc-iw">
-                  <c:choose>
-                    <c:when test="${not empty post.thumbUrl}">
-                      <img class="cc-img" src="${pageContext.request.contextPath}${post.thumbUrl}" alt="${post.title}">
-                    </c:when>
-                    <c:otherwise>
-                      <div class="cc-img" style="background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:40px;">✈️</div>
-                    </c:otherwise>
-                  </c:choose>
-                  <span class="cc-badge">
-                    <c:choose>
-                      <c:when test="${post.postType eq 'review'}">여행후기</c:when>
-                      <c:when test="${post.postType eq 'photo'}">사진</c:when>
-                      <c:when test="${post.postType eq 'tip'}">팁</c:when>
-                      <c:when test="${post.postType eq 'question'}">질문</c:when>
-                      <c:otherwise>${post.postType}</c:otherwise>
-                    </c:choose>
-                  </span>
-                </div>
-                <div class="cc-b">
-                  <div class="cc-title">${post.title}</div>
-                  <div class="cc-foot">
-                    <div class="cc-auth">
-                      <div class="cc-av">${fn:substring(post.nickname, 0, 1)}</div>
-                      <div>
-                        <div class="cc-an">${post.nickname}</div>
-                        <div class="cc-dt">
-                          <fmt:formatDate value="${post.createdAt}" pattern="yyyy.MM.dd"/>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="cc-stats">
-                      <span>&#10084; ${post.likeCount}</span>
-                      <span>&#128172; ${post.commentCount}</span>
-                    </div>
+  <c:choose>
+    <%-- 일반유저/유저경험모드: 차단된 글 아예 안 보임 --%>
+    <c:when test="${(post.accountStatus eq 'BLOCKED' or post.postStatus eq 'DORMANT') and !isAdminMode}">
+    </c:when>
+    <%-- 관리자모드: 정상 표시 + 뱃지 --%>
+    <c:otherwise>
+      <div class="cc-wrap" data-id="${post.postId}">
+        <div class="cc">
+          <div class="cc-iw">
+            <c:choose>
+              <c:when test="${not empty post.thumbUrl}">
+                <img class="cc-img" src="${pageContext.request.contextPath}${post.thumbUrl}" alt="${post.title}">
+              </c:when>
+              <c:otherwise>
+                <div class="cc-img" style="background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:40px;">✈️</div>
+              </c:otherwise>
+            </c:choose>
+            <span class="cc-badge">
+              <c:choose>
+                <c:when test="${post.postType eq 'review'}">여행후기</c:when>
+                <c:when test="${post.postType eq 'photo'}">사진</c:when>
+                <c:when test="${post.postType eq 'tip'}">팁</c:when>
+                <c:when test="${post.postType eq 'question'}">질문</c:when>
+                <c:otherwise>${post.postType}</c:otherwise>
+              </c:choose>
+            </span>
+          </div>
+          <div class="cc-b">
+            <div class="cc-title">${post.title}</div>
+            <div class="cc-foot">
+              <div class="cc-auth">
+                <div class="cc-av">${fn:substring(post.nickname, 0, 1)}</div>
+                <div>
+                  <div class="cc-an">${post.nickname}</div>
+                  <div class="cc-dt">
+                    <fmt:formatDate value="${post.createdAt}" pattern="yyyy.MM.dd"/>
                   </div>
                 </div>
               </div>
-<c:choose>
-  <c:when test="${post.postStatus eq 'DORMANT'}">
-    <div class="post-blurred-overlay">🚫 차단된 게시글입니다.</div>
-  </c:when>
-  <c:when test="${post.accountStatus eq 'BLOCKED'}">
-    <div class="post-blurred-overlay">🚫 차단된 유저의 게시글입니다.</div>
-  </c:when>
-</c:choose>
+              <div class="cc-stats">
+                <span>&#10084; ${post.likeCount}</span>
+                <span>&#128172; ${post.commentCount}</span>
+              </div>
             </div>
-          </c:forEach>
+          </div>
+        </div>
+        <c:if test="${isAdminMode}">
+  <c:choose>
+    <c:when test="${post.postStatus eq 'DORMANT' and post.reportCount >= 3}">
+      <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
+    </c:when>
+    <c:when test="${post.postStatus eq 'DORMANT'}">
+      <span class="blocked-badge">🚫 차단된 게시글</span>
+    </c:when>
+    <c:when test="${post.accountStatus eq 'BLOCKED'}">
+      <span class="blocked-badge">🚫 차단된 유저</span>
+    </c:when>
+  </c:choose>
+</c:if>
+      </div>
+    </c:otherwise>
+  </c:choose>
+</c:forEach>
         </c:otherwise>
       </c:choose>
     </div>
@@ -250,12 +263,10 @@
 
 <script>
 document.querySelectorAll('.cc-wrap[data-id]').forEach(function(wrap) {
-    if (!wrap.classList.contains('post-blurred-wrap')) {
-        wrap.style.cursor = 'pointer';
-        wrap.addEventListener('click', function() {
-            location.href = '${pageContext.request.contextPath}/community/' + this.getAttribute('data-id');
-        });
-    }
+    wrap.style.cursor = 'pointer';
+    wrap.addEventListener('click', function() {
+        location.href = '${pageContext.request.contextPath}/community/' + this.getAttribute('data-id');
+    });
 });
 </script>
 
