@@ -21,10 +21,12 @@
 
     <!-- 찜 / 좋아요 버튼 -->
     <div class="spot-card__actions">
+      <%-- 찜 버튼: 별표(⭐/☆) 사용, active 상태면 항상 ⭐ 표시 --%>
       <button class="action-btn fav-btn ${spot.favorited ? 'active' : ''}"
               title="찜하기">
-        ${spot.favorited ? '💛' : '🤍'}
+        ${spot.favorited ? '⭐' : '☆'}
       </button>
+      <%-- 좋아요 버튼: 하트(❤️/🤍) 사용, active 상태면 항상 ❤️ 표시 --%>
       <button class="action-btn like-btn ${spot.liked ? 'active' : ''}"
               title="좋아요">
         ${spot.liked ? '❤️' : '🤍'}

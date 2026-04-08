@@ -228,6 +228,12 @@
         ORDER  BY tl.tag_name ASC
     </select>
 
+    <select id="selectAllTagList" resultType="string">
+        SELECT tag_name
+        FROM   SPOT_TAG_LIST
+        ORDER  BY tag_name ASC
+    </select>
+
     <!-- =============================================
          상세 단건
          ============================================= -->
@@ -237,6 +243,50 @@
         FROM SPOT_TRAVEL st
         WHERE st.spot_idx = #{spotIdx}
     </select>
+
+    <select id="countBySpotId" resultType="int">
+        SELECT COUNT(*)
+        FROM SPOT_TRAVEL
+        WHERE spot_id = #{spotId}
+    </select>
+
+    <insert id="insertSpot" useGeneratedKeys="true" keyProperty="spotIdx">
+        INSERT INTO SPOT_TRAVEL (
+            spot_id,
+            name,
+            region,
+            address,
+            latitude,
+            longitude,
+            description
+        ) VALUES (
+            #{spotId},
+            #{name},
+            #{region},
+            #{address},
+            #{latitude},
+            #{longitude},
+            #{description}
+        )
+    </insert>
+
+    <!-- 여행지 대표 이미지 저장 -->
+    <insert id="insertSpotImage">
+        INSERT INTO SPOT_IMAGE (spot_idx, image_id, image_url)
+        VALUES (#{spotIdx}, #{imageId}, #{imageUrl})
+    </insert>
+
+    <select id="selectTagIdxByName" resultType="int">
+        SELECT tag_idx
+        FROM   SPOT_TAG_LIST
+        WHERE  tag_name = #{tagName}
+        LIMIT  1
+    </select>
+
+    <insert id="insertSpotTag">
+        INSERT IGNORE INTO SPOT_TAG (spot_idx, tag_idx)
+        VALUES (#{spotIdx}, #{tagIdx})
+    </insert>
 
     <select id="selectSpotTags" resultType="string">
         SELECT tl.tag_name

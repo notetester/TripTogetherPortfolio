@@ -3,12 +3,15 @@ package org.triptogether.explore.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.explore.service.ExploreService;
+import org.triptogether.explore.vo.ExploreCreateDto;
 import org.triptogether.explore.vo.ExploreSearchDto;
 import org.triptogether.explore.vo.ExploreVO;
 
@@ -23,6 +26,9 @@ import java.util.Map;
 public class ExploreController {
 
     private final ExploreService exploreService;
+
+    @Value("${google.maps.api-key}")
+    private String mapsApiKey;
 
     /* ============================================================
        GET /explore  →  여행지 탐색 메인
@@ -56,8 +62,42 @@ public class ExploreController {
         model.addAttribute("search",      search);
         model.addAttribute("regionList",  exploreService.getRegionList());
         model.addAttribute("tagList",     exploreService.getTagList());
+        model.addAttribute("writeTagList", exploreService.getWriteTagList());
+        model.addAttribute("mapsApiKey",  mapsApiKey);
+        if (!model.containsAttribute("writeForm")) {
+            model.addAttribute("writeForm", new ExploreCreateDto());
+        }
+        if (!model.containsAttribute("openWriteModal")) {
+            model.addAttribute("openWriteModal", false);
+        }
 
         return "explore/list";
+    }
+
+    @PostMapping("/write")
+    public String writeSpot(@ModelAttribute("writeForm") ExploreCreateDto writeForm,
+                            HttpSession session,
+                            RedirectAttributes redirectAttributes) {
+
+        UsersVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("writeError", "여행지 등록은 로그인 후 이용할 수 있습니다.");
+            redirectAttributes.addFlashAttribute("openWriteModal", true);
+            redirectAttributes.addFlashAttribute("writeForm", writeForm);
+            return "redirect:/explore";
+        }
+
+        String validationError = validateWriteForm(writeForm);
+        if (validationError != null) {
+            redirectAttributes.addFlashAttribute("writeError", validationError);
+            redirectAttributes.addFlashAttribute("openWriteModal", true);
+            redirectAttributes.addFlashAttribute("writeForm", writeForm);
+            return "redirect:/explore";
+        }
+
+        Long spotIdx = exploreService.createSpot(writeForm, loginUser);
+        redirectAttributes.addFlashAttribute("writeSuccess", "새 여행지가 등록되었습니다.");
+        return "redirect:/detail/" + spotIdx;
     }
 
     /* ============================================================
@@ -122,9 +162,44 @@ public class ExploreController {
     }
 
     private Long getLoginUserIdx(HttpSession session) {
+        UsersVO loginUser = getLoginUser(session);
+        return loginUser != null ? loginUser.getUserIdx() : null;
+    }
+
+    private UsersVO getLoginUser(HttpSession session) {
         Object loginUser = session.getAttribute("loginUser");
         if (loginUser instanceof UsersVO) {
-            return ((UsersVO) loginUser).getUserIdx();
+            return (UsersVO) loginUser;
+        }
+        return null;
+    }
+
+    private String validateWriteForm(ExploreCreateDto writeForm) {
+        if (writeForm == null) return "등록 정보가 올바르지 않습니다.";
+
+        String name = writeForm.getName() == null ? "" : writeForm.getName().trim();
+        String region = writeForm.getRegion() == null ? "" : writeForm.getRegion().trim();
+        String address = writeForm.getAddress() == null ? "" : writeForm.getAddress().trim();
+        String description = writeForm.getDescription() == null ? "" : writeForm.getDescription().trim();
+
+        if (name.isEmpty() || name.length() > 100) {
+            return "여행지 이름은 1자 이상 100자 이하로 입력해주세요.";
+        }
+        if (region.isEmpty() || region.length() > 100) {
+            return "지역은 1자 이상 100자 이하로 입력해주세요.";
+        }
+        if (address.isEmpty() || address.length() > 255) {
+            return "주소를 검색해서 입력해주세요.";
+        }
+        if (writeForm.getLatitude() == null || writeForm.getLongitude() == null) {
+            return "지도에서 위치를 검색해 위도와 경도를 선택해주세요.";
+        }
+        if (writeForm.getLatitude() < -90 || writeForm.getLatitude() > 90
+                || writeForm.getLongitude() < -180 || writeForm.getLongitude() > 180) {
+            return "위치 좌표가 올바르지 않습니다.";
+        }
+        if (description.isEmpty() || description.length() > 2000) {
+            return "설명은 1자 이상 2000자 이하로 입력해주세요.";
         }
         return null;
     }

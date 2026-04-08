@@ -78,6 +78,53 @@
 .search-clear:hover { background: var(--gray-100); color: var(--gray-600); }
 .search-clear.visible { display: block; }
 
+.exp-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.exp-header-note {
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
+.exp-primary-btn,
+.exp-secondary-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s, background .2s, color .2s;
+}
+
+.exp-primary-btn {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, .18);
+}
+
+.exp-primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, .24);
+}
+
+.exp-secondary-btn {
+  background: #fff;
+  color: var(--gray-700);
+  border: 1.5px solid var(--gray-200);
+}
+
+.exp-secondary-btn:hover {
+  background: var(--gray-50);
+}
+
 /* ── 탭 바 ── */
 .exp-tab-bar {
   display: flex;
@@ -184,6 +231,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
+  align-items: stretch;
 }
 
 /* ── 여행지 카드 ── */
@@ -196,6 +244,9 @@
   transition: transform .25s, box-shadow .25s;
   border: 1px solid var(--gray-100);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .spot-card:hover {
@@ -207,11 +258,12 @@
 .spot-card__img-wrap {
   position: relative;
   overflow: hidden;
+  aspect-ratio: 16 / 10;
 }
 
 .spot-card__img {
   width: 100%;
-  height: 210px;
+  height: 100%;
   object-fit: cover;
   transition: transform .45s;
   display: block;
@@ -233,7 +285,13 @@
   transition: opacity .2s;
 }
 
+/* 카드에 hover 하면 모든 액션 버튼 표시 */
 .spot-card:hover .spot-card__actions {
+  opacity: 1;
+}
+
+/* 찜 또는 좋아요가 활성화(active)된 버튼이 있으면 항상 표시 */
+.spot-card__actions:has(.active) {
   opacity: 1;
 }
 
@@ -257,6 +315,11 @@
 .action-btn.active { color: #ef4444; }
 .action-btn.fav-btn.active { color: #f59e0b; }
 
+/* 찜/좋아요가 active 상태인 개별 버튼은 항상 보이도록 (opacity 오버라이드) */
+.action-btn.active {
+  opacity: 1;
+}
+
 /* 지역 뱃지 */
 .spot-card__region-badge {
   position: absolute;
@@ -275,6 +338,9 @@
 /* 카드 본문 */
 .spot-card__body {
   padding: 18px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .spot-card__top {
@@ -290,6 +356,11 @@
   font-weight: 700;
   color: var(--gray-800);
   line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.3em * 2);
 }
 
 .spot-card__rating {
@@ -316,15 +387,17 @@
   line-height: 1.6;
   margin-bottom: 12px;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: calc(1.6em * 3);
 }
 
 .spot-card__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  margin-top: auto;
 }
 
 .spot-tag {
@@ -440,6 +513,271 @@
   transform: translateX(-50%) translateY(0);
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+
+.spot-write-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, .56);
+  z-index: 1100;
+}
+
+.spot-write-modal.show {
+  display: flex;
+}
+
+.spot-write-dialog {
+  width: min(1120px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, .28);
+  padding: 28px;
+}
+
+.spot-write-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.spot-write-head h2 {
+  font-size: 1.5rem;
+  color: var(--gray-800);
+  margin-bottom: 6px;
+}
+
+.spot-write-head p {
+  color: var(--gray-500);
+  font-size: 14px;
+}
+
+.spot-write-close {
+  border: none;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.spot-write-alert {
+  margin-bottom: 18px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
+.spot-write-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr);
+  gap: 24px;
+}
+
+.spot-write-fields {
+  display: grid;
+  gap: 12px;
+}
+
+.spot-write-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-700);
+}
+
+.spot-write-form input[type="text"],
+.spot-write-form textarea {
+  width: 100%;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 13px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--gray-800);
+  background: #fff;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.spot-write-form input[type="text"]:focus,
+.spot-write-form textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, .08);
+  outline: none;
+}
+
+.spot-write-form textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+/* ── PlaceAutocompleteElement 스타일링 ── */
+/* Google의 새 Places API 커스텀 요소가 기존 input과 동일하게 보이도록 스타일 적용 */
+#spotLocationSearchWrap {
+  width: 100%;
+}
+
+#spotLocationSearchWrap gmp-place-autocomplete {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.spot-write-help {
+  margin-top: -4px;
+  font-size: 12px;
+  color: var(--gray-400);
+}
+
+.spot-write-coords {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* ── 이미지 업로드 영역 ── */
+.spot-write-image-wrap {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.spot-image-upload-area {
+  position: relative;
+  min-height: 320px;
+  border: 2px dashed var(--gray-300);
+  border-radius: 20px;
+  background: var(--gray-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  overflow: hidden;
+}
+
+.spot-image-upload-area.drag-over {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+
+.spot-image-upload-area:hover {
+  border-color: var(--blue);
+}
+
+.spot-image-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.spot-image-preview img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 18px;
+}
+
+.spot-image-remove-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.6);
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+}
+
+.spot-image-remove-btn:hover {
+  background: rgba(239, 68, 68, .9);
+}
+
+.spot-image-placeholder {
+  text-align: center;
+  color: var(--gray-400);
+  padding: 24px;
+}
+
+.spot-image-placeholder p {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.spot-write-fallback-input {
+  width: 100%;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 13px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--gray-800);
+  background: #fff;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.spot-write-fallback-input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, .08);
+  outline: none;
+}
+
+.spot-write-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.spot-write-tag-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--gray-50);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.spot-write-tag-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--gray-200);
+  background: #fff;
+  color: var(--gray-700);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.spot-write-tag-option input {
+  accent-color: var(--blue);
+}
+
 /* ── 반응형 ── */
 @media (max-width: 640px) {
   .exp-header { padding: 28px 16px 0; }
@@ -447,8 +785,18 @@
   .exp-body { padding: 24px 16px 48px; }
   .spot-grid { grid-template-columns: 1fr; }
   .exp-tab-btn { padding: 8px 14px; font-size: 13px; }
+  .exp-header-actions { align-items: stretch; }
+  .spot-write-modal { padding: 12px; }
+  .spot-write-dialog { padding: 20px 16px; max-height: calc(100vh - 24px); }
+  .spot-write-grid { grid-template-columns: 1fr; }
+  .spot-image-upload-area { min-height: 240px; }
+  .spot-image-preview img { height: 240px; }
+  .spot-write-coords { grid-template-columns: 1fr; }
+  .spot-write-actions { flex-direction: column-reverse; }
+  .exp-primary-btn, .exp-secondary-btn { width: 100%; }
 }
 
 @media (min-width: 641px) and (max-width: 1023px) {
   .spot-grid { grid-template-columns: repeat(2, 1fr); }
+  .spot-write-grid { grid-template-columns: 1fr; }
 }

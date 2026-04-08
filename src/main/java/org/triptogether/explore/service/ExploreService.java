@@ -1,7 +1,9 @@
 package org.triptogether.explore.service;
 
+import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.explore.vo.ExploreSearchDto;
 import org.triptogether.explore.vo.ExploreVO;
+import org.triptogether.explore.vo.ExploreCreateDto;
 import org.triptogether.explore.vo.ReviewVO;
 
 import java.util.List;
@@ -28,9 +30,13 @@ public interface ExploreService {
 
     /** 태그(테마) 목록 */
     List<String> getTagList();
+    List<String> getWriteTagList();
 
     /** 여행지 상세 */
     ExploreVO getSpotDetail(Long spotIdx, Long loginUserIdx);
+
+    /** 여행지 등록 (이미지 포함) */
+    Long createSpot(ExploreCreateDto spotCreateDto, UsersVO loginUser);
 
     /* ── 리뷰 ── */
 

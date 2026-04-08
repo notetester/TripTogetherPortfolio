@@ -39,6 +39,7 @@ public interface ExploreMapper {
 
     List<String> selectRegionList();
     List<String> selectTagList();
+    List<String> selectAllTagList();
 
     /* ============================================================
        상세 단건
@@ -46,6 +47,16 @@ public interface ExploreMapper {
 
     ExploreVO selectSpotDetail(@Param("spotIdx") Long spotIdx);
     List<String> selectSpotTags(@Param("spotIdx") Long spotIdx);
+    int countBySpotId(@Param("spotId") String spotId);
+    void insertSpot(ExploreVO spot);
+
+    /** 여행지 대표 이미지 저장 (SPOT_IMAGE 테이블) */
+    void insertSpotImage(@Param("spotIdx") Long spotIdx,
+                         @Param("imageId") String imageId,
+                         @Param("imageUrl") String imageUrl);
+    Integer selectTagIdxByName(@Param("tagName") String tagName);
+    void insertSpotTag(@Param("spotIdx") Long spotIdx,
+                       @Param("tagIdx") Integer tagIdx);
 
     /* ============================================================
        리뷰 (SPOT_REVIEW)

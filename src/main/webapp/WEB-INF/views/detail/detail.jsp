@@ -147,6 +147,18 @@
 }
 .review-delete-btn:hover { background:#fee2e2; color:#ef4444; }
 .review-empty { text-align:center; padding:36px; color:var(--gray-400); font-size:14px; }
+.ai-rec-content {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.ai-rec-state {
+  text-align: center;
+  padding: 32px;
+  color: var(--gray-400);
+  font-size: 14px;
+}
 
 /* ── 반응형 ── */
 @media (max-width:640px) {
@@ -193,7 +205,7 @@
   <div class="det-actions">
     <button class="det-action-btn fav-btn ${spot.favorited ? 'active' : ''}"
             data-spot-idx="${spot.spotIdx}">
-      <span>${spot.favorited ? '💛' : '🤍'}</span>
+      <span>${spot.favorited ? '⭐' : '☆'}</span>
       <span>${spot.favorited ? '찜 완료' : '찜하기'}</span>
     </button>
     <button class="det-action-btn like-btn ${spot.liked ? 'active' : ''}"
@@ -404,17 +416,19 @@
        ════════════════════════════════════════ -->
   <c:if test="${isLoggedIn}">
   <div class="det-section" id="aiRecommendSection">
-    <h2>&#x1F916; AI 맞춤 추천 여행지</h2>
-    <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">
+    <h2 id="aiRecTitle">&#x1F916; AI 맞춤 추천 여행지</h2>
+    <p id="aiRecDesc" style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">
       회원님의 관심 여행지를 분석해 비슷한 취향의 여행지를 추천해드립니다.
     </p>
-    <div id="recLoadingMsg" style="text-align:center;padding:32px;color:var(--gray-400);font-size:14px;">
-      <span style="font-size:24px;display:block;margin-bottom:8px;">&#x1F916;</span>
-      AI가 맞춤 여행지를 분석 중입니다...
-    </div>
-    <div class="spot-grid" id="recGrid" style="display:none;"></div>
-    <div id="recEmptyMsg" style="display:none;text-align:center;padding:32px;color:var(--gray-400);font-size:14px;">
-      아직 방문 기록이 부족합니다. 여행지를 더 둘러보시면 맞춤 추천을 드릴게요! ✈️
+    <div class="ai-rec-content">
+      <div id="recLoadingMsg" class="ai-rec-state">
+        <span style="font-size:24px;display:block;margin-bottom:8px;">&#x1F916;</span>
+        AI가 맞춤 여행지를 분석 중입니다...
+      </div>
+      <div class="spot-grid" id="recGrid" style="display:none;"></div>
+      <div id="recEmptyMsg" class="ai-rec-state" style="display:none;">
+        아직 방문 기록이 부족합니다. 여행지를 더 둘러보시면 맞춤 추천을 드릴게요! ✈️
+      </div>
     </div>
   </div>
   </c:if>
@@ -467,7 +481,7 @@
         btn.classList.toggle('active', active);
         btn.querySelector('span:last-child').textContent = active ? onText : offText;
         btn.querySelector('span:first-child').textContent =
-            active ? (key === 'favorited' ? '💛' : '❤️') : '🤍';
+            active ? (key === 'favorited' ? '⭐' : '❤️') : (key === 'favorited' ? '☆' : '🤍');
         showToast(active ? onMsg : offMsg);
       })
       .catch(() => showToast('처리 중 오류가 발생했습니다.'));
@@ -478,7 +492,7 @@
 
   favBtn && favBtn.addEventListener('click', function () {
     toggleAction('/explore/favorite/' + spotIdx, this,
-                 '찜 완료', '찜하기', '💛 찜 추가됨', '찜 취소됨', 'favorited');
+                 '찜 완료', '찜하기', '⭐ 찜 추가됨', '찜 취소됨', 'favorited');
   });
 
   likeBtn && likeBtn.addEventListener('click', function () {
@@ -858,19 +872,26 @@ function initMap() {
 <c:if test="${isLoggedIn}">
 <script>
 (function() {
-  var CTX_REC   = '${pageContext.request.contextPath}';
+  var CTX_REC      = '${pageContext.request.contextPath}';
   var SPOT_IDX_REC = '${spot.spotIdx}';
-  var pageEnter = Date.now();
+  var pageEnter    = Date.now();
+  var logSent      = false;
 
-  /* ── 페이지 이탈 시 체류 시간 전송 ── */
+  /* ── 체류 시간 전송: fetch + keepalive (sendBeacon 대신 → Content-Type 정상 전달) ── */
   function sendViewLog() {
+    if (logSent) return;
     var staySeconds = Math.round((Date.now() - pageEnter) / 1000);
     if (staySeconds < 2) return;
-    navigator.sendBeacon(
-      CTX_REC + '/recommend/view-log',
-      new Blob([JSON.stringify({ spotIdx: SPOT_IDX_REC, staySeconds: staySeconds })],
-               { type: 'application/json' })
-    );
+    logSent = true;
+    fetch(CTX_REC + '/recommend/view-log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spotIdx: SPOT_IDX_REC, staySeconds: staySeconds }),
+      keepalive: true
+    }).then(function() {
+      /* ★ 체류 전송 완료 → 추천 섹션 즉시 새로고침 (실시간 반영) */
+      refreshRecommendations();
+    }).catch(function() { /* 무시 */ });
   }
   window.addEventListener('beforeunload', sendViewLog);
   document.addEventListener('visibilitychange', function() {
@@ -913,9 +934,9 @@ function initMap() {
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  /* ── AI 추천 조회 ── */
+  /* ── AI 추천 조회 (최초 로드 - 로딩 메시지 포함) ── */
   function loadRecommendations() {
-    fetch(CTX_REC + '/recommend/spots')
+    fetch(CTX_REC + '/recommend/spots?currentSpotIdx=' + SPOT_IDX_REC)
       .then(function(r) { return r.json(); })
       .then(function(data) {
         var loadMsg  = document.getElementById('recLoadingMsg');
@@ -927,13 +948,22 @@ function initMap() {
           if (emptyMsg) emptyMsg.style.display = 'block';
           return;
         }
-
-        var html = data.spots.map(buildRecCard).join('');
+        /* ★ 트렌딩 폴백이면 섹션 제목 변경 */
+        var title = document.getElementById('aiRecTitle');
+        var desc  = document.getElementById('aiRecDesc');
+        if (data.isTrending) {
+          if (title) title.textContent = '\uD83D\uDD25 요즘 뜨는 여행지 추천';
+          if (desc)  desc.textContent  = '최근 가장 많은 관심을 받고 있는 여행지를 소개해드립니다.';
+        } else {
+          if (title) title.innerHTML = '&#x1F916; AI 맞춤 추천 여행지';
+          if (desc)  desc.textContent = '회원님의 관심 여행지를 분석해 비슷한 취향의 여행지를 추천해드립니다.';
+        }
         if (grid) {
-          grid.innerHTML = html;
+          grid.innerHTML     = data.spots.map(buildRecCard).join('');
           grid.style.display = '';
         }
         if (loadMsg) loadMsg.style.display = 'none';
+        if (emptyMsg) emptyMsg.style.display = 'none';
       })
       .catch(function() {
         var loadMsg = document.getElementById('recLoadingMsg');
@@ -941,7 +971,24 @@ function initMap() {
       });
   }
 
-  /* 페이지 로드 후 1초 뒤 추천 조회 (지도 로딩과 충돌 방지) */
+  /* ★ 추천 조용히 새로고침 (체류 기록 전송 후 호출 - 로딩 메시지 없이 카드만 교체) */
+  function refreshRecommendations() {
+    fetch(CTX_REC + '/recommend/spots?currentSpotIdx=' + SPOT_IDX_REC)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var grid     = document.getElementById('recGrid');
+        var emptyMsg = document.getElementById('recEmptyMsg');
+        if (!data.success || !data.spots || data.spots.length === 0) return;
+        if (grid) {
+          grid.innerHTML     = data.spots.map(buildRecCard).join('');
+          grid.style.display = '';
+        }
+        if (emptyMsg) emptyMsg.style.display = 'none';
+      })
+      .catch(function() { /* 새로고침 실패는 조용히 무시 */ });
+  }
+
+  /* 페이지 로드 후 1초 뒤 최초 추천 조회 */
   setTimeout(loadRecommendations, 1000);
 })();
 </script>
