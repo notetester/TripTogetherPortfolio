@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="pageCSS" value="mypage/mypage.css"/>
 <%@ include file="../common/header.jsp" %>
-
+<html lang="ko">
 <body>
 <div class="mypage-wrap">
   <div class="mypage-inner">
@@ -109,10 +109,10 @@
             </span>
             <c:choose>
               <c:when test="${user.emailVerified}">
-                <span class="email-status-badge verified">✓ 인증됨</span>
+                <span class="email-status-badge verified" id="emailStatusBadge">✓ 인증됨</span>
               </c:when>
               <c:when test="${not empty user.userEmail}">
-                <span class="email-status-badge unverified">⚠ 미인증</span>
+                <span class="email-status-badge unverified" id="emailStatusBadge">⚠ 미인증</span>
               </c:when>
             </c:choose>
           </div>
@@ -138,7 +138,7 @@
         <div class="toggle-wrap">
           <div>
             <div class="toggle-label">이메일로 로그인</div>
-            <div class="toggle-sub">
+            <div class="toggle-sub" id="emailLoginSub">
               <c:choose>
                 <c:when test="${user.emailVerified}">
                   이메일 주소를 아이디 대신 사용합니다
@@ -151,8 +151,7 @@
           </div>
           <label class="toggle-switch">
             <input type="checkbox" id="emailLoginToggle"
-                   ${user.emailLoginEnabled ? 'checked' : ''}
-                   ${!user.emailVerified ? 'disabled' : ''}>
+                   ${user.emailLoginEnabled ? 'checked' : ''}>
             <span class="toggle-slider"></span>
           </label>
         </div>
@@ -249,7 +248,7 @@
 
         <!-- 카카오 -->
         <div class="social-link-item">
-          <div class="social-link-icon KAKAO">🟡</div>
+          <div class="social-link-icon KAKAO"><span class="kakao-mark-box">k</span></div>
           <div class="social-link-info">
             <div class="social-link-name">카카오</div>
             <div class="social-link-status ${socialLinkMap['KAKAO'] ? 'linked' : ''}">
@@ -466,12 +465,21 @@ document.getElementById('sendVerifyBtn').addEventListener('click', async functio
   msg.className = 'field-msg '+(data.success?'success':'error');
   msg.textContent = data.message;
   this.classList.remove('loading'); this.disabled = false;
-  if (data.success) this.textContent = '재발송';
+  if (data.success) {
+    this.textContent = '재발송';
+    const badge = document.getElementById('emailStatusBadge');
+    if (badge) {
+      badge.className = 'email-status-badge unverified';
+      badge.textContent = '⚠ 미인증';
+    }
+    const sub = document.getElementById('emailLoginSub');
+    if (sub) sub.textContent = '이메일 인증 후 활성화 가능합니다';
+  }
 });
 
 // ── 이메일 로그인 토글 ──
 const emailToggle = document.getElementById('emailLoginToggle');
-if (emailToggle && !emailToggle.disabled) {
+if (emailToggle) {
   emailToggle.addEventListener('change', async function () {
     const enable = this.checked;
     const msg    = document.getElementById('emailLoginMsg');
@@ -481,7 +489,28 @@ if (emailToggle && !emailToggle.disabled) {
     });
     const data = await res.json();
     showMsg(msg, data.success, data.message);
-    if (!data.success) this.checked = !enable; // 롤백
+
+    if (!data.success) {
+      this.checked = !enable; // 롤백
+      if (data.emailVerified === false) {
+        const sub = document.getElementById('emailLoginSub');
+        if (sub) sub.textContent = '이메일 인증 후 활성화 가능합니다';
+      }
+      return;
+    }
+
+    const sub = document.getElementById('emailLoginSub');
+    if (sub) {
+      sub.textContent = enable
+        ? '이메일 주소를 아이디 대신 사용합니다'
+        : '이메일 인증 후 원하실 때 다시 활성화할 수 있습니다';
+    }
+
+    const badge = document.getElementById('emailStatusBadge');
+    if (badge) {
+      badge.className = 'email-status-badge verified';
+      badge.textContent = '✓ 인증됨';
+    }
   });
 }
 

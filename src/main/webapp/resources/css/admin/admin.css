@@ -368,7 +368,7 @@ body {
     display: flex; align-items: center; justify-content: center;
     font-size: 10px; font-weight: 700;
 }
-.social-icon-sm.K { background: #fee500; color: #191919; }
+.social-icon-sm.K { background: #fee500; color: #191919; font-weight: 900; font-size: 13px; text-transform: lowercase; font-family: Arial, Helvetica, sans-serif; }
 .social-icon-sm.N { background: #03c75a; color: #fff; }
 .social-icon-sm.G { background: #f3f4f6; color: #374151; }
 

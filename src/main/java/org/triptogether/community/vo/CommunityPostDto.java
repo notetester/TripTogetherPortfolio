@@ -34,4 +34,8 @@ public class CommunityPostDto {
 
     // 질문 유형일 때만 사용 (null이면 질문 아님)
     private Boolean isSolved;
+
+    private String accountStatus; // 작성자 계정 상태
+
+    private int reportCount;
 }

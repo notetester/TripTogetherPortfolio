@@ -34,6 +34,9 @@
             <a class="adm-nav-item ${activeMenu=='logins'?'active':''}" href="${pageContext.request.contextPath}/admin/logins">
                 <span class="adm-nav-icon">🔐</span> 로그인 감사
             </a>
+            <a class="adm-nav-item ${activeMenu=='security'?'active':''}" href="${pageContext.request.contextPath}/admin/security">
+                <span class="adm-nav-icon">🛡️</span> 보안 이력
+            </a>
 
             <div class="adm-nav-section" style="margin-top:8px;">운영</div>
             <a class="adm-nav-item ${activeMenu=='inquiries'?'active':''}" href="${pageContext.request.contextPath}/admin/inquiries">

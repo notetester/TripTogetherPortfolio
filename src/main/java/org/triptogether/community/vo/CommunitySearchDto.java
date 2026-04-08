@@ -22,6 +22,8 @@ public class CommunitySearchDto {
     private int     pageSize = 10;
     private int     offset;              // Mapper에서 사용 (page-1) * pageSize
 
+    private boolean adminMode;
+
     // offset 자동 계산
     public void calcOffset() {
         this.offset = (this.page - 1) * this.pageSize;

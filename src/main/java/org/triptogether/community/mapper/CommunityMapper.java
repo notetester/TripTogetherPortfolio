@@ -93,5 +93,25 @@ public interface CommunityMapper {
     void decreaseCommentLikeCount(@Param("commentId") Long commentId);
 
     // ===== 신고 =====
-    void insertReport(@Param("postId") Long postId, @Param("userIdx") Long userIdx);
+    int insertReport(@Param("postId") Long postId, @Param("userIdx") Long userIdx);
+    int reportComment(@Param("commentId") Long commentId, @Param("userIdx") Long userIdx);
+    int selectPostReportCount(@Param("postId") Long postId);
+    int selectCommentReportCount(@Param("commentId") Long commentId);
+
+    // ===== 홈 인기 글 =====
+    List<CommunityPostDto> selectPopularPostList();
+
+    // ===== 유저 차단 =====
+    void blockUser(@Param("userIdx") Long userIdx);
+
+    void unblockUser(@Param("userIdx") Long userIdx);
+
+    // ===== 콘텐츠 차단 =====
+    void blockPost(@Param("postId") Long postId);
+    void unblockPost(@Param("postId") Long postId);
+    void blockComment(@Param("commentId") Long commentId);
+    void unblockComment(@Param("commentId") Long commentId);
+
+    void increasePostReportCount(@Param("postId") Long postId);
+    void increaseCommentReportCount(@Param("commentId") Long commentId);
 }

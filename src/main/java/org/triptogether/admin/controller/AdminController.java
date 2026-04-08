@@ -20,6 +20,7 @@ import java.util.Map;
  *     <li>회원 관리</li>
  *     <li>문의 관리</li>
  *     <li>로그인 감사</li>
+ *     <li>보안 이력</li>
  * </ul>
  */
 @Controller
@@ -117,5 +118,12 @@ public class AdminController {
         model.addAllAttributes(adminService.getLoginAuditList(search));
         model.addAttribute("activeMenu", "logins");
         return "admin/logs/list";
+    }
+
+    @GetMapping("/security")
+    public String securityAudit(AdminSecurityAuditSearchVO search, Model model) {
+        model.addAllAttributes(adminService.getSecurityAuditList(search));
+        model.addAttribute("activeMenu", "security");
+        return "admin/security/list";
     }
 }

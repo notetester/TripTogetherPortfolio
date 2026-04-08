@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
+<html lang="ko">
 <body>
 <div class="auth-wrap">
   <div class="auth-card" style="text-align:center;">
@@ -14,8 +15,8 @@
     <c:choose>
       <c:when test="${not empty foundUserId}">
         <div style="font-size:56px;margin:16px 0 20px;">🎉</div>
-        <h1 class="auth-title">아이디를 찾았어요!</h1>
-        <p class="auth-sub">가입하신 아이디는 아래와 같습니다.</p>
+        <h1 class="auth-title">아이디 힌트를 안내드려요</h1>
+        <p class="auth-sub">보안을 위해 아이디는 일부만 마스킹하여 표시됩니다.</p>
 
         <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:12px;
                     padding:20px;margin:20px 0;font-size:22px;font-weight:700;color:var(--blue);
@@ -53,4 +54,5 @@
   </div>
 </div>
 <%@ include file="../common/footer.jsp" %>
-</body></html>
+</body>
+</html>

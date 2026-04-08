@@ -31,4 +31,10 @@ public interface InquiryMapper {
     // ===== 상태 변경 =====
     void updateStatus(@Param("inquiryId") Long inquiryId,
                       @Param("status") String status);
+
+    // ===== 수정 =====
+    void updateInquiry(InquiryPostDto inquiry);
+
+    // ===== 삭제 =====
+    void deleteInquiry(@Param("inquiryId") Long inquiryId);
 }

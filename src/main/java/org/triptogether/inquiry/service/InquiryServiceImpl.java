@@ -69,4 +69,16 @@ public class InquiryServiceImpl implements InquiryService {
         inquiryMapper.insertAnswer(answer);
         inquiryMapper.updateStatus(inquiryId, "COMPLETED");
     }
+
+    @Override
+    @Transactional
+    public void updateInquiry(InquiryPostDto inquiry) {
+        inquiryMapper.updateInquiry(inquiry);
+    }
+
+    @Override
+    @Transactional
+    public void deleteInquiry(Long inquiryId) {
+        inquiryMapper.deleteInquiry(inquiryId);
+    }
 }

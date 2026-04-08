@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.auth.service.AuthServiceImpl;
+import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.myPage.service.MyPageService;
 
@@ -75,12 +76,6 @@ public class ProfileController {
         return "mypage/edit";
     }
 
-    private UsersVO refreshUser(Long userIdx) {
-        // AuthMapper를 통해 최신 사용자 정보 조회 (서비스 통해서)
-        // AuthService에 getUserByIdx 추가하거나 AuthMapper 직접 주입
-        // 여기서는 AuthServiceImpl의 내부 접근을 통해 처리
-        return authService.getUserByIdx(userIdx);
-    }
 
     // ── 기본 프로필 수정 ──────────────────────────
     @PostMapping("/edit/profile")
@@ -116,8 +111,9 @@ public class ProfileController {
     @PostMapping("/edit/password")
     @ResponseBody
     public Map<String, Object> updatePassword(
-            @RequestParam String currentPassword,
+            @RequestParam(required = false) String currentPassword,
             @RequestParam String newPassword,
+            HttpServletRequest request,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -125,13 +121,15 @@ public class ProfileController {
         if (user == null) { result.put("success", false); return result; }
 
         if (user.isPasswordEnabled() && !authService.checkPassword(user.getUserIdx(), currentPassword)) {
+            authService.recordPasswordChangeFailure(user.getUserIdx(), buildRequestContext(request), "WRONG_CURRENT_PASSWORD");
             result.put("success", false); result.put("field", "currentPassword");
             result.put("message", "현재 비밀번호가 올바르지 않습니다."); return result;
         }
         if (newPassword.length() < 8) {
+            authService.recordPasswordChangeFailure(user.getUserIdx(), buildRequestContext(request), "NEW_PASSWORD_TOO_SHORT");
             result.put("success", false); result.put("message", "새 비밀번호는 8자 이상이어야 합니다."); return result;
         }
-        authService.updatePassword(user.getUserIdx(), newPassword);
+        authService.updatePassword(user.getUserIdx(), newPassword, buildRequestContext(request));
         user.setPasswordEnabled(true);
         result.put("success", true); result.put("message", "비밀번호가 변경되었습니다.");
         return result;
@@ -141,7 +139,9 @@ public class ProfileController {
     @PostMapping("/edit/email/send")
     @ResponseBody
     public Map<String, Object> sendEmailVerification(
-            @RequestParam String email, HttpSession session) {
+            @RequestParam String email,
+            HttpServletRequest request,
+            HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
         UsersVO user = loginUser(session);
@@ -151,7 +151,13 @@ public class ProfileController {
                 (user.getUserEmail() == null || !user.getUserEmail().equals(email))) {
             result.put("success", false); result.put("message", "이미 사용 중인 이메일입니다."); return result;
         }
-        authService.sendEmailVerification(user.getUserIdx(), email);
+        boolean sent = authService.sendEmailVerification(user.getUserIdx(), email, buildRequestContext(request));
+        if (!sent) {
+            result.put("success", false);
+            result.put("message", "인증 이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.");
+            return result;
+        }
+
         user.setUserEmail(email); user.setEmailVerified(false); user.setEmailLoginEnabled(false);
         result.put("success", true); result.put("message", "인증 이메일을 발송했습니다. 메일을 확인해주세요.");
         return result;
@@ -161,7 +167,9 @@ public class ProfileController {
     @PostMapping("/edit/email/login-toggle")
     @ResponseBody
     public Map<String, Object> toggleEmailLogin(
-            @RequestParam boolean enable, HttpSession session) {
+            @RequestParam boolean enable,
+            HttpServletRequest request,
+            HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
         UsersVO user = loginUser(session);
@@ -180,19 +188,22 @@ public class ProfileController {
         }
 
         if (!freshUser.isEmailVerified()) {
+            session.setAttribute("loginUser", freshUser);
             result.put("success", false);
             result.put("message", "이메일 인증을 먼저 완료해주세요.");
+            result.put("emailVerified", false);
             return result;
         }
 
         try {
-            authService.toggleEmailLogin(freshUser.getUserIdx(), enable);
+            authService.toggleEmailLogin(freshUser.getUserIdx(), enable, buildRequestContext(request));
 
             // 세션도 최신값 반영
             freshUser.setEmailLoginEnabled(enable);
             session.setAttribute("loginUser", freshUser);
 
             result.put("success", true);
+            result.put("emailVerified", freshUser.isEmailVerified());
             result.put("message", enable
                     ? "이메일 로그인이 활성화되었습니다."
                     : "이메일 로그인이 비활성화되었습니다.");
@@ -225,6 +236,30 @@ public class ProfileController {
     }
 
     // ── 유틸 ──────────────────────────────────────
+    private LoginRequestContext buildRequestContext(HttpServletRequest request) {
+        return LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build();
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        return ip;
+    }
+
     private UsersVO loginUser(HttpSession session) {
         return (UsersVO) session.getAttribute("loginUser");
     }

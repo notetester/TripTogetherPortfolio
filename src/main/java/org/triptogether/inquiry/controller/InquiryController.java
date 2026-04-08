@@ -176,4 +176,76 @@ public class InquiryController {
 
         return ResponseEntity.ok(result);
     }
+
+    /* =============================================
+   POST /inquiry/{inquiryId}/edit - 수정
+   ============================================= */
+    @PostMapping("/{inquiryId}/edit")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> edit(
+            @PathVariable Long inquiryId,
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam String category,
+            @RequestParam(defaultValue = "0") int isPrivate,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+        Long loginUserIdx = getLoginUserIdx(session);
+
+        InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+        if (inquiry == null) {
+            result.put("success", false); return ResponseEntity.status(404).body(result);
+        }
+
+        // 본인 또는 어드민만, PENDING일 때만
+        if (!loginUserIdx.equals(inquiry.getUserIdx()) && !isAdmin(session)) {
+            result.put("success", false); return ResponseEntity.status(403).body(result);
+        }
+        if (!"PENDING".equals(inquiry.getStatus())) {
+            result.put("success", false);
+            result.put("message", "답변이 완료된 글은 수정할 수 없습니다.");
+            return ResponseEntity.status(400).body(result);
+        }
+
+        inquiry.setTitle(title);
+        inquiry.setContent(content);
+        inquiry.setCategory(category);
+        inquiry.setIsPrivate(isPrivate);
+        inquiryService.updateInquiry(inquiry);
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/delete - 삭제
+       ============================================= */
+    @PostMapping("/{inquiryId}/delete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> delete(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+        Long loginUserIdx = getLoginUserIdx(session);
+
+        InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+        if (inquiry == null) {
+            result.put("success", false); return ResponseEntity.status(404).body(result);
+        }
+
+        // 본인 또는 어드민만, PENDING일 때만
+        if (!loginUserIdx.equals(inquiry.getUserIdx()) && !isAdmin(session)) {
+            result.put("success", false); return ResponseEntity.status(403).body(result);
+        }
+        if (!"PENDING".equals(inquiry.getStatus())) {
+            result.put("success", false);
+            result.put("message", "답변이 완료된 글은 삭제할 수 없습니다.");
+            return ResponseEntity.status(400).body(result);
+        }
+
+        inquiryService.deleteInquiry(inquiryId);
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
 }
