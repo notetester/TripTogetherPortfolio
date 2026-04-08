@@ -1,11 +1,28 @@
 /* =============================================
    TRIPTOGETHER - 고객지원 (inquiry)
    resources/css/inquiry/inquiry.css
+
+   [규칙]
    ※ 모든 클래스는 inq- 접두사 사용 → 타 페이지와 충돌 없음
    ※ 색상은 variables.css 의 CSS 변수만 참조
+   ※ 반응형 640px 이하 별도 처리
+
+   [페이지 구성]
+   1. 공통 레이아웃
+   2. 목록 페이지 헤더
+   3. 카테고리 탭
+   4. 목록 본문 영역
+   5. 테이블
+   6. 페이지네이션
+   7. 작성 페이지
+   8. 상세 페이지
+   9. 반응형
    ============================================= */
 
-/* ── flex 레이아웃 보조 (layout.css 와 동일 패턴) ── */
+/* ══════════════════════════════════════════════
+   1. 공통 레이아웃
+   - flex 컨테이너 안에서 남은 공간을 채우도록 설정
+══════════════════════════════════════════════ */
 .inq-body-wrap,
 .inq-write-wrap,
 .inq-detail-wrap {
@@ -14,7 +31,7 @@
 }
 
 /* ══════════════════════════════════════════════
-   페이지 헤더 (목록)
+   2. 목록 페이지 헤더
 ══════════════════════════════════════════════ */
 .inq-ph {
     background: #fff;
@@ -35,7 +52,9 @@
     margin: 0 0 28px;
 }
 
-/* ── 카테고리 탭 ── */
+/* ══════════════════════════════════════════════
+   3. 카테고리 탭
+══════════════════════════════════════════════ */
 .inq-tabs {
     display: flex;
     gap: 0;
@@ -54,10 +73,9 @@
     white-space: nowrap;
 }
 
-.inq-tab:hover {
-    color: var(--blue);
-}
+.inq-tab:hover { color: var(--blue); }
 
+/* 현재 선택된 탭 */
 .inq-tab.active {
     color: var(--blue);
     font-weight: 700;
@@ -65,7 +83,7 @@
 }
 
 /* ══════════════════════════════════════════════
-   본문 영역 (목록)
+   4. 목록 본문 영역
 ══════════════════════════════════════════════ */
 .inq-body-wrap {
     padding: 32px 24px 80px;
@@ -73,7 +91,7 @@
     min-height: 60vh;
 }
 
-/* ── 툴바 ── */
+/* ── 툴바 (총 개수 + 필터 + 버튼) ── */
 .inq-toolbar {
     display: flex;
     align-items: center;
@@ -93,7 +111,7 @@
     font-weight: 700;
 }
 
-/* 어드민 상태 필터 */
+/* 어드민 전용 상태 필터 버튼 */
 .inq-status-filter {
     display: flex;
     gap: 6px;
@@ -138,8 +156,62 @@
     transform: translateY(-1px);
 }
 
+/* ── 검색창 ── */
+.inq-search-form { margin-bottom: 16px; }
+
+.inq-search-wrap {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 4px 4px 4px 14px;
+    max-width: 440px;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.inq-search-wrap:focus-within {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+
+.inq-search-icon { font-size: 15px; margin-right: 8px; flex-shrink: 0; }
+
+.inq-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--gray-800);
+    background: transparent;
+}
+
+.inq-search-btn {
+    padding: 7px 16px;
+    border-radius: 7px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s;
+}
+
+.inq-search-btn:hover { opacity: .85; }
+
+/* 검색어 하이라이트 */
+.inq-highlight {
+    background: #fef08a;
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
 /* ══════════════════════════════════════════════
-   테이블
+   5. 테이블
 ══════════════════════════════════════════════ */
 .inq-table-wrap {
     background: #fff;
@@ -171,6 +243,7 @@
 
 .inq-table th:first-child { text-align: center; }
 
+/* 일반 행 */
 .inq-row {
     border-bottom: 1px solid var(--gray-100);
     cursor: pointer;
@@ -178,8 +251,14 @@
 }
 
 .inq-row:last-child { border-bottom: none; }
-
 .inq-row:hover { background: var(--gray-50); }
+
+/* 비공개 글 행 (클릭 불가 처리) */
+.inq-row-blocked {
+    border-bottom: 1px solid var(--gray-100);
+    cursor: default;
+}
+.inq-row-blocked:hover { background: none; }
 
 .inq-table td {
     padding: 14px 16px;
@@ -205,12 +284,11 @@
     flex-wrap: wrap;
 }
 
-.inq-title {
-    font-weight: 500;
-    color: var(--gray-800);
-}
-
+.inq-title { font-weight: 500; color: var(--gray-800); }
 .inq-row:hover .inq-title { color: var(--blue); }
+
+/* 비공개 글 제목 (회색 처리) */
+.inq-title-blocked { color: var(--gray-400); }
 
 /* 비공개 태그 */
 .inq-private-tag {
@@ -223,7 +301,7 @@
     color: var(--gray-500);
 }
 
-/* 상태 뱃지 */
+/* 상태 뱃지 (색상으로 상태 구분) */
 .inq-status-badge {
     display: inline-block;
     padding: 2px 9px;
@@ -233,9 +311,9 @@
     white-space: nowrap;
 }
 
-.inq-status-badge.PENDING     { background: #fef9c3; color: #92400e; }
-.inq-status-badge.IN_PROGRESS { background: #dbeafe; color: #1e40af; }
-.inq-status-badge.COMPLETED   { background: #dcfce7; color: #15803d; }
+.inq-status-badge.PENDING     { background: #fef9c3; color: #92400e; } /* 노란색: 대기중 */
+.inq-status-badge.IN_PROGRESS { background: #dbeafe; color: #1e40af; } /* 파란색: 처리중 */
+.inq-status-badge.COMPLETED   { background: #dcfce7; color: #15803d; } /* 초록색: 완료 */
 
 /* 카테고리 태그 */
 .inq-category-tag {
@@ -253,7 +331,7 @@
 .inq-nick { color: var(--gray-500); font-size: 13px; }
 .inq-date { color: var(--gray-400); font-size: 12px; white-space: nowrap; }
 
-/* ── 빈 목록 ── */
+/* 빈 목록 */
 .inq-empty {
     text-align: center;
     padding: 60px 24px !important;
@@ -265,7 +343,7 @@
 .inq-empty-sub   { font-size: 13px; color: var(--gray-400); }
 
 /* ══════════════════════════════════════════════
-   페이지네이션
+   6. 페이지네이션
 ══════════════════════════════════════════════ */
 .inq-pagination {
     display: flex;
@@ -299,7 +377,7 @@
 }
 
 /* ══════════════════════════════════════════════
-   작성 페이지
+   7. 작성 페이지
 ══════════════════════════════════════════════ */
 .inq-write-wrap {
     background: var(--gray-50);
@@ -312,9 +390,7 @@
     margin: 0 auto;
 }
 
-.inq-write-header {
-    margin-bottom: 28px;
-}
+.inq-write-header { margin-bottom: 28px; }
 
 .inq-write-header h1 {
     font-size: 1.6rem;
@@ -414,6 +490,7 @@
     box-shadow: 0 0 0 3px rgba(37,99,235,.1);
 }
 
+/* 비활성화된 textarea (답변 완료 후 수정 불가 시) */
 .inq-form-textarea:disabled {
     background: var(--gray-50);
     color: var(--gray-600);
@@ -426,21 +503,15 @@
     align-items: center;
 }
 
-.inq-char-count {
-    font-size: 12px;
-    color: var(--gray-400);
-}
+/* 글자수 카운터 */
+.inq-char-count { font-size: 12px; color: var(--gray-400); }
 
-/* 필드 메시지 */
-.inq-field-msg {
-    font-size: 12px;
-    min-height: 16px;
-}
-
+/* 필드 유효성 메시지 */
+.inq-field-msg { font-size: 12px; min-height: 16px; }
 .inq-field-msg.error   { color: #ef4444; }
 .inq-field-msg.success { color: #15803d; }
 
-/* 비공개 토글 */
+/* 비공개 토글 스위치 */
 .inq-private-toggle {
     display: inline-flex;
     align-items: center;
@@ -474,11 +545,12 @@
     transition: transform .2s;
 }
 
+/* 토글 ON 상태 */
 .inq-private-toggle input:checked + .inq-toggle-slider { background: var(--blue); }
 .inq-private-toggle input:checked + .inq-toggle-slider::before { transform: translateX(18px); }
 
-.inq-toggle-label  { font-size: 14px; font-weight: 500; color: var(--gray-700); }
-.inq-private-hint  { font-size: 12px; color: var(--gray-400); }
+.inq-toggle-label { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+.inq-private-hint { font-size: 12px; color: var(--gray-400); }
 
 /* 작성 버튼 영역 */
 .inq-write-actions {
@@ -489,7 +561,7 @@
     border-top: 1px solid var(--gray-100);
 }
 
-/* 공통 버튼 */
+/* 공통 버튼 - 제출 */
 .inq-btn-submit {
     padding: 10px 24px;
     border-radius: 8px;
@@ -506,6 +578,7 @@
 .inq-btn-submit:hover    { opacity: .88; transform: translateY(-1px); }
 .inq-btn-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
+/* 제출 버튼 로딩 스피너 */
 .inq-btn-submit.loading::after {
     content: '';
     display: inline-block;
@@ -520,6 +593,7 @@
 
 @keyframes inq-spin { to { transform: rotate(360deg); } }
 
+/* 공통 버튼 - 취소 */
 .inq-btn-cancel {
     padding: 10px 20px;
     border-radius: 8px;
@@ -536,7 +610,7 @@
 .inq-btn-cancel:hover { background: var(--gray-200); }
 
 /* ══════════════════════════════════════════════
-   상세 페이지
+   8. 상세 페이지
 ══════════════════════════════════════════════ */
 .inq-detail-wrap {
     background: var(--gray-50);
@@ -588,13 +662,11 @@
     flex-wrap: wrap;
 }
 
-.inq-detail-nick   { color: var(--gray-600); font-weight: 500; }
+.inq-detail-nick    { color: var(--gray-600); font-weight: 500; }
 .inq-detail-divider { color: var(--gray-200); }
-.inq-detail-views  { color: var(--gray-400); }
+.inq-detail-views   { color: var(--gray-400); }
 
-.inq-detail-body {
-    padding: 24px 32px;
-}
+.inq-detail-body { padding: 24px 32px; }
 
 .inq-detail-content {
     font-family: 'Inter', 'Noto Sans KR', sans-serif;
@@ -606,7 +678,7 @@
     margin: 0;
 }
 
-/* 답변 카드 */
+/* 답변 카드 (파란 왼쪽 보더로 구분) */
 .inq-answer-card {
     background: #fff;
     border-radius: 16px;
@@ -625,13 +697,13 @@
     background: var(--blue-light);
 }
 
-.inq-answer-icon   { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
-.inq-answer-title  { font-size: 15px; font-weight: 700; color: var(--blue); }
-.inq-answer-meta   { font-size: 12px; color: var(--gray-400); margin-top: 3px; }
+.inq-answer-icon  { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+.inq-answer-title { font-size: 15px; font-weight: 700; color: var(--blue); }
+.inq-answer-meta  { font-size: 12px; color: var(--gray-400); margin-top: 3px; }
 
 .inq-answer-body { padding: 20px 28px; }
 
-/* 미답변 */
+/* 미답변 안내 */
 .inq-no-answer {
     background: #fff;
     border-radius: 16px;
@@ -649,7 +721,7 @@
 .inq-no-answer-msg  { font-size: 15px; font-weight: 600; color: var(--gray-600); }
 .inq-no-answer-sub  { font-size: 13px; color: var(--gray-400); }
 
-/* 어드민 답변 폼 */
+/* 어드민 전용 답변 작성 폼 */
 .inq-admin-form {
     background: #fff;
     border-radius: 16px;
@@ -672,7 +744,7 @@
     margin-top: 12px;
 }
 
-/* 하단 액션 */
+/* 하단 액션 버튼 영역 */
 .inq-detail-actions {
     display: flex;
     justify-content: flex-start;
@@ -681,9 +753,10 @@
 }
 
 /* ══════════════════════════════════════════════
-   반응형
+   9. 반응형 (640px 이하)
 ══════════════════════════════════════════════ */
 @media (max-width: 640px) {
+    /* 패딩 줄이기 */
     .inq-write-card,
     .inq-detail-head,
     .inq-answer-head,
@@ -694,73 +767,10 @@
         padding-right: 18px;
     }
 
+    /* 카테고리 컬럼 숨기기 */
     .inq-table th:nth-child(3),
-    .inq-table td:nth-child(3) { display: none; } /* 카테고리 숨김 */
+    .inq-table td:nth-child(3) { display: none; }
 
+    /* 탭 폰트 줄이기 */
     .inq-tab { padding: 10px 12px; font-size: 13px; }
-}
-
-
-.inq-row-blocked {
-    border-bottom: 1px solid var(--gray-100);
-    cursor: default;
-}
-.inq-row-blocked:hover { background: none; }
-
-.inq-title-blocked {
-    color: var(--gray-400);
-}
-
-/* ── 검색창 ── */
-.inq-search-form { margin-bottom: 16px; }
-
-.inq-search-wrap {
-    display: flex;
-    align-items: center;
-    background: #fff;
-    border: 1px solid var(--gray-200);
-    border-radius: 10px;
-    padding: 4px 4px 4px 14px;
-    max-width: 440px;
-    transition: border-color .2s, box-shadow .2s;
-}
-
-.inq-search-wrap:focus-within {
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(37,99,235,.1);
-}
-
-.inq-search-icon { font-size: 15px; margin-right: 8px; flex-shrink: 0; }
-
-.inq-search-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-family: inherit;
-    font-size: 14px;
-    color: var(--gray-800);
-    background: transparent;
-}
-
-.inq-search-btn {
-    padding: 7px 16px;
-    border-radius: 7px;
-    background: var(--blue);
-    color: #fff;
-    border: none;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity .2s;
-}
-
-.inq-search-btn:hover { opacity: .85; }
-
-
-.inq-highlight {
-    background: #fef08a;
-    color: inherit;
-    border-radius: 2px;
-    padding: 0 1px;
 }

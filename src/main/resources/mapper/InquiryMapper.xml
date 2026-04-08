@@ -3,9 +3,14 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!--
+    =============================================
+    InquiryMapper.xml - 문의 게시판 SQL 쿼리 모음
+    =============================================
+-->
 <mapper namespace="org.triptogether.inquiry.mapper.InquiryMapper">
 
-    <!-- ResultMap -->
+    <!-- 문의 게시글 매핑 -->
     <resultMap id="InquiryResultMap" type="org.triptogether.inquiry.vo.InquiryPostDto">
         <id     property="inquiryId"  column="inquiry_id"/>
         <result property="userIdx"    column="user_idx"/>
@@ -20,6 +25,7 @@
         <result property="updatedAt"  column="updated_at"/>
     </resultMap>
 
+    <!-- 답변 매핑 -->
     <resultMap id="AnswerResultMap" type="org.triptogether.inquiry.vo.InquiryAnswerDto">
         <id     property="answerId"      column="answer_id"/>
         <result property="inquiryId"     column="inquiry_id"/>
@@ -31,32 +37,39 @@
     </resultMap>
 
     <!-- =============================================
-         목록
+         1. 목록 조회
+         - 검색 조건(카테고리, 상태, 키워드)에 맞는 문의 목록 반환
+         - 키워드는 제목, 내용, 답변 내용까지 검색
+         - 최신순 정렬, 페이지네이션 적용
          ============================================= -->
     <select id="selectInquiryList" resultMap="InquiryResultMap">
         SELECT
-            ip.inquiry_id,
-            ip.user_idx,
-            u.nickname,
-            ip.title,
-            ip.category,
-            ip.is_private,
-            ip.status,
-            ip.view_count,
-            ip.created_at,
-            ip.updated_at
+        ip.inquiry_id,
+        ip.user_idx,
+        u.nickname,
+        ip.title,
+        ip.category,
+        ip.is_private,
+        ip.status,
+        ip.view_count,
+        ip.created_at,
+        ip.updated_at
         FROM INQUIRY_POST ip
         LEFT JOIN USERS u ON ip.user_idx = u.user_idx
         <where>
+            <!-- 카테고리 필터 -->
             <if test="category != null and category != ''">
                 AND ip.category = #{category}
             </if>
+            <!-- 상태 필터 (PENDING/IN_PROGRESS/COMPLETED) -->
             <if test="status != null and status != ''">
                 AND ip.status = #{status}
             </if>
+            <!-- 본인 글만 보기 -->
             <if test="userIdx != null">
                 AND ip.user_idx = #{userIdx}
             </if>
+            <!-- 키워드 검색 (제목 + 내용 + 답변 내용) -->
             <if test="keyword != null and keyword != ''">
                 AND (ip.title   LIKE CONCAT('%', #{keyword}, '%')
                 OR ip.content LIKE CONCAT('%', #{keyword}, '%')
@@ -71,7 +84,11 @@
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
-    <!-- 총 개수 -->
+    <!-- =============================================
+         2. 전체 개수 조회
+         - 페이지네이션 계산에 사용
+         - 목록 조회와 동일한 검색 조건 적용
+         ============================================= -->
     <select id="selectTotalCount" resultType="int">
         SELECT COUNT(*)
         FROM INQUIRY_POST ip
@@ -98,43 +115,51 @@
     </select>
 
     <!-- =============================================
-         상세
+         3. 문의 상세 조회
+         - inquiryId로 단건 문의 조회
+         - USERS 테이블 JOIN으로 닉네임 함께 조회
          ============================================= -->
     <select id="selectInquiry" resultMap="InquiryResultMap">
         SELECT
-            ip.inquiry_id,
-            ip.user_idx,
-            u.nickname,
-            ip.title,
-            ip.content,
-            ip.category,
-            ip.is_private,
-            ip.status,
-            ip.view_count,
-            ip.created_at,
-            ip.updated_at
+        ip.inquiry_id,
+        ip.user_idx,
+        u.nickname,
+        ip.title,
+        ip.content,
+        ip.category,
+        ip.is_private,
+        ip.status,
+        ip.view_count,
+        ip.created_at,
+        ip.updated_at
         FROM INQUIRY_POST ip
         LEFT JOIN USERS u ON ip.user_idx = u.user_idx
         WHERE ip.inquiry_id = #{inquiryId}
     </select>
 
-    <!-- 답변 조회 -->
+    <!-- =============================================
+         4. 답변 조회
+         - 해당 문의에 달린 운영진 답변 조회
+         - USERS 테이블 JOIN으로 운영진 닉네임 함께 조회
+         - 답변이 없으면 null 반환
+         ============================================= -->
     <select id="selectAnswer" resultMap="AnswerResultMap">
         SELECT
-            ia.answer_id,
-            ia.inquiry_id,
-            ia.admin_user_idx,
-            u.nickname,
-            ia.content,
-            ia.created_at,
-            ia.updated_at
+        ia.answer_id,
+        ia.inquiry_id,
+        ia.admin_user_idx,
+        u.nickname,
+        ia.content,
+        ia.created_at,
+        ia.updated_at
         FROM INQUIRY_ANSWER ia
         LEFT JOIN USERS u ON ia.admin_user_idx = u.user_idx
         WHERE ia.inquiry_id = #{inquiryId}
     </select>
 
     <!-- =============================================
-         조회수
+         5. 조회수 증가
+         - 상세 페이지 진입 시 호출
          ============================================= -->
     <update id="updateViewCount">
         UPDATE INQUIRY_POST
@@ -143,7 +168,10 @@
     </update>
 
     <!-- =============================================
-         문의 등록
+         6. 문의 등록
+         - 새 문의를 DB에 저장
+         - useGeneratedKeys: 자동 생성된 PK를 inquiryId에 넣어줌
+         - 기본 상태는 PENDING(대기중)으로 시작
          ============================================= -->
     <insert id="insertInquiry" useGeneratedKeys="true" keyProperty="inquiryId">
         INSERT INTO INQUIRY_POST (user_idx, title, content, category, is_private, status, created_at, updated_at)
@@ -151,7 +179,10 @@
     </insert>
 
     <!-- =============================================
-         답변 등록
+         7. 답변 등록
+         - 운영진이 문의에 답변을 저장
+         - 답변 등록 후 반드시 updateStatus로 상태를 COMPLETED로 변경해야 함
+           (Service에서 @Transactional로 묶어서 처리)
          ============================================= -->
     <insert id="insertAnswer" useGeneratedKeys="true" keyProperty="answerId">
         INSERT INTO INQUIRY_ANSWER (inquiry_id, admin_user_idx, content, created_at, updated_at)
@@ -159,15 +190,22 @@
     </insert>
 
     <!-- =============================================
-         상태 변경
+         8. 문의 상태 변경
+         - status 값: PENDING(대기중) / IN_PROGRESS(처리중) / COMPLETED(완료)
+         - 답변 등록 시 COMPLETED로 변경하는 데 주로 사용
          ============================================= -->
     <update id="updateStatus">
         UPDATE INQUIRY_POST
-        SET status = #{status}, updated_at = NOW()
+        SET status     = #{status},
+        updated_at = NOW()
         WHERE inquiry_id = #{inquiryId}
     </update>
 
-    <!-- 수정 -->
+    <!-- =============================================
+         9. 문의 수정
+         - 제목, 내용, 카테고리, 공개여부 수정
+         - PENDING 상태일 때만 가능 (Controller에서 체크)
+         ============================================= -->
     <update id="updateInquiry">
         UPDATE INQUIRY_POST
         SET title      = #{title},
@@ -178,9 +216,13 @@
         WHERE inquiry_id = #{inquiryId}
     </update>
 
-    <!-- 삭제 -->
+    <!-- =============================================
+         10. 문의 삭제
+         - PENDING 상태일 때만 가능 (Controller에서 체크)
+         ============================================= -->
     <delete id="deleteInquiry">
         DELETE FROM INQUIRY_POST
         WHERE inquiry_id = #{inquiryId}
     </delete>
+
 </mapper>

@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.community.vo.*;
+import org.triptogether.myPage.service.MyPageService;
+import org.triptogether.myPage.vo.FeedNotificationDto;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.util.UUID;
 public class CommunityServiceImpl implements CommunityService {
 
     private final CommunityMapper communityMapper;
+    private final MyPageService myPageService; // 추가
 
     @Value("${file.upload.path}")
     private String uploadPath;
@@ -263,8 +266,18 @@ public class CommunityServiceImpl implements CommunityService {
     public void addComment(Long postId, Long userIdx, String content) {
         communityMapper.insertComment(postId, userIdx, content);
         communityMapper.increaseCommentCount(postId);
-    }
 
+        // 글 작성자에게 알림 생성 (본인 글에 본인 댓글이면 제외)
+        CommunityPostDto post = communityMapper.selectPost(postId);
+        if (post != null && !post.getUserIdx().equals(userIdx)) {
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(post.getUserIdx());
+            notification.setSourceType("community");
+            notification.setSourceId(postId);
+            notification.setMessage("내 글에 새 댓글이 달렸어요.");
+            myPageService.addNotification(notification);
+        }
+    }
     @Override
     @Transactional
     public void deleteComment(Long commentId) {
@@ -282,6 +295,17 @@ public class CommunityServiceImpl implements CommunityService {
     public void addReply(Long postId, Long userIdx, String content, Long parentCommentId) {
         communityMapper.insertReply(postId, userIdx, content, parentCommentId);
         communityMapper.increaseCommentCount(postId);
+
+        // 글 작성자에게 알림 생성 (본인 글에 본인 대댓글이면 제외)
+        CommunityPostDto post = communityMapper.selectPost(postId);
+        if (post != null && !post.getUserIdx().equals(userIdx)) {
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(post.getUserIdx());
+            notification.setSourceType("community");
+            notification.setSourceId(postId);
+            notification.setMessage("내 글에 새 대댓글이 달렸어요.");
+            myPageService.addNotification(notification);
+        }
     }
 
     // ===== 질문 채택 =====
@@ -378,7 +402,7 @@ public class CommunityServiceImpl implements CommunityService {
             String fileName = UUID.randomUUID().toString() + ext;
             file.transferTo(new File(dir + fileName));
 
-            return "/TripTogether/upload/community/" + fileName;
+            return "/upload/community/" + fileName;
         } catch (IOException e) {
             log.error("파일 저장 실패", e);
             return null;
