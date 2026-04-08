@@ -193,6 +193,7 @@ public class ProfileController {
     @PostMapping("/edit/login-settings")
     @ResponseBody
     public Map<String, Object> saveLoginSettings(@RequestParam(required = false) String userId,
+                                                 @RequestParam(required = false) String email,
                                                  @RequestParam(defaultValue = "false") boolean emailLoginEnabled,
                                                  @RequestParam(required = false) String newPassword,
                                                  HttpServletRequest request,
@@ -207,7 +208,7 @@ public class ProfileController {
 
         UsersVO before = authService.getUserByIdx(loginUser.getUserIdx());
         try {
-            UsersVO after = authService.saveLoginSettings(loginUser.getUserIdx(), userId, emailLoginEnabled, newPassword, buildRequestContext(request));
+            UsersVO after = authService.saveLoginSettings(loginUser.getUserIdx(), userId, email, emailLoginEnabled, newPassword, buildRequestContext(request));
             session.setAttribute("loginUser", after);
 
             boolean passwordCleared = before != null && before.isPasswordEnabled() && !after.isPasswordEnabled();

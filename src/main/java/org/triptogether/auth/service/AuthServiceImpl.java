@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -537,6 +538,7 @@ public class AuthServiceImpl implements AuthService {
      */
     public UsersVO saveLoginSettings(Long userIdx,
                                      String userIdToAdd,
+                                     String emailToSave,
                                      boolean enableEmailLogin,
                                      String newPassword,
                                      LoginRequestContext context) {
@@ -550,48 +552,87 @@ public class AuthServiceImpl implements AuthService {
             normalizedUserId = null;
         }
 
+        String normalizedEmail = emailToSave == null ? null : emailToSave.trim();
+        if (normalizedEmail != null && normalizedEmail.isBlank()) {
+            normalizedEmail = null;
+        }
+
+        String currentUserId = hasText(user.getUserId()) ? user.getUserId().trim() : null;
+        String currentEmail = hasText(user.getUserEmail()) ? user.getUserEmail().trim() : null;
+
         // 아이디는 1회만 등록 가능하다.
-        if (user.getUserId() != null && normalizedUserId != null && !user.getUserId().equals(normalizedUserId)) {
+        if (currentUserId != null && normalizedUserId != null && !currentUserId.equals(normalizedUserId)) {
             throw new IllegalStateException("아이디는 변경할 수 없습니다.");
         }
-        if (user.getUserId() == null && normalizedUserId != null && authMapper.existsByUserId(normalizedUserId)) {
+        if (currentUserId == null && normalizedUserId != null && authMapper.existsByUserId(normalizedUserId)) {
             throw new IllegalStateException("입력하신 아이디는 현재 사용할 수 없습니다. 다른 아이디를 입력해 주세요.");
         }
 
-        boolean willHaveUserId = hasText(user.getUserId()) || hasText(normalizedUserId);
-        boolean needsPasswordForFirstLocalLogin = !user.isPasswordEnabled() && (willHaveUserId || enableEmailLogin);
+        // 이메일은 미인증 상태로도 저장 가능하지만, 중복은 허용하지 않는다.
+        if (normalizedEmail != null && !normalizedEmail.equals(currentEmail) && authMapper.existsByEmail(normalizedEmail)) {
+            throw new IllegalStateException("이미 사용 중인 이메일입니다.");
+        }
+
+        boolean emailChanged = !Objects.equals(currentEmail, normalizedEmail);
+        boolean userIdChanged = currentUserId == null && hasText(normalizedUserId);
+        boolean emailLoginChanged = user.isEmailLoginEnabled() != enableEmailLogin;
 
         if (enableEmailLogin) {
-            if (!hasText(user.getUserEmail())) {
-                throw new IllegalStateException("먼저 이메일을 등록해 주세요.");
+            if (!hasText(normalizedEmail)) {
+                throw new IllegalStateException("이메일 로그인을 사용하려면 먼저 이메일을 등록해 주세요.");
             }
-            if (!user.isEmailVerified()) {
-                throw new IllegalStateException("이메일 인증을 먼저 완료해 주세요.");
+            boolean emailVerifiedForTarget = !emailChanged && user.isEmailVerified();
+            if (!emailVerifiedForTarget) {
+                throw new IllegalStateException("이메일 로그인을 사용하려면 먼저 이메일 인증을 완료해 주세요.");
             }
         }
 
+        boolean willHaveUserId = currentUserId != null || hasText(normalizedUserId);
+        boolean needsPasswordForFirstLocalLogin = !user.isPasswordEnabled() && (willHaveUserId || enableEmailLogin);
         if (needsPasswordForFirstLocalLogin) {
             validateNewPassword(newPassword);
         }
 
-        if (user.getUserId() == null && hasText(normalizedUserId)) {
+        boolean hasSocialLogin = !authMapper.findSocialsByUserIdx(userIdx).isEmpty();
+        boolean willHaveUsableIdLogin = willHaveUserId && (user.isPasswordEnabled() || needsPasswordForFirstLocalLogin);
+        boolean willHaveUsableEmailLogin = hasText(normalizedEmail)
+                && !emailChanged
+                && user.isEmailVerified()
+                && enableEmailLogin
+                && (user.isPasswordEnabled() || needsPasswordForFirstLocalLogin);
+
+        if (!willHaveUsableIdLogin && !willHaveUsableEmailLogin && !hasSocialLogin) {
+            throw new IllegalStateException("변경 후 사용할 수 있는 로그인 수단이 남아 있지 않아 저장할 수 없습니다. 먼저 아이디 로그인, 이메일 로그인 또는 소셜 로그인을 하나 이상 유지해 주세요.");
+        }
+
+        if (!userIdChanged && !emailChanged && !emailLoginChanged && !needsPasswordForFirstLocalLogin) {
+            throw new IllegalStateException("변경된 로그인 수단 정보가 없습니다.");
+        }
+
+        if (emailChanged) {
+            authMapper.updateEmail(userIdx, normalizedEmail, false);
+            recordSecurityEvent(userIdx, userIdx, "EMAIL_UPDATE", "COMPLETE",
+                    normalizedEmail, normalizedEmail, true, null,
+                    normalizedEmail == null ? "EMAIL_REMOVED" : "EMAIL_SAVED_UNVERIFIED", context);
+        }
+
+        if (currentUserId == null && hasText(normalizedUserId)) {
             authMapper.updateUserId(userIdx, normalizedUserId);
             recordSecurityEvent(userIdx, userIdx, "ID_LOGIN_ADD", "COMPLETE", normalizedUserId,
-                    user.getUserEmail(), true, null, null, context);
+                    normalizedEmail != null ? normalizedEmail : user.getUserEmail(), true, null, null, context);
         }
 
         if (needsPasswordForFirstLocalLogin) {
             authMapper.updatePassword(userIdx, bCryptPasswordEncoder.encode(newPassword));
             recordSecurityEvent(userIdx, userIdx, "PASSWORD_CHANGE", "COMPLETE",
-                    normalizedUserId != null ? normalizedUserId : user.getUserId(), user.getUserEmail(),
+                    normalizedUserId != null ? normalizedUserId : user.getUserId(), normalizedEmail,
                     true, null, "LOCAL_LOGIN_INITIAL_SET", context);
         }
 
-        boolean emailLoginChanged = user.isEmailLoginEnabled() != enableEmailLogin;
         authMapper.updateEmailLoginEnabled(userIdx, enableEmailLogin);
         if (emailLoginChanged) {
             recordSecurityEvent(userIdx, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE",
-                    user.getUserEmail(), user.getUserEmail(), true, null,
+                    normalizedEmail != null ? normalizedEmail : user.getUserEmail(), normalizedEmail != null ? normalizedEmail : user.getUserEmail(), true, null,
                     enableEmailLogin ? "ENABLE" : "DISABLE", context);
         }
 

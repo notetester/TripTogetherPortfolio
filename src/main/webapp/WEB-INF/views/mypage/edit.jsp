@@ -130,6 +130,7 @@
             <button class="btn-save" id="sendVerifyBtn" style="white-space:nowrap;padding:10px 16px;">인증 발송</button>
           </div>
           <div class="field-msg" id="emailMsg"></div>
+          <div class="field-msg">이메일은 미인증 상태로도 저장할 수 있습니다. 인증은 별도로 진행되며, 이메일 로그인을 사용하려면 인증이 완료되어야 합니다. 이메일을 제거하려면 입력창을 비운 뒤 저장해 주세요.</div>
         </div>
 
         <div class="toggle-wrap">
@@ -310,6 +311,8 @@
 const ctx = '${pageContext.request.contextPath}';
 const hasPasswordEnabled = ${user.passwordEnabled ? 'true' : 'false'};
 const hasFixedUserId = ${not empty user.userId ? 'true' : 'false'};
+const originalEmail = '${user.userEmail != null ? user.userEmail : ''}';
+const originalEmailVerified = ${user.emailVerified ? 'true' : 'false'};
 
 function toggleAcc(id, head) {
   const body = document.getElementById(id);
@@ -454,12 +457,20 @@ const emailToggle = document.getElementById('emailLoginToggle');
 if (emailToggle) {
   emailToggle.addEventListener('change', async function () {
     const msg = document.getElementById('emailLoginMsg');
+    const emailInputValue = document.getElementById('newEmail').value.trim();
     if (!this.checked) {
-      const hasOnlyEmailLocal = !hasFixedUserId && hasPasswordEnabled;
+      const hasOnlyEmailLocal = !hasFixedUserId && hasPasswordEnabled && originalEmailVerified;
       const sub = document.getElementById('emailLoginSub');
       sub.textContent = hasOnlyEmailLocal
         ? '저장 시 이메일 로그인을 해제하면 비밀번호도 함께 해제될 수 있습니다.'
         : '저장 시 이메일 로그인이 해제됩니다.';
+      updateLocalPasswordBox();
+      return;
+    }
+
+    if (emailInputValue !== originalEmail) {
+      showMsg(msg, false, '이메일 주소를 변경한 경우 먼저 저장하거나 인증을 완료한 뒤 다시 시도해 주세요.');
+      this.checked = false;
       updateLocalPasswordBox();
       return;
     }
@@ -510,6 +521,7 @@ document.getElementById('saveLoginSettingsBtn').addEventListener('click', async 
     method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
     body: new URLSearchParams({
       userId,
+      email: document.getElementById('newEmail').value.trim(),
       emailLoginEnabled: enableEmailLogin,
       newPassword: passwordBoxVisible ? pw : ''
     })
