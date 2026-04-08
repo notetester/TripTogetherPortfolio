@@ -19,4 +19,5 @@ public interface AdminService {
     Map<String, Object> getInquiryList(AdminInquirySearchVO search);
     Map<String, Object> getLoginAuditList(AdminLoginAuditSearchVO search);
     Map<String, Object> getSecurityAuditList(AdminSecurityAuditSearchVO search);
+    Map<String, Object> getEmailVerificationRequestList(AdminEmailVerificationRequestSearchVO search);
 }

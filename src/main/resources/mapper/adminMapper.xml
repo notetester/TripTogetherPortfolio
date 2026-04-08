@@ -97,6 +97,26 @@
         <result property="occurredAt" column="occurred_at"/>
     </resultMap>
 
+    <resultMap id="emailVerificationRequestRM" type="org.triptogether.admin.vo.AdminEmailVerificationRequestVO">
+        <id property="emailVerificationRequestIdx" column="email_verification_request_idx"/>
+        <result property="requestId" column="request_id"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="purpose" column="purpose"/>
+        <result property="pendingEmail" column="pending_email"/>
+        <result property="status" column="status"/>
+        <result property="requestedAt" column="requested_at"/>
+        <result property="verifiedAt" column="verified_at"/>
+        <result property="appliedAt" column="applied_at"/>
+        <result property="expiredAt" column="expired_at"/>
+        <result property="cancelledAt" column="cancelled_at"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="userAgent" column="user_agent"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
     <!-- ══════════════════════════════════════════
          회원 목록
     ══════════════════════════════════════════ -->
@@ -429,6 +449,51 @@
     <select id="countSecurityAudits" resultType="int">
         SELECT COUNT(*)
         <include refid="securityAuditSearchBase"/>
+    </select>
+
+
+
+    <!-- ══════════════════════════════════════════
+         이메일 인증 요청 이력
+    ══════════════════════════════════════════ -->
+
+    <sql id="emailVerificationRequestSearchBase">
+        FROM EMAIL_VERIFICATION_REQUEST r
+        INNER JOIN USERS u ON r.user_idx = u.user_idx
+        <where>
+            <if test="status != null and status != 'ALL'">
+                AND r.status = #{status}
+            </if>
+            <if test="purpose != null and purpose != 'ALL'">
+                AND r.purpose = #{purpose}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    IFNULL(u.user_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(r.pending_email, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(r.request_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(r.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+    </sql>
+
+    <select id="findEmailVerificationRequests" resultMap="emailVerificationRequestRM">
+        SELECT
+            r.email_verification_request_idx, r.request_id, r.user_idx,
+            u.user_id, u.nickname,
+            r.purpose, r.pending_email, r.status,
+            r.requested_at, r.verified_at, r.applied_at, r.expired_at, r.cancelled_at,
+            r.ip_address, r.user_agent, r.updated_at, r.created_at
+        <include refid="emailVerificationRequestSearchBase"/>
+        ORDER BY r.requested_at DESC, r.email_verification_request_idx DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countEmailVerificationRequests" resultType="int">
+        SELECT COUNT(*)
+        <include refid="emailVerificationRequestSearchBase"/>
     </select>
 
 </mapper>

@@ -13,6 +13,7 @@ import org.triptogether.myPage.service.MyPageService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -71,9 +72,16 @@ public class ProfileController {
         // 세션도 최신값으로 갱신
         session.setAttribute("loginUser", freshUser);
 
+        String profileEmailRequestId = (String) session.getAttribute("profileEmailRequestId");
+        if (profileEmailRequestId == null || profileEmailRequestId.isBlank()) {
+            profileEmailRequestId = UUID.randomUUID().toString();
+            session.setAttribute("profileEmailRequestId", profileEmailRequestId);
+        }
+
         Map<String, Boolean> socialLinkMap = authService.getSocialLinkMap(freshUser.getUserIdx());
         long socialCount = socialLinkMap.values().stream().filter(Boolean::booleanValue).count();
 
+        model.addAttribute("profileEmailRequestId", profileEmailRequestId);
         model.addAttribute("user", freshUser);
         model.addAttribute("socialLinkMap", socialLinkMap);
         model.addAttribute("socialCount", socialCount);
@@ -164,7 +172,13 @@ public class ProfileController {
                 (user.getUserEmail() == null || !user.getUserEmail().equals(email))) {
             result.put("success", false); result.put("message", "이미 사용 중인 이메일입니다."); return result;
         }
-        boolean sent = authService.sendEmailVerification(user.getUserIdx(), email, buildRequestContext(request));
+        String profileEmailRequestId = (String) session.getAttribute("profileEmailRequestId");
+        if (profileEmailRequestId == null || profileEmailRequestId.isBlank()) {
+            profileEmailRequestId = UUID.randomUUID().toString();
+            session.setAttribute("profileEmailRequestId", profileEmailRequestId);
+        }
+
+        boolean sent = authService.sendEmailVerification(user.getUserIdx(), profileEmailRequestId, email, buildRequestContext(request));
         if (!sent) {
             result.put("success", false);
             result.put("message", "인증 이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.");
@@ -178,7 +192,7 @@ public class ProfileController {
     // ── 이메일 로그인 체크 시점 검증 (실시간 확인용) ─────
     @PostMapping("/edit/email/login-toggle")
     @ResponseBody
-    public Map<String, Object> checkEmailLoginToggle(HttpSession session) {
+    public Map<String, Object> checkEmailLoginToggle(@RequestParam String email, HttpSession session) {
         Map<String, Object> result = new HashMap<>();
         UsersVO user = loginUser(session);
         if (user == null) {
@@ -186,7 +200,22 @@ public class ProfileController {
             result.put("message", "로그인이 필요합니다.");
             return result;
         }
-        return authService.checkEmailLoginAvailability(user.getUserIdx());
+        String profileEmailRequestId = (String) session.getAttribute("profileEmailRequestId");
+        return authService.checkEmailLoginAvailability(user.getUserIdx(), profileEmailRequestId, email);
+    }
+
+    @PostMapping("/edit/email/status")
+    @ResponseBody
+    public Map<String, Object> checkEmailStatus(@RequestParam String email, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return result;
+        }
+        String profileEmailRequestId = (String) session.getAttribute("profileEmailRequestId");
+        return authService.checkEmailLoginAvailability(user.getUserIdx(), profileEmailRequestId, email);
     }
 
     // ── 로컬 로그인 수단 저장 ─────────────────────
@@ -208,8 +237,10 @@ public class ProfileController {
 
         UsersVO before = authService.getUserByIdx(loginUser.getUserIdx());
         try {
-            UsersVO after = authService.saveLoginSettings(loginUser.getUserIdx(), userId, email, emailLoginEnabled, newPassword, buildRequestContext(request));
+            String profileEmailRequestId = (String) session.getAttribute("profileEmailRequestId");
+            UsersVO after = authService.saveLoginSettings(loginUser.getUserIdx(), profileEmailRequestId, userId, email, emailLoginEnabled, newPassword, buildRequestContext(request));
             session.setAttribute("loginUser", after);
+            session.setAttribute("profileEmailRequestId", UUID.randomUUID().toString());
 
             boolean passwordCleared = before != null && before.isPasswordEnabled() && !after.isPasswordEnabled();
             result.put("success", true);
@@ -231,6 +262,7 @@ public class ProfileController {
     @PostMapping("/edit/done")
     public String editDone(HttpSession session) {
         session.removeAttribute("editVerified");
+        session.removeAttribute("profileEmailRequestId");
         return "redirect:/mypage";
     }
 
