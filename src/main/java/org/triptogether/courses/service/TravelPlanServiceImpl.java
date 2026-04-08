@@ -28,6 +28,8 @@ public class TravelPlanServiceImpl implements TravelPlanService {
             detail.setSpotList(
                     travelPlanMapper.getPlanSpotListByPlanId(detail.getPlan_id())
             );
+            System.out.println("spotList = " + detail.getSpotList());
+            System.out.println("spotList size = " + detail.getSpotList().size());
         }
 
         return detail;

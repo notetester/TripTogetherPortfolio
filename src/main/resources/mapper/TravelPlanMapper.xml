@@ -27,17 +27,15 @@
     <!-- 일정 안 장소 목록 -->
     <select id="getPlanSpotListByPlanId"
             parameterType="long"
-            resultType="PlanSpotVO">
-        SELECT ps.plan_spot_id, ps.plan_id, ps.spot_id, ps.visit_date, ps.visit_order,
-                ps.created_at, st.name, st.region, st.address
-        FROM PLAN_SPOT ps
-        LEFT JOIN SPOT_TRAVEL st
-        ON ps.spot_id = st.spot_id
-        WHERE ps.plan_id = #{plan_id}
+            resultType="org.triptogether.courses.vo.PlanSpotVO">
+        SELECT plan_spot_id, plan_id, spot_id, place_name,
+                visit_date, visit_order, created_at
+        FROM PLAN_SPOT
+        WHERE plan_id = #{value}
         ORDER BY
-        CASE WHEN ps.visit_date IS NULL THEN 1 ELSE 0 END,
-        ps.visit_date ASC,
-        ps.visit_order ASC
+        CASE WHEN visit_date IS NULL THEN 1 ELSE 0 END,
+        visit_date ASC,
+        visit_order ASC
     </select>
 
     <!--  여행지 목록  -->
@@ -80,9 +78,10 @@
     <!--  6. 일정에 여행지 추가  -->
     <insert id="insertPlanSpot" parameterType="PlanSpotVO">
         insert into PLAN_SPOT (
-                plan_id, spot_id, visit_date, visit_order, created_at
+                plan_id, spot_id, place_name, visit_date, visit_order, created_at
         ) values (
-                #{plan_id}, #{spot_id}, #{visit_date}, #{visit_order}, NOW()
+                #{plan_id}, #{spot_id}, #{place_name},
+                #{visit_date}, #{visit_order}, NOW()
         )
     </insert>
 

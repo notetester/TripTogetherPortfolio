@@ -21,6 +21,7 @@
             --gray-600: #475569;
             --gray-700: #334155;
             --gray-800: #1e293b;
+            --red: #dc2626;
         }
 
         * {
@@ -30,29 +31,28 @@
         body {
             margin: 0;
             font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-800);
-        }
-
-        .course-write-wrap {
-            min-height: 100vh;
             background:
                     radial-gradient(circle at top right, rgba(37,99,235,.08), transparent 25%),
                     radial-gradient(circle at bottom left, rgba(124,58,237,.06), transparent 25%),
                     var(--gray-50);
+            color: var(--gray-800);
+        }
+
+        .page-wrap {
+            min-height: 100vh;
             padding: 40px 24px 80px;
         }
 
-        .course-write-inner {
-            max-width: 980px;
+        .page-inner {
+            max-width: 1080px;
             margin: 0 auto;
         }
 
-        .course-write-header {
+        .page-header {
             margin-bottom: 28px;
         }
 
-        .course-write-back {
+        .back-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -60,14 +60,13 @@
             color: var(--gray-500);
             text-decoration: none;
             margin-bottom: 16px;
-            transition: color .15s;
         }
 
-        .course-write-back:hover {
+        .back-link:hover {
             color: var(--blue);
         }
 
-        .course-write-title-row {
+        .header-row {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -75,93 +74,90 @@
             flex-wrap: wrap;
         }
 
-        .course-write-title-wrap h1 {
-            font-size: 1.9rem;
-            font-weight: 800;
-            color: var(--gray-800);
+        .header-title h1 {
             margin: 0 0 8px;
+            font-size: 48px;
+            line-height: 1.1;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: #1f2a44;
         }
 
-        .course-write-title-wrap p {
-            font-size: 14px;
-            color: var(--gray-500);
+        .header-title p {
             margin: 0;
-            line-height: 1.6;
+            font-size: 15px;
+            color: var(--gray-500);
+            line-height: 1.7;
         }
 
-        .course-status-chip {
+        .status-chip {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 12px;
+            padding: 9px 13px;
             border-radius: 999px;
             background: #fff;
             border: 1px solid var(--gray-200);
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--gray-600);
             box-shadow: 0 2px 8px rgba(0,0,0,.04);
         }
 
-        .course-status-chip::before {
+        .status-chip::before {
             content: "✈";
             font-size: 12px;
         }
 
-        .write-grid {
+        .grid {
             display: grid;
             grid-template-columns: 1.25fr .9fr;
             gap: 20px;
             align-items: start;
         }
 
-        .write-left,
-        .write-right {
-            min-width: 0;
-        }
-
-        .course-card {
+        .card {
             background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
-            border: 1px solid rgba(226, 232, 240, .9);
+            border-radius: 22px;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, .06);
+            border: 1px solid rgba(226, 232, 240, .95);
             overflow: hidden;
             margin-bottom: 20px;
         }
 
-        .course-card-head {
-            padding: 20px 24px;
+        .card-head {
+            padding: 22px 24px;
             border-bottom: 1px solid var(--gray-100);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
-        .course-card-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
+        .card-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
             background: linear-gradient(135deg, rgba(37,99,235,.12), rgba(124,58,237,.10));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 20px;
             flex-shrink: 0;
         }
 
-        .course-card-title {
-            font-size: 16px;
-            font-weight: 800;
+        .card-title {
+            font-size: 18px;
+            font-weight: 900;
             color: var(--gray-800);
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
-        .course-card-sub {
-            font-size: 12px;
+        .card-sub {
+            font-size: 13px;
             color: var(--gray-400);
         }
 
-        .course-card-body {
+        .card-body {
             padding: 24px;
         }
 
@@ -177,19 +173,19 @@
 
         .form-label {
             display: block;
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 800;
             color: var(--gray-700);
-            margin-bottom: 8px;
+            margin-bottom: 9px;
         }
 
         .form-input {
             width: 100%;
-            height: 46px;
+            height: 52px;
             border: 1px solid var(--gray-200);
-            border-radius: 12px;
-            padding: 0 14px;
-            font-size: 14px;
+            border-radius: 16px;
+            padding: 0 16px;
+            font-size: 15px;
             color: var(--gray-800);
             background: #fff;
             outline: none;
@@ -201,34 +197,22 @@
             box-shadow: 0 0 0 4px rgba(37,99,235,.08);
         }
 
-        select.form-input {
-            appearance: none;
-            background-image:
-                    linear-gradient(45deg, transparent 50%, var(--gray-400) 50%),
-                    linear-gradient(135deg, var(--gray-400) 50%, transparent 50%);
-            background-position:
-                    calc(100% - 18px) calc(50% - 3px),
-                    calc(100% - 12px) calc(50% - 3px);
-            background-size: 6px 6px, 6px 6px;
-            background-repeat: no-repeat;
-            padding-right: 40px;
-        }
-
-        .field-msg.info {
+        .field-msg {
             margin-top: 8px;
             font-size: 12px;
             color: var(--gray-500);
+            line-height: 1.6;
         }
 
         .helper-text {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--gray-500);
-            line-height: 1.6;
-            margin-top: -6px;
-            margin-bottom: 16px;
+            line-height: 1.7;
+            margin-top: -2px;
+            margin-bottom: 18px;
         }
 
-        .travel-spot-list {
+        .spot-list {
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -236,76 +220,93 @@
 
         .spot-item {
             border: 1px solid var(--gray-200);
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 18px;
             background: linear-gradient(180deg, #fff, #fcfdff);
             box-shadow: 0 2px 8px rgba(15,23,42,.03);
         }
 
-        .spot-item-head {
+        .spot-head {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
-        .spot-item-title {
+        .spot-head-left {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 800;
             color: var(--gray-800);
         }
 
-        .spot-index-badge {
-            width: 28px;
-            height: 28px;
+        .spot-badge {
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--blue), var(--purple));
             color: #fff;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            font-weight: 800;
+            font-size: 13px;
+            font-weight: 900;
             flex-shrink: 0;
         }
 
-        .spot-remove-btn {
-            padding: 8px 12px;
-            border-radius: 10px;
+        .remove-btn {
+            padding: 9px 13px;
+            border-radius: 12px;
             border: 1px solid #fecaca;
             background: #fff;
-            color: #dc2626;
+            color: var(--red);
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            transition: all .15s;
         }
 
-        .spot-remove-btn:hover {
+        .remove-btn:hover {
             background: #fef2f2;
+        }
+
+        .spot-preview {
+            margin-top: 10px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            font-size: 13px;
+            color: var(--gray-600);
+            line-height: 1.7;
+        }
+
+        .spot-preview strong {
+            color: var(--gray-800);
+        }
+
+        .spot-preview.empty {
+            color: var(--gray-400);
         }
 
         .spot-actions {
             display: flex;
             gap: 10px;
-            margin-top: 14px;
+            margin-top: 16px;
             flex-wrap: wrap;
         }
 
         .btn-outline {
             padding: 10px 16px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1px solid var(--gray-200);
             background: #fff;
             color: var(--gray-700);
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            transition: all .15s;
         }
 
         .btn-outline:hover {
@@ -314,39 +315,19 @@
             background: var(--blue-light);
         }
 
-        .spot-preview {
-            margin-top: 10px;
-            padding: 12px 14px;
-            border-radius: 12px;
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            font-size: 13px;
-            color: var(--gray-600);
-            line-height: 1.6;
-        }
-
-        .spot-preview strong {
-            color: var(--gray-800);
-            font-weight: 800;
-        }
-
-        .spot-preview.empty {
-            color: var(--gray-400);
-        }
-
         .summary-box {
             background: linear-gradient(135deg, #eff6ff, #f5f3ff);
             border: 1px solid #dbeafe;
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 18px;
             margin-bottom: 16px;
         }
 
         .summary-title {
             font-size: 14px;
-            font-weight: 800;
+            font-weight: 900;
             color: var(--gray-800);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .summary-list {
@@ -358,15 +339,15 @@
         .summary-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             gap: 12px;
-            font-size: 13px;
+            font-size: 14px;
             color: var(--gray-700);
         }
 
         .summary-item span:last-child {
-            font-weight: 700;
+            font-weight: 800;
             color: var(--gray-800);
+            text-align: right;
         }
 
         .public-toggle-wrap {
@@ -375,16 +356,11 @@
             align-items: center;
             gap: 16px;
             padding: 14px 0;
-            border-bottom: 1px solid var(--gray-100);
-        }
-
-        .public-toggle-wrap:last-child {
-            border-bottom: none;
         }
 
         .public-toggle-label {
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--gray-700);
         }
 
@@ -392,7 +368,7 @@
             font-size: 12px;
             color: var(--gray-400);
             margin-top: 4px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .toggle-switch {
@@ -440,9 +416,6 @@
         .submit-area {
             display: flex;
             justify-content: flex-end;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
             margin-top: 24px;
         }
 
@@ -450,26 +423,23 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            justify-content: flex-end;
         }
 
         .btn-cancel-link {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 18px;
-            border-radius: 10px;
+            padding: 12px 18px;
+            border-radius: 12px;
             border: 1px solid var(--gray-200);
             background: #fff;
             color: var(--gray-600);
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 800;
             text-decoration: none;
-            transition: all .15s;
         }
 
         .btn-cancel-link:hover {
-            border-color: var(--gray-300);
             background: var(--gray-100);
         }
 
@@ -477,53 +447,45 @@
             border: none;
             background: linear-gradient(135deg, var(--blue), var(--purple));
             color: #fff;
-            font-weight: 800;
+            font-weight: 900;
             cursor: pointer;
             box-shadow: 0 8px 20px rgba(37,99,235,.18);
-        }
-
-        .btn-save.large {
             min-width: 160px;
-            font-size: 15px;
+            font-size: 16px;
             padding: 12px 22px;
             border-radius: 12px;
         }
 
         .btn-save:hover {
-            opacity: .95;
+            opacity: .96;
         }
 
-        @media (max-width: 900px) {
-            .write-grid {
+        .hidden-input {
+            display: none;
+        }
+
+        @media (max-width: 960px) {
+            .grid {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 640px) {
-            .course-write-wrap {
+            .page-wrap {
                 padding: 24px 16px 56px;
             }
 
-            .course-card-head,
-            .course-card-body {
+            .header-title h1 {
+                font-size: 38px;
+            }
+
+            .card-head,
+            .card-body {
                 padding: 18px;
-            }
-
-            .spot-item {
-                padding: 14px;
-            }
-
-            .spot-item-head {
-                align-items: flex-start;
             }
 
             .form-row {
                 grid-template-columns: 1fr;
-            }
-
-            .submit-area {
-                flex-direction: column;
-                align-items: stretch;
             }
 
             .submit-right {
@@ -531,7 +493,7 @@
             }
 
             .btn-cancel-link,
-            .btn-save.large {
+            .btn-save {
                 width: 100%;
             }
         }
@@ -539,24 +501,24 @@
 </head>
 <body>
 
-<div class="course-write-wrap">
-    <div class="course-write-inner">
+<div class="page-wrap">
+    <div class="page-inner">
 
-        <div class="course-write-header">
-            <a href="${pageContext.request.contextPath}/courses/list" class="course-write-back">
+        <div class="page-header">
+            <a href="${pageContext.request.contextPath}/courses/list" class="back-link">
                 ← 일정 목록으로 돌아가기
             </a>
 
-            <div class="course-write-title-row">
-                <div class="course-write-title-wrap">
+            <div class="header-row">
+                <div class="header-title">
                     <h1>새 여행 일정 만들기</h1>
                     <p>
-                        여행 제목, 기간, 방문할 장소를 한 번에 입력해 저장할 수 있어요.
-                        아래에서 기본 정보와 방문 순서를 차례대로 입력해 주세요.
+                        여행 제목, 기간, 대표 목적지와 방문 장소를 한 번에 입력해 저장할 수 있어요.
+                        대표 목적지는 도시 목록에서 검색해 선택하고, 방문 장소는 직접 입력해 주세요.
                     </p>
                 </div>
 
-                <div class="course-status-chip">작성 중</div>
+                <div class="status-chip">작성 중</div>
             </div>
         </div>
 
@@ -566,30 +528,35 @@
 
             <input type="hidden" id="isPublic" name="is_public" value="0">
 
-            <div class="write-grid">
+            <!-- 대표 목적지 / 도시 자동완성용 -->
+            <datalist id="cityOptionList">
+                <c:forEach var="spot" items="${spotTravelList}">
+                    <option value="${spot.name}"></option>
+                </c:forEach>
+            </datalist>
 
-                <!-- 왼쪽 -->
-                <div class="write-left">
+            <div class="grid">
 
-                    <section class="course-card">
-                        <div class="course-card-head">
-                            <div class="course-card-icon">📝</div>
+                <div>
+                    <section class="card">
+                        <div class="card-head">
+                            <div class="card-icon">📝</div>
                             <div>
-                                <div class="course-card-title">기본 정보</div>
-                                <div class="course-card-sub">일정 제목과 여행 기간을 입력해 주세요.</div>
+                                <div class="card-title">기본 정보</div>
+                                <div class="card-sub">일정 제목과 여행 기간, 대표 목적지를 입력해 주세요.</div>
                             </div>
                         </div>
 
-                        <div class="course-card-body">
+                        <div class="card-body">
                             <div class="form-group">
                                 <label class="form-label" for="title">일정 제목</label>
                                 <input type="text"
                                        id="title"
                                        name="title"
                                        class="form-input"
-                                       placeholder="예: 부산 2박 3일 바다 여행"
+                                       placeholder="예: 부산 2박 3일 여행"
                                        required>
-                                <div class="field-msg info">목록 화면에 표시될 대표 제목이에요.</div>
+                                <div class="field-msg">목록 화면에 표시될 대표 제목이에요.</div>
                             </div>
 
                             <div class="form-group">
@@ -598,7 +565,11 @@
                                        id="destination"
                                        name="destination"
                                        class="form-input"
-                                       placeholder="예: 부산, 제주, 도쿄">
+                                       list="cityOptionList"
+                                       placeholder="도시명을 검색해 선택하세요"
+                                       autocomplete="off"
+                                       required>
+                                <div class="field-msg">SPOT_TRAVEL에 등록된 도시명만 선택할 수 있어요.</div>
                             </div>
 
                             <div class="form-row">
@@ -623,62 +594,41 @@
                         </div>
                     </section>
 
-                    <section class="course-card">
-                        <div class="course-card-head">
-                            <div class="course-card-icon">📍</div>
+                    <section class="card">
+                        <div class="card-head">
+                            <div class="card-icon">📍</div>
                             <div>
-                                <div class="course-card-title">방문 여행지</div>
-                                <div class="course-card-sub">등록된 여행지 목록에서 선택해 주세요.</div>
+                                <div class="card-title">방문 여행지</div>
+                                <div class="card-sub">도시를 선택하고 실제 방문 장소명을 입력해 주세요.</div>
                             </div>
                         </div>
 
-                        <div class="course-card-body">
+                        <div class="card-body">
                             <p class="helper-text">
-                                현재는 <strong>SPOT_TRAVEL</strong>에 등록된 여행지만 선택할 수 있어요.
-                                여행지 선택 시 이름, 지역, 주소를 아래에서 바로 확인할 수 있어요.
+                                각 방문 여행지는 <strong>도시 선택 + 장소명 직접 입력</strong> 방식으로 저장돼요.
+                                저장 시 도시는 <strong>spot_id</strong>로, 장소명은 <strong>place_name</strong>으로 PLAN_SPOT에 들어가요.
                             </p>
 
-                            <!-- 여행지 옵션 원본 -->
-                            <select id="masterSpotSelect" style="display:none;">
-                                <option value="">여행지를 선택하세요</option>
-                                <c:forEach var="spot" items="${spotTravelList}">
-                                    <option value="${spot.spot_id}"
-                                            data-name="${spot.name}"
-                                            data-region="${spot.region}"
-                                            data-address="${spot.address}">
-                                        <c:out value="${spot.name}" />
-                                        <c:if test="${not empty spot.region}">
-                                            (<c:out value="${spot.region}" />)
-                                        </c:if>
-                                    </option>
-                                </c:forEach>
-                            </select>
-
-                            <div id="spotList" class="travel-spot-list">
-                                <!-- JS로 spot-item 추가 -->
-                            </div>
+                            <div id="spotList" class="spot-list"></div>
 
                             <div class="spot-actions">
                                 <button type="button" class="btn-outline" id="addSpotBtn">+ 여행지 추가</button>
                             </div>
                         </div>
                     </section>
-
                 </div>
 
-                <!-- 오른쪽 -->
-                <div class="write-right">
-
-                    <section class="course-card">
-                        <div class="course-card-head">
-                            <div class="course-card-icon">🌍</div>
+                <div>
+                    <section class="card">
+                        <div class="card-head">
+                            <div class="card-icon">🌍</div>
                             <div>
-                                <div class="course-card-title">공개 설정</div>
-                                <div class="course-card-sub">이 일정을 다른 사용자에게 공개할지 정할 수 있어요.</div>
+                                <div class="card-title">공개 설정</div>
+                                <div class="card-sub">이 일정을 다른 사용자에게 공개할지 정할 수 있어요.</div>
                             </div>
                         </div>
 
-                        <div class="course-card-body">
+                        <div class="card-body">
                             <div class="public-toggle-wrap">
                                 <div>
                                     <div class="public-toggle-label">일정 공개</div>
@@ -695,16 +645,16 @@
                         </div>
                     </section>
 
-                    <section class="course-card">
-                        <div class="course-card-head">
-                            <div class="course-card-icon">📌</div>
+                    <section class="card">
+                        <div class="card-head">
+                            <div class="card-icon">📌</div>
                             <div>
-                                <div class="course-card-title">입력 요약</div>
-                                <div class="course-card-sub">현재 작성 내용을 간단히 확인할 수 있어요.</div>
+                                <div class="card-title">입력 요약</div>
+                                <div class="card-sub">현재 작성 내용을 간단히 확인할 수 있어요.</div>
                             </div>
                         </div>
 
-                        <div class="course-card-body">
+                        <div class="card-body">
                             <div class="summary-box">
                                 <div class="summary-title">현재 상태</div>
                                 <div class="summary-list">
@@ -714,7 +664,7 @@
                                     </div>
                                     <div class="summary-item">
                                         <span>대표 목적지</span>
-                                        <span id="summaryDestination">미입력</span>
+                                        <span id="summaryDestination">미선택</span>
                                     </div>
                                     <div class="summary-item">
                                         <span>여행 기간</span>
@@ -736,14 +686,13 @@
                                     <a href="${pageContext.request.contextPath}/courses/list" class="btn-cancel-link">
                                         취소
                                     </a>
-                                    <button type="submit" class="btn-save large">
+                                    <button type="submit" class="btn-save">
                                         일정 저장하기
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </section>
-
                 </div>
 
             </div>
@@ -756,37 +705,46 @@
     const addSpotBtn = document.getElementById("addSpotBtn");
     const isPublicToggle = document.getElementById("isPublicToggle");
     const isPublicHidden = document.getElementById("isPublic");
-    const masterSpotSelect = document.getElementById("masterSpotSelect");
+    const formEl = document.getElementById("travelPlanForm");
 
     const titleEl = document.getElementById("title");
     const destinationEl = document.getElementById("destination");
     const startDateEl = document.getElementById("startDate");
     const endDateEl = document.getElementById("endDate");
-    const formEl = document.getElementById("travelPlanForm");
+
+    const cityMasterList = [
+        <c:forEach var="spot" items="${spotTravelList}" varStatus="s">
+        {
+            spotId: "${spot.spot_id}",
+            name: "${spot.name}"
+        }<c:if test="${!s.last}">,</c:if>
+        </c:forEach>
+    ];
+
+    function findCityByName(cityName) {
+        if (!cityName) return null;
+        const trimmed = cityName.trim();
+        return cityMasterList.find(city => city.name === trimmed) || null;
+    }
 
     function updateSpotPreview(wrapper) {
-        const select = wrapper.querySelector('[data-field="spot_id"]');
+        const cityInput = wrapper.querySelector(".city-name-input");
+        const placeInput = wrapper.querySelector('[data-field="place_name"]');
         const preview = wrapper.querySelector(".spot-preview");
 
-        if (!select || !preview) return;
+        const cityName = cityInput.value.trim();
+        const placeName = placeInput.value.trim();
 
-        const selectedOption = select.options[select.selectedIndex];
-
-        if (!selectedOption || !selectedOption.value) {
+        if (!cityName && !placeName) {
             preview.classList.add("empty");
-            preview.innerHTML = "아직 선택된 여행지가 없어요.";
+            preview.innerHTML = "아직 입력된 방문 여행지가 없어요.";
             return;
         }
 
-        const name = selectedOption.dataset.name || "";
-        const region = selectedOption.dataset.region || "";
-        const address = selectedOption.dataset.address || "";
-
         preview.classList.remove("empty");
         preview.innerHTML = `
-            <div><strong>장소명</strong> : ${name}</div>
-            <div><strong>지역</strong> : ${region || "-"}</div>
-            <div><strong>주소</strong> : ${address || "-"}</div>
+            <div><strong>도시</strong> : ${cityName || "-"}</div>
+            <div><strong>장소명</strong> : ${placeName || "-"}</div>
         `;
     }
 
@@ -795,23 +753,40 @@
         wrapper.className = "spot-item";
 
         wrapper.innerHTML = `
-            <div class="spot-item-head">
-                <div class="spot-item-title">
-                    <span class="spot-index-badge">${index + 1}</span>
+            <div class="spot-head">
+                <div class="spot-head-left">
+                    <span class="spot-badge">${index + 1}</span>
                     <span>여행지 ${index + 1}</span>
                 </div>
-                <button type="button" class="spot-remove-btn">삭제</button>
+                <button type="button" class="remove-btn">삭제</button>
+            </div>
+
+            <input type="hidden" class="hidden-input" data-field="spot_id">
+
+            <div class="form-group">
+                <label class="form-label">도시 선택</label>
+                <input type="text"
+                       class="form-input city-name-input"
+                       list="cityOptionList"
+                       placeholder="도시명을 검색해 선택하세요"
+                       autocomplete="off"
+                       required>
+                <div class="field-msg">이 값은 SPOT_TRAVEL과 연결되어 spot_id로 저장돼요.</div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">여행지 선택</label>
-                <select class="form-input" data-field="spot_id" required>
-                    ${masterSpotSelect.innerHTML}
-                </select>
-                <div class="spot-preview empty">아직 선택된 여행지가 없어요.</div>
+                <label class="form-label">장소명</label>
+                <input type="text"
+                       class="form-input"
+                       data-field="place_name"
+                       placeholder="예: 해운대해수욕장"
+                       required>
+                <div class="field-msg">사용자가 직접 입력한 실제 방문 장소명이 저장돼요.</div>
             </div>
 
-            <div class="form-row">
+            <div class="spot-preview empty">아직 입력된 방문 여행지가 없어요.</div>
+
+            <div class="form-row" style="margin-top:16px;">
                 <div class="form-group">
                     <label class="form-label">방문일</label>
                     <input type="date"
@@ -832,9 +807,17 @@
             </div>
         `;
 
-        const removeBtn = wrapper.querySelector(".spot-remove-btn");
-        const spotSelect = wrapper.querySelector('[data-field="spot_id"]');
+        const removeBtn = wrapper.querySelector(".remove-btn");
+        const cityInput = wrapper.querySelector(".city-name-input");
+        const hiddenSpotIdInput = wrapper.querySelector('[data-field="spot_id"]');
+        const placeInput = wrapper.querySelector('[data-field="place_name"]');
         const visitDateInput = wrapper.querySelector('[data-field="visit_date"]');
+
+        if (destinationEl.value.trim() && !cityInput.value.trim()) {
+            cityInput.value = destinationEl.value.trim();
+            const matchedCity = findCityByName(cityInput.value);
+            hiddenSpotIdInput.value = matchedCity ? matchedCity.spotId : "";
+        }
 
         if (startDateEl.value) {
             visitDateInput.value = startDateEl.value;
@@ -846,18 +829,31 @@
             updateSummary();
         });
 
+        cityInput.addEventListener("input", function () {
+            const matchedCity = findCityByName(cityInput.value);
+            hiddenSpotIdInput.value = matchedCity ? matchedCity.spotId : "";
+            updateSpotPreview(wrapper);
+            updateSummary();
+        });
+
+        cityInput.addEventListener("change", function () {
+            const matchedCity = findCityByName(cityInput.value);
+            hiddenSpotIdInput.value = matchedCity ? matchedCity.spotId : "";
+            updateSpotPreview(wrapper);
+            updateSummary();
+        });
+
+        placeInput.addEventListener("input", function () {
+            updateSpotPreview(wrapper);
+            updateSummary();
+        });
+
         wrapper.querySelectorAll(".form-input").forEach(input => {
             input.addEventListener("input", updateSummary);
             input.addEventListener("change", updateSummary);
         });
 
-        spotSelect.addEventListener("change", function () {
-            updateSpotPreview(wrapper);
-            updateSummary();
-        });
-
         updateSpotPreview(wrapper);
-
         return wrapper;
     }
 
@@ -865,8 +861,8 @@
         const items = spotListEl.querySelectorAll(".spot-item");
 
         items.forEach((item, index) => {
-            const badge = item.querySelector(".spot-index-badge");
-            const title = item.querySelector(".spot-item-title span:last-child");
+            const badge = item.querySelector(".spot-badge");
+            const title = item.querySelector(".spot-head-left span:last-child");
 
             badge.textContent = index + 1;
             title.textContent = "여행지 " + (index + 1);
@@ -904,17 +900,17 @@
             titleEl.value.trim() || "미입력";
 
         document.getElementById("summaryDestination").textContent =
-            destinationEl.value.trim() || "미입력";
+            destinationEl.value.trim() || "미선택";
 
         document.getElementById("summaryDate").textContent =
             formatDateRange(startDateEl.value, endDateEl.value);
 
-        const selectedSpotCount = Array.from(
-            spotListEl.querySelectorAll('select[data-field="spot_id"]')
-        ).filter(select => select.value && select.value.trim() !== "").length;
+        const filledPlaceCount = Array.from(
+            spotListEl.querySelectorAll('[data-field="place_name"]')
+        ).filter(input => input.value.trim() !== "").length;
 
         document.getElementById("summarySpotCount").textContent =
-            selectedSpotCount + "개";
+            filledPlaceCount + "개";
 
         document.getElementById("summaryPublic").textContent =
             isPublicToggle.checked ? "공개" : "비공개";
@@ -930,6 +926,25 @@
     [titleEl, destinationEl, startDateEl, endDateEl].forEach(input => {
         input.addEventListener("input", updateSummary);
         input.addEventListener("change", updateSummary);
+    });
+
+    destinationEl.addEventListener("change", function () {
+        const destinationName = destinationEl.value.trim();
+
+        document.querySelectorAll(".city-name-input").forEach(cityInput => {
+            if (!cityInput.value.trim()) {
+                cityInput.value = destinationName;
+
+                const wrapper = cityInput.closest(".spot-item");
+                const hiddenSpotIdInput = wrapper.querySelector('[data-field="spot_id"]');
+                const matchedCity = findCityByName(destinationName);
+
+                hiddenSpotIdInput.value = matchedCity ? matchedCity.spotId : "";
+                updateSpotPreview(wrapper);
+            }
+        });
+
+        updateSummary();
     });
 
     startDateEl.addEventListener("change", function () {
@@ -955,18 +970,60 @@
     });
 
     formEl.addEventListener("submit", function (e) {
-        const selectedSpotCount = Array.from(
-            spotListEl.querySelectorAll('select[data-field="spot_id"]')
-        ).filter(select => select.value && select.value.trim() !== "").length;
+        const destinationMatched = findCityByName(destinationEl.value);
 
-        if (selectedSpotCount === 0) {
+        if (!destinationMatched) {
             e.preventDefault();
-            alert("최소 1개의 여행지를 선택해 주세요.");
+            alert("대표 목적지는 목록에 있는 도시명 중에서 선택해 주세요.");
+            destinationEl.focus();
             return;
+        }
+
+        const spotItems = spotListEl.querySelectorAll(".spot-item");
+
+        if (spotItems.length === 0) {
+            e.preventDefault();
+            alert("최소 1개의 방문 여행지를 입력해 주세요.");
+            return;
+        }
+
+        for (const item of spotItems) {
+            const cityInput = item.querySelector(".city-name-input");
+            const hiddenSpotIdInput = item.querySelector('[data-field="spot_id"]');
+            const placeInput = item.querySelector('[data-field="place_name"]');
+            const visitDateInput = item.querySelector('[data-field="visit_date"]');
+
+            if (!cityInput.value.trim()) {
+                e.preventDefault();
+                alert("각 방문 여행지의 도시를 선택해 주세요.");
+                cityInput.focus();
+                return;
+            }
+
+            if (!hiddenSpotIdInput.value.trim()) {
+                e.preventDefault();
+                alert("방문 여행지의 도시는 목록에 있는 도시명으로 선택해 주세요.");
+                cityInput.focus();
+                return;
+            }
+
+            if (!placeInput.value.trim()) {
+                e.preventDefault();
+                alert("방문 장소명을 입력해 주세요.");
+                placeInput.focus();
+                return;
+            }
+
+            if (!visitDateInput.value.trim()) {
+                e.preventDefault();
+                alert("방문일을 입력해 주세요.");
+                visitDateInput.focus();
+                return;
+            }
         }
     });
 
-    // 기본 2개 여행지 입력칸 생성
+    // 기본 2개 생성
     addSpot();
     addSpot();
 </script>

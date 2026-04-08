@@ -351,6 +351,163 @@
             .spot-meta {
                 grid-template-columns: 1fr;
             }
+
+            .detail-filter-bar {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                gap: 16px;
+                flex-wrap: wrap;
+                margin-bottom: 20px;
+            }
+
+            .filter-box {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .filter-label {
+                font-size: 13px;
+                font-weight: 700;
+                color: #6b7280;
+            }
+
+            .date-filter-input {
+                height: 40px;
+                padding: 0 12px;
+                border: 1px solid #dbe2ea;
+                border-radius: 10px;
+                font-size: 14px;
+                background: #fff;
+                color: #1f2937;
+            }
+
+            .filter-reset-btn {
+                height: 40px;
+                padding: 0 14px;
+                border: 1px solid #dbe2ea;
+                border-radius: 10px;
+                background: #fff;
+                color: #475569;
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+
+            .filter-reset-btn:hover {
+                background: #f8fafc;
+            }
+
+            .filtered-empty {
+                display: none;
+                margin-top: 14px;
+                border: 1px dashed #d7e0ea;
+                border-radius: 18px;
+                background: #fafcff;
+                padding: 32px 20px;
+                text-align: center;
+                color: #6b7280;
+            }
+        }
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group2 {
+            margin-bottom: 16px;
+        }
+
+        .form-label2 {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #334155;
+        }
+
+        .form-sub2 {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .form-input2 {
+            width: 100%;
+            height: 46px;
+            border: 1px solid #dbe2ea;
+            border-radius: 12px;
+            padding: 0 14px;
+            font-size: 14px;
+            color: #111827;
+            background: #fff;
+            outline: none;
+        }
+
+        .form-input2:focus {
+            border-color: #3366ff;
+            box-shadow: 0 0 0 4px rgba(51, 102, 255, 0.08);
+        }
+
+        .toggle-wrap2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0 20px;
+            border-bottom: 1px solid #edf1f5;
+            margin-bottom: 20px;
+        }
+
+        .edit-spot-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .edit-spot-head h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .edit-spot-item {
+            border: 1px solid #e8edf3;
+            border-radius: 16px;
+            padding: 18px;
+            background: #fcfdff;
+            margin-bottom: 14px;
+        }
+
+        .edit-spot-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .remove-mini-btn {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid #fecaca;
+            background: #fff;
+            color: #ef4444;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .edit-submit-row {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
         }
     </style>
 </head>
@@ -424,6 +581,10 @@
             </div>
 
             <div class="bottom-actions">
+                <button type="button" class="btn btn-primary" onclick="toggleEditForm()">
+                    수정하기
+                </button>
+
                 <form class="inline-form" method="post"
                       action="${pageContext.request.contextPath}/courses/delete"
                       onsubmit="return confirm('이 일정을 삭제할까요?');">
@@ -435,8 +596,18 @@
 
         <!-- 오른쪽 여행지 목록 -->
         <div class="card content-card">
-            <h3 class="section-title">일정에 포함된 여행지</h3>
-            <p class="section-desc">등록된 여행지를 순서대로 확인할 수 있어요.</p>
+            <div class="detail-filter-bar">
+                <div>
+                    <h3 class="section-title">일정에 포함된 여행지</h3>
+                    <p class="section-desc">날짜를 선택하면 해당 날짜 일정만 볼 수 있어요.</p>
+                </div>
+
+                <div class="filter-box">
+                    <span class="filter-label">날짜 선택</span>
+                    <input type="date" id="dateFilter" class="date-filter-input">
+                    <button type="button" class="filter-reset-btn" onclick="resetDateFilter()">전체보기</button>
+                </div>
+            </div>
 
             <c:choose>
                 <c:when test="${empty travelPlan.spotList}">
@@ -445,59 +616,352 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <div class="spot-list">
-                        <c:forEach var="spot" items="${travelPlan.spotList}" varStatus="status">
-                            <div class="spot-item">
+                    <c:set var="prevDate" value="" />
+                    <c:set var="dayOrder" value="0" />
+
+                    <div class="spot-list" id="spotListArea">
+                        <c:forEach var="spot" items="${travelPlan.spotList}">
+                            <fmt:formatDate value="${spot.visit_date}" pattern="yyyy-MM-dd" var="visitDateStr"/>
+
+                            <c:choose>
+                                <c:when test="${prevDate ne visitDateStr}">
+                                    <c:set var="prevDate" value="${visitDateStr}" />
+                                    <c:set var="dayOrder" value="1" />
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="dayOrder" value="${dayOrder + 1}" />
+                                </c:otherwise>
+                            </c:choose>
+
+                            <div class="spot-item" data-visit-date="${visitDateStr}">
                                 <div class="spot-top">
                                     <div class="spot-title-wrap">
                                         <div class="spot-order">
-                                            <c:out value="${spot.visit_order}" />
+                                            <c:out value="${dayOrder}" />
                                         </div>
                                         <div>
                                             <div class="spot-name">
-                                                <c:out value="${spot.name}" />
+                                                <c:out value="${spot.place_name}" />
                                             </div>
                                             <div class="spot-region">
-                                                <c:out value="${spot.region}" />
+                                                <c:out value="${travelPlan.destination}" />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="spot-date">
-                                        <c:choose>
-                                            <c:when test="${not empty spot.visit_date}">
-                                                <fmt:formatDate value="${spot.visit_date}" pattern="yyyy-MM-dd"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                날짜 미지정
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <c:out value="${visitDateStr}" />
                                     </div>
                                 </div>
 
                                 <div class="spot-meta">
-                                    <div class="spot-meta-label">주소</div>
+                                    <div class="spot-meta-label">장소명</div>
                                     <div class="spot-meta-value">
-                                        <c:out value="${spot.address}" />
+                                        <c:out value="${spot.place_name}" />
                                     </div>
 
-                                    <div class="spot-meta-label">스팟 ID</div>
+                                    <div class="spot-meta-label">방문일</div>
                                     <div class="spot-meta-value">
-                                        <c:out value="${spot.spot_id}" />
+                                        <c:out value="${visitDateStr}" />
                                     </div>
 
-                                    <div class="spot-meta-label">순서</div>
+                                    <div class="spot-meta-label">날짜 내 순서</div>
                                     <div class="spot-meta-value">
-                                        <c:out value="${spot.visit_order}" />번째
+                                        <c:out value="${dayOrder}" />번째
                                     </div>
                                 </div>
                             </div>
                         </c:forEach>
                     </div>
+                    <div class="filtered-empty" id="filteredEmpty">
+                        선택한 날짜에 등록된 일정이 없어요.
+                    </div>
                 </c:otherwise>
             </c:choose>
         </div>
+
+        <div class="card content-card" id="editCard" style="display:none; margin-top:24px;">
+            <h3 class="section-title">일정 수정</h3>
+            <p class="section-desc">기본 정보와 방문 여행지를 수정한 뒤 저장할 수 있어요.</p>
+
+            <form id="updateForm"
+                  action="${pageContext.request.contextPath}/courses/update"
+                  method="post">
+
+                <input type="hidden" name="plan_id" value="${travelPlan.plan_id}">
+                <input type="hidden" id="editIsPublic" name="is_public" value="${travelPlan.is_public}">
+
+                <datalist id="editCityOptionList">
+                    <c:forEach var="city" items="${spotTravelList}">
+                        <option value="${city.name}"></option>
+                    </c:forEach>
+                </datalist>
+
+                <div class="form-row-2">
+                    <div class="form-group2">
+                        <label class="form-label2">일정 제목</label>
+                        <input type="text" name="title" class="form-input2"
+                               value="${travelPlan.title}" required>
+                    </div>
+
+                    <div class="form-group2">
+                        <label class="form-label2">대표 목적지</label>
+                        <input type="text" name="destination" class="form-input2"
+                               list="editCityOptionList"
+                               value="${travelPlan.destination}" required>
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group2">
+                        <label class="form-label2">시작일</label>
+                        <fmt:formatDate value="${travelPlan.start_date}" pattern="yyyy-MM-dd" var="startDateStr"/>
+                        <input type="date" name="start_date" class="form-input2"
+                               value="${startDateStr}" required>
+                    </div>
+
+                    <div class="form-group2">
+                        <label class="form-label2">종료일</label>
+                        <fmt:formatDate value="${travelPlan.end_date}" pattern="yyyy-MM-dd" var="endDateStr"/>
+                        <input type="date" name="end_date" class="form-input2"
+                               value="${endDateStr}" required>
+                    </div>
+                </div>
+
+                <div class="toggle-wrap2">
+                    <div>
+                        <div class="form-label2" style="margin-bottom:4px;">공개 여부</div>
+                        <div class="form-sub2">공개 상태를 변경할 수 있어요.</div>
+                    </div>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="editPublicToggle" <c:if test="${travelPlan.is_public == 1}">checked</c:if>>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="edit-spot-head">
+                    <h4>방문 여행지 수정</h4>
+                    <button type="button" class="btn btn-light" onclick="addEditSpot()">+ 여행지 추가</button>
+                </div>
+
+                <div id="editSpotList">
+                    <c:forEach var="spot" items="${travelPlan.spotList}" varStatus="s">
+                        <fmt:formatDate value="${spot.visit_date}" pattern="yyyy-MM-dd" var="spotDateStr"/>
+                        <div class="edit-spot-item">
+                            <input type="hidden" data-field="spot_id" name="spotList[${s.index}].spot_id" value="${spot.spot_id}">
+
+                            <div class="edit-spot-top">
+                                <strong>여행지 ${s.index + 1}</strong>
+                                <button type="button" class="remove-mini-btn" onclick="removeEditSpot(this)">삭제</button>
+                            </div>
+
+                            <div class="form-group2">
+                                <label class="form-label2">도시 선택</label>
+                                <input type="text"
+                                       class="form-input2 city-name-input"
+                                       list="editCityOptionList"
+                                       value="${travelPlan.destination}"
+                                       autocomplete="off"
+                                       required>
+                            </div>
+
+                            <div class="form-row-2">
+                                <div class="form-group2">
+                                    <label class="form-label2">장소명</label>
+                                    <input type="text"
+                                           class="form-input2"
+                                           data-field="place_name"
+                                           name="spotList[${s.index}].place_name"
+                                           value="${spot.place_name}"
+                                           required>
+                                </div>
+
+                                <div class="form-group2">
+                                    <label class="form-label2">방문일</label>
+                                    <input type="date"
+                                           class="form-input2"
+                                           data-field="visit_date"
+                                           name="spotList[${s.index}].visit_date"
+                                           value="${spotDateStr}"
+                                           required>
+                                </div>
+                            </div>
+
+                            <div class="form-group2">
+                                <label class="form-label2">방문 순서</label>
+                                <input type="number"
+                                       class="form-input2"
+                                       data-field="visit_order"
+                                       name="spotList[${s.index}].visit_order"
+                                       value="${spot.visit_order}"
+                                       min="1"
+                                       required>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
+
+                <div class="edit-submit-row">
+                    <button type="button" class="btn btn-light" onclick="toggleEditForm()">취소</button>
+                    <button type="submit" class="btn btn-primary">수정 저장</button>
+                </div>
+            </form>
+        </div>
+
     </div>
 </div>
+
+<script>
+    const dateFilterEl = document.getElementById("dateFilter");
+    const filteredEmptyEl = document.getElementById("filteredEmpty");
+
+    function applyDateFilter() {
+        const selectedDate = dateFilterEl ? dateFilterEl.value : "";
+        const items = document.querySelectorAll("#spotListArea .spot-item");
+
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const itemDate = item.dataset.visitDate;
+            const shouldShow = !selectedDate || itemDate === selectedDate;
+
+            item.style.display = shouldShow ? "" : "none";
+
+            if (shouldShow) {
+                visibleCount++;
+            }
+        });
+
+        if (filteredEmptyEl) {
+            filteredEmptyEl.style.display = visibleCount === 0 ? "block" : "none";
+        }
+    }
+
+    function resetDateFilter() {
+        if (dateFilterEl) {
+            dateFilterEl.value = "";
+        }
+        applyDateFilter();
+    }
+
+    if (dateFilterEl) {
+        dateFilterEl.addEventListener("change", applyDateFilter);
+    }
+
+    const cityMasterList = [
+        <c:forEach var="city" items="${spotTravelList}" varStatus="s">
+        {
+            spotId: "${city.spot_id}",
+            name: "${city.name}"
+        }<c:if test="${!s.last}">,</c:if>
+        </c:forEach>
+    ];
+
+    function findCityByName(cityName) {
+        if (!cityName) return null;
+        const trimmed = cityName.trim();
+        return cityMasterList.find(city => city.name === trimmed) || null;
+    }
+
+    function toggleEditForm() {
+        const editCard = document.getElementById("editCard");
+        if (!editCard) return;
+
+        editCard.style.display = editCard.style.display === "none" ? "block" : "none";
+    }
+
+    const editPublicToggle = document.getElementById("editPublicToggle");
+    const editIsPublic = document.getElementById("editIsPublic");
+
+    if (editPublicToggle && editIsPublic) {
+        editPublicToggle.addEventListener("change", function () {
+            editIsPublic.value = this.checked ? "1" : "0";
+        });
+    }
+
+    function refreshEditSpotIndexes() {
+        const items = document.querySelectorAll("#editSpotList .edit-spot-item");
+
+        items.forEach((item, index) => {
+            const title = item.querySelector(".edit-spot-top strong");
+            if (title) {
+                title.textContent = "여행지 " + (index + 1);
+            }
+
+            item.querySelectorAll("[data-field]").forEach(input => {
+                const field = input.dataset.field;
+                input.name = "spotList[" + index + "]." + field;
+            });
+        });
+    }
+
+    function bindCityInput(item) {
+        const cityInput = item.querySelector(".city-name-input");
+        const hiddenSpotIdInput = item.querySelector('[data-field="spot_id"]');
+
+        function syncCity() {
+            const matchedCity = findCityByName(cityInput.value);
+            hiddenSpotIdInput.value = matchedCity ? matchedCity.spotId : "";
+        }
+
+        cityInput.addEventListener("input", syncCity);
+        cityInput.addEventListener("change", syncCity);
+        syncCity();
+    }
+
+    function addEditSpot() {
+        const list = document.getElementById("editSpotList");
+        const div = document.createElement("div");
+        div.className = "edit-spot-item";
+
+        div.innerHTML = `
+            <input type="hidden" data-field="spot_id" value="">
+
+            <div class="edit-spot-top">
+                <strong>여행지</strong>
+                <button type="button" class="remove-mini-btn" onclick="removeEditSpot(this)">삭제</button>
+            </div>
+
+            <div class="form-group2">
+                <label class="form-label2">도시 선택</label>
+                <input type="text"
+                       class="form-input2 city-name-input"
+                       list="editCityOptionList"
+                       autocomplete="off"
+                       required>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group2">
+                    <label class="form-label2">장소명</label>
+                    <input type="text" class="form-input2" data-field="place_name" required>
+                </div>
+
+                <div class="form-group2">
+                    <label class="form-label2">방문일</label>
+                    <input type="date" class="form-input2" data-field="visit_date" required>
+                </div>
+            </div>
+
+            <div class="form-group2">
+                <label class="form-label2">방문 순서</label>
+                <input type="number" class="form-input2" data-field="visit_order" min="1" required>
+            </div>
+        `;
+
+        list.appendChild(div);
+        bindCityInput(div);
+        refreshEditSpotIndexes();
+    }
+
+    function removeEditSpot(btn) {
+        btn.closest(".edit-spot-item").remove();
+        refreshEditSpotIndexes();
+    }
+
+    document.querySelectorAll("#editSpotList .edit-spot-item").forEach(bindCityInput);
+    refreshEditSpotIndexes();
+</script>
 </body>
 </html>
