@@ -22,7 +22,7 @@
         </div>
         <nav>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'">여행지 탐색</button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses'">여행 코스</button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses/list'">여행 코스</button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/assistant'">AI 도우미</button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'">커뮤니티</button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage/edit-confirm'">마이페이지</button>
