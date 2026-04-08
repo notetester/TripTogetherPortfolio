@@ -48,3 +48,29 @@ nav { display: flex; align-items: center; gap: 4px; }
   background: #fff; cursor: pointer; transition: all .2s;
 }
 .btn-out:hover { border-color: var(--blue); color: var(--blue); }
+
+.admin-mode-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.admin-mode-btn.admin {
+  background: #1d4ed8;
+  color: #fff;
+}
+.admin-mode-btn.admin:hover {
+  background: #1e40af;
+}
+.admin-mode-btn.user {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+.admin-mode-btn.user:hover {
+  background: #e5e7eb;
+}

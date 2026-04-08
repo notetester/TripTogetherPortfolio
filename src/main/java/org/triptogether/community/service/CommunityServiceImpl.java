@@ -324,8 +324,37 @@ public class CommunityServiceImpl implements CommunityService {
     // ===== 신고 =====
 
     @Override
-    public void reportPost(Long postId, Long userIdx) {
-        communityMapper.insertReport(postId, userIdx);
+    public boolean reportPost(Long postId, Long userIdx) {
+        int inserted = communityMapper.insertReport(postId, userIdx);
+        if (inserted > 0) {
+            communityMapper.increasePostReportCount(postId);
+            int reportCount = communityMapper.selectPostReportCount(postId);
+            if (reportCount >= 3) communityMapper.blockPost(postId);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean reportComment(Long commentId, Long userIdx) {
+        int inserted = communityMapper.reportComment(commentId, userIdx);
+        if (inserted > 0) {
+            communityMapper.increaseCommentReportCount(commentId);
+            int reportCount = communityMapper.selectCommentReportCount(commentId);
+            if (reportCount >= 3) communityMapper.blockComment(commentId);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int getPostReportCount(Long postId) {
+        return communityMapper.selectPostReportCount(postId);
+    }
+
+    @Override
+    public int getCommentReportCount(Long commentId) {
+        return communityMapper.selectCommentReportCount(commentId);
     }
 
     // ===== 파일 저장 유틸 =====
@@ -360,4 +389,24 @@ public class CommunityServiceImpl implements CommunityService {
         if (originalFilename == null || !originalFilename.contains(".")) return "";
         return originalFilename.substring(originalFilename.lastIndexOf("."));
     }
+
+    @Override
+    public List<CommunityPostDto> getPopularPostList() {
+        return communityMapper.selectPopularPostList();
+    }
+
+    @Override
+    public void blockUser(Long userIdx) {
+        communityMapper.blockUser(userIdx);
+    }
+
+    @Override
+    public void unblockUser(Long userIdx) {
+        communityMapper.unblockUser(userIdx);
+    }
+
+    @Override public void blockPost(Long postId) { communityMapper.blockPost(postId); }
+    @Override public void unblockPost(Long postId) { communityMapper.unblockPost(postId); }
+    @Override public void blockComment(Long commentId) { communityMapper.blockComment(commentId); }
+    @Override public void unblockComment(Long commentId) { communityMapper.unblockComment(commentId); }
 }

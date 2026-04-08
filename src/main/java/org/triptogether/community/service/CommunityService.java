@@ -56,5 +56,22 @@ public interface CommunityService {
     int getCommentLikeCount(Long commentId);
 
     // ===== 신고 =====
-    void reportPost(Long postId, Long userIdx);
+    boolean reportPost(Long postId, Long userIdx);
+    boolean reportComment(Long commentId, Long userIdx);
+    int getPostReportCount(Long postId);
+    int getCommentReportCount(Long commentId);
+
+
+
+    List<CommunityPostDto> getPopularPostList();
+
+    void blockUser(Long userIdx);
+
+    void unblockUser(Long userIdx);
+
+    void blockPost(Long postId);
+    void unblockPost(Long postId);
+    void blockComment(Long commentId);
+    void unblockComment(Long commentId);
+
 }

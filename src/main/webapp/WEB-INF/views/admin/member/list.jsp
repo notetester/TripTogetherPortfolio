@@ -191,7 +191,7 @@
                         <td>
                             <div class="social-icons">
                                 <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('KAKAO')}">
-                                    <div class="social-icon-sm K" title="카카오">🟡</div>
+                                    <div class="social-icon-sm K" title="카카오">k</div>
                                 </c:if>
                                 <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('NAVER')}">
                                     <div class="social-icon-sm N" title="네이버">N</div>
@@ -404,7 +404,7 @@ function buildSocialHtml(linkedProviders) {
     }
 
     const providerMap = {
-        KAKAO: '🟡 카카오',
+        KAKAO: 'k 카카오',
         NAVER: 'N 네이버',
         GOOGLE: 'G Google'
     };

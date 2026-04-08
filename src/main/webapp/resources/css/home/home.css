@@ -247,6 +247,32 @@
 .cc-stats { display: flex; gap: 14px; color: var(--gray-500); font-size: 14px; }
 .cc-stats span { display: flex; align-items: center; gap: 4px; }
 
+.post-blurred-wrap {
+  position: relative;
+  cursor: default;
+}
+
+.post-blurred {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.post-blurred-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
 
 
 /* ===== 반응형 ===== */
@@ -255,4 +281,41 @@
   .hero-c h1 { font-size: 2rem; }
   .comm-g { grid-template-columns: 1fr; }
   .footer-inner { flex-direction: column; text-align: center; }
+}
+
+
+.blocked-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ef4444;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.report-blurred-wrap {
+  position: relative;
+  cursor: pointer;
+}
+.report-blurred {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+}
+.report-blurred-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+  z-index: 10;
+  cursor: pointer;
 }

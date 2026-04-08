@@ -9,7 +9,10 @@
                 <div class="logo-icon" style="width:32px;height:32px;font-size:16px;">🌐</div>
                 <span class="logo-text" style="font-size:18px;">TripTogether</span>
             </div>
-            <p class="footer-copy">© 2026 TripTogether. All rights reserved. AI 기반 여행 플랫폼</p>
+            <p class="footer-copy">© 2026 TripTogether. All rights reserved. AI 기반 여행 플랫폼
+                &nbsp;·&nbsp;
+                <a href="${pageContext.request.contextPath}/inquiry/list" class="footer-inquiry-link">문의하기</a>
+            </p>
         </div>
     </div>
 </footer>

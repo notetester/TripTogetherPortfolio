@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
+<html lang="ko">
 <body>
 <div class="auth-wrap">
   <div class="auth-card">
@@ -78,4 +79,5 @@
 })();
 </script>
 <%@ include file="../common/footer.jsp" %>
-</body></html>
+</body>
+</html>

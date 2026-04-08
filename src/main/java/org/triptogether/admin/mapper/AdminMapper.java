@@ -31,4 +31,8 @@ public interface AdminMapper {
     // 로그인 감사
     List<AdminLoginAuditVO> findLoginAudits(AdminLoginAuditSearchVO search);
     int countLoginAudits(AdminLoginAuditSearchVO search);
+
+    // 보안 이력 감사
+    List<AdminSecurityAuditVO> findSecurityAudits(AdminSecurityAuditSearchVO search);
+    int countSecurityAudits(AdminSecurityAuditSearchVO search);
 }

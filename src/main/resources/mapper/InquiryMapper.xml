@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.inquiry.mapper.InquiryMapper">
+
+    <!-- ResultMap -->
+    <resultMap id="InquiryResultMap" type="org.triptogether.inquiry.vo.InquiryPostDto">
+        <id     property="inquiryId"  column="inquiry_id"/>
+        <result property="userIdx"    column="user_idx"/>
+        <result property="nickname"   column="nickname"/>
+        <result property="title"      column="title"/>
+        <result property="content"    column="content"/>
+        <result property="category"   column="category"/>
+        <result property="isPrivate"  column="is_private"/>
+        <result property="status"     column="status"/>
+        <result property="viewCount"  column="view_count"/>
+        <result property="createdAt"  column="created_at"/>
+        <result property="updatedAt"  column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="AnswerResultMap" type="org.triptogether.inquiry.vo.InquiryAnswerDto">
+        <id     property="answerId"      column="answer_id"/>
+        <result property="inquiryId"     column="inquiry_id"/>
+        <result property="adminUserIdx"  column="admin_user_idx"/>
+        <result property="adminNickname" column="nickname"/>
+        <result property="content"       column="content"/>
+        <result property="createdAt"     column="created_at"/>
+        <result property="updatedAt"     column="updated_at"/>
+    </resultMap>
+
+    <!-- =============================================
+         목록
+         ============================================= -->
+    <select id="selectInquiryList" resultMap="InquiryResultMap">
+        SELECT
+            ip.inquiry_id,
+            ip.user_idx,
+            u.nickname,
+            ip.title,
+            ip.category,
+            ip.is_private,
+            ip.status,
+            ip.view_count,
+            ip.created_at,
+            ip.updated_at
+        FROM INQUIRY_POST ip
+        LEFT JOIN USERS u ON ip.user_idx = u.user_idx
+        <where>
+            <if test="category != null and category != ''">
+                AND ip.category = #{category}
+            </if>
+            <if test="status != null and status != ''">
+                AND ip.status = #{status}
+            </if>
+            <if test="userIdx != null">
+                AND ip.user_idx = #{userIdx}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (ip.title   LIKE CONCAT('%', #{keyword}, '%')
+                OR ip.content LIKE CONCAT('%', #{keyword}, '%')
+                OR EXISTS (
+                SELECT 1 FROM INQUIRY_ANSWER ia
+                WHERE ia.inquiry_id = ip.inquiry_id
+                AND ia.content LIKE CONCAT('%', #{keyword}, '%')
+                ))
+            </if>
+        </where>
+        ORDER BY ip.created_at DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 총 개수 -->
+    <select id="selectTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM INQUIRY_POST ip
+        <where>
+            <if test="category != null and category != ''">
+                AND ip.category = #{category}
+            </if>
+            <if test="status != null and status != ''">
+                AND ip.status = #{status}
+            </if>
+            <if test="userIdx != null">
+                AND ip.user_idx = #{userIdx}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (ip.title   LIKE CONCAT('%', #{keyword}, '%')
+                OR ip.content LIKE CONCAT('%', #{keyword}, '%')
+                OR EXISTS (
+                SELECT 1 FROM INQUIRY_ANSWER ia
+                WHERE ia.inquiry_id = ip.inquiry_id
+                AND ia.content LIKE CONCAT('%', #{keyword}, '%')
+                ))
+            </if>
+        </where>
+    </select>
+
+    <!-- =============================================
+         상세
+         ============================================= -->
+    <select id="selectInquiry" resultMap="InquiryResultMap">
+        SELECT
+            ip.inquiry_id,
+            ip.user_idx,
+            u.nickname,
+            ip.title,
+            ip.content,
+            ip.category,
+            ip.is_private,
+            ip.status,
+            ip.view_count,
+            ip.created_at,
+            ip.updated_at
+        FROM INQUIRY_POST ip
+        LEFT JOIN USERS u ON ip.user_idx = u.user_idx
+        WHERE ip.inquiry_id = #{inquiryId}
+    </select>
+
+    <!-- 답변 조회 -->
+    <select id="selectAnswer" resultMap="AnswerResultMap">
+        SELECT
+            ia.answer_id,
+            ia.inquiry_id,
+            ia.admin_user_idx,
+            u.nickname,
+            ia.content,
+            ia.created_at,
+            ia.updated_at
+        FROM INQUIRY_ANSWER ia
+        LEFT JOIN USERS u ON ia.admin_user_idx = u.user_idx
+        WHERE ia.inquiry_id = #{inquiryId}
+    </select>
+
+    <!-- =============================================
+         조회수
+         ============================================= -->
+    <update id="updateViewCount">
+        UPDATE INQUIRY_POST
+        SET view_count = view_count + 1
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <!-- =============================================
+         문의 등록
+         ============================================= -->
+    <insert id="insertInquiry" useGeneratedKeys="true" keyProperty="inquiryId">
+        INSERT INTO INQUIRY_POST (user_idx, title, content, category, is_private, status, created_at, updated_at)
+        VALUES (#{userIdx}, #{title}, #{content}, #{category}, #{isPrivate}, 'PENDING', NOW(), NOW())
+    </insert>
+
+    <!-- =============================================
+         답변 등록
+         ============================================= -->
+    <insert id="insertAnswer" useGeneratedKeys="true" keyProperty="answerId">
+        INSERT INTO INQUIRY_ANSWER (inquiry_id, admin_user_idx, content, created_at, updated_at)
+        VALUES (#{inquiryId}, #{adminUserIdx}, #{content}, NOW(), NOW())
+    </insert>
+
+    <!-- =============================================
+         상태 변경
+         ============================================= -->
+    <update id="updateStatus">
+        UPDATE INQUIRY_POST
+        SET status = #{status}, updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <!-- 수정 -->
+    <update id="updateInquiry">
+        UPDATE INQUIRY_POST
+        SET title      = #{title},
+        content    = #{content},
+        category   = #{category},
+        is_private = #{isPrivate},
+        updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <!-- 삭제 -->
+    <delete id="deleteInquiry">
+        DELETE FROM INQUIRY_POST
+        WHERE inquiry_id = #{inquiryId}
+    </delete>
+</mapper>
