@@ -324,24 +324,27 @@ public class CommunityServiceImpl implements CommunityService {
     // ===== 신고 =====
 
     @Override
-    public void reportPost(Long postId, Long userIdx) {
-        communityMapper.insertReport(postId, userIdx);
-        // 신고 3회 이상이면 자동 차단
-        int reportCount = communityMapper.selectPostReportCount(postId);
-        if (reportCount >= 3) {
-            communityMapper.blockPost(postId);
+    public boolean reportPost(Long postId, Long userIdx) {
+        int inserted = communityMapper.insertReport(postId, userIdx);
+        if (inserted > 0) {
+            communityMapper.increasePostReportCount(postId);
+            int reportCount = communityMapper.selectPostReportCount(postId);
+            if (reportCount >= 3) communityMapper.blockPost(postId);
+            return true;
         }
+        return false;
     }
 
-
     @Override
-    public void reportComment(Long commentId, Long userIdx) {
-        communityMapper.reportComment(commentId, userIdx);
-        // 신고 3회 이상이면 자동 차단
-        int reportCount = communityMapper.selectCommentReportCount(commentId);
-        if (reportCount >= 3) {
-            communityMapper.blockComment(commentId);
+    public boolean reportComment(Long commentId, Long userIdx) {
+        int inserted = communityMapper.reportComment(commentId, userIdx);
+        if (inserted > 0) {
+            communityMapper.increaseCommentReportCount(commentId);
+            int reportCount = communityMapper.selectCommentReportCount(commentId);
+            if (reportCount >= 3) communityMapper.blockComment(commentId);
+            return true;
         }
+        return false;
     }
 
     @Override

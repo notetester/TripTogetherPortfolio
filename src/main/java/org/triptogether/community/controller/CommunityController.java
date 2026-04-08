@@ -427,8 +427,9 @@ public class CommunityController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
-            communityService.reportPost(postId, loginUserIdx);
+            boolean reported = communityService.reportPost(postId, loginUserIdx);
             result.put("success", true);
+            result.put("message", reported ? "신고가 접수되었습니다." : "이미 신고하셨습니다.");
         } catch (Exception e) {
             log.error("신고 오류", e);
             result.put("success", false);
@@ -456,8 +457,9 @@ public class CommunityController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
-            communityService.reportComment(commentId, loginUserIdx);
+            boolean reported = communityService.reportComment(commentId, loginUserIdx);
             result.put("success", true);
+            result.put("message", reported ? "신고가 접수되었습니다." : "이미 신고하셨습니다.");
         } catch (Exception e) {
             log.error("댓글 신고 오류", e);
             result.put("success", false);
@@ -466,7 +468,6 @@ public class CommunityController {
 
         return ResponseEntity.ok(result);
     }
-
     /* =============================================
    POST /community/user/{userIdx}/block - 유저 차단
    ============================================= */
