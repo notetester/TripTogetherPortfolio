@@ -245,7 +245,24 @@ public class ProfileController {
         model.addAttribute("communityCount", myPageService.getMyCommunityCount(user.getUserIdx()));
         model.addAttribute("inquiryList",    myPageService.getMyInquiryList(user.getUserIdx()));
         model.addAttribute("inquiryCount",   myPageService.getMyInquiryCount(user.getUserIdx()));
+        model.addAttribute("notifications", myPageService.getNotifications(user.getUserIdx()));
         return "mypage/index";
+    }
+
+    /* =============================================
+   POST /mypage/notification/{notificationId}/read - 알림 읽음 처리
+   ============================================= */
+    @PostMapping("/notification/{notificationId}/read")
+    @ResponseBody
+    public Map<String, Object> readNotification(@PathVariable Long notificationId) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            myPageService.readNotification(notificationId);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+        }
+        return result;
     }
 
     // ── 유틸 ──────────────────────────────────────

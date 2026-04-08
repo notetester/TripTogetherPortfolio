@@ -2,6 +2,7 @@ package org.triptogether.myPage.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
 
@@ -15,4 +16,9 @@ public interface MyPageMapper {
 
     List<MyPageInquiryDto> selectMyInquiryList(@Param("userIdx") Long userIdx);
     int selectMyInquiryCount(@Param("userIdx") Long userIdx);
+
+    // ===== 알림 =====
+    List<FeedNotificationDto> selectNotifications(@Param("userIdx") Long userIdx);
+    void insertNotification(FeedNotificationDto notification);
+    void updateNotificationRead(@Param("notificationId") Long notificationId);
 }

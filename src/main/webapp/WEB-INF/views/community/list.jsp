@@ -181,13 +181,25 @@
                                         </c:otherwise>
                                     </c:choose>
                                     <span class="post-type-badge type-${post.postType}">
-            <c:choose>
-                <c:when test="${post.postType eq 'review'}">여행후기</c:when>
-                <c:when test="${post.postType eq 'photo'}">사진</c:when>
-                <c:when test="${post.postType eq 'tip'}">여행팁</c:when>
-                <c:when test="${post.postType eq 'question'}">질문</c:when>
-            </c:choose>
-          </span>
+    <c:choose>
+        <c:when test="${post.postType eq 'review'}">여행후기</c:when>
+        <c:when test="${post.postType eq 'photo'}">사진</c:when>
+        <c:when test="${post.postType eq 'tip'}">여행팁</c:when>
+        <c:when test="${post.postType eq 'question'}">질문</c:when>
+    </c:choose>
+</span>
+<c:if test="${post.postType eq 'tip' and not empty post.tipCategory}">
+    <span class="post-type-badge type-tip-sub ${post.tipCategory}">
+        <c:choose>
+            <c:when test="${post.tipCategory eq 'transport'}">교통</c:when>
+            <c:when test="${post.tipCategory eq 'accom'}">숙소</c:when>
+            <c:when test="${post.tipCategory eq 'food'}">맛집</c:when>
+            <c:when test="${post.tipCategory eq 'money'}">환전</c:when>
+            <c:when test="${post.tipCategory eq 'safety'}">안전</c:when>
+            <c:otherwise>기타</c:otherwise>
+        </c:choose>
+    </span>
+</c:if>
                                 </div>
                                 <div class="post-card-body">
                                     <div class="post-card-author">

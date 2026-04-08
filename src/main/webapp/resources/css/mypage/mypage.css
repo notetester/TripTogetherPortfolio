@@ -553,6 +553,80 @@
 .mp-placeholder-msg  { font-size: 14px; font-weight: 500; color: var(--gray-500); margin-bottom: 4px; }
 .mp-placeholder-sub  { font-size: 12px; color: var(--gray-400); }
 
+
+/* 알림 카드 */
+.mp-notif-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 6px;
+}
+
+.mp-notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 20px;
+}
+
+.mp-notif-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--gray-50);
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.mp-notif-item:hover { background: var(--gray-100); }
+
+.mp-notif-item.unread {
+    background: #eff6ff;
+    border-left: 3px solid var(--blue);
+}
+
+.mp-notif-type {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--blue);
+    white-space: nowrap;
+}
+
+.mp-notif-msg {
+    flex: 1;
+    font-size: 14px;
+    color: var(--gray-700);
+}
+
+.mp-notif-date {
+    font-size: 12px;
+    color: var(--gray-400);
+    white-space: nowrap;
+}
+
+.mp-notif-footer {
+    padding: 10px 20px 16px;
+    font-size: 12px;
+    color: var(--gray-400);
+    text-align: center;
+}
+
+.mp-notif-empty {
+    padding: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--gray-400);
+}
+
 /* ── 반응형 ── */
 @media (max-width: 560px) {
     .mp-info-grid { grid-template-columns: 1fr; }

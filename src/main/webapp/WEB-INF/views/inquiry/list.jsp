@@ -1,16 +1,43 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%--
+  =============================================
+  문의 게시판 목록 페이지
+  URL: GET /inquiry/list
+  =============================================
+  [model 필요]
+  - inquiryList   : List<InquiryPostDto> - 문의 목록
+  - totalCount    : int                  - 전체 문의 수
+  - totalPage     : int                  - 전체 페이지 수
+  - search        : InquirySearchDto     - 검색 조건 (category, status, keyword, page)
+  - isAdmin       : boolean              - 운영진 여부
+  - loginUserIdx  : Long                 - 로그인 유저 idx
+
+  [페이지 구성]
+  1. 페이지 헤더 + 카테고리 탭
+  2. 검색창
+  3. 툴바 (총 건수 + 어드민 상태 필터 + 문의하기 버튼)
+  4. 문의 목록 테이블
+  5. 페이지네이션
+  6. 스크립트 (행 클릭 이동 + 키워드 하이라이트)
+  =============================================
+--%>
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="inquiry/inquiry.css"/>
 <%@ include file="../common/header.jsp" %>
 <body>
 
+<%-- =============================================
+     1. 페이지 헤더 + 카테고리 탭
+     ============================================= --%>
 <div class="inq-ph">
     <div class="si">
         <h1>고객지원</h1>
         <p class="inq-ph-sub">문의사항을 남겨주시면 빠르게 답변 드리겠습니다</p>
+
+        <%-- 카테고리 탭 - 현재 선택된 탭에 active 클래스 --%>
         <div class="inq-tabs">
             <a href="${pageContext.request.contextPath}/inquiry/list"
                class="inq-tab ${empty search.category ? 'active' : ''}">전체</a>
@@ -28,9 +55,17 @@
     </div>
 </div>
 
+<%-- =============================================
+     본문 영역
+     ============================================= --%>
 <div class="inq-body-wrap">
     <div class="si">
 
+        <%-- =============================================
+             2. 검색창
+             - 현재 category, status 는 hidden으로 유지
+             - keyword 로 제목/내용/답변 내용까지 검색
+             ============================================= --%>
         <form class="inq-search-form"
               action="${pageContext.request.contextPath}/inquiry/list" method="get">
             <input type="hidden" name="category" value="${search.category}">
@@ -43,8 +78,16 @@
             </div>
         </form>
 
+        <%-- =============================================
+             3. 툴바
+             - 총 건수 표시
+             - 어드민 전용: 상태 필터 (전체/대기중/처리중/완료)
+             - 문의하기 버튼
+             ============================================= --%>
         <div class="inq-toolbar">
             <span class="inq-total">총 <strong>${totalCount}</strong>건</span>
+
+            <%-- 어드민만 상태 필터 표시 --%>
             <c:if test="${isAdmin}">
                 <div class="inq-status-filter">
                     <a href="${pageContext.request.contextPath}/inquiry/list?category=${search.category}&keyword=${search.keyword}"
@@ -57,32 +100,37 @@
                        class="inq-sf ${search.status eq 'COMPLETED' ? 'active' : ''}">완료</a>
                 </div>
             </c:if>
+
             <button class="inq-btn-write"
                     onclick="location.href='${pageContext.request.contextPath}/inquiry/write'">
                 &#43;&nbsp;문의하기
             </button>
         </div>
 
+        <%-- =============================================
+             4. 문의 목록 테이블
+             ============================================= --%>
         <div class="inq-table-wrap">
             <table class="inq-table">
                 <colgroup>
-                    <col style="width:70px">
-                    <col>
-                    <col style="width:100px">
-                    <col style="width:110px">
-                    <col style="width:100px">
+                    <col style="width:70px">  <%-- No --%>
+                    <col>                     <%-- 제목 --%>
+                    <col style="width:100px"> <%-- 카테고리 --%>
+                    <col style="width:110px"> <%-- 작성자 --%>
+                    <col style="width:100px"> <%-- 작성일 --%>
                 </colgroup>
                 <thead>
-                <tr>
-                    <th>No</th>
-                    <th>제목</th>
-                    <th>카테고리</th>
-                    <th>작성자</th>
-                    <th>작성일</th>
-                </tr>
+                    <tr>
+                        <th>No</th>
+                        <th>제목</th>
+                        <th>카테고리</th>
+                        <th>작성자</th>
+                        <th>작성일</th>
+                    </tr>
                 </thead>
                 <tbody>
                 <c:choose>
+                    <%-- 문의 없을 때 빈 상태 표시 --%>
                     <c:when test="${empty inquiryList}">
                         <tr>
                             <td colspan="5" class="inq-empty">
@@ -96,8 +144,12 @@
                     </c:when>
                     <c:otherwise>
                         <c:forEach var="inq" items="${inquiryList}" varStatus="vs">
+                            <%-- 비밀글 접근 제한 여부 판단
+                                 - 비밀글이고 본인 글이 아니고 어드민이 아니면 isBlocked = true --%>
                             <c:set var="isMyPost"  value="${inq.userIdx == loginUserIdx}"/>
                             <c:set var="isBlocked" value="${inq.isPrivate == 1 and !isMyPost and !isAdmin}"/>
+
+                            <%-- isBlocked면 클릭 불가 행, 아니면 클릭 가능 행 --%>
                             <c:choose>
                                 <c:when test="${isBlocked}">
                                     <tr class="inq-row-blocked">
@@ -106,9 +158,13 @@
                                     <tr class="inq-row" data-id="${inq.inquiryId}">
                                 </c:otherwise>
                             </c:choose>
+
+                                <%-- No: 최신글이 1번이 되도록 역순 계산 --%>
                                 <td class="inq-no">
                                     ${totalCount - ((search.page - 1) * search.pageSize) - vs.index}
                                 </td>
+
+                                <%-- 제목: 비밀글이면 잠금 표시, 아니면 제목 + 상태 뱃지 --%>
                                 <td class="inq-title-cell">
                                     <c:choose>
                                         <c:when test="${isBlocked}">
@@ -121,6 +177,7 @@
                                                 </c:if>
                                                 ${inq.title}
                                             </span>
+                                            <%-- 상태 뱃지: CSS 클래스명이 status 값과 일치 (PENDING/IN_PROGRESS/COMPLETED) --%>
                                             <span class="inq-status-badge ${inq.status}">
                                                 <c:choose>
                                                     <c:when test="${inq.status eq 'PENDING'}">대기중</c:when>
@@ -131,6 +188,8 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
+
+                                <%-- 카테고리 --%>
                                 <td>
                                     <span class="inq-category-tag">
                                         <c:choose>
@@ -142,12 +201,16 @@
                                         </c:choose>
                                     </span>
                                 </td>
+
+                                <%-- 작성자: 비밀글이면 익명 표시 --%>
                                 <td class="inq-nick">
                                     <c:choose>
                                         <c:when test="${inq.isPrivate == 1 and !isMyPost and !isAdmin}">익명</c:when>
                                         <c:otherwise>${inq.nickname}</c:otherwise>
                                     </c:choose>
                                 </td>
+
+                                <%-- 작성일 --%>
                                 <td class="inq-date">
                                     <fmt:formatDate value="${inq.createdAt}" pattern="yyyy-MM-dd"/>
                                 </td>
@@ -159,16 +222,26 @@
             </table>
         </div>
 
+        <%-- =============================================
+             5. 페이지네이션
+             - 총 페이지가 1개면 표시 안 함
+             - 현재 페이지에 active 클래스
+             ============================================= --%>
         <c:if test="${totalPage > 1}">
             <div class="inq-pagination">
+                <%-- 이전 페이지 버튼 --%>
                 <c:if test="${search.page > 1}">
                     <a href="${pageContext.request.contextPath}/inquiry/list?category=${search.category}&status=${search.status}&keyword=${search.keyword}&page=${search.page - 1}"
                        class="inq-page-btn">&#8249;</a>
                 </c:if>
+
+                <%-- 페이지 번호 버튼 --%>
                 <c:forEach begin="1" end="${totalPage}" var="p">
                     <a href="${pageContext.request.contextPath}/inquiry/list?category=${search.category}&status=${search.status}&keyword=${search.keyword}&page=${p}"
                        class="inq-page-btn ${p == search.page ? 'active' : ''}">${p}</a>
                 </c:forEach>
+
+                <%-- 다음 페이지 버튼 --%>
                 <c:if test="${search.page < totalPage}">
                     <a href="${pageContext.request.contextPath}/inquiry/list?category=${search.category}&status=${search.status}&keyword=${search.keyword}&page=${search.page + 1}"
                        class="inq-page-btn">&#8250;</a>
@@ -181,11 +254,16 @@
 
 <%@ include file="../common/footer.jsp" %>
 
+<%-- =============================================
+     6. 스크립트
+     ============================================= --%>
 <script>
 (function () {
     var ctx = '${pageContext.request.contextPath}';
 
-    // 행 클릭 이동 - onclick 속성 완전 제거, data-id 로 JS 처리
+    // 행 클릭 시 상세 페이지 이동
+    // - onclick 속성 대신 JS로 처리 (EL 충돌 방지)
+    // - data-id 속성에서 inquiryId 읽어서 이동
     document.querySelectorAll('.inq-row[data-id]').forEach(function (tr) {
         tr.style.cursor = 'pointer';
         tr.addEventListener('click', function () {
@@ -193,10 +271,12 @@
         });
     });
 
-    // 키워드 하이라이트
+    // 검색 키워드 하이라이트
+    // - 검색어가 있을 때만 실행
+    // - 제목에서 검색어를 찾아 <mark> 태그로 감쌈
     var keyword = '${search.keyword}';
     if (keyword) {
- var escaped = keyword.replace(/[.*+?^$\u007B\u007D()|[\]\\]/g, '\\$&');
+        var escaped = keyword.replace(/[.*+?^$\u007B\u007D()|[\]\\]/g, '\\$&');
         var regex = new RegExp(escaped, 'gi');
         document.querySelectorAll('.inq-title').forEach(function (el) {
             el.innerHTML = el.innerHTML.replace(regex, function (m) {

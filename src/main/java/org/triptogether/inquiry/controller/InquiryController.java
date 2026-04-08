@@ -15,6 +15,25 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * =============================================
+ * InquiryController - 고객 문의 게시판 컨트롤러
+ * =============================================
+ * 담당 URL: /inquiry/**
+ *
+ * [기능 목록]
+ * - 문의 목록 조회
+ * - 문의 작성
+ * - 문의 상세 조회
+ * - 운영진 답변 등록
+ * - 문의 수정 (PENDING 상태일 때만 가능)
+ * - 문의 삭제 (PENDING 상태일 때만 가능)
+ *
+ * [권한 구조]
+ * - 일반 유저 : 본인 문의만 수정/삭제 가능, 비공개 글은 본인만 열람
+ * - 운영진(ADMIN) : 모든 문의 열람/답변/수정/삭제 가능
+ * =============================================
+ */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -23,7 +42,17 @@ public class InquiryController {
 
     private final InquiryService inquiryService;
 
-    // ===== 로그인 유저 idx 추출 =====
+    /* =============================================
+       유틸 메서드
+       - 세션에서 로그인 유저 정보를 꺼낼 때 사용
+       - auth 담당자의 VO를 직접 import 하지 않고
+         리플렉션으로 접근 (담당자간 의존성 최소화)
+       ============================================= */
+
+    /**
+     * 세션에서 로그인한 유저의 idx(고유번호)를 꺼낸다.
+     * 로그인 안 했거나 오류 시 null 반환.
+     */
     private Long getLoginUserIdx(HttpSession session) {
         try {
             Object loginUser = session.getAttribute("loginUser");
@@ -34,7 +63,10 @@ public class InquiryController {
         }
     }
 
-    // ===== 운영진 여부 확인 =====
+    /**
+     * 세션에서 로그인한 유저가 운영진(ADMIN)인지 확인한다.
+     * 운영진이면 true, 아니면 false 반환.
+     */
     private boolean isAdmin(HttpSession session) {
         try {
             Object loginUser = session.getAttribute("loginUser");
@@ -47,38 +79,54 @@ public class InquiryController {
     }
 
     /* =============================================
-       GET /inquiry/list - 목록
+       GET /inquiry/list - 문의 목록
        ============================================= */
+
+    /**
+     * 문의 목록 페이지를 보여준다.
+     * - 검색/페이지네이션 지원
+     * - 운영진은 모든 문의, 일반 유저도 전체 목록 열람 가능
+     *   (단 비공개 글 내용은 상세에서 제한)
+     */
     @GetMapping("/list")
     public String list(@ModelAttribute InquirySearchDto search,
                        HttpSession session, Model model) {
 
-
         Long loginUserIdx = getLoginUserIdx(session);
         boolean admin     = isAdmin(session);
 
-
-        model.addAttribute("inquiryList", inquiryService.getInquiryList(search));
-        model.addAttribute("totalCount",  inquiryService.getTotalCount(search));
-        model.addAttribute("totalPage",   inquiryService.getTotalPage(search));
-        model.addAttribute("search",      search);
-        model.addAttribute("isAdmin",     admin);
+        model.addAttribute("inquiryList",  inquiryService.getInquiryList(search));
+        model.addAttribute("totalCount",   inquiryService.getTotalCount(search));
+        model.addAttribute("totalPage",    inquiryService.getTotalPage(search));
+        model.addAttribute("search",       search);
+        model.addAttribute("isAdmin",      admin);
         model.addAttribute("loginUserIdx", loginUserIdx);
+
         return "inquiry/list";
     }
 
     /* =============================================
-       GET /inquiry/write - 글쓰기 폼
+       GET /inquiry/write - 문의 작성 폼
        ============================================= */
+
+    /**
+     * 문의 작성 페이지를 보여준다.
+     * (로그인 체크는 WebConfig 인터셉터에서 처리)
+     */
     @GetMapping("/write")
     public String writeForm(HttpSession session) {
-
         return "inquiry/write";
     }
 
     /* =============================================
-       POST /inquiry/write - 글쓰기 등록
+       POST /inquiry/write - 문의 등록
        ============================================= */
+
+    /**
+     * 작성한 문의를 DB에 저장한다.
+     * - 로그인하지 않으면 401 반환
+     * - 성공 시 생성된 inquiryId 반환
+     */
     @PostMapping("/write")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> write(
@@ -90,6 +138,7 @@ public class InquiryController {
 
         Map<String, Object> result = new HashMap<>();
 
+        // 로그인 체크
         if (session.getAttribute("loginUser") == null) {
             result.put("success", false);
             return ResponseEntity.status(401).body(result);
@@ -97,6 +146,8 @@ public class InquiryController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
+
+            // VO에 입력값 세팅
             InquiryPostDto inquiry = new InquiryPostDto();
             inquiry.setUserIdx(loginUserIdx);
             inquiry.setTitle(title);
@@ -107,6 +158,7 @@ public class InquiryController {
             Long inquiryId = inquiryService.writeInquiry(inquiry);
             result.put("success",   true);
             result.put("inquiryId", inquiryId);
+
         } catch (Exception e) {
             log.error("문의 등록 오류", e);
             result.put("success", false);
@@ -117,13 +169,17 @@ public class InquiryController {
     }
 
     /* =============================================
-       GET /inquiry/{inquiryId} - 상세
+       GET /inquiry/{inquiryId} - 문의 상세
        ============================================= */
+
+    /**
+     * 문의 상세 페이지를 보여준다.
+     * - 비공개 글: 본인 또는 운영진만 열람 가능
+     * - 조회수 증가 처리
+     */
     @GetMapping("/{inquiryId}")
     public String detail(@PathVariable Long inquiryId,
                          HttpSession session, Model model) {
-
-
 
         Long loginUserIdx = getLoginUserIdx(session);
         boolean admin     = isAdmin(session);
@@ -131,7 +187,7 @@ public class InquiryController {
         InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
         if (inquiry == null) return "redirect:/inquiry/list";
 
-        // 비공개 접근 제한
+        // 비공개 글 접근 제한 (운영진 또는 작성자만 열람 가능)
         if (inquiry.getIsPrivate() == 1 && !admin
                 && !loginUserIdx.equals(inquiry.getUserIdx())) {
             return "redirect:/inquiry/list";
@@ -139,16 +195,22 @@ public class InquiryController {
 
         inquiryService.increaseViewCount(inquiryId);
 
-        model.addAttribute("inquiry",  inquiry);
-        model.addAttribute("answer",   inquiryService.getAnswer(inquiryId));
-        model.addAttribute("isAdmin",  admin);
-        model.addAttribute("isOwner",  loginUserIdx.equals(inquiry.getUserIdx()));
+        model.addAttribute("inquiry", inquiry);
+        model.addAttribute("answer",  inquiryService.getAnswer(inquiryId));
+        model.addAttribute("isAdmin", admin);
+        model.addAttribute("isOwner", loginUserIdx.equals(inquiry.getUserIdx()));
+
         return "inquiry/detail";
     }
 
     /* =============================================
        POST /inquiry/{inquiryId}/answer - 답변 등록
        ============================================= */
+
+    /**
+     * 운영진이 문의에 답변을 등록한다.
+     * - 운영진이 아니면 403 반환
+     */
     @PostMapping("/{inquiryId}/answer")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> answer(
@@ -158,6 +220,7 @@ public class InquiryController {
 
         Map<String, Object> result = new HashMap<>();
 
+        // 운영진 권한 체크
         if (!isAdmin(session)) {
             result.put("success", false);
             result.put("message", "운영진만 답변할 수 있어요.");
@@ -168,6 +231,7 @@ public class InquiryController {
             Long adminUserIdx = getLoginUserIdx(session);
             inquiryService.writeAnswer(inquiryId, adminUserIdx, content);
             result.put("success", true);
+
         } catch (Exception e) {
             log.error("답변 등록 오류", e);
             result.put("success", false);
@@ -178,8 +242,15 @@ public class InquiryController {
     }
 
     /* =============================================
-   POST /inquiry/{inquiryId}/edit - 수정
-   ============================================= */
+       POST /inquiry/{inquiryId}/edit - 문의 수정
+       ============================================= */
+
+    /**
+     * 문의 내용을 수정한다.
+     * - 본인 또는 운영진만 수정 가능
+     * - PENDING(대기중) 상태일 때만 수정 가능
+     *   (답변 완료된 글은 수정 불가)
+     */
     @PostMapping("/{inquiryId}/edit")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> edit(
@@ -195,13 +266,17 @@ public class InquiryController {
 
         InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
         if (inquiry == null) {
-            result.put("success", false); return ResponseEntity.status(404).body(result);
+            result.put("success", false);
+            return ResponseEntity.status(404).body(result);
         }
 
-        // 본인 또는 어드민만, PENDING일 때만
+        // 본인 또는 운영진만 수정 가능
         if (!loginUserIdx.equals(inquiry.getUserIdx()) && !isAdmin(session)) {
-            result.put("success", false); return ResponseEntity.status(403).body(result);
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
         }
+
+        // PENDING 상태일 때만 수정 가능
         if (!"PENDING".equals(inquiry.getStatus())) {
             result.put("success", false);
             result.put("message", "답변이 완료된 글은 수정할 수 없습니다.");
@@ -214,12 +289,20 @@ public class InquiryController {
         inquiry.setIsPrivate(isPrivate);
         inquiryService.updateInquiry(inquiry);
         result.put("success", true);
+
         return ResponseEntity.ok(result);
     }
 
     /* =============================================
-       POST /inquiry/{inquiryId}/delete - 삭제
+       POST /inquiry/{inquiryId}/delete - 문의 삭제
        ============================================= */
+
+    /**
+     * 문의를 삭제한다.
+     * - 본인 또는 운영진만 삭제 가능
+     * - PENDING(대기중) 상태일 때만 삭제 가능
+     *   (답변 완료된 글은 삭제 불가)
+     */
     @PostMapping("/{inquiryId}/delete")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> delete(
@@ -231,13 +314,17 @@ public class InquiryController {
 
         InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
         if (inquiry == null) {
-            result.put("success", false); return ResponseEntity.status(404).body(result);
+            result.put("success", false);
+            return ResponseEntity.status(404).body(result);
         }
 
-        // 본인 또는 어드민만, PENDING일 때만
+        // 본인 또는 운영진만 삭제 가능
         if (!loginUserIdx.equals(inquiry.getUserIdx()) && !isAdmin(session)) {
-            result.put("success", false); return ResponseEntity.status(403).body(result);
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
         }
+
+        // PENDING 상태일 때만 삭제 가능
         if (!"PENDING".equals(inquiry.getStatus())) {
             result.put("success", false);
             result.put("message", "답변이 완료된 글은 삭제할 수 없습니다.");
@@ -246,6 +333,7 @@ public class InquiryController {
 
         inquiryService.deleteInquiry(inquiryId);
         result.put("success", true);
+
         return ResponseEntity.ok(result);
     }
 }
