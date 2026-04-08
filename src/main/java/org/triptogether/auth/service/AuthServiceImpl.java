@@ -579,10 +579,16 @@ public class AuthServiceImpl implements AuthService {
 
         if (enableEmailLogin) {
             if (!hasText(normalizedEmail)) {
+                if (user.isEmailLoginEnabled()) {
+                    throw new IllegalStateException("이메일을 삭제하려면 이메일 로그인 사용을 함께 해제한 뒤 저장해 주세요.");
+                }
                 throw new IllegalStateException("이메일 로그인을 사용하려면 먼저 이메일을 등록해 주세요.");
             }
             boolean emailVerifiedForTarget = !emailChanged && user.isEmailVerified();
             if (!emailVerifiedForTarget) {
+                if (emailChanged) {
+                    throw new IllegalStateException("이메일을 변경한 경우 먼저 저장 후 인증을 완료한 뒤 이메일 로그인을 다시 사용해 주세요.");
+                }
                 throw new IllegalStateException("이메일 로그인을 사용하려면 먼저 이메일 인증을 완료해 주세요.");
             }
         }

@@ -498,10 +498,16 @@ document.getElementById('saveLoginSettingsBtn').addEventListener('click', async 
   const msg = document.getElementById('saveLoginSettingsMsg');
   const userIdInput = document.getElementById('localUserId');
   const userId = userIdInput ? userIdInput.value.trim() : '';
+  const emailValue = document.getElementById('newEmail').value.trim();
   const enableEmailLogin = document.getElementById('emailLoginToggle').checked;
   const passwordBoxVisible = document.getElementById('localPasswordBox').style.display !== 'none';
   const pw = loginNewPw ? loginNewPw.value : '';
   const pw2 = loginCfmPw ? loginCfmPw.value : '';
+
+  if (enableEmailLogin && !emailValue) {
+    showMsg(msg, false, '이메일을 삭제하려면 이메일 로그인 사용을 함께 해제한 뒤 저장해 주세요.');
+    return;
+  }
 
   if (passwordBoxVisible) {
     if (pw.length < 8) {
@@ -521,7 +527,7 @@ document.getElementById('saveLoginSettingsBtn').addEventListener('click', async 
     method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
     body: new URLSearchParams({
       userId,
-      email: document.getElementById('newEmail').value.trim(),
+      email: emailValue,
       emailLoginEnabled: enableEmailLogin,
       newPassword: passwordBoxVisible ? pw : ''
     })
