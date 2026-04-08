@@ -15,6 +15,7 @@ public class PlanSpotVO {
     private Long plan_spot_id;
     private Long plan_id;
     private String spot_id;
+    private String place_name;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date visit_date;
