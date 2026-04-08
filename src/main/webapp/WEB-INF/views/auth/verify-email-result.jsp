@@ -17,7 +17,7 @@
         <div style="font-size:56px;margin:16px 0 20px;">✅</div>
         <h1 class="auth-title">이메일 인증 완료!</h1>
         <p class="auth-sub">이메일 인증이 성공적으로 완료되었습니다.<br>
-          이제 회원정보 수정 페이지에서 이메일 로그인을 활성화할 수 있어요.</p>
+          회원정보 수정 화면으로 돌아가 저장하면 최종 반영됩니다.</p>
         <button class="btn-submit"
                 onclick="location.href='${pageContext.request.contextPath}/mypage/edit'">
           회원정보 수정으로 가기

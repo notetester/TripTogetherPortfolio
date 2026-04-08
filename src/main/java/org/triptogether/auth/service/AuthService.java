@@ -57,8 +57,8 @@ public interface AuthService {
     void updatePassword(Long userIdx, String newRawPassword, LoginRequestContext context);
 
     // ── 이메일 인증 ────────────────────────────
-    /** 이메일 인증 메일 발송 (VERIFY 목적) */
-    boolean sendEmailVerification(Long userIdx, String email, LoginRequestContext context);
+    /** 회원정보 수정용 이메일 인증 메일 발송 (저장 전 인증 요청 생성) */
+    boolean sendEmailVerification(Long userIdx, String requestId, String email, LoginRequestContext context);
 
     /** VERIFY 토큰 검증 → 이메일 인증 처리 */
     boolean verifyEmail(String token, LoginRequestContext context);

@@ -126,4 +126,11 @@ public class AdminController {
         model.addAttribute("activeMenu", "security");
         return "admin/security/list";
     }
+
+    @GetMapping("/email-verifications")
+    public String emailVerificationRequests(AdminEmailVerificationRequestSearchVO search, Model model) {
+        model.addAllAttributes(adminService.getEmailVerificationRequestList(search));
+        model.addAttribute("activeMenu", "emailVerifications");
+        return "admin/email-verification/list";
+    }
 }

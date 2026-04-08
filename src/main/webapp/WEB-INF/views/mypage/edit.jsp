@@ -79,6 +79,8 @@
       </div>
       <div class="accordion-body edit-card-body" id="acc-login">
 
+        <input type="hidden" id="profileEmailRequestId" value="${profileEmailRequestId}">
+
         <div style="background:var(--gray-50);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:8px;">
           <span class="email-status-badge ${hasUsableIdLogin ? 'verified' : 'unverified'}">아이디 로그인 ${hasUsableIdLogin ? '가능' : '없음'}</span>
           <span class="email-status-badge ${hasUsableEmailLogin ? 'verified' : 'unverified'}">이메일 로그인 ${hasUsableEmailLogin ? '가능' : '없음'}</span>
@@ -104,22 +106,20 @@
         <div style="height:1px;background:var(--gray-100);margin:16px 0;"></div>
 
         <div style="background:var(--gray-50);border-radius:10px;padding:14px 16px;margin-bottom:16px;">
-          <div style="font-size:13px;font-weight:600;color:var(--gray-600);margin-bottom:4px;">현재 이메일</div>
+          <div style="font-size:13px;font-weight:600;color:var(--gray-600);margin-bottom:4px;">이메일 상태</div>
           <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
             <span style="font-size:15px;font-weight:600;color:var(--gray-800);" id="currentEmail">
               <c:choose>
                 <c:when test="${not empty user.userEmail}">${user.userEmail}</c:when>
-                <c:otherwise><span style="color:var(--gray-400);">등록된 이메일 없음</span></c:otherwise>
+                <c:otherwise>등록된 이메일 없음</c:otherwise>
               </c:choose>
             </span>
-            <c:choose>
-              <c:when test="${user.emailVerified}">
-                <span class="email-status-badge verified" id="emailStatusBadge">✓ 인증됨</span>
-              </c:when>
-              <c:when test="${not empty user.userEmail}">
-                <span class="email-status-badge unverified" id="emailStatusBadge">⚠ 미인증</span>
-              </c:when>
-            </c:choose>
+            <span class="email-status-badge ${user.emailVerified ? 'verified' : 'unverified'}" id="emailStatusBadge">
+              <c:choose>
+                <c:when test="${user.emailVerified}">✓ 인증됨</c:when>
+                <c:otherwise>⚠ 미인증</c:otherwise>
+              </c:choose>
+            </span>
           </div>
         </div>
 
@@ -141,7 +141,7 @@
                 <c:when test="${user.emailLoginEnabled}">현재 이메일 로그인 사용 중입니다.</c:when>
                 <c:when test="${user.emailVerified and user.passwordEnabled}">저장하면 이메일 로그인을 사용할 수 있습니다.</c:when>
                 <c:when test="${user.emailVerified and not user.passwordEnabled}">저장 시 비밀번호를 함께 설정해야 이메일 로그인을 사용할 수 있습니다.</c:when>
-                <c:otherwise>이메일 인증 여부는 체크 시점에 다시 확인합니다.</c:otherwise>
+                <c:otherwise>이메일 인증 여부는 체크 시점에 다시 확인합니다. 인증 완료 후 저장해야 최종 반영됩니다.</c:otherwise>
               </c:choose>
             </div>
           </div>
@@ -426,6 +426,52 @@ document.getElementById('saveProfileBtn').addEventListener('click', async functi
   btn.classList.remove('loading'); btn.disabled = false;
 });
 
+async function refreshEmailVerificationState(emailInputValue) {
+  const badge = document.getElementById('emailStatusBadge');
+  const sub = document.getElementById('emailLoginSub');
+  const currentEmailEl = document.getElementById('currentEmail');
+  if (currentEmailEl) {
+    if (emailInputValue && emailInputValue !== originalEmail) {
+      currentEmailEl.textContent = emailInputValue + ' (저장 전)';
+    } else {
+      currentEmailEl.textContent = originalEmail || '등록된 이메일 없음';
+    }
+  }
+  if (!emailInputValue) {
+    if (badge) {
+      badge.className = 'email-status-badge unverified';
+      badge.textContent = '⚠ 미인증';
+    }
+    if (sub) sub.textContent = '이메일을 입력한 뒤 인증을 진행해 주세요.';
+    return {success:false, emailVerified:false, pendingVerified:false};
+  }
+
+  const res = await fetch(ctx + '/mypage/edit/email/status', {
+    method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body: new URLSearchParams({email: emailInputValue})
+  });
+  const data = await res.json();
+  if (badge) {
+    if (data.emailVerified) {
+      badge.className = 'email-status-badge verified';
+      badge.textContent = data.pendingVerified ? '✓ 인증 완료(저장 대기)' : '✓ 인증됨';
+    } else {
+      badge.className = 'email-status-badge unverified';
+      badge.textContent = '⚠ 미인증';
+    }
+  }
+  if (sub) {
+    if (data.emailVerified) {
+      sub.textContent = data.requiresPassword
+        ? '저장 시 비밀번호를 함께 설정해야 이메일 로그인을 사용할 수 있습니다.'
+        : '저장하면 이메일 로그인을 활성화할 수 있습니다.';
+    } else {
+      sub.textContent = '이메일 인증 여부는 체크 시점에 다시 확인합니다. 인증 완료 후 저장해야 최종 반영됩니다.';
+    }
+  }
+  return data;
+}
+
 document.getElementById('sendVerifyBtn').addEventListener('click', async function () {
   const email = document.getElementById('newEmail').value.trim();
   const msg = document.getElementById('emailMsg');
@@ -443,13 +489,7 @@ document.getElementById('sendVerifyBtn').addEventListener('click', async functio
   this.classList.remove('loading'); this.disabled = false;
   if (data.success) {
     this.textContent = '재발송';
-    const badge = document.getElementById('emailStatusBadge');
-    if (badge) {
-      badge.className = 'email-status-badge unverified';
-      badge.textContent = '⚠ 미인증';
-    }
-    const sub = document.getElementById('emailLoginSub');
-    if (sub) sub.textContent = '이메일 인증이 완료되면 체크 시점에 다시 확인합니다.';
+    await refreshEmailVerificationState(email);
   }
 });
 
@@ -468,30 +508,18 @@ if (emailToggle) {
       return;
     }
 
-    if (emailInputValue !== originalEmail) {
-      showMsg(msg, false, '이메일 주소를 변경한 경우 먼저 저장하거나 인증을 완료한 뒤 다시 시도해 주세요.');
+    const data = await refreshEmailVerificationState(emailInputValue);
+    showMsg(msg, data.success, data.message || '이메일 인증 상태를 확인했습니다.');
+    if (!data.success) {
       this.checked = false;
       updateLocalPasswordBox();
       return;
     }
-
-    const res = await fetch(ctx + '/mypage/edit/email/login-toggle', {
-      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams({check:true})
-    });
-    const data = await res.json();
-    showMsg(msg, data.success, data.message);
-    if (!data.success) {
-      this.checked = false;
-      return;
-    }
-    const sub = document.getElementById('emailLoginSub');
-    sub.textContent = data.requiresPassword
-      ? '저장 시 비밀번호를 함께 설정해야 이메일 로그인을 사용할 수 있습니다.'
-      : '저장하면 이메일 로그인이 활성화됩니다.';
     updateLocalPasswordBox();
   });
 }
 updateLocalPasswordBox();
+refreshEmailVerificationState(document.getElementById('newEmail').value.trim()).catch(() => {});
 
 document.getElementById('saveLoginSettingsBtn').addEventListener('click', async function () {
   const btn = this;

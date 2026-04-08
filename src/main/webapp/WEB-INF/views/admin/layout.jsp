@@ -37,6 +37,9 @@
             <a class="adm-nav-item ${activeMenu=='security'?'active':''}" href="${pageContext.request.contextPath}/admin/security">
                 <span class="adm-nav-icon">🛡️</span> 보안 이력
             </a>
+            <a class="adm-nav-item ${activeMenu=='emailVerifications'?'active':''}" href="${pageContext.request.contextPath}/admin/email-verifications">
+                <span class="adm-nav-icon">📧</span> 이메일 인증 요청
+            </a>
 
             <div class="adm-nav-section" style="margin-top:8px;">운영</div>
             <a class="adm-nav-item ${activeMenu=='inquiries'?'active':''}" href="${pageContext.request.contextPath}/admin/inquiries">
