@@ -431,8 +431,6 @@ public class AuthServiceImpl implements AuthService {
                 true, null, null, context);
 
         authMapper.expireOldTokens(email, "VERIFY");
-        // 이메일 변경 전 미인증 상태로 업데이트
-        authMapper.updateEmail(userIdx, email, false);
 
         String token = UUID.randomUUID().toString();
         authMapper.insertEmailVerification(EmailVerificationVO.builder()
@@ -466,7 +464,11 @@ public class AuthServiceImpl implements AuthService {
 
         try {
             authMapper.markTokenUsed(ev.getVerifyIdx());
-            authMapper.updateEmailVerified(ev.getUserIdx(), true);
+            authMapper.updateEmail(ev.getUserIdx(), ev.getEmail(), true);
+            UsersVO updated = authMapper.findByIdx(ev.getUserIdx());
+            if (updated != null && !hasUsableLocalLogin(updated) && updated.isPasswordEnabled()) {
+                authMapper.clearPasswordAndDisable(ev.getUserIdx());
+            }
             recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "EMAIL_VERIFY", "COMPLETE", ev.getEmail(), ev.getEmail(),
                     true, null, null, context);
             return true;
@@ -493,6 +495,116 @@ public class AuthServiceImpl implements AuthService {
         authMapper.updateEmailLoginEnabled(userIdx, enable);
         recordSecurityEvent(userIdx, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE", user.getUserEmail(), user.getUserEmail(),
                 true, null, enable ? "ENABLE" : "DISABLE", context);
+    }
+
+    /**
+     * 이메일 로그인 체크박스 변경 시점에 최신 인증 상태를 다시 확인한다.
+     * 실제 반영은 저장 버튼에서만 수행하고, 여기서는 가능 여부만 판단한다.
+     */
+    public Map<String, Object> checkEmailLoginAvailability(Long userIdx) {
+        UsersVO user = authMapper.findByIdx(userIdx);
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        if (user == null) {
+            result.put("success", false);
+            result.put("message", "사용자 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        if (user.getUserEmail() == null || user.getUserEmail().isBlank()) {
+            result.put("success", false);
+            result.put("message", "먼저 이메일을 등록해 주세요.");
+            return result;
+        }
+        if (!user.isEmailVerified()) {
+            result.put("success", false);
+            result.put("message", "이메일 인증을 먼저 완료해 주세요.");
+            result.put("emailVerified", false);
+            return result;
+        }
+
+        result.put("success", true);
+        result.put("emailVerified", true);
+        result.put("requiresPassword", !user.isPasswordEnabled());
+        result.put("message", user.isPasswordEnabled()
+                ? "저장하면 이메일 로그인이 활성화됩니다."
+                : "저장 시 비밀번호를 함께 설정해야 이메일 로그인을 사용할 수 있습니다.");
+        return result;
+    }
+
+    /**
+     * 로컬 로그인 수단(아이디 / 이메일 로그인)을 저장한다.
+     * 비밀번호는 로컬 로그인 수단이 처음 생길 때만 함께 설정한다.
+     */
+    public UsersVO saveLoginSettings(Long userIdx,
+                                     String userIdToAdd,
+                                     boolean enableEmailLogin,
+                                     String newPassword,
+                                     LoginRequestContext context) {
+        UsersVO user = authMapper.findByIdx(userIdx);
+        if (user == null) {
+            throw new IllegalStateException("사용자 정보를 찾을 수 없습니다.");
+        }
+
+        String normalizedUserId = userIdToAdd == null ? null : userIdToAdd.trim();
+        if (normalizedUserId != null && normalizedUserId.isBlank()) {
+            normalizedUserId = null;
+        }
+
+        // 아이디는 1회만 등록 가능하다.
+        if (user.getUserId() != null && normalizedUserId != null && !user.getUserId().equals(normalizedUserId)) {
+            throw new IllegalStateException("아이디는 변경할 수 없습니다.");
+        }
+        if (user.getUserId() == null && normalizedUserId != null && authMapper.existsByUserId(normalizedUserId)) {
+            throw new IllegalStateException("입력하신 아이디는 현재 사용할 수 없습니다. 다른 아이디를 입력해 주세요.");
+        }
+
+        boolean willHaveUserId = hasText(user.getUserId()) || hasText(normalizedUserId);
+        boolean needsPasswordForFirstLocalLogin = !user.isPasswordEnabled() && (willHaveUserId || enableEmailLogin);
+
+        if (enableEmailLogin) {
+            if (!hasText(user.getUserEmail())) {
+                throw new IllegalStateException("먼저 이메일을 등록해 주세요.");
+            }
+            if (!user.isEmailVerified()) {
+                throw new IllegalStateException("이메일 인증을 먼저 완료해 주세요.");
+            }
+        }
+
+        if (needsPasswordForFirstLocalLogin) {
+            validateNewPassword(newPassword);
+        }
+
+        if (user.getUserId() == null && hasText(normalizedUserId)) {
+            authMapper.updateUserId(userIdx, normalizedUserId);
+            recordSecurityEvent(userIdx, userIdx, "ID_LOGIN_ADD", "COMPLETE", normalizedUserId,
+                    user.getUserEmail(), true, null, null, context);
+        }
+
+        if (needsPasswordForFirstLocalLogin) {
+            authMapper.updatePassword(userIdx, bCryptPasswordEncoder.encode(newPassword));
+            recordSecurityEvent(userIdx, userIdx, "PASSWORD_CHANGE", "COMPLETE",
+                    normalizedUserId != null ? normalizedUserId : user.getUserId(), user.getUserEmail(),
+                    true, null, "LOCAL_LOGIN_INITIAL_SET", context);
+        }
+
+        boolean emailLoginChanged = user.isEmailLoginEnabled() != enableEmailLogin;
+        authMapper.updateEmailLoginEnabled(userIdx, enableEmailLogin);
+        if (emailLoginChanged) {
+            recordSecurityEvent(userIdx, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE",
+                    user.getUserEmail(), user.getUserEmail(), true, null,
+                    enableEmailLogin ? "ENABLE" : "DISABLE", context);
+        }
+
+        UsersVO after = authMapper.findByIdx(userIdx);
+        if (!hasUsableLocalLogin(after) && after.isPasswordEnabled()) {
+            authMapper.clearPasswordAndDisable(userIdx);
+            recordSecurityEvent(userIdx, userIdx, "PASSWORD_CHANGE", "COMPLETE",
+                    after.getUserId(), after.getUserEmail(), true, null,
+                    "LOCAL_LOGIN_METHOD_REMOVED_AUTO_CLEAR", context);
+            after = authMapper.findByIdx(userIdx);
+        }
+
+        return after;
     }
 
     // ════════════════════════════════════════════
@@ -920,10 +1032,15 @@ public class AuthServiceImpl implements AuthService {
     public void unlinkSocial(Long userIdx, String provider) {
         UsersVO user = authMapper.findByIdx(userIdx);
         List<UserSocialVO> socials = authMapper.findSocialsByUserIdx(userIdx);
+        long remainingSocials = socials.stream()
+                .filter(s -> !provider.equalsIgnoreCase(s.getProvider()))
+                .count();
 
-        // 비밀번호 로그인도 없고 소셜 1개뿐이면 해제 불가 (로그인 수단이 없어짐)
-        if (!user.isPasswordEnabled() && socials.size() <= 1) {
-            throw new IllegalStateException("마지막 로그인 수단은 해제할 수 없습니다. 비밀번호를 먼저 설정해주세요.");
+        boolean hasIdLogin = hasUsableIdLogin(user);
+        boolean hasEmailLogin = hasUsableEmailLogin(user);
+
+        if (!hasIdLogin && !hasEmailLogin && remainingSocials <= 0) {
+            throw new IllegalStateException("연동 해제 후 사용할 수 있는 로그인 수단이 남아 있지 않아 처리할 수 없습니다. 먼저 아이디 로그인, 이메일 로그인 또는 다른 소셜 연동을 추가해 주세요.");
         }
         authMapper.deleteSocial(userIdx, provider);
     }
@@ -1218,6 +1335,30 @@ public class AuthServiceImpl implements AuthService {
                 .build());
     }
 
+    private boolean hasUsableIdLogin(UsersVO user) {
+        return user != null && hasText(user.getUserId()) && user.isPasswordEnabled()
+                && !"DELETED".equalsIgnoreCase(user.getAccountStatus());
+    }
+
+    private boolean hasUsableEmailLogin(UsersVO user) {
+        return user != null
+                && hasText(user.getUserEmail())
+                && user.isEmailVerified()
+                && user.isEmailLoginEnabled()
+                && user.isPasswordEnabled()
+                && !"DELETED".equalsIgnoreCase(user.getAccountStatus());
+    }
+
+    private boolean hasUsableLocalLogin(UsersVO user) {
+        return hasUsableIdLogin(user) || hasUsableEmailLogin(user);
+    }
+
+    private void validateNewPassword(String newPassword) {
+        if (!hasText(newPassword) || newPassword.length() < 8) {
+            throw new IllegalStateException("비밀번호는 8자 이상으로 설정해 주세요.");
+        }
+    }
+
     private boolean isRecoverableAccountStatus(String accountStatus) {
         if (accountStatus == null || accountStatus.isBlank()) {
             return true;
@@ -1245,6 +1386,10 @@ public class AuthServiceImpl implements AuthService {
         return userId.substring(0, visibleFront)
                 + "*".repeat(maskLength)
                 + userId.substring(length - visibleBack);
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     private boolean isValidEmailFormat(String identifier) {

@@ -125,6 +125,21 @@
         WHERE user_idx = #{userIdx}
     </update>
 
+    <update id="clearPasswordAndDisable">
+        UPDATE USERS
+        SET user_password        = NULL,
+            password_enabled     = FALSE,
+            email_login_enabled  = FALSE
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="updateUserId">
+        UPDATE USERS
+        SET user_id = #{userId}
+        WHERE user_idx = #{userIdx}
+          AND user_id IS NULL
+    </update>
+
     <update id="updateEmail">
         UPDATE USERS
         SET user_email     = #{email},

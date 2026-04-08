@@ -52,6 +52,13 @@ public interface AuthMapper {
     void updatePassword(@Param("userIdx") Long userIdx,
                         @Param("encodedPassword") String encodedPassword);
 
+    /** 로컬 비밀번호 제거 및 비밀번호 로그인 비활성화 */
+    void clearPasswordAndDisable(Long userIdx);
+
+    /** 아이디 1회 등록 */
+    void updateUserId(@Param("userIdx") Long userIdx,
+                      @Param("userId") String userId);
+
     /** 이메일 + 인증 상태 업데이트 */
     void updateEmail(@Param("userIdx") Long userIdx,
                      @Param("email") String email,
