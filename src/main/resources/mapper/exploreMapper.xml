@@ -102,7 +102,6 @@
                     st.name        LIKE CONCAT('%', #{keyword}, '%')
                     OR st.region   LIKE CONCAT('%', #{keyword}, '%')
                     OR st.address  LIKE CONCAT('%', #{keyword}, '%')
-                    OR st.description LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
             <if test="tab == 'region' and region != null and region != ''">
@@ -131,7 +130,6 @@
                     st.name        LIKE CONCAT('%', #{keyword}, '%')
                     OR st.region   LIKE CONCAT('%', #{keyword}, '%')
                     OR st.address  LIKE CONCAT('%', #{keyword}, '%')
-                    OR st.description LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
             <if test="tab == 'region' and region != null and region != ''">
@@ -227,7 +225,6 @@
                     st.name        LIKE CONCAT('%', #{keyword}, '%')
                     OR st.region   LIKE CONCAT('%', #{keyword}, '%')
                     OR st.address  LIKE CONCAT('%', #{keyword}, '%')
-                    OR st.description LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
         </where>
@@ -250,7 +247,6 @@
                     st.name        LIKE CONCAT('%', #{keyword}, '%')
                     OR st.region   LIKE CONCAT('%', #{keyword}, '%')
                     OR st.address  LIKE CONCAT('%', #{keyword}, '%')
-                    OR st.description LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
         </where>
@@ -280,6 +276,33 @@
         SELECT tag_name
         FROM   SPOT_TAG_LIST
         ORDER  BY tag_name ASC
+    </select>
+
+    <!-- =============================================
+         자동완성 후보 목록 조회
+         - 검색창에 입력된 키워드로 name, region, address를 LIKE 검색
+         - 중복 제거 후 최대 7건만 반환 (드롭다운 UI에 적절한 개수)
+         ============================================= -->
+    <select id="selectSuggestList" resultType="java.util.HashMap">
+        SELECT
+            st.spot_idx   AS spotIdx,
+            st.name       AS name,
+            st.region     AS region,
+            st.address    AS address
+        FROM SPOT_TRAVEL st
+        WHERE
+            st.name    LIKE CONCAT('%', #{keyword}, '%')
+            OR st.region  LIKE CONCAT('%', #{keyword}, '%')
+            OR st.address LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY
+            /* 이름이 정확히 일치하는 것을 최우선으로, 그 다음 이름에 포함된 것 우선 */
+            CASE WHEN st.name = #{keyword} THEN 0
+                 WHEN st.name LIKE CONCAT(#{keyword}, '%') THEN 1
+                 WHEN st.name LIKE CONCAT('%', #{keyword}, '%') THEN 2
+                 ELSE 3
+            END,
+            st.name ASC
+        LIMIT 7
     </select>
 
     <!-- =============================================

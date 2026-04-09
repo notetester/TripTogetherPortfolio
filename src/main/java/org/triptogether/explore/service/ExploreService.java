@@ -61,6 +61,15 @@ public interface ExploreService {
 
     /* ?? 李?/ 醫뗭븘???? */
 
+    /**
+     * 검색 자동완성 후보 목록
+     * - 입력된 키워드로 name, region, address를 LIKE 검색
+     * - 최대 7건의 후보를 Map(spotIdx, name, region, address) 형태로 반환
+     * @param keyword 사용자가 검색창에 입력한 문자열
+     * @return 자동완성 후보 리스트
+     */
+    java.util.List<java.util.Map<String, Object>> getSuggestList(String keyword);
+
     boolean toggleFavorite(Long spotIdx, Long userIdx);
     boolean toggleLike(Long spotIdx, Long userIdx);
 }

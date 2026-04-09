@@ -202,6 +202,22 @@ public class ExploreServiceImpl implements ExploreService {
        李?/ 醫뗭븘???좉?
        ============================================================ */
 
+    /**
+     * 검색 자동완성 후보 목록 조회
+     * - keyword가 비어있으면 빈 리스트 반환 (불필요한 DB 호출 방지)
+     * - keyword 앞뒤 공백 제거 후 SPOT_TRAVEL에서 LIKE 검색
+     * @param keyword 사용자 입력 문자열
+     * @return 최대 7건의 자동완성 후보 (spotIdx, name, region, address 포함)
+     */
+    @Override
+    public java.util.List<java.util.Map<String, Object>> getSuggestList(String keyword) {
+        // 빈 문자열이면 DB 조회 없이 빈 리스트 반환
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return exploreMapper.selectSuggestList(keyword.trim());
+    }
+
     @Override
     public boolean toggleFavorite(Long spotIdx, Long userIdx) {
         boolean already = exploreMapper.selectFavoriteCount(spotIdx, userIdx) > 0;

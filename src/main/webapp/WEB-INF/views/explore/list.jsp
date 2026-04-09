@@ -22,6 +22,8 @@
       <button class="search-clear ${not empty search.keyword ? 'visible' : ''}"
               id="searchClear"
               title="검색 초기화">&#215;</button>
+      <%-- ★ 자동완성 드롭다운: 검색어 입력 시 AJAX로 후보 목록을 받아 표시 --%>
+      <ul class="suggest-dropdown" id="suggestDropdown"></ul>
     </div>
 
     <div class="exp-header-actions">
@@ -445,25 +447,181 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    let searchTimer;
+    /* ══════════════════════════════════════════════════════════
+       자동완성(Suggest) 기능
+       - 사용자가 검색창에 2글자 이상 입력하면 서버에 AJAX 요청
+       - /explore/suggest?q=키워드 → 최대 7건의 후보를 드롭다운으로 표시
+       - 후보를 클릭하면 해당 키워드로 즉시 검색 실행
+       ══════════════════════════════════════════════════════════ */
+    const suggestDropdown = document.getElementById('suggestDropdown');
+    let searchTimer;      // 검색 실행용 디바운스 타이머
+    let suggestTimer;     // 자동완성 요청용 디바운스 타이머
+    let selectedSuggestIdx = -1;  // 키보드 화살표로 선택 중인 항목 인덱스
+
+    /**
+     * 서버에서 자동완성 후보를 가져와 드롭다운에 렌더링
+     * @param {string} keyword - 사용자가 입력한 검색어
+     */
+    function fetchSuggestions(keyword) {
+      // 2글자 미만이면 드롭다운 숨김 (너무 광범위한 결과 방지)
+      if (!keyword || keyword.length < 2) {
+        suggestDropdown.innerHTML = '';
+        suggestDropdown.classList.remove('show');
+        return;
+      }
+
+      // 서버에 자동완성 API 요청
+      fetch(ctx + '/explore/suggest?q=' + encodeURIComponent(keyword))
+        .then(r => r.json())
+        .then(data => {
+          // 키보드 선택 인덱스 초기화
+          selectedSuggestIdx = -1;
+
+          // 결과가 없으면 드롭다운 숨김
+          if (!data || data.length === 0) {
+            suggestDropdown.innerHTML = '';
+            suggestDropdown.classList.remove('show');
+            return;
+          }
+
+          // 각 후보를 <li> 요소로 만들어 드롭다운에 렌더링
+          suggestDropdown.innerHTML = data.map(function(item, idx) {
+            // name에서 검색어와 매칭되는 부분을 <mark>로 하이라이트
+            var name = escapeHtml(item.name || '');
+            var region = escapeHtml(item.region || '');
+            var address = escapeHtml(item.address || '');
+            var highlighted = highlightMatch(name, keyword);
+
+            return '<li class="suggest-item" data-idx="' + idx + '" data-name="' + name + '">'
+              + '<span class="suggest-name">' + highlighted + '</span>'
+              + '<span class="suggest-region">' + region + (address ? ' · ' + address : '') + '</span>'
+              + '</li>';
+          }).join('');
+
+          suggestDropdown.classList.add('show');
+
+          // 각 후보 항목에 클릭 이벤트 등록
+          suggestDropdown.querySelectorAll('.suggest-item').forEach(function(li) {
+            li.addEventListener('mousedown', function(e) {
+              // mousedown 사용 (blur보다 먼저 발생하므로 클릭이 정상 동작)
+              e.preventDefault();
+              var selectedName = this.dataset.name;
+              searchInput.value = selectedName;
+              suggestDropdown.classList.remove('show');
+              // 선택한 항목으로 즉시 검색 실행
+              clearTimeout(searchTimer);
+              navigate(mergedParams({ keyword: selectedName, page: 1 }));
+            });
+          });
+        })
+        .catch(function() {
+          suggestDropdown.classList.remove('show');
+        });
+    }
+
+    /**
+     * HTML 특수문자 이스케이프 (XSS 방지)
+     */
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /**
+     * 텍스트에서 keyword와 매칭되는 부분을 <mark>로 감싸서 하이라이트
+     * @param {string} text - 원본 텍스트
+     * @param {string} keyword - 하이라이트할 키워드
+     * @returns {string} 하이라이트된 HTML 문자열
+     */
+    function highlightMatch(text, keyword) {
+  if (!keyword) return text;
+  var escaped = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  var regex = new RegExp('(' + escaped + ')', 'gi');
+  return text.replace(regex, '<mark>$1</mark>');
+}
+
+    // 검색창 입력 이벤트: 자동완성 드롭다운만 업데이트 (검색 실행은 하지 않음)
+    // ※ 실제 검색은 드롭다운 항목 클릭 또는 Enter 키를 눌러야만 실행됨
     searchInput.addEventListener('input', function () {
+      var val = this.value.trim();
+      // X 버튼 표시/숨김 토글
       searchClear.classList.toggle('visible', this.value.length > 0);
-      clearTimeout(searchTimer);
-      searchTimer = setTimeout(() => {
-        navigate(mergedParams({ keyword: this.value.trim(), page: 1 }));
-      }, 500);
+
+      // 자동완성 드롭다운 업데이트 (300ms 디바운스: 빠른 타이핑 시 요청 최소화)
+      clearTimeout(suggestTimer);
+      suggestTimer = setTimeout(function() { fetchSuggestions(val); }, 300);
     });
 
+    // 키보드 이벤트: Enter, 위/아래 화살표, Escape 처리
     searchInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
+      var items = suggestDropdown.querySelectorAll('.suggest-item');
+
+      if (e.key === 'ArrowDown') {
+        // ▼ 아래 화살표: 다음 항목 선택
+        e.preventDefault();
+        selectedSuggestIdx = Math.min(selectedSuggestIdx + 1, items.length - 1);
+        updateSuggestHighlight(items);
+      } else if (e.key === 'ArrowUp') {
+        // ▲ 위 화살표: 이전 항목 선택
+        e.preventDefault();
+        selectedSuggestIdx = Math.max(selectedSuggestIdx - 1, 0);
+        updateSuggestHighlight(items);
+      } else if (e.key === 'Enter') {
+        // Enter: 선택된 항목이 있으면 해당 항목으로, 없으면 현재 입력값으로 검색
+        e.preventDefault();
         clearTimeout(searchTimer);
-        navigate(mergedParams({ keyword: this.value.trim(), page: 1 }));
+        clearTimeout(suggestTimer);
+        if (selectedSuggestIdx >= 0 && items[selectedSuggestIdx]) {
+          var selectedName = items[selectedSuggestIdx].dataset.name;
+          searchInput.value = selectedName;
+          suggestDropdown.classList.remove('show');
+          navigate(mergedParams({ keyword: selectedName, page: 1 }));
+        } else {
+          suggestDropdown.classList.remove('show');
+          navigate(mergedParams({ keyword: this.value.trim(), page: 1 }));
+        }
+      } else if (e.key === 'Escape') {
+        // Escape: 드롭다운 닫기
+        suggestDropdown.classList.remove('show');
+        selectedSuggestIdx = -1;
       }
     });
 
+    /**
+     * 키보드 화살표로 선택 중인 항목에 하이라이트 클래스 적용
+     * @param {NodeList} items - 드롭다운 내 모든 <li> 요소
+     */
+    function updateSuggestHighlight(items) {
+      items.forEach(function(li, i) {
+        li.classList.toggle('highlighted', i === selectedSuggestIdx);
+      });
+      // 선택된 항목의 텍스트를 검색창에 미리보기
+      if (selectedSuggestIdx >= 0 && items[selectedSuggestIdx]) {
+        searchInput.value = items[selectedSuggestIdx].dataset.name;
+      }
+    }
+
+    // 검색창에서 포커스가 벗어나면 드롭다운 닫기
+    searchInput.addEventListener('blur', function () {
+      // 약간의 딜레이를 줘서 mousedown 클릭이 먼저 처리되도록 함
+      setTimeout(function() {
+        suggestDropdown.classList.remove('show');
+      }, 200);
+    });
+
+    // 검색창에 포커스가 돌아오면 입력값이 있으면 다시 자동완성 표시
+    searchInput.addEventListener('focus', function () {
+      if (this.value.trim().length >= 2) {
+        fetchSuggestions(this.value.trim());
+      }
+    });
+
+    // X 버튼 클릭: 검색어 초기화 + 드롭다운 닫기
     searchClear.addEventListener('click', function () {
       searchInput.value = '';
       searchClear.classList.remove('visible');
+      suggestDropdown.classList.remove('show');
       navigate(mergedParams({ keyword: '', page: 1 }));
     });
 

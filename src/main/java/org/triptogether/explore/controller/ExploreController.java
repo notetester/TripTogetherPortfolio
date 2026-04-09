@@ -114,6 +114,21 @@ public class ExploreController {
     }
 
     /* ============================================================
+       GET /explore/suggest  검색 자동완성 API (AJAX)
+       - 사용자가 검색창에 입력할 때마다 호출
+       - keyword로 name, region, address를 LIKE 검색하여 최대 7건 반환
+       ============================================================ */
+    @GetMapping("/suggest")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> suggest(
+            @RequestParam(defaultValue = "") String q) {
+
+        // 입력값이 비어있으면 빈 배열 반환
+        List<Map<String, Object>> suggestions = exploreService.getSuggestList(q);
+        return ResponseEntity.ok(suggestions);
+    }
+
+    /* ============================================================
        POST /explore/favorite/{spotIdx}  ?? 李??좉? (AJAX)
        ============================================================ */
     @PostMapping("/favorite/{spotIdx}")

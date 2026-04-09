@@ -795,3 +795,69 @@ body.modal-open {
   .spot-grid { grid-template-columns: repeat(2, 1fr); }
   .spot-write-grid { grid-template-columns: 1fr; }
 }
+
+/* ── 검색 자동완성 드롭다운 ── */
+
+/* 드롭다운 컨테이너: 검색창 바로 아래에 절대 위치로 표시 */
+.suggest-dropdown {
+  display: none;                    /* 기본 숨김 */
+  position: absolute;               /* 검색창(.search-wrap) 기준 절대 위치 */
+  top: calc(100% + 4px);            /* 검색창 바로 아래 4px 간격 */
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);  /* 떠있는 느낌의 그림자 */
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  z-index: 1000;                    /* 다른 요소 위에 표시 */
+  max-height: 340px;                /* 최대 높이 제한 (스크롤 대비) */
+  overflow-y: auto;
+}
+
+/* show 클래스가 추가되면 드롭다운 표시 */
+.suggest-dropdown.show {
+  display: block;
+}
+
+/* 각 자동완성 항목 */
+.suggest-item {
+  display: flex;
+  flex-direction: column;           /* 이름과 지역을 세로 배치 */
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  gap: 2px;
+}
+
+/* 마우스 호버 또는 키보드 화살표로 선택된 항목 */
+.suggest-item:hover,
+.suggest-item.highlighted {
+  background-color: var(--gray-100, #f3f4f6);
+}
+
+/* 여행지 이름 (메인 텍스트) */
+.suggest-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-800, #1f2937);
+}
+
+/* 검색어 매칭 부분 하이라이트 (<mark> 태그) */
+.suggest-name mark {
+  background: #fef08a;              /* 노란색 형광펜 효과 */
+  color: inherit;
+  padding: 0 1px;
+  border-radius: 2px;
+}
+
+/* 지역/주소 (보조 텍스트) */
+.suggest-region {
+  font-size: 12px;
+  color: var(--gray-400, #9ca3af);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;          /* 너무 긴 주소는 ... 처리 */
+}

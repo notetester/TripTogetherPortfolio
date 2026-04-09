@@ -62,6 +62,16 @@ public interface ExploreMapper {
     List<String> selectTagList();
     List<String> selectAllTagList();
 
+    /**
+     * 자동완성 후보 목록 조회
+     * - 사용자가 검색창에 입력한 키워드(keyword)와 매칭되는
+     *   여행지의 name, region, address를 LIKE 검색하여 최대 7건 반환
+     * - 결과는 Map<String, Object> 형태로 spotIdx, name, region을 포함
+     * @param keyword 사용자가 입력한 검색어
+     * @return 자동완성 후보 리스트 (최대 7건)
+     */
+    List<java.util.Map<String, Object>> selectSuggestList(@Param("keyword") String keyword);
+
     /* ============================================================
        ?곸꽭 ?④굔
        ============================================================ */
