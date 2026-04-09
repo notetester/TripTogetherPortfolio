@@ -15,6 +15,10 @@ public interface MyPageService {
 
     // ===== 알림 =====
     List<FeedNotificationDto> getNotifications(Long userIdx);
+    List<FeedNotificationDto> getAllNotifications(Long userIdx);
+    int getNotificationCount(Long userIdx);
+    FeedNotificationDto getNotification(Long notificationId);
     void addNotification(FeedNotificationDto notification);
-    void readNotification(Long notificationId);
+    void deleteNotification(Long notificationId);
+    void deleteAllNotifications(Long userIdx);
 }

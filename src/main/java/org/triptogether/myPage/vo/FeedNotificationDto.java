@@ -21,9 +21,6 @@ public class FeedNotificationDto {
     /** 알림 메시지 */
     private String message;
 
-    /** 읽음 여부 (0: 안읽음, 1: 읽음) */
-    private int isRead;
-
     /** 알림 생성 일시 */
     private Date createdAt;
 }

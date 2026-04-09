@@ -306,6 +306,20 @@ public class CommunityServiceImpl implements CommunityService {
             notification.setMessage("내 글에 새 대댓글이 달렸어요.");
             myPageService.addNotification(notification);
         }
+
+        // 대댓글 알람: 부모 댓글 작성자에게 알림 생성
+        CommunityCommentDto parentComment = communityMapper.selectComment(parentCommentId);
+        if (parentComment != null && !parentComment.getUserIdx().equals(userIdx)) {
+            // 부모 댓글 작성자 != 글 작성자인 경우에만 알림 (중복 제거)
+            if (!parentComment.getUserIdx().equals(post.getUserIdx())) {
+                FeedNotificationDto notification = new FeedNotificationDto();
+                notification.setUserIdx(parentComment.getUserIdx());
+                notification.setSourceType("community");
+                notification.setSourceId(postId);
+                notification.setMessage("내 댓글에 새 답글이 달렸어요.");
+                myPageService.addNotification(notification);
+            }
+        }
     }
 
     // ===== 질문 채택 =====

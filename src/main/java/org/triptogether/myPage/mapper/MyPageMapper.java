@@ -19,6 +19,10 @@ public interface MyPageMapper {
 
     // ===== 알림 =====
     List<FeedNotificationDto> selectNotifications(@Param("userIdx") Long userIdx);
+    List<FeedNotificationDto> selectAllNotifications(@Param("userIdx") Long userIdx);
+    int selectNotificationCount(@Param("userIdx") Long userIdx);
+    FeedNotificationDto selectNotification(@Param("notificationId") Long notificationId);
     void insertNotification(FeedNotificationDto notification);
-    void updateNotificationRead(@Param("notificationId") Long notificationId);
+    void deleteNotification(@Param("notificationId") Long notificationId);
+    void deleteAllNotifications(@Param("userIdx") Long userIdx);
 }
