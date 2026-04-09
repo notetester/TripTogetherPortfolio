@@ -8,6 +8,7 @@
 
 <body>
 <style>
+html { scrollbar-gutter: stable; }
 /* ── 히어로 ── */
 .det-hero { position:relative; height:420px; overflow:hidden; background:var(--gray-200); }
 .det-hero img { width:100%; height:100%; object-fit:cover; display:block; }
@@ -18,7 +19,13 @@
 .det-hero-rat .star { color:#fbbf24; font-size:18px; }
 
 /* ── 본문 ── */
-.det-body { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+.det-body {
+  max-width:960px;
+  width:100%;
+  margin:0 auto;
+  padding:40px 24px 80px;
+  box-sizing:border-box;
+}
 
 /* ── 액션 버튼 ── */
 .det-actions { display:flex; gap:12px; margin-bottom:36px; flex-wrap:wrap; }
@@ -31,6 +38,11 @@
 }
 .det-action-btn:hover { border-color:var(--blue); color:var(--blue); }
 .det-action-btn.active { background:var(--blue-light); color:var(--blue); border-color:var(--blue); }
+.det-action-icon { font-size:18px; line-height:1; color:var(--gray-400); }
+.det-action-label { line-height:1.2; }
+.det-action-btn.active .det-action-icon { color:var(--blue); }
+.det-action-btn.fav-btn.active .det-action-icon { color:#f59e0b; }
+.det-action-btn.like-btn.active .det-action-icon { color:#ef4444; }
 .det-back-btn {
   background:none; border:none; color:var(--gray-500); font-family:inherit;
   font-size:14px; font-weight:500; cursor:pointer; padding:0;
@@ -43,6 +55,8 @@
   background:#fff; border-radius:var(--radius);
   padding:28px 32px; margin-bottom:24px;
   box-shadow:var(--shadow-sm); border:1px solid var(--gray-100);
+  width:100%;
+  box-sizing:border-box;
 }
 .det-section h2 {
   font-size:1.1rem; font-weight:700; color:var(--gray-800);
@@ -205,13 +219,13 @@
   <div class="det-actions">
     <button class="det-action-btn fav-btn ${spot.favorited ? 'active' : ''}"
             data-spot-idx="${spot.spotIdx}">
-      <span>${spot.favorited ? '⭐' : '☆'}</span>
-      <span>${spot.favorited ? '찜 완료' : '찜하기'}</span>
+      <span class="det-action-icon">${spot.favorited ? '⭐' : '☆'}</span>
+      <span class="det-action-label">${spot.favorited ? '찜 완료' : '찜하기'}</span>
     </button>
     <button class="det-action-btn like-btn ${spot.liked ? 'active' : ''}"
             data-spot-idx="${spot.spotIdx}">
-      <span>${spot.liked ? '❤️' : '🤍'}</span>
-      <span>${spot.liked ? '좋아요 완료' : '좋아요'}</span>
+      <span class="det-action-icon">${spot.liked ? '❤️' : '🤍'}</span>
+      <span class="det-action-label">${spot.liked ? '좋아요 완료' : '좋아요'}</span>
     </button>
     <button class="det-action-btn"
             onclick="location.href='${pageContext.request.contextPath}/assistant'">
@@ -479,8 +493,8 @@
         }
         const active = data[key];
         btn.classList.toggle('active', active);
-        btn.querySelector('span:last-child').textContent = active ? onText : offText;
-        btn.querySelector('span:first-child').textContent =
+        btn.querySelector('.det-action-label').textContent = active ? onText : offText;
+        btn.querySelector('.det-action-icon').textContent =
             active ? (key === 'favorited' ? '⭐' : '❤️') : (key === 'favorited' ? '☆' : '🤍');
         showToast(active ? onMsg : offMsg);
       })

@@ -10,49 +10,49 @@ import java.util.List;
 
 public interface ExploreService {
 
-    /** 여행지 목록 (전체 / 지역별 / 테마별) */
+    /** ?ы뻾吏 紐⑸줉 (?꾩껜 / 吏??퀎 / ?뚮쭏蹂? */
     List<ExploreVO> getSpotList(ExploreSearchDto search);
 
-    /** 평점순 목록 */
+    /** ?됱젏??紐⑸줉 */
     List<ExploreVO> getRatingSpotList(ExploreSearchDto search);
 
-    /** 좋아요순 목록 */
+    /** 醫뗭븘?붿닚 紐⑸줉 */
     List<ExploreVO> getLikesSpotList(ExploreSearchDto search);
 
-    /** 전체 건수 (탭에 따라 분기) */
+    /** ?꾩껜 嫄댁닔 (??뿉 ?곕씪 遺꾧린) */
     int getTotalCount(ExploreSearchDto search);
 
-    /** 전체 페이지 수 */
+    /** ?꾩껜 ?섏씠吏 ??*/
     int getTotalPage(ExploreSearchDto search);
 
-    /** 지역 목록 */
+    /** 吏??紐⑸줉 */
     List<String> getRegionList();
 
-    /** 태그(테마) 목록 */
+    /** ?쒓렇(?뚮쭏) 紐⑸줉 */
     List<String> getTagList();
     List<String> getWriteTagList();
 
-    /** 여행지 상세 */
+    /** ?ы뻾吏 ?곸꽭 */
     ExploreVO getSpotDetail(Long spotIdx, Long loginUserIdx);
 
-    /** 여행지 등록 (이미지 포함) */
+    /** ?ы뻾吏 ?깅줉 (?대?吏 ?ы븿) */
     Long createSpot(ExploreCreateDto spotCreateDto, UsersVO loginUser);
 
-    /* ── 리뷰 ── */
+    /* ?? 由щ럭 ?? */
 
-    /** 리뷰 목록 조회 */
+    /** 由щ럭 紐⑸줉 議고쉶 */
     List<ReviewVO> getReviewList(Long spotIdx);
 
-    /** 리뷰 작성 가능 여부 (로그인 + 중복 작성 체크) */
+    /** 由щ럭 ?묒꽦 媛???щ? (濡쒓렇??+ 以묐났 ?묒꽦 泥댄겕) */
     boolean canWriteReview(Long spotIdx, Long userIdx);
 
-    /** 리뷰 작성 */
+    /** 由щ럭 ?묒꽦 */
     void writeReview(ReviewVO review);
 
-    /** 리뷰 삭제 */
+    /** 由щ럭 ??젣 */
     void deleteReview(Long reviewIdx, Long userIdx);
 
-    /* ── 찜 / 좋아요 ── */
+    /* ?? 李?/ 醫뗭븘???? */
 
     boolean toggleFavorite(Long spotIdx, Long userIdx);
     boolean toggleLike(Long spotIdx, Long userIdx);

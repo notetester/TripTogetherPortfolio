@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.triptogether.explore.mapper.ExploreMapper">
 
     <!-- =============================================
-         ResultMap - SPOT_TRAVEL + 실시간 집계
+         ResultMap - SPOT_TRAVEL + ?ㅼ떆媛?吏묎퀎
          ============================================= -->
     <resultMap id="SpotResultMap" type="org.triptogether.explore.vo.ExploreVO">
         <id     property="spotIdx"     column="spot_idx"/>
@@ -38,8 +38,8 @@
     </resultMap>
 
     <!-- =============================================
-         공통 SELECT 컬럼 Fragment
-         rating_avg / review_count / like_count 모두 실시간 집계
+         怨듯넻 SELECT 而щ읆 Fragment
+         rating_avg / review_count / like_count 紐⑤몢 ?ㅼ떆媛?吏묎퀎
          ============================================= -->
     <sql id="spotColumns">
         st.spot_idx,
@@ -50,25 +50,25 @@
         st.latitude,
         st.longitude,
         st.description,
-        /* SPOT_REVIEW 실시간 평균 평점 */
+        /* SPOT_REVIEW ?ㅼ떆媛??됯퇏 ?됱젏 */
         COALESCE((
             SELECT ROUND(AVG(sr.rating), 1)
             FROM   SPOT_REVIEW sr
             WHERE  sr.spot_idx = st.spot_idx
         ), 0.0) AS rating_avg_real,
-        /* SPOT_REVIEW 실시간 리뷰 수 */
+        /* SPOT_REVIEW ?ㅼ떆媛?由щ럭 ??*/
         (
             SELECT COUNT(*)
             FROM   SPOT_REVIEW sr
             WHERE  sr.spot_idx = st.spot_idx
         ) AS review_count_real,
-        /* SPOT_LIKE 실시간 좋아요 수 */
+        /* SPOT_LIKE ?ㅼ떆媛?醫뗭븘????*/
         (
             SELECT COUNT(*)
             FROM   SPOT_LIKE sl
             WHERE  sl.spot_idx = st.spot_idx
         ) AS like_count_real,
-        /* 대표 이미지 */
+        /* ????대?吏 */
         (
             SELECT si.image_url
             FROM   SPOT_IMAGE si
@@ -76,7 +76,7 @@
             ORDER  BY si.image_idx ASC
             LIMIT  1
         ) AS thumb_url,
-        /* 태그 (콤마 구분) */
+        /* ?쒓렇 (肄ㅻ쭏 援щ텇) */
         (
             SELECT GROUP_CONCAT(tl.tag_name ORDER BY tl.tag_name SEPARATOR ',')
             FROM   SPOT_TAG      s_tag
@@ -86,7 +86,7 @@
     </sql>
 
     <!-- =============================================
-         전체 / 지역별 / 테마별 목록
+         ?꾩껜 / 吏??퀎 / ?뚮쭏蹂?紐⑸줉
          ============================================= -->
     <select id="selectSpotList" resultMap="SpotResultMap">
         SELECT DISTINCT
@@ -117,7 +117,7 @@
         OFFSET #{offset}
     </select>
 
-    <!-- 전체 건수 -->
+    <!-- ?꾩껜 嫄댁닔 -->
     <select id="selectTotalCount" resultType="int">
         SELECT COUNT(DISTINCT st.spot_idx)
         FROM SPOT_TRAVEL st
@@ -144,7 +144,7 @@
     </select>
 
     <!-- =============================================
-         평점순 목록 (SPOT_REVIEW.rating AVG DESC)
+         ?됱젏??紐⑸줉 (SPOT_REVIEW.rating AVG DESC)
          ============================================= -->
     <select id="selectRatingSpotList" resultMap="SpotResultMap">
         SELECT
@@ -177,7 +177,7 @@
     </select>
 
     <!-- =============================================
-         좋아요순 목록 (SPOT_LIKE COUNT DESC)
+         醫뗭븘?붿닚 紐⑸줉 (SPOT_LIKE COUNT DESC)
          ============================================= -->
     <select id="selectLikesSpotList" resultMap="SpotResultMap">
         SELECT
@@ -209,8 +209,9 @@
         </where>
     </select>
 
+
     <!-- =============================================
-         지역 목록 / 태그 목록
+         吏??紐⑸줉 / ?쒓렇 紐⑸줉
          ============================================= -->
     <select id="selectRegionList" resultType="string">
         SELECT DISTINCT region
@@ -235,7 +236,7 @@
     </select>
 
     <!-- =============================================
-         상세 단건
+         ?곸꽭 ?④굔
          ============================================= -->
     <select id="selectSpotDetail" resultMap="SpotResultMap">
         SELECT
@@ -270,7 +271,7 @@
         )
     </insert>
 
-    <!-- 여행지 대표 이미지 저장 -->
+    <!-- ?ы뻾吏 ????대?吏 ???-->
     <insert id="insertSpotImage">
         INSERT INTO SPOT_IMAGE (spot_idx, image_id, image_url)
         VALUES (#{spotIdx}, #{imageId}, #{imageUrl})
@@ -297,7 +298,7 @@
     </select>
 
     <!-- =============================================
-         리뷰 (SPOT_REVIEW)
+         由щ럭 (SPOT_REVIEW)
          ============================================= -->
     <select id="selectReviewList" resultMap="ReviewResultMap">
         SELECT
@@ -334,7 +335,7 @@
     </delete>
 
     <!-- =============================================
-         찜 (SPOT_FAVORITE)
+         李?(SPOT_FAVORITE)
          ============================================= -->
     <select id="selectFavoriteCount" resultType="int">
         SELECT COUNT(*) FROM SPOT_FAVORITE
@@ -352,7 +353,7 @@
     </delete>
 
     <!-- =============================================
-         좋아요 (SPOT_LIKE)
+         醫뗭븘??(SPOT_LIKE)
          ============================================= -->
     <select id="selectLikeCount" resultType="int">
         SELECT COUNT(*) FROM SPOT_LIKE
@@ -370,3 +371,4 @@
     </delete>
 
 </mapper>
+

@@ -12,29 +12,30 @@ import java.util.List;
 public interface ExploreMapper {
 
     /* ============================================================
-       목록 조회
+       紐⑸줉 議고쉶
        ============================================================ */
 
-    /** 전체 / 지역별 / 테마별 목록 */
+    /** ?꾩껜 / 吏??퀎 / ?뚮쭏蹂?紐⑸줉 */
     List<ExploreVO> selectSpotList(ExploreSearchDto search);
 
-    /** 전체 건수 (페이징용) */
+    /** ?꾩껜 嫄댁닔 (?섏씠吏뺤슜) */
     int selectTotalCount(ExploreSearchDto search);
 
-    /** 평점순 목록 (SPOT_REVIEW AVG rating DESC) */
+    /** ?됱젏??紐⑸줉 (SPOT_REVIEW AVG rating DESC) */
     List<ExploreVO> selectRatingSpotList(ExploreSearchDto search);
 
-    /** 평점순 전체 건수 */
+    /** ?됱젏???꾩껜 嫄댁닔 */
     int selectRatingTotalCount(ExploreSearchDto search);
 
-    /** 좋아요순 목록 (SPOT_LIKE COUNT DESC) */
+    /** 醫뗭븘?붿닚 紐⑸줉 (SPOT_LIKE COUNT DESC) */
     List<ExploreVO> selectLikesSpotList(ExploreSearchDto search);
 
-    /** 좋아요순 전체 건수 */
+    /** 醫뗭븘?붿닚 ?꾩껜 嫄댁닔 */
     int selectLikesTotalCount(ExploreSearchDto search);
 
+
     /* ============================================================
-       지역 / 태그 필터 목록
+       吏??/ ?쒓렇 ?꾪꽣 紐⑸줉
        ============================================================ */
 
     List<String> selectRegionList();
@@ -42,7 +43,7 @@ public interface ExploreMapper {
     List<String> selectAllTagList();
 
     /* ============================================================
-       상세 단건
+       ?곸꽭 ?④굔
        ============================================================ */
 
     ExploreVO selectSpotDetail(@Param("spotIdx") Long spotIdx);
@@ -50,7 +51,7 @@ public interface ExploreMapper {
     int countBySpotId(@Param("spotId") String spotId);
     void insertSpot(ExploreVO spot);
 
-    /** 여행지 대표 이미지 저장 (SPOT_IMAGE 테이블) */
+    /** ?ы뻾吏 ????대?吏 ???(SPOT_IMAGE ?뚯씠釉? */
     void insertSpotImage(@Param("spotIdx") Long spotIdx,
                          @Param("imageId") String imageId,
                          @Param("imageUrl") String imageUrl);
@@ -59,25 +60,25 @@ public interface ExploreMapper {
                        @Param("tagIdx") Integer tagIdx);
 
     /* ============================================================
-       리뷰 (SPOT_REVIEW)
+       由щ럭 (SPOT_REVIEW)
        ============================================================ */
 
-    /** 해당 여행지의 리뷰 목록 (최신순) */
+    /** ?대떦 ?ы뻾吏??由щ럭 紐⑸줉 (理쒖떊?? */
     List<ReviewVO> selectReviewList(@Param("spotIdx") Long spotIdx);
 
-    /** 현재 로그인 사용자가 이미 리뷰를 작성했는지 확인 */
+    /** ?꾩옱 濡쒓렇???ъ슜?먭? ?대? 由щ럭瑜??묒꽦?덈뒗吏 ?뺤씤 */
     int selectMyReviewCount(@Param("spotIdx") Long spotIdx,
                             @Param("userIdx") Long userIdx);
 
-    /** 리뷰 작성 */
+    /** 由щ럭 ?묒꽦 */
     void insertReview(ReviewVO review);
 
-    /** 리뷰 삭제 (본인만) */
+    /** 由щ럭 ??젣 (蹂몄씤留? */
     void deleteReview(@Param("reviewIdx") Long reviewIdx,
                       @Param("userIdx")   Long userIdx);
 
     /* ============================================================
-       찜 (SPOT_FAVORITE)
+       李?(SPOT_FAVORITE)
        ============================================================ */
 
     int  selectFavoriteCount(@Param("spotIdx") Long spotIdx,
@@ -88,7 +89,7 @@ public interface ExploreMapper {
                         @Param("userIdx") Long userIdx);
 
     /* ============================================================
-       좋아요 (SPOT_LIKE)
+       醫뗭븘??(SPOT_LIKE)
        ============================================================ */
 
     int  selectLikeCount(@Param("spotIdx") Long spotIdx,

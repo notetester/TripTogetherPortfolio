@@ -290,11 +290,6 @@
   opacity: 1;
 }
 
-/* 찜 또는 좋아요가 활성화(active)된 버튼이 있으면 항상 표시 */
-.spot-card__actions:has(.active) {
-  opacity: 1;
-}
-
 .action-btn {
   width: 34px;
   height: 34px;

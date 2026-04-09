@@ -78,7 +78,7 @@
 
           <label class="spot-write-label" for="spotRegion">지역</label>
           <input type="text" id="spotRegion" name="region" maxlength="100"
-                 value="${fn:escapeXml(writeForm.region)}" placeholder="예) 서울" required>
+                 value="${fn:escapeXml(writeForm.region)}" placeholder="예) 대한민국" required>
 
           <label class="spot-write-label" for="spotAddress">주소</label>
           <input type="text" id="spotAddress" name="address" maxlength="255"
@@ -111,7 +111,7 @@
               </label>
             </c:forEach>
           </div>
-          <p class="spot-write-help">DB에 저장된 태그 중에서 골라 여행지와 함께 등록할 수 있습니다.</p>
+          <p class="spot-write-help">최대 4개의 태그를 선택 할 수 있습니다.</p>
         </div>
 
         <%-- ── 이미지 업로드 영역 (기존 지도 영역 대체) ── --%>
@@ -342,6 +342,22 @@
 <%@ include file="../common/footer.jsp" %>
 
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const checkboxes = document.querySelectorAll('input[name="tags"]');
+  const max = 4;
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener("change", function () {
+      const checked = document.querySelectorAll('input[name="tags"]:checked');
+
+      if (checked.length > max) {
+        this.checked = false;
+        alert("태그는 최대 4개까지 선택할 수 있습니다.");
+      }
+    });
+  });
+});
+
   (function () {
     'use strict';
 
@@ -530,12 +546,18 @@
       if (!components || !components.length) return '';
       for (var i = 0; i < components.length; i++) {
         var comp = components[i];
-        if (comp.types.indexOf('administrative_area_level_1') > -1) {
+        if (comp.types.indexOf('country') > -1) {
           return comp.longText || comp.long_name || '';
         }
       }
       for (var j = 0; j < components.length; j++) {
-        var fb = components[j];
+        var admin = components[j];
+        if (admin.types.indexOf('administrative_area_level_1') > -1) {
+          return admin.longText || admin.long_name || '';
+        }
+      }
+      for (var k = 0; k < components.length; k++) {
+        var fb = components[k];
         if (fb.types.indexOf('locality') > -1 || fb.types.indexOf('sublocality') > -1) {
           return fb.longText || fb.long_name || '';
         }

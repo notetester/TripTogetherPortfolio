@@ -22,6 +22,9 @@ public class ExploreSearchDto {
     // 검색어 (name, region, address, description 통합 검색)
     private String keyword;
 
+    // 현재 로그인 사용자 idx (목록의 찜/좋아요 상태 표시용)
+    private Long loginUserIdx;
+
     // 페이지네이션
     private int page     = 1;
     private int pageSize = 12;
