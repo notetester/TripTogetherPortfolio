@@ -209,6 +209,53 @@
         </where>
     </select>
 
+    <!-- =============================================
+         찜한 여행지 목록 (SPOT_FAVORITE JOIN)
+         - 로그인 사용자가 찜한 여행지만 조회
+         ============================================= -->
+    <select id="selectFavoriteSpotList" resultMap="SpotResultMap">
+        SELECT
+            <include refid="spotColumns"/>
+        FROM SPOT_TRAVEL st
+        <!-- SPOT_FAVORITE 테이블과 INNER JOIN: 현재 로그인 사용자가 찜한 것만 필터 -->
+        JOIN SPOT_FAVORITE sf ON sf.spot_idx = st.spot_idx
+                              AND sf.user_idx = #{loginUserIdx}
+        <where>
+            <!-- 검색어가 있으면 이름/지역/주소/설명에서 LIKE 검색 -->
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    st.name        LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.region   LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.address  LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.description LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        <!-- 최근에 찜한 순서대로 정렬 -->
+        ORDER BY sf.created_at DESC
+        LIMIT  #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <!-- 찜한 여행지 전체 건수 (페이징 계산용) -->
+    <select id="selectFavoriteTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM SPOT_TRAVEL st
+        <!-- 현재 로그인 사용자의 찜 목록만 카운트 -->
+        JOIN SPOT_FAVORITE sf ON sf.spot_idx = st.spot_idx
+                              AND sf.user_idx = #{loginUserIdx}
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    st.name        LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.region   LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.address  LIKE CONCAT('%', #{keyword}, '%')
+                    OR st.description LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+    </select>
+
 
     <!-- =============================================
          吏??紐⑸줉 / ?쒓렇 紐⑸줉

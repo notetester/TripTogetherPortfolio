@@ -62,6 +62,26 @@ public class ExploreServiceImpl implements ExploreService {
         return list;
     }
 
+    /**
+     * 찜한 여행지 목록 조회
+     * - loginUserIdx가 null이면(비로그인) 빈 리스트 반환
+     * - SPOT_FAVORITE 테이블과 JOIN하여 현재 사용자가 찜한 여행지만 조회
+     */
+    @Override
+    public List<ExploreVO> getFavoriteSpotList(ExploreSearchDto search) {
+        // 비로그인 상태에서는 찜 기능을 사용할 수 없으므로 빈 목록 반환
+        if (search.getLoginUserIdx() == null) {
+            return Collections.emptyList();
+        }
+        // DB에서 현재 사용자가 찜한 여행지 목록 조회
+        List<ExploreVO> list = exploreMapper.selectFavoriteSpotList(search);
+        // GROUP_CONCAT으로 가져온 태그 문자열을 List<String>으로 분리
+        splitTags(list);
+        // 각 카드에 현재 사용자의 찜/좋아요 상태를 표시하기 위해 설정
+        applyUserActionState(list, search.getLoginUserIdx());
+        return list;
+    }
+
 
     @Override
     public int getTotalCount(ExploreSearchDto search) {
@@ -70,6 +90,13 @@ public class ExploreServiceImpl implements ExploreService {
             return exploreMapper.selectRatingTotalCount(search);
         } else if ("likes".equals(tab)) {
             return exploreMapper.selectLikesTotalCount(search);
+        } else if ("favorite".equals(tab)) {
+            // 비로그인이면 찜한 여행지가 0건
+            if (search.getLoginUserIdx() == null) {
+                return 0;
+            }
+            // 현재 사용자가 찜한 여행지의 전체 건수 반환
+            return exploreMapper.selectFavoriteTotalCount(search);
         }
         return exploreMapper.selectTotalCount(search);
     }

@@ -17,6 +17,7 @@ import org.triptogether.explore.vo.ExploreVO;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 
 @Slf4j
@@ -52,13 +53,24 @@ public class ExploreController {
             spotList = exploreService.getRatingSpotList(search);
         } else if ("likes".equals(tab)) {
             spotList = exploreService.getLikesSpotList(search);
+        } else if ("favorite".equals(tab)) {
+            // 찜한 여행지 탭: 로그인 사용자가 SPOT_FAVORITE에 등록한 여행지 목록 조회
+            spotList = exploreService.getFavoriteSpotList(search);
+        } else if ("ai".equals(tab)) {
+            // AI 추천 탭: 클라이언트 AJAX(/recommend/spots)로 데이터를 로드하므로
+            // 서버에서는 빈 목록을 세팅하여 불필요한 페이징 블록이 생기지 않도록 처리
+            spotList = Collections.emptyList();
         } else {
             spotList = exploreService.getSpotList(search);
         }
 
+        // AI 탭은 AJAX 기반이므로, totalCount/totalPage를 0으로 세팅하여 페이징 블록 미표시
+        int totalCount = "ai".equals(tab) ? 0 : exploreService.getTotalCount(search);
+        int totalPage  = "ai".equals(tab) ? 0 : exploreService.getTotalPage(search);
+
         model.addAttribute("spotList",    spotList);
-        model.addAttribute("totalCount",  exploreService.getTotalCount(search));
-        model.addAttribute("totalPage",   exploreService.getTotalPage(search));
+        model.addAttribute("totalCount",  totalCount);
+        model.addAttribute("totalPage",   totalPage);
         model.addAttribute("currentPage", page);
         model.addAttribute("search",      search);
         model.addAttribute("regionList",  exploreService.getRegionList());

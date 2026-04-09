@@ -19,6 +19,13 @@ public interface ExploreService {
     /** 醫뗭븘?붿닚 紐⑸줉 */
     List<ExploreVO> getLikesSpotList(ExploreSearchDto search);
 
+    /**
+     * 찜한 여행지 목록
+     * - 로그인 사용자가 찜(SPOT_FAVORITE)한 여행지를 조회
+     * - 비로그인 상태에서는 빈 목록 반환
+     */
+    List<ExploreVO> getFavoriteSpotList(ExploreSearchDto search);
+
     /** ?꾩껜 嫄댁닔 (??뿉 ?곕씪 遺꾧린) */
     int getTotalCount(ExploreSearchDto search);
 

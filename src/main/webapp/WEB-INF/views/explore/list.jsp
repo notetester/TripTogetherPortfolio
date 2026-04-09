@@ -39,6 +39,10 @@
       <button class="exp-tab-btn ${search.tab == 'theme' ? 'active' : ''}" data-tab="theme" role="tab">&#128506; 테마별</button>
       <button class="exp-tab-btn ${search.tab == 'rating' ? 'active' : ''}" data-tab="rating" role="tab">&#11088; 평점순</button>
       <button class="exp-tab-btn ${search.tab == 'likes' ? 'active' : ''}" data-tab="likes" role="tab">&#10084; 좋아요순</button>
+      <%-- ★ 찜한 여행지 탭: 로그인 사용자에게만 노출 --%>
+      <c:if test="${not empty sessionScope.loginUser}">
+        <button class="exp-tab-btn ${search.tab == 'favorite' ? 'active' : ''}" data-tab="favorite" role="tab">&#x1F4CC; 찜한 여행지</button>
+      </c:if>
       <c:if test="${not empty sessionScope.loginUser}">
         <button class="exp-tab-btn ${search.tab == 'ai' ? 'active' : ''}" data-tab="ai" role="tab">&#x1F916; AI 추천</button>
       </c:if>
@@ -252,7 +256,7 @@
         </c:when>
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
-            <div class="empty-icon">&#11088;</div>
+            <div class="empty-icon">&#x1F4CC;</div>
             <p>아직 평점이 등록된 여행지가 없습니다.</p>
           </div>
         </c:otherwise>
@@ -280,6 +284,35 @@
       </c:choose>
     </div>
   </div>
+
+  <%-- ★ 찜한 여행지 탭 패널: 로그인 사용자에게만 노출 --%>
+  <c:if test="${not empty sessionScope.loginUser}">
+  <div id="tab-favorite" class="tab-panel ${search.tab == 'favorite' ? 'active' : ''}">
+    <div class="result-bar">
+      <p class="result-count">&#x1F4CC; 내가 찜한 여행지: <strong>${totalCount}</strong>개</p>
+    </div>
+    <div class="spot-grid" id="grid-favorite">
+      <c:choose>
+        <%-- 찜한 여행지가 있으면 spotCard.jsp를 이용해 카드 목록 출력 --%>
+        <c:when test="${not empty spotList}">
+          <c:forEach var="spot" items="${spotList}">
+            <%@ include file="spotCard.jsp" %>
+          </c:forEach>
+        </c:when>
+        <%-- 찜한 여행지가 없으면 안내 메시지 출력 --%>
+        <c:otherwise>
+          <div class="empty-state" style="grid-column:1/-1">
+            <div class="empty-icon">&#x1F4CC;</div>
+            <p>아직 찜한 여행지가 없습니다.</p>
+            <p style="font-size:14px;color:var(--gray-400);margin-top:8px;">
+              여행지 카드의 ☆ 버튼을 눌러 찜해보세요!
+            </p>
+          </div>
+        </c:otherwise>
+      </c:choose>
+    </div>
+  </div>
+  </c:if>
 
   <c:if test="${not empty sessionScope.loginUser}">
   <div id="tab-ai" class="tab-panel ${search.tab == 'ai' ? 'active' : ''}">
@@ -476,7 +509,15 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
+    /**
+     * 찜/좋아요 토글 공통 함수
+     * - 서버에 POST 요청 후 버튼 상태 업데이트
+     * - 현재 "찜한 여행지" 탭에서 찜 해제 시, 해당 카드를 DOM에서 즉시 제거
+     */
     function toggleAction(endpoint, btn, onIcon, offIcon, onMsg, offMsg, key) {
+      // 토글 요청을 보내기 전에, 해당 카드의 참조를 미리 저장해둠
+      const card = btn.closest('.spot-card');
+
       fetch(ctx + endpoint, { method: 'POST' })
         .then(r => r.json())
         .then(data => {
@@ -485,10 +526,49 @@ document.addEventListener("DOMContentLoaded", function () {
             setTimeout(() => { window.location.href = ctx + '/auth/login'; }, 1500);
             return;
           }
+
+          // 서버 응답에서 현재 상태(true=활성, false=비활성) 가져오기
           const active = data[key];
+          // 버튼 아이콘과 active 클래스를 업데이트
           btn.textContent = active ? onIcon : offIcon;
           btn.classList.toggle('active', active);
           showToast(active ? onMsg : offMsg);
+
+          /* ── 찜한 여행지 탭에서 찜 해제 시, 카드를 DOM에서 즉시 제거 ── */
+          // key === 'favorited': 찜 버튼을 눌렀을 때만 해당
+          // !active: 찜이 해제된 상태일 때만 해당
+          // currentTab === 'favorite': 현재 "찜한 여행지" 탭에 있을 때만 해당
+          if (key === 'favorited' && !active && currentTab === 'favorite' && card) {
+            // 카드를 부드럽게 사라지게 하는 CSS 트랜지션 적용
+            card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.95)';
+
+            // 트랜지션 완료 후 DOM에서 카드 요소 제거
+            setTimeout(() => {
+              card.remove();
+
+              // 남은 카드 개수를 세어 카운트 텍스트 업데이트
+              const grid = document.getElementById('grid-favorite');
+              const remaining = grid ? grid.querySelectorAll('.spot-card').length : 0;
+
+              // 결과 카운트 업데이트 ("📌 내가 찜한 여행지: N개")
+              const countEl = document.querySelector('#tab-favorite .result-count strong');
+              if (countEl) countEl.textContent = remaining;
+
+              // 카드가 0개가 되면 빈 상태 안내 메시지 표시
+              if (remaining === 0 && grid) {
+                grid.innerHTML =
+                  '<div class="empty-state" style="grid-column:1/-1">' +
+                    '<div class="empty-icon">\u{1F4CC}</div>' +
+                    '<p>아직 찜한 여행지가 없습니다.</p>' +
+                    '<p style="font-size:14px;color:var(--gray-400);margin-top:8px;">' +
+                      '여행지 카드의 ☆ 버튼을 눌러 찜해보세요!' +
+                    '</p>' +
+                  '</div>';
+              }
+            }, 300);
+          }
         })
         .catch(() => showToast('요청 처리 중 오류가 발생했습니다.'));
     }

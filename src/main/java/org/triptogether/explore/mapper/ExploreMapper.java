@@ -33,6 +33,26 @@ public interface ExploreMapper {
     /** 醫뗭븘?붿닚 ?꾩껜 嫄댁닔 */
     int selectLikesTotalCount(ExploreSearchDto search);
 
+    /* ============================================================
+       찜한 여행지 (SPOT_FAVORITE 기반)
+       - 로그인 사용자가 찜한 여행지 목록을 조회
+       ============================================================ */
+
+    /**
+     * 찜한 여행지 목록 조회
+     * - loginUserIdx(로그인 사용자 PK) 기준으로 SPOT_FAVORITE와 JOIN
+     * @param search 검색 조건 DTO (loginUserIdx, keyword, 페이징 정보 포함)
+     * @return 해당 사용자가 찜한 여행지 리스트
+     */
+    List<ExploreVO> selectFavoriteSpotList(ExploreSearchDto search);
+
+    /**
+     * 찜한 여행지 전체 건수 (페이징 계산용)
+     * @param search 검색 조건 DTO (loginUserIdx 기준)
+     * @return 찜한 여행지 총 개수
+     */
+    int selectFavoriteTotalCount(ExploreSearchDto search);
+
 
     /* ============================================================
        吏??/ ?쒓렇 ?꾪꽣 紐⑸줉
