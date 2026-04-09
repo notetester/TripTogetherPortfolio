@@ -269,3 +269,23 @@
   z-index: 10;
   cursor: pointer;
 }
+
+.post-type-badge.type-tip-sub {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.post-type-badge.type-tip-sub {
+  background: #f0fdf4;
+  color: #15803d;
+  position: absolute;
+  top: 36px;  /* 첫 번째 뱃지 아래 */
+  left: 8px;
+}
+
+.post-type-badge.type-tip-sub.transport { background: #dbeafe; color: #1d4ed8; } /* 파란색: 교통 */
+.post-type-badge.type-tip-sub.accom     { background: #fce7f3; color: #be185d; } /* 핑크색: 숙소 */
+.post-type-badge.type-tip-sub.food      { background: #fef9c3; color: #92400e; } /* 노란색: 맛집 */
+.post-type-badge.type-tip-sub.money     { background: #ffedd5; color: #c2410c; } /* 주황색: 환전 */
+.post-type-badge.type-tip-sub.safety    { background: #fee2e2; color: #b91c1c; } /* 빨간색: 안전 */
+.post-type-badge.type-tip-sub.other     { background: #f3f4f6; color: #374151; } /* 회색: 기타 */

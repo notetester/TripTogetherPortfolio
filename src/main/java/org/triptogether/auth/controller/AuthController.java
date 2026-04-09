@@ -162,7 +162,7 @@ public class AuthController {
         Map<String, Object> result = new HashMap<>();
 
         if (authService.isUserIdDuplicate(userId)) {
-            return error(result, "userId", "이미 사용 중인 아이디입니다.");
+            return error(result, "userId", "입력하신 아이디는 현재 사용할 수 없습니다. 다른 아이디를 입력해 주세요.");
         }
         if (userEmail != null && !userEmail.isBlank() && authService.isEmailDuplicate(userEmail)) {
             return error(result, "userEmail", "이미 사용 중인 이메일입니다.");

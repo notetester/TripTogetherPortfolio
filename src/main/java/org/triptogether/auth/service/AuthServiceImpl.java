@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -426,34 +427,49 @@ public class AuthServiceImpl implements AuthService {
     // 이메일 인증
     // ════════════════════════════════════════════
     @Override
-    public boolean sendEmailVerification(Long userIdx, String email, LoginRequestContext context) {
+    public boolean sendEmailVerification(Long userIdx, String requestId, String email, LoginRequestContext context) {
         recordSecurityEvent(userIdx, userIdx, "EMAIL_VERIFY", "REQUEST", email, email,
-                true, null, null, context);
+                true, null, "PROFILE_EMAIL", context);
 
-        authMapper.expireOldTokens(email, "VERIFY");
-        // 이메일 변경 전 미인증 상태로 업데이트
-        authMapper.updateEmail(userIdx, email, false);
+        authMapper.cancelActiveEmailVerificationRequests(userIdx, "PROFILE_EMAIL");
 
         String token = UUID.randomUUID().toString();
-        authMapper.insertEmailVerification(EmailVerificationVO.builder()
+        EmailVerificationRequestVO request = EmailVerificationRequestVO.builder()
+                .requestId(requestId)
                 .userIdx(userIdx)
-                .email(email)
+                .purpose("PROFILE_EMAIL")
+                .pendingEmail(email)
                 .token(token)
-                .purpose("VERIFY")
+                .status("REQUESTED")
                 .expiredAt(LocalDateTime.now().plusMinutes(30))
-                .build());
+                .ipAddress(context != null ? context.getIpAddress() : null)
+                .userAgent(context != null ? context.getUserAgent() : null)
+                .build();
+        authMapper.insertEmailVerificationRequest(request);
 
         boolean sent = sendMail(email, "[TripTogether] 이메일 인증",
-                buildEmailHtml("이메일 인증", "아래 버튼을 클릭하시면 이메일 인증이 완료됩니다.",
+                buildEmailHtml("이메일 인증", "아래 버튼을 클릭하시면 이메일 인증이 완료됩니다. 인증 후 회원정보 수정 화면에서 저장해야 최종 반영됩니다.",
                         baseUrl + "/auth/verify-email?token=" + token, "이메일 인증 완료"));
 
+        if (!sent) {
+            authMapper.cancelEmailVerificationRequest(request.getEmailVerificationRequestIdx());
+        }
+
         recordSecurityEvent(userIdx, userIdx, "EMAIL_VERIFY", "ISSUE", email, email,
-                sent, sent ? null : "MAIL_SEND_FAILED", null, context);
+                sent, sent ? null : "MAIL_SEND_FAILED", "PROFILE_EMAIL", context);
         return sent;
     }
 
     @Override
     public boolean verifyEmail(String token, LoginRequestContext context) {
+        EmailVerificationRequestVO request = authMapper.findValidEmailVerificationRequestByToken(token, "PROFILE_EMAIL");
+        if (request != null) {
+            authMapper.markEmailVerificationRequestVerified(request.getEmailVerificationRequestIdx());
+            recordSecurityEvent(request.getUserIdx(), request.getUserIdx(), "EMAIL_VERIFY", "VERIFY",
+                    request.getPendingEmail(), request.getPendingEmail(), true, null, "PROFILE_EMAIL", context);
+            return true;
+        }
+
         EmailVerificationVO ev = authMapper.findValidToken(token, "VERIFY");
         if (ev == null) {
             recordSecurityEvent(null, null, "EMAIL_VERIFY", "VERIFY", null, null,
@@ -466,7 +482,11 @@ public class AuthServiceImpl implements AuthService {
 
         try {
             authMapper.markTokenUsed(ev.getVerifyIdx());
-            authMapper.updateEmailVerified(ev.getUserIdx(), true);
+            authMapper.updateEmail(ev.getUserIdx(), ev.getEmail(), true);
+            UsersVO updated = authMapper.findByIdx(ev.getUserIdx());
+            if (updated != null && !hasUsableLocalLogin(updated) && updated.isPasswordEnabled()) {
+                authMapper.clearPasswordAndDisable(ev.getUserIdx());
+            }
             recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "EMAIL_VERIFY", "COMPLETE", ev.getEmail(), ev.getEmail(),
                     true, null, null, context);
             return true;
@@ -493,6 +513,184 @@ public class AuthServiceImpl implements AuthService {
         authMapper.updateEmailLoginEnabled(userIdx, enable);
         recordSecurityEvent(userIdx, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE", user.getUserEmail(), user.getUserEmail(),
                 true, null, enable ? "ENABLE" : "DISABLE", context);
+    }
+
+    /**
+     * 이메일 로그인 체크박스 변경 시점에 최신 인증 상태를 다시 확인한다.
+     * 실제 반영은 저장 버튼에서만 수행하고, 여기서는 가능 여부만 판단한다.
+     */
+    public Map<String, Object> checkEmailLoginAvailability(Long userIdx, String requestId, String emailToCheck) {
+        UsersVO user = authMapper.findByIdx(userIdx);
+        Map<String, Object> result = new LinkedHashMap<>();
+
+        if (user == null) {
+            result.put("success", false);
+            result.put("message", "사용자 정보를 찾을 수 없습니다.");
+            return result;
+        }
+
+        String normalizedEmail = emailToCheck == null ? null : emailToCheck.trim();
+        if (!hasText(normalizedEmail)) {
+            result.put("success", false);
+            result.put("message", "먼저 이메일을 등록해 주세요.");
+            result.put("emailVerified", false);
+            result.put("pendingVerified", false);
+            return result;
+        }
+
+        boolean currentVerified = normalizedEmail.equals(user.getUserEmail()) && user.isEmailVerified();
+        EmailVerificationRequestVO pending = authMapper.findApplicableEmailVerificationRequest(userIdx, requestId, "PROFILE_EMAIL", normalizedEmail);
+        boolean pendingVerified = pending != null;
+        boolean verified = currentVerified || pendingVerified;
+
+        result.put("emailVerified", verified);
+        result.put("pendingVerified", pendingVerified);
+        result.put("requiresPassword", !user.isPasswordEnabled());
+
+        if (!verified) {
+            result.put("success", false);
+            result.put("message", normalizedEmail.equals(user.getUserEmail())
+                    ? "이메일 인증을 먼저 완료해 주세요."
+                    : "새 이메일 인증을 완료한 뒤 저장해 주세요.");
+            return result;
+        }
+
+        result.put("success", true);
+        result.put("message", user.isPasswordEnabled()
+                ? "저장하면 이메일 로그인이 활성화됩니다."
+                : "저장 시 비밀번호를 함께 설정해야 이메일 로그인을 사용할 수 있습니다.");
+        return result;
+    }
+
+    /**
+     * 로컬 로그인 수단(아이디 / 이메일 로그인)을 저장한다.
+     * 비밀번호는 로컬 로그인 수단이 처음 생길 때만 함께 설정한다.
+     */
+    public UsersVO saveLoginSettings(Long userIdx,
+                                     String requestId,
+                                     String userIdToAdd,
+                                     String emailToSave,
+                                     boolean enableEmailLogin,
+                                     String newPassword,
+                                     LoginRequestContext context) {
+        UsersVO user = authMapper.findByIdx(userIdx);
+        if (user == null) {
+            throw new IllegalStateException("사용자 정보를 찾을 수 없습니다.");
+        }
+
+        String normalizedUserId = userIdToAdd == null ? null : userIdToAdd.trim();
+        if (normalizedUserId != null && normalizedUserId.isBlank()) {
+            normalizedUserId = null;
+        }
+
+        String normalizedEmail = emailToSave == null ? null : emailToSave.trim();
+        if (normalizedEmail != null && normalizedEmail.isBlank()) {
+            normalizedEmail = null;
+        }
+
+        String currentUserId = hasText(user.getUserId()) ? user.getUserId().trim() : null;
+        String currentEmail = hasText(user.getUserEmail()) ? user.getUserEmail().trim() : null;
+
+        // 아이디는 1회만 등록 가능하다.
+        if (currentUserId != null && normalizedUserId != null && !currentUserId.equals(normalizedUserId)) {
+            throw new IllegalStateException("아이디는 변경할 수 없습니다.");
+        }
+        if (currentUserId == null && normalizedUserId != null && authMapper.existsByUserId(normalizedUserId)) {
+            throw new IllegalStateException("입력하신 아이디는 현재 사용할 수 없습니다. 다른 아이디를 입력해 주세요.");
+        }
+
+        // 이메일은 미인증 상태로도 저장 가능하지만, 중복은 허용하지 않는다.
+        if (normalizedEmail != null && !normalizedEmail.equals(currentEmail) && authMapper.existsByEmail(normalizedEmail)) {
+            throw new IllegalStateException("이미 사용 중인 이메일입니다.");
+        }
+
+        boolean emailChanged = !Objects.equals(currentEmail, normalizedEmail);
+        boolean userIdChanged = currentUserId == null && hasText(normalizedUserId);
+        boolean emailLoginChanged = user.isEmailLoginEnabled() != enableEmailLogin;
+
+        EmailVerificationRequestVO verifiedRequest = hasText(normalizedEmail)
+                ? authMapper.findApplicableEmailVerificationRequest(userIdx, requestId, "PROFILE_EMAIL", normalizedEmail)
+                : null;
+        boolean emailVerifiedForTarget = hasText(normalizedEmail)
+                && ((normalizedEmail.equals(currentEmail) && user.isEmailVerified()) || verifiedRequest != null);
+        boolean willApplyVerifiedEmail = verifiedRequest != null
+                && (emailChanged || !user.isEmailVerified() || !normalizedEmail.equals(currentEmail));
+        boolean shouldApplyEmailState = emailChanged || willApplyVerifiedEmail;
+
+        if (enableEmailLogin) {
+            if (!hasText(normalizedEmail)) {
+                throw new IllegalStateException("이메일을 삭제하려면 이메일 로그인 사용을 함께 해제한 뒤 저장해 주세요.");
+            }
+            if (!emailVerifiedForTarget) {
+                throw new IllegalStateException(normalizedEmail.equals(currentEmail)
+                        ? "이메일 로그인을 사용하려면 먼저 이메일 인증을 완료해 주세요."
+                        : "새 이메일 인증을 완료한 뒤 저장해 주세요.");
+            }
+        }
+
+        boolean willHaveUserId = currentUserId != null || hasText(normalizedUserId);
+        boolean needsPasswordForFirstLocalLogin = !user.isPasswordEnabled() && (willHaveUserId || enableEmailLogin);
+        if (needsPasswordForFirstLocalLogin) {
+            validateNewPassword(newPassword);
+        }
+
+        boolean hasSocialLogin = !authMapper.findSocialsByUserIdx(userIdx).isEmpty();
+        boolean willHaveUsableIdLogin = willHaveUserId && (user.isPasswordEnabled() || needsPasswordForFirstLocalLogin);
+        boolean willHaveUsableEmailLogin = hasText(normalizedEmail)
+                && emailVerifiedForTarget
+                && enableEmailLogin
+                && (user.isPasswordEnabled() || needsPasswordForFirstLocalLogin);
+
+        if (!willHaveUsableIdLogin && !willHaveUsableEmailLogin && !hasSocialLogin) {
+            throw new IllegalStateException("변경 후 사용할 수 있는 로그인 수단이 남아 있지 않아 저장할 수 없습니다. 먼저 아이디 로그인, 이메일 로그인 또는 소셜 로그인을 하나 이상 유지해 주세요.");
+        }
+
+        if (!userIdChanged && !shouldApplyEmailState && !emailLoginChanged && !needsPasswordForFirstLocalLogin) {
+            throw new IllegalStateException("변경된 로그인 수단 정보가 없습니다.");
+        }
+
+        if (shouldApplyEmailState) {
+            authMapper.updateEmail(userIdx, normalizedEmail, emailVerifiedForTarget);
+            recordSecurityEvent(userIdx, userIdx, "EMAIL_UPDATE", "COMPLETE",
+                    normalizedEmail, normalizedEmail, true, null,
+                    normalizedEmail == null ? "EMAIL_REMOVED" : (emailVerifiedForTarget ? "EMAIL_APPLIED_VERIFIED" : "EMAIL_SAVED_UNVERIFIED"), context);
+            if (verifiedRequest != null) {
+                authMapper.markEmailVerificationRequestApplied(verifiedRequest.getEmailVerificationRequestIdx());
+                recordSecurityEvent(userIdx, userIdx, "EMAIL_VERIFY", "COMPLETE",
+                        normalizedEmail, normalizedEmail, true, null, "PROFILE_EMAIL", context);
+            }
+        }
+
+        if (currentUserId == null && hasText(normalizedUserId)) {
+            authMapper.updateUserId(userIdx, normalizedUserId);
+            recordSecurityEvent(userIdx, userIdx, "ID_LOGIN_ADD", "COMPLETE", normalizedUserId,
+                    normalizedEmail != null ? normalizedEmail : user.getUserEmail(), true, null, null, context);
+        }
+
+        if (needsPasswordForFirstLocalLogin) {
+            authMapper.updatePassword(userIdx, bCryptPasswordEncoder.encode(newPassword));
+            recordSecurityEvent(userIdx, userIdx, "PASSWORD_CHANGE", "COMPLETE",
+                    normalizedUserId != null ? normalizedUserId : user.getUserId(), normalizedEmail,
+                    true, null, "LOCAL_LOGIN_INITIAL_SET", context);
+        }
+
+        authMapper.updateEmailLoginEnabled(userIdx, enableEmailLogin);
+        if (emailLoginChanged) {
+            recordSecurityEvent(userIdx, userIdx, "EMAIL_LOGIN_TOGGLE", "COMPLETE",
+                    normalizedEmail != null ? normalizedEmail : user.getUserEmail(), normalizedEmail != null ? normalizedEmail : user.getUserEmail(), true, null,
+                    enableEmailLogin ? "ENABLE" : "DISABLE", context);
+        }
+
+        UsersVO after = authMapper.findByIdx(userIdx);
+        if (!hasUsableLocalLogin(after) && after.isPasswordEnabled()) {
+            authMapper.clearPasswordAndDisable(userIdx);
+            recordSecurityEvent(userIdx, userIdx, "PASSWORD_CHANGE", "COMPLETE",
+                    after.getUserId(), after.getUserEmail(), true, null,
+                    "LOCAL_LOGIN_METHOD_REMOVED_AUTO_CLEAR", context);
+            after = authMapper.findByIdx(userIdx);
+        }
+
+        return after;
     }
 
     // ════════════════════════════════════════════
@@ -920,10 +1118,15 @@ public class AuthServiceImpl implements AuthService {
     public void unlinkSocial(Long userIdx, String provider) {
         UsersVO user = authMapper.findByIdx(userIdx);
         List<UserSocialVO> socials = authMapper.findSocialsByUserIdx(userIdx);
+        long remainingSocials = socials.stream()
+                .filter(s -> !provider.equalsIgnoreCase(s.getProvider()))
+                .count();
 
-        // 비밀번호 로그인도 없고 소셜 1개뿐이면 해제 불가 (로그인 수단이 없어짐)
-        if (!user.isPasswordEnabled() && socials.size() <= 1) {
-            throw new IllegalStateException("마지막 로그인 수단은 해제할 수 없습니다. 비밀번호를 먼저 설정해주세요.");
+        boolean hasIdLogin = hasUsableIdLogin(user);
+        boolean hasEmailLogin = hasUsableEmailLogin(user);
+
+        if (!hasIdLogin && !hasEmailLogin && remainingSocials <= 0) {
+            throw new IllegalStateException("연동 해제 후 사용할 수 있는 로그인 수단이 남아 있지 않아 처리할 수 없습니다. 먼저 아이디 로그인, 이메일 로그인 또는 다른 소셜 연동을 추가해 주세요.");
         }
         authMapper.deleteSocial(userIdx, provider);
     }
@@ -1218,6 +1421,30 @@ public class AuthServiceImpl implements AuthService {
                 .build());
     }
 
+    private boolean hasUsableIdLogin(UsersVO user) {
+        return user != null && hasText(user.getUserId()) && user.isPasswordEnabled()
+                && !"DELETED".equalsIgnoreCase(user.getAccountStatus());
+    }
+
+    private boolean hasUsableEmailLogin(UsersVO user) {
+        return user != null
+                && hasText(user.getUserEmail())
+                && user.isEmailVerified()
+                && user.isEmailLoginEnabled()
+                && user.isPasswordEnabled()
+                && !"DELETED".equalsIgnoreCase(user.getAccountStatus());
+    }
+
+    private boolean hasUsableLocalLogin(UsersVO user) {
+        return hasUsableIdLogin(user) || hasUsableEmailLogin(user);
+    }
+
+    private void validateNewPassword(String newPassword) {
+        if (!hasText(newPassword) || newPassword.length() < 8) {
+            throw new IllegalStateException("비밀번호는 8자 이상으로 설정해 주세요.");
+        }
+    }
+
     private boolean isRecoverableAccountStatus(String accountStatus) {
         if (accountStatus == null || accountStatus.isBlank()) {
             return true;
@@ -1245,6 +1472,10 @@ public class AuthServiceImpl implements AuthService {
         return userId.substring(0, visibleFront)
                 + "*".repeat(maskLength)
                 + userId.substring(length - visibleBack);
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     private boolean isValidEmailFormat(String identifier) {

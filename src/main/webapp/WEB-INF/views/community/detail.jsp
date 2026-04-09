@@ -103,6 +103,7 @@
         </div>
       </c:if>
 
+        <br>
       <%-- 이미지 슬라이더 --%>
       <c:if test="${not empty imageList}">
         <div class="detail-slider">

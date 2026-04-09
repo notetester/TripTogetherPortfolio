@@ -35,4 +35,8 @@ public interface AdminMapper {
     // 보안 이력 감사
     List<AdminSecurityAuditVO> findSecurityAudits(AdminSecurityAuditSearchVO search);
     int countSecurityAudits(AdminSecurityAuditSearchVO search);
+
+    // 이메일 인증 요청 이력
+    List<AdminEmailVerificationRequestVO> findEmailVerificationRequests(AdminEmailVerificationRequestSearchVO search);
+    int countEmailVerificationRequests(AdminEmailVerificationRequestSearchVO search);
 }

@@ -26,6 +26,7 @@
         <result property="thumbUrl"     column="thumb_url"/>
         <result property="accountStatus" column="account_status"/>
         <result property="reportCount" column="report_count"/>
+        <result property="tipCategory" column="tip_category"/>
 
     </resultMap>
 
@@ -76,7 +77,8 @@
             cpi.image_url AS thumb_url,
             cpq.is_solved,
             u.account_status,
-            cpd.report_count
+            cpd.report_count,
+            cptip.tip_category
         FROM COMMUNITY_POST cp
         JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
@@ -85,6 +87,7 @@
         LEFT JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
         LEFT JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
         LEFT JOIN COMMUNITY_POST_QUESTION cpq ON cp.post_id = cpq.post_id
+        LEFT JOIN COMMUNITY_POST_TIP cptip ON cp.post_id = cptip.post_id
         WHERE 1=1
         <if test="adminMode">
             AND cpd.post_status IN ('ACTIVE', 'BLOCKED')

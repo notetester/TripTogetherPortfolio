@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%--
   마이페이지 메인
   Controller : GET /mypage
@@ -143,13 +144,52 @@
         </div>
 
 
+        <%-- 알림 카드 --%>
+        <div class="mp-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title">
+                    <span class="mp-card-icon">📬</span> 새 알림
+                    <c:if test="${not empty notifications}">
+                        <span class="mp-notif-count">${fn:length(notifications)}</span>
+                    </c:if>
+                </div>
+            </div>
+            <div class="mp-notif-list">
+                <c:choose>
+                    <c:when test="${empty notifications}">
+                        <div class="mp-notif-empty">새로운 알림이 없어요.</div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="noti" items="${notifications}">
+                            <c:set var="readClass" value="${noti.isRead == 0 ? 'unread' : ''}"/>
+                            <div class="mp-notif-item ${readClass}"
+     onclick="readNotification('${noti.notificationId}', '${noti.sourceType}', '${noti.sourceId}')">
+                        <span class="mp-notif-type">
+                            <c:choose>
+                                <c:when test="${noti.sourceType eq 'community'}">[커뮤니티]</c:when>
+                                <c:when test="${noti.sourceType eq 'inquiry'}">[문의게시판]</c:when>
+                                <c:otherwise>[알림]</c:otherwise>
+                            </c:choose>
+                        </span>
+                                <span class="mp-notif-msg">${noti.message}</span>
+                                <span class="mp-notif-date">
+                            <fmt:formatDate value="${noti.createdAt}" pattern="yyyy-MM-dd"/>
+                        </span>
+                            </div>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+            <div class="mp-notif-footer">새 알림은 최신순으로 최대 10개까지만 표시됩니다.</div>
+        </div>
+
         <%-- ══════════════════════════════════════════
-             내 여행지 탐색 (가칭)
+             내 리뷰 (가칭)
         ══════════════════════════════════════════ --%>
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">⭐</span> 내 여행지 탐색 (가칭)
+                    <span class="mp-card-icon">⭐</span> 내 리뷰 (가칭)
                 </div>
             </div>
             <div class="mp-placeholder">
@@ -175,8 +215,6 @@
                 <div class="mp-placeholder-sub">기능이 완성되면 여기서 확인할 수 있어요</div>
             </div>
         </div>
-
-
 
 
         <%-- ══════════════════════════════════════════
@@ -303,8 +341,24 @@
         </div>
 
 
-    </div><%-- /mp-inner --%>
-</div><%-- /mp-wrap --%>
+    </div>
+    <%-- /mp-inner --%>
+</div>
+<%-- /mp-wrap --%>
+
+<script>
+    function readNotification(notificationId, sourceType, sourceId) {
+        fetch('${pageContext.request.contextPath}/mypage/notification/' + notificationId + '/read', {
+            method: 'POST',
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        }).then(function () {
+            var url = '';
+            if (sourceType === 'community') url = '${pageContext.request.contextPath}/community/' + sourceId;
+            else if (sourceType === 'inquiry') url = '${pageContext.request.contextPath}/inquiry/' + sourceId;
+            if (url) location.href = url;
+        });
+    }
+</script>
 
 <%@ include file="../common/footer.jsp" %>
 </body>

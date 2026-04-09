@@ -13,6 +13,7 @@ import org.triptogether.myPage.service.MyPageService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -71,8 +72,22 @@ public class ProfileController {
         // 세션도 최신값으로 갱신
         session.setAttribute("loginUser", freshUser);
 
+        String profileEmailRequestId = (String) session.getAttribute("profileEmailRequestId");
+        if (profileEmailRequestId == null || profileEmailRequestId.isBlank()) {
+            profileEmailRequestId = UUID.randomUUID().toString();
+            session.setAttribute("profileEmailRequestId", profileEmailRequestId);
+        }
+
+        Map<String, Boolean> socialLinkMap = authService.getSocialLinkMap(freshUser.getUserIdx());
+        long socialCount = socialLinkMap.values().stream().filter(Boolean::booleanValue).count();
+
+        model.addAttribute("profileEmailRequestId", profileEmailRequestId);
         model.addAttribute("user", freshUser);
-        model.addAttribute("socialLinkMap", authService.getSocialLinkMap(freshUser.getUserIdx()));
+        model.addAttribute("socialLinkMap", socialLinkMap);
+        model.addAttribute("socialCount", socialCount);
+        model.addAttribute("hasUsableIdLogin", freshUser.getUserId() != null && !freshUser.getUserId().isBlank() && freshUser.isPasswordEnabled());
+        model.addAttribute("hasUsableEmailLogin", freshUser.getUserEmail() != null && !freshUser.getUserEmail().isBlank()
+                && freshUser.isEmailVerified() && freshUser.isEmailLoginEnabled() && freshUser.isPasswordEnabled());
         return "mypage/edit";
     }
 
@@ -120,7 +135,13 @@ public class ProfileController {
         UsersVO user = loginUser(session);
         if (user == null) { result.put("success", false); return result; }
 
-        if (user.isPasswordEnabled() && !authService.checkPassword(user.getUserIdx(), currentPassword)) {
+        if (!user.isPasswordEnabled()) {
+            result.put("success", false);
+            result.put("message", "비밀번호는 로그인 수단을 추가하는 과정에서 함께 설정해 주세요.");
+            return result;
+        }
+
+        if (!authService.checkPassword(user.getUserIdx(), currentPassword)) {
             authService.recordPasswordChangeFailure(user.getUserIdx(), buildRequestContext(request), "WRONG_CURRENT_PASSWORD");
             result.put("success", false); result.put("field", "currentPassword");
             result.put("message", "현재 비밀번호가 올바르지 않습니다."); return result;
@@ -151,26 +172,27 @@ public class ProfileController {
                 (user.getUserEmail() == null || !user.getUserEmail().equals(email))) {
             result.put("success", false); result.put("message", "이미 사용 중인 이메일입니다."); return result;
         }
-        boolean sent = authService.sendEmailVerification(user.getUserIdx(), email, buildRequestContext(request));
+        String profileEmailRequestId = (String) session.getAttribute("profileEmailRequestId");
+        if (profileEmailRequestId == null || profileEmailRequestId.isBlank()) {
+            profileEmailRequestId = UUID.randomUUID().toString();
+            session.setAttribute("profileEmailRequestId", profileEmailRequestId);
+        }
+
+        boolean sent = authService.sendEmailVerification(user.getUserIdx(), profileEmailRequestId, email, buildRequestContext(request));
         if (!sent) {
             result.put("success", false);
             result.put("message", "인증 이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.");
             return result;
         }
 
-        user.setUserEmail(email); user.setEmailVerified(false); user.setEmailLoginEnabled(false);
         result.put("success", true); result.put("message", "인증 이메일을 발송했습니다. 메일을 확인해주세요.");
         return result;
     }
 
-    // ── 이메일 로그인 토글 ─────────────────────────
+    // ── 이메일 로그인 체크 시점 검증 (실시간 확인용) ─────
     @PostMapping("/edit/email/login-toggle")
     @ResponseBody
-    public Map<String, Object> toggleEmailLogin(
-            @RequestParam boolean enable,
-            HttpServletRequest request,
-            HttpSession session) {
-
+    public Map<String, Object> checkEmailLoginToggle(@RequestParam String email, HttpSession session) {
         Map<String, Object> result = new HashMap<>();
         UsersVO user = loginUser(session);
         if (user == null) {
@@ -178,35 +200,57 @@ public class ProfileController {
             result.put("message", "로그인이 필요합니다.");
             return result;
         }
+        String profileEmailRequestId = (String) session.getAttribute("profileEmailRequestId");
+        return authService.checkEmailLoginAvailability(user.getUserIdx(), profileEmailRequestId, email);
+    }
 
-        // 세션값이 아니라 DB 최신값으로 검사
-        UsersVO freshUser = authService.getUserByIdx(user.getUserIdx());
-        if (freshUser == null) {
+    @PostMapping("/edit/email/status")
+    @ResponseBody
+    public Map<String, Object> checkEmailStatus(@RequestParam String email, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) {
             result.put("success", false);
-            result.put("message", "사용자 정보를 찾을 수 없습니다.");
+            result.put("message", "로그인이 필요합니다.");
+            return result;
+        }
+        String profileEmailRequestId = (String) session.getAttribute("profileEmailRequestId");
+        return authService.checkEmailLoginAvailability(user.getUserIdx(), profileEmailRequestId, email);
+    }
+
+    // ── 로컬 로그인 수단 저장 ─────────────────────
+    @PostMapping("/edit/login-settings")
+    @ResponseBody
+    public Map<String, Object> saveLoginSettings(@RequestParam(required = false) String userId,
+                                                 @RequestParam(required = false) String email,
+                                                 @RequestParam(defaultValue = "false") boolean emailLoginEnabled,
+                                                 @RequestParam(required = false) String newPassword,
+                                                 HttpServletRequest request,
+                                                 HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        UsersVO loginUser = loginUser(session);
+        if (loginUser == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
             return result;
         }
 
-        if (!freshUser.isEmailVerified()) {
-            session.setAttribute("loginUser", freshUser);
-            result.put("success", false);
-            result.put("message", "이메일 인증을 먼저 완료해주세요.");
-            result.put("emailVerified", false);
-            return result;
-        }
-
+        UsersVO before = authService.getUserByIdx(loginUser.getUserIdx());
         try {
-            authService.toggleEmailLogin(freshUser.getUserIdx(), enable, buildRequestContext(request));
+            String profileEmailRequestId = (String) session.getAttribute("profileEmailRequestId");
+            UsersVO after = authService.saveLoginSettings(loginUser.getUserIdx(), profileEmailRequestId, userId, email, emailLoginEnabled, newPassword, buildRequestContext(request));
+            session.setAttribute("loginUser", after);
+            session.setAttribute("profileEmailRequestId", UUID.randomUUID().toString());
 
-            // 세션도 최신값 반영
-            freshUser.setEmailLoginEnabled(enable);
-            session.setAttribute("loginUser", freshUser);
-
+            boolean passwordCleared = before != null && before.isPasswordEnabled() && !after.isPasswordEnabled();
             result.put("success", true);
-            result.put("emailVerified", freshUser.isEmailVerified());
-            result.put("message", enable
-                    ? "이메일 로그인이 활성화되었습니다."
-                    : "이메일 로그인이 비활성화되었습니다.");
+            result.put("userId", after.getUserId());
+            result.put("emailLoginEnabled", after.isEmailLoginEnabled());
+            result.put("passwordEnabled", after.isPasswordEnabled());
+            result.put("passwordCleared", passwordCleared);
+            result.put("message", passwordCleared
+                    ? "로그인 수단이 변경되었습니다. 현재 사용할 수 있는 로컬 로그인 수단이 없어 비밀번호가 함께 해제되었습니다. 다시 사용하려면 비밀번호를 새로 설정해 주세요."
+                    : "로그인 수단 설정이 저장되었습니다.");
         } catch (IllegalStateException e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -218,6 +262,7 @@ public class ProfileController {
     @PostMapping("/edit/done")
     public String editDone(HttpSession session) {
         session.removeAttribute("editVerified");
+        session.removeAttribute("profileEmailRequestId");
         return "redirect:/mypage";
     }
 
@@ -232,7 +277,24 @@ public class ProfileController {
         model.addAttribute("communityCount", myPageService.getMyCommunityCount(user.getUserIdx()));
         model.addAttribute("inquiryList",    myPageService.getMyInquiryList(user.getUserIdx()));
         model.addAttribute("inquiryCount",   myPageService.getMyInquiryCount(user.getUserIdx()));
+        model.addAttribute("notifications", myPageService.getNotifications(user.getUserIdx()));
         return "mypage/index";
+    }
+
+    /* =============================================
+   POST /mypage/notification/{notificationId}/read - 알림 읽음 처리
+   ============================================= */
+    @PostMapping("/notification/{notificationId}/read")
+    @ResponseBody
+    public Map<String, Object> readNotification(@PathVariable Long notificationId) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            myPageService.readNotification(notificationId);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+        }
+        return result;
     }
 
     // ── 유틸 ──────────────────────────────────────

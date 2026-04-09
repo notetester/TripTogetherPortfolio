@@ -11,34 +11,44 @@ import java.lang.reflect.Method;
 
 /**
  * =============================================
- * AdminModeInterceptor - 관리자 모드 전역 인터셉터
+ * AdminModeInterceptor - 관리자 모드 전역 인터셉터 설명
  * =============================================
  *
- * [역할]
- * 모든 페이지 요청 후(postHandle) 자동으로 아래 두 값을 Model에 주입한다.
+ * [목적]
+ * 모든 페이지에서 "이 사람이 관리자인가?" 를 알아야 관리자 모드 전환이 가능함. 그래서 이 인터셉터를 씀
+ *
+ * [하는일]
+ *  모든 페이지 요청 후(postHandle) 자동으로 아래 두 값을 Model에 주입한다.
  *   - isAdmin     : 현재 로그인한 유저가 ADMIN 권한인지 여부
  *   - isAdminMode : ADMIN이면서 '관리자모드'인지 여부
- *                   (유저경험모드로 전환 시 false)
+ *                 (유저경험모드로 전환 시 false)
  *
- * [사용 목적]
- * header.jsp에서 관리자 전용 토글 버튼(관리자모드 / 유저경험모드)을 표시하기 위해
- * 모든 페이지에서 isAdmin, isAdminMode 값이 필요하다.
- * 각 Controller마다 개별적으로 추가하는 대신 인터셉터로 전역 처리한다.
+ * [전달하는 값]
+ *  - isAdmin     : 관리자면 true, 아니면 false
+ *  - isAdminMode : 관리자모드면 true, 유저경험모드면 false
  *
- * [모드 전환]
- * POST /community/admin/viewmode 요청으로 세션의 viewMode 값을 토글한다.
- *   - viewMode = null  → 관리자모드 (기본값)
- *   - viewMode = "user" → 유저경험모드 (일반 유저처럼 보임)
+ * [모드 전환 과정]
+ * 헤더의 토글 버튼 클릭
+ *  → POST /community/admin/viewmode 호출
+ *  → 세션에 viewMode 값 저장
+ *    - viewMode = null  → 관리자모드 (기본값)
+ *    - viewMode = "user" → 유저경험모드
  *
- * [JSP 사용법]
- * 모든 JSP에서 별도 설정 없이 바로 사용 가능:
- *   ${isAdmin}     → 관리자 여부
- *   ${isAdminMode} → 관리자모드 여부 (차단 기능, 관리 버튼 표시 조건)
+ *  [JSP에서 사용법]
+ *  모든 JSP에서 그냥 바로 쓰면 됨:
+ *    ${isAdmin}     → 관리자 여부
+ *    ${isAdminMode} → 현재 관리자모드 여부
  *
- * [담당자]
- * Victor (커뮤니티 모듈 담당)
- * =============================================
+ *  [예시]
+ *  <%-- 관리자모드일때만 차단 뱃지 보이게 --%>
+ * <c:if test="${isAdminMode}">
+ *     <span class="blocked-badge">🚫 차단된 게시글</span>
+ * </c:if>
+ *
+ *  [담당자] Victor (커뮤니티 모듈)
+ *  =============================================
  */
+
 @Component
 public class AdminModeInterceptor implements HandlerInterceptor {
 

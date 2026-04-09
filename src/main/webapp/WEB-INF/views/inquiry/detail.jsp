@@ -2,13 +2,24 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%--
-  고객지원 - 문의 상세 페이지
-  Controller : GET /inquiry/{inquiryId}
-  Model 필요 :
-    - inquiry : InquiryPostDto
-    - answer  : InquiryAnswerDto  (null 이면 미답변)
-    - isAdmin : boolean
-    - isOwner : boolean
+  =============================================
+  문의 게시판 상세 페이지
+  URL: GET /inquiry/{inquiryId}
+  =============================================
+  [model 필요]
+  - inquiry : InquiryPostDto  - 문의 내용
+  - answer  : InquiryAnswerDto - 운영진 답변 (없으면 null)
+  - isAdmin : boolean          - 운영진 여부
+  - isOwner : boolean          - 작성자 본인 여부
+
+  [페이지 구성]
+  1. 문의 본문 카드 (제목, 카테고리, 상태, 내용)
+  2. 답변 영역 (답변 있으면 답변 카드, 없으면 대기 안내)
+  3. 어드민 전용 답변 입력 폼
+  4. 수정 폼 (PENDING + 본인/어드민만 표시)
+  5. 하단 액션 버튼 (목록/수정/삭제)
+  6. 스크립트 (답변 등록 + 수정 + 삭제)
+  =============================================
 --%>
 <!DOCTYPE html>
 <html lang="ko">
@@ -19,24 +30,27 @@
 <div class="inq-detail-wrap">
   <div class="inq-detail-inner">
 
-    <%-- 뒤로가기 --%>
+    <%-- 뒤로가기 버튼 --%>
     <button class="inq-back-btn"
             onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
       &#8592; 목록으로
     </button>
 
-    <%-- ══════════════════════════════════════════
-         문의 본문 카드
-    ══════════════════════════════════════════ --%>
+    <%-- =============================================
+         1. 문의 본문 카드
+         ============================================= --%>
     <div class="inq-detail-card">
 
-      <%-- 카드 헤더 --%>
+      <%-- 카드 헤더: 카테고리 + 상태 뱃지 + 비공개 태그 --%>
       <div class="inq-detail-head">
         <div class="inq-detail-meta">
+          <%-- 카테고리 태그 --%>
           <span class="inq-category-tag">${inquiry.category eq 'service' ? '서비스' :
             inquiry.category eq 'payment' ? '결제' :
             inquiry.category eq 'account' ? '계정' :
             inquiry.category eq 'bug'     ? '오류신고' : '기타'}</span>
+
+          <%-- 상태 뱃지: CSS 클래스명이 status 값과 일치 (PENDING/IN_PROGRESS/COMPLETED) --%>
           <span class="inq-status-badge ${inquiry.status}">
             <c:choose>
               <c:when test="${inquiry.status eq 'PENDING'}">대기중</c:when>
@@ -44,15 +58,20 @@
               <c:when test="${inquiry.status eq 'COMPLETED'}">✓ 답변완료</c:when>
             </c:choose>
           </span>
+
+          <%-- 비공개 태그 --%>
           <c:if test="${inquiry.isPrivate == 1}">
             <span class="inq-private-tag">🔒 비공개</span>
           </c:if>
         </div>
 
+        <%-- 제목 --%>
         <h1 class="inq-detail-title">${inquiry.title}</h1>
 
+        <%-- 작성자 / 날짜 / 조회수 --%>
         <div class="inq-detail-info">
           <span class="inq-detail-nick">
+            <%-- 비공개 글이고 어드민이 아니면 익명 표시 --%>
             <c:choose>
               <c:when test="${inquiry.isPrivate == 1 and !isAdmin}">익명</c:when>
               <c:otherwise>${inquiry.nickname}</c:otherwise>
@@ -67,16 +86,18 @@
         </div>
       </div>
 
-      <%-- 카드 본문 --%>
+      <%-- 카드 본문: 문의 내용 --%>
       <div class="inq-detail-body">
         <pre class="inq-detail-content">${inquiry.content}</pre>
       </div>
 
     </div><%-- /inq-detail-card --%>
 
-    <%-- ══════════════════════════════════════════
-         답변 영역
-    ══════════════════════════════════════════ --%>
+    <%-- =============================================
+         2. 답변 영역
+         - 답변이 있으면 답변 카드 표시
+         - 없으면 대기 중 안내 표시
+         ============================================= --%>
     <c:choose>
       <%-- 답변이 있을 때 --%>
       <c:when test="${not empty answer}">
@@ -107,23 +128,25 @@
       </c:otherwise>
     </c:choose>
 
-    <%-- ══════════════════════════════════════════
-         어드민 답변 입력 폼
-    ══════════════════════════════════════════ --%>
+    <%-- =============================================
+         3. 어드민 전용 답변 입력 폼
+         - 어드민만 표시
+         - 이미 답변이 있으면 textarea 비활성화
+         ============================================= --%>
     <c:if test="${isAdmin}">
       <div class="inq-admin-form">
-        <div class="inq-admin-form-title">
-          🛡️ 운영진 답변 작성
-        </div>
+        <div class="inq-admin-form-title">🛡️ 운영진 답변 작성</div>
         <textarea class="inq-form-textarea" id="adminContent" rows="6"
                   placeholder="답변 내용을 입력해주세요..."
                   <c:if test="${not empty answer}">disabled</c:if>
         ><c:if test="${not empty answer}">${answer.content}</c:if></textarea>
         <div class="inq-admin-form-actions">
           <c:choose>
+            <%-- 이미 답변 있으면 안내 문구만 표시 --%>
             <c:when test="${not empty answer}">
               <span style="font-size:13px;color:var(--gray-400);">이미 답변이 등록되었습니다</span>
             </c:when>
+            <%-- 답변 없으면 등록 버튼 표시 --%>
             <c:otherwise>
               <button class="inq-btn-submit" id="answerBtn">답변 등록</button>
             </c:otherwise>
@@ -132,75 +155,99 @@
       </div>
     </c:if>
 
-<%-- 수정 폼 (PENDING + 본인/어드민만 표시) --%>
-<c:if test="${(isOwner or isAdmin) and inquiry.status eq 'PENDING'}">
-  <div class="inq-edit-form" id="editForm" style="display:none;">
-    <div class="inq-write-card">
-      <div class="inq-form-group">
-        <label class="inq-form-label">문의 유형</label>
-        <select class="inq-form-select" id="editCategory">
-          <option value="service" ${inquiry.category eq 'service' ? 'selected' : ''}>서비스 이용</option>
-          <option value="payment" ${inquiry.category eq 'payment' ? 'selected' : ''}>결제 / 환불</option>
-          <option value="account" ${inquiry.category eq 'account' ? 'selected' : ''}>계정 / 로그인</option>
-          <option value="bug"     ${inquiry.category eq 'bug'     ? 'selected' : ''}>오류 신고</option>
-          <option value="etc"     ${inquiry.category eq 'etc'     ? 'selected' : ''}>기타</option>
-        </select>
+    <%-- =============================================
+         4. 수정 폼
+         - PENDING 상태이고 본인 또는 어드민만 표시
+         - 기본값은 숨겨져 있고 수정 버튼 클릭 시 표시
+         ============================================= --%>
+    <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'PENDING'}">
+      <div class="inq-edit-form" id="editForm" style="display:none;">
+        <div class="inq-write-card">
+          <%-- 문의 유형 --%>
+          <div class="inq-form-group">
+            <label class="inq-form-label">문의 유형</label>
+            <select class="inq-form-select" id="editCategory">
+              <option value="service" ${inquiry.category eq 'service' ? 'selected' : ''}>서비스 이용</option>
+              <option value="payment" ${inquiry.category eq 'payment' ? 'selected' : ''}>결제 / 환불</option>
+              <option value="account" ${inquiry.category eq 'account' ? 'selected' : ''}>계정 / 로그인</option>
+              <option value="bug"     ${inquiry.category eq 'bug'     ? 'selected' : ''}>오류 신고</option>
+              <option value="etc"     ${inquiry.category eq 'etc'     ? 'selected' : ''}>기타</option>
+            </select>
+          </div>
+          <%-- 제목 --%>
+          <div class="inq-form-group">
+            <label class="inq-form-label">제목</label>
+            <input class="inq-form-input" type="text" id="editTitle" value="${inquiry.title}">
+          </div>
+          <%-- 내용 --%>
+          <div class="inq-form-group">
+            <label class="inq-form-label">내용</label>
+            <textarea class="inq-form-textarea" id="editContent" rows="10">${inquiry.content}</textarea>
+          </div>
+          <%-- 비공개 여부 --%>
+          <div class="inq-form-group">
+            <label class="inq-private-toggle">
+              <input type="checkbox" id="editIsPrivate" ${inquiry.isPrivate == 1 ? 'checked' : ''}>
+              <span class="inq-toggle-slider"></span>
+              <span class="inq-toggle-label">비공개</span>
+            </label>
+          </div>
+          <%-- 취소 / 저장 버튼 --%>
+          <div class="inq-write-actions">
+            <button class="inq-btn-cancel" id="editCancelBtn">취소</button>
+            <button class="inq-btn-submit" id="editSaveBtn">저장</button>
+          </div>
+        </div>
       </div>
-      <div class="inq-form-group">
-        <label class="inq-form-label">제목</label>
-        <input class="inq-form-input" type="text" id="editTitle" value="${inquiry.title}">
+    </c:if>
+
+    <%-- 답변 완료 시 수정/삭제 불가 안내 --%>
+    <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'COMPLETED'}">
+      <div style="font-size:13px; color:var(--gray-400); margin-bottom:8px;">
+        ⚠️ 답변이 완료된 글은 수정/삭제하실 수 없습니다.
       </div>
-      <div class="inq-form-group">
-        <label class="inq-form-label">내용</label>
-        <textarea class="inq-form-textarea" id="editContent" rows="10">${inquiry.content}</textarea>
-      </div>
-      <div class="inq-form-group">
-        <label class="inq-private-toggle">
-          <input type="checkbox" id="editIsPrivate" ${inquiry.isPrivate == 1 ? 'checked' : ''}>
-          <span class="inq-toggle-slider"></span>
-          <span class="inq-toggle-label">비공개</span>
-        </label>
-      </div>
-      <div class="inq-write-actions">
-        <button class="inq-btn-cancel" id="editCancelBtn">취소</button>
-        <button class="inq-btn-submit" id="editSaveBtn">저장</button>
-      </div>
+    </c:if>
+
+    <%-- =============================================
+         5. 하단 액션 버튼
+         - 목록으로: 모든 유저
+         - 수정/삭제: PENDING 상태이고 본인 또는 어드민만
+         ============================================= --%>
+    <div class="inq-detail-actions">
+      <%-- 목록으로 버튼 --%>
+      <button class="inq-btn-cancel"
+              onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
+        목록으로
+      </button>
+
+      <%-- 수정/삭제 버튼: PENDING 상태 + 본인 또는 어드민만 --%>
+      <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'PENDING'}">
+        <button class="inq-btn-cancel" id="editBtn">✏️ 수정</button>
+        <button class="inq-btn-submit" id="deleteBtn"
+                style="background:#ef4444;">🗑️ 삭제</button>
+      </c:if>
     </div>
-  </div>
-</c:if>
-
-<c:if test="${(isOwner or isAdmin) and inquiry.status eq 'COMPLETED'}">
-  <div style="font-size:13px; color:var(--gray-400); margin-bottom:8px;">
-    ⚠️ 답변이 완료된 글은 수정/삭제하실 수 없습니다.
-  </div>
-</c:if>
-
-<%-- 하단 액션 버튼 --%>
-<div class="inq-detail-actions">
-  <button class="inq-btn-cancel"
-          onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
-    목록으로
-  </button>
-  <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'PENDING'}">
-    <button class="inq-btn-cancel" id="editBtn">✏️ 수정</button>
-    <button class="inq-btn-submit" id="deleteBtn"
-            style="background:#ef4444;">🗑️ 삭제</button>
-  </c:if>
-</div>
 
   </div><%-- /inq-detail-inner --%>
 </div><%-- /inq-detail-wrap --%>
 
+<%-- =============================================
+     6. 스크립트
+     ============================================= --%>
+
+<%-- 어드민 답변 등록 스크립트 (어드민이고 아직 답변 없을 때만 로드) --%>
 <c:if test="${isAdmin and empty answer}">
 <script>
 (function () {
   const ctx = '${pageContext.request.contextPath}';
   const inquiryId = ${inquiry.inquiryId};
 
+  // 답변 등록 버튼 클릭
   document.getElementById('answerBtn').addEventListener('click', async function () {
     const content = document.getElementById('adminContent').value.trim();
     if (!content) { alert('답변 내용을 입력해주세요.'); return; }
 
+    // 중복 클릭 방지 + 로딩 스피너
     this.disabled = true;
     this.classList.add('loading');
 
@@ -213,7 +260,7 @@
       const data = await res.json();
 
       if (data.success) {
-        location.reload();
+        location.reload(); // 답변 등록 후 페이지 새로고침
       } else {
         alert(data.message || '답변 등록에 실패했습니다.');
         this.disabled = false;
@@ -229,6 +276,7 @@
 </script>
 </c:if>
 
+<%-- 수정 / 삭제 스크립트 (본인 또는 어드민 + PENDING 상태일 때만 로드) --%>
 <script>
 (function () {
   var ctx = '${pageContext.request.contextPath}';
@@ -240,26 +288,27 @@
   var editCancel = document.getElementById('editCancelBtn');
   var editSave   = document.getElementById('editSaveBtn');
 
+  // 수정/삭제 버튼이 없으면 (권한 없음) 스크립트 종료
   if (!editBtn) return;
 
-  // 수정 버튼 - 폼 토글
+  // 수정 버튼: 수정 폼 토글
   editBtn.addEventListener('click', function () {
     var isShown = editForm.style.display !== 'none';
     editForm.style.display = isShown ? 'none' : 'block';
     editBtn.textContent = isShown ? '✏️ 수정' : '✏️ 취소';
   });
 
-  // 수정 취소
+  // 수정 취소 버튼: 수정 폼 닫기
   editCancel.addEventListener('click', function () {
     editForm.style.display = 'none';
     editBtn.textContent = '✏️ 수정';
   });
 
-  // 수정 저장
+  // 수정 저장 버튼: POST /inquiry/{inquiryId}/edit
   editSave.addEventListener('click', async function () {
-    var title    = document.getElementById('editTitle').value.trim();
-    var content  = document.getElementById('editContent').value.trim();
-    var category = document.getElementById('editCategory').value;
+    var title     = document.getElementById('editTitle').value.trim();
+    var content   = document.getElementById('editContent').value.trim();
+    var category  = document.getElementById('editCategory').value;
     var isPrivate = document.getElementById('editIsPrivate').checked ? 1 : 0;
 
     if (!title)   { alert('제목을 입력해주세요.'); return; }
@@ -275,8 +324,9 @@
         body: new URLSearchParams({ title, content, category, isPrivate })
       });
       var data = await res.json();
+
       if (data.success) {
-        location.reload();
+        location.reload(); // 수정 후 페이지 새로고침
       } else {
         alert(data.message || '수정에 실패했습니다.');
         this.disabled = false;
@@ -289,7 +339,7 @@
     }
   });
 
-  // 삭제
+  // 삭제 버튼: POST /inquiry/{inquiryId}/delete
   deleteBtn.addEventListener('click', async function () {
     if (!confirm('정말 삭제하시겠습니까?')) return;
     this.disabled = true;
@@ -300,8 +350,9 @@
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       var data = await res.json();
+
       if (data.success) {
-        location.href = ctx + '/inquiry/list';
+        location.href = ctx + '/inquiry/list'; // 삭제 후 목록으로 이동
       } else {
         alert(data.message || '삭제에 실패했습니다.');
         this.disabled = false;

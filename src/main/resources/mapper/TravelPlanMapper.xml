@@ -4,11 +4,92 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.triptogether.courses.mapper.TravelPlanMapper">
-    <!--  리스트 -->
-    <select id="getTravelList" parameterType="TravelPlanVO" resultType="TravelPlanVO">
-        select plan_id, user_idx, title, start_date, end_date, is_public
-        from TRAVEL_PLAN
-        where user_idx = #{user_idx}
-        order by plan_id desc
+    <!--  1. 내 여행일정 목록 조회 -->
+    <select id="getTravelList"
+            parameterType="org.triptogether.courses.vo.TravelPlanVO"
+            resultType="org.triptogether.courses.vo.TravelPlanVO">
+        SELECT
+        plan_id, user_idx, title, destination, start_date, end_date,
+        is_public, share_token, created_at, updated_at
+        FROM TRAVEL_PLAN
+        WHERE user_idx = #{user_idx}
+        ORDER BY plan_id DESC
     </select>
+
+    <!--  2. 여행일정 상세 조회  -->
+    <select id="getTravelPlanDetail" parameterType="TravelPlanVO" resultType="TravelPlanVO">
+        select plan_id, user_idx, title, destination, start_date, end_date,
+                is_public, share_token, created_at, updated_at
+        from TRAVEL_PLAN
+        where plan_id = #{plan_id} and user_idx = #{user_idx}
+    </select>
+
+    <!-- 일정 안 장소 목록 -->
+    <select id="getPlanSpotListByPlanId"
+            parameterType="long"
+            resultType="org.triptogether.courses.vo.PlanSpotVO">
+        SELECT plan_spot_id, plan_id, spot_id, place_name,
+                visit_date, visit_order, created_at
+        FROM PLAN_SPOT
+        WHERE plan_id = #{value}
+        ORDER BY
+        CASE WHEN visit_date IS NULL THEN 1 ELSE 0 END,
+        visit_date ASC,
+        visit_order ASC
+    </select>
+
+    <!--  여행지 목록  -->
+    <select id="getSpotTravelList" resultType="SpotTravelVO">
+        SELECT spot_idx, spot_id, name, region, address, latitude,
+        longitude, description, rating_avg, review_count
+        FROM SPOT_TRAVEL
+        ORDER BY name ASC
+    </select>
+
+    <!--  3. 여행일정 생성  -->
+    <insert id="insertTravelPlan"
+            parameterType="TravelPlanVO"
+            useGeneratedKeys="true"
+            keyProperty="plan_id">
+        insert into TRAVEL_PLAN (
+                user_idx, title, destination, start_date, end_date,
+                is_public, share_token, created_at, updated_at
+        ) values (
+                #{user_idx}, #{title}, #{destination}, #{start_date}, #{end_date},
+                #{is_public}, #{share_token}, NOW(), NOW()
+        )
+    </insert>
+
+    <!--  4. 여행일정 수정 -->
+    <update id="updateTravelPlan" parameterType="TravelPlanVO">
+        update TRAVEL_PLAN
+        set (title, destination, start_date, end_date, is_public, updated_at)
+            = (#{title}, #{destination}, #{start_date}, #{end_date}, #{is_public}, NOW())
+        WHERE plan_id = #{plan_id}
+        AND user_idx = #{user_idx}
+    </update>
+
+    <!--  5. 여행일정 삭제  -->
+    <delete id="deleteTravelPlan" parameterType="TravelPlanVO">
+        delete from TRAVEL_PLAN
+        where plan_id = #{plan_id} and user_idx = #{user_idx}
+    </delete>
+
+    <!--  6. 일정에 여행지 추가  -->
+    <insert id="insertPlanSpot" parameterType="PlanSpotVO">
+        insert into PLAN_SPOT (
+                plan_id, spot_id, place_name, visit_date, visit_order, created_at
+        ) values (
+                #{plan_id}, #{spot_id}, #{place_name},
+                #{visit_date}, #{visit_order}, NOW()
+        )
+    </insert>
+
+    <!-- 7, 8, 9 처리용: 기존 일정 내 장소 전체 삭제 후 재삽입 -->
+    <delete id="deletePlanSpotsByPlanId"
+            parameterType="long">
+        DELETE FROM PLAN_SPOT
+        WHERE plan_id = #{plan_id}
+    </delete>
+
 </mapper>

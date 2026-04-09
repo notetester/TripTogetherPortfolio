@@ -2,6 +2,7 @@ package org.triptogether.auth.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.triptogether.auth.vo.EmailVerificationRequestVO;
 import org.triptogether.auth.vo.EmailVerificationVO;
 import org.triptogether.auth.vo.UserLoginHistoryVO;
 import org.triptogether.auth.vo.UserSecurityHistoryVO;
@@ -51,6 +52,13 @@ public interface AuthMapper {
     /** 비밀번호 변경 */
     void updatePassword(@Param("userIdx") Long userIdx,
                         @Param("encodedPassword") String encodedPassword);
+
+    /** 로컬 비밀번호 제거 및 비밀번호 로그인 비활성화 */
+    void clearPasswordAndDisable(Long userIdx);
+
+    /** 아이디 1회 등록 */
+    void updateUserId(@Param("userIdx") Long userIdx,
+                      @Param("userId") String userId);
 
     /** 이메일 + 인증 상태 업데이트 */
     void updateEmail(@Param("userIdx") Long userIdx,
@@ -102,6 +110,42 @@ public interface AuthMapper {
 
     /** 계정 보안 / 복구 이벤트 이력 저장 */
     void insertSecurityHistory(UserSecurityHistoryVO history);
+
+    // ══════════════════════════════════════════
+    // EMAIL_VERIFICATION_REQUEST
+    // ══════════════════════════════════════════
+
+    /** 프로필 이메일 인증 요청 생성 */
+    void insertEmailVerificationRequest(EmailVerificationRequestVO request);
+
+    /** 동일 user/purpose 의 미적용 요청 취소 */
+    void cancelActiveEmailVerificationRequests(@Param("userIdx") Long userIdx,
+                                               @Param("purpose") String purpose);
+
+    /** 토큰 기준 유효한 프로필 이메일 인증 요청 조회 */
+    EmailVerificationRequestVO findValidEmailVerificationRequestByToken(@Param("token") String token,
+                                                                        @Param("purpose") String purpose);
+
+    /** 특정 이메일 인증 요청 취소 */
+    void cancelEmailVerificationRequest(Long emailVerificationRequestIdx);
+
+    /** 사용자/요청/request 이메일 기준 저장 가능 상태 조회 */
+    EmailVerificationRequestVO findApplicableEmailVerificationRequest(@Param("userIdx") Long userIdx,
+                                                                      @Param("requestId") String requestId,
+                                                                      @Param("purpose") String purpose,
+                                                                      @Param("pendingEmail") String pendingEmail);
+
+    /** 사용자/요청/request 이메일 기준 최신 요청 상태 조회 */
+    EmailVerificationRequestVO findLatestEmailVerificationRequest(@Param("userIdx") Long userIdx,
+                                                                  @Param("requestId") String requestId,
+                                                                  @Param("purpose") String purpose,
+                                                                  @Param("pendingEmail") String pendingEmail);
+
+    /** 이메일 인증 요청을 VERIFIED 로 변경 */
+    void markEmailVerificationRequestVerified(Long emailVerificationRequestIdx);
+
+    /** 이메일 인증 요청을 APPLIED 로 변경 */
+    void markEmailVerificationRequestApplied(Long emailVerificationRequestIdx);
 
     // ══════════════════════════════════════════
     // EMAIL_VERIFICATION

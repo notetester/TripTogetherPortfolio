@@ -224,7 +224,7 @@
     debounce('userId', async () => {
       const dup = await checkDuplicate('userId', v);
       dup
-        ? setFieldStatus('userId','userIdMsg','error','이미 사용 중인 아이디입니다.')
+        ? setFieldStatus('userId','userIdMsg','error','입력하신 아이디는 현재 사용할 수 없습니다. 다른 아이디를 입력해 주세요.')
         : setFieldStatus('userId','userIdMsg','success','사용 가능한 아이디입니다.');
     });
   });
