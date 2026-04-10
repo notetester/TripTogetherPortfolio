@@ -143,14 +143,13 @@
             </div>
         </div>
 
-
         <%-- 알림 카드 --%>
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
                     <span class="mp-card-icon">📬</span> 새 알림
                     <c:if test="${not empty notifications}">
-                        <span class="mp-notif-count">${fn:length(notifications)}</span>
+                        <span class="mp-notif-count">${totalNotificationCount}</span>
                     </c:if>
                 </div>
             </div>
@@ -161,9 +160,8 @@
                     </c:when>
                     <c:otherwise>
                         <c:forEach var="noti" items="${notifications}">
-                            <c:set var="readClass" value="${noti.isRead == 0 ? 'unread' : ''}"/>
-                            <div class="mp-notif-item ${readClass}"
-     onclick="readNotification('${noti.notificationId}', '${noti.sourceType}', '${noti.sourceId}')">
+                            <div class="mp-notif-item" data-notification-id="${noti.notificationId}"
+             onclick="deleteNotification('${noti.notificationId}', '${noti.sourceType}', '${noti.sourceId}')">
                         <span class="mp-notif-type">
                             <c:choose>
                                 <c:when test="${noti.sourceType eq 'community'}">[커뮤니티]</c:when>
@@ -180,7 +178,9 @@
                     </c:otherwise>
                 </c:choose>
             </div>
-            <div class="mp-notif-footer">새 알림은 최신순으로 최대 10개까지만 표시됩니다.</div>
+            <div class="mp-notif-footer">
+                새 알림은 최신순으로 최대 10개까지만 표시됩니다.
+            </div>
         </div>
 
         <%-- ══════════════════════════════════════════
@@ -347,17 +347,39 @@
 <%-- /mp-wrap --%>
 
 <script>
-    function readNotification(notificationId, sourceType, sourceId) {
+    /**
+     * 단일 알림 삭제
+     */
+    function deleteNotification(notificationId, sourceType, sourceId) {
         fetch('${pageContext.request.contextPath}/mypage/notification/' + notificationId + '/read', {
             method: 'POST',
             headers: {'X-Requested-With': 'XMLHttpRequest'}
-        }).then(function () {
-            var url = '';
-            if (sourceType === 'community') url = '${pageContext.request.contextPath}/community/' + sourceId;
-            else if (sourceType === 'inquiry') url = '${pageContext.request.contextPath}/inquiry/' + sourceId;
-            if (url) location.href = url;
-        });
+        }).then(r => r.json())
+          .then(data => {
+              if (data.success && data.redirectUrl) {
+                  // redirectUrl은 /community/123 형태이므로 contextPath 추가
+                  location.href = '${pageContext.request.contextPath}' + data.redirectUrl;
+              } else {
+                  alert('알림 처리 중 오류가 발생했습니다.');
+              }
+          })
+          .catch(err => {
+              console.error('알림 처리 오류:', err);
+              alert('알림 처리 중 오류가 발생했습니다.');
+          });
     }
+
+    /**
+     * 날짜 포맷팅 (YYYY-MM-DD)
+     */
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
 </script>
 
 <%@ include file="../common/footer.jsp" %>

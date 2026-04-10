@@ -17,6 +17,7 @@ public interface CommunityMapper {
     List<CommunityPostImageDto> selectImageList(@Param("postId") Long postId);
     List<String> selectTagList(@Param("postId") Long postId);
     List<CommunityCommentDto> selectCommentList(@Param("postId") Long postId);
+    CommunityCommentDto selectComment(@Param("commentId") Long commentId);
     String selectTipCategory(@Param("postId") Long postId);
     Integer selectIsSolved(@Param("postId") Long postId);
     List<CommunityPostDto> selectRelatedList(@Param("postId") Long postId);

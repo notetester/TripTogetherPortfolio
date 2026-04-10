@@ -41,14 +41,32 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
+    public List<FeedNotificationDto> getAllNotifications(Long userIdx) {
+        return myPageMapper.selectAllNotifications(userIdx);
+    }
+
+    @Override
+    public int getNotificationCount(Long userIdx) {
+        return myPageMapper.selectNotificationCount(userIdx);
+    }
+
+    @Override
+    public FeedNotificationDto getNotification(Long notificationId) {
+        return myPageMapper.selectNotification(notificationId);
+    }
+
+    @Override
     public void addNotification(FeedNotificationDto notification) {
         myPageMapper.insertNotification(notification);
     }
 
     @Override
-    public void readNotification(Long notificationId) {
-        myPageMapper.updateNotificationRead(notificationId);
+    public void deleteNotification(Long notificationId) {
+        myPageMapper.deleteNotification(notificationId);
     }
 
-
+    @Override
+    public void deleteAllNotifications(Long userIdx) {
+        myPageMapper.deleteAllNotifications(userIdx);
+    }
 }

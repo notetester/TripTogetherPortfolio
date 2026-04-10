@@ -81,32 +81,58 @@
         <result property="sourceType"     column="source_type"/>
         <result property="sourceId"       column="source_id"/>
         <result property="message"        column="message"/>
-        <result property="isRead"         column="is_read"/>
         <result property="createdAt"      column="created_at"/>
     </resultMap>
 
     <!-- 알림 목록 조회 (최신순 10개) -->
     <select id="selectNotifications" resultMap="FeedNotificationResultMap">
-        SELECT notification_id, user_idx, source_type, source_id, message, is_read, created_at
+        SELECT notification_id, user_idx, source_type, source_id, message, created_at
         FROM MYPAGE_FEED_NOTIFICATION
         WHERE user_idx = #{userIdx}
         ORDER BY created_at DESC
         LIMIT 10
     </select>
 
+    <!-- 알림 총 개수 조회 -->
+    <select id="selectNotificationCount" resultType="int">
+        SELECT COUNT(*)
+        FROM MYPAGE_FEED_NOTIFICATION
+        WHERE user_idx = #{userIdx}
+    </select>
+
+    <!-- 알림 목록 조회 (무제한) -->
+    <select id="selectAllNotifications" resultMap="FeedNotificationResultMap">
+        SELECT notification_id, user_idx, source_type, source_id, message, created_at
+        FROM MYPAGE_FEED_NOTIFICATION
+        WHERE user_idx = #{userIdx}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 단일 알림 조회 -->
+    <select id="selectNotification" resultMap="FeedNotificationResultMap">
+        SELECT notification_id, user_idx, source_type, source_id, message, created_at
+        FROM MYPAGE_FEED_NOTIFICATION
+        WHERE notification_id = #{notificationId}
+    </select>
+
     <!-- 알림 등록 -->
     <insert id="insertNotification" useGeneratedKeys="true" keyProperty="notificationId">
         INSERT INTO MYPAGE_FEED_NOTIFICATION
-        (user_idx, source_type, source_id, message, is_read, created_at)
+        (user_idx, source_type, source_id, message, created_at)
         VALUES
-        (#{userIdx}, #{sourceType}, #{sourceId}, #{message}, 0, NOW())
+        (#{userIdx}, #{sourceType}, #{sourceId}, #{message}, NOW())
     </insert>
 
-    <!-- 알림 읽음 처리 -->
-    <update id="updateNotificationRead">
-        UPDATE MYPAGE_FEED_NOTIFICATION
-        SET is_read = 1
+    <!-- 단일 알림 삭제 -->
+    <delete id="deleteNotification">
+        DELETE FROM MYPAGE_FEED_NOTIFICATION
         WHERE notification_id = #{notificationId}
-    </update>
+    </delete>
+
+    <!-- 전체 알림 삭제 -->
+    <delete id="deleteAllNotifications">
+        DELETE FROM MYPAGE_FEED_NOTIFICATION
+        WHERE user_idx = #{userIdx}
+    </delete>
 
 </mapper>

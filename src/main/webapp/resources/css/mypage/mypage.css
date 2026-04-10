@@ -579,12 +579,13 @@
 .mp-notif-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
+    gap: 12px;
+    padding: 12px 16px;
     border-radius: 8px;
     background: var(--gray-50);
     cursor: pointer;
     transition: background .15s;
+    min-height: 48px;
 }
 
 .mp-notif-item:hover { background: var(--gray-100); }
@@ -605,6 +606,7 @@
     flex: 1;
     font-size: 14px;
     color: var(--gray-700);
+    word-break: break-word;
 }
 
 .mp-notif-date {
@@ -614,7 +616,7 @@
 }
 
 .mp-notif-footer {
-    padding: 10px 20px 16px;
+    padding: 12px 20px 16px;
     font-size: 12px;
     color: var(--gray-400);
     text-align: center;
