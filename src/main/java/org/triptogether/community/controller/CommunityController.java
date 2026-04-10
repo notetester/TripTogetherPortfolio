@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.*;
+import org.triptogether.report.service.ReportService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -23,6 +24,7 @@ import java.util.Map;
 public class CommunityController {
 
     private final CommunityService communityService;
+    private final ReportService reportService;
 
     /* =============================================
        GET /community/list - 커뮤니티 목록
@@ -427,7 +429,10 @@ public class CommunityController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
-            boolean reported = communityService.reportPost(postId, loginUserIdx);
+            boolean reported = reportService.submitReport("post", postId, loginUserIdx, null);
+            if (reported) {
+                communityService.updatePostReportCache(postId);
+            }
             result.put("success", true);
             result.put("message", reported ? "신고가 접수되었습니다." : "이미 신고하셨습니다.");
         } catch (Exception e) {
@@ -457,7 +462,10 @@ public class CommunityController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
-            boolean reported = communityService.reportComment(commentId, loginUserIdx);
+            boolean reported = reportService.submitReport("comment", commentId, loginUserIdx, null);
+            if (reported) {
+                communityService.updateCommentReportCache(commentId);
+            }
             result.put("success", true);
             result.put("message", reported ? "신고가 접수되었습니다." : "이미 신고하셨습니다.");
         } catch (Exception e) {

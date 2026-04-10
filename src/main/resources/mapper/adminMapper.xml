@@ -280,7 +280,7 @@
             (SELECT COUNT(DISTINCT user_idx) FROM USER_SOCIAL WHERE provider = 'GOOGLE') AS googleLinked,
             (SELECT COUNT(*) FROM COMMUNITY_POST) AS totalCommunityPosts,
             (SELECT COUNT(*) FROM COMMUNITY_POST_DETAIL WHERE post_status = 'ACTIVE') AS activeCommunityPosts,
-            (SELECT COUNT(*) FROM COMMUNITY_REPORT WHERE status = 'ACTIVE') AS activeReports,
+            (SELECT COUNT(*) FROM REPORT WHERE status = 'PENDING') AS activeReports,
             (SELECT COUNT(*) FROM INQUIRY_POST) AS totalInquiries,
             (SELECT COUNT(*) FROM INQUIRY_POST WHERE status = 'PENDING') AS pendingInquiries,
             (SELECT COUNT(*) FROM INQUIRY_POST WHERE status = 'COMPLETED') AS completedInquiries

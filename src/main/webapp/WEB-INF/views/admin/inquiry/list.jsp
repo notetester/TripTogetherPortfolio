@@ -29,10 +29,15 @@
                     <div>
                         <div class="adm-filter-label">상태</div>
                         <select class="adm-select" name="status">
-                            <option value="ALL" ${search.status=='ALL'?'selected':''}>전체</option>
-                            <option value="PENDING" ${search.status=='PENDING'?'selected':''}>대기</option>
-                            <option value="IN_PROGRESS" ${search.status=='IN_PROGRESS'?'selected':''}>처리중</option>
-                            <option value="COMPLETED" ${search.status=='COMPLETED'?'selected':''}>완료</option>
+                            <option value="ALL"              ${search.status=='ALL'?'selected':''}>전체</option>
+                            <option value="PENDING"          ${search.status=='PENDING'?'selected':''}>대기중</option>
+                            <option value="IN_PROGRESS"      ${search.status=='IN_PROGRESS'?'selected':''}>처리중</option>
+                            <option value="COMPLETED"        ${search.status=='COMPLETED'?'selected':''}>답변완료</option>
+                            <option value="USER_COMPLETED"   ${search.status=='USER_COMPLETED'?'selected':''}>해결됨</option>
+                            <option value="CANCELLED"        ${search.status=='CANCELLED'?'selected':''}>취소됨</option>
+                            <option value="DELETE_REQUESTED" ${search.status=='DELETE_REQUESTED'?'selected':''}>삭제요청</option>
+                            <option value="PRIVATE_REQUESTED"${search.status=='PRIVATE_REQUESTED'?'selected':''}>비공개요청</option>
+                            <option value="PUBLIC_REQUESTED" ${search.status=='PUBLIC_REQUESTED'?'selected':''}>공개요청</option>
                         </select>
                     </div>
 
@@ -83,7 +88,7 @@
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="item">
-                    <tr>
+                    <tr class="adm-inq-row" data-id="${item.inquiryId}" style="cursor:pointer;">
                         <td>#${item.inquiryId}</td>
                         <td>
                             <div class="mem-name">${item.nickname}</div>
@@ -96,8 +101,30 @@
                                 조회 ${item.viewCount}
                             </div>
                         </td>
-                        <td>${item.category}</td>
-                        <td><span class="status-badge ${item.status}">${item.status}</span></td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${item.category eq 'service'}">서비스</c:when>
+                                <c:when test="${item.category eq 'payment'}">결제</c:when>
+                                <c:when test="${item.category eq 'account'}">계정</c:when>
+                                <c:when test="${item.category eq 'bug'}">오류신고</c:when>
+                                <c:otherwise>기타</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <span class="status-badge ${item.status}">
+                                <c:choose>
+                                    <c:when test="${item.status eq 'PENDING'}">대기중</c:when>
+                                    <c:when test="${item.status eq 'IN_PROGRESS'}">처리중</c:when>
+                                    <c:when test="${item.status eq 'COMPLETED'}">답변완료</c:when>
+                                    <c:when test="${item.status eq 'USER_COMPLETED'}">해결됨</c:when>
+                                    <c:when test="${item.status eq 'CANCELLED'}">취소됨</c:when>
+                                    <c:when test="${item.status eq 'DELETE_REQUESTED'}">삭제요청</c:when>
+                                    <c:when test="${item.status eq 'PRIVATE_REQUESTED'}">비공개요청</c:when>
+                                    <c:when test="${item.status eq 'PUBLIC_REQUESTED'}">공개요청</c:when>
+                                    <c:otherwise>${item.status}</c:otherwise>
+                                </c:choose>
+                            </span>
+                        </td>
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.answerId}">
@@ -136,6 +163,13 @@ function goPage(page) {
     params.set('page', page);
     location.href = '${pageContext.request.contextPath}/admin/inquiries?' + params.toString();
 }
+
+// 행 클릭 시 문의 상세 페이지 이동
+document.querySelectorAll('.adm-inq-row[data-id]').forEach(function (tr) {
+    tr.addEventListener('click', function () {
+        location.href = '${pageContext.request.contextPath}/inquiry/' + this.getAttribute('data-id');
+    });
+});
 </script>
 
 <%@ include file="../layout-close.jsp" %>

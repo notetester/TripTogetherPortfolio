@@ -85,7 +85,15 @@
         </div>
       </div>
 
-      <%-- 2-4. 비공개 여부 토글
+      <%-- 2-4. 파일 첨부 --%>
+      <div class="inq-form-group">
+        <label class="inq-form-label">첨부파일 <span style="font-size:12px;color:var(--gray-400);">(jpg/jpeg/png/gif/webp, 최대 10MB)</span></label>
+        <input type="file" class="inq-form-input" id="images" name="images"
+               multiple accept=".jpg,.jpeg,.png,.gif,.webp">
+        <div class="inq-attach-preview" id="attachPreview"></div>
+      </div>
+
+      <%-- 2-5. 비공개 여부 토글
                - 체크 시 본인과 운영진만 열람 가능 --%>
       <div class="inq-form-group">
         <label class="inq-private-toggle">
@@ -96,7 +104,7 @@
         <div class="inq-private-hint">비공개 설정 시 본인과 운영진만 열람할 수 있습니다</div>
       </div>
 
-      <%-- 2-5. 취소 / 등록 버튼 --%>
+      <%-- 2-6. 취소 / 등록 버튼 --%>
       <div class="inq-write-actions">
         <button class="inq-btn-cancel"
                 onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
@@ -118,24 +126,34 @@
 (function () {
   const ctx = '${pageContext.request.contextPath}';
 
-  // 2-3. 글자수 카운터: 내용 입력할 때마다 현재 글자수 업데이트
+  // 글자수 카운터
   const contentEl = document.getElementById('content');
   const countEl   = document.getElementById('contentCount');
   contentEl.addEventListener('input', function () {
     countEl.textContent = this.value.length;
   });
 
-  // 2-5. 등록 버튼 클릭 시 처리
+  // 파일 선택 시 미리보기 목록 표시
+  document.getElementById('images').addEventListener('change', function () {
+    const preview = document.getElementById('attachPreview');
+    preview.innerHTML = '';
+    Array.from(this.files).forEach(function (file) {
+      const item = document.createElement('div');
+      item.className = 'inq-attach-preview-item';
+      item.textContent = file.name;
+      preview.appendChild(item);
+    });
+  });
+
+  // 등록 버튼 클릭
   document.getElementById('submitBtn').addEventListener('click', async function () {
     const category  = document.getElementById('category').value;
     const title     = document.getElementById('title').value.trim();
     const content   = contentEl.value.trim();
-    // 체크박스 체크 여부에 따라 1 또는 0 전달
     const isPrivate = document.getElementById('isPrivate').checked ? 1 : 0;
 
-    // 유효성 검사: 모든 필수값 확인
+    // 유효성 검사
     let valid = true;
-
     if (!category) {
       setMsg('categoryMsg', '문의 유형을 선택해주세요.', 'error'); valid = false;
     } else { clearMsg('categoryMsg'); }
@@ -154,21 +172,29 @@
 
     if (!valid) return;
 
-    // 중복 클릭 방지 + 로딩 스피너 표시
     this.disabled = true;
     this.classList.add('loading');
 
     try {
-      // POST /inquiry/write 로 폼 데이터 전송
+      // FormData로 텍스트 + 파일 동시 전송
+      const formData = new FormData();
+      formData.append('category',  category);
+      formData.append('title',     title);
+      formData.append('content',   content);
+      formData.append('isPrivate', isPrivate);
+
+      const imageInput = document.getElementById('images');
+      Array.from(imageInput.files).forEach(function (file) {
+        formData.append('images', file);
+      });
+
       const res  = await fetch(ctx + '/inquiry/write', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ category, title, content, isPrivate })
+        body: formData   // Content-Type 헤더 지정 안 함 (브라우저 자동 처리)
       });
       const data = await res.json();
 
       if (data.success) {
-        // 등록 성공 시 상세 페이지로 이동
         location.href = ctx + '/inquiry/' + data.inquiryId;
       } else {
         alert('등록에 실패했습니다. 다시 시도해주세요.');
@@ -182,14 +208,12 @@
     }
   });
 
-  // 유효성 메시지 표시 함수
   function setMsg(id, msg, type) {
     const el = document.getElementById(id);
     el.textContent = msg;
     el.className = 'inq-field-msg ' + type;
   }
 
-  // 유효성 메시지 초기화 함수
   function clearMsg(id) {
     const el = document.getElementById(id);
     el.textContent = '';

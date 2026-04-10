@@ -3,6 +3,7 @@ package org.triptogether.inquiry.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.triptogether.inquiry.vo.InquiryAnswerDto;
+import org.triptogether.inquiry.vo.InquiryAttachmentDto;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
 
@@ -82,4 +83,23 @@ public interface InquiryMapper {
        - PENDING 상태일 때만 가능 (Controller에서 체크)
        ============================================= */
     void deleteInquiry(@Param("inquiryId") Long inquiryId);
+
+    // ===== 상태 변경 (시간 기록 포함) =====
+    void updateStatusWithTime(@Param("inquiryId") Long inquiryId,
+                              @Param("status") String status);
+
+    // ===== 공개여부 변경 =====
+    void updateIsPrivate(@Param("inquiryId") Long inquiryId,
+                         @Param("isPrivate") int isPrivate);
+
+    // ===== 답변 수정 =====
+    void updateAnswer(InquiryAnswerDto answer);
+
+    // ===== 답변 삭제 =====
+    void deleteAnswer(@Param("inquiryId") Long inquiryId);
+
+    // ===== 첨부파일 =====
+    void insertAttachment(InquiryAttachmentDto attachment);
+    List<InquiryAttachmentDto> selectAttachmentList(@Param("inquiryId") Long inquiryId);
+    void deleteAttachment(@Param("attachmentId") Long attachmentId);
 }

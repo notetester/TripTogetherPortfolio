@@ -498,18 +498,18 @@
          신고
          ============================================= -->
     <insert id="insertReport">
-        INSERT IGNORE INTO COMMUNITY_REPORT
-            (post_id, user_idx, reason, status, created_at)
+        INSERT IGNORE INTO REPORT
+            (user_idx, target_type, target_id, reason, status, created_at, updated_at)
         VALUES
-            (#{postId}, #{userIdx}, 'other', 'pending', NOW())
+            (#{userIdx}, 'post', #{postId}, 'other', 'PENDING', NOW(), NOW())
     </insert>
 
     <!-- 댓글 신고 INSERT -->
     <insert id="reportComment">
-        INSERT IGNORE INTO COMMUNITY_REPORT
-        (comment_id, user_idx, reason, status, created_at)
-    VALUES
-        (#{commentId}, #{userIdx}, 'other', 'pending', NOW())
+        INSERT IGNORE INTO REPORT
+            (user_idx, target_type, target_id, reason, status, created_at, updated_at)
+        VALUES
+            (#{userIdx}, 'comment', #{commentId}, 'other', 'PENDING', NOW(), NOW())
     </insert>
 
     <!-- 게시글 신고 횟수 조회 -->

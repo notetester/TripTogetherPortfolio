@@ -56,6 +56,11 @@
               <c:when test="${inquiry.status eq 'PENDING'}">대기중</c:when>
               <c:when test="${inquiry.status eq 'IN_PROGRESS'}">처리중</c:when>
               <c:when test="${inquiry.status eq 'COMPLETED'}">✓ 답변완료</c:when>
+              <c:when test="${inquiry.status eq 'CANCELLED'}">취소됨</c:when>
+              <c:when test="${inquiry.status eq 'USER_COMPLETED'}">해결됨</c:when>
+              <c:when test="${inquiry.status eq 'DELETE_REQUESTED'}">삭제요청</c:when>
+              <c:when test="${inquiry.status eq 'PRIVATE_REQUESTED'}">비공개요청</c:when>
+              <c:when test="${inquiry.status eq 'PUBLIC_REQUESTED'}">공개요청</c:when>
             </c:choose>
           </span>
 
@@ -83,6 +88,10 @@
           </span>
           <span class="inq-detail-divider">·</span>
           <span class="inq-detail-views">조회 ${inquiry.viewCount}</span>
+          <c:if test="${inquiry.updatedAt != null and inquiry.updatedAt.time != inquiry.createdAt.time}">
+            <span class="inq-detail-divider">·</span>
+            <span class="inq-detail-edited">수정됨 <fmt:formatDate value="${inquiry.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></span>
+          </c:if>
         </div>
       </div>
 
@@ -90,6 +99,23 @@
       <div class="inq-detail-body">
         <pre class="inq-detail-content">${inquiry.content}</pre>
       </div>
+
+      <%-- 첨부파일 목록 --%>
+      <c:if test="${not empty attachmentList}">
+        <div class="inq-attachment-list">
+          <div class="inq-attachment-title">📎 첨부파일</div>
+          <c:forEach var="att" items="${attachmentList}">
+            <div class="inq-attachment-item">
+              <a href="${pageContext.request.contextPath}${att.fileUrl}" target="_blank">
+                <img src="${pageContext.request.contextPath}${att.fileUrl}"
+                     alt="${att.fileName}"
+                     class="inq-attachment-img"/>
+              </a>
+              <span class="inq-attachment-name">${att.fileName}</span>
+            </div>
+          </c:forEach>
+        </div>
+      </c:if>
 
     </div><%-- /inq-detail-card --%>
 
@@ -109,6 +135,9 @@
               <div class="inq-answer-meta">
                 ${answer.adminNickname} ·
                 <fmt:formatDate value="${answer.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
+                <c:if test="${answer.updatedAt != null and answer.updatedAt.time != answer.createdAt.time}">
+                  · <span class="inq-detail-edited">수정됨 <fmt:formatDate value="${answer.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></span>
+                </c:if>
               </div>
             </div>
           </div>
@@ -135,20 +164,46 @@
          ============================================= --%>
     <c:if test="${isAdmin}">
       <div class="inq-admin-form">
-        <div class="inq-admin-form-title">🛡️ 운영진 답변 작성</div>
+        <div class="inq-admin-form-title">🛡️ 관리자 패널</div>
+
+        <%-- 상태 변경 버튼 영역 --%>
+        <div class="inq-admin-status-bar">
+          <span class="inq-admin-status-label">상태 변경:</span>
+          <button class="inq-btn-status" id="btnStatusInProgress">🔄 처리중</button>
+          <button class="inq-btn-status inq-btn-status-complete" id="btnStatusCompleted">✅ 답변완료</button>
+        </div>
+
+        <%-- 공개/비공개 요청 수락 버튼 (해당 상태일 때만 표시) --%>
+        <c:if test="${inquiry.status eq 'PUBLIC_REQUESTED'}">
+          <div class="inq-admin-status-bar">
+            <span class="inq-admin-status-label">공개 요청 대기중:</span>
+            <button class="inq-btn-submit" id="btnApprovePublic">🔓 공개 수락</button>
+          </div>
+        </c:if>
+        <c:if test="${inquiry.status eq 'PRIVATE_REQUESTED'}">
+          <div class="inq-admin-status-bar">
+            <span class="inq-admin-status-label">비공개 요청 대기중:</span>
+            <button class="inq-btn-submit" id="btnApprovePrivate">🔒 비공개 수락</button>
+          </div>
+        </c:if>
+
+        <%-- 답변 작성/수정 영역 --%>
         <textarea class="inq-form-textarea" id="adminContent" rows="6"
                   placeholder="답변 내용을 입력해주세요..."
                   <c:if test="${not empty answer}">disabled</c:if>
         ><c:if test="${not empty answer}">${answer.content}</c:if></textarea>
         <div class="inq-admin-form-actions">
           <c:choose>
-            <%-- 이미 답변 있으면 안내 문구만 표시 --%>
+            <%-- 답변 있을 때: 답변 수정 버튼 --%>
             <c:when test="${not empty answer}">
-              <span style="font-size:13px;color:var(--gray-400);">이미 답변이 등록되었습니다</span>
+              <button class="inq-btn-cancel" id="answerEditToggleBtn">✏️ 답변 수정</button>
+              <button class="inq-btn-submit" id="answerEditSaveBtn" style="display:none;">저장</button>
+              <button class="inq-btn-cancel" id="answerEditCancelBtn" style="display:none;">취소</button>
             </c:when>
-            <%-- 답변 없으면 등록 버튼 표시 --%>
+            <%-- 답변 없을 때: 등록 / 답변+완료 동시처리 버튼 --%>
             <c:otherwise>
-              <button class="inq-btn-submit" id="answerBtn">답변 등록</button>
+              <button class="inq-btn-cancel" id="answerBtn">답변 등록</button>
+              <button class="inq-btn-submit" id="answerAndCompleteBtn">답변 + 완료 처리</button>
             </c:otherwise>
           </c:choose>
         </div>
@@ -192,6 +247,23 @@
               <span class="inq-toggle-label">비공개</span>
             </label>
           </div>
+          <%-- 첨부파일 업로드 --%>
+          <div class="inq-form-group">
+            <label class="inq-form-label">첨부파일 추가</label>
+            <input type="file" class="inq-form-input" id="editAttachFile" multiple
+                   accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.zip">
+            <c:if test="${not empty attachmentList}">
+              <div class="inq-attachment-edit-list">
+                <c:forEach var="att" items="${attachmentList}">
+                  <div class="inq-attachment-edit-item" data-id="${att.attachmentId}">
+                    <span>${att.fileName}</span>
+                    <button type="button" class="inq-attach-delete-btn"
+                            data-id="${att.attachmentId}">✕</button>
+                  </div>
+                </c:forEach>
+              </div>
+            </c:if>
+          </div>
           <%-- 취소 / 저장 버튼 --%>
           <div class="inq-write-actions">
             <button class="inq-btn-cancel" id="editCancelBtn">취소</button>
@@ -201,10 +273,10 @@
       </div>
     </c:if>
 
-    <%-- 답변 완료 시 수정/삭제 불가 안내 --%>
-    <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'COMPLETED'}">
+    <%-- 수정 불가 안내 --%>
+    <c:if test="${(isOwner or isAdmin) and (inquiry.status eq 'COMPLETED' or inquiry.status eq 'IN_PROGRESS' or inquiry.status eq 'USER_COMPLETED' or inquiry.status eq 'CANCELLED')}">
       <div style="font-size:13px; color:var(--gray-400); margin-bottom:8px;">
-        ⚠️ 답변이 완료된 글은 수정/삭제하실 수 없습니다.
+        ⚠️ 현재 상태에서는 문의를 수정할 수 없습니다.
       </div>
     </c:if>
 
@@ -220,11 +292,51 @@
         목록으로
       </button>
 
-      <%-- 수정/삭제 버튼: PENDING 상태 + 본인 또는 어드민만 --%>
+      <%-- PENDING: 수정 + 삭제 --%>
       <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'PENDING'}">
         <button class="inq-btn-cancel" id="editBtn">✏️ 수정</button>
         <button class="inq-btn-submit" id="deleteBtn"
                 style="background:#ef4444;">🗑️ 삭제</button>
+      </c:if>
+
+      <%-- CANCELLED: 삭제만 --%>
+      <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'CANCELLED'}">
+        <button class="inq-btn-submit" id="deleteBtn"
+                style="background:#ef4444;">🗑️ 삭제</button>
+      </c:if>
+
+      <%-- 유저 전용: 문의 취소 버튼 (PENDING/IN_PROGRESS일 때) --%>
+      <c:if test="${isOwner and (inquiry.status eq 'PENDING' or inquiry.status eq 'IN_PROGRESS')}">
+        <button class="inq-btn-submit" id="cancelInquiryBtn"
+                style="background:#f59e0b;">✖ 문의 취소</button>
+      </c:if>
+
+      <%-- 유저 전용: 해결됐어요 버튼 (IN_PROGRESS 또는 COMPLETED일 때) --%>
+      <c:if test="${isOwner and (inquiry.status eq 'IN_PROGRESS' or inquiry.status eq 'COMPLETED')}">
+        <button class="inq-btn-submit" id="userCompleteBtn"
+                style="background:#10b981;">해결됐어요 ✓</button>
+      </c:if>
+
+      <%-- 유저 전용: COMPLETED일 때 삭제요청 / 비공개 요청 --%>
+      <c:if test="${isOwner and inquiry.status eq 'COMPLETED'}">
+        <button class="inq-btn-submit" id="deleteRequestBtn"
+                style="background:#ef4444;">🗑️ 삭제 요청</button>
+        <c:if test="${inquiry.isPrivate == 0}">
+          <button class="inq-btn-cancel" id="privateRequestBtn">🔒 비공개 요청</button>
+        </c:if>
+      </c:if>
+
+      <%-- 유저 전용: USER_COMPLETED일 때 삭제요청만 --%>
+      <c:if test="${isOwner and inquiry.status eq 'USER_COMPLETED'}">
+        <button class="inq-btn-submit" id="deleteRequestBtn"
+                style="background:#ef4444;">🗑️ 삭제 요청</button>
+      </c:if>
+
+      <%-- 유저 전용: 비공개 상태일 때 공개 요청 (CANCELLED/USER_COMPLETED 제외) --%>
+      <c:if test="${isOwner and inquiry.isPrivate == 1
+                   and inquiry.status ne 'CANCELLED'
+                   and inquiry.status ne 'USER_COMPLETED'}">
+        <button class="inq-btn-cancel" id="publicRequestBtn">🔓 공개 요청</button>
       </c:if>
     </div>
 
@@ -235,133 +347,319 @@
      6. 스크립트
      ============================================= --%>
 
-<%-- 어드민 답변 등록 스크립트 (어드민이고 아직 답변 없을 때만 로드) --%>
-<c:if test="${isAdmin and empty answer}">
-<script>
-(function () {
-  const ctx = '${pageContext.request.contextPath}';
-  const inquiryId = ${inquiry.inquiryId};
-
-  // 답변 등록 버튼 클릭
-  document.getElementById('answerBtn').addEventListener('click', async function () {
-    const content = document.getElementById('adminContent').value.trim();
-    if (!content) { alert('답변 내용을 입력해주세요.'); return; }
-
-    // 중복 클릭 방지 + 로딩 스피너
-    this.disabled = true;
-    this.classList.add('loading');
-
-    try {
-      const res  = await fetch(ctx + '/inquiry/' + inquiryId + '/answer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ content })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        location.reload(); // 답변 등록 후 페이지 새로고침
-      } else {
-        alert(data.message || '답변 등록에 실패했습니다.');
-        this.disabled = false;
-        this.classList.remove('loading');
-      }
-    } catch (e) {
-      alert('오류가 발생했습니다.');
-      this.disabled = false;
-      this.classList.remove('loading');
-    }
-  });
-})();
-</script>
-</c:if>
-
-<%-- 수정 / 삭제 스크립트 (본인 또는 어드민 + PENDING 상태일 때만 로드) --%>
 <script>
 (function () {
   var ctx = '${pageContext.request.contextPath}';
   var inquiryId = ${inquiry.inquiryId};
 
+  /* =============================================
+     공통 유틸: POST fetch
+     ============================================= */
+  async function postJson(url, params) {
+    var res = await fetch(ctx + url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(params)
+    });
+    return res.json();
+  }
+
+  /* =============================================
+     어드민: 상태 변경 (처리중 / 답변완료)
+     ============================================= */
+  var btnInProgress = document.getElementById('btnStatusInProgress');
+  var btnCompleted  = document.getElementById('btnStatusCompleted');
+
+  if (btnInProgress) {
+    btnInProgress.addEventListener('click', async function () {
+      if (!confirm('상태를 "처리중"으로 변경하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/status', { status: 'IN_PROGRESS' });
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '상태 변경에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
+
+  if (btnCompleted) {
+    btnCompleted.addEventListener('click', async function () {
+      if (!confirm('상태를 "답변완료"로 변경하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/status', { status: 'COMPLETED' });
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '상태 변경에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
+
+  /* =============================================
+     어드민: 답변 등록
+     ============================================= */
+  var answerBtn = document.getElementById('answerBtn');
+  if (answerBtn) {
+    answerBtn.addEventListener('click', async function () {
+      var content = document.getElementById('adminContent').value.trim();
+      if (!content) { alert('답변 내용을 입력해주세요.'); return; }
+      this.disabled = true;
+      this.classList.add('loading');
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/answer', { content: content, complete: 'false' });
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '답변 등록에 실패했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+    });
+  }
+
+  /* =============================================
+     어드민: 답변 + 완료 동시 처리
+     ============================================= */
+  var answerAndCompleteBtn = document.getElementById('answerAndCompleteBtn');
+  if (answerAndCompleteBtn) {
+    answerAndCompleteBtn.addEventListener('click', async function () {
+      var content = document.getElementById('adminContent').value.trim();
+      if (!content) { alert('답변 내용을 입력해주세요.'); return; }
+      this.disabled = true;
+      this.classList.add('loading');
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/answer', { content: content, complete: 'true' });
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '처리에 실패했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+    });
+  }
+
+  /* =============================================
+     어드민: 공개/비공개 요청 수락
+     ============================================= */
+  var btnApprovePublic  = document.getElementById('btnApprovePublic');
+  var btnApprovePrivate = document.getElementById('btnApprovePrivate');
+
+  if (btnApprovePublic) {
+    btnApprovePublic.addEventListener('click', async function () {
+      if (!confirm('공개 요청을 수락하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/visibility-approve', { type: 'public' });
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '처리에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
+
+  if (btnApprovePrivate) {
+    btnApprovePrivate.addEventListener('click', async function () {
+      if (!confirm('비공개 요청을 수락하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/visibility-approve', { type: 'private' });
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '처리에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
+
+  /* =============================================
+     어드민: 답변 수정 토글
+     ============================================= */
+  var answerEditToggleBtn = document.getElementById('answerEditToggleBtn');
+  var answerEditSaveBtn   = document.getElementById('answerEditSaveBtn');
+  var answerEditCancelBtn = document.getElementById('answerEditCancelBtn');
+  var adminContent        = document.getElementById('adminContent');
+
+  if (answerEditToggleBtn) {
+    answerEditToggleBtn.addEventListener('click', function () {
+      adminContent.disabled = false;
+      adminContent.focus();
+      answerEditToggleBtn.style.display = 'none';
+      answerEditSaveBtn.style.display   = 'inline-block';
+      answerEditCancelBtn.style.display = 'inline-block';
+    });
+
+    answerEditCancelBtn.addEventListener('click', function () {
+      adminContent.disabled = true;
+      answerEditToggleBtn.style.display = 'inline-block';
+      answerEditSaveBtn.style.display   = 'none';
+      answerEditCancelBtn.style.display = 'none';
+    });
+
+    answerEditSaveBtn.addEventListener('click', async function () {
+      var content = adminContent.value.trim();
+      if (!content) { alert('답변 내용을 입력해주세요.'); return; }
+      this.disabled = true;
+      this.classList.add('loading');
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/answer/edit', { content: content });
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '답변 수정에 실패했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+    });
+  }
+
+  /* =============================================
+     수정 / 삭제 (본인 또는 어드민 + PENDING)
+     ============================================= */
   var editBtn    = document.getElementById('editBtn');
   var deleteBtn  = document.getElementById('deleteBtn');
   var editForm   = document.getElementById('editForm');
-  var editCancel = document.getElementById('editCancelBtn');
-  var editSave   = document.getElementById('editSaveBtn');
 
-  // 수정/삭제 버튼이 없으면 (권한 없음) 스크립트 종료
-  if (!editBtn) return;
+  if (editBtn) {
+    var editCancel = document.getElementById('editCancelBtn');
+    var editSave   = document.getElementById('editSaveBtn');
 
-  // 수정 버튼: 수정 폼 토글
-  editBtn.addEventListener('click', function () {
-    var isShown = editForm.style.display !== 'none';
-    editForm.style.display = isShown ? 'none' : 'block';
-    editBtn.textContent = isShown ? '✏️ 수정' : '✏️ 취소';
-  });
+    editBtn.addEventListener('click', function () {
+      var isShown = editForm.style.display !== 'none';
+      editForm.style.display = isShown ? 'none' : 'block';
+      editBtn.textContent = isShown ? '✏️ 수정' : '✏️ 취소';
+    });
 
-  // 수정 취소 버튼: 수정 폼 닫기
-  editCancel.addEventListener('click', function () {
-    editForm.style.display = 'none';
-    editBtn.textContent = '✏️ 수정';
-  });
+    editCancel.addEventListener('click', function () {
+      editForm.style.display = 'none';
+      editBtn.textContent = '✏️ 수정';
+    });
 
-  // 수정 저장 버튼: POST /inquiry/{inquiryId}/edit
-  editSave.addEventListener('click', async function () {
-    var title     = document.getElementById('editTitle').value.trim();
-    var content   = document.getElementById('editContent').value.trim();
-    var category  = document.getElementById('editCategory').value;
-    var isPrivate = document.getElementById('editIsPrivate').checked ? 1 : 0;
+    editSave.addEventListener('click', async function () {
+      var title     = document.getElementById('editTitle').value.trim();
+      var content   = document.getElementById('editContent').value.trim();
+      var category  = document.getElementById('editCategory').value;
+      var isPrivate = document.getElementById('editIsPrivate').checked ? 1 : 0;
+      if (!title)   { alert('제목을 입력해주세요.'); return; }
+      if (!content) { alert('내용을 입력해주세요.'); return; }
+      this.disabled = true;
+      this.classList.add('loading');
+      try {
+        // FormData로 텍스트 + 새 파일 동시 전송
+        var formData = new FormData();
+        formData.append('title',     title);
+        formData.append('content',   content);
+        formData.append('category',  category);
+        formData.append('isPrivate', isPrivate);
 
-    if (!title)   { alert('제목을 입력해주세요.'); return; }
-    if (!content) { alert('내용을 입력해주세요.'); return; }
+        var fileInput = document.getElementById('editAttachFile');
+        if (fileInput) {
+          Array.from(fileInput.files).forEach(function (file) {
+            formData.append('images', file);
+          });
+        }
 
-    this.disabled = true;
-    this.classList.add('loading');
+        var res = await fetch(ctx + '/inquiry/' + inquiryId + '/edit', {
+          method: 'POST',
+          body: formData
+        });
+        var data = await res.json();
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '수정에 실패했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+    });
 
-    try {
-      var res  = await fetch(ctx + '/inquiry/' + inquiryId + '/edit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ title, content, category, isPrivate })
+    // 첨부파일 개별 삭제 버튼
+    document.querySelectorAll('.inq-attach-delete-btn').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        var attachmentId = this.getAttribute('data-id');
+        if (!confirm('첨부파일을 삭제하시겠습니까?')) return;
+        try {
+          var data = await postJson('/inquiry/attachment/' + attachmentId + '/delete', {});
+          if (data.success) { this.closest('.inq-attachment-edit-item').remove(); }
+          else { alert(data.message || '삭제에 실패했습니다.'); }
+        } catch (e) { alert('오류가 발생했습니다.'); }
       });
-      var data = await res.json();
+    });
+  }
 
-      if (data.success) {
-        location.reload(); // 수정 후 페이지 새로고침
-      } else {
-        alert(data.message || '수정에 실패했습니다.');
-        this.disabled = false;
-        this.classList.remove('loading');
-      }
-    } catch (e) {
-      alert('오류가 발생했습니다.');
-      this.disabled = false;
-      this.classList.remove('loading');
-    }
-  });
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async function () {
+      if (!confirm('정말 삭제하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/delete', {});
+        if (data.success) { location.href = ctx + '/inquiry/list'; }
+        else { alert(data.message || '삭제에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
 
-  // 삭제 버튼: POST /inquiry/{inquiryId}/delete
-  deleteBtn.addEventListener('click', async function () {
-    if (!confirm('정말 삭제하시겠습니까?')) return;
-    this.disabled = true;
+  /* =============================================
+     유저: 문의 취소
+     ============================================= */
+  /* =============================================
+     유저: 해결됐어요 (직접 완료 처리)
+     ============================================= */
+  var userCompleteBtn = document.getElementById('userCompleteBtn');
+  if (userCompleteBtn) {
+    userCompleteBtn.addEventListener('click', async function () {
+      if (!confirm('문의가 해결되었나요? 완료 처리하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/user-complete', {});
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '처리에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
 
-    try {
-      var res  = await fetch(ctx + '/inquiry/' + inquiryId + '/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      });
-      var data = await res.json();
+  /* =============================================
+     유저: 문의 취소
+     ============================================= */
+  var cancelInquiryBtn = document.getElementById('cancelInquiryBtn');
+  if (cancelInquiryBtn) {
+    cancelInquiryBtn.addEventListener('click', async function () {
+      if (!confirm('문의를 취소하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/cancel', {});
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '취소에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
 
-      if (data.success) {
-        location.href = ctx + '/inquiry/list'; // 삭제 후 목록으로 이동
-      } else {
-        alert(data.message || '삭제에 실패했습니다.');
-        this.disabled = false;
-      }
-    } catch (e) {
-      alert('오류가 발생했습니다.');
-      this.disabled = false;
-    }
-  });
+  /* =============================================
+     유저: 삭제 요청
+     ============================================= */
+  var deleteRequestBtn = document.getElementById('deleteRequestBtn');
+  if (deleteRequestBtn) {
+    deleteRequestBtn.addEventListener('click', async function () {
+      if (!confirm('삭제를 요청하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/delete-request', {});
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '삭제 요청에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
+
+  /* =============================================
+     유저: 비공개 / 공개 요청
+     ============================================= */
+  var privateRequestBtn = document.getElementById('privateRequestBtn');
+  var publicRequestBtn  = document.getElementById('publicRequestBtn');
+
+  if (privateRequestBtn) {
+    privateRequestBtn.addEventListener('click', async function () {
+      if (!confirm('비공개로 전환을 요청하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/visibility-request', { type: 'private' });
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '요청에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
+
+  if (publicRequestBtn) {
+    publicRequestBtn.addEventListener('click', async function () {
+      if (!confirm('공개로 전환을 요청하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/visibility-request', { type: 'public' });
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '요청에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
+
 })();
 </script>
 

@@ -23,6 +23,11 @@
         <result property="viewCount"  column="view_count"/>
         <result property="createdAt"  column="created_at"/>
         <result property="updatedAt"  column="updated_at"/>
+        <result property="inProgressAt"          column="in_progress_at"/>
+        <result property="completedAt"           column="completed_at"/>
+        <result property="cancelledAt"           column="cancelled_at"/>
+        <result property="deleteRequestedAt"     column="delete_requested_at"/>
+        <result property="visibilityRequestedAt" column="visibility_requested_at"/>
     </resultMap>
 
     <!-- 답변 매핑 -->
@@ -34,6 +39,15 @@
         <result property="content"       column="content"/>
         <result property="createdAt"     column="created_at"/>
         <result property="updatedAt"     column="updated_at"/>
+    </resultMap>
+
+    <!-- 첨부파일 매핑 -->
+    <resultMap id="AttachmentResultMap" type="org.triptogether.inquiry.vo.InquiryAttachmentDto">
+        <id     property="attachmentId" column="attachment_id"/>
+        <result property="inquiryId"    column="inquiry_id"/>
+        <result property="fileUrl"      column="file_url"/>
+        <result property="fileName"     column="file_name"/>
+        <result property="createdAt"    column="created_at"/>
     </resultMap>
 
     <!-- =============================================
@@ -131,7 +145,12 @@
         ip.status,
         ip.view_count,
         ip.created_at,
-        ip.updated_at
+        ip.updated_at,
+        ip.in_progress_at,
+        ip.completed_at,
+        ip.cancelled_at,
+        ip.delete_requested_at,
+        ip.visibility_requested_at
         FROM INQUIRY_POST ip
         LEFT JOIN USERS u ON ip.user_idx = u.user_idx
         WHERE ip.inquiry_id = #{inquiryId}
@@ -223,6 +242,75 @@
     <delete id="deleteInquiry">
         DELETE FROM INQUIRY_POST
         WHERE inquiry_id = #{inquiryId}
+    </delete>
+
+    <!-- =============================================
+         11. 공개여부 변경
+         ============================================= -->
+    <update id="updateIsPrivate">
+        UPDATE INQUIRY_POST
+        SET is_private = #{isPrivate},
+            updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <!-- =============================================
+         12. 상태 변경 (시간 기록 포함)
+         ============================================= -->
+    <update id="updateStatusWithTime">
+        UPDATE INQUIRY_POST
+        SET status = #{status},
+            in_progress_at = CASE WHEN #{status} = 'IN_PROGRESS' THEN NOW() ELSE in_progress_at END,
+            completed_at = CASE WHEN #{status} IN ('COMPLETED', 'USER_COMPLETED') THEN NOW() ELSE completed_at END,
+            cancelled_at = CASE WHEN #{status} = 'CANCELLED' THEN NOW() ELSE cancelled_at END,
+            delete_requested_at = CASE WHEN #{status} = 'DELETE_REQUESTED' THEN NOW() ELSE delete_requested_at END,
+            visibility_requested_at = CASE WHEN #{status} IN ('PRIVATE_REQUESTED', 'PUBLIC_REQUESTED') THEN NOW() ELSE visibility_requested_at END,
+            updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <!-- =============================================
+         13. 답변 수정
+         ============================================= -->
+    <update id="updateAnswer">
+        UPDATE INQUIRY_ANSWER
+        SET content    = #{content},
+            updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <!-- =============================================
+         14. 답변 삭제
+         ============================================= -->
+    <delete id="deleteAnswer">
+        DELETE FROM INQUIRY_ANSWER
+        WHERE inquiry_id = #{inquiryId}
+    </delete>
+
+    <!-- =============================================
+         15. 첨부파일 등록
+         ============================================= -->
+    <insert id="insertAttachment" useGeneratedKeys="true" keyProperty="attachmentId">
+        INSERT INTO INQUIRY_ATTACHMENT (inquiry_id, file_url, file_name, created_at)
+        VALUES (#{inquiryId}, #{fileUrl}, #{fileName}, NOW())
+    </insert>
+
+    <!-- =============================================
+         16. 첨부파일 목록 조회
+         ============================================= -->
+    <select id="selectAttachmentList" resultMap="AttachmentResultMap">
+        SELECT attachment_id, inquiry_id, file_url, file_name, created_at
+        FROM INQUIRY_ATTACHMENT
+        WHERE inquiry_id = #{inquiryId}
+        ORDER BY created_at ASC
+    </select>
+
+    <!-- =============================================
+         17. 첨부파일 삭제
+         ============================================= -->
+    <delete id="deleteAttachment">
+        DELETE FROM INQUIRY_ATTACHMENT
+        WHERE attachment_id = #{attachmentId}
     </delete>
 
 </mapper>
