@@ -7,12 +7,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.inquiry.service.InquiryService;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
+import org.triptogether.inquiry.vo.InquiryAttachmentDto;
+import org.triptogether.myPage.service.MyPageService;
+import org.triptogether.myPage.vo.FeedNotificationDto;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +46,7 @@ import java.util.Map;
 public class InquiryController {
 
     private final InquiryService inquiryService;
+    private final MyPageService myPageService;
 
     /* =============================================
        유틸 메서드
@@ -134,6 +140,7 @@ public class InquiryController {
             @RequestParam String content,
             @RequestParam String category,
             @RequestParam(defaultValue = "0") int isPrivate,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -147,7 +154,6 @@ public class InquiryController {
         try {
             Long loginUserIdx = getLoginUserIdx(session);
 
-            // VO에 입력값 세팅
             InquiryPostDto inquiry = new InquiryPostDto();
             inquiry.setUserIdx(loginUserIdx);
             inquiry.setTitle(title);
@@ -155,7 +161,7 @@ public class InquiryController {
             inquiry.setCategory(category);
             inquiry.setIsPrivate(isPrivate);
 
-            Long inquiryId = inquiryService.writeInquiry(inquiry);
+            Long inquiryId = inquiryService.writeInquiry(inquiry, images);
             result.put("success",   true);
             result.put("inquiryId", inquiryId);
 
@@ -195,10 +201,11 @@ public class InquiryController {
 
         inquiryService.increaseViewCount(inquiryId);
 
-        model.addAttribute("inquiry", inquiry);
-        model.addAttribute("answer",  inquiryService.getAnswer(inquiryId));
-        model.addAttribute("isAdmin", admin);
-        model.addAttribute("isOwner", loginUserIdx.equals(inquiry.getUserIdx()));
+        model.addAttribute("inquiry",        inquiry);
+        model.addAttribute("answer",         inquiryService.getAnswer(inquiryId));
+        model.addAttribute("attachmentList", inquiryService.getAttachmentList(inquiryId));
+        model.addAttribute("isAdmin",        admin);
+        model.addAttribute("isOwner",        loginUserIdx.equals(inquiry.getUserIdx()));
 
         return "inquiry/detail";
     }
@@ -216,6 +223,7 @@ public class InquiryController {
     public ResponseEntity<Map<String, Object>> answer(
             @PathVariable Long inquiryId,
             @RequestParam String content,
+            @RequestParam(defaultValue = "false") boolean complete,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -229,7 +237,17 @@ public class InquiryController {
 
         try {
             Long adminUserIdx = getLoginUserIdx(session);
-            inquiryService.writeAnswer(inquiryId, adminUserIdx, content);
+            InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+            inquiryService.writeAnswer(inquiryId, adminUserIdx, content, complete);
+
+            // 유저에게 알림 전송
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(inquiry.getUserIdx());
+            notification.setSourceType("inquiry");
+            notification.setSourceId(inquiryId);
+            notification.setMessage("문의에 답변이 등록되었습니다.");
+            myPageService.addNotification(notification);
+
             result.put("success", true);
 
         } catch (Exception e) {
@@ -259,6 +277,7 @@ public class InquiryController {
             @RequestParam String content,
             @RequestParam String category,
             @RequestParam(defaultValue = "0") int isPrivate,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -288,6 +307,14 @@ public class InquiryController {
         inquiry.setCategory(category);
         inquiry.setIsPrivate(isPrivate);
         inquiryService.updateInquiry(inquiry);
+
+        // 새로 추가된 파일 저장
+        if (images != null) {
+            for (MultipartFile file : images) {
+                if (file == null || file.isEmpty()) continue;
+                inquiryService.addAttachment(inquiryId, file);
+            }
+        }
         result.put("success", true);
 
         return ResponseEntity.ok(result);
@@ -324,16 +351,209 @@ public class InquiryController {
             return ResponseEntity.status(403).body(result);
         }
 
-        // PENDING 상태일 때만 삭제 가능
-        if (!"PENDING".equals(inquiry.getStatus())) {
+        // PENDING 또는 CANCELLED 상태일 때만 삭제 가능
+        String st = inquiry.getStatus();
+        if (!"PENDING".equals(st) && !"CANCELLED".equals(st)) {
             result.put("success", false);
-            result.put("message", "답변이 완료된 글은 삭제할 수 없습니다.");
+            result.put("message", "삭제할 수 없는 상태입니다.");
             return ResponseEntity.status(400).body(result);
         }
 
         inquiryService.deleteInquiry(inquiryId);
         result.put("success", true);
 
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/status - 관리자 상태 변경
+       ============================================= */
+    @PostMapping("/{inquiryId}/status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> changeStatus(
+            @PathVariable Long inquiryId,
+            @RequestParam String status,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdmin(session)) {
+            result.put("success", false);
+            result.put("message", "운영진만 상태를 변경할 수 있어요.");
+            return ResponseEntity.status(403).body(result);
+        }
+        try {
+            inquiryService.updateStatusWithTime(inquiryId, status);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("상태 변경 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/answer/edit - 관리자 답변 수정
+       ============================================= */
+    @PostMapping("/{inquiryId}/answer/edit")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> editAnswer(
+            @PathVariable Long inquiryId,
+            @RequestParam String content,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdmin(session)) {
+            result.put("success", false);
+            result.put("message", "운영진만 답변을 수정할 수 있어요.");
+            return ResponseEntity.status(403).body(result);
+        }
+        try {
+            inquiryService.updateAnswer(inquiryId, content);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("답변 수정 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/user-complete - 유저 직접 완료 처리
+       ============================================= */
+    @PostMapping("/{inquiryId}/user-complete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> userComplete(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Long loginUserIdx = getLoginUserIdx(session);
+        InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+        if (inquiry == null) {
+            result.put("success", false);
+            return ResponseEntity.status(404).body(result);
+        }
+        if (!loginUserIdx.equals(inquiry.getUserIdx())) {
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
+        }
+        String st = inquiry.getStatus();
+        if (!"IN_PROGRESS".equals(st) && !"COMPLETED".equals(st)) {
+            result.put("success", false);
+            result.put("message", "처리중 또는 답변완료 상태에서만 완료 처리할 수 있습니다.");
+            return ResponseEntity.status(400).body(result);
+        }
+        inquiryService.updateStatusWithTime(inquiryId, "USER_COMPLETED");
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/cancel - 유저 문의 취소
+       ============================================= */
+    @PostMapping("/{inquiryId}/cancel")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> cancelInquiry(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Long loginUserIdx = getLoginUserIdx(session);
+        InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+        if (inquiry == null) {
+            result.put("success", false);
+            return ResponseEntity.status(404).body(result);
+        }
+        if (!loginUserIdx.equals(inquiry.getUserIdx())) {
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
+        }
+        if (!"PENDING".equals(inquiry.getStatus()) && !"IN_PROGRESS".equals(inquiry.getStatus())) {
+            result.put("success", false);
+            result.put("message", "취소할 수 없는 상태입니다.");
+            return ResponseEntity.status(400).body(result);
+        }
+        inquiryService.updateStatusWithTime(inquiryId, "CANCELLED");
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/delete-request - 유저 삭제 요청
+       ============================================= */
+    @PostMapping("/{inquiryId}/delete-request")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteRequest(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Long loginUserIdx = getLoginUserIdx(session);
+        InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+        if (inquiry == null) {
+            result.put("success", false);
+            return ResponseEntity.status(404).body(result);
+        }
+        if (!loginUserIdx.equals(inquiry.getUserIdx())) {
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
+        }
+        if (!"COMPLETED".equals(inquiry.getStatus())) {
+            result.put("success", false);
+            result.put("message", "답변완료 상태에서만 삭제 요청이 가능합니다.");
+            return ResponseEntity.status(400).body(result);
+        }
+        inquiryService.updateStatusWithTime(inquiryId, "DELETE_REQUESTED");
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/visibility-request - 유저 비공개/공개 요청
+       ============================================= */
+    @PostMapping("/{inquiryId}/visibility-request")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> visibilityRequest(
+            @PathVariable Long inquiryId,
+            @RequestParam String type,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Long loginUserIdx = getLoginUserIdx(session);
+        InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+        if (inquiry == null) {
+            result.put("success", false);
+            return ResponseEntity.status(404).body(result);
+        }
+        if (!loginUserIdx.equals(inquiry.getUserIdx())) {
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
+        }
+        String status = "private".equals(type) ? "PRIVATE_REQUESTED" : "PUBLIC_REQUESTED";
+        inquiryService.updateStatusWithTime(inquiryId, status);
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/visibility-approve - 관리자 공개/비공개 수락
+       ============================================= */
+    @PostMapping("/{inquiryId}/visibility-approve")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> visibilityApprove(
+            @PathVariable Long inquiryId,
+            @RequestParam String type,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdmin(session)) {
+            result.put("success", false);
+            result.put("message", "운영진만 수락할 수 있어요.");
+            return ResponseEntity.status(403).body(result);
+        }
+        try {
+            inquiryService.approveVisibility(inquiryId, type);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("공개여부 수락 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
         return ResponseEntity.ok(result);
     }
 }

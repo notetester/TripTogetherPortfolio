@@ -1,6 +1,8 @@
 package org.triptogether.inquiry.service;
 
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.inquiry.vo.InquiryAnswerDto;
+import org.triptogether.inquiry.vo.InquiryAttachmentDto;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
 
@@ -57,6 +59,7 @@ public interface InquiryService {
        - 생성된 문의 ID 반환
        ============================================= */
     Long writeInquiry(InquiryPostDto inquiry);
+    Long writeInquiry(InquiryPostDto inquiry, List<MultipartFile> images);
 
     /* =============================================
        8. 답변 등록
@@ -64,6 +67,7 @@ public interface InquiryService {
        - 답변 등록 시 문의 status → COMPLETED 로 자동 변경
        ============================================= */
     void writeAnswer(Long inquiryId, Long adminUserIdx, String content);
+    void writeAnswer(Long inquiryId, Long adminUserIdx, String content, boolean complete);
 
     /* =============================================
        9. 문의 수정
@@ -77,4 +81,20 @@ public interface InquiryService {
        - PENDING 상태일 때만 가능 (Controller에서 체크)
        ============================================= */
     void deleteInquiry(Long inquiryId);
+
+    // ===== 상태 변경 (시간 기록 포함) =====
+    void updateStatusWithTime(Long inquiryId, String status);
+
+    // ===== 공개여부 수락 (관리자) =====
+    void approveVisibility(Long inquiryId, String type);
+
+    // ===== 답변 수정/삭제 =====
+    void updateAnswer(Long inquiryId, String content);
+    void deleteAnswer(Long inquiryId);
+
+    // ===== 첨부파일 =====
+    void addAttachment(Long inquiryId, String fileUrl, String fileName);
+    void addAttachment(Long inquiryId, MultipartFile file);
+    List<InquiryAttachmentDto> getAttachmentList(Long inquiryId);
+    void removeAttachment(Long attachmentId);
 }

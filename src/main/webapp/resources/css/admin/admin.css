@@ -352,6 +352,20 @@ body {
 .status-badge.DORMANT { background: rgba(234,179,8,.12); color: #fbbf24; }
 .status-badge.DELETED { background: rgba(239,68,68,.10); color: #f87171; }
 
+/* 문의 상태 */
+.status-badge.PENDING           { background: rgba(234,179,8,.12);   color: #fbbf24; }
+.status-badge.IN_PROGRESS       { background: rgba(59,130,246,.12);  color: #60a5fa; }
+.status-badge.COMPLETED         { background: rgba(34,197,94,.12);   color: #4ade80; }
+.status-badge.USER_COMPLETED    { background: rgba(16,185,129,.12);  color: #34d399; }
+.status-badge.CANCELLED         { background: rgba(100,116,139,.12); color: #94a3b8; }
+.status-badge.DELETE_REQUESTED  { background: rgba(239,68,68,.12);   color: #f87171; }
+.status-badge.PRIVATE_REQUESTED { background: rgba(139,92,246,.12);  color: #a78bfa; }
+.status-badge.PUBLIC_REQUESTED  { background: rgba(14,165,233,.12);  color: #38bdf8; }
+
+/* 신고 상태 */
+.status-badge.RESOLVED  { background: rgba(34,197,94,.12);   color: #4ade80; }
+.status-badge.DISMISSED { background: rgba(100,116,139,.12); color: #94a3b8; }
+
 /* ── 권한 배지 ── */
 .role-badge {
     display: inline-block;

@@ -45,6 +45,9 @@
             <a class="adm-nav-item ${activeMenu=='inquiries'?'active':''}" href="${pageContext.request.contextPath}/admin/inquiries">
                 <span class="adm-nav-icon">📩</span> 문의 관리
             </a>
+            <a class="adm-nav-item ${activeMenu=='reports'?'active':''}" href="${pageContext.request.contextPath}/admin/reports">
+                <span class="adm-nav-icon">🚨</span> 신고 관리
+            </a>
 
             <div class="adm-nav-section" style="margin-top:8px;">콘텐츠</div>
             <span class="adm-nav-item disabled">

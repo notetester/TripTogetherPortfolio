@@ -177,12 +177,17 @@
                                                 </c:if>
                                                 ${inq.title}
                                             </span>
-                                            <%-- 상태 뱃지: CSS 클래스명이 status 값과 일치 (PENDING/IN_PROGRESS/COMPLETED) --%>
+                                            <%-- 상태 뱃지 --%>
                                             <span class="inq-status-badge ${inq.status}">
                                                 <c:choose>
                                                     <c:when test="${inq.status eq 'PENDING'}">대기중</c:when>
                                                     <c:when test="${inq.status eq 'IN_PROGRESS'}">처리중</c:when>
                                                     <c:when test="${inq.status eq 'COMPLETED'}">✓ 답변완료</c:when>
+                                                    <c:when test="${inq.status eq 'USER_COMPLETED'}">✓ 해결됨</c:when>
+                                                    <c:when test="${inq.status eq 'CANCELLED'}">취소됨</c:when>
+                                                    <c:when test="${inq.status eq 'DELETE_REQUESTED'}">삭제요청</c:when>
+                                                    <c:when test="${inq.status eq 'PRIVATE_REQUESTED'}">비공개요청</c:when>
+                                                    <c:when test="${inq.status eq 'PUBLIC_REQUESTED'}">공개요청</c:when>
                                                 </c:choose>
                                             </span>
                                         </c:otherwise>

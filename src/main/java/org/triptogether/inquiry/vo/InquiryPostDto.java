@@ -44,4 +44,19 @@ public class InquiryPostDto {
 
     /** 문의 수정 일시 */
     private Date updatedAt;
+
+    /** 처리 시작 일시 */
+    private Date inProgressAt;
+
+    /** 처리 완료 일시 */
+    private Date completedAt;
+
+    /** 취소 일시 */
+    private Date cancelledAt;
+
+    /** 삭제 요청 일시 */
+    private Date deleteRequestedAt;
+
+    /** 공개 전환 요청 일시 */
+    private Date visibilityRequestedAt;
 }

@@ -68,6 +68,11 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
+    public CommunityCommentDto getComment(Long commentId) {
+        return communityMapper.selectComment(commentId);
+    }
+
+    @Override
     public String getTipCategory(Long postId) {
         return communityMapper.selectTipCategory(postId);
     }
@@ -362,27 +367,17 @@ public class CommunityServiceImpl implements CommunityService {
     // ===== 신고 =====
 
     @Override
-    public boolean reportPost(Long postId, Long userIdx) {
-        int inserted = communityMapper.insertReport(postId, userIdx);
-        if (inserted > 0) {
-            communityMapper.increasePostReportCount(postId);
-            int reportCount = communityMapper.selectPostReportCount(postId);
-            if (reportCount >= 3) communityMapper.blockPost(postId);
-            return true;
-        }
-        return false;
+    public void updatePostReportCache(Long postId) {
+        communityMapper.increasePostReportCount(postId);
+        int reportCount = communityMapper.selectPostReportCount(postId);
+        if (reportCount >= 3) communityMapper.blockPost(postId);
     }
 
     @Override
-    public boolean reportComment(Long commentId, Long userIdx) {
-        int inserted = communityMapper.reportComment(commentId, userIdx);
-        if (inserted > 0) {
-            communityMapper.increaseCommentReportCount(commentId);
-            int reportCount = communityMapper.selectCommentReportCount(commentId);
-            if (reportCount >= 3) communityMapper.blockComment(commentId);
-            return true;
-        }
-        return false;
+    public void updateCommentReportCache(Long commentId) {
+        communityMapper.increaseCommentReportCount(commentId);
+        int reportCount = communityMapper.selectCommentReportCount(commentId);
+        if (reportCount >= 3) communityMapper.blockComment(commentId);
     }
 
     @Override
