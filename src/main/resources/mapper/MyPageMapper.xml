@@ -19,29 +19,27 @@
 
     <select id="selectMyCommunityList" resultMap="CommunityResultMap">
         SELECT
-        cp.post_id,
-        cp.title,
-        cpd.post_type,
-        cpd.region,
-        cpd.comment_count,
-        cpd.like_count,
-        cpd.view_count,
-        cpd.post_status,
-        cp.created_at
-        FROM COMMUNITY_POST cp
-        JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
-        WHERE cp.user_idx = #{userIdx}
-        AND cpd.post_status = 'ACTIVE'
-        ORDER BY cp.created_at DESC
+            post_id,
+            title,
+            post_type,
+            region,
+            comment_count,
+            like_count,
+            view_count,
+            post_status,
+            created_at
+        FROM COMMUNITY_POST
+        WHERE user_idx  = #{userIdx}
+          AND post_status = 'ACTIVE'
+        ORDER BY created_at DESC
         LIMIT 10
     </select>
 
     <select id="selectMyCommunityCount" resultType="int">
         SELECT COUNT(*)
-        FROM COMMUNITY_POST cp
-        JOIN COMMUNITY_POST_DETAIL cpd ON cp.post_id = cpd.post_id
-        WHERE cp.user_idx = #{userIdx}
-        AND cpd.post_status = 'ACTIVE'
+        FROM COMMUNITY_POST
+        WHERE user_idx  = #{userIdx}
+          AND post_status = 'ACTIVE'
     </select>
 
     <resultMap id="InquiryResultMap" type="org.triptogether.myPage.vo.MyPageInquiryDto">
