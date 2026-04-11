@@ -97,8 +97,8 @@ Files are stored at `${file.upload.path}` (default: `src/main/resources/upload/`
 - dev 브랜치에서 직접 작업 절대 금지
 
 ## Victor 담당 모듈
-- community, inquiry, myPage만 수정 가능
-- auth, admin, courses, assistant, explore, detail, common, home 건드리지 말 것
+- community, inquiry, myPage, report, home만 수정 가능
+- auth, admin, courses, assistant, explore, detail, common 건드리지 말 것
 
 ## CSS 프리픽스 규칙
 - 커뮤니티: `comm-`
