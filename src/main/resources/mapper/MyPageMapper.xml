@@ -73,6 +73,35 @@
         WHERE user_idx = #{userIdx}
     </select>
 
+    <resultMap id="ReportResultMap" type="org.triptogether.myPage.vo.MyPageReportDto">
+        <id     property="reportId"   column="report_id"/>
+        <result property="targetType" column="target_type"/>
+        <result property="targetId"   column="target_id"/>
+        <result property="reason"     column="reason"/>
+        <result property="status"     column="status"/>
+        <result property="createdAt"  column="created_at"/>
+    </resultMap>
+
+    <select id="selectMyReportList" resultMap="ReportResultMap">
+        SELECT
+            report_id,
+            target_type,
+            target_id,
+            reason,
+            status,
+            created_at
+        FROM REPORT
+        WHERE user_idx = #{userIdx}
+        ORDER BY created_at DESC
+        LIMIT 10
+    </select>
+
+    <select id="selectMyReportCount" resultType="int">
+        SELECT COUNT(*)
+        FROM REPORT
+        WHERE user_idx = #{userIdx}
+    </select>
+
     <resultMap id="FeedNotificationResultMap" type="org.triptogether.myPage.vo.FeedNotificationDto">
         <id     property="notificationId" column="notification_id"/>
         <result property="userIdx"        column="user_idx"/>

@@ -496,4 +496,14 @@
         <include refid="emailVerificationRequestSearchBase"/>
     </select>
 
+    <!-- 신고 처리용: 상태 무관 게시글 작성자 조회 -->
+    <select id="findPostAuthorIdx" resultType="Long">
+        SELECT user_idx FROM COMMUNITY_POST WHERE post_id = #{postId}
+    </select>
+
+    <!-- 신고 처리용: 상태 무관 댓글 작성자 조회 -->
+    <select id="findCommentAuthorIdx" resultType="Long">
+        SELECT user_idx FROM COMMUNITY_COMMENT WHERE comment_id = #{commentId}
+    </select>
+
 </mapper>

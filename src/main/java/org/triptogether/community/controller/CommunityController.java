@@ -13,6 +13,7 @@ import org.triptogether.report.service.ReportService;
 import jakarta.servlet.http.HttpSession;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class CommunityController {
                        @RequestParam(defaultValue = "all")    String type,
                        @RequestParam(defaultValue = "latest") String sort,
                        @RequestParam(defaultValue = "")       String keyword,
+                       @RequestParam(defaultValue = "all")    String searchType,
                        @RequestParam(defaultValue = "1")      int    page,
                        HttpSession session,
                        Model model) {
@@ -44,14 +46,19 @@ public class CommunityController {
         search.setType(type);
         search.setSort(sort);
         search.setKeyword(keyword);
+        search.setSearchType(searchType);
         search.setPage(page);
         search.calcOffset();
         search.setAdminMode(isAdminUser(session) && !"user".equals(session.getAttribute("viewMode")));
 
-        model.addAttribute("postList",    communityService.getPostList(search));
-        model.addAttribute("totalCount",  communityService.getTotalCount(search));
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPage",   communityService.getTotalPage(search));
+        model.addAttribute("postList",          communityService.getPostList(search));
+        model.addAttribute("totalCount",        communityService.getTotalCount(search));
+        model.addAttribute("currentPage",       page);
+        model.addAttribute("totalPage",         communityService.getTotalPage(search));
+        boolean showSections = "all".equals(region) && "all".equals(type) && "all".equals(searchType) && keyword.isEmpty();
+        if (showSections) {
+            model.addAttribute("todayPopularList", communityService.getTodayPopularList());
+        }
         return "community/list";
     }
 
@@ -60,6 +67,7 @@ public class CommunityController {
        ============================================= */
     @GetMapping("/{postId}")
     public String detail(@PathVariable Long postId,
+                         @RequestParam(defaultValue = "1") int latestPage,
                          HttpSession session,
                          Model model) {
 
@@ -70,6 +78,20 @@ public class CommunityController {
         CommunityPostDto post = communityService.getPost(postId);
         if (post == null) return "redirect:/community/list";
 
+        List<CommunityPostDto> relatedList = communityService.getRelatedList(postId);
+
+        // 최신글 제외 ID: 현재 게시글 + 추천글
+        List<Long> excludeIds = new ArrayList<>();
+        excludeIds.add(postId);
+        for (CommunityPostDto r : relatedList) {
+            excludeIds.add(r.getPostId());
+        }
+
+        int latestPageSize = 10;
+        int latestTotalPage = communityService.getLatestTotalPage(excludeIds, latestPageSize);
+        if (latestPage < 1) latestPage = 1;
+        if (latestPage > latestTotalPage && latestTotalPage > 0) latestPage = latestTotalPage;
+
         model.addAttribute("post",        post);
         model.addAttribute("imageList",   communityService.getImageList(postId));
         model.addAttribute("tagList",     communityService.getTagList(postId));
@@ -79,9 +101,33 @@ public class CommunityController {
         model.addAttribute("isLiked",     loginUserIdx != null && communityService.isLiked(postId, loginUserIdx));
         model.addAttribute("isOwner",     loginUserIdx != null && loginUserIdx.equals(post.getUserIdx()));
         model.addAttribute("acceptedCommentId", communityService.getAcceptedCommentId(postId));
-        model.addAttribute("relatedList", communityService.getRelatedList(postId));
+        model.addAttribute("relatedList",       relatedList);
+        model.addAttribute("latestList",        communityService.getLatestList(excludeIds, latestPage, latestPageSize));
+        model.addAttribute("latestPage",        latestPage);
+        model.addAttribute("latestTotalPage",   latestTotalPage);
 
         return "community/detail";
+    }
+
+    /* =============================================
+       GET /community/{postId}/comments - 댓글 목록 AJAX 프래그먼트
+       파라미터: sort=created|latest|replies
+       ============================================= */
+    @GetMapping("/{postId}/comments")
+    public String commentFragment(@PathVariable Long postId,
+                                  @RequestParam(defaultValue = "created") String sort,
+                                  HttpSession session,
+                                  Model model) {
+        Long loginUserIdx = getLoginUserIdx(session);
+        CommunityPostDto post = communityService.getPost(postId);
+        if (post == null) return "redirect:/community/list";
+
+        model.addAttribute("post",             post);
+        model.addAttribute("commentList",      communityService.getCommentList(postId, sort));
+        model.addAttribute("acceptedCommentId",communityService.getAcceptedCommentId(postId));
+        model.addAttribute("isSolved",         communityService.isSolved(postId));
+        model.addAttribute("isOwner",          loginUserIdx != null && loginUserIdx.equals(post.getUserIdx()));
+        return "community/_comment_list";
     }
 
     /* =============================================
@@ -124,6 +170,10 @@ public class CommunityController {
             Long postId = communityService.writePost(writeDto, loginUserIdx);
             result.put("success", true);
             result.put("postId",  postId);
+        } catch (IllegalStateException e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.status(429).body(result);
         } catch (Exception e) {
             log.error("글쓰기 오류", e);
             result.put("success", false);
@@ -271,6 +321,10 @@ public class CommunityController {
             Long loginUserIdx = getLoginUserIdx(session);
             communityService.addComment(postId, loginUserIdx, content);
             result.put("success", true);
+        } catch (IllegalStateException e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.status(429).body(result);
         } catch (Exception e) {
             log.error("댓글 등록 오류", e);
             result.put("success", false);
@@ -329,6 +383,10 @@ public class CommunityController {
             Long loginUserIdx = getLoginUserIdx(session);
             communityService.addReply(postId, loginUserIdx, content, commentId);
             result.put("success", true);
+        } catch (IllegalStateException e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.status(429).body(result);
         } catch (Exception e) {
             log.error("대댓글 등록 오류", e);
             result.put("success", false);
@@ -429,7 +487,7 @@ public class CommunityController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
-            boolean reported = reportService.submitReport("post", postId, loginUserIdx, null);
+            boolean reported = reportService.submitReport("post", postId, loginUserIdx, null, null, null, null);
             if (reported) {
                 communityService.updatePostReportCache(postId);
             }
@@ -462,7 +520,7 @@ public class CommunityController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
-            boolean reported = reportService.submitReport("comment", commentId, loginUserIdx, null);
+            boolean reported = reportService.submitReport("comment", commentId, loginUserIdx, null, null, null, null);
             if (reported) {
                 communityService.updateCommentReportCache(commentId);
             }

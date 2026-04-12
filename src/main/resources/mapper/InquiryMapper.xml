@@ -197,6 +197,14 @@
         VALUES (#{userIdx}, #{title}, #{content}, #{category}, #{isPrivate}, 'PENDING', NOW(), NOW())
     </insert>
 
+    <!-- 도배 방지: 최근 N분 내 작성 수 조회 -->
+    <select id="countRecentInquiriesByUser" resultType="int">
+        SELECT COUNT(*)
+        FROM INQUIRY_POST
+        WHERE user_idx = #{userIdx}
+          AND created_at >= DATE_SUB(NOW(), INTERVAL #{minutes} MINUTE)
+    </select>
+
     <!-- =============================================
          7. 답변 등록
          - 운영진이 문의에 답변을 저장

@@ -28,64 +28,155 @@
     <div class="si">
         <div class="comm-ph-top">
             <div>
-                <h1>트립 모먼트</h1>
+                <h1><a href="${pageContext.request.contextPath}/community/list"
+                       onclick="sessionStorage.removeItem('todayPopularClosed')"
+                       style="color:inherit;text-decoration:none;cursor:pointer;">트립 모먼트</a></h1>
                 <p class="comm-sub">전 세계 여행자들의 생생한 여행 이야기</p>
             </div>
-            <button class="btn-write"
-                    onclick="location.href='${pageContext.request.contextPath}/community/write'">
-                &#43; 글쓰기
-            </button>
         </div>
+
+        <%-- 오늘 인기 여행 이야기 섹션 --%>
+        <c:if test="${not empty todayPopularList}">
+            <div class="comm-section-title comm-section-title-today">
+                &#128293; 오늘 인기 여행 이야기
+                <button class="comm-section-toggle" id="todayToggleBtn" onclick="toggleTodaySection()">목록 닫기</button>
+            </div>
+            <div id="todayPopularGrid">
+                <div class="comm-carousel-outer">
+                    <button class="comm-carousel-btn comm-carousel-prev" id="todayCarouselPrev">&#8249;</button>
+                    <div class="comm-carousel-vp">
+                        <div class="comm-carousel-track" id="todayCarouselTrack">
+                            <c:forEach var="post" items="${todayPopularList}">
+                                <div class="comm-today-card" data-id="${post.postId}">
+                                    <div class="comm-today-card-iw">
+                                        <c:choose>
+                                            <c:when test="${not empty post.thumbUrl}">
+                                                <c:choose>
+                                                    <c:when test="${fn:startsWith(post.thumbUrl, 'http')}">
+                                                        <img class="comm-today-card-img" src="${post.thumbUrl}" alt="${post.title}" loading="lazy">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <img class="comm-today-card-img" src="${pageContext.request.contextPath}${post.thumbUrl}" alt="${post.title}" loading="lazy">
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="comm-today-card-img comm-today-card-noimg">✈️</div>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <span class="post-type-badge type-${post.postType}">
+                                            <c:choose>
+                                                <c:when test="${post.postType eq 'review'}">여행후기</c:when>
+                                                <c:when test="${post.postType eq 'photo'}">사진</c:when>
+                                                <c:when test="${post.postType eq 'tip'}">여행팁</c:when>
+                                                <c:when test="${post.postType eq 'question'}">질문</c:when>
+                                            </c:choose>
+                                        </span>
+                                        <c:if test="${post.postType eq 'tip' and not empty post.tipCategory}">
+                                            <span class="post-type-badge type-tip-sub ${post.tipCategory}">
+                                                <c:choose>
+                                                    <c:when test="${post.tipCategory eq 'transport'}">교통</c:when>
+                                                    <c:when test="${post.tipCategory eq 'accom'}">숙소</c:when>
+                                                    <c:when test="${post.tipCategory eq 'food'}">맛집</c:when>
+                                                    <c:when test="${post.tipCategory eq 'money'}">환전</c:when>
+                                                    <c:when test="${post.tipCategory eq 'safety'}">안전</c:when>
+                                                    <c:otherwise>기타</c:otherwise>
+                                                </c:choose>
+                                            </span>
+                                        </c:if>
+                                        <c:if test="${post.postType eq 'question'}">
+                                            <c:choose>
+                                                <c:when test="${post.isSolved}">
+                                                    <span class="post-type-badge type-question-sub solved">해결됨</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="post-type-badge type-question-sub unsolved">해결중</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:if>
+                                    </div>
+                                    <div class="comm-today-card-body">
+                                        <div class="comm-today-card-title">${post.title}</div>
+                                        <div class="comm-today-card-footer">
+                                            <span class="comm-today-card-author">${post.nickname}</span>
+                                            <span class="comm-today-card-stats">
+                                                &#10084; ${post.likeCount} &nbsp; &#128172; ${post.commentCount}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </div>
+                    <button class="comm-carousel-btn comm-carousel-next" id="todayCarouselNext">&#8250;</button>
+                </div>
+            </div>
+        </c:if>
 
         <%-- 지역 탭 --%>
         <div class="region-tabs">
-            <a href="${pageContext.request.contextPath}/community/list?region=all&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=all&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${empty param.region or param.region eq 'all' ? 'active' : ''}">
-                &#127758; 전체
+                전체
             </a>
-            <a href="${pageContext.request.contextPath}/community/list?region=asia&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=asia&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'asia' ? 'active' : ''}">
-                &#127759; 아시아
+                아시아
             </a>
-            <a href="${pageContext.request.contextPath}/community/list?region=europe&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=europe&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'europe' ? 'active' : ''}">
-                &#127957; 유럽
+                유럽
             </a>
-            <a href="${pageContext.request.contextPath}/community/list?region=africa&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=africa&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'africa' ? 'active' : ''}">
-                &#127758; 아프리카
+                아프리카
             </a>
-            <a href="${pageContext.request.contextPath}/community/list?region=north_america&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=north_america&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'north_america' ? 'active' : ''}">
-                &#127482;&#127480; 북아메리카
+                북아메리카
             </a>
-            <a href="${pageContext.request.contextPath}/community/list?region=south_america&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=south_america&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'south_america' ? 'active' : ''}">
-                &#127475;&#127480; 남아메리카
+                남아메리카
             </a>
-            <a href="${pageContext.request.contextPath}/community/list?region=oceania&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=oceania&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'oceania' ? 'active' : ''}">
-                &#127944; 오세아니아
+                오세아니아
             </a>
-            <a href="${pageContext.request.contextPath}/community/list?region=etc&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=etc&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'etc' ? 'active' : ''}">
-                &#127760; 기타
+                기타
             </a>
         </div>
 
-        <%-- 검색창 --%>
+        <%-- 검색창 + 글쓰기 버튼 --%>
         <div class="comm-search-wrap">
-            <form action="${pageContext.request.contextPath}/community/list" method="get">
-                <input type="hidden" name="region" value="${param.region}">
-                <input type="hidden" name="type" value="${param.type}">
-                <input type="hidden" name="sort" value="${param.sort}">
-                <div class="comm-search-box">
-                    <input type="text" name="keyword" class="comm-search-input"
-                           value="${param.keyword}"
-                           placeholder="국가, 도시, 태그로 검색하세요">
-                    <button type="submit" class="comm-search-btn">&#128269;</button>
-                </div>
-            </form>
+            <div class="comm-search-row">
+                <form action="${pageContext.request.contextPath}/community/list" method="get">
+                    <input type="hidden" name="region" value="${param.region}">
+                    <input type="hidden" name="type" value="${param.type}">
+                    <input type="hidden" name="sort" value="${param.sort}">
+                    <div class="comm-search-box">
+                        <select name="searchType" class="comm-search-select">
+                            <option value="all"    ${empty param.searchType or param.searchType eq 'all'     ? 'selected' : ''}>제목+내용+해시태그</option>
+                            <option value="title"   ${param.searchType eq 'title'   ? 'selected' : ''}>제목</option>
+                            <option value="content" ${param.searchType eq 'content' ? 'selected' : ''}>내용</option>
+                            <option value="tag"     ${param.searchType eq 'tag'     ? 'selected' : ''}>해시태그</option>
+                            <option value="author"  ${param.searchType eq 'author'  ? 'selected' : ''}>글쓴이</option>
+                            <option value="comment" ${param.searchType eq 'comment' ? 'selected' : ''}>댓글</option>
+                        </select>
+                        <span class="comm-search-divider"></span>
+                        <input type="text" name="keyword" class="comm-search-input"
+                               value="${param.keyword}"
+                               placeholder="여행 이야기를 검색해보세요">
+                        <button type="submit" class="comm-search-btn">&#128269;</button>
+                    </div>
+                </form>
+                <button class="btn-write"
+                        onclick="location.href='${pageContext.request.contextPath}/community/write'">
+                    &#43; 글쓰기
+                </button>
+            </div>
         </div>
 
     </div>
@@ -97,23 +188,23 @@
     <%-- 유형 필터 + 정렬 바 --%>
     <div class="comm-filter-bar">
         <div class="type-filters">
-            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=all&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=all&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="type-btn ${empty param.type or param.type eq 'all' ? 'active' : ''}">전체</a>
-            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=review&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=review&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="type-btn ${param.type eq 'review' ? 'active' : ''}">&#128172; 여행후기</a>
-            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=photo&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=photo&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="type-btn ${param.type eq 'photo' ? 'active' : ''}">&#128247; 사진</a>
-            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=tip&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=tip&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="type-btn ${param.type eq 'tip' ? 'active' : ''}">&#128161; 여행팁</a>
-            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=question&sort=${param.sort}&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=question&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="type-btn ${param.type eq 'question' ? 'active' : ''}">&#10067; 질문</a>
         </div>
         <div class="sort-area">
-            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=latest&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=latest&searchType=${param.searchType}&keyword=${param.keyword}"
                class="sort-btn ${empty param.sort or param.sort eq 'latest' ? 'active' : ''}">최신순</a>
-            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=popular&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=popular&searchType=${param.searchType}&keyword=${param.keyword}"
                class="sort-btn ${param.sort eq 'popular' ? 'active' : ''}">인기순</a>
-            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=views&keyword=${param.keyword}"
+            <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=views&searchType=${param.searchType}&keyword=${param.keyword}"
                class="sort-btn ${param.sort eq 'views' ? 'active' : ''}">조회순</a>
             <span class="total-count">총 <strong>${totalCount}</strong>개</span>
         </div>
@@ -127,6 +218,9 @@
                class="search-clear-btn">&#10005; 검색 초기화</a>
         </div>
     </c:if>
+
+    <%-- 최신 여행 이야기 섹션 타이틀 --%>
+    <div class="comm-section-title">&#128336; 최신 여행 이야기</div>
 
     <%--
       게시글 목록
@@ -169,9 +263,14 @@
                                 <div class="post-card-img-wrap">
                                     <c:choose>
                                         <c:when test="${not empty post.thumbUrl}">
-                                            <img class="post-card-img"
-                                                 src="${pageContext.request.contextPath}${post.thumbUrl}"
-                                                 alt="${post.title}" loading="lazy">
+                                            <c:choose>
+                                                <c:when test="${fn:startsWith(post.thumbUrl, 'http')}">
+                                                    <img class="post-card-img" src="${post.thumbUrl}" alt="${post.title}" loading="lazy">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <img class="post-card-img" src="${pageContext.request.contextPath}${post.thumbUrl}" alt="${post.title}" loading="lazy">
+                                                </c:otherwise>
+                                            </c:choose>
                                         </c:when>
                                         <c:otherwise>
                                             <div class="post-card-img"
@@ -200,6 +299,16 @@
         </c:choose>
     </span>
 </c:if>
+<c:if test="${post.postType eq 'question'}">
+    <c:choose>
+        <c:when test="${post.isSolved}">
+            <span class="post-type-badge type-question-sub solved">해결됨</span>
+        </c:when>
+        <c:otherwise>
+            <span class="post-type-badge type-question-sub unsolved">해결중</span>
+        </c:otherwise>
+    </c:choose>
+</c:if>
                                 </div>
                                 <div class="post-card-body">
                                     <div class="post-card-author">
@@ -220,16 +329,6 @@
                                         <span class="post-stat like-stat">&#10084; ${post.likeCount}</span>
                                         <span class="post-stat">&#128172; ${post.commentCount}</span>
                                         <span class="post-stat">&#128065; ${post.viewCount}</span>
-                                        <c:if test="${post.postType eq 'question'}">
-                                            <c:choose>
-                                                <c:when test="${post.isSolved}">
-                                                    <span class="post-stat" style="color:#16a34a; font-weight:700;">&#10003; 해결됨</span>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span class="post-stat" style="color:#ea580c; font-weight:700;">&#8987; 미해결</span>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </c:if>
                                     </div>
                                 </div>
                             </div>
@@ -262,23 +361,155 @@
     <c:if test="${totalPage > 1}">
         <div class="pagination">
             <c:if test="${currentPage > 1}">
-                <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}&page=${currentPage - 1}"
+                <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}&page=${currentPage - 1}"
                    class="page-btn">&#8249;</a>
             </c:if>
             <c:forEach begin="1" end="${totalPage}" var="p">
-                <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}&page=${p}"
+                <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}&page=${p}"
                    class="page-btn ${p eq currentPage ? 'active' : ''}">${p}</a>
             </c:forEach>
             <c:if test="${currentPage < totalPage}">
-                <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=${param.sort}&keyword=${param.keyword}&page=${currentPage + 1}"
+                <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}&page=${currentPage + 1}"
                    class="page-btn">&#8250;</a>
             </c:if>
         </div>
     </c:if>
 
+    <%-- 하단 검색바 + 글쓰기 버튼 --%>
+    <div class="comm-bottom-search">
+        <div class="comm-search-row">
+            <form action="${pageContext.request.contextPath}/community/list" method="get">
+                <input type="hidden" name="region" value="${param.region}">
+                <input type="hidden" name="type" value="${param.type}">
+                <input type="hidden" name="sort" value="${param.sort}">
+                <div class="comm-search-box">
+                    <select name="searchType" class="comm-search-select">
+                        <option value="all"    ${empty param.searchType or param.searchType eq 'all'     ? 'selected' : ''}>제목+내용+해시태그</option>
+                        <option value="title"   ${param.searchType eq 'title'   ? 'selected' : ''}>제목</option>
+                        <option value="content" ${param.searchType eq 'content' ? 'selected' : ''}>내용</option>
+                        <option value="tag"     ${param.searchType eq 'tag'     ? 'selected' : ''}>해시태그</option>
+                        <option value="author"  ${param.searchType eq 'author'  ? 'selected' : ''}>글쓴이</option>
+                        <option value="comment" ${param.searchType eq 'comment' ? 'selected' : ''}>댓글</option>
+                    </select>
+                    <span class="comm-search-divider"></span>
+                    <input type="text" name="keyword" class="comm-search-input"
+                           value="${param.keyword}"
+                           placeholder="여행 이야기를 검색해보세요">
+                    <button type="submit" class="comm-search-btn">&#128269;</button>
+                </div>
+            </form>
+            <button class="btn-write"
+                    onclick="location.href='${pageContext.request.contextPath}/community/write'">
+                &#43; 글쓰기
+            </button>
+        </div>
+    </div>
+
 </div>
 
 <script>
+    /* ===== 오늘 인기 섹션 토글 ===== */
+    var STORAGE_KEY = 'todayPopularClosed';
+
+    function toggleTodaySection() {
+        var grid = document.getElementById('todayPopularGrid');
+        var btn  = document.getElementById('todayToggleBtn');
+        if (!grid) return;
+        if (grid.style.display === 'none') {
+            grid.style.display = '';
+            btn.textContent = '목록 닫기';
+            sessionStorage.removeItem(STORAGE_KEY);
+        } else {
+            grid.style.display = 'none';
+            btn.textContent = '목록 열기';
+            sessionStorage.setItem(STORAGE_KEY, '1');
+        }
+    }
+
+    (function () {
+        var grid = document.getElementById('todayPopularGrid');
+        var btn  = document.getElementById('todayToggleBtn');
+        if (sessionStorage.getItem(STORAGE_KEY) === '1') {
+            if (grid) grid.style.display = 'none';
+            if (btn)  btn.textContent = '목록 열기';
+        }
+    })();
+
+    /* ===== 오늘 인기 캐러셀 ===== */
+    window.addEventListener('load', function () {
+        var track   = document.getElementById('todayCarouselTrack');
+        var prevBtn = document.getElementById('todayCarouselPrev');
+        var nextBtn = document.getElementById('todayCarouselNext');
+        if (!track || !track.children.length) return;
+
+        var cards   = track.children;
+        var total   = cards.length;
+        var visible = 3;
+        var gap     = 16;
+        var current = 0;
+        var autoTimer;
+
+        function setCardWidths() {
+            var vpWidth = track.parentElement.offsetWidth;
+            if (!vpWidth) return;
+            var w = (vpWidth - gap * (visible - 1)) / visible;
+            Array.from(cards).forEach(function (c) { c.style.width = w + 'px'; });
+            track.style.gap = gap + 'px';
+        }
+
+        function cardStep() {
+            return cards[0].getBoundingClientRect().width + gap;
+        }
+
+        function goTo(idx) {
+            current = Math.max(0, Math.min(idx, total - visible));
+            track.style.transform = 'translateX(-' + (current * cardStep()) + 'px)';
+        }
+
+        function next() {
+            if (current >= total - visible) {
+                track.style.transition = 'none';
+                current = 0;
+                track.style.transform = 'translateX(0)';
+                track.getBoundingClientRect();
+                track.style.transition = '';
+            } else {
+                goTo(current + 1);
+            }
+        }
+
+        function prev() {
+            if (current <= 0) {
+                track.style.transition = 'none';
+                current = total - visible;
+                track.style.transform = 'translateX(-' + (current * cardStep()) + 'px)';
+                track.getBoundingClientRect();
+                track.style.transition = '';
+            } else {
+                goTo(current - 1);
+            }
+        }
+
+        function startAuto() { autoTimer = setInterval(next, 2500); }
+        function stopAuto()  { clearInterval(autoTimer); }
+
+        nextBtn.addEventListener('click', function () { stopAuto(); next(); startAuto(); });
+        prevBtn.addEventListener('click', function () { stopAuto(); prev(); startAuto(); });
+
+        track.querySelectorAll('.comm-today-card').forEach(function (card) {
+            card.addEventListener('click', function () {
+                location.href = '${pageContext.request.contextPath}/community/' + this.getAttribute('data-id');
+            });
+        });
+
+        window.addEventListener('resize', function () {
+            stopAuto(); setCardWidths(); goTo(current); startAuto();
+        });
+
+        setCardWidths();
+        startAuto();
+    });
+
     document.querySelectorAll('.post-card-wrap[data-id]').forEach(function (wrap) {
         wrap.style.cursor = 'pointer';
         wrap.addEventListener('click', function () {

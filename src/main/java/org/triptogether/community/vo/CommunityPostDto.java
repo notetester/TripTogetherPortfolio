@@ -5,7 +5,7 @@ import java.util.Date;
 
 /**
  * 커뮤니티 게시글 DTO
- * COMMUNITY_POST + COMMUNITY_POST_DETAIL + COMMUNITY_POST_IMAGE(대표) JOIN 결과
+ * COMMUNITY_POST + COMMUNITY_POST_IMAGE(대표) JOIN 결과
  */
 @Data
 public class CommunityPostDto {
@@ -17,7 +17,7 @@ public class CommunityPostDto {
     private String  content;
     private Date    createdAt;
 
-    // COMMUNITY_POST_DETAIL
+    // COMMUNITY_POST (통합 필드)
     private String  region;       // all/domestic/asia/europe/americas/middle-east
     private String  postType;     // review/photo/tip/question
     private String  postStatus;   // ACTIVE/DORMANT/DELETED

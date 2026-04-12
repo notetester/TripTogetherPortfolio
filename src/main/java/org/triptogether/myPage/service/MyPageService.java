@@ -3,6 +3,7 @@ package org.triptogether.myPage.service;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPageReportDto;
 
 import java.util.List;
 
@@ -12,6 +13,9 @@ public interface MyPageService {
     int getMyCommunityCount(Long userIdx);
     List<MyPageInquiryDto> getMyInquiryList(Long userIdx);
     int getMyInquiryCount(Long userIdx);
+
+    List<MyPageReportDto> getMyReportList(Long userIdx);
+    int getMyReportCount(Long userIdx);
 
     // ===== 알림 =====
     List<FeedNotificationDto> getNotifications(Long userIdx);

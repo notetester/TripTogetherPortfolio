@@ -15,8 +15,8 @@
                     <div>
                         <div class="adm-filter-label">상태</div>
                         <select class="adm-select" name="status">
-                            <option value=""          ${empty search.status        ?'selected':''}>전체</option>
-                            <option value="PENDING"   ${search.status=='PENDING'   ?'selected':''}>대기중</option>
+                            <option value=""           ${empty search.status         ?'selected':''}>전체</option>
+                            <option value="IN_REVIEW" ${search.status=='IN_REVIEW' ?'selected':''}>검토중</option>
                             <option value="RESOLVED"  ${search.status=='RESOLVED'  ?'selected':''}>처리완료</option>
                             <option value="DISMISSED" ${search.status=='DISMISSED' ?'selected':''}>반려</option>
                         </select>
@@ -55,15 +55,15 @@
                     <th>사유</th>
                     <th>신고일</th>
                     <th>처리일</th>
-                    <th>수정일</th>
-                    <th>처리 어드민</th>
                     <th>상태</th>
-                    <th>검토</th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach items="${reportList}" var="r">
-                    <tr>
+                    <tr class="rpt-admin-row" data-id="${r.reportId}" style="cursor:pointer;"
+                        onmouseenter="this.style.background='rgba(255,255,255,.04)'"
+                        onmouseleave="this.style.background=''"
+                    >
                         <td>#${r.reportId}</td>
 
                         <%-- 신고수: 3건 이상이면 빨간 강조 --%>
@@ -97,23 +97,21 @@
                             <div class="mem-uid">#${r.userIdx}</div>
                         </td>
 
-                        <%-- 사유: user 신고면 [사유 보기] 버튼 → 모달, 그 외 직접 표시 --%>
+                        <%-- 사유 --%>
                         <td>
-                            <c:choose>
-                                <c:when test="${r.targetType eq 'user'}">
-                                    <c:choose>
-                                        <c:when test="${not empty r.reason}">
-                                            <button class="adm-btn adm-btn-ghost rpt-reason-btn"
-                                                    style="font-size:11px;padding:3px 8px;"
-                                                    data-reason="${r.reason}">사유 보기</button>
-                                        </c:when>
-                                        <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
-                                    </c:choose>
-                                </c:when>
-                                <c:otherwise>
-                                    <span style="font-size:12px;">${r.reason}</span>
-                                </c:otherwise>
-                            </c:choose>
+                            <span style="font-size:12px;">
+                                <c:choose>
+                                    <c:when test="${r.reason eq 'spam'}">스팸/광고</c:when>
+                                    <c:when test="${r.reason eq 'abuse'}">욕설/비방</c:when>
+                                    <c:when test="${r.reason eq 'privacy'}">개인정보 노출</c:when>
+                                    <c:when test="${r.reason eq 'adult'}">음란물</c:when>
+                                    <c:when test="${r.reason eq 'illegal'}">불법 정보</c:when>
+                                    <c:when test="${r.reason eq 'other'}">기타</c:when>
+                                    <c:when test="${r.reason eq 'user'}">유저 신고</c:when>
+                                    <c:when test="${not empty r.reason}">${r.reason}</c:when>
+                                    <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
+                                </c:choose>
+                            </span>
                         </td>
 
                         <%-- 신고일 --%>
@@ -133,27 +131,11 @@
                             </c:choose>
                         </td>
 
-                        <%-- 수정일 --%>
-                        <td>
-                            <fmt:formatDate value="${r.updatedAt}" pattern="yyyy.MM.dd"/>
-                            <div class="mem-uid"><fmt:formatDate value="${r.updatedAt}" pattern="HH:mm"/></div>
-                        </td>
-
-                        <%-- 처리 어드민 --%>
-                        <td>
-                            <c:choose>
-                                <c:when test="${not empty r.resolverIdx}">
-                                    <span class="mem-uid">#${r.resolverIdx}</span>
-                                </c:when>
-                                <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
-                            </c:choose>
-                        </td>
-
                         <%-- 상태 배지 --%>
                         <td>
                             <span class="status-badge ${r.status}">
                                 <c:choose>
-                                    <c:when test="${r.status eq 'PENDING'}">대기중</c:when>
+                                    <c:when test="${r.status eq 'IN_REVIEW'}">검토중</c:when>
                                     <c:when test="${r.status eq 'RESOLVED'}">처리완료</c:when>
                                     <c:when test="${r.status eq 'DISMISSED'}">반려</c:when>
                                     <c:otherwise>${r.status}</c:otherwise>
@@ -161,22 +143,10 @@
                             </span>
                         </td>
 
-                        <%-- 검토 버튼 --%>
-                        <td>
-                            <c:if test="${r.status eq 'PENDING'}">
-                                <button class="adm-btn adm-btn-ghost rpt-review-btn"
-                                        style="font-size:11px;padding:3px 10px;"
-                                        data-id="${r.reportId}"
-                                        data-target-type="${r.targetType}">검토</button>
-                            </c:if>
-                            <c:if test="${r.status ne 'PENDING'}">
-                                <span style="color:#64748b;font-size:11px;">처리됨</span>
-                            </c:if>
-                        </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty reportList}">
-                    <tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;">조회 결과가 없습니다.</td></tr>
+                    <tr><td colspan="8" style="text-align:center;padding:40px;color:#475569;">조회 결과가 없습니다.</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -200,133 +170,13 @@
     </div>
 </div>
 
-<%-- ── 사유 보기 모달 ── --%>
-<div id="rpt-reason-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#1e2330;border-radius:12px;padding:28px 32px;min-width:320px;max-width:480px;box-shadow:0 8px 32px rgba(0,0,0,.4);">
-        <div style="font-size:15px;font-weight:700;color:#f1f5f9;margin-bottom:12px;">신고 사유</div>
-        <p id="rpt-reason-text" style="font-size:13px;color:#94a3b8;line-height:1.7;white-space:pre-wrap;"></p>
-        <div style="text-align:right;margin-top:20px;">
-            <button class="adm-btn adm-btn-ghost" id="rpt-reason-close" style="font-size:12px;">닫기</button>
-        </div>
-    </div>
-</div>
-
-<%-- ── 검토 모달 ── --%>
-<div id="rpt-review-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#1e2330;border-radius:12px;padding:28px 32px;min-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.4);">
-        <div style="font-size:15px;font-weight:700;color:#f1f5f9;margin-bottom:6px;">신고 처리</div>
-        <div id="rpt-review-desc" style="font-size:12px;color:#64748b;margin-bottom:20px;"></div>
-        <input type="hidden" id="review-report-id" value="">
-        <input type="hidden" id="review-target-type" value="">
-
-        <%-- POST / COMMENT 전용 버튼 그룹 --%>
-        <div id="rpt-btn-content" style="display:none;flex-direction:column;gap:8px;margin-bottom:12px;">
-            <button class="adm-btn rpt-action-btn" data-action="DELETE_CONTENT"
-                    style="font-size:12px;background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);width:100%;justify-content:center;">
-                게시물 삭제 후 처리완료
-            </button>
-            <button class="adm-btn rpt-action-btn" data-action="BLOCK_AUTHOR"
-                    style="font-size:12px;background:rgba(234,179,8,.15);color:#fbbf24;border:1px solid rgba(234,179,8,.3);width:100%;justify-content:center;">
-                작성자 계정 차단 후 처리완료
-            </button>
-        </div>
-
-        <%-- USER 전용 버튼 그룹 --%>
-        <div id="rpt-btn-user" style="display:none;flex-direction:column;gap:8px;margin-bottom:12px;">
-            <button class="adm-btn rpt-action-btn" data-action="BLOCK_USER"
-                    style="font-size:12px;background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);width:100%;justify-content:center;">
-                계정 차단 후 처리완료
-            </button>
-        </div>
-
-        <%-- 공통 하단 버튼 --%>
-        <div style="display:flex;gap:8px;justify-content:flex-end;border-top:1px solid rgba(255,255,255,.07);padding-top:12px;">
-            <button class="adm-btn adm-btn-ghost" id="rpt-review-close" style="font-size:12px;">취소</button>
-            <button class="adm-btn rpt-action-btn" data-action="REJECTED"
-                    style="font-size:12px;background:rgba(100,116,139,.2);color:#94a3b8;border:1px solid rgba(100,116,139,.3);">
-                유지 (반려)
-            </button>
-        </div>
-    </div>
-</div>
-
 <script>
-(function () {
-    // ── 사유 보기 모달 ──
-    var reasonModal = document.getElementById('rpt-reason-modal');
-    var reasonText  = document.getElementById('rpt-reason-text');
-
-    document.querySelectorAll('.rpt-reason-btn').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            reasonText.textContent = this.getAttribute('data-reason') || '(사유 없음)';
-            reasonModal.style.display = 'flex';
-        });
+// 행 클릭 시 신고 상세 페이지 이동
+document.querySelectorAll('.rpt-admin-row[data-id]').forEach(function (tr) {
+    tr.addEventListener('click', function () {
+        location.href = '${pageContext.request.contextPath}/report/' + this.getAttribute('data-id');
     });
-    document.getElementById('rpt-reason-close').addEventListener('click', function () {
-        reasonModal.style.display = 'none';
-    });
-    reasonModal.addEventListener('click', function (e) {
-        if (e.target === reasonModal) reasonModal.style.display = 'none';
-    });
-
-    // ── 검토 모달 ──
-    var reviewModal      = document.getElementById('rpt-review-modal');
-    var reviewReportId   = document.getElementById('review-report-id');
-    var reviewTargetType = document.getElementById('review-target-type');
-    var reviewDesc       = document.getElementById('rpt-review-desc');
-    var btnContent       = document.getElementById('rpt-btn-content');
-    var btnUser          = document.getElementById('rpt-btn-user');
-
-    var typeLabel = { post: '게시글', comment: '댓글', user: '유저' };
-
-    document.querySelectorAll('.rpt-review-btn').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var id   = this.getAttribute('data-id');
-            var type = this.getAttribute('data-target-type');
-            reviewReportId.value   = id;
-            reviewTargetType.value = type;
-            reviewDesc.textContent = '신고 대상: ' + (typeLabel[type] || type) + ' #' + id;
-            // 버튼 그룹 전환
-            btnContent.style.display = (type === 'post' || type === 'comment') ? 'flex' : 'none';
-            btnUser.style.display    = (type === 'user') ? 'flex' : 'none';
-            reviewModal.style.display = 'flex';
-        });
-    });
-    document.getElementById('rpt-review-close').addEventListener('click', function () {
-        reviewModal.style.display = 'none';
-    });
-    reviewModal.addEventListener('click', function (e) {
-        if (e.target === reviewModal) reviewModal.style.display = 'none';
-    });
-
-    function resolveReport(action) {
-        var reportId = reviewReportId.value;
-        if (!reportId) return;
-        fetch('${pageContext.request.contextPath}/admin/report/' + reportId + '/resolve', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'action=' + encodeURIComponent(action)
-        })
-        .then(function (res) { return res.json(); })
-        .then(function (data) {
-            if (data.success) {
-                reviewModal.style.display = 'none';
-                location.reload();
-            } else {
-                alert(data.message || '처리 중 오류가 발생했습니다.');
-            }
-        })
-        .catch(function () { alert('네트워크 오류가 발생했습니다.'); });
-    }
-
-    document.querySelectorAll('.rpt-action-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            resolveReport(this.getAttribute('data-action'));
-        });
-    });
-}());
+});
 
 function goPage(page) {
     var params = new URLSearchParams(window.location.search);

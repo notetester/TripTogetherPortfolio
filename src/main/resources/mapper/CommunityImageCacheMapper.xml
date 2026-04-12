@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.community.mapper.CommunityImageCacheMapper">
+
+    <delete id="deleteCacheByRegion">
+        DELETE FROM COMMUNITY_IMAGE_CACHE WHERE region = #{region}
+    </delete>
+
+    <insert id="insertCache">
+        INSERT INTO COMMUNITY_IMAGE_CACHE (region, image_url, fetched_at)
+        VALUES (#{region}, #{imageUrl}, NOW())
+    </insert>
+
+    <select id="selectRandomCacheImage" resultType="String">
+        SELECT image_url
+        FROM COMMUNITY_IMAGE_CACHE
+        WHERE region = #{region}
+        ORDER BY RAND()
+        LIMIT 1
+    </select>
+
+    <select id="selectRandomCacheImageFromAll" resultType="String">
+        SELECT image_url
+        FROM COMMUNITY_IMAGE_CACHE
+        ORDER BY RAND()
+        LIMIT 1
+    </select>
+
+</mapper>

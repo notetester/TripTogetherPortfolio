@@ -165,6 +165,10 @@ public class InquiryController {
             result.put("success",   true);
             result.put("inquiryId", inquiryId);
 
+        } catch (IllegalStateException e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.status(429).body(result);
         } catch (Exception e) {
             log.error("문의 등록 오류", e);
             result.put("success", false);
@@ -528,6 +532,41 @@ public class InquiryController {
         String status = "private".equals(type) ? "PRIVATE_REQUESTED" : "PUBLIC_REQUESTED";
         inquiryService.updateStatusWithTime(inquiryId, status);
         result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/delete-approve - 관리자 삭제 요청 수락
+       ============================================= */
+    @PostMapping("/{inquiryId}/delete-approve")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteApprove(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdmin(session)) {
+            result.put("success", false);
+            result.put("message", "운영진만 수락할 수 있어요.");
+            return ResponseEntity.status(403).body(result);
+        }
+        InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+        if (inquiry == null) {
+            result.put("success", false);
+            return ResponseEntity.status(404).body(result);
+        }
+        if (!"DELETE_REQUESTED".equals(inquiry.getStatus())) {
+            result.put("success", false);
+            result.put("message", "삭제 요청 상태가 아닙니다.");
+            return ResponseEntity.status(400).body(result);
+        }
+        try {
+            inquiryService.deleteInquiry(inquiryId);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("삭제 요청 수락 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
         return ResponseEntity.ok(result);
     }
 

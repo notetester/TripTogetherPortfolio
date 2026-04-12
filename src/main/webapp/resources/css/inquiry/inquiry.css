@@ -138,13 +138,13 @@
 
 /* 문의하기 버튼 */
 .inq-btn-write {
-    padding: 9px 20px;
+    padding: 8px 14px;
     border-radius: 8px;
     background: var(--blue);
     color: #fff;
     border: none;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: opacity .2s, transform .2s;
@@ -568,13 +568,13 @@
 
 /* 공통 버튼 - 제출 */
 .inq-btn-submit {
-    padding: 10px 24px;
+    padding: 8px 14px;
     border-radius: 8px;
     background: var(--blue);
     color: #fff;
     border: none;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: opacity .2s, transform .2s;
@@ -600,13 +600,13 @@
 
 /* 공통 버튼 - 취소 */
 .inq-btn-cancel {
-    padding: 10px 20px;
+    padding: 8px 14px;
     border-radius: 8px;
     background: var(--gray-100);
     color: var(--gray-600);
     border: none;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     transition: background .15s;
@@ -763,6 +763,11 @@
 
 .inq-btn-status:hover    { opacity: .85; transform: translateY(-1px); }
 .inq-btn-status:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+.inq-btn-status.inq-btn-status-pending {
+    background: #fef9c3;
+    color: #854d0e;
+}
 
 .inq-btn-status.inq-btn-status-complete {
     background: #dcfce7;

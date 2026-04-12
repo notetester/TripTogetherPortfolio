@@ -50,4 +50,13 @@ public class ReportDto {
 
     /** 동일 대상(post/comment/user)의 총 신고 접수 건수 (서브쿼리 조회) */
     private int targetReportCount;
+
+    /** 처리 액션 텍스트 (게시글 삭제 / 작성자 차단 등) */
+    private String resolveAction;
+
+    /** 유저 신고 출처 유형 (post / comment) */
+    private String sourceType;
+
+    /** 유저 신고 출처 ID (post_id / comment_id) */
+    private Long sourceId;
 }

@@ -125,11 +125,22 @@ CREATE TABLE IF NOT EXISTS `COMMUNITY_POST_IMAGE` (
   `post_id` bigint NOT NULL COMMENT '게시글 ID (COMMUNITY_POST.post_id 참조)',
   `image_url` varchar(500) NOT NULL COMMENT '이미지 경로',
   `sort_order` int NOT NULL DEFAULT '1' COMMENT '이미지 순서 (1번이 대표 이미지)',
+  `is_auto` tinyint(1) NOT NULL DEFAULT '0' COMMENT '자동추천 이미지 여부 (0=유저업로드, 1=Pixabay자동)',
   PRIMARY KEY (`image_id`),
   KEY `idx_cpi_post` (`post_id`),
   KEY `idx_cpi_order` (`post_id`,`sort_order`),
   CONSTRAINT `fk_cpi_post` FOREIGN KEY (`post_id`) REFERENCES `COMMUNITY_POST` (`post_id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='게시글 이미지 (여러 장 지원)';
+
+-- Pixabay 자동추천 이미지 캐시 테이블
+CREATE TABLE IF NOT EXISTS `COMMUNITY_IMAGE_CACHE` (
+  `cache_id` bigint NOT NULL AUTO_INCREMENT COMMENT '캐시 ID',
+  `region` varchar(50) NOT NULL COMMENT '지역 코드 (asia/europe/africa/north_america/south_america/oceania)',
+  `image_url` varchar(500) NOT NULL COMMENT 'Pixabay webformatURL',
+  `fetched_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '수집 일시',
+  PRIMARY KEY (`cache_id`),
+  KEY `idx_cic_region` (`region`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Pixabay 자동추천 이미지 캐시';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -360,11 +371,14 @@ CREATE TABLE IF NOT EXISTS `REPORT` (
   `target_id` bigint NOT NULL,
   `reason` varchar(50) DEFAULT NULL,
   `description` varchar(500) DEFAULT NULL,
-  `status` varchar(20) NOT NULL DEFAULT 'PENDING',
+  `status` varchar(20) NOT NULL DEFAULT 'IN_REVIEW',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `resolved_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `resolver_idx` bigint DEFAULT NULL,
+  `resolve_action` varchar(50) DEFAULT NULL,
+  `source_type` varchar(20) DEFAULT NULL,
+  `source_id` bigint DEFAULT NULL,
   PRIMARY KEY (`report_id`),
   UNIQUE KEY `uq_report` (`user_idx`,`target_type`,`target_id`),
   KEY `resolver_idx` (`resolver_idx`),

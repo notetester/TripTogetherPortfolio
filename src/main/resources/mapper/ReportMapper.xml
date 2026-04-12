@@ -25,6 +25,9 @@
         <result property="resolverIdx"       column="resolver_idx"/>
         <result property="nickname"          column="nickname"/>
         <result property="targetReportCount" column="target_report_count"/>
+        <result property="resolveAction"     column="resolve_action"/>
+        <result property="sourceType"        column="source_type"/>
+        <result property="sourceId"          column="source_id"/>
     </resultMap>
 
     <!-- =============================================
@@ -37,6 +40,9 @@
             </if>
             <if test="targetType != null and targetType != ''">
                 AND r.target_type = #{targetType}
+            </if>
+            <if test="userIdx != null">
+                AND r.user_idx = #{userIdx}
             </if>
         </where>
     </sql>
@@ -59,6 +65,9 @@
             r.resolved_at,
             r.updated_at,
             r.resolver_idx,
+            r.resolve_action,
+            r.source_type,
+            r.source_id,
             u.nickname,
             (
                 SELECT COUNT(*)
@@ -98,6 +107,9 @@
             r.resolved_at,
             r.updated_at,
             r.resolver_idx,
+            r.resolve_action,
+            r.source_type,
+            r.source_id,
             u.nickname
         FROM REPORT r
         LEFT JOIN USERS u ON r.user_idx = u.user_idx
@@ -121,12 +133,17 @@
     <insert id="insertReport" useGeneratedKeys="true" keyProperty="reportId">
         INSERT IGNORE INTO REPORT (
             user_idx, target_type, target_id,
-            reason, description, status, created_at, updated_at
+            reason, description, status, source_type, source_id, created_at, updated_at
         ) VALUES (
             #{userIdx}, #{targetType}, #{targetId},
-            #{reason}, #{description}, 'PENDING', NOW(), NOW()
+            #{reason}, #{description}, 'IN_REVIEW', #{sourceType}, #{sourceId}, NOW(), NOW()
         )
     </insert>
+
+    <!-- 신고 대상 유저 닉네임 조회 -->
+    <select id="selectTargetUserNickname" resultType="String">
+        SELECT nickname FROM USERS WHERE user_idx = #{userIdx}
+    </select>
 
     <!-- =============================================
          6. 신고 상태 변경
@@ -134,10 +151,81 @@
          ============================================= -->
     <update id="updateReportStatus">
         UPDATE REPORT
-        SET status       = #{status},
-            resolver_idx = #{resolverIdx},
-            resolved_at  = NOW(),
-            updated_at   = NOW()
+        SET status         = #{status},
+            resolver_idx   = #{resolverIdx},
+            resolve_action = #{resolveAction},
+            resolved_at    = NOW(),
+            updated_at     = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- 신고 처리 취소 → IN_REVIEW 복원 (resolved_at 초기화) -->
+    <update id="revertReportToPending">
+        UPDATE REPORT
+        SET status         = 'IN_REVIEW',
+            resolver_idx   = NULL,
+            resolve_action = NULL,
+            resolved_at    = NULL,
+            updated_at     = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- =============================================
+         8. 신고 내용 수정 (본인 + IN_REVIEW)
+         ============================================= -->
+    <update id="updateReport">
+        UPDATE REPORT
+        SET reason      = #{reason},
+            description = #{description},
+            updated_at  = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- =============================================
+         9. 신고 삭제 (본인)
+         ============================================= -->
+    <delete id="deleteReport">
+        DELETE FROM REPORT WHERE report_id = #{reportId}
+    </delete>
+
+    <!-- =============================================
+         10. 신고 취소 → CANCELLED (본인 + IN_REVIEW)
+         ============================================= -->
+    <update id="cancelReport">
+        UPDATE REPORT
+        SET status     = 'CANCELLED',
+            updated_at = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- =============================================
+         11. 동일 유저+대상 신고 조회 (재신고 판별용)
+         ============================================= -->
+    <select id="selectReportByUserAndTarget" resultMap="ReportResultMap">
+        SELECT report_id, user_idx, target_type, target_id, reason, description,
+               status, created_at, resolved_at, updated_at, resolver_idx,
+               resolve_action, source_type, source_id
+        FROM REPORT
+        WHERE user_idx    = #{userIdx}
+          AND target_type = #{targetType}
+          AND target_id   = #{targetId}
+        LIMIT 1
+    </select>
+
+    <!-- =============================================
+         12. 취소된 신고 재활성화 (CANCELLED → IN_REVIEW)
+         ============================================= -->
+    <update id="reactivateCancelledReport">
+        UPDATE REPORT
+        SET status      = 'IN_REVIEW',
+            reason      = #{reason},
+            description = #{description},
+            source_type = #{sourceType},
+            source_id   = #{sourceId},
+            resolver_idx   = NULL,
+            resolve_action = NULL,
+            resolved_at    = NULL,
+            updated_at     = NOW()
         WHERE report_id = #{reportId}
     </update>
 

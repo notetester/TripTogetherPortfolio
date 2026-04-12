@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPageReportDto;
 
 import java.util.List;
 
@@ -16,6 +17,9 @@ public interface MyPageMapper {
 
     List<MyPageInquiryDto> selectMyInquiryList(@Param("userIdx") Long userIdx);
     int selectMyInquiryCount(@Param("userIdx") Long userIdx);
+
+    List<MyPageReportDto> selectMyReportList(@Param("userIdx") Long userIdx);
+    int selectMyReportCount(@Param("userIdx") Long userIdx);
 
     // ===== 알림 =====
     List<FeedNotificationDto> selectNotifications(@Param("userIdx") Long userIdx);
