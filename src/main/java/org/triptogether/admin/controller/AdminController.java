@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.triptogether.admin.service.AdminService;
 import org.triptogether.admin.vo.*;
 import org.triptogether.community.service.CommunityService;
-import org.triptogether.community.vo.CommunityCommentDto;
-import org.triptogether.community.vo.CommunityPostDto;
 import org.triptogether.report.service.ReportService;
 import org.triptogether.report.vo.ReportDto;
 import org.triptogether.report.vo.ReportSearchDto;
@@ -170,7 +168,7 @@ public class AdminController {
 
                 case "REJECTED":
                     // 콘텐츠·계정 유지, 신고 반려
-                    reportService.updateReportStatus(reportId, "DISMISSED", resolverIdx);
+                    reportService.updateReportStatus(reportId, "DISMISSED", resolverIdx, null);
                     break;
 
                 case "DELETE_CONTENT":
@@ -184,18 +182,17 @@ public class AdminController {
                         result.put("message", "해당 대상 유형에는 콘텐츠 삭제를 사용할 수 없습니다.");
                         return ResponseEntity.status(400).body(result);
                     }
-                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx);
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx,
+                            "post".equals(targetType) ? "게시글 삭제" : "댓글 삭제");
                     break;
 
                 case "BLOCK_AUTHOR":
                     // 작성자 계정 차단 후 신고 처리완료
                     Long authorIdx = null;
                     if ("post".equals(targetType)) {
-                        CommunityPostDto post = communityService.getPost(targetId);
-                        if (post != null) authorIdx = post.getUserIdx();
+                        authorIdx = adminService.getPostAuthorIdx(targetId);
                     } else if ("comment".equals(targetType)) {
-                        CommunityCommentDto comment = communityService.getComment(targetId);
-                        if (comment != null) authorIdx = comment.getUserIdx();
+                        authorIdx = adminService.getCommentAuthorIdx(targetId);
                     } else {
                         result.put("success", false);
                         result.put("message", "해당 대상 유형에는 작성자 차단을 사용할 수 없습니다.");
@@ -207,7 +204,7 @@ public class AdminController {
                         return ResponseEntity.status(404).body(result);
                     }
                     adminService.changeMemberStatus(authorIdx, "BLOCKED");
-                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx);
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx, "작성자 차단");
                     break;
 
                 case "BLOCK_USER":
@@ -218,7 +215,38 @@ public class AdminController {
                         return ResponseEntity.status(400).body(result);
                     }
                     adminService.changeMemberStatus(targetId, "BLOCKED");
-                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx);
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx, "유저 계정 차단");
+                    break;
+
+                case "DELETE_AND_BLOCK":
+                    // 게시물/댓글 삭제 + 작성자 차단 후 신고 처리완료
+                    Long authorIdxForBlock = null;
+                    if ("post".equals(targetType)) {
+                        authorIdxForBlock = adminService.getPostAuthorIdx(targetId);
+                        communityService.deletePost(targetId);
+                    } else if ("comment".equals(targetType)) {
+                        authorIdxForBlock = adminService.getCommentAuthorIdx(targetId);
+                        communityService.deleteComment(targetId);
+                    } else {
+                        result.put("success", false);
+                        result.put("message", "해당 대상 유형에는 이 처리를 사용할 수 없습니다.");
+                        return ResponseEntity.status(400).body(result);
+                    }
+                    if (authorIdxForBlock != null) {
+                        adminService.changeMemberStatus(authorIdxForBlock, "BLOCKED");
+                    }
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx,
+                            "post".equals(targetType) ? "게시글 삭제 + 작성자 차단" : "댓글 삭제 + 작성자 차단");
+                    break;
+
+                case "REVERT_TO_PENDING":
+                    // 반려/처리완료 → IN_REVIEW 복원
+                    if ("IN_REVIEW".equals(report.getStatus())) {
+                        result.put("success", false);
+                        result.put("message", "이미 검토중 상태입니다.");
+                        return ResponseEntity.status(400).body(result);
+                    }
+                    reportService.revertReportToPending(reportId);
                     break;
 
                 default:

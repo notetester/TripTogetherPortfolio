@@ -6,6 +6,7 @@ import org.triptogether.myPage.mapper.MyPageMapper;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPageReportDto;
 
 import java.util.List;
 
@@ -33,6 +34,16 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public int getMyInquiryCount(Long userIdx) {
         return myPageMapper.selectMyInquiryCount(userIdx);
+    }
+
+    @Override
+    public List<MyPageReportDto> getMyReportList(Long userIdx) {
+        return myPageMapper.selectMyReportList(userIdx);
+    }
+
+    @Override
+    public int getMyReportCount(Long userIdx) {
+        return myPageMapper.selectMyReportCount(userIdx);
     }
 
     @Override

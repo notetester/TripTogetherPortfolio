@@ -53,5 +53,47 @@ public interface ReportMapper {
        ============================================= */
     void updateReportStatus(@Param("reportId") Long reportId,
                             @Param("status") String status,
-                            @Param("resolverIdx") Long resolverIdx);
+                            @Param("resolverIdx") Long resolverIdx,
+                            @Param("resolveAction") String resolveAction);
+
+    /* =============================================
+       7. 신고 반려 취소 → PENDING 복원
+       - resolver_idx, resolved_at 초기화
+       ============================================= */
+    void revertReportToPending(@Param("reportId") Long reportId);
+
+    String selectTargetUserNickname(@Param("userIdx") Long userIdx);
+
+    /* =============================================
+       8. 신고 내용 수정
+       ============================================= */
+    void updateReport(@Param("reportId") Long reportId,
+                      @Param("reason") String reason,
+                      @Param("description") String description);
+
+    /* =============================================
+       9. 신고 삭제
+       ============================================= */
+    void deleteReport(@Param("reportId") Long reportId);
+
+    /* =============================================
+       10. 신고 취소 → CANCELLED
+       ============================================= */
+    void cancelReport(@Param("reportId") Long reportId);
+
+    /* =============================================
+       11. 동일 유저+대상 신고 조회 (재신고 판별용)
+       ============================================= */
+    ReportDto selectReportByUserAndTarget(@Param("userIdx") Long userIdx,
+                                          @Param("targetType") String targetType,
+                                          @Param("targetId") Long targetId);
+
+    /* =============================================
+       12. 취소된 신고 재활성화 (CANCELLED → IN_REVIEW)
+       ============================================= */
+    void reactivateCancelledReport(@Param("reportId") Long reportId,
+                                   @Param("reason") String reason,
+                                   @Param("description") String description,
+                                   @Param("sourceType") String sourceType,
+                                   @Param("sourceId") Long sourceId);
 }

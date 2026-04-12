@@ -13,4 +13,5 @@ public class CommunityPostImageDto {
     private Long    postId;
     private String  imageUrl;
     private int     sortOrder;  // 1번이 대표 이미지
+    private boolean autoImage;  // true = Pixabay 자동추천 이미지
 }

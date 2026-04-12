@@ -108,6 +108,10 @@ public class InquiryServiceImpl implements InquiryService {
     @Override
     @Transactional
     public Long writeInquiry(InquiryPostDto inquiry, List<MultipartFile> images) {
+        // 도배 방지: 10분 내 3개 이상이면 거부
+        if (inquiryMapper.countRecentInquiriesByUser(inquiry.getUserIdx(), 10) >= 3) {
+            throw new IllegalStateException("10분 내 문의를 3개 이상 작성할 수 없습니다.");
+        }
         inquiryMapper.insertInquiry(inquiry);
         Long inquiryId = inquiry.getInquiryId();
 

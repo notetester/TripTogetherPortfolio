@@ -102,4 +102,7 @@ public interface InquiryMapper {
     void insertAttachment(InquiryAttachmentDto attachment);
     List<InquiryAttachmentDto> selectAttachmentList(@Param("inquiryId") Long inquiryId);
     void deleteAttachment(@Param("attachmentId") Long attachmentId);
+
+    // ===== 도배 방지 =====
+    int countRecentInquiriesByUser(@Param("userIdx") Long userIdx, @Param("minutes") int minutes);
 }

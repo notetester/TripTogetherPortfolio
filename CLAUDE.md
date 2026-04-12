@@ -88,9 +88,17 @@ Files are stored at `${file.upload.path}` (default: `src/main/resources/upload/`
 
 ---
 
-## 작업 방식
-- 코드 작성 전 항상 구현 계획을 먼저 설명하고 승인받을 것
-- 승인 없이 바로 코드 작성 금지
+## Database Schema
+DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 참고해.
+
+---
+
+## ⚠️ 작업 방식 (절대 규칙)
+- 어떤 코드 변경이든 반드시 구현 계획을 먼저 텍스트로 설명할 것
+- 사용자가 명시적으로 "진행" 또는 승인 의사를 밝힌 후에만 코드 작성 시작
+- 승인 전 Edit/Write/Bash(코드 수정) 도구 사용 절대 금지
+- "계획부터", "코딩하지마" 등의 지시가 없어도 이 규칙은 항상 적용됨
+- 단순 오타 수정·주석 수정이라도 계획 설명 후 승인 필요
 
 ## ⚠️ 작업 브랜치 규칙 (매우 중요)
 - 코드 작업은 반드시 Victor 브랜치에서만 할 것
@@ -104,6 +112,7 @@ Files are stored at `${file.upload.path}` (default: `src/main/resources/upload/`
 - 커뮤니티: `comm-`
 - 문의게시판: `inq-`
 - 마이페이지: `mp-`
+- 신고게시판: `rpt-`
 - 모듈 간 프리픽스 절대 섞지 말 것
 
 ## JSP/EL 작성 규칙

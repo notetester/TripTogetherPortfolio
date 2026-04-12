@@ -46,11 +46,32 @@ public interface ReportService {
        - 동일 유저 중복 신고 방지 (INSERT IGNORE)
        - 이미 신고한 경우 false 반환
        ============================================= */
-    boolean submitReport(String targetType, Long targetId, Long userIdx, String reason);
+    boolean submitReport(String targetType, Long targetId, Long userIdx, String reason, String description,
+                         String sourceType, Long sourceId);
 
     /* =============================================
        7. 신고 상태 변경 (관리자)
        - PENDING → RESOLVED / DISMISSED
        ============================================= */
-    void updateReportStatus(Long reportId, String status, Long resolverIdx);
+    void updateReportStatus(Long reportId, String status, Long resolverIdx, String resolveAction);
+
+    /* =============================================
+       8. 신고 반려 취소 → PENDING 복원 (관리자)
+       ============================================= */
+    void revertReportToPending(Long reportId);
+
+    /* =============================================
+       9. 신고 내용 수정 (본인 + IN_REVIEW)
+       ============================================= */
+    void updateReport(Long reportId, String reason, String description);
+
+    /* =============================================
+       10. 신고 삭제 (본인)
+       ============================================= */
+    void deleteReport(Long reportId);
+
+    /* =============================================
+       11. 신고 취소 → CANCELLED (본인 + IN_REVIEW)
+       ============================================= */
+    void cancelReport(Long reportId);
 }

@@ -15,7 +15,7 @@ public class CommunityWriteDto {
     private String              title;
     private String              content;
 
-    // COMMUNITY_POST_DETAIL
+    // COMMUNITY_POST (통합 필드)
     private String              region   = "all";
     private String              postType = "review";
 

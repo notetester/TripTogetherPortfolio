@@ -281,6 +281,8 @@ public class ProfileController {
         model.addAttribute("communityCount", myPageService.getMyCommunityCount(user.getUserIdx()));
         model.addAttribute("inquiryList",    myPageService.getMyInquiryList(user.getUserIdx()));
         model.addAttribute("inquiryCount",   myPageService.getMyInquiryCount(user.getUserIdx()));
+        model.addAttribute("reportList",     myPageService.getMyReportList(user.getUserIdx()));
+        model.addAttribute("reportCount",    myPageService.getMyReportCount(user.getUserIdx()));
         model.addAttribute("notifications", myPageService.getNotifications(user.getUserIdx()));
         model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(user.getUserIdx()));
         return "mypage/index";
@@ -327,6 +329,8 @@ public class ProfileController {
             return "/community/" + sourceId;
         } else if ("inquiry".equals(sourceType)) {
             return "/inquiry/" + sourceId;
+        } else if ("report".equals(sourceType)) {
+            return "/report/" + sourceId;
         }
 
         return "/mypage";

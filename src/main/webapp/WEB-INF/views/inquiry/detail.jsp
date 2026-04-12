@@ -169,9 +169,19 @@
         <%-- 상태 변경 버튼 영역 --%>
         <div class="inq-admin-status-bar">
           <span class="inq-admin-status-label">상태 변경:</span>
+          <button class="inq-btn-status inq-btn-status-pending" id="btnStatusPending">🔔 대기중</button>
           <button class="inq-btn-status" id="btnStatusInProgress">🔄 처리중</button>
           <button class="inq-btn-status inq-btn-status-complete" id="btnStatusCompleted">✅ 답변완료</button>
         </div>
+
+        <%-- 삭제 요청 수락 버튼 (DELETE_REQUESTED 상태일 때만 표시) --%>
+        <c:if test="${inquiry.status eq 'DELETE_REQUESTED'}">
+          <div class="inq-admin-status-bar">
+            <span class="inq-admin-status-label">삭제 요청 대기중:</span>
+            <button class="inq-btn-submit" id="btnApproveDelete"
+                    style="background:#ef4444;">🗑️ 삭제 수락</button>
+          </div>
+        </c:if>
 
         <%-- 공개/비공개 요청 수락 버튼 (해당 상태일 때만 표시) --%>
         <c:if test="${inquiry.status eq 'PUBLIC_REQUESTED'}">
@@ -365,10 +375,23 @@
   }
 
   /* =============================================
-     어드민: 상태 변경 (처리중 / 답변완료)
+     어드민: 상태 변경 (대기중 / 처리중 / 답변완료)
      ============================================= */
+  var btnPending    = document.getElementById('btnStatusPending');
   var btnInProgress = document.getElementById('btnStatusInProgress');
   var btnCompleted  = document.getElementById('btnStatusCompleted');
+
+  if (btnPending) {
+    btnPending.addEventListener('click', async function () {
+      if (!confirm('상태를 "대기중"으로 변경하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/status', { status: 'PENDING' });
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '상태 변경에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
 
   if (btnInProgress) {
     btnInProgress.addEventListener('click', async function () {
@@ -433,8 +456,21 @@
   /* =============================================
      어드민: 공개/비공개 요청 수락
      ============================================= */
+  var btnApproveDelete  = document.getElementById('btnApproveDelete');
   var btnApprovePublic  = document.getElementById('btnApprovePublic');
   var btnApprovePrivate = document.getElementById('btnApprovePrivate');
+
+  if (btnApproveDelete) {
+    btnApproveDelete.addEventListener('click', async function () {
+      if (!confirm('삭제 요청을 수락하고 문의를 삭제하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/delete-approve', {});
+        if (data.success) { location.href = ctx + '/inquiry/list'; }
+        else { alert(data.message || '처리에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
 
   if (btnApprovePublic) {
     btnApprovePublic.addEventListener('click', async function () {

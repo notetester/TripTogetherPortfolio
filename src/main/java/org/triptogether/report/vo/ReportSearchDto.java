@@ -13,8 +13,11 @@ public class ReportSearchDto {
     /** 처리 상태 필터 (PENDING / RESOLVED / DISMISSED) */
     private String status;
 
-    /** 신고 대상 유형 필터 (post / comment) */
+    /** 신고 대상 유형 필터 (post / comment / user) */
     private String targetType;
+
+    /** 신고자 유저 idx 필터 (본인 신고내역 조회용, null이면 전체) */
+    private Long userIdx;
 
     /** 현재 페이지 번호 (기본값: 1) */
     private int page = 1;
