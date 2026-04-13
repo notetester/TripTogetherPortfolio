@@ -2,6 +2,7 @@ package org.triptogether.report.service;
 
 import org.triptogether.report.vo.ReportDto;
 import org.triptogether.report.vo.ReportSearchDto;
+import org.triptogether.report.vo.ReportStatsDto;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public interface ReportService {
        - 검색 조건(status, targetType)에 맞는 신고 목록 반환
        - 페이지네이션 포함
        ============================================= */
+    ReportStatsDto getReportStats();
+
     List<ReportDto> getReportList(ReportSearchDto search);
 
     /* =============================================

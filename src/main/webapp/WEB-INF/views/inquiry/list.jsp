@@ -269,10 +269,11 @@
     // 행 클릭 시 상세 페이지 이동
     // - onclick 속성 대신 JS로 처리 (EL 충돌 방지)
     // - data-id 속성에서 inquiryId 읽어서 이동
+    var listParams = 'page=${search.page}&category=${search.category}&status=${search.status}&keyword=' + encodeURIComponent('${search.keyword}');
     document.querySelectorAll('.inq-row[data-id]').forEach(function (tr) {
         tr.style.cursor = 'pointer';
         tr.addEventListener('click', function () {
-            location.href = ctx + '/inquiry/' + this.getAttribute('data-id');
+            location.href = ctx + '/inquiry/' + this.getAttribute('data-id') + '?' + listParams;
         });
     });
 

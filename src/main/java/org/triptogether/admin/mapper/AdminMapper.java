@@ -27,6 +27,15 @@ public interface AdminMapper {
     // 문의 관리
     List<AdminInquiryVO> findInquiries(AdminInquirySearchVO search);
     int countInquiries(AdminInquirySearchVO search);
+    AdminInquiryVO findInquiryDetail(Long inquiryId);
+    AdminInquiryStatsVO getInquiryStats();
+    void insertInquiryAnswer(@Param("inquiryId") Long inquiryId,
+                             @Param("adminUserIdx") Long adminUserIdx,
+                             @Param("content") String content);
+    void updateInquiryAnswer(@Param("answerId") Long answerId, @Param("content") String content);
+    void deleteInquiryAnswer(Long inquiryId);
+    void updateInquiryStatus(@Param("inquiryId") Long inquiryId, @Param("status") String status);
+    void deleteInquiry(Long inquiryId);
 
     // 로그인 감사
     List<AdminLoginAuditVO> findLoginAudits(AdminLoginAuditSearchVO search);

@@ -80,6 +80,43 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public AdminInquiryVO getInquiryDetail(Long inquiryId) {
+        return adminMapper.findInquiryDetail(inquiryId);
+    }
+
+    @Override
+    public AdminInquiryStatsVO getInquiryStats() {
+        return adminMapper.getInquiryStats();
+    }
+
+    @Override
+    public void saveInquiryAnswer(Long inquiryId, Long adminUserIdx, String content) {
+        AdminInquiryVO inquiry = adminMapper.findInquiryDetail(inquiryId);
+        if (inquiry.getAnswerId() != null) {
+            adminMapper.updateInquiryAnswer(inquiry.getAnswerId(), content);
+        } else {
+            adminMapper.insertInquiryAnswer(inquiryId, adminUserIdx, content);
+            adminMapper.updateInquiryStatus(inquiryId, "COMPLETED");
+        }
+    }
+
+    @Override
+    public void deleteInquiryAnswer(Long inquiryId) {
+        adminMapper.deleteInquiryAnswer(inquiryId);
+        adminMapper.updateInquiryStatus(inquiryId, "PENDING");
+    }
+
+    @Override
+    public void updateInquiryStatus(Long inquiryId, String status) {
+        adminMapper.updateInquiryStatus(inquiryId, status);
+    }
+
+    @Override
+    public void deleteInquiry(Long inquiryId) {
+        adminMapper.deleteInquiry(inquiryId);
+    }
+
+    @Override
     public Map<String, Object> getInquiryList(AdminInquirySearchVO search) {
         List<AdminInquiryVO> list = adminMapper.findInquiries(search);
         int total = adminMapper.countInquiries(search);

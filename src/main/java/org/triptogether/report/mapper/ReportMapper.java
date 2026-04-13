@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.triptogether.report.vo.ReportDto;
 import org.triptogether.report.vo.ReportSearchDto;
+import org.triptogether.report.vo.ReportStatsDto;
 
 import java.util.List;
 
@@ -21,6 +22,8 @@ public interface ReportMapper {
        - USERS JOIN으로 신고자 닉네임 포함
        - 페이지네이션 포함
        ============================================= */
+    ReportStatsDto selectReportStats();
+
     List<ReportDto> selectReportList(ReportSearchDto search);
 
     /* =============================================

@@ -48,6 +48,12 @@ public class ReportDto {
     /** 신고한 유저의 닉네임 (USERS 테이블 JOIN) */
     private String nickname;
 
+    /** 신고한 유저의 아이디 (USERS 테이블 JOIN) */
+    private String userId;
+
+    /** 신고한 유저의 계정 상태 (USERS 테이블 JOIN) */
+    private String accountStatus;
+
     /** 동일 대상(post/comment/user)의 총 신고 접수 건수 (서브쿼리 조회) */
     private int targetReportCount;
 

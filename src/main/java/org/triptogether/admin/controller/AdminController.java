@@ -118,8 +118,90 @@ public class AdminController {
     @GetMapping("/inquiries")
     public String inquiryList(AdminInquirySearchVO search, Model model) {
         model.addAllAttributes(adminService.getInquiryList(search));
+        model.addAttribute("stats", adminService.getInquiryStats());
         model.addAttribute("activeMenu", "inquiries");
         return "admin/inquiry/list";
+    }
+
+    @GetMapping("/inquiries/{inquiryId}")
+    public String inquiryDetail(@PathVariable Long inquiryId, Model model) {
+        AdminInquiryVO inquiry = adminService.getInquiryDetail(inquiryId);
+        if (inquiry == null) {
+            return "redirect:/admin/inquiries";
+        }
+        model.addAttribute("inquiry", inquiry);
+        model.addAttribute("activeMenu", "inquiries");
+        return "admin/inquiry/detail";
+    }
+
+    @PostMapping("/inquiries/{inquiryId}/answer")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> saveInquiryAnswer(
+            @PathVariable Long inquiryId,
+            @RequestParam String content,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        try {
+            adminService.saveInquiryAnswer(inquiryId, loginUser.getUserIdx(), content);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("답변 저장 오류 inquiryId={}", inquiryId, e);
+            result.put("success", false);
+            result.put("message", "처리 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(result);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/inquiries/{inquiryId}/answer/delete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteInquiryAnswer(@PathVariable Long inquiryId) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            adminService.deleteInquiryAnswer(inquiryId);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("답변 삭제 오류 inquiryId={}", inquiryId, e);
+            result.put("success", false);
+            result.put("message", "처리 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(result);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/inquiries/{inquiryId}/status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> changeInquiryStatus(
+            @PathVariable Long inquiryId,
+            @RequestParam String status) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            adminService.updateInquiryStatus(inquiryId, status);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("문의 상태 변경 오류 inquiryId={}", inquiryId, e);
+            result.put("success", false);
+            result.put("message", "처리 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(result);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/inquiries/{inquiryId}/delete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteInquiry(@PathVariable Long inquiryId) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            adminService.deleteInquiry(inquiryId);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("문의 삭제 오류 inquiryId={}", inquiryId, e);
+            result.put("success", false);
+            result.put("message", "처리 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(result);
+        }
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/reports")
@@ -128,8 +210,20 @@ public class AdminController {
         model.addAttribute("totalCount",  reportService.getTotalCount(search));
         model.addAttribute("totalPage",   reportService.getTotalPage(search));
         model.addAttribute("search",      search);
+        model.addAttribute("stats",       reportService.getReportStats());
         model.addAttribute("activeMenu",  "reports");
         return "admin/report/list";
+    }
+
+    @GetMapping("/reports/{reportId}")
+    public String reportDetail(@PathVariable Long reportId, Model model) {
+        var report = reportService.getReport(reportId);
+        if (report == null) {
+            return "redirect:/admin/reports";
+        }
+        model.addAttribute("report", report);
+        model.addAttribute("activeMenu", "reports");
+        return "admin/report/detail";
     }
 
     /**

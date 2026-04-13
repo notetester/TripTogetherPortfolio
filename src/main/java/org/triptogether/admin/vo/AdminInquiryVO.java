@@ -16,11 +16,14 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminInquiryVO {
+public class
+
+AdminInquiryVO {
     private Long inquiryId;
     private Long userIdx;
     private String userId;
     private String nickname;
+    private String accountStatus;
     private String title;
     private String content;
     private String category;

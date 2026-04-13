@@ -48,6 +48,7 @@
         <result property="userIdx" column="user_idx"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>
+        <result property="accountStatus" column="account_status"/>
         <result property="title" column="title"/>
         <result property="content" column="content"/>
         <result property="category" column="category"/>
@@ -377,7 +378,7 @@
 
     <select id="findInquiries" resultMap="inquiryRM">
         SELECT
-            ip.inquiry_id, ip.user_idx, u.user_id, u.nickname,
+            ip.inquiry_id, ip.user_idx, u.user_id, u.nickname, u.account_status,
             ip.title, ip.content, ip.category, ip.is_private, ip.status, ip.view_count,
             ip.created_at, ip.updated_at,
             ia.answer_id, ia.content AS answer_content, au.nickname AS answer_admin_nickname,
@@ -391,6 +392,54 @@
         SELECT COUNT(*)
         <include refid="inquirySearchBase"/>
     </select>
+
+    <select id="findInquiryDetail" resultMap="inquiryRM">
+        SELECT
+            ip.inquiry_id, ip.user_idx, u.user_id, u.nickname, u.account_status,
+            ip.title, ip.content, ip.category, ip.is_private, ip.status, ip.view_count,
+            ip.created_at, ip.updated_at,
+            ia.answer_id, ia.content AS answer_content, au.nickname AS answer_admin_nickname,
+            ia.created_at AS answered_at
+        FROM INQUIRY_POST ip
+        INNER JOIN USERS u ON ip.user_idx = u.user_idx
+        LEFT JOIN INQUIRY_ANSWER ia ON ip.inquiry_id = ia.inquiry_id
+        LEFT JOIN USERS au ON ia.admin_user_idx = au.user_idx
+        WHERE ip.inquiry_id = #{inquiryId}
+    </select>
+
+    <select id="getInquiryStats" resultType="org.triptogether.admin.vo.AdminInquiryStatsVO">
+        SELECT
+            COUNT(*)                                                                             AS totalInquiries,
+            IFNULL(SUM(CASE WHEN status = 'PENDING'     THEN 1 ELSE 0 END), 0)                  AS pendingInquiries,
+            IFNULL(SUM(CASE WHEN status = 'IN_PROGRESS' THEN 1 ELSE 0 END), 0)                  AS inProgressInquiries,
+            IFNULL(SUM(CASE WHEN status IN ('COMPLETED','USER_COMPLETED') THEN 1 ELSE 0 END), 0) AS completedInquiries
+        FROM INQUIRY_POST
+    </select>
+
+    <insert id="insertInquiryAnswer">
+        INSERT INTO INQUIRY_ANSWER (inquiry_id, admin_user_idx, content)
+        VALUES (#{inquiryId}, #{adminUserIdx}, #{content})
+    </insert>
+
+    <update id="updateInquiryAnswer">
+        UPDATE INQUIRY_ANSWER
+        SET content = #{content}, updated_at = NOW()
+        WHERE answer_id = #{answerId}
+    </update>
+
+    <delete id="deleteInquiryAnswer">
+        DELETE FROM INQUIRY_ANSWER WHERE inquiry_id = #{inquiryId}
+    </delete>
+
+    <update id="updateInquiryStatus">
+        UPDATE INQUIRY_POST
+        SET status = #{status}, updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <delete id="deleteInquiry">
+        DELETE FROM INQUIRY_POST WHERE inquiry_id = #{inquiryId}
+    </delete>
 
     <!-- ══════════════════════════════════════════
          로그인 감사
