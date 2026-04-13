@@ -146,7 +146,7 @@ public class ActivityLogInterceptor implements HandlerInterceptor {
         String[] parts = uri.split("/");
         for (int i = parts.length - 1; i >= 0; i--) {
             String p = parts[i];
-            if (p != null && p.matches("\d+")) {
+            if (p != null && p.matches("\\d+")) {
                 return p;
             }
         }
