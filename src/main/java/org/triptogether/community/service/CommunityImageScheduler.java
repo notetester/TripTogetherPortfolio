@@ -11,11 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.triptogether.community.mapper.CommunityImageCacheMapper;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -26,7 +27,9 @@ public class CommunityImageScheduler {
     private String apiKey;
 
     private final RestTemplate restTemplate;
-    private final CommunityImageCacheMapper communityImageCacheMapper;
+
+    private final Map<String, List<String>> imageCache = new ConcurrentHashMap<>();
+    private static final Random random = new Random();
 
     private static final Map<String, String> REGION_KEYWORDS = new LinkedHashMap<>();
     static {
@@ -38,20 +41,30 @@ public class CommunityImageScheduler {
         REGION_KEYWORDS.put("oceania",       "oceania landscape");
     }
 
-    /** 앱 시작 시 1회 즉시 실행 */
+    /** 앱 시작 시 백그라운드에서 1회 실행 */
     @PostConstruct
     public void initCache() {
-        log.info("Pixabay 초기 캐시 로드 시작");
-        refreshCache();
+        new Thread(() -> {
+            log.info("Pixabay 초기 캐시 로드 시작");
+            refreshCache();
+        }).start();
     }
 
-    /** 4시간마다 캐시 갱신 */
-    @Scheduled(fixedRate = 4 * 60 * 60 * 1000L)
+    /** 24시간마다 캐시 갱신 */
+    @Scheduled(fixedRate = 24 * 60 * 60 * 1000L)
     public void refreshCache() {
         for (Map.Entry<String, String> entry : REGION_KEYWORDS.entrySet()) {
             refreshRegion(entry.getKey(), entry.getValue());
         }
         log.info("Pixabay 캐시 갱신 완료");
+    }
+
+    public String getRandomImage(String region) {
+        List<String> urls = "etc".equals(region)
+                ? imageCache.values().stream().flatMap(List::stream).collect(Collectors.toList())
+                : imageCache.getOrDefault(region, Collections.emptyList());
+        if (urls.isEmpty()) return null;
+        return urls.get(random.nextInt(urls.size()));
     }
 
     private void refreshRegion(String region, String keyword) {
@@ -70,22 +83,17 @@ public class CommunityImageScheduler {
                 return;
             }
 
-            // webformatURL 수집 후 셔플 → 10장 선택
             List<String> urls = new ArrayList<>();
             for (JsonElement elem : hits) {
-                JsonElement urlElem = elem.getAsJsonObject().get("webformatURL");
+                JsonElement urlElem = elem.getAsJsonObject().get("previewURL");
                 if (urlElem != null && !urlElem.isJsonNull()) {
                     urls.add(urlElem.getAsString());
                 }
             }
             Collections.shuffle(urls);
-            List<String> selected = urls.subList(0, Math.min(10, urls.size()));
+            List<String> selected = urls.subList(0, Math.min(3, urls.size()));
 
-            // 기존 캐시 삭제 후 새 이미지 삽입
-            communityImageCacheMapper.deleteCacheByRegion(region);
-            for (String imageUrl : selected) {
-                communityImageCacheMapper.insertCache(region, imageUrl);
-            }
+            imageCache.put(region, new ArrayList<>(selected));
             log.info("Pixabay 캐시 갱신: region={}, count={}", region, selected.size());
 
         } catch (Exception e) {

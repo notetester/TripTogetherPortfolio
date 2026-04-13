@@ -27,4 +27,7 @@ public class CommunityWriteDto {
 
     // 이미지 파일 (MultipartFile 배열)
     private List<MultipartFile> images;
+
+    // 욕설 감지 후 강제 등록 여부
+    private boolean forceSubmit;
 }

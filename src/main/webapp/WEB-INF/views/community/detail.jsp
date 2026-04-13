@@ -114,7 +114,7 @@
           <c:forEach var="img" items="${imageList}">
             <div class="detail-image-item">
               <c:choose>
-                <c:when test="${img.autoImage}">
+                <c:when test="${fn:startsWith(img.imageUrl, 'http')}">
                   <img src="${img.imageUrl}" alt="${post.title}" loading="lazy"
                        onclick="window.open('${img.imageUrl}', '_blank')">
                 </c:when>
@@ -749,16 +749,24 @@ function toggleLike(postId) {
   });
 }
 
-function submitComment(postId) {
+function submitComment(postId, forceSubmit) {
   var text = document.getElementById('commentText').value.trim();
   if (!text) return;
+  var body = 'content=' + encodeURIComponent(text);
+  if (forceSubmit) body += '&forceSubmit=true';
   fetch(CTX + '/community/' + postId + '/comment', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-    body: 'content=' + encodeURIComponent(text)
+    body: body
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
+    if (data.toxicityDetected) {
+      if (confirm(data.message || '부적절한 표현이 감지되었습니다. 그래도 등록하시겠습니까?')) {
+        submitComment(postId, true);
+      }
+      return;
+    }
     if (data.success) location.reload();
     else alert(data.message || '댓글 작성에 실패했습니다.');
   });
@@ -792,16 +800,24 @@ function toggleReplyInput(commentId) {
   if (!wrap.classList.contains('hidden')) document.getElementById('replyText_' + commentId).focus();
 }
 
-function submitReply(postId, commentId) {
+function submitReply(postId, commentId, forceSubmit) {
   var text = document.getElementById('replyText_' + commentId).value.trim();
   if (!text) return;
+  var body = 'content=' + encodeURIComponent(text);
+  if (forceSubmit) body += '&forceSubmit=true';
   fetch(CTX + '/community/' + postId + '/comment/' + commentId + '/reply', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-    body: 'content=' + encodeURIComponent(text)
+    body: body
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
+    if (data.toxicityDetected) {
+      if (confirm(data.message || '부적절한 표현이 감지되었습니다. 그래도 등록하시겠습니까?')) {
+        submitReply(postId, commentId, true);
+      }
+      return;
+    }
     if (data.success) location.reload();
     else alert(data.message || '답글 작성에 실패했습니다.');
   });
