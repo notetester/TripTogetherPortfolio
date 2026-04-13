@@ -498,10 +498,16 @@
     font-weight: 600;
     white-space: nowrap;
 }
-.mp-badge-type    { background: var(--blue-light); color: var(--blue); }
+.mp-badge-type-review   { background:#2563eb; color:#fff; }
+.mp-badge-type-photo    { background:#7c3aed; color:#fff; }
+.mp-badge-type-tip      { background:#16a34a; color:#fff; }
+.mp-badge-type-question { background:#ea580c; color:#fff; }
 .mp-badge-PENDING     { background: #fef9c3; color: #92400e; }
 .mp-badge-IN_PROGRESS { background: #dbeafe; color: #1e40af; }
 .mp-badge-COMPLETED   { background: #dcfce7; color: #15803d; }
+.mp-badge-IN_REVIEW   { background: #dbeafe; color: #1e40af; }
+.mp-badge-RESOLVED    { background: #dcfce7; color: #15803d; }
+.mp-badge-DISMISSED   { background: #f3f4f6; color: #6b7280; }
 .mp-badge-comment { background: #f3f4f6; color: var(--gray-600); }
 
 /* ── 빈 상태 ── */
@@ -579,12 +585,13 @@
 .mp-notif-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
+    gap: 12px;
+    padding: 12px 16px;
     border-radius: 8px;
     background: var(--gray-50);
     cursor: pointer;
     transition: background .15s;
+    min-height: 48px;
 }
 
 .mp-notif-item:hover { background: var(--gray-100); }
@@ -605,6 +612,7 @@
     flex: 1;
     font-size: 14px;
     color: var(--gray-700);
+    word-break: break-word;
 }
 
 .mp-notif-date {
@@ -614,7 +622,7 @@
 }
 
 .mp-notif-footer {
-    padding: 10px 20px 16px;
+    padding: 12px 20px 16px;
     font-size: 12px;
     color: var(--gray-400);
     text-align: center;

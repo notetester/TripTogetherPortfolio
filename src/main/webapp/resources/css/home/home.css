@@ -192,12 +192,26 @@
 .tc-likes { display: flex; align-items: center; gap: 4px; font-size: 14px; color: var(--gray-500); }
 
 /* ===== 커뮤니티 카드 ===== */
-.comm-g {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 24px;
+.comm-g-outer {
+  position: relative; display: flex; align-items: center; gap: 8px;
 }
+.comm-g-vp { overflow: hidden; flex: 1; }
+.comm-g-track {
+  display: flex; gap: 24px;
+  transition: transform 0.4s ease;
+}
+.comm-g-btn {
+  flex-shrink: 0; width: 36px; height: 36px;
+  background: #fff; border: 1px solid var(--gray-200); border-radius: 50%;
+  font-size: 22px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm); transition: background .15s, border-color .15s;
+  color: var(--gray-600);
+}
+.comm-g-btn:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
+.comm-g-track .cc-wrap { flex-shrink: 0; min-width: 0; }
 .cc {
+  width: 100%;
   background: #fff;
   border-radius: var(--radius);
   overflow: hidden;
@@ -279,7 +293,7 @@
 @media (max-width: 768px) {
   .hero { height: 420px; }
   .hero-c h1 { font-size: 2rem; }
-  .comm-g { grid-template-columns: 1fr; }
+  /* cc width는 JS로 제어 */
   .footer-inner { flex-direction: column; text-align: center; }
 }
 

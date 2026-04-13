@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.community.mapper.CommunityMapper;
+import org.triptogether.community.mapper.CommunityImageCacheMapper;
 import org.triptogether.community.vo.*;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
@@ -22,7 +23,8 @@ import java.util.UUID;
 public class CommunityServiceImpl implements CommunityService {
 
     private final CommunityMapper communityMapper;
-    private final MyPageService myPageService; // 추가
+    private final CommunityImageCacheMapper communityImageCacheMapper;
+    private final MyPageService myPageService;
 
     @Value("${file.upload.path}")
     private String uploadPath;
@@ -64,7 +66,17 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public List<CommunityCommentDto> getCommentList(Long postId) {
-        return communityMapper.selectCommentList(postId);
+        return communityMapper.selectCommentList(postId, "created");
+    }
+
+    @Override
+    public List<CommunityCommentDto> getCommentList(Long postId, String sort) {
+        return communityMapper.selectCommentList(postId, sort);
+    }
+
+    @Override
+    public CommunityCommentDto getComment(Long commentId) {
+        return communityMapper.selectComment(commentId);
     }
 
     @Override
@@ -83,6 +95,23 @@ public class CommunityServiceImpl implements CommunityService {
         return communityMapper.selectRelatedList(postId);
     }
 
+    @Override
+    public List<CommunityPostDto> getLatestList(List<Long> excludeIds, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return communityMapper.selectLatestList(excludeIds, pageSize, offset);
+    }
+
+    @Override
+    public int getLatestTotalCount(List<Long> excludeIds) {
+        return communityMapper.selectLatestTotalCount(excludeIds);
+    }
+
+    @Override
+    public int getLatestTotalPage(List<Long> excludeIds, int pageSize) {
+        int total = communityMapper.selectLatestTotalCount(excludeIds);
+        return (int) Math.ceil((double) total / pageSize);
+    }
+
     // ===== 조회수 =====
 
     @Override
@@ -96,6 +125,11 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional
     public Long writePost(CommunityWriteDto writeDto, Long userIdx) {
 
+        // 도배 방지: 5분 내 3개 이상이면 거부
+        if (communityMapper.countRecentPostsByUser(userIdx, 5) >= 3) {
+            throw new IllegalStateException("5분 내 게시글을 3개 이상 작성할 수 없습니다.");
+        }
+
         // 1. COMMUNITY_POST INSERT
         CommunityPostDto post = new CommunityPostDto();
         post.setUserIdx(userIdx);
@@ -104,19 +138,23 @@ public class CommunityServiceImpl implements CommunityService {
         communityMapper.insertPost(post);
         Long postId = post.getPostId(); // useGeneratedKeys로 자동 주입
 
-        // 2. COMMUNITY_POST_DETAIL INSERT
-        communityMapper.insertPostDetail(postId, writeDto.getRegion(), writeDto.getPostType());
+        // 2. 지역/유형 업데이트
+        communityMapper.updatePostRegionType(postId, writeDto.getRegion(), writeDto.getPostType());
 
         // 3. COMMUNITY_POST_IMAGE INSERT (이미지 파일 업로드)
+        int imageSortOrder = 1;
         if (writeDto.getImages() != null && !writeDto.getImages().isEmpty()) {
-            int sortOrder = 1;
             for (MultipartFile file : writeDto.getImages()) {
                 if (file == null || file.isEmpty()) continue;
                 String savedUrl = saveFile(file);
                 if (savedUrl != null) {
-                    communityMapper.insertImage(postId, savedUrl, sortOrder++);
+                    communityMapper.insertImage(postId, savedUrl, imageSortOrder++);
                 }
             }
+        }
+        // 이미지 없으면 Pixabay 자동추천 이미지 배정
+        if (imageSortOrder == 1) {
+            assignAutoImage(postId, writeDto.getRegion());
         }
 
         // 4. COMMUNITY_TAG UPSERT + COMMUNITY_POST_TAG INSERT
@@ -158,16 +196,17 @@ public class CommunityServiceImpl implements CommunityService {
         // 1. COMMUNITY_POST 제목/본문 수정
         communityMapper.updatePost(postId, writeDto.getTitle(), writeDto.getContent());
 
-        // 2. COMMUNITY_POST_DETAIL 지역/유형 수정
-        communityMapper.updatePostDetail(postId, writeDto.getRegion(), writeDto.getPostType());
+        // 2. 지역/유형 수정
+        communityMapper.updatePostRegionType(postId, writeDto.getRegion(), writeDto.getPostType());
 
         // 3. 이미지 처리 - 기존 이미지 전부 삭제 후 재등록
         communityMapper.deleteImages(postId);
 
-        // 3-1. 기존 이미지 중 유지할 것 재등록
+        // 3-1. 기존 이미지 중 유지할 것 재등록 (자동추천 URL은 http로 시작 → 제외)
         int sortOrder = 1;
         if (existingImages != null) {
             for (String imageUrl : existingImages) {
+                if (imageUrl == null || imageUrl.startsWith("http")) continue;
                 communityMapper.insertImage(postId, imageUrl, sortOrder++);
             }
         }
@@ -181,6 +220,11 @@ public class CommunityServiceImpl implements CommunityService {
                     communityMapper.insertImage(postId, savedUrl, sortOrder++);
                 }
             }
+        }
+
+        // 이미지 없으면 Pixabay 자동추천 이미지 재배정
+        if (sortOrder == 1) {
+            assignAutoImage(postId, writeDto.getRegion());
         }
 
         // 4. 태그 처리 - 기존 태그 전부 삭제 후 재등록
@@ -250,6 +294,16 @@ public class CommunityServiceImpl implements CommunityService {
             // 좋아요 추가
             communityMapper.insertLike(postId, userIdx);
             communityMapper.increaseLikeCount(postId);
+            // 알림 발송 (본인 글 제외)
+            CommunityPostDto post = communityMapper.selectPost(postId);
+            if (post != null && !post.getUserIdx().equals(userIdx)) {
+                FeedNotificationDto notification = new FeedNotificationDto();
+                notification.setUserIdx(post.getUserIdx());
+                notification.setSourceType("community");
+                notification.setSourceId(postId);
+                notification.setMessage("내 글에 좋아요가 달렸어요.");
+                myPageService.addNotification(notification);
+            }
             return true;
         }
     }
@@ -264,6 +318,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     @Transactional
     public void addComment(Long postId, Long userIdx, String content) {
+        // 도배 방지: 1분 내 5개 이상이면 거부
+        if (communityMapper.countRecentCommentsByUser(userIdx, 1) >= 5) {
+            throw new IllegalStateException("1분 내 댓글을 5개 이상 작성할 수 없습니다.");
+        }
         communityMapper.insertComment(postId, userIdx, content);
         communityMapper.increaseCommentCount(postId);
 
@@ -293,6 +351,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     @Transactional
     public void addReply(Long postId, Long userIdx, String content, Long parentCommentId) {
+        // 도배 방지: 댓글+대댓글 합산 1분 내 5개 이상이면 거부
+        if (communityMapper.countRecentCommentsByUser(userIdx, 1) >= 5) {
+            throw new IllegalStateException("1분 내 댓글을 5개 이상 작성할 수 없습니다.");
+        }
         communityMapper.insertReply(postId, userIdx, content, parentCommentId);
         communityMapper.increaseCommentCount(postId);
 
@@ -305,6 +367,20 @@ public class CommunityServiceImpl implements CommunityService {
             notification.setSourceId(postId);
             notification.setMessage("내 글에 새 대댓글이 달렸어요.");
             myPageService.addNotification(notification);
+        }
+
+        // 대댓글 알람: 부모 댓글 작성자에게 알림 생성
+        CommunityCommentDto parentComment = communityMapper.selectComment(parentCommentId);
+        if (parentComment != null && !parentComment.getUserIdx().equals(userIdx)) {
+            // 부모 댓글 작성자 != 글 작성자인 경우에만 알림 (중복 제거)
+            if (!parentComment.getUserIdx().equals(post.getUserIdx())) {
+                FeedNotificationDto notification = new FeedNotificationDto();
+                notification.setUserIdx(parentComment.getUserIdx());
+                notification.setSourceType("community");
+                notification.setSourceId(postId);
+                notification.setMessage("내 댓글에 새 답글이 달렸어요.");
+                myPageService.addNotification(notification);
+            }
         }
     }
 
@@ -348,27 +424,17 @@ public class CommunityServiceImpl implements CommunityService {
     // ===== 신고 =====
 
     @Override
-    public boolean reportPost(Long postId, Long userIdx) {
-        int inserted = communityMapper.insertReport(postId, userIdx);
-        if (inserted > 0) {
-            communityMapper.increasePostReportCount(postId);
-            int reportCount = communityMapper.selectPostReportCount(postId);
-            if (reportCount >= 3) communityMapper.blockPost(postId);
-            return true;
-        }
-        return false;
+    public void updatePostReportCache(Long postId) {
+        communityMapper.increasePostReportCount(postId);
+        int reportCount = communityMapper.selectPostReportCount(postId);
+        if (reportCount >= 3) communityMapper.blockPost(postId);
     }
 
     @Override
-    public boolean reportComment(Long commentId, Long userIdx) {
-        int inserted = communityMapper.reportComment(commentId, userIdx);
-        if (inserted > 0) {
-            communityMapper.increaseCommentReportCount(commentId);
-            int reportCount = communityMapper.selectCommentReportCount(commentId);
-            if (reportCount >= 3) communityMapper.blockComment(commentId);
-            return true;
-        }
-        return false;
+    public void updateCommentReportCache(Long commentId) {
+        communityMapper.increaseCommentReportCount(commentId);
+        int reportCount = communityMapper.selectCommentReportCount(commentId);
+        if (reportCount >= 3) communityMapper.blockComment(commentId);
     }
 
     @Override
@@ -379,6 +445,21 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public int getCommentReportCount(Long commentId) {
         return communityMapper.selectCommentReportCount(commentId);
+    }
+
+    // ===== Pixabay 자동추천 이미지 배정 =====
+
+    private void assignAutoImage(Long postId, String region) {
+        try {
+            String imageUrl = "etc".equals(region)
+                    ? communityImageCacheMapper.selectRandomCacheImageFromAll()
+                    : communityImageCacheMapper.selectRandomCacheImage(region);
+            if (imageUrl != null) {
+                communityMapper.insertAutoImage(postId, imageUrl);
+            }
+        } catch (Exception e) {
+            log.warn("자동추천 이미지 배정 실패 (postId={}, region={}): {}", postId, region, e.getMessage());
+        }
     }
 
     // ===== 파일 저장 유틸 =====
@@ -417,6 +498,11 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public List<CommunityPostDto> getPopularPostList() {
         return communityMapper.selectPopularPostList();
+    }
+
+    @Override
+    public List<CommunityPostDto> getTodayPopularList() {
+        return communityMapper.selectTodayPopularList();
     }
 
     @Override

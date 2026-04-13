@@ -16,22 +16,33 @@ public interface CommunityMapper {
     CommunityPostDto selectPost(@Param("postId") Long postId);
     List<CommunityPostImageDto> selectImageList(@Param("postId") Long postId);
     List<String> selectTagList(@Param("postId") Long postId);
-    List<CommunityCommentDto> selectCommentList(@Param("postId") Long postId);
+    List<CommunityCommentDto> selectCommentList(@Param("postId") Long postId, @Param("sort") String sort);
+    CommunityCommentDto selectComment(@Param("commentId") Long commentId);
     String selectTipCategory(@Param("postId") Long postId);
     Integer selectIsSolved(@Param("postId") Long postId);
     List<CommunityPostDto> selectRelatedList(@Param("postId") Long postId);
+    List<CommunityPostDto> selectLatestList(@Param("excludeIds") List<Long> excludeIds,
+                                            @Param("pageSize") int pageSize,
+                                            @Param("offset") int offset);
+    int selectLatestTotalCount(@Param("excludeIds") List<Long> excludeIds);
+
+    // ===== 도배 방지 =====
+    int countRecentPostsByUser(@Param("userIdx") Long userIdx, @Param("minutes") int minutes);
+    int countRecentCommentsByUser(@Param("userIdx") Long userIdx, @Param("minutes") int minutes);
 
     // ===== 조회수 =====
     void updateViewCount(@Param("postId") Long postId);
 
     // ===== 글쓰기 =====
     void insertPost(CommunityPostDto post);  // useGeneratedKeys → post.postId 자동 주입
-    void insertPostDetail(@Param("postId") Long postId,
-                          @Param("region") String region,
-                          @Param("postType") String postType);
+    void updatePostRegionType(@Param("postId") Long postId,
+                              @Param("region") String region,
+                              @Param("postType") String postType);
     void insertImage(@Param("postId") Long postId,
                      @Param("imageUrl") String imageUrl,
                      @Param("sortOrder") int sortOrder);
+    void insertAutoImage(@Param("postId") Long postId,
+                         @Param("imageUrl") String imageUrl);
     void upsertTag(@Param("tagName") String tagName);
     Long selectTagId(@Param("tagName") String tagName);
     void insertPostTag(@Param("postId") Long postId, @Param("tagId") Long tagId);
@@ -62,9 +73,6 @@ public interface CommunityMapper {
     void updatePost(@Param("postId") Long postId,
                     @Param("title") String title,
                     @Param("content") String content);
-    void updatePostDetail(@Param("postId") Long postId,
-                          @Param("region") String region,
-                          @Param("postType") String postType);
     void deleteImages(@Param("postId") Long postId);
     void deletePostTags(@Param("postId") Long postId);
     void upsertPostTip(@Param("postId") Long postId,
@@ -100,6 +108,9 @@ public interface CommunityMapper {
 
     // ===== 홈 인기 글 =====
     List<CommunityPostDto> selectPopularPostList();
+
+    // ===== 오늘 인기 여행 이야기 =====
+    List<CommunityPostDto> selectTodayPopularList();
 
     // ===== 유저 차단 =====
     void blockUser(@Param("userIdx") Long userIdx);

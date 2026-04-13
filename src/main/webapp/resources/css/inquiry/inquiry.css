@@ -138,13 +138,13 @@
 
 /* 문의하기 버튼 */
 .inq-btn-write {
-    padding: 9px 20px;
+    padding: 8px 14px;
     border-radius: 8px;
     background: var(--blue);
     color: #fff;
     border: none;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: opacity .2s, transform .2s;
@@ -311,9 +311,14 @@
     white-space: nowrap;
 }
 
-.inq-status-badge.PENDING     { background: #fef9c3; color: #92400e; } /* 노란색: 대기중 */
-.inq-status-badge.IN_PROGRESS { background: #dbeafe; color: #1e40af; } /* 파란색: 처리중 */
-.inq-status-badge.COMPLETED   { background: #dcfce7; color: #15803d; } /* 초록색: 완료 */
+.inq-status-badge.PENDING            { background: #fef9c3; color: #92400e; } /* 노란색: 대기중 */
+.inq-status-badge.IN_PROGRESS        { background: #dbeafe; color: #1e40af; } /* 파란색: 처리중 */
+.inq-status-badge.COMPLETED          { background: #dcfce7; color: #15803d; } /* 초록색: 답변완료 */
+.inq-status-badge.USER_COMPLETED     { background: #d1fae5; color: #065f46; } /* 에메랄드: 해결됨 */
+.inq-status-badge.CANCELLED          { background: #f3f4f6; color: #6b7280; } /* 회색: 취소됨 */
+.inq-status-badge.DELETE_REQUESTED   { background: #fee2e2; color: #991b1b; } /* 연빨강: 삭제요청 */
+.inq-status-badge.PRIVATE_REQUESTED  { background: #ede9fe; color: #5b21b6; } /* 보라: 비공개요청 */
+.inq-status-badge.PUBLIC_REQUESTED   { background: #e0f2fe; color: #0369a1; } /* 하늘: 공개요청 */
 
 /* 카테고리 태그 */
 .inq-category-tag {
@@ -563,13 +568,13 @@
 
 /* 공통 버튼 - 제출 */
 .inq-btn-submit {
-    padding: 10px 24px;
+    padding: 8px 14px;
     border-radius: 8px;
     background: var(--blue);
     color: #fff;
     border: none;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: opacity .2s, transform .2s;
@@ -595,13 +600,13 @@
 
 /* 공통 버튼 - 취소 */
 .inq-btn-cancel {
-    padding: 10px 20px;
+    padding: 8px 14px;
     border-radius: 8px;
     background: var(--gray-100);
     color: var(--gray-600);
     border: none;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     transition: background .15s;
@@ -738,6 +743,37 @@
     margin-bottom: 14px;
 }
 
+/* 관리자 패널 상태변경 버튼 영역 */
+.inq-admin-status-bar {
+    margin-bottom: 16px;
+}
+
+/* 관리자 패널 상태변경 버튼 */
+.inq-btn-status {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity .15s, transform .15s;
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.inq-btn-status:hover    { opacity: .85; transform: translateY(-1px); }
+.inq-btn-status:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+.inq-btn-status.inq-btn-status-pending {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.inq-btn-status.inq-btn-status-complete {
+    background: #dcfce7;
+    color: #15803d;
+}
+
 .inq-admin-form-actions {
     display: flex;
     justify-content: flex-end;
@@ -773,4 +809,70 @@
 
     /* 탭 폰트 줄이기 */
     .inq-tab { padding: 10px 12px; font-size: 13px; }
+}
+
+/* =============================================
+   첨부파일 목록
+   ============================================= */
+.inq-attachment-list {
+    margin-top: 20px;
+    padding-top: 16px;
+    padding-left: 20px;
+    border-top: 1px solid var(--gray-100);
+}
+
+.inq-attachment-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 12px;
+}
+
+.inq-attachment-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 12px 0;
+    vertical-align: top;
+}
+
+.inq-attachment-img {
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.inq-attachment-img:hover {
+    opacity: 0.85;
+}
+
+.inq-attachment-name {
+    font-size: 12px;
+    color: var(--gray-500);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 첨부파일 미리보기 (write.jsp) */
+.inq-attach-preview {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.inq-attach-preview-item {
+    font-size: 12px;
+    color: var(--gray-600);
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 4px;
+    padding: 3px 8px;
 }

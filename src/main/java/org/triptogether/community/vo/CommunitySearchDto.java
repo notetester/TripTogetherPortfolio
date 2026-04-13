@@ -14,7 +14,8 @@ public class CommunitySearchDto {
     private String  type     = "all";    // all/review/photo/tip/question
     private String  sort     = "latest"; // latest/popular/views
 
-    // 검색 조건 (태그 + 제목 + 본문 동시 검색)
+    // 검색 조건
+    private String  searchType = "all";  // all/title/content/tag/author/comment
     private String  keyword;             // 검색어
 
     // 페이지네이션

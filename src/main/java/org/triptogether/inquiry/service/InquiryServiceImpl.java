@@ -1,14 +1,21 @@
 package org.triptogether.inquiry.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.inquiry.mapper.InquiryMapper;
 import org.triptogether.inquiry.vo.InquiryAnswerDto;
+import org.triptogether.inquiry.vo.InquiryAttachmentDto;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * =============================================
@@ -19,11 +26,15 @@ import java.util.List;
  * 예) 답변 등록 + 상태 변경 → 둘 다 성공하거나 둘 다 실패
  * =============================================
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InquiryServiceImpl implements InquiryService {
 
     private final InquiryMapper inquiryMapper;
+
+    @Value("${file.upload.path}")
+    private String uploadPath;
 
     /* =============================================
        1. 목록 조회
@@ -91,8 +102,34 @@ public class InquiryServiceImpl implements InquiryService {
     @Override
     @Transactional
     public Long writeInquiry(InquiryPostDto inquiry) {
+        return writeInquiry(inquiry, null);
+    }
+
+    @Override
+    @Transactional
+    public Long writeInquiry(InquiryPostDto inquiry, List<MultipartFile> images) {
+        // 도배 방지: 10분 내 3개 이상이면 거부
+        if (inquiryMapper.countRecentInquiriesByUser(inquiry.getUserIdx(), 10) >= 3) {
+            throw new IllegalStateException("10분 내 문의를 3개 이상 작성할 수 없습니다.");
+        }
         inquiryMapper.insertInquiry(inquiry);
-        return inquiry.getInquiryId();
+        Long inquiryId = inquiry.getInquiryId();
+
+        if (images != null) {
+            for (MultipartFile file : images) {
+                if (file == null || file.isEmpty()) continue;
+                String savedUrl = saveFile(file);
+                if (savedUrl != null) {
+                    InquiryAttachmentDto attachment = new InquiryAttachmentDto();
+                    attachment.setInquiryId(inquiryId);
+                    attachment.setFileUrl(savedUrl);
+                    attachment.setFileName(file.getOriginalFilename());
+                    inquiryMapper.insertAttachment(attachment);
+                }
+            }
+        }
+
+        return inquiryId;
     }
 
     /* =============================================
@@ -105,12 +142,18 @@ public class InquiryServiceImpl implements InquiryService {
     @Override
     @Transactional
     public void writeAnswer(Long inquiryId, Long adminUserIdx, String content) {
+        writeAnswer(inquiryId, adminUserIdx, content, false);
+    }
+
+    @Override
+    @Transactional
+    public void writeAnswer(Long inquiryId, Long adminUserIdx, String content, boolean complete) {
         InquiryAnswerDto answer = new InquiryAnswerDto();
         answer.setInquiryId(inquiryId);
         answer.setAdminUserIdx(adminUserIdx);
         answer.setContent(content);
         inquiryMapper.insertAnswer(answer);
-        inquiryMapper.updateStatus(inquiryId, "COMPLETED");
+        inquiryMapper.updateStatus(inquiryId, complete ? "COMPLETED" : "IN_PROGRESS");
     }
 
     /* =============================================
@@ -132,5 +175,99 @@ public class InquiryServiceImpl implements InquiryService {
     @Transactional
     public void deleteInquiry(Long inquiryId) {
         inquiryMapper.deleteInquiry(inquiryId);
+    }
+
+    @Override
+    public void updateStatusWithTime(Long inquiryId, String status) {
+        inquiryMapper.updateStatusWithTime(inquiryId, status);
+    }
+
+    @Override
+    @Transactional
+    public void approveVisibility(Long inquiryId, String type) {
+        int isPrivate = "private".equals(type) ? 1 : 0;
+        inquiryMapper.updateIsPrivate(inquiryId, isPrivate);
+        inquiryMapper.updateStatus(inquiryId, "COMPLETED");
+    }
+
+    @Override
+    @Transactional
+    public void updateAnswer(Long inquiryId, String content) {
+        InquiryAnswerDto answer = new InquiryAnswerDto();
+        answer.setInquiryId(inquiryId);
+        answer.setContent(content);
+        inquiryMapper.updateAnswer(answer);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAnswer(Long inquiryId) {
+        inquiryMapper.deleteAnswer(inquiryId);
+        inquiryMapper.updateStatus(inquiryId, "IN_PROGRESS");
+    }
+
+    @Override
+    @Transactional
+    public void addAttachment(Long inquiryId, String fileUrl, String fileName) {
+        InquiryAttachmentDto attachment = new InquiryAttachmentDto();
+        attachment.setInquiryId(inquiryId);
+        attachment.setFileUrl(fileUrl);
+        attachment.setFileName(fileName);
+        inquiryMapper.insertAttachment(attachment);
+    }
+
+    @Override
+    @Transactional
+    public void addAttachment(Long inquiryId, MultipartFile file) {
+        String savedUrl = saveFile(file);
+        if (savedUrl != null) {
+            InquiryAttachmentDto attachment = new InquiryAttachmentDto();
+            attachment.setInquiryId(inquiryId);
+            attachment.setFileUrl(savedUrl);
+            attachment.setFileName(file.getOriginalFilename());
+            inquiryMapper.insertAttachment(attachment);
+        }
+    }
+
+    @Override
+    public List<InquiryAttachmentDto> getAttachmentList(Long inquiryId) {
+        return inquiryMapper.selectAttachmentList(inquiryId);
+    }
+
+    @Override
+    @Transactional
+    public void removeAttachment(Long attachmentId) {
+        inquiryMapper.deleteAttachment(attachmentId);
+    }
+
+    // ===== 파일 저장 유틸 =====
+
+    private String saveFile(MultipartFile file) {
+        String ext = getExtension(file.getOriginalFilename()).toLowerCase();
+        if (!ext.equals(".jpg") && !ext.equals(".jpeg")
+                && !ext.equals(".png") && !ext.equals(".gif")
+                && !ext.equals(".webp")) {
+            log.warn("허용되지 않는 파일 형식 업로드 시도: {}", ext);
+            return null;
+        }
+        try {
+            String dir = System.getProperty("user.dir").replace("\\", "/")
+                    + "/" + uploadPath + "/inquiry/";
+            File dirFile = new File(dir);
+            if (!dirFile.exists()) dirFile.mkdirs();
+
+            String fileName = UUID.randomUUID().toString() + ext;
+            file.transferTo(new File(dir + fileName));
+
+            return "/upload/inquiry/" + fileName;
+        } catch (IOException e) {
+            log.error("파일 저장 실패", e);
+            return null;
+        }
+    }
+
+    private String getExtension(String originalFilename) {
+        if (originalFilename == null || !originalFilename.contains(".")) return "";
+        return originalFilename.substring(originalFilename.lastIndexOf("."));
     }
 }

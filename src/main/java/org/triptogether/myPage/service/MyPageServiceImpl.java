@@ -6,6 +6,7 @@ import org.triptogether.myPage.mapper.MyPageMapper;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPageReportDto;
 
 import java.util.List;
 
@@ -36,8 +37,33 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
+    public List<MyPageReportDto> getMyReportList(Long userIdx) {
+        return myPageMapper.selectMyReportList(userIdx);
+    }
+
+    @Override
+    public int getMyReportCount(Long userIdx) {
+        return myPageMapper.selectMyReportCount(userIdx);
+    }
+
+    @Override
     public List<FeedNotificationDto> getNotifications(Long userIdx) {
         return myPageMapper.selectNotifications(userIdx);
+    }
+
+    @Override
+    public List<FeedNotificationDto> getAllNotifications(Long userIdx) {
+        return myPageMapper.selectAllNotifications(userIdx);
+    }
+
+    @Override
+    public int getNotificationCount(Long userIdx) {
+        return myPageMapper.selectNotificationCount(userIdx);
+    }
+
+    @Override
+    public FeedNotificationDto getNotification(Long notificationId) {
+        return myPageMapper.selectNotification(notificationId);
     }
 
     @Override
@@ -46,9 +72,12 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
-    public void readNotification(Long notificationId) {
-        myPageMapper.updateNotificationRead(notificationId);
+    public void deleteNotification(Long notificationId) {
+        myPageMapper.deleteNotification(notificationId);
     }
 
-
+    @Override
+    public void deleteAllNotifications(Long userIdx) {
+        myPageMapper.deleteAllNotifications(userIdx);
+    }
 }

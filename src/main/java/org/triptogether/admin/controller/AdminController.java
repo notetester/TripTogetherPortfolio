@@ -2,11 +2,17 @@ package org.triptogether.admin.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.admin.service.AdminService;
 import org.triptogether.admin.vo.*;
+import org.triptogether.community.service.CommunityService;
+import org.triptogether.report.service.ReportService;
+import org.triptogether.report.vo.ReportDto;
+import org.triptogether.report.vo.ReportSearchDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,12 +29,15 @@ import java.util.Map;
  *     <li>보안 이력</li>
  * </ul>
  */
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 public class AdminController {
 
     private final AdminService adminService;
+    private final ReportService reportService;
+    private final CommunityService communityService;
 
     @GetMapping({"", "/"})
     public String dashboard(Model model) {
@@ -111,6 +120,151 @@ public class AdminController {
         model.addAllAttributes(adminService.getInquiryList(search));
         model.addAttribute("activeMenu", "inquiries");
         return "admin/inquiry/list";
+    }
+
+    @GetMapping("/reports")
+    public String reportList(@ModelAttribute ReportSearchDto search, Model model) {
+        model.addAttribute("reportList",  reportService.getReportList(search));
+        model.addAttribute("totalCount",  reportService.getTotalCount(search));
+        model.addAttribute("totalPage",   reportService.getTotalPage(search));
+        model.addAttribute("search",      search);
+        model.addAttribute("activeMenu",  "reports");
+        return "admin/report/list";
+    }
+
+    /**
+     * 신고 처리
+     *
+     * action 값에 따른 처리:
+     *   REJECTED      → 신고 반려 (DISMISSED), 콘텐츠/계정 유지
+     *   DELETE_CONTENT → 게시물/댓글 삭제 후 RESOLVED  (POST·COMMENT 전용)
+     *   BLOCK_AUTHOR  → 작성자 계정 차단 후 RESOLVED   (POST·COMMENT 전용)
+     *   BLOCK_USER    → 신고 대상 유저 차단 후 RESOLVED (USER 전용)
+     */
+    @PostMapping("/report/{reportId}/resolve")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> resolveReport(
+            @PathVariable Long reportId,
+            @RequestParam String action,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        ReportDto report = reportService.getReport(reportId);
+        if (report == null) {
+            result.put("success", false);
+            result.put("message", "신고를 찾을 수 없습니다.");
+            return ResponseEntity.status(404).body(result);
+        }
+
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long resolverIdx = loginUser.getUserIdx();
+
+        try {
+            String targetType = report.getTargetType();
+            Long   targetId   = report.getTargetId();
+
+            switch (action) {
+
+                case "REJECTED":
+                    // 콘텐츠·계정 유지, 신고 반려
+                    reportService.updateReportStatus(reportId, "DISMISSED", resolverIdx, null);
+                    break;
+
+                case "DELETE_CONTENT":
+                    // 게시물 또는 댓글 삭제 후 신고 처리완료
+                    if ("post".equals(targetType)) {
+                        communityService.deletePost(targetId);
+                    } else if ("comment".equals(targetType)) {
+                        communityService.deleteComment(targetId);
+                    } else {
+                        result.put("success", false);
+                        result.put("message", "해당 대상 유형에는 콘텐츠 삭제를 사용할 수 없습니다.");
+                        return ResponseEntity.status(400).body(result);
+                    }
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx,
+                            "post".equals(targetType) ? "게시글 삭제" : "댓글 삭제");
+                    break;
+
+                case "BLOCK_AUTHOR":
+                    // 작성자 계정 차단 후 신고 처리완료
+                    Long authorIdx = null;
+                    if ("post".equals(targetType)) {
+                        authorIdx = adminService.getPostAuthorIdx(targetId);
+                    } else if ("comment".equals(targetType)) {
+                        authorIdx = adminService.getCommentAuthorIdx(targetId);
+                    } else {
+                        result.put("success", false);
+                        result.put("message", "해당 대상 유형에는 작성자 차단을 사용할 수 없습니다.");
+                        return ResponseEntity.status(400).body(result);
+                    }
+                    if (authorIdx == null) {
+                        result.put("success", false);
+                        result.put("message", "작성자를 찾을 수 없습니다.");
+                        return ResponseEntity.status(404).body(result);
+                    }
+                    adminService.changeMemberStatus(authorIdx, "BLOCKED");
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx, "작성자 차단");
+                    break;
+
+                case "BLOCK_USER":
+                    // 신고 대상 유저 차단 후 신고 처리완료 (USER 전용)
+                    if (!"user".equals(targetType)) {
+                        result.put("success", false);
+                        result.put("message", "해당 대상 유형에는 유저 차단을 사용할 수 없습니다.");
+                        return ResponseEntity.status(400).body(result);
+                    }
+                    adminService.changeMemberStatus(targetId, "BLOCKED");
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx, "유저 계정 차단");
+                    break;
+
+                case "DELETE_AND_BLOCK":
+                    // 게시물/댓글 삭제 + 작성자 차단 후 신고 처리완료
+                    Long authorIdxForBlock = null;
+                    if ("post".equals(targetType)) {
+                        authorIdxForBlock = adminService.getPostAuthorIdx(targetId);
+                        communityService.deletePost(targetId);
+                    } else if ("comment".equals(targetType)) {
+                        authorIdxForBlock = adminService.getCommentAuthorIdx(targetId);
+                        communityService.deleteComment(targetId);
+                    } else {
+                        result.put("success", false);
+                        result.put("message", "해당 대상 유형에는 이 처리를 사용할 수 없습니다.");
+                        return ResponseEntity.status(400).body(result);
+                    }
+                    if (authorIdxForBlock != null) {
+                        adminService.changeMemberStatus(authorIdxForBlock, "BLOCKED");
+                    }
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx,
+                            "post".equals(targetType) ? "게시글 삭제 + 작성자 차단" : "댓글 삭제 + 작성자 차단");
+                    break;
+
+                case "REVERT_TO_PENDING":
+                    // 반려/처리완료 → IN_REVIEW 복원
+                    if ("IN_REVIEW".equals(report.getStatus())) {
+                        result.put("success", false);
+                        result.put("message", "이미 검토중 상태입니다.");
+                        return ResponseEntity.status(400).body(result);
+                    }
+                    reportService.revertReportToPending(reportId);
+                    break;
+
+                default:
+                    result.put("success", false);
+                    result.put("message", "알 수 없는 처리 옵션입니다.");
+                    return ResponseEntity.status(400).body(result);
+            }
+
+            result.put("success", true);
+
+        } catch (Exception e) {
+            log.error("신고 처리 오류 reportId={}", reportId, e);
+            result.put("success", false);
+            result.put("message", "처리 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(result);
+        }
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/logins")

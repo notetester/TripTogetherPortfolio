@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    =============================================
+    ReportMapper.xml - 신고 게시판 SQL 쿼리 모음
+    =============================================
+-->
+<mapper namespace="org.triptogether.report.mapper.ReportMapper">
+
+    <!-- 신고 매핑 -->
+    <resultMap id="ReportResultMap" type="org.triptogether.report.vo.ReportDto">
+        <id     property="reportId"          column="report_id"/>
+        <result property="userIdx"           column="user_idx"/>
+        <result property="targetType"        column="target_type"/>
+        <result property="targetId"          column="target_id"/>
+        <result property="reason"            column="reason"/>
+        <result property="description"       column="description"/>
+        <result property="status"            column="status"/>
+        <result property="createdAt"         column="created_at"/>
+        <result property="resolvedAt"        column="resolved_at"/>
+        <result property="updatedAt"         column="updated_at"/>
+        <result property="resolverIdx"       column="resolver_idx"/>
+        <result property="nickname"          column="nickname"/>
+        <result property="targetReportCount" column="target_report_count"/>
+        <result property="resolveAction"     column="resolve_action"/>
+        <result property="sourceType"        column="source_type"/>
+        <result property="sourceId"          column="source_id"/>
+    </resultMap>
+
+    <!-- =============================================
+         공통 검색 조건 (목록/카운트 공유)
+         ============================================= -->
+    <sql id="searchWhere">
+        <where>
+            <if test="status != null and status != ''">
+                AND r.status = #{status}
+            </if>
+            <if test="targetType != null and targetType != ''">
+                AND r.target_type = #{targetType}
+            </if>
+            <if test="userIdx != null">
+                AND r.user_idx = #{userIdx}
+            </if>
+        </where>
+    </sql>
+
+    <!-- =============================================
+         1. 신고 목록 조회
+         - USERS JOIN으로 신고자 닉네임 포함
+         - 최신순 정렬, 페이지네이션 적용
+         ============================================= -->
+    <select id="selectReportList" resultMap="ReportResultMap">
+        SELECT
+            r.report_id,
+            r.user_idx,
+            r.target_type,
+            r.target_id,
+            r.reason,
+            r.description,
+            r.status,
+            r.created_at,
+            r.resolved_at,
+            r.updated_at,
+            r.resolver_idx,
+            r.resolve_action,
+            r.source_type,
+            r.source_id,
+            u.nickname,
+            (
+                SELECT COUNT(*)
+                FROM REPORT r2
+                WHERE r2.target_type = r.target_type
+                  AND r2.target_id   = r.target_id
+            ) AS target_report_count
+        FROM REPORT r
+        LEFT JOIN USERS u ON r.user_idx = u.user_idx
+        <include refid="searchWhere"/>
+        ORDER BY r.created_at DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- =============================================
+         2. 전체 개수 조회
+         ============================================= -->
+    <select id="selectTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM REPORT r
+        <include refid="searchWhere"/>
+    </select>
+
+    <!-- =============================================
+         3. 신고 단건 조회
+         ============================================= -->
+    <select id="selectReport" resultMap="ReportResultMap">
+        SELECT
+            r.report_id,
+            r.user_idx,
+            r.target_type,
+            r.target_id,
+            r.reason,
+            r.description,
+            r.status,
+            r.created_at,
+            r.resolved_at,
+            r.updated_at,
+            r.resolver_idx,
+            r.resolve_action,
+            r.source_type,
+            r.source_id,
+            u.nickname
+        FROM REPORT r
+        LEFT JOIN USERS u ON r.user_idx = u.user_idx
+        WHERE r.report_id = #{reportId}
+    </select>
+
+    <!-- =============================================
+         4. 대상별 신고 수 조회
+         ============================================= -->
+    <select id="selectReportCountByTarget" resultType="int">
+        SELECT COUNT(*)
+        FROM REPORT
+        WHERE target_type = #{targetType}
+          AND target_id   = #{targetId}
+    </select>
+
+    <!-- =============================================
+         5. 신고 등록
+         - INSERT IGNORE: 동일 유저의 중복 신고 방지
+         ============================================= -->
+    <insert id="insertReport" useGeneratedKeys="true" keyProperty="reportId">
+        INSERT IGNORE INTO REPORT (
+            user_idx, target_type, target_id,
+            reason, description, status, source_type, source_id, created_at, updated_at
+        ) VALUES (
+            #{userIdx}, #{targetType}, #{targetId},
+            #{reason}, #{description}, 'IN_REVIEW', #{sourceType}, #{sourceId}, NOW(), NOW()
+        )
+    </insert>
+
+    <!-- 신고 대상 유저 닉네임 조회 -->
+    <select id="selectTargetUserNickname" resultType="String">
+        SELECT nickname FROM USERS WHERE user_idx = #{userIdx}
+    </select>
+
+    <!-- =============================================
+         6. 신고 상태 변경
+         - status, resolverIdx, resolved_at, updated_at 업데이트
+         ============================================= -->
+    <update id="updateReportStatus">
+        UPDATE REPORT
+        SET status         = #{status},
+            resolver_idx   = #{resolverIdx},
+            resolve_action = #{resolveAction},
+            resolved_at    = NOW(),
+            updated_at     = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- 신고 처리 취소 → IN_REVIEW 복원 (resolved_at 초기화) -->
+    <update id="revertReportToPending">
+        UPDATE REPORT
+        SET status         = 'IN_REVIEW',
+            resolver_idx   = NULL,
+            resolve_action = NULL,
+            resolved_at    = NULL,
+            updated_at     = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- =============================================
+         8. 신고 내용 수정 (본인 + IN_REVIEW)
+         ============================================= -->
+    <update id="updateReport">
+        UPDATE REPORT
+        SET reason      = #{reason},
+            description = #{description},
+            updated_at  = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- =============================================
+         9. 신고 삭제 (본인)
+         ============================================= -->
+    <delete id="deleteReport">
+        DELETE FROM REPORT WHERE report_id = #{reportId}
+    </delete>
+
+    <!-- =============================================
+         10. 신고 취소 → CANCELLED (본인 + IN_REVIEW)
+         ============================================= -->
+    <update id="cancelReport">
+        UPDATE REPORT
+        SET status     = 'CANCELLED',
+            updated_at = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- =============================================
+         11. 동일 유저+대상 신고 조회 (재신고 판별용)
+         ============================================= -->
+    <select id="selectReportByUserAndTarget" resultMap="ReportResultMap">
+        SELECT report_id, user_idx, target_type, target_id, reason, description,
+               status, created_at, resolved_at, updated_at, resolver_idx,
+               resolve_action, source_type, source_id
+        FROM REPORT
+        WHERE user_idx    = #{userIdx}
+          AND target_type = #{targetType}
+          AND target_id   = #{targetId}
+        LIMIT 1
+    </select>
+
+    <!-- =============================================
+         12. 취소된 신고 재활성화 (CANCELLED → IN_REVIEW)
+         ============================================= -->
+    <update id="reactivateCancelledReport">
+        UPDATE REPORT
+        SET status      = 'IN_REVIEW',
+            reason      = #{reason},
+            description = #{description},
+            source_type = #{sourceType},
+            source_id   = #{sourceId},
+            resolver_idx   = NULL,
+            resolve_action = NULL,
+            resolved_at    = NULL,
+            updated_at     = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+</mapper>

@@ -143,14 +143,13 @@
             </div>
         </div>
 
-
         <%-- 알림 카드 --%>
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
                     <span class="mp-card-icon">📬</span> 새 알림
                     <c:if test="${not empty notifications}">
-                        <span class="mp-notif-count">${fn:length(notifications)}</span>
+                        <span class="mp-notif-count">${totalNotificationCount}</span>
                     </c:if>
                 </div>
             </div>
@@ -161,13 +160,13 @@
                     </c:when>
                     <c:otherwise>
                         <c:forEach var="noti" items="${notifications}">
-                            <c:set var="readClass" value="${noti.isRead == 0 ? 'unread' : ''}"/>
-                            <div class="mp-notif-item ${readClass}"
-     onclick="readNotification('${noti.notificationId}', '${noti.sourceType}', '${noti.sourceId}')">
+                            <div class="mp-notif-item" data-notification-id="${noti.notificationId}"
+             onclick="deleteNotification('${noti.notificationId}', '${noti.sourceType}', '${noti.sourceId}')">
                         <span class="mp-notif-type">
                             <c:choose>
                                 <c:when test="${noti.sourceType eq 'community'}">[커뮤니티]</c:when>
                                 <c:when test="${noti.sourceType eq 'inquiry'}">[문의게시판]</c:when>
+                                <c:when test="${noti.sourceType eq 'report'}">[신고게시판]</c:when>
                                 <c:otherwise>[알림]</c:otherwise>
                             </c:choose>
                         </span>
@@ -180,7 +179,9 @@
                     </c:otherwise>
                 </c:choose>
             </div>
-            <div class="mp-notif-footer">새 알림은 최신순으로 최대 10개까지만 표시됩니다.</div>
+            <div class="mp-notif-footer">
+                새 알림은 최신순으로 최대 10개까지만 표시됩니다.
+            </div>
         </div>
 
         <%-- ══════════════════════════════════════════
@@ -242,15 +243,6 @@
                         <c:forEach var="post" items="${communityList}">
                             <a href="${pageContext.request.contextPath}/community/${post.postId}"
                                class="mp-list-item">
-                                <div class="mp-list-icon">
-                                    <c:choose>
-                                        <c:when test="${post.postType eq 'review'}">⭐</c:when>
-                                        <c:when test="${post.postType eq 'photo'}">📷</c:when>
-                                        <c:when test="${post.postType eq 'tip'}">💡</c:when>
-                                        <c:when test="${post.postType eq 'question'}">❓</c:when>
-                                        <c:otherwise>📄</c:otherwise>
-                                    </c:choose>
-                                </div>
                                 <div class="mp-list-content">
                                     <div class="mp-list-title">${post.title}</div>
                                     <div class="mp-list-meta">
@@ -261,7 +253,7 @@
                                     </div>
                                 </div>
                                 <div class="mp-list-badges">
-                                    <span class="mp-badge mp-badge-type">
+                                    <span class="mp-badge mp-badge-type-${post.postType}">
                                         <c:choose>
                                             <c:when test="${post.postType eq 'review'}">후기</c:when>
                                             <c:when test="${post.postType eq 'photo'}">사진</c:when>
@@ -303,12 +295,6 @@
                         <c:forEach var="inq" items="${inquiryList}">
                             <a href="${pageContext.request.contextPath}/inquiry/${inq.inquiryId}"
                                class="mp-list-item">
-                                <div class="mp-list-icon">
-                                    <c:choose>
-                                        <c:when test="${inq.isPrivate == 1}">🔒</c:when>
-                                        <c:otherwise>📩</c:otherwise>
-                                    </c:choose>
-                                </div>
                                 <div class="mp-list-content">
                                     <div class="mp-list-title">${inq.title}</div>
                                     <div class="mp-list-meta">
@@ -341,23 +327,122 @@
         </div>
 
 
+        <%-- ══════════════════════════════════════════
+             내 신고내역
+        ══════════════════════════════════════════ --%>
+        <div class="mp-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title">
+                    <span class="mp-card-icon">🚨</span>
+                    내 신고내역
+                    <span class="mp-card-count">${reportCount}</span>
+                </div>
+                <a href="${pageContext.request.contextPath}/report/list"
+                   class="mp-card-more">전체보기 →</a>
+            </div>
+            <div class="mp-card-body">
+                <c:choose>
+                    <c:when test="${empty reportList}">
+                        <div class="mp-empty">
+                            <div class="mp-empty-icon">📭</div>
+                            접수한 신고가 없습니다
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="rpt" items="${reportList}">
+                            <a href="${pageContext.request.contextPath}/report/${rpt.reportId}"
+                               class="mp-list-item">
+                                <div class="mp-list-content">
+                                    <div class="mp-list-title">
+                                        <c:choose>
+                                            <c:when test="${rpt.targetType eq 'post'}">게시글 신고</c:when>
+                                            <c:when test="${rpt.targetType eq 'comment'}">댓글 신고</c:when>
+                                            <c:when test="${rpt.targetType eq 'user'}">유저 신고</c:when>
+                                            <c:otherwise>신고</c:otherwise>
+                                        </c:choose>
+                                        <span style="color:var(--gray-400);font-size:12px;margin-left:4px;">#${rpt.targetId}</span>
+                                    </div>
+                                    <div class="mp-list-meta">
+                                        <span><fmt:formatDate value="${rpt.createdAt}" pattern="yyyy-MM-dd"/></span>
+                                        <c:if test="${not empty rpt.reason}">
+                                            <span>
+                                                <c:choose>
+                                                    <c:when test="${rpt.reason eq 'spam'}">스팸/광고</c:when>
+                                                    <c:when test="${rpt.reason eq 'abuse'}">욕설/비방</c:when>
+                                                    <c:when test="${rpt.reason eq 'privacy'}">개인정보 노출</c:when>
+                                                    <c:when test="${rpt.reason eq 'adult'}">음란물</c:when>
+                                                    <c:when test="${rpt.reason eq 'illegal'}">불법 정보</c:when>
+                                                    <c:when test="${rpt.reason eq 'other'}">기타</c:when>
+                                                    <c:otherwise>${rpt.reason}</c:otherwise>
+                                                </c:choose>
+                                            </span>
+                                        </c:if>
+                                    </div>
+                                </div>
+                                <div class="mp-list-badges">
+                                    <span class="mp-badge mp-badge-${rpt.status}">
+                                        <c:choose>
+                                            <c:when test="${rpt.status eq 'PENDING'}">검토중</c:when>
+                                            <c:when test="${rpt.status eq 'RESOLVED'}">처리완료</c:when>
+                                            <c:when test="${rpt.status eq 'DISMISSED'}">반려</c:when>
+                                            <c:otherwise>${rpt.status}</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </div>
+                            </a>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+
     </div>
     <%-- /mp-inner --%>
 </div>
 <%-- /mp-wrap --%>
 
 <script>
-    function readNotification(notificationId, sourceType, sourceId) {
-        fetch('${pageContext.request.contextPath}/mypage/notification/' + notificationId + '/read', {
+    /**
+     * 단일 알림 삭제
+     */
+    /* ===== 뒤로가기 캐시 새로고침 ===== */
+    window.addEventListener('pageshow', function(e) {
+        if (e.persisted) location.reload();
+    });
+
+    function deleteNotification(notificationId, sourceType, sourceId) {
+        var ctx = '${pageContext.request.contextPath}';
+        var fallbackUrl = ctx + (
+            sourceType === 'community' ? '/community/' + sourceId :
+            sourceType === 'inquiry'   ? '/inquiry/'   + sourceId :
+            sourceType === 'report'    ? '/report/'    + sourceId : '/mypage'
+        );
+
+        fetch(ctx + '/mypage/notification/' + notificationId + '/read', {
             method: 'POST',
             headers: {'X-Requested-With': 'XMLHttpRequest'}
-        }).then(function () {
-            var url = '';
-            if (sourceType === 'community') url = '${pageContext.request.contextPath}/community/' + sourceId;
-            else if (sourceType === 'inquiry') url = '${pageContext.request.contextPath}/inquiry/' + sourceId;
-            if (url) location.href = url;
-        });
+        }).then(r => r.json())
+          .then(data => {
+              location.href = (data.success && data.redirectUrl)
+                  ? ctx + data.redirectUrl
+                  : fallbackUrl;
+          })
+          .catch(function() {
+              location.href = fallbackUrl;
+          });
     }
+
+    /**
+     * 날짜 포맷팅 (YYYY-MM-DD)
+     */
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
 </script>
 
 <%@ include file="../common/footer.jsp" %>

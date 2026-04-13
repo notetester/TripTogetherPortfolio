@@ -35,18 +35,9 @@
     <h2 class="write-page-title" id="writePageTitle">
       <c:choose>
         <c:when test="${isEdit}">게시글 수정</c:when>
-        <c:otherwise>여행 이야기 쓰기</c:otherwise>
+        <c:otherwise><span class="write-title-reset" onclick="resetWrite()">여행 이야기 쓰기</span></c:otherwise>
       </c:choose>
     </h2>
-    <div class="write-top-actions">
-      <button class="btn-cancel" onclick="cancelWrite()">취소</button>
-      <button class="btn-submit" onclick="submitWrite()">
-        <c:choose>
-          <c:when test="${isEdit}">수정하기</c:when>
-          <c:otherwise>등록하기</c:otherwise>
-        </c:choose>
-      </button>
-    </div>
   </div>
 
   <form id="writeForm" enctype="multipart/form-data">
@@ -125,6 +116,15 @@
                     oninput="document.getElementById('contentCount').textContent=this.value.length"><c:if test="${isEdit}">${post.content}</c:if></textarea>
           <div class="input-counter">
             <span id="contentCount">${isEdit ? fn:length(post.content) : 0}</span>/3000
+          </div>
+          <div class="write-bottom-actions">
+            <button type="button" class="btn-cancel" onclick="cancelWrite()">취소</button>
+            <button type="button" class="btn-submit" onclick="submitWrite()">
+              <c:choose>
+                <c:when test="${isEdit}">수정하기</c:when>
+                <c:otherwise>등록하기</c:otherwise>
+              </c:choose>
+            </button>
           </div>
         </div>
 
@@ -231,8 +231,7 @@ var TYPE_CONFIG = {
   question: {
     title: IS_EDIT ? '질문 수정' : '질문하기', imgMax: 2,
     guide: ['질문을 구체적으로 작성해주세요',
-            '여행 일정과 예산을 함께 알려주세요',
-            '답변이 달리면 메일을 보내드려요(구현중입니다)']
+            '여행 일정과 예산을 함께 알려주세요']
   }
 };
 
@@ -341,11 +340,7 @@ function selectType(type, btn) {
       + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'other\',this)">&#128161; 기타</button>'
       + '</div></div>';
   } else if (type === 'question') {
-    sec.innerHTML = '<div class="write-section">'
-      + '<div class="question-notice"><span class="q-notice-icon">&#10067;</span>'
-      + '<div><p class="q-notice-title">질문 게시글 안내</p>'
-      + '<p class="q-notice-desc">답변이 달리면 메일을 보내드려요(구현중입니다)</p>'
-      + '</div></div></div>';
+    sec.innerHTML = '';
   } else {
     sec.innerHTML = '';
   }
@@ -547,6 +542,11 @@ if (type === 'photo') {
       alert(data.message || '처리 중 오류가 발생했습니다.');
     }
   });
+}
+
+function resetWrite() {
+  if (!confirm('작성 중인 내용이 모두 초기화됩니다. 새로 시작하시겠습니까?')) return;
+  location.href = CTX + '/community/write';
 }
 
 function cancelWrite() {

@@ -70,6 +70,16 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public Long getPostAuthorIdx(Long postId) {
+        return adminMapper.findPostAuthorIdx(postId);
+    }
+
+    @Override
+    public Long getCommentAuthorIdx(Long commentId) {
+        return adminMapper.findCommentAuthorIdx(commentId);
+    }
+
+    @Override
     public Map<String, Object> getInquiryList(AdminInquirySearchVO search) {
         List<AdminInquiryVO> list = adminMapper.findInquiries(search);
         int total = adminMapper.countInquiries(search);

@@ -3,6 +3,7 @@ package org.triptogether.myPage.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,11 +11,14 @@ import org.triptogether.auth.service.AuthServiceImpl;
 import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.myPage.service.MyPageService;
+import org.triptogether.myPage.vo.FeedNotificationDto;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/mypage")
@@ -36,7 +40,7 @@ public class ProfileController {
     @PostMapping("/edit-confirm")
     @ResponseBody
     public Map<String, Object> checkPassword(@RequestParam String password,
-                                              HttpSession session) {
+                                             HttpSession session) {
         Map<String, Object> result = new HashMap<>();
         UsersVO user = loginUser(session);
         if (user == null) { result.put("success", false); result.put("message", "로그인이 필요합니다."); return result; }
@@ -277,19 +281,97 @@ public class ProfileController {
         model.addAttribute("communityCount", myPageService.getMyCommunityCount(user.getUserIdx()));
         model.addAttribute("inquiryList",    myPageService.getMyInquiryList(user.getUserIdx()));
         model.addAttribute("inquiryCount",   myPageService.getMyInquiryCount(user.getUserIdx()));
+        model.addAttribute("reportList",     myPageService.getMyReportList(user.getUserIdx()));
+        model.addAttribute("reportCount",    myPageService.getMyReportCount(user.getUserIdx()));
         model.addAttribute("notifications", myPageService.getNotifications(user.getUserIdx()));
+        model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(user.getUserIdx()));
         return "mypage/index";
     }
 
     /* =============================================
-   POST /mypage/notification/{notificationId}/read - 알림 읽음 처리
+   POST /mypage/notification/{notificationId}/read - 알림 삭제 및 리다이렉트 URL 반환
    ============================================= */
     @PostMapping("/notification/{notificationId}/read")
     @ResponseBody
-    public Map<String, Object> readNotification(@PathVariable Long notificationId) {
+    public Map<String, Object> deleteNotification(@PathVariable Long notificationId) {
         Map<String, Object> result = new HashMap<>();
         try {
-            myPageService.readNotification(notificationId);
+            // 1. 알림 조회 (sourceType, sourceId 확인)
+            FeedNotificationDto notification = myPageService.getNotification(notificationId);
+
+            if (notification == null) {
+                result.put("success", false);
+                result.put("message", "알림을 찾을 수 없습니다.");
+                return result;
+            }
+
+            // 2. 알림 삭제
+            myPageService.deleteNotification(notificationId);
+
+            // 3. redirectUrl 생성
+            String redirectUrl = buildRedirectUrl(notification.getSourceType(), notification.getSourceId());
+
+            result.put("success", true);
+            result.put("redirectUrl", redirectUrl);
+        } catch (Exception e) {
+            log.error("알림 삭제 중 오류", e);
+            result.put("success", false);
+            result.put("message", "오류가 발생했습니다.");
+        }
+        return result;
+    }
+
+    /**
+     * sourceType과 sourceId를 기반으로 리다이렉트 URL 생성
+     */
+    private String buildRedirectUrl(String sourceType, Long sourceId) {
+        if ("community".equals(sourceType)) {
+            return "/community/" + sourceId;
+        } else if ("inquiry".equals(sourceType)) {
+            return "/inquiry/" + sourceId;
+        } else if ("report".equals(sourceType)) {
+            return "/report/" + sourceId;
+        }
+
+        return "/mypage";
+    }
+
+    /* =============================================
+   GET /mypage/notifications/all - 모든 알림 조회 (무제한)
+   ============================================= */
+    @GetMapping("/notifications/all")
+    @ResponseBody
+    public Map<String, Object> getAllNotifications(HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) {
+            result.put("success", false);
+            return result;
+        }
+        try {
+            List<FeedNotificationDto> notifications = myPageService.getAllNotifications(user.getUserIdx());
+            result.put("success", true);
+            result.put("notifications", notifications);
+        } catch (Exception e) {
+            result.put("success", false);
+        }
+        return result;
+    }
+
+    /* =============================================
+   POST /mypage/notifications/read-all - 모든 알림 삭제
+   ============================================= */
+    @PostMapping("/notifications/read-all")
+    @ResponseBody
+    public Map<String, Object> deleteAllNotifications(HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) {
+            result.put("success", false);
+            return result;
+        }
+        try {
+            myPageService.deleteAllNotifications(user.getUserIdx());
             result.put("success", true);
         } catch (Exception e) {
             result.put("success", false);

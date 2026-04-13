@@ -15,6 +15,8 @@ public interface AdminService {
     List<UserLoginHistoryVO> getLoginHistory(Long userIdx);
     void changeMemberStatus(Long userIdx, String status);
     void changeMemberRole(Long userIdx, String role);
+    Long getPostAuthorIdx(Long postId);
+    Long getCommentAuthorIdx(Long commentId);
 
     Map<String, Object> getInquiryList(AdminInquirySearchVO search);
     Map<String, Object> getLoginAuditList(AdminLoginAuditSearchVO search);

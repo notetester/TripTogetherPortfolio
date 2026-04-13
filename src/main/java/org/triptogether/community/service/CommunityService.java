@@ -15,9 +15,14 @@ public interface CommunityService {
     List<CommunityPostImageDto> getImageList(Long postId);
     List<String> getTagList(Long postId);
     List<CommunityCommentDto> getCommentList(Long postId);
+    List<CommunityCommentDto> getCommentList(Long postId, String sort);
+    CommunityCommentDto getComment(Long commentId);
     String getTipCategory(Long postId);
     boolean isSolved(Long postId);
     List<CommunityPostDto> getRelatedList(Long postId);
+    List<CommunityPostDto> getLatestList(List<Long> excludeIds, int page, int pageSize);
+    int getLatestTotalCount(List<Long> excludeIds);
+    int getLatestTotalPage(List<Long> excludeIds, int pageSize);
 
     // ===== 조회수 =====
     void increaseViewCount(Long postId);
@@ -56,14 +61,15 @@ public interface CommunityService {
     int getCommentLikeCount(Long commentId);
 
     // ===== 신고 =====
-    boolean reportPost(Long postId, Long userIdx);
-    boolean reportComment(Long commentId, Long userIdx);
+    void updatePostReportCache(Long postId);
+    void updateCommentReportCache(Long commentId);
     int getPostReportCount(Long postId);
     int getCommentReportCount(Long commentId);
 
 
 
     List<CommunityPostDto> getPopularPostList();
+    List<CommunityPostDto> getTodayPopularList();
 
     void blockUser(Long userIdx);
 

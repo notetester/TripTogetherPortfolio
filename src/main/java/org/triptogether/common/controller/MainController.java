@@ -16,7 +16,7 @@ public class MainController {
 
     @GetMapping("/")
     public String index(Model model) {
-        model.addAttribute("popularList", communityService.getPopularPostList());
+        model.addAttribute("popularList", communityService.getTodayPopularList());
         return "home/home";
     }
 }

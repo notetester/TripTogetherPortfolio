@@ -39,4 +39,8 @@ public interface AdminMapper {
     // 이메일 인증 요청 이력
     List<AdminEmailVerificationRequestVO> findEmailVerificationRequests(AdminEmailVerificationRequestSearchVO search);
     int countEmailVerificationRequests(AdminEmailVerificationRequestSearchVO search);
+
+    // 신고 처리용 - 상태 무관 작성자 조회
+    Long findPostAuthorIdx(@Param("postId") Long postId);
+    Long findCommentAuthorIdx(@Param("commentId") Long commentId);
 }
