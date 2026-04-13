@@ -9,6 +9,7 @@ import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.report.mapper.ReportMapper;
 import org.triptogether.report.vo.ReportDto;
 import org.triptogether.report.vo.ReportSearchDto;
+import org.triptogether.report.vo.ReportStatsDto;
 
 import java.util.List;
 
@@ -24,6 +25,14 @@ public class ReportServiceImpl implements ReportService {
 
     private final ReportMapper reportMapper;
     private final MyPageService myPageService;
+
+    /* =============================================
+       통계 조회 (어드민)
+       ============================================= */
+    @Override
+    public ReportStatsDto getReportStats() {
+        return reportMapper.selectReportStats();
+    }
 
     /* =============================================
        1. 신고 목록 조회

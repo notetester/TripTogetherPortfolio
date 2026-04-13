@@ -31,22 +31,6 @@
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/inquiries">
                 <div class="adm-filter-bar">
-                    <div style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label">검색</div>
-                        <div style="display:flex;gap:6px;">
-                            <select class="adm-select" name="searchType" style="width:110px;">
-                                <option value="all" ${search.searchType=='all'?'selected':''}>전체</option>
-                                <option value="title" ${search.searchType=='title'?'selected':''}>제목</option>
-                                <option value="content" ${search.searchType=='content'?'selected':''}>내용</option>
-                                <option value="nickname" ${search.searchType=='nickname'?'selected':''}>작성자</option>
-                            </select>
-                            <div class="adm-search-box" style="flex:1;">
-                                <span class="adm-search-ico">🔍</span>
-                                <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="검색어 입력...">
-                            </div>
-                        </div>
-                    </div>
-
                     <div>
                         <div class="adm-filter-label">상태</div>
                         <select class="adm-select" name="status">
@@ -81,6 +65,22 @@
                             <option value="ANSWERED" ${search.answered=='ANSWERED'?'selected':''}>답변 완료</option>
                             <option value="UNANSWERED" ${search.answered=='UNANSWERED'?'selected':''}>미답변</option>
                         </select>
+                    </div>
+
+                    <div style="flex:1;min-width:220px;">
+                        <div class="adm-filter-label">검색</div>
+                        <div style="display:flex;gap:6px;">
+                            <select class="adm-select" name="searchType" style="width:110px;">
+                                <option value="all" ${search.searchType=='all'?'selected':''}>전체</option>
+                                <option value="title" ${search.searchType=='title'?'selected':''}>제목</option>
+                                <option value="content" ${search.searchType=='content'?'selected':''}>내용</option>
+                                <option value="nickname" ${search.searchType=='nickname'?'selected':''}>작성자</option>
+                            </select>
+                            <div class="adm-search-box" style="flex:1;">
+                                <span class="adm-search-ico">🔍</span>
+                                <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="검색어 입력...">
+                            </div>
+                        </div>
                     </div>
 
                     <button class="adm-btn adm-btn-primary" type="submit">조회</button>

@@ -210,8 +210,20 @@ public class AdminController {
         model.addAttribute("totalCount",  reportService.getTotalCount(search));
         model.addAttribute("totalPage",   reportService.getTotalPage(search));
         model.addAttribute("search",      search);
+        model.addAttribute("stats",       reportService.getReportStats());
         model.addAttribute("activeMenu",  "reports");
         return "admin/report/list";
+    }
+
+    @GetMapping("/reports/{reportId}")
+    public String reportDetail(@PathVariable Long reportId, Model model) {
+        var report = reportService.getReport(reportId);
+        if (report == null) {
+            return "redirect:/admin/reports";
+        }
+        model.addAttribute("report", report);
+        model.addAttribute("activeMenu", "reports");
+        return "admin/report/detail";
     }
 
     /**

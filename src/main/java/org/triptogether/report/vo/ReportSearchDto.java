@@ -19,6 +19,12 @@ public class ReportSearchDto {
     /** 신고자 유저 idx 필터 (본인 신고내역 조회용, null이면 전체) */
     private Long userIdx;
 
+    /** 신고 사유 필터 (spam / abuse / privacy / adult / illegal / other / user) */
+    private String reason;
+
+    /** 신고자 닉네임 검색 키워드 */
+    private String keyword;
+
     /** 현재 페이지 번호 (기본값: 1) */
     private int page = 1;
 
