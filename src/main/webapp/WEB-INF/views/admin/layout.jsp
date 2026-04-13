@@ -56,10 +56,9 @@
             </a>
 
             <div class="adm-nav-section" style="margin-top:8px;">콘텐츠</div>
-            <span class="adm-nav-item disabled">
+            <a class="adm-nav-item ${activeMenu=='community'?'active':''}" href="${pageContext.request.contextPath}/admin/community">
                 <span class="adm-nav-icon">📝</span> 커뮤니티 관리
-                <span class="adm-nav-badge soon">회의 후</span>
-            </span>
+            </a>
             <span class="adm-nav-item disabled">
                 <span class="adm-nav-icon">📍</span> 여행지 관리
                 <span class="adm-nav-badge soon">회의 후</span>
