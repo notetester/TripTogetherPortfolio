@@ -243,14 +243,33 @@ public class AuthServiceImpl implements AuthService {
             return;
         }
 
+        authMapper.cancelActiveEmailVerificationRequests(user.getUserIdx(), "FIND_ID");
         authMapper.expireOldTokens(user.getUserEmail(), "FIND_ID");
+        String requestId = UUID.randomUUID().toString();
         String token = UUID.randomUUID().toString();
+        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
+
+        EmailVerificationRequestVO request = EmailVerificationRequestVO.builder()
+                .requestId(requestId)
+                .userIdx(user.getUserIdx())
+                .purpose("FIND_ID")
+                .pendingEmail(user.getUserEmail())
+                .token(token)
+                .status("REQUESTED")
+                .expiredAt(expiredAt)
+                .ipAddress(context != null ? context.getIpAddress() : null)
+                .userAgent(context != null ? context.getUserAgent() : null)
+                .build();
+        authMapper.insertEmailVerificationRequest(request);
+
         authMapper.insertEmailVerification(EmailVerificationVO.builder()
+                .emailVerificationRequestIdx(request.getEmailVerificationRequestIdx())
+                .requestId(requestId)
                 .userIdx(user.getUserIdx())
                 .email(user.getUserEmail())
                 .token(token)
                 .purpose("FIND_ID")
-                .expiredAt(LocalDateTime.now().plusMinutes(30))
+                .expiredAt(expiredAt)
                 .build());
 
         boolean sent = sendMail(normalizedEmail, "[TripTogether] 아이디 확인 요청 안내",
@@ -261,8 +280,13 @@ public class AuthServiceImpl implements AuthService {
                         "아이디 힌트 확인하기"
                 ));
 
+        if (!sent) {
+            authMapper.cancelEmailVerificationRequest(request.getEmailVerificationRequestIdx());
+            authMapper.cancelTokensByRequestId(requestId);
+        }
+
         recordSecurityEvent(user.getUserIdx(), null, "FIND_ID", "ISSUE", normalizedEmail, normalizedEmail,
-                sent, sent ? null : "MAIL_SEND_FAILED", null, context);
+                sent, sent ? null : "MAIL_SEND_FAILED", requestId, context);
     }
 
     @Override
@@ -274,18 +298,22 @@ public class AuthServiceImpl implements AuthService {
             return null;
         }
         authMapper.markTokenUsed(ev.getVerifyIdx());
+        if (ev.getEmailVerificationRequestIdx() != null) {
+            authMapper.markEmailVerificationRequestVerified(ev.getEmailVerificationRequestIdx());
+            authMapper.markEmailVerificationRequestApplied(ev.getEmailVerificationRequestIdx());
+        }
 
         String userId = authMapper.findUserIdByEmail(ev.getEmail());
         if (userId == null || userId.isBlank()) {
             recordSecurityEvent(ev.getUserIdx(), null, "FIND_ID", "VERIFY", ev.getEmail(), ev.getEmail(),
-                    false, "USER_ID_NOT_FOUND", null, context);
+                    false, "USER_ID_NOT_FOUND", ev.getRequestId(), context);
             return null;
         }
 
         recordSecurityEvent(ev.getUserIdx(), null, "FIND_ID", "VERIFY", ev.getEmail(), ev.getEmail(),
-                true, null, null, context);
+                true, null, ev.getRequestId(), context);
         recordSecurityEvent(ev.getUserIdx(), null, "FIND_ID", "COMPLETE", ev.getEmail(), ev.getEmail(),
-                true, null, null, context);
+                true, null, ev.getRequestId(), context);
         return maskUserId(userId);
     }
 
@@ -340,22 +368,46 @@ public class AuthServiceImpl implements AuthService {
             return;
         }
 
+        authMapper.cancelActiveEmailVerificationRequests(user.getUserIdx(), "RESET_PW");
         authMapper.expireOldTokens(user.getUserEmail(), "RESET_PW");
+        String requestId = UUID.randomUUID().toString();
         String token = UUID.randomUUID().toString();
+        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
+
+        EmailVerificationRequestVO request = EmailVerificationRequestVO.builder()
+                .requestId(requestId)
+                .userIdx(user.getUserIdx())
+                .purpose("RESET_PW")
+                .pendingEmail(user.getUserEmail())
+                .token(token)
+                .status("REQUESTED")
+                .expiredAt(expiredAt)
+                .ipAddress(context != null ? context.getIpAddress() : null)
+                .userAgent(context != null ? context.getUserAgent() : null)
+                .build();
+        authMapper.insertEmailVerificationRequest(request);
+
         authMapper.insertEmailVerification(EmailVerificationVO.builder()
+                .emailVerificationRequestIdx(request.getEmailVerificationRequestIdx())
+                .requestId(requestId)
                 .userIdx(user.getUserIdx())
                 .email(user.getUserEmail())
                 .token(token)
                 .purpose("RESET_PW")
-                .expiredAt(LocalDateTime.now().plusMinutes(30))
+                .expiredAt(expiredAt)
                 .build());
 
         boolean sent = sendMail(user.getUserEmail(), "[TripTogether] 비밀번호 재설정",
                 buildEmailHtml("비밀번호 재설정", "아래 버튼을 클릭하시면 비밀번호를 재설정할 수 있습니다. 링크는 30분간 유효합니다.",
                         baseUrl + "/auth/reset-pw?token=" + token, "비밀번호 재설정하기"));
 
+        if (!sent) {
+            authMapper.cancelEmailVerificationRequest(request.getEmailVerificationRequestIdx());
+            authMapper.cancelTokensByRequestId(requestId);
+        }
+
         recordSecurityEvent(user.getUserIdx(), null, "FIND_PASSWORD", "ISSUE", normalizedIdentifier, user.getUserEmail(),
-                sent, sent ? null : "MAIL_SEND_FAILED", null, context);
+                sent, sent ? null : "MAIL_SEND_FAILED", requestId, context);
     }
 
     @Override
@@ -370,12 +422,16 @@ public class AuthServiceImpl implements AuthService {
         UsersVO user = authMapper.findByIdx(ev.getUserIdx());
         if (user == null) {
             recordSecurityEvent(ev.getUserIdx(), null, "FIND_PASSWORD", "VERIFY", ev.getEmail(), ev.getEmail(),
-                    false, "USER_NOT_FOUND", null, context);
+                    false, "USER_NOT_FOUND", ev.getRequestId(), context);
             return null;
         }
 
+        if (ev.getEmailVerificationRequestIdx() != null) {
+            authMapper.markEmailVerificationRequestVerified(ev.getEmailVerificationRequestIdx());
+        }
+
         recordSecurityEvent(ev.getUserIdx(), null, "FIND_PASSWORD", "VERIFY", ev.getEmail(), ev.getEmail(),
-                true, null, null, context);
+                true, null, ev.getRequestId(), context);
         return user;
     }
 
@@ -388,9 +444,12 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
         authMapper.markTokenUsed(ev.getVerifyIdx());
+        if (ev.getEmailVerificationRequestIdx() != null) {
+            authMapper.markEmailVerificationRequestApplied(ev.getEmailVerificationRequestIdx());
+        }
         authMapper.resetPassword(ev.getUserIdx(), bCryptPasswordEncoder.encode(newPassword));
         recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "RESET_PASSWORD", "COMPLETE", ev.getEmail(), ev.getEmail(),
-                true, null, null, context);
+                true, null, ev.getRequestId(), context);
         return true;
     }
 
@@ -429,11 +488,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean sendEmailVerification(Long userIdx, String requestId, String email, LoginRequestContext context) {
         recordSecurityEvent(userIdx, userIdx, "EMAIL_VERIFY", "REQUEST", email, email,
-                true, null, "PROFILE_EMAIL", context);
+                true, null, requestId, context);
 
         authMapper.cancelActiveEmailVerificationRequests(userIdx, "PROFILE_EMAIL");
+        authMapper.cancelTokensByRequestId(requestId);
 
         String token = UUID.randomUUID().toString();
+        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
         EmailVerificationRequestVO request = EmailVerificationRequestVO.builder()
                 .requestId(requestId)
                 .userIdx(userIdx)
@@ -441,11 +502,21 @@ public class AuthServiceImpl implements AuthService {
                 .pendingEmail(email)
                 .token(token)
                 .status("REQUESTED")
-                .expiredAt(LocalDateTime.now().plusMinutes(30))
+                .expiredAt(expiredAt)
                 .ipAddress(context != null ? context.getIpAddress() : null)
                 .userAgent(context != null ? context.getUserAgent() : null)
                 .build();
         authMapper.insertEmailVerificationRequest(request);
+
+        authMapper.insertEmailVerification(EmailVerificationVO.builder()
+                .emailVerificationRequestIdx(request.getEmailVerificationRequestIdx())
+                .requestId(requestId)
+                .userIdx(userIdx)
+                .email(email)
+                .token(token)
+                .purpose("PROFILE_EMAIL")
+                .expiredAt(expiredAt)
+                .build());
 
         boolean sent = sendMail(email, "[TripTogether] 이메일 인증",
                 buildEmailHtml("이메일 인증", "아래 버튼을 클릭하시면 이메일 인증이 완료됩니다. 인증 후 회원정보 수정 화면에서 저장해야 최종 반영됩니다.",
@@ -453,10 +524,11 @@ public class AuthServiceImpl implements AuthService {
 
         if (!sent) {
             authMapper.cancelEmailVerificationRequest(request.getEmailVerificationRequestIdx());
+            authMapper.cancelTokensByRequestId(requestId);
         }
 
         recordSecurityEvent(userIdx, userIdx, "EMAIL_VERIFY", "ISSUE", email, email,
-                sent, sent ? null : "MAIL_SEND_FAILED", "PROFILE_EMAIL", context);
+                sent, sent ? null : "MAIL_SEND_FAILED", requestId, context);
         return sent;
     }
 
@@ -464,9 +536,13 @@ public class AuthServiceImpl implements AuthService {
     public boolean verifyEmail(String token, LoginRequestContext context) {
         EmailVerificationRequestVO request = authMapper.findValidEmailVerificationRequestByToken(token, "PROFILE_EMAIL");
         if (request != null) {
+            EmailVerificationVO ev = authMapper.findValidToken(token, "PROFILE_EMAIL");
+            if (ev != null) {
+                authMapper.markTokenUsed(ev.getVerifyIdx());
+            }
             authMapper.markEmailVerificationRequestVerified(request.getEmailVerificationRequestIdx());
             recordSecurityEvent(request.getUserIdx(), request.getUserIdx(), "EMAIL_VERIFY", "VERIFY",
-                    request.getPendingEmail(), request.getPendingEmail(), true, null, "PROFILE_EMAIL", context);
+                    request.getPendingEmail(), request.getPendingEmail(), true, null, request.getRequestId(), context);
             return true;
         }
 
@@ -478,7 +554,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "EMAIL_VERIFY", "VERIFY", ev.getEmail(), ev.getEmail(),
-                true, null, null, context);
+                true, null, ev.getRequestId(), context);
 
         try {
             authMapper.markTokenUsed(ev.getVerifyIdx());
@@ -488,7 +564,7 @@ public class AuthServiceImpl implements AuthService {
                 authMapper.clearPasswordAndDisable(ev.getUserIdx());
             }
             recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "EMAIL_VERIFY", "COMPLETE", ev.getEmail(), ev.getEmail(),
-                    true, null, null, context);
+                    true, null, ev.getRequestId(), context);
             return true;
         } catch (Exception e) {
             recordSecurityEvent(ev.getUserIdx(), ev.getUserIdx(), "EMAIL_VERIFY", "COMPLETE", ev.getEmail(), ev.getEmail(),

@@ -117,6 +117,49 @@
         <result property="createdAt" column="created_at"/>
     </resultMap>
 
+    <resultMap id="emailVerificationRM" type="org.triptogether.admin.vo.AdminEmailVerificationVO">
+        <id property="verifyIdx" column="verify_idx"/>
+        <result property="emailVerificationRequestIdx" column="email_verification_request_idx"/>
+        <result property="requestId" column="request_id"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="email" column="email"/>
+        <result property="token" column="token"/>
+        <result property="purpose" column="purpose"/>
+        <result property="used" column="used"/>
+        <result property="usedAt" column="used_at"/>
+        <result property="expiredAt" column="expired_at"/>
+        <result property="cancelledAt" column="cancelled_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <resultMap id="activityLogRM" type="org.triptogether.admin.vo.AdminActivityLogVO">
+        <id property="activityIdx" column="activity_idx"/>
+        <result property="requestId" column="request_id"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="sessionId" column="session_id"/>
+        <result property="requestUri" column="request_uri"/>
+        <result property="httpMethod" column="http_method"/>
+        <result property="activityType" column="activity_type"/>
+        <result property="activityCode" column="activity_code"/>
+        <result property="targetType" column="target_type"/>
+        <result property="targetId" column="target_id"/>
+        <result property="handlerName" column="handler_name"/>
+        <result property="queryString" column="query_string"/>
+        <result property="referer" column="referer"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="userAgent" column="user_agent"/>
+        <result property="responseStatus" column="response_status"/>
+        <result property="responseTimeMs" column="response_time_ms"/>
+        <result property="success" column="is_success"/>
+        <result property="detailSummary" column="detail_summary"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
     <!-- ══════════════════════════════════════════
          회원 목록
     ══════════════════════════════════════════ -->
@@ -459,7 +502,7 @@
 
     <sql id="emailVerificationRequestSearchBase">
         FROM EMAIL_VERIFICATION_REQUEST r
-        INNER JOIN USERS u ON r.user_idx = u.user_idx
+        LEFT JOIN USERS u ON r.user_idx = u.user_idx
         <where>
             <if test="status != null and status != 'ALL'">
                 AND r.status = #{status}
@@ -504,6 +547,106 @@
     <!-- 신고 처리용: 상태 무관 댓글 작성자 조회 -->
     <select id="findCommentAuthorIdx" resultType="Long">
         SELECT user_idx FROM COMMUNITY_COMMENT WHERE comment_id = #{commentId}
+    </select>
+
+
+
+    <!-- ══════════════════════════════════════════
+         이메일 액션 토큰 이력
+    ══════════════════════════════════════════ -->
+
+    <sql id="emailVerificationSearchBase">
+        FROM EMAIL_VERIFICATION v
+        LEFT JOIN USERS u ON v.user_idx = u.user_idx
+        <where>
+            <if test="used != null and used == 'USED'">
+                AND v.used = TRUE
+            </if>
+            <if test="used != null and used == 'UNUSED'">
+                AND v.used = FALSE
+            </if>
+            <if test="purpose != null and purpose != 'ALL'">
+                AND v.purpose = #{purpose}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    IFNULL(u.user_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(v.email, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(v.request_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(v.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+    </sql>
+
+    <select id="findEmailVerifications" resultMap="emailVerificationRM">
+        SELECT
+            v.verify_idx, v.email_verification_request_idx, v.request_id, v.user_idx,
+            u.user_id, u.nickname,
+            v.email, v.token, v.purpose, v.used,
+            v.used_at, v.expired_at, v.cancelled_at, v.updated_at, v.created_at
+        <include refid="emailVerificationSearchBase"/>
+        ORDER BY v.created_at DESC, v.verify_idx DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countEmailVerifications" resultType="int">
+        SELECT COUNT(*)
+        <include refid="emailVerificationSearchBase"/>
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         일반 활동 로그
+    ══════════════════════════════════════════ -->
+
+    <sql id="activityLogSearchBase">
+        FROM USER_ACTIVITY_LOG a
+        LEFT JOIN USERS u ON a.user_idx = u.user_idx
+        <where>
+            <if test="success != null and success == 'SUCCESS'">
+                AND a.is_success = TRUE
+            </if>
+            <if test="success != null and success == 'FAIL'">
+                AND a.is_success = FALSE
+            </if>
+            <if test="activityType != null and activityType != 'ALL'">
+                AND a.activity_type = #{activityType}
+            </if>
+            <if test="httpMethod != null and httpMethod != 'ALL'">
+                AND a.http_method = #{httpMethod}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    IFNULL(u.user_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(a.request_uri, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(a.activity_code, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(a.target_type, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(a.target_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(a.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+    </sql>
+
+    <select id="findActivityLogs" resultMap="activityLogRM">
+        SELECT
+            a.activity_idx, a.request_id, a.user_idx,
+            u.user_id, u.nickname,
+            a.session_id, a.request_uri, a.http_method,
+            a.activity_type, a.activity_code, a.target_type, a.target_id,
+            a.handler_name, a.query_string, a.referer,
+            a.ip_address, a.user_agent, a.response_status, a.response_time_ms,
+            a.is_success, a.detail_summary, a.created_at
+        <include refid="activityLogSearchBase"/>
+        ORDER BY a.created_at DESC, a.activity_idx DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countActivityLogs" resultType="int">
+        SELECT COUNT(*)
+        <include refid="activityLogSearchBase"/>
     </select>
 
 </mapper>

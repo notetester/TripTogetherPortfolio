@@ -2,20 +2,17 @@ package org.triptogether.inquiry.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.triptogether.cloudinary.CloudinaryService;
 import org.triptogether.inquiry.mapper.InquiryMapper;
 import org.triptogether.inquiry.vo.InquiryAnswerDto;
 import org.triptogether.inquiry.vo.InquiryAttachmentDto;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * =============================================
@@ -32,9 +29,7 @@ import java.util.UUID;
 public class InquiryServiceImpl implements InquiryService {
 
     private final InquiryMapper inquiryMapper;
-
-    @Value("${file.upload.path}")
-    private String uploadPath;
+    private final CloudinaryService cloudinaryService;
 
     /* =============================================
        1. 목록 조회
@@ -243,31 +238,6 @@ public class InquiryServiceImpl implements InquiryService {
     // ===== 파일 저장 유틸 =====
 
     private String saveFile(MultipartFile file) {
-        String ext = getExtension(file.getOriginalFilename()).toLowerCase();
-        if (!ext.equals(".jpg") && !ext.equals(".jpeg")
-                && !ext.equals(".png") && !ext.equals(".gif")
-                && !ext.equals(".webp")) {
-            log.warn("허용되지 않는 파일 형식 업로드 시도: {}", ext);
-            return null;
-        }
-        try {
-            String dir = System.getProperty("user.dir").replace("\\", "/")
-                    + "/" + uploadPath + "/inquiry/";
-            File dirFile = new File(dir);
-            if (!dirFile.exists()) dirFile.mkdirs();
-
-            String fileName = UUID.randomUUID().toString() + ext;
-            file.transferTo(new File(dir + fileName));
-
-            return "/upload/inquiry/" + fileName;
-        } catch (IOException e) {
-            log.error("파일 저장 실패", e);
-            return null;
-        }
-    }
-
-    private String getExtension(String originalFilename) {
-        if (originalFilename == null || !originalFilename.contains(".")) return "";
-        return originalFilename.substring(originalFilename.lastIndexOf("."));
+        return cloudinaryService.uploadImage(file, "inquiry");
     }
 }

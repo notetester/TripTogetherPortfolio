@@ -115,21 +115,21 @@ public interface AuthMapper {
     // EMAIL_VERIFICATION_REQUEST
     // ══════════════════════════════════════════
 
-    /** 프로필 이메일 인증 요청 생성 */
+    /** 이메일 액션 요청 헤더 생성 */
     void insertEmailVerificationRequest(EmailVerificationRequestVO request);
 
     /** 동일 user/purpose 의 미적용 요청 취소 */
     void cancelActiveEmailVerificationRequests(@Param("userIdx") Long userIdx,
                                                @Param("purpose") String purpose);
 
-    /** 토큰 기준 유효한 프로필 이메일 인증 요청 조회 */
+    /** 토큰 기준 유효한 이메일 액션 요청 조회 */
     EmailVerificationRequestVO findValidEmailVerificationRequestByToken(@Param("token") String token,
                                                                         @Param("purpose") String purpose);
 
     /** 특정 이메일 인증 요청 취소 */
     void cancelEmailVerificationRequest(Long emailVerificationRequestIdx);
 
-    /** 사용자/요청/request 이메일 기준 저장 가능 상태 조회 */
+    /** 사용자/요청/request 이메일 기준 저장 가능 상태 조회 (주로 PROFILE_EMAIL) */
     EmailVerificationRequestVO findApplicableEmailVerificationRequest(@Param("userIdx") Long userIdx,
                                                                       @Param("requestId") String requestId,
                                                                       @Param("purpose") String purpose,
@@ -159,6 +159,9 @@ public interface AuthMapper {
 
     /** 토큰 사용 처리 */
     void markTokenUsed(Long verifyIdx);
+
+    /** 요청 ID 기준으로 연결된 토큰을 취소(무효) 처리 */
+    void cancelTokensByRequestId(String requestId);
 
     /** 동일 이메일+목적의 미사용 토큰 전체 만료 처리 (중복 발급 방지) */
     void expireOldTokens(@Param("email") String email,

@@ -210,8 +210,9 @@
               <button class="inq-btn-submit" id="answerEditSaveBtn" style="display:none;">저장</button>
               <button class="inq-btn-cancel" id="answerEditCancelBtn" style="display:none;">취소</button>
             </c:when>
-            <%-- 답변 없을 때: 등록 / 답변+완료 동시처리 버튼 --%>
+            <%-- 답변 없을 때: AI 초안 / 등록 / 답변+완료 동시처리 버튼 --%>
             <c:otherwise>
+              <button class="inq-btn-cancel" id="aiDraftBtn">🤖 AI 초안</button>
               <button class="inq-btn-cancel" id="answerBtn">답변 등록</button>
               <button class="inq-btn-submit" id="answerAndCompleteBtn">답변 + 완료 처리</button>
             </c:otherwise>
@@ -414,6 +415,32 @@
         if (data.success) { location.reload(); }
         else { alert(data.message || '상태 변경에 실패했습니다.'); this.disabled = false; }
       } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
+
+  /* =============================================
+     어드민: AI 답변 초안 생성
+     ============================================= */
+  var aiDraftBtn = document.getElementById('aiDraftBtn');
+  if (aiDraftBtn) {
+    aiDraftBtn.addEventListener('click', async function () {
+      var btn = this;
+      btn.disabled = true;
+      btn.textContent = '⏳ 생성 중...';
+      try {
+        var res  = await fetch(ctx + '/inquiry/' + inquiryId + '/ai-draft', { method: 'POST' });
+        var data = await res.json();
+        if (data.success) {
+          document.getElementById('adminContent').value = data.draft;
+        } else {
+          alert(data.message || 'AI 초안 생성에 실패했습니다.');
+        }
+      } catch (e) {
+        alert('오류가 발생했습니다. 다시 시도해주세요.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🤖 AI 초안';
+      }
     });
   }
 

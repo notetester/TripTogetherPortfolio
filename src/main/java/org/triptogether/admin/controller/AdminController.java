@@ -287,4 +287,19 @@ public class AdminController {
         model.addAttribute("activeMenu", "emailVerifications");
         return "admin/email-verification/list";
     }
+
+    @GetMapping("/email-tokens")
+    public String emailVerifications(AdminEmailVerificationSearchVO search, Model model) {
+        model.addAllAttributes(adminService.getEmailVerificationList(search));
+        model.addAttribute("activeMenu", "emailTokens");
+        return "admin/email-token/list";
+    }
+
+    @GetMapping("/activity-logs")
+    public String activityLogs(AdminActivityLogSearchVO search, Model model) {
+        model.addAllAttributes(adminService.getActivityLogList(search));
+        model.addAttribute("activeMenu", "activityLogs");
+        return "admin/activity-log/list";
+    }
+
 }

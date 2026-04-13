@@ -2,12 +2,14 @@ package org.triptogether.community.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.*;
+import org.triptogether.perspective.PerspectiveService;
 import org.triptogether.report.service.ReportService;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +28,10 @@ public class CommunityController {
 
     private final CommunityService communityService;
     private final ReportService reportService;
+    private final PerspectiveService perspectiveService;
+
+    @Value("${system.user.idx}")
+    private Long systemUserIdx;
 
     /* =============================================
        GET /community/list - 커뮤니티 목록
@@ -167,9 +173,24 @@ public class CommunityController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
+
+            if (!writeDto.isForceSubmit()) {
+                String text = (writeDto.getTitle() != null ? writeDto.getTitle() : "") + " "
+                            + (writeDto.getContent() != null ? writeDto.getContent() : "");
+                if (perspectiveService.isToxic(text)) {
+                    result.put("toxicityDetected", true);
+                    return ResponseEntity.ok(result);
+                }
+            }
+
             Long postId = communityService.writePost(writeDto, loginUserIdx);
             result.put("success", true);
             result.put("postId",  postId);
+
+            if (writeDto.isForceSubmit()) {
+                reportService.submitReport("post", postId, systemUserIdx,
+                        "toxicity", "AI 욕설 감지 (강제 등록)", null, null);
+            }
         } catch (IllegalStateException e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -303,6 +324,7 @@ public class CommunityController {
     public ResponseEntity<Map<String, Object>> addComment(
             @PathVariable Long postId,
             @RequestParam String content,
+            @RequestParam(defaultValue = "false") boolean forceSubmit,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -319,8 +341,19 @@ public class CommunityController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
-            communityService.addComment(postId, loginUserIdx, content);
+
+            if (!forceSubmit && perspectiveService.isToxic(content)) {
+                result.put("toxicityDetected", true);
+                return ResponseEntity.ok(result);
+            }
+
+            Long commentId = communityService.addComment(postId, loginUserIdx, content);
             result.put("success", true);
+
+            if (forceSubmit) {
+                reportService.submitReport("comment", commentId, systemUserIdx,
+                        "toxicity", "AI 욕설 감지 (강제 등록)", "post", postId);
+            }
         } catch (IllegalStateException e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -365,6 +398,7 @@ public class CommunityController {
             @PathVariable Long postId,
             @PathVariable Long commentId,
             @RequestParam String content,
+            @RequestParam(defaultValue = "false") boolean forceSubmit,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -381,8 +415,19 @@ public class CommunityController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
-            communityService.addReply(postId, loginUserIdx, content, commentId);
+
+            if (!forceSubmit && perspectiveService.isToxic(content)) {
+                result.put("toxicityDetected", true);
+                return ResponseEntity.ok(result);
+            }
+
+            Long replyId = communityService.addReply(postId, loginUserIdx, content, commentId);
             result.put("success", true);
+
+            if (forceSubmit) {
+                reportService.submitReport("comment", replyId, systemUserIdx,
+                        "toxicity", "AI 욕설 감지 (강제 등록)", "post", postId);
+            }
         } catch (IllegalStateException e) {
             result.put("success", false);
             result.put("message", e.getMessage());

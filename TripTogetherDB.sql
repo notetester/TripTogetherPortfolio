@@ -132,18 +132,6 @@ CREATE TABLE IF NOT EXISTS `COMMUNITY_POST_IMAGE` (
   CONSTRAINT `fk_cpi_post` FOREIGN KEY (`post_id`) REFERENCES `COMMUNITY_POST` (`post_id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='게시글 이미지 (여러 장 지원)';
 
--- Pixabay 자동추천 이미지 캐시 테이블
-CREATE TABLE IF NOT EXISTS `COMMUNITY_IMAGE_CACHE` (
-  `cache_id` bigint NOT NULL AUTO_INCREMENT COMMENT '캐시 ID',
-  `region` varchar(50) NOT NULL COMMENT '지역 코드 (asia/europe/africa/north_america/south_america/oceania)',
-  `image_url` varchar(500) NOT NULL COMMENT 'Pixabay webformatURL',
-  `fetched_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '수집 일시',
-  PRIMARY KEY (`cache_id`),
-  KEY `idx_cic_region` (`region`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Pixabay 자동추천 이미지 캐시';
-
--- 내보낼 데이터가 선택되어 있지 않습니다.
-
 -- 테이블 team1_db.COMMUNITY_POST_LIKE 구조 내보내기
 CREATE TABLE IF NOT EXISTS `COMMUNITY_POST_LIKE` (
   `like_id` bigint NOT NULL AUTO_INCREMENT COMMENT '좋아요 ID',

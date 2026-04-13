@@ -625,7 +625,7 @@
     <!-- =============================================
          댓글
          ============================================= -->
-    <insert id="insertComment">
+    <insert id="insertComment" useGeneratedKeys="true" keyProperty="commentId">
         INSERT INTO COMMUNITY_COMMENT
             (post_id, user_idx, content, comment_status, like_count, created_at, updated_at)
         VALUES
@@ -786,7 +786,7 @@
     </select>
 
     <!-- 대댓글 INSERT -->
-    <insert id="insertReply">
+    <insert id="insertReply" useGeneratedKeys="true" keyProperty="commentId">
         INSERT INTO COMMUNITY_COMMENT
             (post_id, user_idx, content, comment_status, like_count,
              parent_comment_id, created_at, updated_at)

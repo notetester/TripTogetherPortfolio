@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="activeMenu" value="emailVerifications"/>
-<c:set var="pageTitle" value="이메일 인증 요청"/>
+<c:set var="pageTitle" value="이메일 액션 요청"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -13,13 +13,16 @@
                     <div class="adm-search-box" style="flex:1;min-width:220px;">
                         <div class="adm-filter-label">검색</div>
                         <span class="adm-search-ico">🔍</span>
-                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="아이디, 닉네임, 이메일, 요청ID, IP 검색">
+                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="아이디, 닉네임, 대상 이메일, 요청ID, IP 검색">
                     </div>
                     <div>
                         <div class="adm-filter-label">목적</div>
                         <select class="adm-select" name="purpose">
                             <option value="ALL" ${search.purpose=='ALL'?'selected':''}>전체</option>
                             <option value="PROFILE_EMAIL" ${search.purpose=='PROFILE_EMAIL'?'selected':''}>PROFILE_EMAIL</option>
+                            <option value="FIND_ID" ${search.purpose=='FIND_ID'?'selected':''}>FIND_ID</option>
+                            <option value="RESET_PW" ${search.purpose=='RESET_PW'?'selected':''}>RESET_PW</option>
+                            <option value="VERIFY" ${search.purpose=='VERIFY'?'selected':''}>VERIFY</option>
                         </select>
                     </div>
                     <div>
@@ -41,7 +44,7 @@
 
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">저장 전 이메일 인증 요청 이력</div>
+            <div class="adm-card-title">이메일 액션 요청 이력</div>
             <div style="font-size:12px;color:#64748b;">총 ${total}건</div>
         </div>
         <div class="adm-table-wrap">
@@ -65,8 +68,8 @@
                     <tr>
                         <td><fmt:formatDate value="${item.requestedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></td>
                         <td>
-                            <div class="mem-name">${item.nickname}</div>
-                            <div class="mem-uid">@${item.userId}</div>
+                            <div class="mem-name"><c:out value="${empty item.nickname ? '미식별 요청' : item.nickname}"/></div>
+                            <div class="mem-uid"><c:out value="${empty item.userId ? '-' : '@'.concat(item.userId)}"/></div>
                         </td>
                         <td>${item.purpose}</td>
                         <td><c:out value="${item.pendingEmail}"/></td>
