@@ -134,4 +134,32 @@ public class AdminServiceImpl implements AdminService {
         result.put("search", search);
         return result;
     }
+
+    @Override
+    public Map<String, Object> getEmailVerificationList(AdminEmailVerificationSearchVO search) {
+        List<AdminEmailVerificationVO> list = adminMapper.findEmailVerifications(search);
+        int total = adminMapper.countEmailVerifications(search);
+        AdminPageVO paging = AdminPageVO.of(total, search.getPage(), search.getSize(), 10);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("paging", paging);
+        result.put("total", total);
+        result.put("search", search);
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getActivityLogList(AdminActivityLogSearchVO search) {
+        List<AdminActivityLogVO> list = adminMapper.findActivityLogs(search);
+        int total = adminMapper.countActivityLogs(search);
+        AdminPageVO paging = AdminPageVO.of(total, search.getPage(), search.getSize(), 10);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("paging", paging);
+        result.put("total", total);
+        result.put("search", search);
+        return result;
+    }
 }

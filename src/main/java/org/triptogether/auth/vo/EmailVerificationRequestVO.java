@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 /**
  * EMAIL_VERIFICATION_REQUEST 테이블 VO.
  *
- * <p>회원정보 수정 화면에서 입력 중인 이메일의 저장 전 인증 상태를 추적한다.</p>
- * <p>USERS.user_email / email_verified 는 최종 저장 시점에만 반영하고,
- * 그 전 단계의 인증 진행 상태는 이 테이블에서 관리한다.</p>
+ * <p>이메일 링크를 발급하는 모든 요청의 헤더/워크플로우 상태를 저장한다.</p>
+ * <p>현재는 PROFILE_EMAIL 중심으로 사용 중이지만, 아이디 찾기 / 비밀번호 재설정 등
+ * 다른 이메일 액션 요청도 같은 구조로 확장 가능하도록 설계한다.</p>
  */
 @Data
 @Builder
@@ -22,10 +22,10 @@ public class EmailVerificationRequestVO {
 
     private Long emailVerificationRequestIdx;
     private String requestId;
-    private Long userIdx;
+    private Long userIdx; // 식별 가능 시만 사용. 비회원/미식별 요청은 null 가능
     private String purpose;
-    private String pendingEmail;
-    private String token;
+    private String pendingEmail; // 의미상 요청 대상 이메일
+    private String token;        // 현재 시스템 호환을 위해 유지하는 토큰 복사본
     private String status;
     private LocalDateTime requestedAt;
     private LocalDateTime verifiedAt;

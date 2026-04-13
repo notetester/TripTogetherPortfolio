@@ -37,8 +37,14 @@
             <a class="adm-nav-item ${activeMenu=='security'?'active':''}" href="${pageContext.request.contextPath}/admin/security">
                 <span class="adm-nav-icon">🛡️</span> 보안 이력
             </a>
+            <a class="adm-nav-item ${activeMenu=='emailTokens'?'active':''}" href="${pageContext.request.contextPath}/admin/email-tokens">
+                <span class="adm-nav-icon">🔗</span> 이메일 액션 토큰
+            </a>
             <a class="adm-nav-item ${activeMenu=='emailVerifications'?'active':''}" href="${pageContext.request.contextPath}/admin/email-verifications">
-                <span class="adm-nav-icon">📧</span> 이메일 인증 요청
+                <span class="adm-nav-icon">📧</span> 이메일 액션 요청
+            </a>
+            <a class="adm-nav-item ${activeMenu=='activityLogs'?'active':''}" href="${pageContext.request.contextPath}/admin/activity-logs">
+                <span class="adm-nav-icon">🧭</span> 일반 활동 로그
             </a>
 
             <div class="adm-nav-section" style="margin-top:8px;">운영</div>

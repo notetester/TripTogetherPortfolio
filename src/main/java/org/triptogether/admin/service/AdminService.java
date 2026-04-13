@@ -22,4 +22,6 @@ public interface AdminService {
     Map<String, Object> getLoginAuditList(AdminLoginAuditSearchVO search);
     Map<String, Object> getSecurityAuditList(AdminSecurityAuditSearchVO search);
     Map<String, Object> getEmailVerificationRequestList(AdminEmailVerificationRequestSearchVO search);
+    Map<String, Object> getEmailVerificationList(AdminEmailVerificationSearchVO search);
+    Map<String, Object> getActivityLogList(AdminActivityLogSearchVO search);
 }

@@ -48,12 +48,17 @@
 
     <resultMap id="verifyRM" type="org.triptogether.auth.vo.EmailVerificationVO">
         <id  property="verifyIdx"   column="verify_idx"/>
+        <result property="emailVerificationRequestIdx" column="email_verification_request_idx"/>
+        <result property="requestId"    column="request_id"/>
         <result property="userIdx"      column="user_idx"/>
         <result property="email"        column="email"/>
         <result property="token"        column="token"/>
         <result property="purpose"      column="purpose"/>
         <result property="expiredAt"    column="expired_at"/>
         <result property="used"         column="used"/>
+        <result property="usedAt"       column="used_at"/>
+        <result property="cancelledAt"  column="cancelled_at"/>
+        <result property="updatedAt"    column="updated_at"/>
         <result property="createdAt"    column="created_at"/>
     </resultMap>
 
@@ -338,9 +343,14 @@
          EMAIL_VERIFICATION
     ═══════════════════════════════════════ -->
 
-    <insert id="insertEmailVerification">
-        INSERT INTO EMAIL_VERIFICATION (user_idx, email, token, purpose, expired_at)
-        VALUES (#{userIdx}, #{email}, #{token}, #{purpose}, #{expiredAt})
+    <insert id="insertEmailVerification" useGeneratedKeys="true" keyProperty="verifyIdx" keyColumn="verify_idx">
+        INSERT INTO EMAIL_VERIFICATION (
+            email_verification_request_idx, request_id, user_idx, email, token, purpose, expired_at,
+            used, used_at, cancelled_at
+        ) VALUES (
+            #{emailVerificationRequestIdx}, #{requestId}, #{userIdx}, #{email}, #{token}, #{purpose}, #{expiredAt},
+            FALSE, #{usedAt}, #{cancelledAt}
+        )
     </insert>
 
     <select id="findValidToken" resultMap="verifyRM">
@@ -353,7 +363,19 @@
     </select>
 
     <update id="markTokenUsed">
-        UPDATE EMAIL_VERIFICATION SET used = TRUE WHERE verify_idx = #{verifyIdx}
+        UPDATE EMAIL_VERIFICATION
+        SET used = TRUE,
+            used_at = NOW()
+        WHERE verify_idx = #{verifyIdx}
+    </update>
+
+    <update id="cancelTokensByRequestId">
+        UPDATE EMAIL_VERIFICATION
+        SET cancelled_at = NOW(),
+            expired_at = CASE WHEN expired_at > NOW() THEN NOW() ELSE expired_at END
+        WHERE request_id = #{requestId}
+          AND used = FALSE
+          AND cancelled_at IS NULL
     </update>
 
     <!-- 기존 미사용 토큰 모두 만료 처리 (동일 이메일+목적) -->
