@@ -36,9 +36,17 @@ public interface AdminMapper {
     List<AdminSecurityAuditVO> findSecurityAudits(AdminSecurityAuditSearchVO search);
     int countSecurityAudits(AdminSecurityAuditSearchVO search);
 
-    // 이메일 인증 요청 이력
+    // 이메일 액션 요청 이력
     List<AdminEmailVerificationRequestVO> findEmailVerificationRequests(AdminEmailVerificationRequestSearchVO search);
     int countEmailVerificationRequests(AdminEmailVerificationRequestSearchVO search);
+
+    // 이메일 액션 토큰 이력
+    List<AdminEmailVerificationVO> findEmailVerifications(AdminEmailVerificationSearchVO search);
+    int countEmailVerifications(AdminEmailVerificationSearchVO search);
+
+    // 일반 활동 로그
+    List<AdminActivityLogVO> findActivityLogs(AdminActivityLogSearchVO search);
+    int countActivityLogs(AdminActivityLogSearchVO search);
 
     // 신고 처리용 - 상태 무관 작성자 조회
     Long findPostAuthorIdx(@Param("postId") Long postId);

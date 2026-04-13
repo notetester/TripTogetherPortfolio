@@ -30,6 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
     private final LoginInterceptor loginInterceptor;
     private final AdminInterceptor adminInterceptor;
     private final AdminModeInterceptor adminModeInterceptor;
+    private final ActivityLogInterceptor activityLogInterceptor;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -44,6 +45,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // 일반 활동 로그
+        registry.addInterceptor(activityLogInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/resources/**", "/upload/**", "/favicon.ico",
+                        "/error", "/css/**", "/js/**", "/images/**"
+                );
+
         // 일반 로그인 필요 영역
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns(

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.common.mapper.ActivityLogMapper">
+
+    <insert id="insertActivityLog">
+        INSERT INTO USER_ACTIVITY_LOG (
+            request_id, user_idx, session_id, request_uri, http_method,
+            activity_type, activity_code, target_type, target_id,
+            handler_name, query_string, referer,
+            ip_address, user_agent, response_status, response_time_ms,
+            is_success, detail_summary
+        ) VALUES (
+            #{requestId}, #{userIdx}, #{sessionId}, #{requestUri}, #{httpMethod},
+            #{activityType}, #{activityCode}, #{targetType}, #{targetId},
+            #{handlerName}, #{queryString}, #{referer},
+            #{ipAddress}, #{userAgent}, #{responseStatus}, #{responseTimeMs},
+            #{success}, #{detailSummary}
+        )
+    </insert>
+
+</mapper>
