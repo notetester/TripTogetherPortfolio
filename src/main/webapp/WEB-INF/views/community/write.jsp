@@ -474,7 +474,7 @@ function renderTags() {
   document.getElementById('tagsHidden').value = tags.join(',');
 }
 
-function submitWrite() {
+function submitWrite(forceSubmit) {
   var title   = document.getElementById('writeTitle').value.trim();
   var content = document.getElementById('writeContent').value.trim();
   var type    = document.getElementById('postType').value;
@@ -487,27 +487,31 @@ function submitWrite() {
     renderTags();
   }
 
-  if (!title) {
-    alert('제목을 입력해주세요.');
-    document.getElementById('writeTitle').focus();
-    return;
+  if (!forceSubmit) {
+    if (!title) {
+      alert('제목을 입력해주세요.');
+      document.getElementById('writeTitle').focus();
+      return;
+    }
+    if (!content && type !== 'photo') {
+      alert('내용을 입력해주세요.');
+      document.getElementById('writeContent').focus();
+      return;
+    }
+    if (type === 'photo' && uploadedFiles.length === 0) {
+      alert('사진 유형은 최소 1장의 사진이 필요해요.');
+      return;
+    }
   }
+
   /* 사진 유형이면 content를 빈 문자열로 강제 설정 */
-if (type === 'photo') {
+  if (type === 'photo') {
     document.getElementById('writeContent').value = '';
     document.getElementById('writeContent').readOnly = false;
-}
-  if (!content && type !== 'photo') {
-    alert('내용을 입력해주세요.');
-    document.getElementById('writeContent').focus();
-    return;
-  }
-  if (type === 'photo' && uploadedFiles.length === 0) {
-    alert('사진 유형은 최소 1장의 사진이 필요해요.');
-    return;
   }
 
   var formData = new FormData(document.getElementById('writeForm'));
+  if (forceSubmit) formData.append('forceSubmit', 'true');
 
   /* 새로 추가된 이미지만 전송 */
   uploadedFiles.forEach(function(img) {
@@ -536,6 +540,12 @@ if (type === 'photo') {
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
+    if (data.toxicityDetected) {
+      if (confirm(data.message || '부적절한 표현이 감지되었습니다. 그래도 등록하시겠습니까?')) {
+        submitWrite(true);
+      }
+      return;
+    }
     if (data.success) {
       location.href = CTX + '/community/' + data.postId;
     } else {

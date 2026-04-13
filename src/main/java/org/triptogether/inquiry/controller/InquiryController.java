@@ -8,12 +8,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.triptogether.inquiry.service.InquiryAiService;
 import org.triptogether.inquiry.service.InquiryService;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
 import org.triptogether.inquiry.vo.InquiryAttachmentDto;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.perspective.PerspectiveService;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -47,6 +49,8 @@ public class InquiryController {
 
     private final InquiryService inquiryService;
     private final MyPageService myPageService;
+    private final PerspectiveService perspectiveService;
+    private final InquiryAiService inquiryAiService;
 
     /* =============================================
        유틸 메서드
@@ -141,6 +145,7 @@ public class InquiryController {
             @RequestParam String category,
             @RequestParam(defaultValue = "0") int isPrivate,
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
+            @RequestParam(defaultValue = "false") boolean forceSubmit,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -153,6 +158,11 @@ public class InquiryController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
+
+            if (!forceSubmit && perspectiveService.isToxic(title + " " + content)) {
+                result.put("toxicityDetected", true);
+                return ResponseEntity.ok(result);
+            }
 
             InquiryPostDto inquiry = new InquiryPostDto();
             inquiry.setUserIdx(loginUserIdx);
@@ -567,6 +577,51 @@ public class InquiryController {
             result.put("success", false);
             return ResponseEntity.status(500).body(result);
         }
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/ai-draft - 관리자 AI 답변 초안 생성
+       ============================================= */
+
+    /**
+     * Claude Haiku(Victor 개인 계정)로 답변 초안을 생성한다.
+     * 관리자만 호출 가능.
+     */
+    @PostMapping("/{inquiryId}/ai-draft")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> aiDraft(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (!isAdmin(session)) {
+            result.put("success", false);
+            result.put("message", "관리자만 사용할 수 있습니다.");
+            return ResponseEntity.status(403).body(result);
+        }
+
+        InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+        if (inquiry == null) {
+            result.put("success", false);
+            return ResponseEntity.status(404).body(result);
+        }
+
+        String draft = inquiryAiService.generateDraft(
+                inquiry.getCategory(),
+                inquiry.getTitle(),
+                inquiry.getContent()
+        );
+
+        if (draft == null || draft.isBlank()) {
+            result.put("success", false);
+            result.put("message", "AI 초안 생성에 실패했습니다. 잠시 후 다시 시도해주세요.");
+            return ResponseEntity.status(500).body(result);
+        }
+
+        result.put("success", true);
+        result.put("draft", draft);
         return ResponseEntity.ok(result);
     }
 

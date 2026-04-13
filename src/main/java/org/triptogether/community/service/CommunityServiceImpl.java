@@ -2,20 +2,16 @@ package org.triptogether.community.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.triptogether.cloudinary.CloudinaryService;
 import org.triptogether.community.mapper.CommunityMapper;
-import org.triptogether.community.mapper.CommunityImageCacheMapper;
 import org.triptogether.community.vo.*;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -23,11 +19,9 @@ import java.util.UUID;
 public class CommunityServiceImpl implements CommunityService {
 
     private final CommunityMapper communityMapper;
-    private final CommunityImageCacheMapper communityImageCacheMapper;
+    private final CommunityImageScheduler communityImageScheduler;
+    private final CloudinaryService cloudinaryService;
     private final MyPageService myPageService;
-
-    @Value("${file.upload.path}")
-    private String uploadPath;
 
     // ===== 목록 =====
 
@@ -317,12 +311,16 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     @Transactional
-    public void addComment(Long postId, Long userIdx, String content) {
+    public Long addComment(Long postId, Long userIdx, String content) {
         // 도배 방지: 1분 내 5개 이상이면 거부
         if (communityMapper.countRecentCommentsByUser(userIdx, 1) >= 5) {
             throw new IllegalStateException("1분 내 댓글을 5개 이상 작성할 수 없습니다.");
         }
-        communityMapper.insertComment(postId, userIdx, content);
+        CommunityCommentDto dto = new CommunityCommentDto();
+        dto.setPostId(postId);
+        dto.setUserIdx(userIdx);
+        dto.setContent(content);
+        communityMapper.insertComment(dto);
         communityMapper.increaseCommentCount(postId);
 
         // 글 작성자에게 알림 생성 (본인 글에 본인 댓글이면 제외)
@@ -335,6 +333,7 @@ public class CommunityServiceImpl implements CommunityService {
             notification.setMessage("내 글에 새 댓글이 달렸어요.");
             myPageService.addNotification(notification);
         }
+        return dto.getCommentId();
     }
     @Override
     @Transactional
@@ -350,12 +349,17 @@ public class CommunityServiceImpl implements CommunityService {
     // ===== 대댓글 =====
     @Override
     @Transactional
-    public void addReply(Long postId, Long userIdx, String content, Long parentCommentId) {
+    public Long addReply(Long postId, Long userIdx, String content, Long parentCommentId) {
         // 도배 방지: 댓글+대댓글 합산 1분 내 5개 이상이면 거부
         if (communityMapper.countRecentCommentsByUser(userIdx, 1) >= 5) {
             throw new IllegalStateException("1분 내 댓글을 5개 이상 작성할 수 없습니다.");
         }
-        communityMapper.insertReply(postId, userIdx, content, parentCommentId);
+        CommunityCommentDto dto = new CommunityCommentDto();
+        dto.setPostId(postId);
+        dto.setUserIdx(userIdx);
+        dto.setContent(content);
+        dto.setParentCommentId(parentCommentId);
+        communityMapper.insertReply(dto);
         communityMapper.increaseCommentCount(postId);
 
         // 글 작성자에게 알림 생성 (본인 글에 본인 대댓글이면 제외)
@@ -382,6 +386,7 @@ public class CommunityServiceImpl implements CommunityService {
                 myPageService.addNotification(notification);
             }
         }
+        return dto.getCommentId();
     }
 
     // ===== 질문 채택 =====
@@ -451,9 +456,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     private void assignAutoImage(Long postId, String region) {
         try {
-            String imageUrl = "etc".equals(region)
-                    ? communityImageCacheMapper.selectRandomCacheImageFromAll()
-                    : communityImageCacheMapper.selectRandomCacheImage(region);
+            String imageUrl = communityImageScheduler.getRandomImage(region);
             if (imageUrl != null) {
                 communityMapper.insertAutoImage(postId, imageUrl);
             }
@@ -465,34 +468,7 @@ public class CommunityServiceImpl implements CommunityService {
     // ===== 파일 저장 유틸 =====
 
     private String saveFile(MultipartFile file) {
-        // 파일 형식 검증
-        String ext = getExtension(file.getOriginalFilename()).toLowerCase();
-        if (!ext.equals(".jpg") && !ext.equals(".jpeg")
-                && !ext.equals(".png") && !ext.equals(".gif")
-                && !ext.equals(".webp")) {
-            log.warn("허용되지 않는 파일 형식 업로드 시도: {}", ext);
-            return null;
-        }
-
-        try {
-            String dir = System.getProperty("user.dir").replace("\\", "/")
-                    + "/" + uploadPath + "/community/";
-            File dirFile = new File(dir);
-            if (!dirFile.exists()) dirFile.mkdirs();
-
-            String fileName = UUID.randomUUID().toString() + ext;
-            file.transferTo(new File(dir + fileName));
-
-            return "/upload/community/" + fileName;
-        } catch (IOException e) {
-            log.error("파일 저장 실패", e);
-            return null;
-        }
-    }
-
-    private String getExtension(String originalFilename) {
-        if (originalFilename == null || !originalFilename.contains(".")) return "";
-        return originalFilename.substring(originalFilename.lastIndexOf("."));
+        return cloudinaryService.uploadImage(file, "community");
     }
 
     @Override

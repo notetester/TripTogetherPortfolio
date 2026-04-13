@@ -61,9 +61,7 @@ public interface CommunityMapper {
     void decreaseLikeCount(@Param("postId") Long postId);
 
     // ===== 댓글 =====
-    void insertComment(@Param("postId") Long postId,
-                       @Param("userIdx") Long userIdx,
-                       @Param("content") String content);
+    void insertComment(CommunityCommentDto comment);
     void updateCommentStatus(@Param("commentId") Long commentId, @Param("status") String status);
     Long selectPostIdByCommentId(@Param("commentId") Long commentId);
     void increaseCommentCount(@Param("postId") Long postId);
@@ -83,10 +81,7 @@ public interface CommunityMapper {
     List<Long> selectTagIdList(@Param("postId") Long postId);
 
     // ===== 대댓글 =====
-    void insertReply(@Param("postId") Long postId,
-                     @Param("userIdx") Long userIdx,
-                     @Param("content") String content,
-                     @Param("parentCommentId") Long parentCommentId);
+    void insertReply(CommunityCommentDto comment);
 
     // ===== 질문 채택 =====
     void acceptComment(@Param("postId") Long postId, @Param("commentId") Long commentId);

@@ -175,6 +175,7 @@
     this.disabled = true;
     this.classList.add('loading');
 
+    const btn = this;
     try {
       // FormData로 텍스트 + 파일 동시 전송
       const formData = new FormData();
@@ -190,21 +191,41 @@
 
       const res  = await fetch(ctx + '/inquiry/write', {
         method: 'POST',
-        body: formData   // Content-Type 헤더 지정 안 함 (브라우저 자동 처리)
+        body: formData
       });
       const data = await res.json();
+
+      if (data.toxicityDetected) {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        if (confirm(data.message || '부적절한 표현이 감지되었습니다. 그래도 등록하시겠습니까?')) {
+          btn.disabled = true;
+          btn.classList.add('loading');
+          formData.append('forceSubmit', 'true');
+          const res2  = await fetch(ctx + '/inquiry/write', { method: 'POST', body: formData });
+          const data2 = await res2.json();
+          if (data2.success) {
+            location.href = ctx + '/inquiry/' + data2.inquiryId;
+          } else {
+            alert('등록에 실패했습니다. 다시 시도해주세요.');
+            btn.disabled = false;
+            btn.classList.remove('loading');
+          }
+        }
+        return;
+      }
 
       if (data.success) {
         location.href = ctx + '/inquiry/' + data.inquiryId;
       } else {
         alert('등록에 실패했습니다. 다시 시도해주세요.');
-        this.disabled = false;
-        this.classList.remove('loading');
+        btn.disabled = false;
+        btn.classList.remove('loading');
       }
     } catch (e) {
       alert('오류가 발생했습니다. 다시 시도해주세요.');
-      this.disabled = false;
-      this.classList.remove('loading');
+      btn.disabled = false;
+      btn.classList.remove('loading');
     }
   });
 

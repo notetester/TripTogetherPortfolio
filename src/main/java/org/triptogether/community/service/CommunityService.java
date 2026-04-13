@@ -39,7 +39,7 @@ public interface CommunityService {
     int getLikeCount(Long postId);
 
     // ===== 댓글 =====
-    void addComment(Long postId, Long userIdx, String content);
+    Long addComment(Long postId, Long userIdx, String content);
     void deleteComment(Long commentId);
 
     // ===== 수정 =====
@@ -49,7 +49,7 @@ public interface CommunityService {
     void updateTagRelation(Long postId);
 
     // ===== 대댓글 =====
-    void addReply(Long postId, Long userIdx, String content, Long parentCommentId);
+    Long addReply(Long postId, Long userIdx, String content, Long parentCommentId);
 
     // ===== 질문 채택 =====
     void acceptComment(Long postId, Long commentId);
