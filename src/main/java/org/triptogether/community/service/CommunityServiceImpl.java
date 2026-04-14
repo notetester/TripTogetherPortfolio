@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.cloudinary.CloudinaryService;
 import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.community.vo.*;
+import org.triptogether.config.IpBlockMapper;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 
@@ -22,6 +23,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final CommunityImageScheduler communityImageScheduler;
     private final CloudinaryService cloudinaryService;
     private final MyPageService myPageService;
+    private final IpBlockMapper ipBlockMapper;
 
     // ===== 목록 =====
 
@@ -495,4 +497,62 @@ public class CommunityServiceImpl implements CommunityService {
     @Override public void unblockPost(Long postId) { communityMapper.unblockPost(postId); }
     @Override public void blockComment(Long commentId) { communityMapper.blockComment(commentId); }
     @Override public void unblockComment(Long commentId) { communityMapper.unblockComment(commentId); }
+
+    // ===== IP 저장 =====
+
+    @Override
+    public void savePostIp(Long postId, String ipAddress) {
+        if (ipAddress != null) communityMapper.updatePostIp(postId, ipAddress);
+    }
+
+    @Override
+    public void saveCommentIp(Long commentId, String ipAddress) {
+        if (ipAddress != null) communityMapper.updateCommentIp(commentId, ipAddress);
+    }
+
+    // ===== 일괄 처리 (게시글) =====
+
+    @Override
+    @Transactional
+    public void bulkDeletePosts(List<Long> postIds) {
+        if (postIds == null || postIds.isEmpty()) return;
+        communityMapper.bulkDeletePosts(postIds);
+    }
+
+    @Override
+    @Transactional
+    public void bulkBlockUsersByPosts(List<Long> postIds) {
+        if (postIds == null || postIds.isEmpty()) return;
+        List<Long> userIdxes = communityMapper.selectUserIdxsByPostIds(postIds);
+        if (!userIdxes.isEmpty()) communityMapper.bulkBlockUsers(userIdxes);
+    }
+
+    @Override
+    public List<String> getIpsByPostIds(List<Long> postIds) {
+        if (postIds == null || postIds.isEmpty()) return List.of();
+        return communityMapper.selectIpsByPostIds(postIds);
+    }
+
+    // ===== 일괄 처리 (댓글/대댓글) =====
+
+    @Override
+    @Transactional
+    public void bulkDeleteComments(List<Long> commentIds) {
+        if (commentIds == null || commentIds.isEmpty()) return;
+        communityMapper.bulkDeleteComments(commentIds);
+    }
+
+    @Override
+    @Transactional
+    public void bulkBlockUsersByComments(List<Long> commentIds) {
+        if (commentIds == null || commentIds.isEmpty()) return;
+        List<Long> userIdxes = communityMapper.selectUserIdxsByCommentIds(commentIds);
+        if (!userIdxes.isEmpty()) communityMapper.bulkBlockUsers(userIdxes);
+    }
+
+    @Override
+    public List<String> getIpsByCommentIds(List<Long> commentIds) {
+        if (commentIds == null || commentIds.isEmpty()) return List.of();
+        return communityMapper.selectIpsByCommentIds(commentIds);
+    }
 }

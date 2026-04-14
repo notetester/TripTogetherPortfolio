@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.config.IpBlockMapper">
+
+    <!-- IP 차단 여부 확인 -->
+    <select id="isBlocked" parameterType="string" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM IP_BLOCKLIST
+        WHERE ip_address = #{ipAddress}
+    </select>
+
+    <!-- IP 단건 차단 등록 -->
+    <insert id="insertBlockedIp">
+        INSERT IGNORE INTO IP_BLOCKLIST (ip_address, reason)
+        VALUES (#{ipAddress}, #{reason})
+    </insert>
+
+    <!-- IP 다건 차단 등록 -->
+    <insert id="insertBlockedIps">
+        INSERT IGNORE INTO IP_BLOCKLIST (ip_address, reason)
+        VALUES
+        <foreach collection="list" item="ip" separator=",">
+            (#{ip}, #{reason})
+        </foreach>
+    </insert>
+
+    <!-- IP 차단 해제 -->
+    <delete id="deleteBlockedIp" parameterType="string">
+        DELETE FROM IP_BLOCKLIST
+        WHERE ip_address = #{ipAddress}
+    </delete>
+
+</mapper>

@@ -194,6 +194,35 @@
         </div>
       </div>
 
+      <%-- 어드민 댓글 일괄 처리 툴바 --%>
+      <c:if test="${isAdminMode}">
+        <div class="comm-admin-toolbar" id="adminCommentToolbar">
+          <label class="comm-admin-chk-all">
+            <input type="checkbox" id="chkAllComment"> 전체선택
+          </label>
+          <span class="comm-admin-selected-count" id="selectedCommentCount">0개 선택됨</span>
+          <div class="comm-admin-actions">
+            <button class="comm-admin-btn btn-delete" onclick="doBulkCommentAction('delete')">삭제</button>
+            <div class="comm-admin-dropdown">
+              <button class="comm-admin-btn btn-block-user">차단 ▾</button>
+              <div class="comm-admin-dropdown-menu">
+                <button onclick="doBulkCommentAction('blockUser')">아이디 차단</button>
+                <button onclick="doBulkCommentAction('blockIp')">아이피 차단</button>
+                <button onclick="doBulkCommentAction('blockBoth')">아이디+아이피 차단</button>
+              </div>
+            </div>
+            <div class="comm-admin-dropdown">
+              <button class="comm-admin-btn btn-block-delete">차단+삭제 ▾</button>
+              <div class="comm-admin-dropdown-menu">
+                <button onclick="doBulkCommentAction('blockUserAndDelete')">아이디 차단+삭제</button>
+                <button onclick="doBulkCommentAction('blockIpAndDelete')">아이피 차단+삭제</button>
+                <button onclick="doBulkCommentAction('blockAndDelete')">아이디+아이피+삭제</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </c:if>
+
       <%-- 댓글 목록 컨테이너 (AJAX 교체 대상) --%>
       <div id="commentListContainer">
         <div class="comment-list">
@@ -212,6 +241,10 @@
                       <%-- ACTIVE 또는 신고차단(report>=3) 또는 관리자모드 --%>
                       <c:if test="${comment.commentStatus eq 'ACTIVE' or (comment.commentStatus eq 'BLOCKED' and comment.reportCount >= 3) or isAdminMode}">
                         <div class="comment-item" id="comment_${comment.commentId}">
+                          <c:if test="${isAdminMode}">
+                            <input type="checkbox" class="comm-admin-comment-chk" data-id="${comment.commentId}"
+                                   onclick="event.stopPropagation()">
+                          </c:if>
                           <div class="comment-av">
                             <c:choose>
                               <c:when test="${not empty comment.nickname}">${fn:substring(comment.nickname, 0, 1)}</c:when>
@@ -325,6 +358,10 @@
                               <c:otherwise>
                                 <c:if test="${reply.commentStatus eq 'ACTIVE' or (reply.commentStatus eq 'BLOCKED' and reply.reportCount >= 3) or isAdminMode}">
                                   <div class="comment-item reply-item">
+                                    <c:if test="${isAdminMode}">
+                                      <input type="checkbox" class="comm-admin-comment-chk" data-id="${reply.commentId}"
+                                             onclick="event.stopPropagation()">
+                                    </c:if>
                                     <div class="reply-indent">&#8618;</div>
                                     <div class="comment-av reply-av">
                                       <c:choose>
@@ -470,9 +507,40 @@
   <c:if test="${not empty relatedList}">
     <div class="detail-bottom-section">
       <h3 class="detail-bottom-title">&#10024; 추천 여행 이야기</h3>
+      <c:if test="${isAdminMode}">
+        <div class="comm-admin-toolbar" id="adminRelatedToolbar">
+          <label class="comm-admin-chk-all">
+            <input type="checkbox" id="chkAllRelated"> 전체선택
+          </label>
+          <span class="comm-admin-selected-count" id="selectedRelatedCount">0개 선택됨</span>
+          <div class="comm-admin-actions">
+            <button class="comm-admin-btn btn-delete" onclick="doBulkPostAction('related','delete')">삭제</button>
+            <div class="comm-admin-dropdown">
+              <button class="comm-admin-btn btn-block-user">차단 ▾</button>
+              <div class="comm-admin-dropdown-menu">
+                <button onclick="doBulkPostAction('related','blockUser')">아이디 차단</button>
+                <button onclick="doBulkPostAction('related','blockIp')">아이피 차단</button>
+                <button onclick="doBulkPostAction('related','blockBoth')">아이디+아이피 차단</button>
+              </div>
+            </div>
+            <div class="comm-admin-dropdown">
+              <button class="comm-admin-btn btn-block-delete">차단+삭제 ▾</button>
+              <div class="comm-admin-dropdown-menu">
+                <button onclick="doBulkPostAction('related','blockUserAndDelete')">아이디 차단+삭제</button>
+                <button onclick="doBulkPostAction('related','blockIpAndDelete')">아이피 차단+삭제</button>
+                <button onclick="doBulkPostAction('related','blockAndDelete')">아이디+아이피+삭제</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </c:if>
       <div class="detail-post-list">
         <c:forEach var="r" items="${relatedList}">
-          <div class="post-card-wrap" data-href="${pageContext.request.contextPath}/community/${r.postId}">
+          <div class="post-card-wrap" data-id="${r.postId}" data-href="${pageContext.request.contextPath}/community/${r.postId}">
+            <c:if test="${isAdminMode}">
+              <input type="checkbox" class="comm-admin-related-chk comm-admin-post-chk" data-id="${r.postId}" onclick="event.stopPropagation()">
+              <button class="post-admin-delete-btn" onclick="adminDeletePost(event, ${r.postId})">✕</button>
+            </c:if>
             <div class="post-card">
               <div class="post-card-img-wrap">
                 <c:choose>
@@ -528,6 +596,33 @@
   <%-- 최신글 목록 --%>
   <div class="detail-bottom-section">
     <h3 class="detail-bottom-title">&#128336; 최신 여행 이야기</h3>
+    <c:if test="${isAdminMode}">
+      <div class="comm-admin-toolbar" id="adminLatestToolbar">
+        <label class="comm-admin-chk-all">
+          <input type="checkbox" id="chkAllLatest"> 전체선택
+        </label>
+        <span class="comm-admin-selected-count" id="selectedLatestCount">0개 선택됨</span>
+        <div class="comm-admin-actions">
+          <button class="comm-admin-btn btn-delete" onclick="doBulkPostAction('latest','delete')">삭제</button>
+          <div class="comm-admin-dropdown">
+            <button class="comm-admin-btn btn-block-user">차단 ▾</button>
+            <div class="comm-admin-dropdown-menu">
+              <button onclick="doBulkPostAction('latest','blockUser')">아이디 차단</button>
+              <button onclick="doBulkPostAction('latest','blockIp')">아이피 차단</button>
+              <button onclick="doBulkPostAction('latest','blockBoth')">아이디+아이피 차단</button>
+            </div>
+          </div>
+          <div class="comm-admin-dropdown">
+            <button class="comm-admin-btn btn-block-delete">차단+삭제 ▾</button>
+            <div class="comm-admin-dropdown-menu">
+              <button onclick="doBulkPostAction('latest','blockUserAndDelete')">아이디 차단+삭제</button>
+              <button onclick="doBulkPostAction('latest','blockIpAndDelete')">아이피 차단+삭제</button>
+              <button onclick="doBulkPostAction('latest','blockAndDelete')">아이디+아이피+삭제</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </c:if>
     <c:choose>
       <c:when test="${empty latestList}">
         <div style="text-align:center;padding:24px;font-size:13px;color:var(--gray-400);">게시글이 없습니다.</div>
@@ -535,7 +630,11 @@
       <c:otherwise>
         <div class="detail-post-list">
           <c:forEach var="l" items="${latestList}">
-            <div class="post-card-wrap" data-href="${pageContext.request.contextPath}/community/${l.postId}">
+            <div class="post-card-wrap" data-id="${l.postId}" data-href="${pageContext.request.contextPath}/community/${l.postId}">
+              <c:if test="${isAdminMode}">
+                <input type="checkbox" class="comm-admin-latest-chk comm-admin-post-chk" data-id="${l.postId}" onclick="event.stopPropagation()">
+                <button class="post-admin-delete-btn" onclick="adminDeletePost(event, ${l.postId})">✕</button>
+              </c:if>
               <div class="post-card">
                 <div class="post-card-img-wrap">
                   <c:choose>
@@ -900,6 +999,130 @@ function unblockComment(commentId) {
     else alert('차단 해제에 실패했습니다.');
   });
 }
+
+/* ===== 어드민 댓글 일괄 처리 ===== */
+(function () {
+    var chkAll     = document.getElementById('chkAllComment');
+    var countLabel = document.getElementById('selectedCommentCount');
+    if (!chkAll) return;
+
+    function getChecked() {
+        return Array.from(document.querySelectorAll('.comm-admin-comment-chk:checked'));
+    }
+
+    function updateCount() {
+        countLabel.textContent = getChecked().length + '개 선택됨';
+    }
+
+    chkAll.addEventListener('change', function () {
+        document.querySelectorAll('.comm-admin-comment-chk').forEach(function (c) {
+            c.checked = chkAll.checked;
+        });
+        updateCount();
+    });
+
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('comm-admin-comment-chk')) {
+            if (!e.target.checked) chkAll.checked = false;
+            updateCount();
+        }
+    });
+
+})();
+
+window.doBulkCommentAction = function (action) {
+    var checked = Array.from(document.querySelectorAll('.comm-admin-comment-chk:checked'));
+    if (checked.length === 0) { alert('선택된 댓글이 없습니다.'); return; }
+
+    var labels = {
+        'delete':              '삭제',
+        'blockUser':           '아이디 차단',
+        'blockIp':             '아이피 차단',
+        'blockBoth':           '아이디+아이피 차단',
+        'blockUserAndDelete':  '아이디 차단+삭제',
+        'blockIpAndDelete':    '아이피 차단+삭제',
+        'blockAndDelete':      '아이디+아이피+삭제'
+    };
+    if (!confirm(checked.length + '개 댓글에 대해 [' + labels[action] + '] 을(를) 실행하시겠습니까?')) return;
+
+    var commentIds = checked.map(function (c) { return c.getAttribute('data-id'); });
+    var params     = new URLSearchParams();
+    params.append('action', action);
+    commentIds.forEach(function (id) { params.append('commentIds', id); });
+
+    fetch(CTX + '/community/admin/bulk/comment', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body:    params.toString()
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+        if (data.success) { alert('처리가 완료되었습니다.'); location.reload(); }
+        else alert('처리 중 오류가 발생했습니다: ' + (data.message || ''));
+    })
+    .catch(function () { alert('요청 중 오류가 발생했습니다.'); });
+};
+
+/* ===== 추천/최신 섹션 어드민 ===== */
+function adminDeletePost(event, postId) {
+  event.stopPropagation();
+  if (!confirm('이 게시글을 삭제하시겠습니까?')) return;
+  fetch(CTX + '/community/' + postId, {
+    method: 'DELETE', headers: {'X-Requested-With': 'XMLHttpRequest'}
+  }).then(function(res) {
+    if (res.ok) location.reload();
+    else alert('삭제에 실패했습니다.');
+  });
+}
+
+(function() {
+  var sections = [
+    { chkAllId: 'chkAllRelated', cls: '.comm-admin-related-chk', countId: 'selectedRelatedCount' },
+    { chkAllId: 'chkAllLatest',  cls: '.comm-admin-latest-chk',  countId: 'selectedLatestCount'  }
+  ];
+  sections.forEach(function(s) {
+    var chkAll = document.getElementById(s.chkAllId);
+    if (!chkAll) return;
+    var countLabel = document.getElementById(s.countId);
+    function updateCount() {
+      countLabel.textContent = document.querySelectorAll(s.cls + ':checked').length + '개 선택됨';
+    }
+    chkAll.addEventListener('change', function() {
+      document.querySelectorAll(s.cls).forEach(function(c) { c.checked = chkAll.checked; });
+      updateCount();
+    });
+    document.addEventListener('change', function(e) {
+      if (e.target.matches(s.cls)) {
+        if (!e.target.checked) chkAll.checked = false;
+        updateCount();
+      }
+    });
+  });
+})();
+
+window.doBulkPostAction = function(section, action) {
+  var cls = section === 'related' ? '.comm-admin-related-chk' : '.comm-admin-latest-chk';
+  var checked = Array.from(document.querySelectorAll(cls + ':checked'));
+  if (checked.length === 0) { alert('선택된 게시글이 없습니다.'); return; }
+  var labels = {
+    'delete': '삭제', 'blockUser': '아이디 차단', 'blockIp': '아이피 차단',
+    'blockBoth': '아이디+아이피 차단', 'blockUserAndDelete': '아이디 차단+삭제',
+    'blockIpAndDelete': '아이피 차단+삭제', 'blockAndDelete': '아이디+아이피+삭제'
+  };
+  if (!confirm(checked.length + '개 게시글에 대해 [' + labels[action] + '] 을(를) 실행하시겠습니까?')) return;
+  var params = new URLSearchParams();
+  params.append('action', action);
+  checked.forEach(function(c) { params.append('postIds', c.getAttribute('data-id')); });
+  fetch(CTX + '/community/admin/bulk', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest'},
+    body: params.toString()
+  }).then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) { alert('처리가 완료되었습니다.'); location.reload(); }
+      else alert('처리 중 오류가 발생했습니다: ' + (data.message || ''));
+    }).catch(function() { alert('요청 중 오류가 발생했습니다.'); });
+};
 
 function adminDeleteComment(event, commentId) {
   event.stopPropagation();

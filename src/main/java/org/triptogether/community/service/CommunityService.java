@@ -80,4 +80,18 @@ public interface CommunityService {
     void blockComment(Long commentId);
     void unblockComment(Long commentId);
 
+    // ===== IP 저장 =====
+    void savePostIp(Long postId, String ipAddress);
+    void saveCommentIp(Long commentId, String ipAddress);
+
+    // ===== 일괄 처리 (게시글) =====
+    void bulkDeletePosts(List<Long> postIds);
+    void bulkBlockUsersByPosts(List<Long> postIds);
+    List<String> getIpsByPostIds(List<Long> postIds);
+
+    // ===== 일괄 처리 (댓글/대댓글) =====
+    void bulkDeleteComments(List<Long> commentIds);
+    void bulkBlockUsersByComments(List<Long> commentIds);
+    List<String> getIpsByCommentIds(List<Long> commentIds);
+
 }

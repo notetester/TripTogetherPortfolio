@@ -120,4 +120,19 @@ public interface CommunityMapper {
 
     void increasePostReportCount(@Param("postId") Long postId);
     void increaseCommentReportCount(@Param("commentId") Long commentId);
+
+    // ===== IP 저장 =====
+    void updatePostIp(@Param("postId") Long postId, @Param("ipAddress") String ipAddress);
+    void updateCommentIp(@Param("commentId") Long commentId, @Param("ipAddress") String ipAddress);
+
+    // ===== 일괄 처리 (게시글) =====
+    List<Long>   selectUserIdxsByPostIds(@Param("postIds") List<Long> postIds);
+    List<String> selectIpsByPostIds(@Param("postIds") List<Long> postIds);
+    void bulkDeletePosts(@Param("postIds") List<Long> postIds);
+    void bulkBlockUsers(@Param("userIdxes") List<Long> userIdxes);
+
+    // ===== 일괄 처리 (댓글/대댓글) =====
+    List<Long>   selectUserIdxsByCommentIds(@Param("commentIds") List<Long> commentIds);
+    List<String> selectIpsByCommentIds(@Param("commentIds") List<Long> commentIds);
+    void bulkDeleteComments(@Param("commentIds") List<Long> commentIds);
 }
