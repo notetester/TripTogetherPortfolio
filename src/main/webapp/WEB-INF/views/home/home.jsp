@@ -190,94 +190,57 @@
             <button class="vm" onclick="location.href='${pageContext.request.contextPath}/community/list'">더보기 &#8594;
             </button>
         </div>
-        <c:choose>
-            <c:when test="${empty popularList}">
-                <div style="padding:40px;text-align:center;color:var(--gray-400);">
-                    아직 게시글이 없습니다
-                </div>
-            </c:when>
-            <c:otherwise>
-                <div class="comm-g-outer">
-                    <button class="comm-g-btn comm-g-prev" id="homeCarouselPrev">&#8249;</button>
-                    <div class="comm-g-vp">
-                        <div class="comm-g-track" id="homeCarouselTrack">
-                            <c:forEach var="post" items="${popularList}">
-                                <c:if test="${!(post.accountStatus eq 'BLOCKED' or post.postStatus eq 'BLOCKED') or isAdminMode}">
-                                    <div class="cc-wrap ${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}"
-                                         data-id="${post.postId}">
-                                        <div class="cc ${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
-                                            <div class="cc-iw">
-                                                <c:choose>
-                                                    <c:when test="${not empty post.thumbUrl}">
-                                                        <c:choose>
-                                                            <c:when test="${fn:startsWith(post.thumbUrl, 'http')}">
-                                                                <img class="cc-img" src="${post.thumbUrl}" alt="${post.title}">
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <img class="cc-img" src="${pageContext.request.contextPath}${post.thumbUrl}" alt="${post.title}">
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <div class="cc-img" style="background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:40px;">✈️</div>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                                <span class="cc-badge">
-                                                    <c:choose>
-                                                        <c:when test="${post.postType eq 'review'}">여행후기</c:when>
-                                                        <c:when test="${post.postType eq 'photo'}">사진</c:when>
-                                                        <c:when test="${post.postType eq 'tip'}">팁</c:when>
-                                                        <c:when test="${post.postType eq 'question'}">질문</c:when>
-                                                        <c:otherwise>${post.postType}</c:otherwise>
-                                                    </c:choose>
-                                                </span>
-                                            </div>
-                                            <div class="cc-b">
-                                                <div class="cc-title">${post.title}</div>
-                                                <div class="cc-foot">
-                                                    <div class="cc-auth">
-                                                        <div class="cc-av">${fn:substring(post.nickname, 0, 1)}</div>
-                                                        <div>
-                                                            <div class="cc-an">${post.nickname}</div>
-                                                            <div class="cc-dt"><fmt:formatDate value="${post.createdAt}" pattern="yyyy.MM.dd"/></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="cc-stats">
-                                                        <span>&#10084; ${post.likeCount}</span>
-                                                        <span>&#128172; ${post.commentCount}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <c:if test="${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode}">
-                                            <div class="report-blurred-overlay" onclick="removeReportBlur(this)">⚠️ 신고된 콘텐츠입니다. 클릭하여 확인</div>
-                                        </c:if>
-                                        <c:if test="${isAdminMode}">
-                                            <c:choose>
-                                                <c:when test="${post.postStatus eq 'BLOCKED' and post.reportCount >= 3}"><span class="blocked-badge">🚨 신고에 의해 차단됨</span></c:when>
-                                                <c:when test="${post.postStatus eq 'BLOCKED'}"><span class="blocked-badge">🚫 차단된 게시글</span></c:when>
-                                                <c:when test="${post.accountStatus eq 'BLOCKED'}"><span class="blocked-badge">🚫 차단된 유저</span></c:when>
-                                            </c:choose>
-                                        </c:if>
-                                    </div>
-                                </c:if>
-                            </c:forEach>
-                        </div>
-                    </div>
-                    <button class="comm-g-btn comm-g-next" id="homeCarouselNext">&#8250;</button>
-                </div>
-            </c:otherwise>
-        </c:choose>
+        <div id="popularSection">
+            <div style="padding:40px;text-align:center;color:var(--gray-400);">불러오는 중...</div>
+        </div>
     </div>
 </section>
 
 <script>
-    document.querySelectorAll('.cc-wrap[data-id]').forEach(function (wrap) {
-        wrap.style.cursor = 'pointer';
-        wrap.addEventListener('click', function () {
-            location.href = '${pageContext.request.contextPath}/community/' + this.getAttribute('data-id');
-        });
-    });
+    var ctx       = '${pageContext.request.contextPath}';
+    var adminMode = ${isAdminMode};
+
+    var TYPE_LABELS = { review: '여행후기', photo: '사진', tip: '팁', question: '질문' };
+
+    function escHtml(s) {
+        return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function buildCard(p) {
+        var blocked = (p.accountStatus === 'BLOCKED' || p.postStatus === 'BLOCKED');
+        if (blocked && !adminMode) return '';
+
+        var isReportBlur = p.reportCount >= 3 && p.postStatus === 'BLOCKED' && !adminMode;
+        var imgHtml = p.thumbUrl
+            ? '<img class="cc-img" src="' + escHtml(p.thumbUrl.startsWith('http') ? p.thumbUrl : ctx + p.thumbUrl) + '" alt="' + escHtml(p.title) + '">'
+            : '<div class="cc-img" style="background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:40px;">✈️</div>';
+
+        var dateStr = p.createdAt ? p.createdAt.substring(0, 10).replace(/-/g, '.') : '';
+        var badge   = adminMode
+            ? (p.postStatus === 'BLOCKED' && p.reportCount >= 3 ? '<span class="blocked-badge">🚨 신고에 의해 차단됨</span>'
+             : p.postStatus === 'BLOCKED'                       ? '<span class="blocked-badge">🚫 차단된 게시글</span>'
+             : p.accountStatus === 'BLOCKED'                    ? '<span class="blocked-badge">🚫 차단된 유저</span>' : '') : '';
+        var blurOverlay = isReportBlur
+            ? '<div class="report-blurred-overlay" onclick="removeReportBlur(this)">⚠️ 신고된 콘텐츠입니다. 클릭하여 확인</div>' : '';
+
+        return '<div class="cc-wrap' + (isReportBlur ? ' report-blurred-wrap' : '') + '" data-id="' + p.postId + '" style="cursor:pointer;">'
+             + '  <div class="cc' + (isReportBlur ? ' report-blurred' : '') + '">'
+             + '    <div class="cc-iw">' + imgHtml
+             + '      <span class="cc-badge">' + escHtml(TYPE_LABELS[p.postType] || p.postType) + '</span>'
+             + '    </div>'
+             + '    <div class="cc-b">'
+             + '      <div class="cc-title">' + escHtml(p.title) + '</div>'
+             + '      <div class="cc-foot">'
+             + '        <div class="cc-auth"><div class="cc-av">' + escHtml((p.nickname || '?').charAt(0)) + '</div>'
+             + '          <div><div class="cc-an">' + escHtml(p.nickname) + '</div><div class="cc-dt">' + dateStr + '</div></div>'
+             + '        </div>'
+             + '        <div class="cc-stats"><span>❤ ' + (p.likeCount||0) + '</span><span>💬 ' + (p.commentCount||0) + '</span></div>'
+             + '      </div>'
+             + '    </div>'
+             + '  </div>'
+             + blurOverlay + badge
+             + '</div>';
+    }
 
     function removeReportBlur(overlay) {
         var wrap = overlay.closest('.report-blurred-wrap');
@@ -286,12 +249,17 @@
         overlay.remove();
     }
 
-    /* ===== 홈 인기 캐러셀 ===== */
-    window.addEventListener('load', function () {
-        var track   = document.getElementById('homeCarouselTrack');
-        var prevBtn = document.getElementById('homeCarouselPrev');
-        var nextBtn = document.getElementById('homeCarouselNext');
+    function initCarousel(section) {
+        var track   = section.querySelector('#homeCarouselTrack');
+        var prevBtn = section.querySelector('#homeCarouselPrev');
+        var nextBtn = section.querySelector('#homeCarouselNext');
         if (!track || !track.children.length) return;
+
+        track.querySelectorAll('.cc-wrap[data-id]').forEach(function (wrap) {
+            wrap.addEventListener('click', function () {
+                location.href = ctx + '/community/' + this.getAttribute('data-id');
+            });
+        });
 
         var cards   = track.children;
         var total   = cards.length;
@@ -312,9 +280,7 @@
             track.style.gap = gap + 'px';
         }
 
-        function cardStep() {
-            return cards[0].getBoundingClientRect().width + gap;
-        }
+        function cardStep() { return cards[0].getBoundingClientRect().width + gap; }
 
         function goTo(idx) {
             current = Math.max(0, Math.min(idx, total - visible));
@@ -323,26 +289,18 @@
 
         function next() {
             if (current >= total - visible) {
-                track.style.transition = 'none';
-                current = 0;
+                track.style.transition = 'none'; current = 0;
                 track.style.transform = 'translateX(0)';
-                track.getBoundingClientRect();
-                track.style.transition = '';
-            } else {
-                goTo(current + 1);
-            }
+                track.getBoundingClientRect(); track.style.transition = '';
+            } else { goTo(current + 1); }
         }
 
         function prev() {
             if (current <= 0) {
-                track.style.transition = 'none';
-                current = total - visible;
+                track.style.transition = 'none'; current = total - visible;
                 track.style.transform = 'translateX(-' + (current * cardStep()) + 'px)';
-                track.getBoundingClientRect();
-                track.style.transition = '';
-            } else {
-                goTo(current - 1);
-            }
+                track.getBoundingClientRect(); track.style.transition = '';
+            } else { goTo(current - 1); }
         }
 
         function startAuto() { autoTimer = setInterval(next, 2500); }
@@ -350,13 +308,34 @@
 
         nextBtn.addEventListener('click', function () { stopAuto(); next(); startAuto(); });
         prevBtn.addEventListener('click', function () { stopAuto(); prev(); startAuto(); });
-        window.addEventListener('resize', function () {
-            stopAuto(); setCardWidths(); goTo(current); startAuto();
-        });
+        window.addEventListener('resize', function () { stopAuto(); setCardWidths(); goTo(current); startAuto(); });
 
         setCardWidths();
         startAuto();
-    });
+    }
+
+    /* ===== 인기글 AJAX 로드 ===== */
+    fetch(ctx + '/community/api/popular')
+        .then(function (res) { return res.json(); })
+        .then(function (posts) {
+            var section = document.getElementById('popularSection');
+            if (!posts || posts.length === 0) {
+                section.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-400);">아직 게시글이 없습니다</div>';
+                return;
+            }
+            var cards = posts.map(buildCard).join('');
+            section.innerHTML =
+                '<div class="comm-g-outer">'
+              + '  <button class="comm-g-btn comm-g-prev" id="homeCarouselPrev">&#8249;</button>'
+              + '  <div class="comm-g-vp"><div class="comm-g-track" id="homeCarouselTrack">' + cards + '</div></div>'
+              + '  <button class="comm-g-btn comm-g-next" id="homeCarouselNext">&#8250;</button>'
+              + '</div>';
+            initCarousel(section);
+        })
+        .catch(function () {
+            document.getElementById('popularSection').innerHTML =
+                '<div style="padding:40px;text-align:center;color:var(--gray-400);">불러오기 실패</div>';
+        });
 </script>
 
 <%@ include file="../common/footer.jsp" %>

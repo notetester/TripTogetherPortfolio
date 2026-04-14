@@ -12,7 +12,9 @@ import org.triptogether.community.vo.*;
 import org.triptogether.perspective.PerspectiveService;
 import org.triptogether.report.service.ReportService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.triptogether.config.IpBlockMapper;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class CommunityController {
     private final CommunityService communityService;
     private final ReportService reportService;
     private final PerspectiveService perspectiveService;
+    private final IpBlockMapper ipBlockMapper;
 
     @Value("${system.user.idx}")
     private Long systemUserIdx;
@@ -37,6 +40,15 @@ public class CommunityController {
        GET /community/list - 커뮤니티 목록
        파라미터: region, type, sort, page
        ============================================= */
+    /* =============================================
+       GET /community/api/popular - 오늘 인기글 JSON (홈 페이지 AJAX용)
+       ============================================= */
+    @GetMapping("/api/popular")
+    @ResponseBody
+    public ResponseEntity<List<CommunityPostDto>> getPopularPosts() {
+        return ResponseEntity.ok(communityService.getTodayPopularList());
+    }
+
     @GetMapping("/list")
     public String list(@RequestParam(defaultValue = "all")    String region,
                        @RequestParam(defaultValue = "all")    String type,
@@ -155,6 +167,7 @@ public class CommunityController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> write(
             @ModelAttribute CommunityWriteDto writeDto,
+            HttpServletRequest request,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -184,6 +197,7 @@ public class CommunityController {
             }
 
             Long postId = communityService.writePost(writeDto, loginUserIdx);
+            communityService.savePostIp(postId, getClientIp(request));
             result.put("success", true);
             result.put("postId",  postId);
 
@@ -325,6 +339,7 @@ public class CommunityController {
             @PathVariable Long postId,
             @RequestParam String content,
             @RequestParam(defaultValue = "false") boolean forceSubmit,
+            HttpServletRequest request,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -348,6 +363,7 @@ public class CommunityController {
             }
 
             Long commentId = communityService.addComment(postId, loginUserIdx, content);
+            communityService.saveCommentIp(commentId, getClientIp(request));
             result.put("success", true);
 
             if (forceSubmit) {
@@ -399,6 +415,7 @@ public class CommunityController {
             @PathVariable Long commentId,
             @RequestParam String content,
             @RequestParam(defaultValue = "false") boolean forceSubmit,
+            HttpServletRequest request,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -422,6 +439,7 @@ public class CommunityController {
             }
 
             Long replyId = communityService.addReply(postId, loginUserIdx, content, commentId);
+            communityService.saveCommentIp(replyId, getClientIp(request));
             result.put("success", true);
 
             if (forceSubmit) {
@@ -708,6 +726,134 @@ public class CommunityController {
 
 
     /* =============================================
+       POST /community/admin/bulk — 게시글 일괄 처리
+       action: delete / blockUser / blockIp / blockBoth / blockAndDelete
+       ============================================= */
+    @PostMapping("/admin/bulk")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> bulkAction(
+            @RequestParam String action,
+            @RequestParam List<Long> postIds,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdminUser(session)) {
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
+        }
+        if (postIds == null || postIds.isEmpty()) {
+            result.put("success", false);
+            result.put("message", "선택된 게시글이 없습니다.");
+            return ResponseEntity.badRequest().body(result);
+        }
+
+        try {
+            switch (action) {
+                case "delete":
+                    communityService.bulkDeletePosts(postIds);
+                    break;
+                case "blockUser":
+                    communityService.bulkBlockUsersByPosts(postIds);
+                    break;
+                case "blockIp":
+                    bulkBlockIps(communityService.getIpsByPostIds(postIds), "게시글 관리자 일괄 차단");
+                    break;
+                case "blockBoth":
+                    communityService.bulkBlockUsersByPosts(postIds);
+                    bulkBlockIps(communityService.getIpsByPostIds(postIds), "게시글 관리자 일괄 차단");
+                    break;
+                case "blockUserAndDelete":
+                    communityService.bulkBlockUsersByPosts(postIds);
+                    communityService.bulkDeletePosts(postIds);
+                    break;
+                case "blockIpAndDelete":
+                    bulkBlockIps(communityService.getIpsByPostIds(postIds), "게시글 관리자 일괄 차단");
+                    communityService.bulkDeletePosts(postIds);
+                    break;
+                case "blockAndDelete":
+                    communityService.bulkBlockUsersByPosts(postIds);
+                    bulkBlockIps(communityService.getIpsByPostIds(postIds), "게시글 관리자 일괄 차단");
+                    communityService.bulkDeletePosts(postIds);
+                    break;
+                default:
+                    result.put("success", false);
+                    result.put("message", "알 수 없는 액션입니다.");
+                    return ResponseEntity.badRequest().body(result);
+            }
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("게시글 일괄 처리 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /community/admin/bulk/comment — 댓글/대댓글 일괄 처리
+       action: delete / blockUser / blockIp / blockBoth / blockAndDelete
+       ============================================= */
+    @PostMapping("/admin/bulk/comment")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> bulkCommentAction(
+            @RequestParam String action,
+            @RequestParam List<Long> commentIds,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdminUser(session)) {
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
+        }
+        if (commentIds == null || commentIds.isEmpty()) {
+            result.put("success", false);
+            result.put("message", "선택된 댓글이 없습니다.");
+            return ResponseEntity.badRequest().body(result);
+        }
+
+        try {
+            switch (action) {
+                case "delete":
+                    communityService.bulkDeleteComments(commentIds);
+                    break;
+                case "blockUser":
+                    communityService.bulkBlockUsersByComments(commentIds);
+                    break;
+                case "blockIp":
+                    bulkBlockIps(communityService.getIpsByCommentIds(commentIds), "댓글 관리자 일괄 차단");
+                    break;
+                case "blockBoth":
+                    communityService.bulkBlockUsersByComments(commentIds);
+                    bulkBlockIps(communityService.getIpsByCommentIds(commentIds), "댓글 관리자 일괄 차단");
+                    break;
+                case "blockUserAndDelete":
+                    communityService.bulkBlockUsersByComments(commentIds);
+                    communityService.bulkDeleteComments(commentIds);
+                    break;
+                case "blockIpAndDelete":
+                    bulkBlockIps(communityService.getIpsByCommentIds(commentIds), "댓글 관리자 일괄 차단");
+                    communityService.bulkDeleteComments(commentIds);
+                    break;
+                case "blockAndDelete":
+                    communityService.bulkBlockUsersByComments(commentIds);
+                    bulkBlockIps(communityService.getIpsByCommentIds(commentIds), "댓글 관리자 일괄 차단");
+                    communityService.bulkDeleteComments(commentIds);
+                    break;
+                default:
+                    result.put("success", false);
+                    result.put("message", "알 수 없는 액션입니다.");
+                    return ResponseEntity.badRequest().body(result);
+            }
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("댓글 일괄 처리 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
    로그인 사용자 userIdx 추출 유틸
    로그인 담당자 UserDto의 getUserIdx() 메서드 호출
    ============================================= */
@@ -742,5 +888,24 @@ public class CommunityController {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String[] headers = {
+                "X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP",
+                "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"
+        };
+        for (String h : headers) {
+            String ip = request.getHeader(h);
+            if (ip != null && !ip.isBlank() && !"unknown".equalsIgnoreCase(ip)) {
+                return ip.split(",")[0].trim();
+            }
+        }
+        return request.getRemoteAddr();
+    }
+
+    private void bulkBlockIps(List<String> ips, String reason) {
+        if (ips == null || ips.isEmpty()) return;
+        ipBlockMapper.insertBlockedIps(ips, reason);
     }
 }

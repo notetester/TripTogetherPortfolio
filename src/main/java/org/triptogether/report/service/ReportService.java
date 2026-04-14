@@ -6,75 +6,59 @@ import org.triptogether.report.vo.ReportStatsDto;
 
 import java.util.List;
 
-/**
- * =============================================
- * ReportService - 신고 게시판 서비스 인터페이스
- * =============================================
- */
 public interface ReportService {
 
-    /* =============================================
-       1. 신고 목록 조회
-       - 검색 조건(status, targetType)에 맞는 신고 목록 반환
-       - 페이지네이션 포함
-       ============================================= */
+    // ===== 통계 조회 =====
+
+    // 신고 현황 통계 가져옴 (어드민 대시보드용)
     ReportStatsDto getReportStats();
 
+    // ===== 목록 조회 =====
+
+    // 검색 조건에 맞는 신고 목록 가져옴
     List<ReportDto> getReportList(ReportSearchDto search);
 
-    /* =============================================
-       2. 전체 개수 조회
-       - 페이지네이션 계산에 사용
-       ============================================= */
+    // 검색 조건에 맞는 신고 총 개수 가져옴 (페이지네이션용)
     int getTotalCount(ReportSearchDto search);
 
-    /* =============================================
-       3. 전체 페이지 수 계산
-       ============================================= */
+    // 총 페이지 수 계산함
     int getTotalPage(ReportSearchDto search);
 
-    /* =============================================
-       4. 신고 단건 조회
-       ============================================= */
+    // ===== 단건 조회 =====
+
+    // 신고 하나 가져옴
     ReportDto getReport(Long reportId);
 
-    /* =============================================
-       5. 대상별 신고 수 조회
-       - 특정 게시글/댓글/유저의 신고 횟수 반환
-       ============================================= */
+    // 특정 게시글/댓글/유저의 신고 횟수 가져옴
     int getReportCountByTarget(String targetType, Long targetId);
 
-    /* =============================================
-       6. 신고 접수
-       - 동일 유저 중복 신고 방지 (INSERT IGNORE)
-       - 이미 신고한 경우 false 반환
-       ============================================= */
+    // ===== 신고 접수 =====
+
+    // 신고 접수함. 중복 신고면 false 반환, 취소된 신고 재활성화도 처리함
     boolean submitReport(String targetType, Long targetId, Long userIdx, String reason, String description,
                          String sourceType, Long sourceId);
 
-    /* =============================================
-       7. 신고 상태 변경 (관리자)
-       - PENDING → RESOLVED / DISMISSED
-       ============================================= */
-    void updateReportStatus(Long reportId, String status, Long resolverIdx, String resolveAction);
+    // ===== 신고 수정 =====
 
-    /* =============================================
-       8. 신고 반려 취소 → PENDING 복원 (관리자)
-       ============================================= */
-    void revertReportToPending(Long reportId);
-
-    /* =============================================
-       9. 신고 내용 수정 (본인 + IN_REVIEW)
-       ============================================= */
+    // 신고 내용 수정함 (본인 + IN_REVIEW 상태만 가능)
     void updateReport(Long reportId, String reason, String description);
 
-    /* =============================================
-       10. 신고 삭제 (본인)
-       ============================================= */
+    // ===== 신고 취소 =====
+
+    // 신고 취소함. status를 CANCELLED로 바꿈 (본인만 가능)
+    void cancelReport(Long reportId);
+
+    // ===== 신고 삭제 =====
+
+    // 신고 삭제함 (본인만 가능)
     void deleteReport(Long reportId);
 
-    /* =============================================
-       11. 신고 취소 → CANCELLED (본인 + IN_REVIEW)
-       ============================================= */
-    void cancelReport(Long reportId);
+    // ===== 상태 변경 (어드민) =====
+
+    // 신고 상태 변경함. PENDING → RESOLVED / DISMISSED (어드민 전용)
+    void updateReportStatus(Long reportId, String status, Long resolverIdx, String resolveAction);
+
+    // 반려된 신고를 PENDING으로 복원함 (어드민 전용)
+    void revertReportToPending(Long reportId);
+
 }
