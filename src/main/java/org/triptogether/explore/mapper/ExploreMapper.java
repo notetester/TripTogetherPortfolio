@@ -112,6 +112,8 @@ public interface ExploreMapper {
                       @Param("userIdx")   Long userIdx);
     void blockReview(@Param("reviewIdx") Long reviewIdx,
                      @Param("spotIdx") Long spotIdx);
+    void blockReviews(@Param("spotIdx") Long spotIdx,
+                      @Param("reviewIdxList") List<Long> reviewIdxList);
 
     /* ============================================================
        찜 (SPOT_FAVORITE)

@@ -10,6 +10,7 @@
     <resultMap id="SpotResultMap" type="org.triptogether.explore.vo.ExploreVO">
         <id     property="spotIdx"     column="spot_idx"/>
         <result property="spotId"      column="spot_id"/>
+        <result property="userIdx"     column="user_idx"/>
         <result property="name"        column="name"/>
         <result property="region"      column="region"/>
         <result property="address"     column="address"/>
@@ -46,6 +47,7 @@
     <sql id="spotColumns">
         st.spot_idx,
         st.spot_id,
+        st.user_idx,
         st.name,
         st.region,
         st.address,
@@ -343,6 +345,7 @@
     <insert id="insertSpot" useGeneratedKeys="true" keyProperty="spotIdx">
         INSERT INTO SPOT_TRAVEL (
             spot_id,
+            user_idx,
             name,
             region,
             address,
@@ -352,6 +355,7 @@
             spot_active
         ) VALUES (
             #{spotId},
+            #{userIdx},
             #{name},
             #{region},
             #{address},
@@ -460,6 +464,16 @@
         SET    review_block = 1
         WHERE  review_idx = #{reviewIdx}
           AND  spot_idx   = #{spotIdx}
+    </update>
+
+    <update id="blockReviews">
+        UPDATE SPOT_REVIEW
+        SET    review_block = 1
+        WHERE  spot_idx = #{spotIdx}
+          AND  review_idx IN
+          <foreach collection="reviewIdxList" item="reviewIdx" open="(" separator="," close=")">
+              #{reviewIdx}
+          </foreach>
     </update>
 
     <!-- =============================================

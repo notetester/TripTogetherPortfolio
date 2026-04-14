@@ -217,6 +217,43 @@ public class DetailController {
         return ResponseEntity.ok(result);
     }
 
+    /* ============================================================
+       POST /detail/{spotIdx}/review/block-bulk  →  관리자 리뷰 선택/일괄 차단
+       ============================================================ */
+    @PostMapping("/{spotIdx}/review/block-bulk")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> blockReviews(
+            @PathVariable Long spotIdx,
+            @RequestBody Map<String, Object> body,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (!isAdminMode(session)) {
+            result.put("success", false);
+            result.put("message", "관리자모드에서만 리뷰를 차단할 수 있습니다.");
+            return ResponseEntity.ok(result);
+        }
+
+        Object rawIds = body.get("reviewIdxList");
+        if (!(rawIds instanceof List<?> rawList) || rawList.isEmpty()) {
+            result.put("success", false);
+            result.put("message", "차단할 리뷰를 하나 이상 선택해주세요.");
+            return ResponseEntity.ok(result);
+        }
+
+        List<Long> reviewIdxList = rawList.stream()
+                .map(String::valueOf)
+                .map(Long::parseLong)
+                .toList();
+
+        exploreService.blockReviews(spotIdx, reviewIdxList);
+        result.put("success", true);
+        result.put("blockedCount", reviewIdxList.size());
+        result.put("message", "선택한 리뷰가 차단되었습니다.");
+        return ResponseEntity.ok(result);
+    }
+
     /* ── 세션에서 로그인 사용자 idx ── */
     private Long getLoginUserIdx(HttpSession session) {
         UsersVO loginUser = getLoginUser(session);

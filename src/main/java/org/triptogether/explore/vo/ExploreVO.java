@@ -12,6 +12,7 @@ public class ExploreVO {
     // SPOT_TRAVEL
     private Long   spotIdx;
     private String spotId;
+    private Long   userIdx;
     private String name;
     private String region;
     private String address;

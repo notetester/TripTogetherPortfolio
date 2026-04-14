@@ -68,6 +68,9 @@ public interface ExploreService {
     /** 관리자 리뷰 차단 */
     void blockReview(Long spotIdx, Long reviewIdx);
 
+    /** 관리자 리뷰 일괄 차단 */
+    void blockReviews(Long spotIdx, List<Long> reviewIdxList);
+
     /* 찜/좋아요 관련 기능 */
 
     /**

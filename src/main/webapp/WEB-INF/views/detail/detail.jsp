@@ -138,12 +138,63 @@ html { scrollbar-gutter: stable; }
 
 /* ── 리뷰 카드 목록 ── */
 .review-list { display:flex; flex-direction:column; gap:16px; }
+.review-admin-tools {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:16px;
+  padding:12px 14px;
+  border:1px solid #fed7aa;
+  border-radius:10px;
+  background:#fff7ed;
+  flex-wrap:wrap;
+}
+.review-admin-left {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.review-admin-select-all {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  font-weight:600;
+  color:#9a3412;
+}
+.review-admin-bulk-btn {
+  padding:8px 14px;
+  border-radius:8px;
+  border:1px solid #fdba74;
+  background:#fff;
+  color:#c2410c;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+.review-admin-bulk-btn:disabled {
+  opacity:.5;
+  cursor:not-allowed;
+}
 .review-card {
   padding:18px 20px; border-radius:10px;
   background:var(--gray-50); border:1px solid var(--gray-200);
 }
+.review-card.admin-selecting {
+  border-color:#fdba74;
+  background:#fff7ed;
+}
 .review-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:8px; }
 .review-author-info { display:flex; align-items:center; gap:10px; }
+.review-admin-check {
+  width:18px;
+  height:18px;
+  accent-color:#ea580c;
+  cursor:pointer;
+}
 .review-avatar {
   width:36px; height:36px; border-radius:50%;
   background:linear-gradient(135deg,var(--blue),var(--purple));
@@ -615,6 +666,21 @@ html { scrollbar-gutter: stable; }
     </div><%-- /reviewWriteArea --%>
 
     <!-- 리뷰 목록 -->
+    <c:if test="${isAdminMode and not empty reviewList}">
+      <div class="review-admin-tools">
+        <div class="review-admin-left">
+          <label class="review-admin-select-all">
+            <input type="checkbox" id="reviewSelectAll">
+            <span>전체 선택</span>
+          </label>
+          <span class="review-sub">선택한 리뷰만 차단하거나, 전체 선택 후 일괄 차단할 수 있습니다.</span>
+        </div>
+        <button type="button" class="review-admin-bulk-btn" id="blockSelectedReviewsBtn" disabled>
+          선택 차단
+        </button>
+      </div>
+    </c:if>
+
     <div class="review-list" id="reviewList">
       <c:choose>
         <c:when test="${not empty reviewList}">
@@ -622,6 +688,11 @@ html { scrollbar-gutter: stable; }
             <div class="review-card" id="rv-${rv.reviewIdx}">
               <div class="review-card-top">
                 <div class="review-author-info">
+                  <c:if test="${isAdminMode}">
+                    <input type="checkbox"
+                           class="review-admin-check"
+                           data-review-select="${rv.reviewIdx}">
+                  </c:if>
                   <div class="review-avatar">
                     ${fn:substring(rv.nickname, 0, 1)}
                   </div>
@@ -961,6 +1032,109 @@ html { scrollbar-gutter: stable; }
     });
   }
 
+  /* ══════════════════════════════════════
+     관리자 리뷰 선택 / 전체선택 / 선택 차단
+     ══════════════════════════════════════ */
+  const reviewSelectAll = document.getElementById('reviewSelectAll');
+  const blockSelectedReviewsBtn = document.getElementById('blockSelectedReviewsBtn');
+
+  function getSelectedReviewCheckboxes() {
+    return Array.from(document.querySelectorAll('[data-review-select]:checked'));
+  }
+
+  function syncReviewSelectionUi() {
+    const allCheckboxes = Array.from(document.querySelectorAll('[data-review-select]'));
+    const checkedCheckboxes = getSelectedReviewCheckboxes();
+
+    allCheckboxes.forEach(function (checkbox) {
+      const card = checkbox.closest('.review-card');
+      if (card) {
+        card.classList.toggle('admin-selecting', checkbox.checked);
+      }
+    });
+
+    if (reviewSelectAll) {
+      reviewSelectAll.checked = allCheckboxes.length > 0 && checkedCheckboxes.length === allCheckboxes.length;
+      reviewSelectAll.indeterminate = checkedCheckboxes.length > 0 && checkedCheckboxes.length < allCheckboxes.length;
+    }
+
+    if (blockSelectedReviewsBtn) {
+      blockSelectedReviewsBtn.disabled = checkedCheckboxes.length === 0;
+      blockSelectedReviewsBtn.textContent = checkedCheckboxes.length > 0
+        ? '선택 차단 (' + checkedCheckboxes.length + ')'
+        : '선택 차단';
+    }
+  }
+
+  function bindReviewSelection() {
+    document.querySelectorAll('[data-review-select]').forEach(function (checkbox) {
+      checkbox.addEventListener('change', syncReviewSelectionUi);
+    });
+
+    reviewSelectAll && reviewSelectAll.addEventListener('change', function () {
+      const checked = this.checked;
+      document.querySelectorAll('[data-review-select]').forEach(function (checkbox) {
+        checkbox.checked = checked;
+      });
+      syncReviewSelectionUi();
+    });
+
+    blockSelectedReviewsBtn && blockSelectedReviewsBtn.addEventListener('click', function () {
+      const selectedIds = getSelectedReviewCheckboxes().map(function (checkbox) {
+        return Number(checkbox.dataset.reviewSelect);
+      });
+
+      if (selectedIds.length === 0) {
+        showToast('차단할 리뷰를 선택해주세요.');
+        return;
+      }
+
+      const isAllSelected = document.querySelectorAll('[data-review-select]').length === selectedIds.length;
+      const confirmMessage = isAllSelected
+        ? '현재 보이는 리뷰를 모두 차단하시겠습니까?'
+        : '선택한 리뷰를 차단하시겠습니까?';
+      if (!confirm(confirmMessage)) return;
+
+      fetch(ctx + '/detail/' + spotIdx + '/review/block-bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewIdxList: selectedIds })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (!data.success) {
+            showToast(data.message || '차단 실패');
+            return;
+          }
+
+          selectedIds.forEach(function (reviewId) {
+            const card = document.getElementById('rv-' + reviewId);
+            card && card.remove();
+          });
+
+          if (reviewSelectAll) {
+            reviewSelectAll.checked = false;
+            reviewSelectAll.indeterminate = false;
+          }
+
+          syncReviewSelectionUi();
+          showToast((data.blockedCount || selectedIds.length) + '개의 리뷰가 차단되었습니다.');
+
+          const list = document.getElementById('reviewList');
+          if (list && list.querySelectorAll('.review-card').length === 0) {
+            const tools = document.querySelector('.review-admin-tools');
+            tools && tools.remove();
+            list.innerHTML = '<div class="review-empty">현재 노출 가능한 리뷰가 없습니다.</div>';
+          }
+        })
+        .catch(function () {
+          showToast('처리 중 오류가 발생했습니다.');
+        });
+    });
+
+    syncReviewSelectionUi();
+  }
+
   /* 리뷰 작성 폼을 #reviewWriteArea 안에 동적으로 생성 */
   function showWriteForm() {
     const area = document.getElementById('reviewWriteArea');
@@ -994,6 +1168,7 @@ html { scrollbar-gutter: stable; }
 
   bindDeleteBtns();
   bindBlockBtns();
+  bindReviewSelection();
 
 })();
 </script>

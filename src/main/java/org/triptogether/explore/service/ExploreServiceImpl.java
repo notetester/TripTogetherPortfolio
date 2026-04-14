@@ -150,6 +150,7 @@ public class ExploreServiceImpl implements ExploreService {
         /* 단계 1. SPOT_TRAVEL 테이블에 기본 정보 INSERT */
         ExploreVO spot = new ExploreVO();
         spot.setSpotId(generateUniqueSpotId());
+        spot.setUserIdx(loginUser != null ? loginUser.getUserIdx() : null);
         spot.setName(trimToNull(spotCreateDto.getName()));
         spot.setRegion(trimToNull(spotCreateDto.getRegion()));
         spot.setAddress(trimToNull(spotCreateDto.getAddress()));
@@ -244,6 +245,14 @@ public class ExploreServiceImpl implements ExploreService {
             return;
         }
         exploreMapper.blockReview(reviewIdx, spotIdx);
+    }
+
+    @Override
+    public void blockReviews(Long spotIdx, List<Long> reviewIdxList) {
+        if (spotIdx == null || reviewIdxList == null || reviewIdxList.isEmpty()) {
+            return;
+        }
+        exploreMapper.blockReviews(spotIdx, reviewIdxList);
     }
 
     /* ============================================================
