@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface ExploreService {
 
-    /** ?ы뻾吏 紐⑸줉 (?꾩껜 / 吏??퀎 / ?뚮쭏蹂? */
+    /** 여행지 목록 조회 (전체 / 지역별 / 테마별) */
     List<ExploreVO> getSpotList(ExploreSearchDto search);
 
-    /** ?됱젏??紐⑸줉 */
+    /** 평점순 목록 조회 */
     List<ExploreVO> getRatingSpotList(ExploreSearchDto search);
 
-    /** 醫뗭븘?붿닚 紐⑸줉 */
+    /** 좋아요순 목록 조회 */
     List<ExploreVO> getLikesSpotList(ExploreSearchDto search);
 
     /**
@@ -26,40 +26,49 @@ public interface ExploreService {
      */
     List<ExploreVO> getFavoriteSpotList(ExploreSearchDto search);
 
-    /** ?꾩껜 嫄댁닔 (??뿉 ?곕씪 遺꾧린) */
+    /** 전체 건수 조회 (탭에 따라 분기) */
     int getTotalCount(ExploreSearchDto search);
 
-    /** ?꾩껜 ?섏씠吏 ??*/
+    /** 전체 페이지 수 조회 */
     int getTotalPage(ExploreSearchDto search);
 
-    /** 吏??紐⑸줉 */
+    /** 지역 목록 조회 */
     List<String> getRegionList();
 
-    /** ?쒓렇(?뚮쭏) 紐⑸줉 */
+    /** 태그(테마) 목록 조회 */
     List<String> getTagList();
     List<String> getWriteTagList();
 
-    /** ?ы뻾吏 ?곸꽭 */
+    /** 여행지 상세 조회 */
     ExploreVO getSpotDetail(Long spotIdx, Long loginUserIdx);
 
-    /** ?ы뻾吏 ?깅줉 (?대?吏 ?ы븿) */
+    /** 여행지 등록 (이미지 포함) */
     Long createSpot(ExploreCreateDto spotCreateDto, UsersVO loginUser);
 
-    /* ?? 由щ럭 ?? */
+    /** 관리자 여행지 수정 */
+    void updateSpot(Long spotIdx, ExploreCreateDto spotCreateDto, UsersVO loginUser);
 
-    /** 由щ럭 紐⑸줉 議고쉶 */
+    /** 관리자 여행지 삭제(soft delete) */
+    void softDeleteSpot(Long spotIdx);
+
+    /* 리뷰 관련 기능 */
+
+    /** 리뷰 목록 조회 */
     List<ReviewVO> getReviewList(Long spotIdx);
 
-    /** 由щ럭 ?묒꽦 媛???щ? (濡쒓렇??+ 以묐났 ?묒꽦 泥댄겕) */
+    /** 리뷰 작성 가능 여부 확인 (로그인 + 중복 작성 체크) */
     boolean canWriteReview(Long spotIdx, Long userIdx);
 
-    /** 由щ럭 ?묒꽦 */
+    /** 리뷰 작성 */
     void writeReview(ReviewVO review);
 
-    /** 由щ럭 ??젣 */
+    /** 리뷰 삭제 */
     void deleteReview(Long reviewIdx, Long userIdx);
 
-    /* ?? 李?/ 醫뗭븘???? */
+    /** 관리자 리뷰 차단 */
+    void blockReview(Long spotIdx, Long reviewIdx);
+
+    /* 찜/좋아요 관련 기능 */
 
     /**
      * 검색 자동완성 후보 목록

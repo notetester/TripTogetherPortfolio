@@ -32,7 +32,7 @@ public class ExploreController {
     private String mapsApiKey;
 
     /* ============================================================
-       GET /explore  ?? ?ы뻾吏 ?먯깋 硫붿씤
+       GET /explore  여행지 탐색 메인
        tab: all / region / theme / rating / likes
        ============================================================ */
     @GetMapping
@@ -94,7 +94,7 @@ public class ExploreController {
 
         UsersVO loginUser = getLoginUser(session);
         if (loginUser == null) {
-            redirectAttributes.addFlashAttribute("writeError", "?ы뻾吏 ?깅줉? 濡쒓렇?????댁슜?????덉뒿?덈떎.");
+            redirectAttributes.addFlashAttribute("writeError", "여행지 등록은 로그인한 사용자만 가능합니다.");
             redirectAttributes.addFlashAttribute("openWriteModal", true);
             redirectAttributes.addFlashAttribute("writeForm", writeForm);
             return "redirect:/explore";
@@ -109,7 +109,7 @@ public class ExploreController {
         }
 
         Long spotIdx = exploreService.createSpot(writeForm, loginUser);
-        redirectAttributes.addFlashAttribute("writeSuccess", "???ы뻾吏媛 ?깅줉?섏뿀?듬땲??");
+        redirectAttributes.addFlashAttribute("writeSuccess", "여행지가 등록되었습니다.");
         return "redirect:/detail/" + spotIdx;
     }
 
@@ -129,7 +129,7 @@ public class ExploreController {
     }
 
     /* ============================================================
-       POST /explore/favorite/{spotIdx}  ?? 李??좉? (AJAX)
+       POST /explore/favorite/{spotIdx}  찜 토글 (AJAX)
        ============================================================ */
     @PostMapping("/favorite/{spotIdx}")
     @ResponseBody
@@ -141,19 +141,19 @@ public class ExploreController {
 
         if (userIdx == null) {
             result.put("success", false);
-            result.put("message", "濡쒓렇?몄씠 ?꾩슂?⑸땲??");
+            result.put("message", "로그인이 필요합니다.");
             return ResponseEntity.ok(result);
         }
 
         boolean added = exploreService.toggleFavorite(spotIdx, userIdx);
         result.put("success",   true);
         result.put("favorited", added);
-        result.put("message",   added ? "李?紐⑸줉??異붽??섏뿀?듬땲??" : "李?紐⑸줉?먯꽌 ?쒓굅?섏뿀?듬땲??");
+        result.put("message",   added ? "찜 목록에 추가되었습니다." : "찜 목록에서 제거되었습니다.");
         return ResponseEntity.ok(result);
     }
 
     /* ============================================================
-       POST /explore/like/{spotIdx}  ?? 醫뗭븘???좉? (AJAX)
+       POST /explore/like/{spotIdx}  좋아요 토글 (AJAX)
        ============================================================ */
     @PostMapping("/like/{spotIdx}")
     @ResponseBody
@@ -165,18 +165,18 @@ public class ExploreController {
 
         if (userIdx == null) {
             result.put("success", false);
-            result.put("message", "濡쒓렇?몄씠 ?꾩슂?⑸땲??");
+            result.put("message", "로그인이 필요합니다.");
             return ResponseEntity.ok(result);
         }
 
         boolean added = exploreService.toggleLike(spotIdx, userIdx);
         result.put("success", true);
         result.put("liked",   added);
-        result.put("message", added ? "醫뗭븘?붾? ?뚮??듬땲??" : "醫뗭븘?붾? 痍⑥냼?덉뒿?덈떎.");
+        result.put("message", added ? "좋아요를 눌렀습니다." : "좋아요를 취소했습니다.");
         return ResponseEntity.ok(result);
     }
 
-    /* ?? ?대? ?좏떥 ?? */
+    /* 검색 조건 DTO 생성 */
     private ExploreSearchDto buildSearch(String tab, String keyword,
                                          String region, String theme, int page) {
         ExploreSearchDto s = new ExploreSearchDto();
@@ -203,7 +203,7 @@ public class ExploreController {
     }
 
     private String validateWriteForm(ExploreCreateDto writeForm) {
-        if (writeForm == null) return "?깅줉 ?뺣낫媛 ?щ컮瑜댁? ?딆뒿?덈떎.";
+        if (writeForm == null) return "등록 정보가 올바르지 않습니다.";
 
         String name = writeForm.getName() == null ? "" : writeForm.getName().trim();
         String region = writeForm.getRegion() == null ? "" : writeForm.getRegion().trim();
@@ -211,23 +211,23 @@ public class ExploreController {
         String description = writeForm.getDescription() == null ? "" : writeForm.getDescription().trim();
 
         if (name.isEmpty() || name.length() > 100) {
-            return "?ы뻾吏 ?대쫫? 1???댁긽 100???댄븯濡??낅젰?댁＜?몄슂.";
+            return "여행지 이름은 1자 이상 100자 이하로 입력해주세요.";
         }
         if (region.isEmpty() || region.length() > 100) {
-            return "吏??? 1???댁긽 100???댄븯濡??낅젰?댁＜?몄슂.";
+            return "지역은 1자 이상 100자 이하로 입력해주세요.";
         }
         if (address.isEmpty() || address.length() > 255) {
-            return "二쇱냼瑜?寃?됲빐???낅젰?댁＜?몄슂.";
+            return "주소를 검색해 입력해주세요.";
         }
         if (writeForm.getLatitude() == null || writeForm.getLongitude() == null) {
-            return "吏?꾩뿉???꾩튂瑜?寃?됲빐 ?꾨룄? 寃쎈룄瑜??좏깮?댁＜?몄슂.";
+            return "지도에서 위치를 검색해 위도와 경도를 선택해주세요.";
         }
         if (writeForm.getLatitude() < -90 || writeForm.getLatitude() > 90
                 || writeForm.getLongitude() < -180 || writeForm.getLongitude() > 180) {
-            return "?꾩튂 醫뚰몴媛 ?щ컮瑜댁? ?딆뒿?덈떎.";
+            return "위치 좌표가 올바르지 않습니다.";
         }
         if (description.isEmpty() || description.length() > 2000) {
-            return "?ㅻ챸? 1???댁긽 2000???댄븯濡??낅젰?댁＜?몄슂.";
+            return "설명은 1자 이상 2000자 이하로 입력해주세요.";
         }
         return null;
     }

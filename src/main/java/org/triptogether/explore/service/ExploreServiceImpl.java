@@ -30,12 +30,12 @@ public class ExploreServiceImpl implements ExploreService {
 
     private final ExploreMapper exploreMapper;
 
-    /** application.properties??file.upload.path 媛?(?? src/main/resources/upload/) */
+    /** application.properties의 file.upload.path 값 (예: src/main/resources/upload/) */
     @Value("${file.upload.path}")
     private String uploadPath;
 
     /* ============================================================
-       紐⑸줉 議고쉶
+       목록 조회
        ============================================================ */
 
     @Override
@@ -109,7 +109,7 @@ public class ExploreServiceImpl implements ExploreService {
     }
 
     /* ============================================================
-       ?꾪꽣 ?곗씠??
+       필터 데이터
        ============================================================ */
 
     @Override
@@ -128,7 +128,7 @@ public class ExploreServiceImpl implements ExploreService {
     }
 
     /* ============================================================
-       ?곸꽭 議고쉶
+       상세 조회
        ============================================================ */
 
     @Override
@@ -147,7 +147,7 @@ public class ExploreServiceImpl implements ExploreService {
 
     @Override
     public Long createSpot(ExploreCreateDto spotCreateDto, UsersVO loginUser) {
-        /* ?? 1. SPOT_TRAVEL ?뚯씠釉붿뿉 湲곕낯 ?뺣낫 INSERT ?? */
+        /* 단계 1. SPOT_TRAVEL 테이블에 기본 정보 INSERT */
         ExploreVO spot = new ExploreVO();
         spot.setSpotId(generateUniqueSpotId());
         spot.setName(trimToNull(spotCreateDto.getName()));
@@ -159,7 +159,7 @@ public class ExploreServiceImpl implements ExploreService {
 
         exploreMapper.insertSpot(spot);
 
-        /* ?? 2. ?대?吏 ?뚯씪???덉쑝硫??????SPOT_IMAGE ?뚯씠釉붿뿉 INSERT ?? */
+        /* 단계 2. 이미지 파일이 있으면 SPOT_IMAGE 테이블에 INSERT */
         MultipartFile imageFile = spotCreateDto.getImage();
         if (imageFile != null && !imageFile.isEmpty()) {
             String imageUrl = saveSpotImage(imageFile);
@@ -173,8 +173,48 @@ public class ExploreServiceImpl implements ExploreService {
         return spot.getSpotIdx();
     }
 
+    @Override
+    public void updateSpot(Long spotIdx, ExploreCreateDto spotCreateDto, UsersVO loginUser) {
+        if (spotIdx == null || spotCreateDto == null) {
+            return;
+        }
+
+        ExploreVO spot = new ExploreVO();
+        spot.setSpotIdx(spotIdx);
+        spot.setName(trimToNull(spotCreateDto.getName()));
+        spot.setRegion(trimToNull(spotCreateDto.getRegion()));
+        spot.setAddress(trimToNull(spotCreateDto.getAddress()));
+        spot.setLatitude(spotCreateDto.getLatitude());
+        spot.setLongitude(spotCreateDto.getLongitude());
+        spot.setDescription(trimToNull(spotCreateDto.getDescription()));
+
+        exploreMapper.updateSpot(spot);
+
+        // 관리자가 새 대표 이미지를 업로드한 경우, 기존 이미지를 지우고 새 이미지 1장으로 교체한다.
+        MultipartFile imageFile = spotCreateDto.getImage();
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageUrl = saveSpotImage(imageFile);
+            if (imageUrl != null) {
+                exploreMapper.deleteSpotImages(spotIdx);
+                exploreMapper.insertSpotImage(spotIdx, generateImageId(loginUser), imageUrl);
+            }
+        }
+
+        // 태그는 수정 폼에서 선택한 값으로 전체 교체한다.
+        exploreMapper.deleteSpotTags(spotIdx);
+        saveSpotTags(spotIdx, spotCreateDto.getTags());
+    }
+
+    @Override
+    public void softDeleteSpot(Long spotIdx) {
+        if (spotIdx == null) {
+            return;
+        }
+        exploreMapper.softDeleteSpot(spotIdx);
+    }
+
     /* ============================================================
-       由щ럭
+       리뷰
        ============================================================ */
 
     @Override
@@ -184,7 +224,7 @@ public class ExploreServiceImpl implements ExploreService {
 
     @Override
     public boolean canWriteReview(Long spotIdx, Long userIdx) {
-        // ?대? ?묒꽦??由щ럭媛 ?놁뼱???묒꽦 媛??
+        // 이미 작성한 리뷰가 없을 때만 작성 가능
         return exploreMapper.selectMyReviewCount(spotIdx, userIdx) == 0;
     }
 
@@ -198,8 +238,16 @@ public class ExploreServiceImpl implements ExploreService {
         exploreMapper.deleteReview(reviewIdx, userIdx);
     }
 
+    @Override
+    public void blockReview(Long spotIdx, Long reviewIdx) {
+        if (spotIdx == null || reviewIdx == null) {
+            return;
+        }
+        exploreMapper.blockReview(reviewIdx, spotIdx);
+    }
+
     /* ============================================================
-       李?/ 醫뗭븘???좉?
+       찜 / 좋아요 토글
        ============================================================ */
 
     /**
@@ -233,7 +281,7 @@ public class ExploreServiceImpl implements ExploreService {
     }
 
     /* ============================================================
-       ?대? ?좏떥 - GROUP_CONCAT ??List<String>
+       태그 후처리 - GROUP_CONCAT 문자열을 List<String>으로 변환
        ============================================================ */
     private void splitTags(List<ExploreVO> list) {
         if (list == null) return;
@@ -311,44 +359,44 @@ public class ExploreServiceImpl implements ExploreService {
     }
 
     /**
-     * ?ы뻾吏 ?대?吏 ?뚯씪???쒕쾭????ν븯怨? ?묎렐 媛?ν븳 URL 寃쎈줈瑜?諛섑솚?쒕떎.
-     * - ???寃쎈줈: {?꾨줈?앺듃猷⑦듃}/{uploadPath}/explore/{UUID}.{?뺤옣??
-     * - 諛섑솚 URL:  /TripTogether/upload/explore/{UUID}.{?뺤옣??
+     * 여행지 이미지 파일을 서버에 저장하고 웹에서 접근 가능한 URL 경로를 반환한다.
+     * - 저장 경로: {프로젝트루트}/{uploadPath}/explore/{UUID}.{확장자}
+     * - 반환 URL: /TripTogether/upload/explore/{UUID}.{확장자}
      *
-     * @param file ?낅줈?쒕맂 ?대?吏 ?뚯씪
-     * @return ??λ맂 ?대?吏?????묎렐 寃쎈줈, ?ㅽ뙣 ??null
+     * @param file 업로드한 이미지 파일
+     * @return 저장된 이미지의 웹 접근 경로, 실패 시 null
      */
     private String saveSpotImage(MultipartFile file) {
-        /* ?뺤옣??異붿텧 諛??덉슜 ?뺤떇 寃利?*/
+        /* 확장자 추출 및 허용 형식 검증 */
         String ext = getExtension(file.getOriginalFilename()).toLowerCase();
         if (!ext.equals(".jpg") && !ext.equals(".jpeg")
                 && !ext.equals(".png") && !ext.equals(".gif")
                 && !ext.equals(".webp")) {
-            log.warn("?덉슜?섏? ?딅뒗 ?ы뻾吏 ?대?吏 ?뚯씪 ?뺤떇: {}", ext);
+            log.warn("허용되지 않은 여행지 이미지 파일 형식: {}", ext);
             return null;
         }
 
         try {
-            /* ????붾젆?곕━ ?앹꽦 (?놁쑝硫??먮룞 ?앹꽦) */
+            /* 저장 디렉터리 생성 (없으면 자동 생성) */
             String dir = System.getProperty("user.dir").replace("\\", "/")
                     + "/" + uploadPath + "/explore/";
             File dirFile = new File(dir);
             if (!dirFile.exists()) dirFile.mkdirs();
 
-            /* UUID 湲곕컲 怨좎쑀 ?뚯씪紐??앹꽦 ?????*/
+            /* UUID 기반 고유 파일명 생성 후 저장 */
             String fileName = UUID.randomUUID().toString() + ext;
             file.transferTo(new File(dir + fileName));
 
-            /* ?뱀뿉???묎렐 媛?ν븳 URL 寃쎈줈 諛섑솚 */
+            /* 웹에서 접근 가능한 URL 경로 반환 */
             return "/TripTogether/upload/explore/" + fileName;
         } catch (IOException e) {
-            log.error("?ы뻾吏 ?대?吏 ?뚯씪 ????ㅽ뙣", e);
+            log.error("여행지 이미지 파일 저장 실패", e);
             return null;
         }
     }
 
     /**
-     * ?뚯씪紐낆뿉???뺤옣?먮? 異붿텧?쒕떎. (?? "photo.jpg" ??".jpg")
+     * 파일명에서 확장자를 추출한다. (예: "photo.jpg" -> ".jpg")
      */
     private String getExtension(String fileName) {
         if (fileName == null) return "";

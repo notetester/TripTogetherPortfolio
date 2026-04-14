@@ -174,6 +174,150 @@ html { scrollbar-gutter: stable; }
   font-size: 14px;
 }
 
+/* ── 관리자 전용 영역 ── */
+.det-admin-bar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 18px;
+  margin-bottom:24px;
+  border:1px solid #bfdbfe;
+  border-radius:14px;
+  background:#eff6ff;
+  flex-wrap:wrap;
+}
+.det-admin-copy { font-size:13px; color:#1d4ed8; line-height:1.6; }
+.det-admin-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.det-admin-btn {
+  padding:10px 16px;
+  border-radius:10px;
+  border:1px solid #93c5fd;
+  background:#fff;
+  color:#1d4ed8;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+.det-admin-btn.danger {
+  border-color:#fecaca;
+  color:#dc2626;
+}
+.det-admin-review-btn {
+  background:#fff7ed;
+  border:1px solid #fdba74;
+  color:#c2410c;
+  font-size:12px;
+  cursor:pointer;
+  padding:5px 9px;
+  border-radius:6px;
+}
+.det-admin-modal {
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(15, 23, 42, .56);
+  z-index:1200;
+  padding:20px;
+}
+.det-admin-modal.show { display:flex; }
+.det-admin-dialog {
+  width:min(920px, 100%);
+  max-height:calc(100vh - 40px);
+  overflow-y:auto;
+  background:#fff;
+  border-radius:20px;
+  box-shadow:0 24px 60px rgba(15, 23, 42, .28);
+  padding:24px;
+}
+.det-admin-head {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:18px;
+}
+.det-admin-head h3 { margin:0 0 6px; font-size:1.2rem; color:var(--gray-800); }
+.det-admin-head p { margin:0; font-size:13px; color:var(--gray-500); }
+.det-admin-close {
+  width:36px; height:36px; border:none; border-radius:50%;
+  background:var(--gray-100); color:var(--gray-600); font-size:22px; cursor:pointer;
+}
+.det-admin-alert {
+  padding:12px 14px;
+  border-radius:12px;
+  margin-bottom:16px;
+  font-size:13px;
+}
+.det-admin-alert.error {
+  background:#fef2f2;
+  color:#b91c1c;
+  border:1px solid #fecaca;
+}
+.det-admin-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+.det-admin-field {
+  display:grid;
+  gap:8px;
+}
+.det-admin-field.full { grid-column:1 / -1; }
+.det-admin-field label {
+  font-size:13px;
+  font-weight:700;
+  color:var(--gray-700);
+}
+.det-admin-field input[type="text"],
+.det-admin-field input[type="number"],
+.det-admin-field textarea,
+.det-admin-field input[type="file"] {
+  width:100%;
+  border:1.5px solid var(--gray-200);
+  border-radius:12px;
+  padding:12px 13px;
+  font-family:inherit;
+  font-size:14px;
+  color:var(--gray-800);
+  background:#fff;
+  box-sizing:border-box;
+}
+.det-admin-field textarea {
+  min-height:160px;
+  resize:vertical;
+}
+.det-admin-tag-box {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:14px;
+  border:1.5px solid var(--gray-200);
+  border-radius:14px;
+  background:var(--gray-50);
+}
+.det-admin-tag {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  background:#fff;
+  border:1px solid var(--gray-200);
+  border-radius:999px;
+  font-size:13px;
+  color:var(--gray-700);
+}
+.det-admin-foot {
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:22px;
+  flex-wrap:wrap;
+}
+
 /* ── 반응형 ── */
 @media (max-width:640px) {
   .det-hero { height:280px; }
@@ -181,6 +325,7 @@ html { scrollbar-gutter: stable; }
   .det-hero-content { left:20px; right:20px; bottom:20px; }
   .det-body { padding:24px 16px 60px; }
   .det-section { padding:20px; }
+  .det-admin-grid { grid-template-columns:1fr; }
 }
 </style>
 
@@ -232,6 +377,99 @@ html { scrollbar-gutter: stable; }
       &#10024; AI에게 여행 계획 짜기
     </button>
   </div>
+
+  <c:if test="${isAdminMode}">
+    <div class="det-admin-bar">
+      <div class="det-admin-copy">
+        <strong>🛡️ 관리자모드</strong><br>
+        현재 여행지 정보를 수정하거나, 소프트 삭제 처리할 수 있습니다.
+      </div>
+      <div class="det-admin-actions">
+        <button type="button" class="det-admin-btn" id="openAdminEditBtn">여행지 수정</button>
+        <form method="post" action="${pageContext.request.contextPath}/detail/${spot.spotIdx}/admin/delete"
+              onsubmit="return confirm('이 여행지를 삭제 처리하시겠습니까? 삭제 처리 후에는 목록과 상세에서 노출되지 않습니다.');">
+          <button type="submit" class="det-admin-btn danger">여행지 삭제</button>
+        </form>
+      </div>
+    </div>
+  </c:if>
+
+  <c:if test="${isAdminMode}">
+    <div class="det-admin-modal ${openAdminEditModal ? 'show' : ''}" id="adminEditModal">
+      <div class="det-admin-dialog">
+        <div class="det-admin-head">
+          <div>
+            <h3>여행지 정보 수정</h3>
+            <p>관리자모드에서만 수정이 가능하며, 빈 값이나 잘못된 좌표는 저장되지 않습니다.</p>
+          </div>
+          <button type="button" class="det-admin-close" id="closeAdminEditBtn">&#215;</button>
+        </div>
+
+        <c:if test="${not empty adminEditError}">
+          <div class="det-admin-alert error">${fn:escapeXml(adminEditError)}</div>
+        </c:if>
+
+        <form method="post"
+              action="${pageContext.request.contextPath}/detail/${spot.spotIdx}/admin/update"
+              enctype="multipart/form-data"
+              id="adminEditForm">
+          <div class="det-admin-grid">
+            <div class="det-admin-field">
+              <label for="adminSpotName">여행지 이름</label>
+              <input type="text" id="adminSpotName" name="name" maxlength="100"
+                     value="${fn:escapeXml(adminEditForm.name)}" required>
+            </div>
+            <div class="det-admin-field">
+              <label for="adminSpotRegion">지역</label>
+              <input type="text" id="adminSpotRegion" name="region" maxlength="100"
+                     value="${fn:escapeXml(adminEditForm.region)}" required>
+            </div>
+            <div class="det-admin-field full">
+              <label for="adminSpotAddress">주소</label>
+              <input type="text" id="adminSpotAddress" name="address" maxlength="255"
+                     value="${fn:escapeXml(adminEditForm.address)}" required>
+            </div>
+            <div class="det-admin-field">
+              <label for="adminSpotLat">위도</label>
+              <input type="number" id="adminSpotLat" name="latitude" step="0.000001"
+                     value="${adminEditForm.latitude}" required>
+            </div>
+            <div class="det-admin-field">
+              <label for="adminSpotLng">경도</label>
+              <input type="number" id="adminSpotLng" name="longitude" step="0.000001"
+                     value="${adminEditForm.longitude}" required>
+            </div>
+            <div class="det-admin-field full">
+              <label for="adminSpotDesc">설명</label>
+              <textarea id="adminSpotDesc" name="description" maxlength="2000" required>${fn:escapeXml(adminEditForm.description)}</textarea>
+            </div>
+            <div class="det-admin-field full">
+              <label for="adminSpotImage">대표 이미지 교체</label>
+              <input type="file" id="adminSpotImage" name="image" accept=".jpg,.jpeg,.png,.gif,.webp">
+            </div>
+            <div class="det-admin-field full">
+              <label>태그 선택</label>
+              <div class="det-admin-tag-box">
+                <c:forEach var="tag" items="${writeTagList}">
+                  <label class="det-admin-tag">
+                    <input type="checkbox" name="tags" value="${fn:escapeXml(tag)}"
+                           <c:forEach var="selectedTag" items="${adminEditForm.tags}">
+                             <c:if test="${selectedTag == tag}">checked</c:if>
+                           </c:forEach>>
+                    <span>${fn:escapeXml(tag)}</span>
+                  </label>
+                </c:forEach>
+              </div>
+            </div>
+          </div>
+          <div class="det-admin-foot">
+            <button type="button" class="det-action-btn" id="cancelAdminEditBtn">취소</button>
+            <button type="submit" class="det-action-btn active">수정 저장</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </c:if>
 
   <!-- 기본 정보 -->
   <div class="det-section">
@@ -409,6 +647,12 @@ html { scrollbar-gutter: stable; }
                             data-review-idx="${rv.reviewIdx}"
                             data-spot-idx="${spot.spotIdx}">삭제</button>
                   </c:if>
+                  <c:if test="${isAdminMode}">
+                    <button class="det-admin-review-btn"
+                            type="button"
+                            data-block-review-idx="${rv.reviewIdx}"
+                            data-block-spot-idx="${spot.spotIdx}">차단</button>
+                  </c:if>
                 </div>
               </div>
               <p class="review-content">${fn:escapeXml(rv.content)}</p>
@@ -460,6 +704,7 @@ html { scrollbar-gutter: stable; }
 
 <!-- 토스트 -->
 <div class="toast" id="toast"></div>
+<div id="adminEditSuccessMsg" data-message="${fn:escapeXml(adminEditSuccess)}" style="display:none;"></div>
 
 <%@ include file="../common/footer.jsp" %>
 
@@ -470,6 +715,10 @@ html { scrollbar-gutter: stable; }
   const ctx      = '${pageContext.request.contextPath}';
   const spotIdx  = '${spot.spotIdx}';
   const loginUserIdx = '${loginUserIdx}';
+  const adminEditModal = document.getElementById('adminEditModal');
+  if (adminEditModal && adminEditModal.classList.contains('show')) {
+    document.body.classList.add('modal-open');
+  }
 
   /* ── 토스트 ── */
   function showToast(msg) {
@@ -478,6 +727,57 @@ html { scrollbar-gutter: stable; }
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2500);
   }
+
+  const successMsg = document.getElementById('adminEditSuccessMsg');
+  if (successMsg && successMsg.dataset.message) {
+    showToast(successMsg.dataset.message);
+  }
+
+  /* ══════════════════════════════════════
+     관리자 여행지 수정 모달
+     ══════════════════════════════════════ */
+  function openAdminModal() {
+    if (!adminEditModal) return;
+    adminEditModal.classList.add('show');
+    document.body.classList.add('modal-open');
+  }
+
+  function closeAdminModal() {
+    if (!adminEditModal) return;
+    adminEditModal.classList.remove('show');
+    document.body.classList.remove('modal-open');
+  }
+
+  const openAdminEditBtn = document.getElementById('openAdminEditBtn');
+  const closeAdminEditBtn = document.getElementById('closeAdminEditBtn');
+  const cancelAdminEditBtn = document.getElementById('cancelAdminEditBtn');
+
+  openAdminEditBtn && openAdminEditBtn.addEventListener('click', openAdminModal);
+  closeAdminEditBtn && closeAdminEditBtn.addEventListener('click', closeAdminModal);
+  cancelAdminEditBtn && cancelAdminEditBtn.addEventListener('click', closeAdminModal);
+
+  adminEditModal && adminEditModal.addEventListener('click', function (e) {
+    if (e.target === adminEditModal) {
+      closeAdminModal();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && adminEditModal && adminEditModal.classList.contains('show')) {
+      closeAdminModal();
+    }
+  });
+
+  const adminTagCheckboxes = document.querySelectorAll('#adminEditForm input[name="tags"]');
+  adminTagCheckboxes.forEach(function (checkbox) {
+    checkbox.addEventListener('change', function () {
+      const checked = document.querySelectorAll('#adminEditForm input[name="tags"]:checked');
+      if (checked.length > 4) {
+        this.checked = false;
+        showToast('태그는 최대 4개까지 선택할 수 있습니다.');
+      }
+    });
+  });
 
   /* ══════════════════════════════════════
      찜 / 좋아요 토글
@@ -626,6 +926,41 @@ html { scrollbar-gutter: stable; }
     });
   }
 
+  /* ══════════════════════════════════════
+     관리자 리뷰 차단
+     ══════════════════════════════════════ */
+  function bindBlockBtns() {
+    document.querySelectorAll('[data-block-review-idx]').forEach(btn => {
+      btn.addEventListener('click', function () {
+        if (!confirm('이 리뷰를 차단하시겠습니까? 차단 후 상세 화면에서 더 이상 노출되지 않습니다.')) return;
+
+        const reviewIdx = this.dataset.blockReviewIdx;
+        const currentSpotIdx = this.dataset.blockSpotIdx;
+
+        fetch(ctx + '/detail/' + currentSpotIdx + '/review/' + reviewIdx + '/block', {
+          method: 'POST'
+        })
+          .then(r => r.json())
+          .then(data => {
+            if (!data.success) {
+              showToast(data.message || '차단 실패');
+              return;
+            }
+
+            const card = document.getElementById('rv-' + reviewIdx);
+            card && card.remove();
+            showToast('리뷰가 차단되었습니다.');
+
+            const list = document.getElementById('reviewList');
+            if (list && list.querySelectorAll('.review-card').length === 0) {
+              list.innerHTML = '<div class="review-empty">현재 노출 가능한 리뷰가 없습니다.</div>';
+            }
+          })
+          .catch(() => showToast('처리 중 오류가 발생했습니다.'));
+      });
+    });
+  }
+
   /* 리뷰 작성 폼을 #reviewWriteArea 안에 동적으로 생성 */
   function showWriteForm() {
     const area = document.getElementById('reviewWriteArea');
@@ -658,6 +993,7 @@ html { scrollbar-gutter: stable; }
   }
 
   bindDeleteBtns();
+  bindBlockBtns();
 
 })();
 </script>

@@ -12,25 +12,25 @@ import java.util.List;
 public interface ExploreMapper {
 
     /* ============================================================
-       紐⑸줉 議고쉶
+       목록 조회
        ============================================================ */
 
-    /** ?꾩껜 / 吏??퀎 / ?뚮쭏蹂?紐⑸줉 */
+    /** 전체 / 지역별 / 테마별 목록 조회 */
     List<ExploreVO> selectSpotList(ExploreSearchDto search);
 
-    /** ?꾩껜 嫄댁닔 (?섏씠吏뺤슜) */
+    /** 전체 건수 조회 (페이징용) */
     int selectTotalCount(ExploreSearchDto search);
 
-    /** ?됱젏??紐⑸줉 (SPOT_REVIEW AVG rating DESC) */
+    /** 평점순 목록 조회 (SPOT_REVIEW AVG rating DESC) */
     List<ExploreVO> selectRatingSpotList(ExploreSearchDto search);
 
-    /** ?됱젏???꾩껜 嫄댁닔 */
+    /** 평점순 전체 건수 조회 */
     int selectRatingTotalCount(ExploreSearchDto search);
 
-    /** 醫뗭븘?붿닚 紐⑸줉 (SPOT_LIKE COUNT DESC) */
+    /** 좋아요순 목록 조회 (SPOT_LIKE COUNT DESC) */
     List<ExploreVO> selectLikesSpotList(ExploreSearchDto search);
 
-    /** 醫뗭븘?붿닚 ?꾩껜 嫄댁닔 */
+    /** 좋아요순 전체 건수 조회 */
     int selectLikesTotalCount(ExploreSearchDto search);
 
     /* ============================================================
@@ -55,7 +55,7 @@ public interface ExploreMapper {
 
 
     /* ============================================================
-       吏??/ ?쒓렇 ?꾪꽣 紐⑸줉
+       지역/태그 필터 목록
        ============================================================ */
 
     List<String> selectRegionList();
@@ -73,42 +73,48 @@ public interface ExploreMapper {
     List<java.util.Map<String, Object>> selectSuggestList(@Param("keyword") String keyword);
 
     /* ============================================================
-       ?곸꽭 ?④굔
+       상세 조회
        ============================================================ */
 
     ExploreVO selectSpotDetail(@Param("spotIdx") Long spotIdx);
     List<String> selectSpotTags(@Param("spotIdx") Long spotIdx);
     int countBySpotId(@Param("spotId") String spotId);
     void insertSpot(ExploreVO spot);
+    void updateSpot(ExploreVO spot);
+    void softDeleteSpot(@Param("spotIdx") Long spotIdx);
 
-    /** ?ы뻾吏 ????대?吏 ???(SPOT_IMAGE ?뚯씠釉? */
+    /** 여행지 대표 이미지 저장 (SPOT_IMAGE 테이블) */
     void insertSpotImage(@Param("spotIdx") Long spotIdx,
                          @Param("imageId") String imageId,
                          @Param("imageUrl") String imageUrl);
+    void deleteSpotImages(@Param("spotIdx") Long spotIdx);
     Integer selectTagIdxByName(@Param("tagName") String tagName);
     void insertSpotTag(@Param("spotIdx") Long spotIdx,
                        @Param("tagIdx") Integer tagIdx);
+    void deleteSpotTags(@Param("spotIdx") Long spotIdx);
 
     /* ============================================================
-       由щ럭 (SPOT_REVIEW)
+       리뷰 (SPOT_REVIEW)
        ============================================================ */
 
-    /** ?대떦 ?ы뻾吏??由щ럭 紐⑸줉 (理쒖떊?? */
+    /** 해당 여행지의 리뷰 목록 조회 (최신순) */
     List<ReviewVO> selectReviewList(@Param("spotIdx") Long spotIdx);
 
-    /** ?꾩옱 濡쒓렇???ъ슜?먭? ?대? 由щ럭瑜??묒꽦?덈뒗吏 ?뺤씤 */
+    /** 현재 로그인 사용자가 이미 리뷰를 작성했는지 확인 */
     int selectMyReviewCount(@Param("spotIdx") Long spotIdx,
                             @Param("userIdx") Long userIdx);
 
-    /** 由щ럭 ?묒꽦 */
+    /** 리뷰 작성 */
     void insertReview(ReviewVO review);
 
-    /** 由щ럭 ??젣 (蹂몄씤留? */
+    /** 리뷰 삭제 (본인만 가능) */
     void deleteReview(@Param("reviewIdx") Long reviewIdx,
                       @Param("userIdx")   Long userIdx);
+    void blockReview(@Param("reviewIdx") Long reviewIdx,
+                     @Param("spotIdx") Long spotIdx);
 
     /* ============================================================
-       李?(SPOT_FAVORITE)
+       찜 (SPOT_FAVORITE)
        ============================================================ */
 
     int  selectFavoriteCount(@Param("spotIdx") Long spotIdx,
@@ -119,7 +125,7 @@ public interface ExploreMapper {
                         @Param("userIdx") Long userIdx);
 
     /* ============================================================
-       醫뗭븘??(SPOT_LIKE)
+       좋아요 (SPOT_LIKE)
        ============================================================ */
 
     int  selectLikeCount(@Param("spotIdx") Long spotIdx,

@@ -18,6 +18,7 @@ public class ExploreVO {
     private Double latitude;
     private Double longitude;
     private String description;
+    private Integer spotActive; // 0: 노출, 1: 삭제(비노출)
 
     // SPOT_REVIEW 실시간 집계값 (Mapper에서 서브쿼리로 계산)
     private Float  ratingAvg;

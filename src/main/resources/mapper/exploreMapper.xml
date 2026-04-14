@@ -5,7 +5,7 @@
 <mapper namespace="org.triptogether.explore.mapper.ExploreMapper">
 
     <!-- =============================================
-         ResultMap - SPOT_TRAVEL + ?ㅼ떆媛?吏묎퀎
+         ResultMap - SPOT_TRAVEL + 실시간 집계
          ============================================= -->
     <resultMap id="SpotResultMap" type="org.triptogether.explore.vo.ExploreVO">
         <id     property="spotIdx"     column="spot_idx"/>
@@ -16,6 +16,7 @@
         <result property="latitude"    column="latitude"/>
         <result property="longitude"   column="longitude"/>
         <result property="description" column="description"/>
+        <result property="spotActive"  column="spot_active"/>
         <result property="ratingAvg"   column="rating_avg_real"/>
         <result property="reviewCount" column="review_count_real"/>
         <result property="likeCount"   column="like_count_real"/>
@@ -34,12 +35,13 @@
         <result property="rating"     column="rating"/>
         <result property="content"    column="content"/>
         <result property="createdAt"  column="created_at"/>
+        <result property="reviewBlock" column="review_block"/>
         <result property="nickname"   column="nickname"/>
     </resultMap>
 
     <!-- =============================================
-         怨듯넻 SELECT 而щ읆 Fragment
-         rating_avg / review_count / like_count 紐⑤몢 ?ㅼ떆媛?吏묎퀎
+         공통 SELECT 컬럼 Fragment
+         rating_avg / review_count / like_count 모두 실시간 집계
          ============================================= -->
     <sql id="spotColumns">
         st.spot_idx,
@@ -50,25 +52,28 @@
         st.latitude,
         st.longitude,
         st.description,
-        /* SPOT_REVIEW ?ㅼ떆媛??됯퇏 ?됱젏 */
+        st.spot_active,
+        /* SPOT_REVIEW 실시간 평균 평점 */
         COALESCE((
             SELECT ROUND(AVG(sr.rating), 1)
             FROM   SPOT_REVIEW sr
             WHERE  sr.spot_idx = st.spot_idx
+              AND  COALESCE(sr.review_block, 0) = 0
         ), 0.0) AS rating_avg_real,
-        /* SPOT_REVIEW ?ㅼ떆媛?由щ럭 ??*/
+        /* SPOT_REVIEW 실시간 리뷰 수 */
         (
             SELECT COUNT(*)
             FROM   SPOT_REVIEW sr
             WHERE  sr.spot_idx = st.spot_idx
+              AND  COALESCE(sr.review_block, 0) = 0
         ) AS review_count_real,
-        /* SPOT_LIKE ?ㅼ떆媛?醫뗭븘????*/
+        /* SPOT_LIKE 실시간 좋아요 수 */
         (
             SELECT COUNT(*)
             FROM   SPOT_LIKE sl
             WHERE  sl.spot_idx = st.spot_idx
         ) AS like_count_real,
-        /* ????대?吏 */
+        /* 대표 이미지 */
         (
             SELECT si.image_url
             FROM   SPOT_IMAGE si
@@ -76,7 +81,7 @@
             ORDER  BY si.image_idx ASC
             LIMIT  1
         ) AS thumb_url,
-        /* ?쒓렇 (肄ㅻ쭏 援щ텇) */
+        /* 태그 (콤마 구분) */
         (
             SELECT GROUP_CONCAT(tl.tag_name ORDER BY tl.tag_name SEPARATOR ',')
             FROM   SPOT_TAG      s_tag
@@ -86,7 +91,7 @@
     </sql>
 
     <!-- =============================================
-         ?꾩껜 / 吏??퀎 / ?뚮쭏蹂?紐⑸줉
+         전체 / 지역별 / 테마별 목록
          ============================================= -->
     <select id="selectSpotList" resultMap="SpotResultMap">
         SELECT DISTINCT
@@ -97,6 +102,7 @@
             JOIN SPOT_TAG_LIST tl2    ON tl2.tag_idx     = s_tag2.tag_idx
         </if>
         <where>
+            COALESCE(st.spot_active, 0) = 0
             <if test="keyword != null and keyword != ''">
                 AND (
                     st.name        LIKE CONCAT('%', #{keyword}, '%')
@@ -116,7 +122,7 @@
         OFFSET #{offset}
     </select>
 
-    <!-- ?꾩껜 嫄댁닔 -->
+    <!-- 전체 건수 -->
     <select id="selectTotalCount" resultType="int">
         SELECT COUNT(DISTINCT st.spot_idx)
         FROM SPOT_TRAVEL st
@@ -125,6 +131,7 @@
             JOIN SPOT_TAG_LIST tl2    ON tl2.tag_idx     = s_tag2.tag_idx
         </if>
         <where>
+            COALESCE(st.spot_active, 0) = 0
             <if test="keyword != null and keyword != ''">
                 AND (
                     st.name        LIKE CONCAT('%', #{keyword}, '%')
@@ -142,13 +149,14 @@
     </select>
 
     <!-- =============================================
-         ?됱젏??紐⑸줉 (SPOT_REVIEW.rating AVG DESC)
+         평점순 목록 (SPOT_REVIEW.rating AVG DESC)
          ============================================= -->
     <select id="selectRatingSpotList" resultMap="SpotResultMap">
         SELECT
             <include refid="spotColumns"/>
         FROM SPOT_TRAVEL st
         <where>
+            COALESCE(st.spot_active, 0) = 0
             <if test="keyword != null and keyword != ''">
                 AND (
                     st.name   LIKE CONCAT('%', #{keyword}, '%')
@@ -165,6 +173,7 @@
         SELECT COUNT(*)
         FROM SPOT_TRAVEL st
         <where>
+            COALESCE(st.spot_active, 0) = 0
             <if test="keyword != null and keyword != ''">
                 AND (
                     st.name   LIKE CONCAT('%', #{keyword}, '%')
@@ -175,13 +184,14 @@
     </select>
 
     <!-- =============================================
-         醫뗭븘?붿닚 紐⑸줉 (SPOT_LIKE COUNT DESC)
+         좋아요순 목록 (SPOT_LIKE COUNT DESC)
          ============================================= -->
     <select id="selectLikesSpotList" resultMap="SpotResultMap">
         SELECT
             <include refid="spotColumns"/>
         FROM SPOT_TRAVEL st
         <where>
+            COALESCE(st.spot_active, 0) = 0
             <if test="keyword != null and keyword != ''">
                 AND (
                     st.name   LIKE CONCAT('%', #{keyword}, '%')
@@ -198,6 +208,7 @@
         SELECT COUNT(*)
         FROM SPOT_TRAVEL st
         <where>
+            COALESCE(st.spot_active, 0) = 0
             <if test="keyword != null and keyword != ''">
                 AND (
                     st.name   LIKE CONCAT('%', #{keyword}, '%')
@@ -219,6 +230,7 @@
         JOIN SPOT_FAVORITE sf ON sf.spot_idx = st.spot_idx
                               AND sf.user_idx = #{loginUserIdx}
         <where>
+            COALESCE(st.spot_active, 0) = 0
             <!-- 검색어가 있으면 이름/지역/주소/설명에서 LIKE 검색 -->
             <if test="keyword != null and keyword != ''">
                 AND (
@@ -242,6 +254,7 @@
         JOIN SPOT_FAVORITE sf ON sf.spot_idx = st.spot_idx
                               AND sf.user_idx = #{loginUserIdx}
         <where>
+            COALESCE(st.spot_active, 0) = 0
             <if test="keyword != null and keyword != ''">
                 AND (
                     st.name        LIKE CONCAT('%', #{keyword}, '%')
@@ -254,12 +267,14 @@
 
 
     <!-- =============================================
-         吏??紐⑸줉 / ?쒓렇 紐⑸줉
+         지역 목록 / 태그 목록
          ============================================= -->
     <select id="selectRegionList" resultType="string">
         SELECT DISTINCT region
         FROM   SPOT_TRAVEL
-        WHERE  region IS NOT NULL AND region != ''
+        WHERE  region IS NOT NULL
+          AND  region != ''
+          AND  COALESCE(spot_active, 0) = 0
         ORDER  BY region ASC
     </select>
 
@@ -291,9 +306,12 @@
             st.address    AS address
         FROM SPOT_TRAVEL st
         WHERE
-            st.name    LIKE CONCAT('%', #{keyword}, '%')
-            OR st.region  LIKE CONCAT('%', #{keyword}, '%')
-            OR st.address LIKE CONCAT('%', #{keyword}, '%')
+            COALESCE(st.spot_active, 0) = 0
+            AND (
+                st.name    LIKE CONCAT('%', #{keyword}, '%')
+                OR st.region  LIKE CONCAT('%', #{keyword}, '%')
+                OR st.address LIKE CONCAT('%', #{keyword}, '%')
+            )
         ORDER BY
             /* 이름이 정확히 일치하는 것을 최우선으로, 그 다음 이름에 포함된 것 우선 */
             CASE WHEN st.name = #{keyword} THEN 0
@@ -306,13 +324,14 @@
     </select>
 
     <!-- =============================================
-         ?곸꽭 ?④굔
+         상세 조회
          ============================================= -->
     <select id="selectSpotDetail" resultMap="SpotResultMap">
         SELECT
             <include refid="spotColumns"/>
         FROM SPOT_TRAVEL st
         WHERE st.spot_idx = #{spotIdx}
+          AND COALESCE(st.spot_active, 0) = 0
     </select>
 
     <select id="countBySpotId" resultType="int">
@@ -329,7 +348,8 @@
             address,
             latitude,
             longitude,
-            description
+            description,
+            spot_active
         ) VALUES (
             #{spotId},
             #{name},
@@ -337,15 +357,39 @@
             #{address},
             #{latitude},
             #{longitude},
-            #{description}
+            #{description},
+            0
         )
     </insert>
 
-    <!-- ?ы뻾吏 ????대?吏 ???-->
+    <update id="updateSpot">
+        UPDATE SPOT_TRAVEL
+        SET    name = #{name},
+               region = #{region},
+               address = #{address},
+               latitude = #{latitude},
+               longitude = #{longitude},
+               description = #{description}
+        WHERE  spot_idx = #{spotIdx}
+          AND  COALESCE(spot_active, 0) = 0
+    </update>
+
+    <update id="softDeleteSpot">
+        UPDATE SPOT_TRAVEL
+        SET    spot_active = 1
+        WHERE  spot_idx = #{spotIdx}
+    </update>
+
+    <!-- 여행지 대표 이미지 저장 -->
     <insert id="insertSpotImage">
         INSERT INTO SPOT_IMAGE (spot_idx, image_id, image_url)
         VALUES (#{spotIdx}, #{imageId}, #{imageUrl})
     </insert>
+
+    <delete id="deleteSpotImages">
+        DELETE FROM SPOT_IMAGE
+        WHERE  spot_idx = #{spotIdx}
+    </delete>
 
     <select id="selectTagIdxByName" resultType="int">
         SELECT tag_idx
@@ -359,6 +403,11 @@
         VALUES (#{spotIdx}, #{tagIdx})
     </insert>
 
+    <delete id="deleteSpotTags">
+        DELETE FROM SPOT_TAG
+        WHERE  spot_idx = #{spotIdx}
+    </delete>
+
     <select id="selectSpotTags" resultType="string">
         SELECT tl.tag_name
         FROM   SPOT_TAG      s_tag
@@ -368,7 +417,7 @@
     </select>
 
     <!-- =============================================
-         由щ럭 (SPOT_REVIEW)
+         리뷰 (SPOT_REVIEW)
          ============================================= -->
     <select id="selectReviewList" resultMap="ReviewResultMap">
         SELECT
@@ -379,10 +428,12 @@
             sr.rating,
             sr.content,
             sr.created_at,
+            sr.review_block,
             u.nickname
         FROM   SPOT_REVIEW sr
         JOIN   USERS u ON u.user_idx = sr.user_idx
         WHERE  sr.spot_idx = #{spotIdx}
+          AND  COALESCE(sr.review_block, 0) = 0
         ORDER  BY sr.created_at DESC
     </select>
 
@@ -394,8 +445,8 @@
     </select>
 
     <insert id="insertReview" useGeneratedKeys="true" keyProperty="reviewIdx">
-        INSERT INTO SPOT_REVIEW (spot_idx, user_idx, rating, content, created_at)
-        VALUES (#{spotIdx}, #{userIdx}, #{rating}, #{content}, NOW())
+        INSERT INTO SPOT_REVIEW (spot_idx, user_idx, rating, content, created_at, review_block)
+        VALUES (#{spotIdx}, #{userIdx}, #{rating}, #{content}, NOW(), 0)
     </insert>
 
     <delete id="deleteReview">
@@ -404,8 +455,15 @@
           AND  user_idx   = #{userIdx}
     </delete>
 
+    <update id="blockReview">
+        UPDATE SPOT_REVIEW
+        SET    review_block = 1
+        WHERE  review_idx = #{reviewIdx}
+          AND  spot_idx   = #{spotIdx}
+    </update>
+
     <!-- =============================================
-         李?(SPOT_FAVORITE)
+         찜 (SPOT_FAVORITE)
          ============================================= -->
     <select id="selectFavoriteCount" resultType="int">
         SELECT COUNT(*) FROM SPOT_FAVORITE
@@ -423,7 +481,7 @@
     </delete>
 
     <!-- =============================================
-         醫뗭븘??(SPOT_LIKE)
+         좋아요 (SPOT_LIKE)
          ============================================= -->
     <select id="selectLikeCount" resultType="int">
         SELECT COUNT(*) FROM SPOT_LIKE
@@ -441,4 +499,3 @@
     </delete>
 
 </mapper>
-
