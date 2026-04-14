@@ -448,42 +448,60 @@ async function changeStatus(userIdx, status, el) {
         BLOCKED: '차단 처리',
         DELETED: '탈퇴 처리'
     };
-    if (!confirm(`이 회원을 "\${labels[status]}" 하시겠습니까?`)) return;
+    if (!confirm(`이 회원을 "\${labels[status] || status}" 하시겠습니까?`)) return;
 
-    el.closest('.action-menu').classList.remove('open');
+    const menu = el.closest('.action-menu');
+    if (menu) menu.classList.remove('open');
 
-    const res = await fetch(`${ctx}/admin/members/${userIdx}/status`, {
+    const res = await fetch(`\${ctx}/admin/members/\${userIdx}/status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ status })
     });
-    const data = await res.json();
-    if (data.success) {
-        adm_toast(data.message);
+
+    let data;
+    try {
+        data = await res.json();
+    } catch (e) {
+        adm_toast('회원 상태 변경 응답을 해석하지 못했습니다.', 'error');
+        return;
+    }
+
+    if (res.ok && data.success) {
+        adm_toast(data.message || '상태가 변경되었습니다.');
         setTimeout(() => location.reload(), 800);
     } else {
-        adm_toast(data.message, 'error');
+        adm_toast(data.message || '회원 상태 변경 중 오류가 발생했습니다.', 'error');
     }
 }
 
 /* ── 권한 변경 ── */
 async function changeRole(userIdx, role, el) {
     const labels = { ADMIN: '관리자 권한 부여', USER: '일반 유저로 변경' };
-    if (!confirm(`"\${labels[role]}" 하시겠습니까?`)) return;
+    if (!confirm(`"\${labels[role] || role}" 하시겠습니까?`)) return;
 
-    el.closest('.action-menu').classList.remove('open');
+    const menu = el.closest('.action-menu');
+    if (menu) menu.classList.remove('open');
 
-    const res = await fetch(`${ctx}/admin/members/${userIdx}/role`, {
+    const res = await fetch(`\${ctx}/admin/members/\${userIdx}/role`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ role })
     });
-    const data = await res.json();
-    if (data.success) {
-        adm_toast(data.message);
+
+    let data;
+    try {
+        data = await res.json();
+    } catch (e) {
+        adm_toast('회원 권한 변경 응답을 해석하지 못했습니다.', 'error');
+        return;
+    }
+
+    if (res.ok && data.success) {
+        adm_toast(data.message || '권한이 변경되었습니다.');
         setTimeout(() => location.reload(), 800);
     } else {
-        adm_toast(data.message, 'error');
+        adm_toast(data.message || '회원 권한 변경 중 오류가 발생했습니다.', 'error');
     }
 }
 
@@ -493,7 +511,7 @@ async function openDetail(userIdx) {
     document.getElementById('modalBody').innerHTML =
         '<div style="text-align:center;padding:40px;color:#475569;">불러오는 중... ⏳</div>';
 
-    const res = await fetch(`${ctx}/admin/members/${userIdx}`);
+    const res = await fetch(`\${ctx}/admin/members/\${userIdx}`);
     const data = await res.json();
 
     if (!data.success) {
@@ -505,7 +523,7 @@ async function openDetail(userIdx) {
     const m = data.member || {};
     const h = Array.isArray(data.history) ? data.history : [];
 
-    document.getElementById('modalTitle').textContent = `${m.nickname || '회원'} 님 상세 정보`;
+    document.getElementById('modalTitle').textContent = `\${m.nickname || '회원'} 님 상세 정보`;
 
     document.getElementById('modalBody').innerHTML = `
         <div class="adm-tabs">
