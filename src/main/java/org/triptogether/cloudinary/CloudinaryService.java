@@ -57,6 +57,30 @@ public class CloudinaryService {
         }
     }
 
+    /**
+     * byte[] 이미지를 Cloudinary에 업로드한다. publicId를 지정하면 덮어쓰기(overwrite)된다.
+     *
+     * @param bytes    이미지 바이트 배열
+     * @param folder   Cloudinary 내 저장 폴더
+     * @param publicId 고정 public_id (null이면 자동 생성)
+     * @return Cloudinary secure_url, 실패 시 null
+     */
+    public String uploadImageFromBytes(byte[] bytes, String folder, String publicId) {
+        if (bytes == null || bytes.length == 0) return null;
+        try {
+            Map<String, Object> options = new java.util.HashMap<>();
+            options.put("folder", folder);
+            options.put("overwrite", true);
+            options.put("resource_type", "image");
+            if (publicId != null) options.put("public_id", publicId);
+            Map<?, ?> result = cloudinary.uploader().upload(bytes, options);
+            return (String) result.get("secure_url");
+        } catch (Exception e) {
+            log.error("Cloudinary byte 업로드 실패: {}", e.getMessage());
+            return null;
+        }
+    }
+
     private String getExtension(String filename) {
         if (filename == null || !filename.contains(".")) return "";
         return filename.substring(filename.lastIndexOf("."));
