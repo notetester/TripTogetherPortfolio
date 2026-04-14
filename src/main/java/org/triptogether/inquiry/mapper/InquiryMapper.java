@@ -9,100 +9,90 @@ import org.triptogether.inquiry.vo.InquirySearchDto;
 
 import java.util.List;
 
-/**
- * =============================================
- * InquiryMapper - 문의 게시판 DB 쿼리 인터페이스
- * =============================================
- */
 @Mapper
 public interface InquiryMapper {
 
-    /* =============================================
-       1. 목록 조회
-       - 검색 조건에 맞는 문의 목록 반환
-       - 페이지네이션 포함
-       ============================================= */
+    // ===== 목록 조회 =====
+
+    // 검색 조건에 맞는 문의 목록 조회 (페이지네이션 포함)
     List<InquiryPostDto> selectInquiryList(InquirySearchDto search);
 
-    /* =============================================
-       2. 전체 개수 조회
-       - 페이지네이션 계산에 사용
-       ============================================= */
+    // 검색 조건에 맞는 문의 총 개수 조회 (페이지네이션용)
     int selectTotalCount(InquirySearchDto search);
 
-    /* =============================================
-       3. 문의 상세 조회
-       - inquiryId로 단건 문의 조회
-       ============================================= */
+    // ===== 단건 조회 =====
+
+    // 문의 하나 조회
     InquiryPostDto selectInquiry(@Param("inquiryId") Long inquiryId);
 
-    /* =============================================
-       4. 답변 조회
-       - 해당 문의에 달린 운영진 답변 조회
-       - 답변이 없으면 null 반환
-       ============================================= */
+    // 해당 문의에 달린 답변 조회 (답변 없으면 null)
     InquiryAnswerDto selectAnswer(@Param("inquiryId") Long inquiryId);
 
-    /* =============================================
-       5. 조회수 증가
-       - 상세 페이지 진입 시 호출
-       ============================================= */
+    // ===== 조회수 증가 =====
+
+    // 조회수 1 올림
     void updateViewCount(@Param("inquiryId") Long inquiryId);
 
-    /* =============================================
-       6. 문의 등록
-       - 새 문의를 DB에 저장
-       ============================================= */
+    // ===== 문의 등록 =====
+
+    // 문의 INSERT (useGeneratedKeys → inquiry.inquiryId에 자동 주입됨)
     void insertInquiry(InquiryPostDto inquiry);
 
-    /* =============================================
-       7. 답변 등록
-       - 운영진이 문의에 답변을 저장
-       - 답변 등록 시 문의 status → COMPLETED 로 변경 필요
-         (Service에서 updateStatus 함께 호출)
-       ============================================= */
+    // ===== 문의 수정 =====
+
+    // 문의 수정 (제목/내용/카테고리/공개여부)
+    void updateInquiry(InquiryPostDto inquiry);
+
+    // ===== 문의 삭제 =====
+
+    // 문의 삭제
+    void deleteInquiry(@Param("inquiryId") Long inquiryId);
+
+    // ===== 답변 등록 =====
+
+    // 답변 INSERT
     void insertAnswer(InquiryAnswerDto answer);
 
-    /* =============================================
-       8. 문의 상태 변경
-       - status 값: PENDING(대기중) / IN_PROGRESS(처리중) / COMPLETED(완료)
-       - 답변 등록 시 COMPLETED로 변경하는 데 사용
-       ============================================= */
+    // ===== 답변 수정 =====
+
+    // 답변 내용 수정
+    void updateAnswer(InquiryAnswerDto answer);
+
+    // ===== 답변 삭제 =====
+
+    // 답변 삭제
+    void deleteAnswer(@Param("inquiryId") Long inquiryId);
+
+    // ===== 상태 변경 =====
+
+    // 문의 상태 변경 (status: PENDING / IN_PROGRESS / COMPLETED)
     void updateStatus(@Param("inquiryId") Long inquiryId,
                       @Param("status") String status);
 
-    /* =============================================
-       9. 문의 수정
-       - 제목, 내용, 카테고리, 공개여부 수정
-       - PENDING 상태일 때만 가능 (Controller에서 체크)
-       ============================================= */
-    void updateInquiry(InquiryPostDto inquiry);
-
-    /* =============================================
-       10. 문의 삭제
-       - PENDING 상태일 때만 가능 (Controller에서 체크)
-       ============================================= */
-    void deleteInquiry(@Param("inquiryId") Long inquiryId);
-
-    // ===== 상태 변경 (시간 기록 포함) =====
+    // 문의 상태 변경 (처리 시각도 함께 기록)
     void updateStatusWithTime(@Param("inquiryId") Long inquiryId,
                               @Param("status") String status);
 
     // ===== 공개여부 변경 =====
+
+    // 문의 공개여부 변경 (isPrivate: 1=비공개 / 0=공개)
     void updateIsPrivate(@Param("inquiryId") Long inquiryId,
                          @Param("isPrivate") int isPrivate);
 
-    // ===== 답변 수정 =====
-    void updateAnswer(InquiryAnswerDto answer);
-
-    // ===== 답변 삭제 =====
-    void deleteAnswer(@Param("inquiryId") Long inquiryId);
-
     // ===== 첨부파일 =====
+
+    // 첨부파일 INSERT
     void insertAttachment(InquiryAttachmentDto attachment);
+
+    // 첨부파일 목록 조회
     List<InquiryAttachmentDto> selectAttachmentList(@Param("inquiryId") Long inquiryId);
+
+    // 첨부파일 삭제
     void deleteAttachment(@Param("attachmentId") Long attachmentId);
 
     // ===== 도배 방지 =====
+
+    // 최근 N분 내 해당 유저의 문의 작성 수 조회
     int countRecentInquiriesByUser(@Param("userIdx") Long userIdx, @Param("minutes") int minutes);
+
 }

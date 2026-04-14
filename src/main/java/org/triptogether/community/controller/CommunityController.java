@@ -40,6 +40,15 @@ public class CommunityController {
        GET /community/list - 커뮤니티 목록
        파라미터: region, type, sort, page
        ============================================= */
+    /* =============================================
+       GET /community/api/popular - 오늘 인기글 JSON (홈 페이지 AJAX용)
+       ============================================= */
+    @GetMapping("/api/popular")
+    @ResponseBody
+    public ResponseEntity<List<CommunityPostDto>> getPopularPosts() {
+        return ResponseEntity.ok(communityService.getTodayPopularList());
+    }
+
     @GetMapping("/list")
     public String list(@RequestParam(defaultValue = "all")    String region,
                        @RequestParam(defaultValue = "all")    String type,

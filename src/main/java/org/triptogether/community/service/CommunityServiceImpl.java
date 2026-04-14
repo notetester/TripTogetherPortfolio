@@ -27,16 +27,19 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 목록 =====
 
+    // 검색 조건에 맞는 게시글 목록 가져옴
     @Override
     public List<CommunityPostDto> getPostList(CommunitySearchDto search) {
         return communityMapper.selectPostList(search);
     }
 
+    // 검색 조건에 맞는 게시글 총 개수 가져옴 (페이지네이션용)
     @Override
     public int getTotalCount(CommunitySearchDto search) {
         return communityMapper.selectTotalCount(search);
     }
 
+    // 총 페이지 수 계산함 (올림 처리)
     @Override
     public int getTotalPage(CommunitySearchDto search) {
         int totalCount = communityMapper.selectTotalCount(search);
@@ -45,63 +48,75 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 상세 =====
 
+    // 게시글 하나 가져옴
     @Override
     public CommunityPostDto getPost(Long postId) {
         return communityMapper.selectPost(postId);
     }
 
+    // 게시글에 첨부된 이미지 목록 가져옴
     @Override
     public List<CommunityPostImageDto> getImageList(Long postId) {
         return communityMapper.selectImageList(postId);
     }
 
+    // 게시글에 달린 태그 목록 가져옴
     @Override
     public List<String> getTagList(Long postId) {
         return communityMapper.selectTagList(postId);
     }
 
+    // 댓글 목록 가져옴 (기본 정렬: 최신순)
     @Override
     public List<CommunityCommentDto> getCommentList(Long postId) {
         return communityMapper.selectCommentList(postId, "created");
     }
 
+    // 댓글 목록 가져옴 (sort: created=최신순 / likes=좋아요순)
     @Override
     public List<CommunityCommentDto> getCommentList(Long postId, String sort) {
         return communityMapper.selectCommentList(postId, sort);
     }
 
+    // 댓글 하나 가져옴 (대댓글 알림 발송할 때 부모 댓글 조회에 씀)
     @Override
     public CommunityCommentDto getComment(Long commentId) {
         return communityMapper.selectComment(commentId);
     }
 
+    // 팁 카테고리 가져옴 (tip 유형 게시글 전용)
     @Override
     public String getTipCategory(Long postId) {
         return communityMapper.selectTipCategory(postId);
     }
 
+    // 질문 해결 여부 가져옴 (1이면 해결, 나머지는 미해결)
     @Override
     public boolean isSolved(Long postId) {
         Integer result = communityMapper.selectIsSolved(postId);
         return result != null && result == 1;
     }
 
+    // 같은 태그 기반 추천 게시글 목록 가져옴
     @Override
     public List<CommunityPostDto> getRelatedList(Long postId) {
         return communityMapper.selectRelatedList(postId);
     }
 
+    // 최신 게시글 목록 가져옴 (이미 보여준 게시글 ID는 excludeIds로 제외)
     @Override
     public List<CommunityPostDto> getLatestList(List<Long> excludeIds, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
         return communityMapper.selectLatestList(excludeIds, pageSize, offset);
     }
 
+    // 최신 게시글 총 개수 가져옴
     @Override
     public int getLatestTotalCount(List<Long> excludeIds) {
         return communityMapper.selectLatestTotalCount(excludeIds);
     }
 
+    // 최신 게시글 총 페이지 수 계산함
     @Override
     public int getLatestTotalPage(List<Long> excludeIds, int pageSize) {
         int total = communityMapper.selectLatestTotalCount(excludeIds);
@@ -110,6 +125,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 조회수 =====
 
+    // 조회수 1 올림
     @Override
     public void increaseViewCount(Long postId) {
         communityMapper.updateViewCount(postId);
@@ -117,6 +133,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 글쓰기 =====
 
+    // 게시글 작성함. 도배 방지 → 저장 → 이미지 → 태그 순으로 처리함. 생성된 postId 반환
     @Override
     @Transactional
     public Long writePost(CommunityWriteDto writeDto, Long userIdx) {
@@ -184,6 +201,8 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     // ===== 수정 =====
+
+    // 게시글 수정함. 이미지/태그는 전부 지우고 다시 등록함
     @Override
     @Transactional
     public void editPost(Long postId, CommunityWriteDto writeDto,
@@ -248,36 +267,24 @@ public class CommunityServiceImpl implements CommunityService {
         updateTagRelation(postId);
     }
 
-
     // ===== 삭제 =====
 
+    // 게시글 삭제함. 실제 삭제가 아니라 status를 'DELETED'로 바꿈 (소프트 딜리트)
     @Override
     @Transactional
     public void deletePost(Long postId) {
-        // post_status = 'DELETED' 로 변경 (실제 삭제 X)
         communityMapper.updatePostStatus(postId, "DELETED");
-    }
-
-    // ===== 태그 공출현 =====
-    @Override
-    public void updateTagRelation(Long postId) {
-        List<Long> tagIds = communityMapper.selectTagIdList(postId);
-        if (tagIds == null || tagIds.size() < 2) return;
-        // 태그 쌍마다 공출현 횟수 +1
-        for (int i = 0; i < tagIds.size(); i++) {
-            for (int j = i + 1; j < tagIds.size(); j++) {
-                communityMapper.upsertTagRelation(tagIds.get(i), tagIds.get(j));
-            }
-        }
     }
 
     // ===== 좋아요 =====
 
+    // 해당 유저가 이 게시글에 좋아요 눌렀는지 확인함
     @Override
     public boolean isLiked(Long postId, Long userIdx) {
         return communityMapper.selectLikeCount(postId, userIdx) > 0;
     }
 
+    // 좋아요 토글함. 눌렀으면 취소, 안 눌렀으면 추가. true면 좋아요 추가된 상태
     @Override
     @Transactional
     public boolean toggleLike(Long postId, Long userIdx) {
@@ -304,6 +311,7 @@ public class CommunityServiceImpl implements CommunityService {
         }
     }
 
+    // 게시글 좋아요 수 가져옴
     @Override
     public int getLikeCount(Long postId) {
         return communityMapper.selectPostLikeCount(postId);
@@ -311,6 +319,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 댓글 =====
 
+    // 댓글 작성함. 도배 방지 체크 후 저장함. 생성된 commentId 반환
     @Override
     @Transactional
     public Long addComment(Long postId, Long userIdx, String content) {
@@ -337,6 +346,8 @@ public class CommunityServiceImpl implements CommunityService {
         }
         return dto.getCommentId();
     }
+
+    // 댓글 삭제함. 소프트 딜리트 + 댓글 수 캐시 감소
     @Override
     @Transactional
     public void deleteComment(Long commentId) {
@@ -349,6 +360,8 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     // ===== 대댓글 =====
+
+    // 대댓글 작성함. 도배 방지 체크 후 저장함. 생성된 commentId 반환
     @Override
     @Transactional
     public Long addReply(Long postId, Long userIdx, String content, Long parentCommentId) {
@@ -375,11 +388,11 @@ public class CommunityServiceImpl implements CommunityService {
             myPageService.addNotification(notification);
         }
 
-        // 대댓글 알람: 부모 댓글 작성자에게 알림 생성
+        // 부모 댓글 작성자에게 알림 생성 (글 작성자와 중복이면 제외)
         CommunityCommentDto parentComment = communityMapper.selectComment(parentCommentId);
         if (parentComment != null && !parentComment.getUserIdx().equals(userIdx)) {
-            // 부모 댓글 작성자 != 글 작성자인 경우에만 알림 (중복 제거)
-            if (!parentComment.getUserIdx().equals(post.getUserIdx())) {
+            // 부모 댓글 작성자 != 글 작성자인 경우에만 알림 (중복 방지)
+            if (post == null || !parentComment.getUserIdx().equals(post.getUserIdx())) {
                 FeedNotificationDto notification = new FeedNotificationDto();
                 notification.setUserIdx(parentComment.getUserIdx());
                 notification.setSourceType("community");
@@ -391,24 +404,15 @@ public class CommunityServiceImpl implements CommunityService {
         return dto.getCommentId();
     }
 
-    // ===== 질문 채택 =====
-    @Override
-    @Transactional
-    public void acceptComment(Long postId, Long commentId) {
-        communityMapper.acceptComment(postId, commentId);
-    }
-
-    @Override
-    public Long getAcceptedCommentId(Long postId) {
-        return communityMapper.selectAcceptedCommentId(postId);
-    }
-
     // ===== 댓글 좋아요 =====
+
+    // 해당 유저가 이 댓글에 좋아요 눌렀는지 확인함
     @Override
     public boolean isCommentLiked(Long commentId, Long userIdx) {
         return communityMapper.selectCommentLikeCount(commentId, userIdx) > 0;
     }
 
+    // 댓글 좋아요 토글함
     @Override
     @Transactional
     public boolean toggleCommentLike(Long commentId, Long userIdx) {
@@ -423,13 +427,45 @@ public class CommunityServiceImpl implements CommunityService {
         }
     }
 
+    // 댓글 좋아요 수 가져옴
     @Override
     public int getCommentLikeCount(Long commentId) {
         return communityMapper.selectCommentLikeCountById(commentId);
     }
 
+    // ===== 질문 채택 =====
+
+    // 질문 게시글에서 특정 댓글을 채택된 답변으로 표시함
+    @Override
+    @Transactional
+    public void acceptComment(Long postId, Long commentId) {
+        communityMapper.acceptComment(postId, commentId);
+    }
+
+    // 채택된 댓글 ID 가져옴
+    @Override
+    public Long getAcceptedCommentId(Long postId) {
+        return communityMapper.selectAcceptedCommentId(postId);
+    }
+
+    // ===== 태그 공출현 =====
+
+    // 이 게시글의 태그들 간 공출현 관계를 업데이트함 (태그 추천 기능용)
+    @Override
+    public void updateTagRelation(Long postId) {
+        List<Long> tagIds = communityMapper.selectTagIdList(postId);
+        if (tagIds == null || tagIds.size() < 2) return;
+        // 태그 쌍마다 공출현 횟수 +1
+        for (int i = 0; i < tagIds.size(); i++) {
+            for (int j = i + 1; j < tagIds.size(); j++) {
+                communityMapper.upsertTagRelation(tagIds.get(i), tagIds.get(j));
+            }
+        }
+    }
+
     // ===== 신고 =====
 
+    // 게시글 신고 횟수 캐시 업데이트함. 3회 이상이면 자동 차단함
     @Override
     public void updatePostReportCache(Long postId) {
         communityMapper.increasePostReportCount(postId);
@@ -437,6 +473,7 @@ public class CommunityServiceImpl implements CommunityService {
         if (reportCount >= 3) communityMapper.blockPost(postId);
     }
 
+    // 댓글 신고 횟수 캐시 업데이트함. 3회 이상이면 자동 차단함
     @Override
     public void updateCommentReportCache(Long commentId) {
         communityMapper.increaseCommentReportCount(commentId);
@@ -444,18 +481,133 @@ public class CommunityServiceImpl implements CommunityService {
         if (reportCount >= 3) communityMapper.blockComment(commentId);
     }
 
+    // 게시글 신고 횟수 가져옴
     @Override
     public int getPostReportCount(Long postId) {
         return communityMapper.selectPostReportCount(postId);
     }
 
+    // 댓글 신고 횟수 가져옴
     @Override
     public int getCommentReportCount(Long commentId) {
         return communityMapper.selectCommentReportCount(commentId);
     }
 
-    // ===== Pixabay 자동추천 이미지 배정 =====
+    // ===== 차단 (어드민) =====
 
+    // 유저 차단함 (account_status = 'BLOCKED')
+    @Override
+    public void blockUser(Long userIdx) {
+        communityMapper.blockUser(userIdx);
+    }
+
+    // 유저 차단 해제함 (account_status = 'ACTIVE')
+    @Override
+    public void unblockUser(Long userIdx) {
+        communityMapper.unblockUser(userIdx);
+    }
+
+    // 게시글 차단함 (post_status = 'BLOCKED')
+    @Override
+    public void blockPost(Long postId) {
+        communityMapper.blockPost(postId);
+    }
+
+    // 게시글 차단 해제함
+    @Override
+    public void unblockPost(Long postId) {
+        communityMapper.unblockPost(postId);
+    }
+
+    // 댓글/대댓글 차단함 (comment_status = 'BLOCKED')
+    @Override
+    public void blockComment(Long commentId) {
+        communityMapper.blockComment(commentId);
+    }
+
+    // 댓글/대댓글 차단 해제함
+    @Override
+    public void unblockComment(Long commentId) {
+        communityMapper.unblockComment(commentId);
+    }
+
+    // ===== IP 저장 =====
+
+    // 게시글 작성 시 IP 저장함
+    @Override
+    public void savePostIp(Long postId, String ipAddress) {
+        if (ipAddress != null) communityMapper.updatePostIp(postId, ipAddress);
+    }
+
+    // 댓글/대댓글 작성 시 IP 저장함
+    @Override
+    public void saveCommentIp(Long commentId, String ipAddress) {
+        if (ipAddress != null) communityMapper.updateCommentIp(commentId, ipAddress);
+    }
+
+    // ===== 일괄 처리 (게시글) =====
+
+    // 여러 게시글 한번에 삭제함 (소프트 딜리트)
+    @Override
+    @Transactional
+    public void bulkDeletePosts(List<Long> postIds) {
+        if (postIds == null || postIds.isEmpty()) return;
+        communityMapper.bulkDeletePosts(postIds);
+    }
+
+    // 여러 게시글 작성자 한번에 차단함
+    @Override
+    @Transactional
+    public void bulkBlockUsersByPosts(List<Long> postIds) {
+        if (postIds == null || postIds.isEmpty()) return;
+        List<Long> userIdxes = communityMapper.selectUserIdxsByPostIds(postIds);
+        if (!userIdxes.isEmpty()) communityMapper.bulkBlockUsers(userIdxes);
+    }
+
+    // 여러 게시글의 IP 목록 가져옴
+    @Override
+    public List<String> getIpsByPostIds(List<Long> postIds) {
+        if (postIds == null || postIds.isEmpty()) return List.of();
+        return communityMapper.selectIpsByPostIds(postIds);
+    }
+
+    // ===== 일괄 처리 (댓글/대댓글) =====
+
+    // 여러 댓글 한번에 삭제함 (소프트 딜리트)
+    @Override
+    @Transactional
+    public void bulkDeleteComments(List<Long> commentIds) {
+        if (commentIds == null || commentIds.isEmpty()) return;
+        communityMapper.bulkDeleteComments(commentIds);
+    }
+
+    // 여러 댓글 작성자 한번에 차단함
+    @Override
+    @Transactional
+    public void bulkBlockUsersByComments(List<Long> commentIds) {
+        if (commentIds == null || commentIds.isEmpty()) return;
+        List<Long> userIdxes = communityMapper.selectUserIdxsByCommentIds(commentIds);
+        if (!userIdxes.isEmpty()) communityMapper.bulkBlockUsers(userIdxes);
+    }
+
+    // 여러 댓글의 IP 목록 가져옴
+    @Override
+    public List<String> getIpsByCommentIds(List<Long> commentIds) {
+        if (commentIds == null || commentIds.isEmpty()) return List.of();
+        return communityMapper.selectIpsByCommentIds(commentIds);
+    }
+
+    // ===== 오늘 인기 게시글 =====
+
+    // 오늘 작성된 게시글 중 좋아요 순 상위 목록 가져옴
+    @Override
+    public List<CommunityPostDto> getTodayPopularList() {
+        return communityMapper.selectTodayPopularList();
+    }
+
+    // ===== private 유틸 =====
+
+    // Pixabay 자동추천 이미지 배정함 (이미지 없는 게시글에 지역별 기본 이미지 넣어줌)
     private void assignAutoImage(Long postId, String region) {
         try {
             String imageUrl = communityImageScheduler.getRandomImage(region);
@@ -467,92 +619,9 @@ public class CommunityServiceImpl implements CommunityService {
         }
     }
 
-    // ===== 파일 저장 유틸 =====
-
+    // 이미지 파일 Cloudinary에 업로드하고 URL 반환함
     private String saveFile(MultipartFile file) {
         return cloudinaryService.uploadImage(file, "community");
     }
 
-    @Override
-    public List<CommunityPostDto> getPopularPostList() {
-        return communityMapper.selectPopularPostList();
-    }
-
-    @Override
-    public List<CommunityPostDto> getTodayPopularList() {
-        return communityMapper.selectTodayPopularList();
-    }
-
-    @Override
-    public void blockUser(Long userIdx) {
-        communityMapper.blockUser(userIdx);
-    }
-
-    @Override
-    public void unblockUser(Long userIdx) {
-        communityMapper.unblockUser(userIdx);
-    }
-
-    @Override public void blockPost(Long postId) { communityMapper.blockPost(postId); }
-    @Override public void unblockPost(Long postId) { communityMapper.unblockPost(postId); }
-    @Override public void blockComment(Long commentId) { communityMapper.blockComment(commentId); }
-    @Override public void unblockComment(Long commentId) { communityMapper.unblockComment(commentId); }
-
-    // ===== IP 저장 =====
-
-    @Override
-    public void savePostIp(Long postId, String ipAddress) {
-        if (ipAddress != null) communityMapper.updatePostIp(postId, ipAddress);
-    }
-
-    @Override
-    public void saveCommentIp(Long commentId, String ipAddress) {
-        if (ipAddress != null) communityMapper.updateCommentIp(commentId, ipAddress);
-    }
-
-    // ===== 일괄 처리 (게시글) =====
-
-    @Override
-    @Transactional
-    public void bulkDeletePosts(List<Long> postIds) {
-        if (postIds == null || postIds.isEmpty()) return;
-        communityMapper.bulkDeletePosts(postIds);
-    }
-
-    @Override
-    @Transactional
-    public void bulkBlockUsersByPosts(List<Long> postIds) {
-        if (postIds == null || postIds.isEmpty()) return;
-        List<Long> userIdxes = communityMapper.selectUserIdxsByPostIds(postIds);
-        if (!userIdxes.isEmpty()) communityMapper.bulkBlockUsers(userIdxes);
-    }
-
-    @Override
-    public List<String> getIpsByPostIds(List<Long> postIds) {
-        if (postIds == null || postIds.isEmpty()) return List.of();
-        return communityMapper.selectIpsByPostIds(postIds);
-    }
-
-    // ===== 일괄 처리 (댓글/대댓글) =====
-
-    @Override
-    @Transactional
-    public void bulkDeleteComments(List<Long> commentIds) {
-        if (commentIds == null || commentIds.isEmpty()) return;
-        communityMapper.bulkDeleteComments(commentIds);
-    }
-
-    @Override
-    @Transactional
-    public void bulkBlockUsersByComments(List<Long> commentIds) {
-        if (commentIds == null || commentIds.isEmpty()) return;
-        List<Long> userIdxes = communityMapper.selectUserIdxsByCommentIds(commentIds);
-        if (!userIdxes.isEmpty()) communityMapper.bulkBlockUsers(userIdxes);
-    }
-
-    @Override
-    public List<String> getIpsByCommentIds(List<Long> commentIds) {
-        if (commentIds == null || commentIds.isEmpty()) return List.of();
-        return communityMapper.selectIpsByCommentIds(commentIds);
-    }
 }

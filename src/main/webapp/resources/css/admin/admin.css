@@ -373,8 +373,9 @@ body {
     padding: 2px 8px; border-radius: 4px;
     font-size: 10px; font-weight: 700;
 }
-.role-badge.ADMIN { background: rgba(139,92,246,.2); color: #a78bfa; }
-.role-badge.USER  { background: rgba(100,116,139,.12); color: #94a3b8; }
+.role-badge.ADMIN  { background: rgba(139,92,246,.2); color: #a78bfa; }
+.role-badge.USER   { background: rgba(100,116,139,.12); color: #94a3b8; }
+.role-badge.SYSTEM { background: rgba(234,179,8,.2); color: #ca8a04; }
 
 /* ── 소셜 연동 아이콘 ── */
 .social-icons { display: flex; gap: 4px; }

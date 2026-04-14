@@ -430,29 +430,6 @@
         LIMIT 10
     </select>
 
-    <!-- 홈 화면 커뮤니티 인기 글 (좋아요 순 상위 3개) -->
-    <select id="selectPopularPostList" resultMap="PostResultMap">
-        SELECT
-            cp.post_id,
-            cp.user_idx,
-            u.nickname,
-            cp.title,
-            cp.created_at,
-            cp.post_type,
-            cp.like_count,
-            cp.comment_count,
-            cp.report_count,
-            u.account_status,
-            cpi.image_url AS thumb_url
-        FROM COMMUNITY_POST cp
-        LEFT JOIN USERS u ON cp.user_idx = u.user_idx
-        LEFT JOIN COMMUNITY_POST_IMAGE cpi
-            ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
-        WHERE cp.post_status IN ('ACTIVE', 'BLOCKED')
-        ORDER BY cp.like_count DESC, cp.created_at DESC
-        LIMIT 3
-    </select>
-
     <!-- =============================================
          도배 방지: 최근 N분 내 작성 수 조회
          ============================================= -->
