@@ -442,7 +442,12 @@ function toggleMenu(btn) {
 
 /* ── 상태 변경 ── */
 async function changeStatus(userIdx, status, el) {
-    const labels = { ACTIVE: '활성화', DORMANT: '휴면 처리', DELETED: '탈퇴 처리' };
+    const labels = {
+        ACTIVE: '활성화',
+        DORMANT: '휴면 처리',
+        BLOCKED: '차단 처리',
+        DELETED: '탈퇴 처리'
+    };
     if (!confirm(`이 회원을 "\${labels[status]}" 하시겠습니까?`)) return;
 
     el.closest('.action-menu').classList.remove('open');

@@ -19,6 +19,12 @@ public interface AdminService {
     Long getCommentAuthorIdx(Long commentId);
 
     Map<String, Object> getInquiryList(AdminInquirySearchVO search);
+    AdminInquiryVO getInquiryDetail(Long inquiryId);
+    AdminInquiryStatsVO getInquiryStats();
+    void saveInquiryAnswer(Long inquiryId, Long adminUserIdx, String content);
+    void deleteInquiryAnswer(Long inquiryId);
+    void updateInquiryStatus(Long inquiryId, String status);
+    void deleteInquiry(Long inquiryId);
     Map<String, Object> getLoginAuditList(AdminLoginAuditSearchVO search);
     Map<String, Object> getSecurityAuditList(AdminSecurityAuditSearchVO search);
     Map<String, Object> getEmailVerificationRequestList(AdminEmailVerificationRequestSearchVO search);

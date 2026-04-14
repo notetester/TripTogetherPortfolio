@@ -24,6 +24,8 @@
         <result property="updatedAt"         column="updated_at"/>
         <result property="resolverIdx"       column="resolver_idx"/>
         <result property="nickname"          column="nickname"/>
+        <result property="userId"            column="user_id"/>
+        <result property="accountStatus"     column="account_status"/>
         <result property="targetReportCount" column="target_report_count"/>
         <result property="resolveAction"     column="resolve_action"/>
         <result property="sourceType"        column="source_type"/>
@@ -43,6 +45,12 @@
             </if>
             <if test="userIdx != null">
                 AND r.user_idx = #{userIdx}
+            </if>
+            <if test="reason != null and reason != ''">
+                AND r.reason = #{reason}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
             </if>
         </where>
     </sql>
@@ -69,6 +77,8 @@
             r.source_type,
             r.source_id,
             u.nickname,
+            u.user_id,
+            u.account_status,
             (
                 SELECT COUNT(*)
                 FROM REPORT r2
@@ -80,6 +90,18 @@
         <include refid="searchWhere"/>
         ORDER BY r.created_at DESC
         LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- =============================================
+         통계 조회 (어드민)
+         ============================================= -->
+    <select id="selectReportStats" resultType="org.triptogether.report.vo.ReportStatsDto">
+        SELECT
+            COUNT(*)                                                                          AS totalReports,
+            IFNULL(SUM(CASE WHEN status = 'IN_REVIEW'  THEN 1 ELSE 0 END), 0)                AS inReviewReports,
+            IFNULL(SUM(CASE WHEN status = 'RESOLVED'   THEN 1 ELSE 0 END), 0)                AS resolvedReports,
+            IFNULL(SUM(CASE WHEN status = 'DISMISSED'  THEN 1 ELSE 0 END), 0)                AS dismissedReports
+        FROM REPORT
     </select>
 
     <!-- =============================================
@@ -110,7 +132,9 @@
             r.resolve_action,
             r.source_type,
             r.source_id,
-            u.nickname
+            u.nickname,
+            u.user_id,
+            u.account_status
         FROM REPORT r
         LEFT JOIN USERS u ON r.user_idx = u.user_idx
         WHERE r.report_id = #{reportId}

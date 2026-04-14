@@ -26,8 +26,7 @@
   <div class="rpt-detail-inner">
 
     <%-- 뒤로가기 버튼 --%>
-    <button class="rpt-back-btn"
-            onclick="location.href='${pageContext.request.contextPath}/report/list'">
+    <button class="rpt-back-btn" onclick="goBackToList()">
       &#8592; 목록으로
     </button>
 
@@ -389,8 +388,7 @@
          5. 하단 액션 버튼
          ============================================= --%>
     <div class="rpt-detail-actions">
-      <button class="rpt-btn-cancel"
-              onclick="location.href='${pageContext.request.contextPath}/report/list'">
+      <button class="rpt-btn-cancel" onclick="goBackToList()">
         목록으로
       </button>
 
@@ -422,6 +420,16 @@
 <%-- =============================================
      스크립트 (관리자 패널 액션)
      ============================================= --%>
+<script>
+var ctx = '${pageContext.request.contextPath}';
+function goBackToList() {
+    var params = new URLSearchParams(window.location.search);
+    var page       = params.get('page')       || '1';
+    var targetType = params.get('targetType') || '';
+    location.href = ctx + '/report/list?page=' + page + (targetType ? '&targetType=' + encodeURIComponent(targetType) : '');
+}
+</script>
+
 <c:if test="${isAdmin}">
 <script>
 (function () {

@@ -31,8 +31,7 @@
   <div class="inq-detail-inner">
 
     <%-- 뒤로가기 버튼 --%>
-    <button class="inq-back-btn"
-            onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
+    <button class="inq-back-btn" onclick="goBackToList()">
       &#8592; 목록으로
     </button>
 
@@ -298,8 +297,7 @@
          ============================================= --%>
     <div class="inq-detail-actions">
       <%-- 목록으로 버튼 --%>
-      <button class="inq-btn-cancel"
-              onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
+      <button class="inq-btn-cancel" onclick="goBackToList()">
         목록으로
       </button>
 
@@ -357,6 +355,21 @@
 <%-- =============================================
      6. 스크립트
      ============================================= --%>
+
+<script>
+var ctx = '${pageContext.request.contextPath}';
+function goBackToList() {
+    var params   = new URLSearchParams(window.location.search);
+    var page     = params.get('page')     || '1';
+    var category = params.get('category') || '';
+    var status   = params.get('status')   || '';
+    var keyword  = params.get('keyword')  || '';
+    location.href = ctx + '/inquiry/list?page=' + page
+        + (category ? '&category=' + encodeURIComponent(category) : '')
+        + (status   ? '&status='   + encodeURIComponent(status)   : '')
+        + (keyword  ? '&keyword='  + encodeURIComponent(keyword)  : '');
+}
+</script>
 
 <script>
 (function () {

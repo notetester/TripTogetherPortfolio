@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminCommunityMapper">
+
+    <!-- ══════════════════════════════════════════
+         ResultMap
+    ══════════════════════════════════════════ -->
+
+    <resultMap id="postRM" type="org.triptogether.admin.vo.AdminCommunityPostVO">
+        <id     property="postId"               column="post_id"/>
+        <result property="userIdx"              column="user_idx"/>
+        <result property="userId"               column="user_id"/>
+        <result property="nickname"             column="nickname"/>
+        <result property="accountStatus"        column="account_status"/>
+        <result property="lastIp"               column="last_ip"/>
+        <result property="title"                column="title"/>
+        <result property="content"              column="content"/>
+        <result property="postType"             column="post_type"/>
+        <result property="region"               column="region"/>
+        <result property="postStatus"           column="post_status"/>
+        <result property="viewCount"            column="view_count"/>
+        <result property="likeCount"            column="like_count"/>
+        <result property="commentCount"         column="comment_count"/>
+        <result property="reportCount"          column="report_count"/>
+        <result property="createdAt"            column="created_at"/>
+        <result property="updatedAt"            column="updated_at"/>
+        <result property="thumbUrl"             column="thumb_url"/>
+        <result property="tipCategory"          column="tip_category"/>
+        <result property="authorResolveCount30d" column="author_resolve_count_30d"/>
+    </resultMap>
+
+    <resultMap id="commentRM" type="org.triptogether.admin.vo.AdminCommunityCommentVO">
+        <id     property="commentId"            column="comment_id"/>
+        <result property="postId"               column="post_id"/>
+        <result property="postTitle"            column="post_title"/>
+        <result property="userIdx"              column="user_idx"/>
+        <result property="userId"               column="user_id"/>
+        <result property="nickname"             column="nickname"/>
+        <result property="accountStatus"        column="account_status"/>
+        <result property="lastIp"               column="last_ip"/>
+        <result property="content"              column="content"/>
+        <result property="commentStatus"        column="comment_status"/>
+        <result property="likeCount"            column="like_count"/>
+        <result property="reportCount"          column="report_count"/>
+        <result property="createdAt"            column="created_at"/>
+        <result property="updatedAt"            column="updated_at"/>
+        <result property="parentCommentId"      column="parent_comment_id"/>
+        <result property="authorResolveCount30d" column="author_resolve_count_30d"/>
+    </resultMap>
+
+    <resultMap id="reportRM" type="org.triptogether.admin.vo.AdminCommunityReportVO">
+        <id     property="reportId"             column="report_id"/>
+        <result property="reporterIdx"          column="reporter_idx"/>
+        <result property="reporterUserId"       column="reporter_user_id"/>
+        <result property="reporterNickname"     column="reporter_nickname"/>
+        <result property="reason"               column="reason"/>
+        <result property="status"               column="status"/>
+        <result property="createdAt"            column="created_at"/>
+        <result property="resolvedAt"           column="resolved_at"/>
+        <result property="resolveAction"        column="resolve_action"/>
+    </resultMap>
+
+    <!-- ══════════════════════════════════════════
+         대시보드 통계
+    ══════════════════════════════════════════ -->
+
+    <select id="getStats" resultType="org.triptogether.admin.vo.AdminCommunityStatsVO">
+        SELECT
+            (SELECT COUNT(*) FROM COMMUNITY_POST)                                                          AS totalPosts,
+            (SELECT COUNT(*) FROM COMMUNITY_POST WHERE post_status = 'ACTIVE')                             AS activePosts,
+            (SELECT COUNT(*) FROM COMMUNITY_POST WHERE post_status = 'BLOCKED')                            AS blockedPosts,
+            (SELECT COUNT(*) FROM COMMUNITY_POST WHERE post_status = 'DELETED')                            AS deletedPosts,
+            (SELECT COUNT(*) FROM COMMUNITY_COMMENT)                                                       AS totalComments,
+            (SELECT COUNT(*) FROM COMMUNITY_COMMENT WHERE comment_status = 'ACTIVE')                       AS activeComments,
+            (SELECT COUNT(*) FROM COMMUNITY_COMMENT WHERE comment_status = 'BLOCKED')                      AS blockedComments,
+            (SELECT COUNT(*) FROM REPORT
+             WHERE target_type IN ('post','comment')
+               AND status NOT IN ('RESOLVED','DISMISSED'))                                                 AS pendingReports,
+            (SELECT COUNT(*) FROM REPORT
+             WHERE target_type IN ('post','comment')
+               AND status = 'RESOLVED'
+               AND resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY))                                        AS resolvedReports30d
+        FROM DUAL
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         게시글 목록 검색 조건
+    ══════════════════════════════════════════ -->
+
+    <sql id="postSearchWhere">
+        <where>
+            <choose>
+                <when test="status != null and status != 'ALL'">
+                    AND cp.post_status = #{status}
+                </when>
+                <!-- 기본: 전체 상태 포함 -->
+            </choose>
+            <if test="postType != null and postType != 'ALL'">
+                AND cp.post_type = #{postType}
+            </if>
+            <if test="flagged != null and flagged == 'FLAGGED'">
+                AND IFNULL(ar.resolve_count, 0) > 0
+            </if>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'userId'">
+                        AND u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'nickname'">
+                        AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'content'">
+                        AND cp.content LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (
+                            cp.title LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <!-- ══════════════════════════════════════════
+         게시글 목록
+    ══════════════════════════════════════════ -->
+
+    <select id="findPosts" resultMap="postRM">
+        SELECT
+            cp.post_id, cp.user_idx,
+            u.user_id, u.nickname, u.account_status,
+            lh.ip_address                      AS last_ip,
+            cp.title, cp.content,
+            cp.post_type, cp.region,
+            cp.post_status,
+            cp.view_count, cp.like_count, cp.comment_count, cp.report_count,
+            cp.created_at, cp.updated_at, cp.tip_category,
+            cpi.image_url                      AS thumb_url,
+            IFNULL(ar.resolve_count, 0)        AS author_resolve_count_30d
+        FROM COMMUNITY_POST cp
+        LEFT JOIN USERS u ON cp.user_idx = u.user_idx
+        LEFT JOIN COMMUNITY_POST_IMAGE cpi
+            ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
+        LEFT JOIN (
+            SELECT user_idx,
+                   SUBSTRING_INDEX(GROUP_CONCAT(ip_address ORDER BY login_at DESC), ',', 1) AS ip_address
+            FROM USER_LOGIN_HISTORY
+            WHERE auth_type IN ('PASSWORD', 'SOCIAL')
+            GROUP BY user_idx
+        ) lh ON lh.user_idx = cp.user_idx
+        LEFT JOIN (
+            SELECT author_idx, COUNT(*) AS resolve_count
+            FROM (
+                SELECT cp2.user_idx AS author_idx
+                FROM REPORT r
+                INNER JOIN COMMUNITY_POST cp2
+                    ON r.target_id = cp2.post_id AND r.target_type = 'post'
+                WHERE r.status = 'RESOLVED'
+                  AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+                UNION ALL
+                SELECT cc2.user_idx AS author_idx
+                FROM REPORT r
+                INNER JOIN COMMUNITY_COMMENT cc2
+                    ON r.target_id = cc2.comment_id AND r.target_type = 'comment'
+                WHERE r.status = 'RESOLVED'
+                  AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            ) resolved_items
+            GROUP BY author_idx
+        ) ar ON ar.author_idx = cp.user_idx
+        <include refid="postSearchWhere"/>
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'reportCount'">cp.report_count DESC, cp.created_at DESC</when>
+            <otherwise>cp.created_at DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countPosts" resultType="int">
+        SELECT COUNT(cp.post_id)
+        FROM COMMUNITY_POST cp
+        LEFT JOIN USERS u ON cp.user_idx = u.user_idx
+        <if test="flagged != null and flagged == 'FLAGGED'">
+        LEFT JOIN (
+            SELECT author_idx, COUNT(*) AS resolve_count
+            FROM (
+                SELECT cp2.user_idx AS author_idx
+                FROM REPORT r
+                INNER JOIN COMMUNITY_POST cp2
+                    ON r.target_id = cp2.post_id AND r.target_type = 'post'
+                WHERE r.status = 'RESOLVED'
+                  AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+                UNION ALL
+                SELECT cc2.user_idx AS author_idx
+                FROM REPORT r
+                INNER JOIN COMMUNITY_COMMENT cc2
+                    ON r.target_id = cc2.comment_id AND r.target_type = 'comment'
+                WHERE r.status = 'RESOLVED'
+                  AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            ) resolved_items
+            GROUP BY author_idx
+        ) ar ON ar.author_idx = cp.user_idx
+        </if>
+        <include refid="postSearchWhere"/>
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         게시글 상세
+    ══════════════════════════════════════════ -->
+
+    <select id="findPostDetail" resultMap="postRM">
+        SELECT
+            cp.post_id, cp.user_idx,
+            u.user_id, u.nickname, u.account_status,
+            lh.ip_address                      AS last_ip,
+            cp.title, cp.content,
+            cp.post_type, cp.region,
+            cp.post_status,
+            cp.view_count, cp.like_count, cp.comment_count, cp.report_count,
+            cp.created_at, cp.updated_at, cp.tip_category,
+            cpi.image_url                      AS thumb_url,
+            (
+                SELECT COUNT(*) FROM (
+                    SELECT r.report_id
+                    FROM REPORT r
+                    INNER JOIN COMMUNITY_POST cp2
+                        ON r.target_id = cp2.post_id AND r.target_type = 'post'
+                    WHERE cp2.user_idx = cp.user_idx
+                      AND r.status = 'RESOLVED'
+                      AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+                    UNION ALL
+                    SELECT r.report_id
+                    FROM REPORT r
+                    INNER JOIN COMMUNITY_COMMENT cc2
+                        ON r.target_id = cc2.comment_id AND r.target_type = 'comment'
+                    WHERE cc2.user_idx = cp.user_idx
+                      AND r.status = 'RESOLVED'
+                      AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+                ) cnt
+            )                                  AS author_resolve_count_30d
+        FROM COMMUNITY_POST cp
+        LEFT JOIN USERS u ON cp.user_idx = u.user_idx
+        LEFT JOIN COMMUNITY_POST_IMAGE cpi
+            ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
+        LEFT JOIN (
+            SELECT user_idx,
+                   SUBSTRING_INDEX(GROUP_CONCAT(ip_address ORDER BY login_at DESC), ',', 1) AS ip_address
+            FROM USER_LOGIN_HISTORY
+            WHERE auth_type IN ('PASSWORD', 'SOCIAL')
+            GROUP BY user_idx
+        ) lh ON lh.user_idx = cp.user_idx
+        WHERE cp.post_id = #{postId}
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         게시글 댓글 목록 (어드민용)
+    ══════════════════════════════════════════ -->
+
+    <select id="findCommentsByPost" resultMap="commentRM">
+        SELECT
+            cc.comment_id, cc.post_id,
+            cp.title                           AS post_title,
+            cc.user_idx,
+            u.user_id, u.nickname, u.account_status,
+            lh.ip_address                      AS last_ip,
+            cc.content, cc.comment_status,
+            cc.like_count, cc.report_count,
+            cc.created_at, cc.updated_at, cc.parent_comment_id,
+            IFNULL(ar.resolve_count, 0)        AS author_resolve_count_30d
+        FROM COMMUNITY_COMMENT cc
+        LEFT JOIN COMMUNITY_POST cp ON cp.post_id = cc.post_id
+        LEFT JOIN USERS u ON cc.user_idx = u.user_idx
+        LEFT JOIN (
+            SELECT user_idx,
+                   SUBSTRING_INDEX(GROUP_CONCAT(ip_address ORDER BY login_at DESC), ',', 1) AS ip_address
+            FROM USER_LOGIN_HISTORY
+            WHERE auth_type IN ('PASSWORD', 'SOCIAL')
+            GROUP BY user_idx
+        ) lh ON lh.user_idx = cc.user_idx
+        LEFT JOIN (
+            SELECT author_idx, COUNT(*) AS resolve_count
+            FROM (
+                SELECT cp2.user_idx AS author_idx
+                FROM REPORT r
+                INNER JOIN COMMUNITY_POST cp2
+                    ON r.target_id = cp2.post_id AND r.target_type = 'post'
+                WHERE r.status = 'RESOLVED'
+                  AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+                UNION ALL
+                SELECT cc2.user_idx AS author_idx
+                FROM REPORT r
+                INNER JOIN COMMUNITY_COMMENT cc2
+                    ON r.target_id = cc2.comment_id AND r.target_type = 'comment'
+                WHERE r.status = 'RESOLVED'
+                  AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            ) resolved_items
+            GROUP BY author_idx
+        ) ar ON ar.author_idx = cc.user_idx
+        WHERE cc.post_id = #{postId}
+          AND cc.comment_status != 'DELETED'
+        ORDER BY COALESCE(cc.parent_comment_id, cc.comment_id), cc.comment_id
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         게시글 신고 내역
+    ══════════════════════════════════════════ -->
+
+    <select id="findReportsByPost" resultMap="reportRM">
+        SELECT
+            r.report_id,
+            r.user_idx   AS reporter_idx,
+            u.user_id    AS reporter_user_id,
+            u.nickname   AS reporter_nickname,
+            r.reason, r.status,
+            r.created_at, r.resolved_at, r.resolve_action
+        FROM REPORT r
+        LEFT JOIN USERS u ON r.user_idx = u.user_idx
+        WHERE r.target_type = 'post'
+          AND r.target_id = #{postId}
+        ORDER BY r.created_at DESC
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         댓글 전체 목록 검색 조건
+    ══════════════════════════════════════════ -->
+
+    <sql id="commentSearchWhere">
+        <where>
+            <choose>
+                <when test="status != null and status != 'ALL'">
+                    AND cc.comment_status = #{status}
+                </when>
+                <otherwise>
+                    AND cc.comment_status != 'DELETED'
+                </otherwise>
+            </choose>
+            <if test="flagged != null and flagged == 'FLAGGED'">
+                AND IFNULL(ar.resolve_count, 0) > 0
+            </if>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'userId'">
+                        AND u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'nickname'">
+                        AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND cc.content LIKE CONCAT('%', #{keyword}, '%')
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <!-- ══════════════════════════════════════════
+         댓글 전체 목록
+    ══════════════════════════════════════════ -->
+
+    <select id="findComments" resultMap="commentRM">
+        SELECT
+            cc.comment_id, cc.post_id,
+            cp.title                           AS post_title,
+            cc.user_idx,
+            u.user_id, u.nickname, u.account_status,
+            lh.ip_address                      AS last_ip,
+            cc.content, cc.comment_status,
+            cc.like_count, cc.report_count,
+            cc.created_at, cc.updated_at, cc.parent_comment_id,
+            IFNULL(ar.resolve_count, 0)        AS author_resolve_count_30d
+        FROM COMMUNITY_COMMENT cc
+        LEFT JOIN COMMUNITY_POST cp ON cp.post_id = cc.post_id
+        LEFT JOIN USERS u ON cc.user_idx = u.user_idx
+        LEFT JOIN (
+            SELECT user_idx,
+                   SUBSTRING_INDEX(GROUP_CONCAT(ip_address ORDER BY login_at DESC), ',', 1) AS ip_address
+            FROM USER_LOGIN_HISTORY
+            WHERE auth_type IN ('PASSWORD', 'SOCIAL')
+            GROUP BY user_idx
+        ) lh ON lh.user_idx = cc.user_idx
+        LEFT JOIN (
+            SELECT author_idx, COUNT(*) AS resolve_count
+            FROM (
+                SELECT cp2.user_idx AS author_idx
+                FROM REPORT r
+                INNER JOIN COMMUNITY_POST cp2
+                    ON r.target_id = cp2.post_id AND r.target_type = 'post'
+                WHERE r.status = 'RESOLVED'
+                  AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+                UNION ALL
+                SELECT cc2.user_idx AS author_idx
+                FROM REPORT r
+                INNER JOIN COMMUNITY_COMMENT cc2
+                    ON r.target_id = cc2.comment_id AND r.target_type = 'comment'
+                WHERE r.status = 'RESOLVED'
+                  AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            ) resolved_items
+            GROUP BY author_idx
+        ) ar ON ar.author_idx = cc.user_idx
+        <include refid="commentSearchWhere"/>
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'reportCount'">cc.report_count DESC, cc.created_at DESC</when>
+            <otherwise>cc.created_at DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countComments" resultType="int">
+        SELECT COUNT(cc.comment_id)
+        FROM COMMUNITY_COMMENT cc
+        LEFT JOIN USERS u ON cc.user_idx = u.user_idx
+        <if test="flagged != null and flagged == 'FLAGGED'">
+        LEFT JOIN (
+            SELECT author_idx, COUNT(*) AS resolve_count
+            FROM (
+                SELECT cp2.user_idx AS author_idx
+                FROM REPORT r
+                INNER JOIN COMMUNITY_POST cp2
+                    ON r.target_id = cp2.post_id AND r.target_type = 'post'
+                WHERE r.status = 'RESOLVED'
+                  AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+                UNION ALL
+                SELECT cc2.user_idx AS author_idx
+                FROM REPORT r
+                INNER JOIN COMMUNITY_COMMENT cc2
+                    ON r.target_id = cc2.comment_id AND r.target_type = 'comment'
+                WHERE r.status = 'RESOLVED'
+                  AND r.resolved_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            ) resolved_items
+            GROUP BY author_idx
+        ) ar ON ar.author_idx = cc.user_idx
+        </if>
+        <include refid="commentSearchWhere"/>
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         상태 변경
+    ══════════════════════════════════════════ -->
+
+    <update id="updatePostStatus">
+        UPDATE COMMUNITY_POST
+        SET post_status = #{status},
+            updated_at  = NOW()
+        WHERE post_id = #{postId}
+    </update>
+
+    <update id="bulkUpdatePostStatus">
+        UPDATE COMMUNITY_POST
+        SET post_status = #{status},
+            updated_at  = NOW()
+        WHERE post_id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">#{id}</foreach>
+    </update>
+
+    <update id="updateCommentStatus">
+        UPDATE COMMUNITY_COMMENT
+        SET comment_status = #{status},
+            updated_at     = NOW()
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <update id="bulkUpdateCommentStatus">
+        UPDATE COMMUNITY_COMMENT
+        SET comment_status = #{status},
+            updated_at     = NOW()
+        WHERE comment_id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">#{id}</foreach>
+    </update>
+
+</mapper>

@@ -209,10 +209,11 @@
 (function () {
     var ctx = '${pageContext.request.contextPath}';
 
-    // 행 클릭 시 상세 페이지 이동
+    // 행 클릭 시 상세 페이지 이동 (page/targetType 파라미터 전달)
+    var listParams = 'page=${search.page}&targetType=${search.targetType}';
     document.querySelectorAll('.rpt-row[data-id]').forEach(function (tr) {
         tr.addEventListener('click', function () {
-            location.href = ctx + '/report/' + this.getAttribute('data-id');
+            location.href = ctx + '/report/' + this.getAttribute('data-id') + '?' + listParams;
         });
     });
 })();
