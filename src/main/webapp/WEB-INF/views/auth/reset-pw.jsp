@@ -1,44 +1,38 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
 <html lang="ko">
 <body>
 <div class="auth-wrap">
   <div class="auth-card">
-
     <div class="auth-logo" onclick="location.href='${pageContext.request.contextPath}/'">
-      <div class="auth-logo-icon">🌐</div><span class="auth-logo-text">TripTogether</span>
+      <div class="auth-logo-icon">T</div><span class="auth-logo-text">TripTogether</span>
     </div>
 
     <c:choose>
       <c:when test="${not empty error}">
-        <!-- 토큰 만료 -->
         <div style="text-align:center;">
           <div style="font-size:56px;margin:16px 0 20px;">⏰</div>
-          <h1 class="auth-title">링크가 만료되었어요</h1>
+          <h1 class="auth-title"><spring:message code="auth.resetPw.expiredTitle"/></h1>
           <p class="auth-sub">${error}</p>
-          <button class="btn-submit"
-                  onclick="location.href='${pageContext.request.contextPath}/auth/find-pw'">
-            다시 요청하기
+          <button class="btn-submit" onclick="location.href='${pageContext.request.contextPath}/auth/find-pw'">
+            <spring:message code="auth.resetPw.retry"/>
           </button>
         </div>
       </c:when>
-
       <c:otherwise>
-        <h1 class="auth-title">새 비밀번호 설정 🔑</h1>
-        <p class="auth-sub"><strong>${nickname}</strong>님의 새 비밀번호를 설정해주세요.</p>
-
+        <h1 class="auth-title"><spring:message code="auth.resetPw.title"/></h1>
+        <p class="auth-sub"><strong>${nickname}</strong><spring:message code="auth.resetPw.subtitle"/></p>
         <div id="errorBanner" class="auth-error-banner"></div>
-
         <input type="hidden" id="token" value="${token}">
 
         <div class="form-group">
-          <label class="form-label" for="newPassword">새 비밀번호</label>
+          <label class="form-label" for="newPassword"><spring:message code="auth.resetPw.newPassword"/></label>
           <div class="pw-wrap">
-            <input class="form-input" type="password" id="newPassword"
-                   placeholder="영문, 숫자, 특수문자 포함 8자 이상" maxlength="64">
-            <button type="button" class="pw-toggle" id="pt1">👁</button>
+            <input class="form-input" type="password" id="newPassword" placeholder="<spring:message code='auth.register.password.placeholder'/>" maxlength="64">
+            <button type="button" class="pw-toggle" id="pt1">보기</button>
           </div>
           <div class="pw-strength">
             <div class="pw-bar" id="b1"></div>
@@ -49,37 +43,36 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="confirmPassword">비밀번호 확인</label>
+          <label class="form-label" for="confirmPassword"><spring:message code="auth.register.passwordConfirm"/></label>
           <div class="pw-wrap">
-            <input class="form-input" type="password" id="confirmPassword"
-                   placeholder="비밀번호 재입력" maxlength="64">
-            <button type="button" class="pw-toggle" id="pt2">👁</button>
+            <input class="form-input" type="password" id="confirmPassword" placeholder="<spring:message code='auth.register.passwordConfirm.placeholder'/>" maxlength="64">
+            <button type="button" class="pw-toggle" id="pt2">보기</button>
           </div>
           <div class="field-msg" id="cfmMsg"></div>
         </div>
 
-        <button type="button" class="btn-submit" id="resetBtn">비밀번호 재설정</button>
+        <button type="button" class="btn-submit" id="resetBtn"><spring:message code="auth.resetPw.submit"/></button>
       </c:otherwise>
     </c:choose>
 
     <div class="auth-footer" style="margin-top:16px;">
-      <a href="${pageContext.request.contextPath}/auth/login">← 로그인으로</a>
+      <a href="${pageContext.request.contextPath}/auth/login"><spring:message code="auth.common.backToLogin"/></a>
     </div>
   </div>
 </div>
 <script>
 (function(){
-  // 토글
   function toggle(btnId, inputId){
     document.getElementById(btnId).addEventListener('click',function(){
       const el=document.getElementById(inputId);
       const t=el.type==='text';
-      el.type=t?'password':'text'; this.textContent=t?'👁':'🙈';
+      el.type=t?'password':'text';
+      this.textContent=t?'보기':'숨김';
     });
   }
-  toggle('pt1','newPassword'); toggle('pt2','confirmPassword');
+  toggle('pt1','newPassword');
+  toggle('pt2','confirmPassword');
 
-  // 강도
   document.getElementById('newPassword').addEventListener('input',function(){
     const v=this.value, bars=[document.getElementById('b1'),document.getElementById('b2'),document.getElementById('b3')];
     let s=0;
@@ -90,13 +83,11 @@
     bars.forEach((b,i)=>{ b.className='pw-bar'+(i<s&&cls?' '+cls:''); });
   });
 
-  // 확인
   document.getElementById('confirmPassword').addEventListener('input',function(){
     const pw=document.getElementById('newPassword').value;
     const msg=document.getElementById('cfmMsg');
-    if(!this.value){msg.className='field-msg';return;}
-    if(pw===this.value){msg.className='field-msg success';msg.textContent='비밀번호가 일치합니다.';}
-    else{msg.className='field-msg error';msg.textContent='비밀번호가 일치하지 않습니다.';}
+    if(!this.value){msg.className='field-msg'; msg.textContent=''; return;}
+    if(pw===this.value){msg.className='field-msg success';msg.textContent='<spring:message code="auth.register.password.match" javaScriptEscape="true"/>';} else {msg.className='field-msg error';msg.textContent='<spring:message code="auth.register.password.mismatch" javaScriptEscape="true"/>';}
   });
 
   document.getElementById('resetBtn').addEventListener('click',async function(){
@@ -104,27 +95,26 @@
     const cfm=document.getElementById('confirmPassword').value;
     const token=document.getElementById('token').value;
     const errBanner=document.getElementById('errorBanner');
-
     if(newPassword.length<8){
       document.getElementById('pwMsg').className='field-msg error';
-      document.getElementById('pwMsg').textContent='비밀번호는 8자 이상이어야 합니다.'; return;
+      document.getElementById('pwMsg').textContent='<spring:message code="auth.register.password.short" javaScriptEscape="true"/>';
+      return;
     }
     if(newPassword!==cfm){
       document.getElementById('cfmMsg').className='field-msg error';
-      document.getElementById('cfmMsg').textContent='비밀번호가 일치하지 않습니다.'; return;
+      document.getElementById('cfmMsg').textContent='<spring:message code="auth.register.password.mismatch" javaScriptEscape="true"/>';
+      return;
     }
 
     this.classList.add('loading'); this.disabled=true;
     const res=await fetch('${pageContext.request.contextPath}/auth/reset-pw',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({token,newPassword})
+      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({token,newPassword})
     });
     const data=await res.json();
     if(data.success){
       location.href = data.redirect + '?resetOk=1';
     } else {
-      errBanner.textContent='⚠️ '+(data.message||'오류가 발생했습니다.');
+      errBanner.textContent='오류 ' + (data.message||'<spring:message code="auth.login.error.server" javaScriptEscape="true"/>');
       errBanner.classList.add('show');
       this.classList.remove('loading'); this.disabled=false;
     }

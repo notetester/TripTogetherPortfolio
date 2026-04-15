@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
@@ -22,18 +23,18 @@
 
     <!-- ═══ STEP 1 ═══ -->
     <div id="step1">
-      <h1 class="auth-title">여행의 시작 ✈️</h1>
-      <p class="auth-sub">계정 정보를 입력해주세요</p>
+      <h1 class="auth-title"><spring:message code="auth.register.title1"/></h1>
+      <p class="auth-sub"><spring:message code="auth.register.subtitle1"/></p>
 
       <!-- 소셜 가입 -->
       <div class="social-btns">
         <a href="${pageContext.request.contextPath}/auth/kakao" class="social-btn kakao">
           <span class="social-icon kakao-mark">k</span>
-          카카오로 시작하기
+          <spring:message code="auth.register.kakao"/>
         </a>
         <a href="${pageContext.request.contextPath}/auth/naver" class="social-btn naver">
           <span class="social-icon" style="font-weight:900;font-size:14px;">N</span>
-          네이버로 시작하기
+          <spring:message code="auth.register.naver"/>
         </a>
         <a href="${pageContext.request.contextPath}/auth/google" class="social-btn google">
           <span class="social-icon">
@@ -44,31 +45,31 @@
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
             </svg>
           </span>
-          Google로 시작하기
+          <spring:message code="auth.register.google"/>
         </a>
       </div>
 
-      <div class="auth-divider">또는 이메일로 가입</div>
+      <div class="auth-divider"><spring:message code="auth.register.or"/></div>
 
       <div class="form-group">
-        <label class="form-label" for="userId">아이디 <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="userId"><spring:message code="auth.register.userId"/> <span style="color:#ef4444">*</span></label>
         <input class="form-input" type="text" id="userId" name="userId"
-               placeholder="영문, 숫자 4~20자" maxlength="20" autocomplete="username">
+               placeholder="<spring:message code="auth.register.userId.placeholder"/>" maxlength="20" autocomplete="username">
         <div class="field-msg" id="userIdMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="userEmail">이메일 <span style="color:var(--gray-400);font-weight:400">(선택)</span></label>
+        <label class="form-label" for="userEmail"><spring:message code="auth.register.email"/> <span style="color:var(--gray-400);font-weight:400"><spring:message code="auth.register.optional"/></span></label>
         <input class="form-input" type="email" id="userEmail" name="userEmail"
                placeholder="example@email.com" autocomplete="email">
         <div class="field-msg" id="emailMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password">비밀번호 <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="password"><spring:message code="auth.register.password"/> <span style="color:#ef4444">*</span></label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="password" name="password"
-                 placeholder="영문, 숫자, 특수문자 포함 8자 이상" maxlength="64" autocomplete="new-password">
+                 placeholder="<spring:message code="auth.register.password.placeholder"/>" maxlength="64" autocomplete="new-password">
           <button type="button" class="pw-toggle" id="pwToggle1">👁</button>
         </div>
         <div class="pw-strength" id="pwStrengthBar">
@@ -80,36 +81,36 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="passwordConfirm">비밀번호 확인 <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="passwordConfirm"><spring:message code="auth.register.passwordConfirm"/> <span style="color:#ef4444">*</span></label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="passwordConfirm"
-                 placeholder="비밀번호 재입력" maxlength="64" autocomplete="new-password">
+                 placeholder="<spring:message code="auth.register.passwordConfirm.placeholder"/>" maxlength="64" autocomplete="new-password">
           <button type="button" class="pw-toggle" id="pwToggle2">👁</button>
         </div>
         <div class="field-msg" id="pwConfirmMsg"></div>
       </div>
 
       <button type="button" class="btn-submit" id="step1Btn" style="margin-top:4px;">
-        다음 단계 →
+        <spring:message code="auth.register.next"/>
       </button>
     </div>
 
     <!-- ═══ STEP 2 ═══ -->
     <div id="step2" style="display:none">
-      <h1 class="auth-title">거의 다 됐어요 🗺️</h1>
-      <p class="auth-sub">프로필 정보를 입력해주세요</p>
+      <h1 class="auth-title"><spring:message code="auth.register.title2"/></h1>
+      <p class="auth-sub"><spring:message code="auth.register.subtitle2"/></p>
 
       <div class="form-group">
-        <label class="form-label" for="nickname">닉네임 <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="nickname"><spring:message code="auth.register.nickname"/> <span style="color:#ef4444">*</span></label>
         <input class="form-input" type="text" id="nickname" name="nickname"
-               placeholder="2~20자 (한글, 영문, 숫자)" maxlength="20">
+               placeholder="<spring:message code="auth.register.nickname.placeholder"/>" maxlength="20">
         <div class="field-msg" id="nicknameMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="nationality">국적 <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="nationality"><spring:message code="auth.register.nationality"/> <span style="color:#ef4444">*</span></label>
         <select class="form-select" id="nationality" name="nationality">
-          <option value="">국적을 선택하세요</option>
+          <option value=""><spring:message code="auth.register.nationality.placeholder"/></option>
           <option value="KR">🇰🇷 대한민국</option>
           <option value="US">🇺🇸 미국</option>
           <option value="JP">🇯🇵 일본</option>
@@ -125,9 +126,9 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="preferredLang">선호 언어 <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="preferredLang"><spring:message code="auth.register.language"/> <span style="color:#ef4444">*</span></label>
         <select class="form-select" id="preferredLang" name="preferredLang">
-          <option value="">언어를 선택하세요</option>
+          <option value=""><spring:message code="auth.register.language.placeholder"/></option>
           <option value="ko">🇰🇷 한국어</option>
           <option value="en">🇺🇸 English</option>
           <option value="ja">🇯🇵 日本語</option>
@@ -142,17 +143,17 @@
         <button type="button" class="btn-submit" id="backBtn"
                 style="background:var(--gray-100);color:var(--gray-700);
                        box-shadow:none;flex:0 0 80px;font-weight:600;">
-          ← 이전
+          <spring:message code="auth.register.prev"/>
         </button>
         <button type="button" class="btn-submit" id="registerBtn" style="flex:1;">
-          가입 완료 🎉
+          <spring:message code="auth.register.complete"/>
         </button>
       </div>
     </div>
 
     <div class="auth-footer">
-      이미 계정이 있으신가요?
-      <a href="${pageContext.request.contextPath}/auth/login">로그인</a>
+      <spring:message code="auth.register.hasAccount"/>
+      <a href="${pageContext.request.contextPath}/auth/login"><spring:message code="header.auth.login"/></a>
     </div>
 
   </div>

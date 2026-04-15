@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/chatbot.css">
 
 <footer class="site-footer">
@@ -9,30 +10,30 @@
                 <div class="logo-icon" style="width:32px;height:32px;font-size:16px;">🌐</div>
                 <span class="logo-text" style="font-size:18px;">TripTogether</span>
             </div>
-            <p class="footer-copy">© 2026 TripTogether. All rights reserved. AI 기반 여행 플랫폼
+            <p class="footer-copy"><spring:message code="footer.copy"/>
                 &nbsp;·&nbsp;
-                <a href="${pageContext.request.contextPath}/inquiry/list" class="footer-inquiry-link">문의하기</a>
+                <a href="${pageContext.request.contextPath}/inquiry/list" class="footer-inquiry-link"><spring:message code="footer.inquiry"/></a>
             </p>
         </div>
     </div>
 </footer>
 
-<button id="chatbot-toggle" aria-label="TripTogether 도우미 열기" title="AI 여행 도우미">
+<button id="chatbot-toggle" aria-label="<spring:message code="footer.chatbot.open"/>" title="<spring:message code="footer.chatbot.title"/>">
     <span id="cb-toggle-icon">✈️</span>
     <span id="chatbot-badge"></span>
 </button>
 
-<div id="chatbot-box" role="dialog" aria-label="TripTogether 도우미">
+<div id="chatbot-box" role="dialog" aria-label="<spring:message code="footer.chatbot.dialog"/>">
     <div class="cb-header">
         <div class="cb-avatar">✈️</div>
         <div class="cb-header-info">
-            <div class="cb-header-name">TripTogether 도우미</div>
+            <div class="cb-header-name"><spring:message code="footer.chatbot.name"/></div>
             <div class="cb-header-status">
                 <span class="cb-dot"></span>
-                <span>TripTogether 챗봇 도우미가 답변합니다</span>
+                <span><spring:message code="footer.chatbot.status"/></span>
             </div>
         </div>
-        <button class="cb-close" id="cb-close" aria-label="닫기">✕</button>
+        <button class="cb-close" id="cb-close" aria-label="<spring:message code="footer.chatbot.close"/>">✕</button>
     </div>
 
     <div class="cb-body" id="cb-body"></div>
@@ -40,8 +41,8 @@
     <div class="cb-footer">
         <div class="cb-suggestions" id="cb-suggestions"></div>
         <div class="cb-input-row">
-            <textarea id="cb-input" placeholder="TripTogether에 대해 물어보세요..." rows="1"></textarea>
-            <button id="cb-send" aria-label="전송">➤</button>
+            <textarea id="cb-input" placeholder="<spring:message code="footer.chatbot.placeholder"/>" rows="1"></textarea>
+            <button id="cb-send" aria-label="<spring:message code="footer.chatbot.send"/>">➤</button>
         </div>
     </div>
 </div>
@@ -50,6 +51,22 @@
     (function () {
         const ctx = '${pageContext.request.contextPath}';
         const loggedIn = ${not empty sessionScope.loginUser};
+        const msg = {
+            suggestPopular: '<spring:message code="footer.chatbot.suggest.popular" javaScriptEscape="true"/>',
+            suggestPopularMsg: '<spring:message code="footer.chatbot.suggest.popular.msg" javaScriptEscape="true"/>',
+            suggestCourses: '<spring:message code="footer.chatbot.suggest.courses" javaScriptEscape="true"/>',
+            suggestCoursesMsg: '<spring:message code="footer.chatbot.suggest.courses.msg" javaScriptEscape="true"/>',
+            suggestAssistant: '<spring:message code="footer.chatbot.suggest.assistant" javaScriptEscape="true"/>',
+            suggestAssistantMsg: '<spring:message code="footer.chatbot.suggest.assistant.msg" javaScriptEscape="true"/>',
+            suggestCommunity: '<spring:message code="footer.chatbot.suggest.community" javaScriptEscape="true"/>',
+            suggestCommunityMsg: '<spring:message code="footer.chatbot.suggest.community.msg" javaScriptEscape="true"/>',
+            suggestAuth: '<spring:message code="footer.chatbot.suggest.auth" javaScriptEscape="true"/>',
+            suggestAuthMsg: '<spring:message code="footer.chatbot.suggest.auth.msg" javaScriptEscape="true"/>',
+            welcomeTitle: '<spring:message code="footer.chatbot.welcome.title" javaScriptEscape="true"/>',
+            welcomeBody1: '<spring:message code="footer.chatbot.welcome.body1" javaScriptEscape="true"/>',
+            welcomeBody2: '<spring:message code="footer.chatbot.welcome.body2" javaScriptEscape="true"/>',
+            error: '<spring:message code="footer.chatbot.error" javaScriptEscape="true"/>'
+        };
         // JSP EL 이 boolean 리터럴(true/false)로 출력되므로 JS에서 그대로 사용 가능하다.
 
         let isOpen = false;
@@ -57,11 +74,11 @@
         let history = [];
 
         const INITIAL_SUGGESTIONS = [
-            { label: '인기 여행지 추천 ✈️', msg: '인기 여행지를 추천해줘' },
-            { label: '여행 코스 보기 🗺️', msg: '여행 코스를 보고 싶어' },
-            { label: 'AI 도우미 사용법 ✨', msg: 'AI 도우미는 어떻게 쓰나요?' },
-            { label: '커뮤니티 둘러보기 💬', msg: '커뮤니티에서 뭘 할 수 있어?' },
-            ...(!loggedIn ? [{ label: '로그인 / 회원가입 👤', msg: '로그인하려면 어떻게 해?' }] : []),
+            { label: msg.suggestPopular, msg: msg.suggestPopularMsg },
+            { label: msg.suggestCourses, msg: msg.suggestCoursesMsg },
+            { label: msg.suggestAssistant, msg: msg.suggestAssistantMsg },
+            { label: msg.suggestCommunity, msg: msg.suggestCommunityMsg },
+            ...(!loggedIn ? [{ label: msg.suggestAuth, msg: msg.suggestAuthMsg }] : []),
         ];
 
         const toggle = document.getElementById('chatbot-toggle');
@@ -96,9 +113,9 @@
             const wrap = document.createElement('div');
             wrap.className = 'cb-msg-wrap bot';
             wrap.innerHTML = '<div class="cb-welcome">' +
-                '<div class="cb-welcome-title">👋 안녕하세요!</div>' +
-                'TripTogether 여행 도우미입니다.<br>' +
-                '여행지 추천, 코스 정보, 사이트 이용 방법 등 무엇이든 물어보세요!' +
+                '<div class="cb-welcome-title">' + escHtml(msg.welcomeTitle) + '</div>' +
+                escHtml(msg.welcomeBody1) + '<br>' +
+                escHtml(msg.welcomeBody2) +
                 '</div>';
             body.appendChild(wrap);
             renderSuggestions(INITIAL_SUGGESTIONS.map(s => s.label));
@@ -215,7 +232,7 @@
 
             } catch (e) {
                 hideTyping();
-                appendBotResponse({ message: '오류 발생', links: [], quickReplies: [] });
+                appendBotResponse({ message: msg.error, links: [], quickReplies: [] });
             } finally {
                 isTyping = false;
                 sendBtn.disabled = false;

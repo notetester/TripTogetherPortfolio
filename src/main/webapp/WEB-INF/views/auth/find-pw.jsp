@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
 <html lang="ko">
@@ -11,28 +12,28 @@
       <div class="auth-logo-icon">🌐</div><span class="auth-logo-text">TripTogether</span>
     </div>
 
-    <h1 class="auth-title">비밀번호 찾기 🔐</h1>
-    <p class="auth-sub">가입한 아이디 또는 이메일을 입력하시면<br>확인 가능한 계정이 있는 경우 비밀번호 재설정 안내를 보내드립니다.</p>
+    <h1 class="auth-title"><spring:message code="auth.findPw.title"/></h1>
+    <p class="auth-sub"><spring:message code="auth.findPw.subtitle" htmlEscape="false"/></p>
 
     <div id="successBanner" class="auth-error-banner"
          style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d;display:none;"></div>
     <div id="errorBanner" class="auth-error-banner"></div>
 
     <div class="form-group">
-      <label class="form-label" for="identifier">아이디 또는 이메일</label>
+      <label class="form-label" for="identifier"><spring:message code="auth.findPw.identifier"/></label>
       <input class="form-input" type="text" id="identifier"
-             placeholder="아이디 또는 등록된 이메일 주소">
+             placeholder="<spring:message code="auth.findPw.identifier.placeholder"/>">
       <div class="field-msg info" style="display:block;">
-        ⚠️ 인증된 이메일이 등록된 계정에 한해 비밀번호 재설정 안내를 받을 수 있습니다.
+        <spring:message code="auth.findPw.help"/>
       </div>
     </div>
 
-    <button type="button" class="btn-submit" id="sendBtn">재설정 링크 발송</button>
+    <button type="button" class="btn-submit" id="sendBtn"><spring:message code="auth.findPw.submit"/></button>
 
     <div class="auth-footer" style="margin-top:16px;">
-      <a href="${pageContext.request.contextPath}/auth/login">← 로그인으로</a>
+      <a href="${pageContext.request.contextPath}/auth/login"><spring:message code="auth.common.backToLogin"/></a>
       &nbsp;·&nbsp;
-      <a href="${pageContext.request.contextPath}/auth/find-id">아이디 찾기</a>
+      <a href="${pageContext.request.contextPath}/auth/find-id"><spring:message code="auth.login.findId"/></a>
     </div>
   </div>
 </div>
@@ -62,7 +63,7 @@
   sendBtn.addEventListener('click', async function () {
     const identifier = identifierInput.value.trim();
     if (!identifier) {
-      showError('아이디 또는 이메일을 입력해주세요.');
+      showError('<spring:message code="auth.findPw.empty" javaScriptEscape="true"/>');
       return;
     }
 
@@ -79,14 +80,14 @@
 
       const data = await res.json();
       if (!data.success) {
-        showError(data.message || '비밀번호 재설정 요청 처리 중 오류가 발생했습니다.');
+        showError(data.message || '<spring:message code="auth.findPw.fail" javaScriptEscape="true"/>');
         return;
       }
 
-      showSuccess(data.message || '비밀번호 재설정 링크를 발송했습니다.');
-      this.textContent = '재발송';
+      showSuccess(data.message || '<spring:message code="auth.findPw.sent" javaScriptEscape="true"/>');
+      this.textContent = '<spring:message code="auth.findPw.resend" javaScriptEscape="true"/>';
     } catch (e) {
-      showError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      showError('<spring:message code="auth.findPw.server" javaScriptEscape="true"/>');
     } finally {
       this.classList.remove('loading');
       this.disabled = false;

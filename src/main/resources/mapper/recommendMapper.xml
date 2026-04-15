@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.explore.mapper.RecommendMapper">
+
+    <!-- SpotViewLogVO -->
+    <resultMap id="ViewLogMap" type="org.triptogether.explore.vo.SpotViewLogVO">
+        <id     property="logIdx"      column="log_idx"/>
+        <result property="userIdx"     column="user_idx"/>
+        <result property="spotIdx"     column="spot_idx"/>
+        <result property="staySeconds" column="stay_seconds"/>
+        <result property="viewedAt"    column="viewed_at"/>
+        <result property="spotName"    column="spot_name"/>
+        <result property="tagsConcat"  column="tags_concat"/>
+        <result property="visitCount"  column="visit_count"/>
+    </resultMap>
+
+    <!-- CandidateSpotVO (태그 매칭 점수 포함) -->
+    <resultMap id="CandidateMap" type="org.triptogether.explore.vo.CandidateSpotVO">
+        <id     property="spotIdx"      column="spot_idx"/>
+        <result property="name"         column="name"/>
+        <result property="region"       column="region"/>
+        <result property="tagsConcat"   column="tags_concat"/>
+        <result property="visitedFlag"  column="visited_flag"/>
+        <result property="tagMatchScore" column="tag_match_score"/>
+    </resultMap>
+
+    <!-- RecommendVO -->
+    <resultMap id="RecommendMap" type="org.triptogether.explore.vo.RecommendVO">
+        <id     property="recIdx"        column="rec_idx"/>
+        <result property="userIdx"       column="user_idx"/>
+        <result property="spotIdx"       column="spot_idx"/>
+        <result property="recReason"     column="rec_reason"/>
+        <result property="recScore"      column="rec_score"/>
+        <result property="spotName"      column="spot_name"/>
+        <result property="region"        column="region"/>
+        <result property="thumbUrl"      column="thumb_url"/>
+        <result property="ratingAvg"     column="rating_avg_real"/>
+        <result property="reviewCount"   column="review_count_real"/>
+        <result property="likeCount"     column="like_count_real"/>
+        <result property="tagMatchCount" column="tag_match_count"/>
+    </resultMap>
+
+    <!-- =============================================
+         조회 로그 저장
+         ============================================= -->
+    <insert id="insertViewLog" useGeneratedKeys="true" keyProperty="logIdx">
+        INSERT INTO SPOT_VIEW_LOG (user_idx, spot_idx, stay_seconds, viewed_at)
+        VALUES (#{userIdx}, #{spotIdx}, #{staySeconds}, NOW())
+    </insert>
+
+    <!-- =============================================
+         최근 N개 조회 로그 (태그·방문횟수 포함)
+         ============================================= -->
+    <select id="selectRecentViewLogs" resultMap="ViewLogMap">
+        SELECT
+            svl.log_idx,
+            svl.user_idx,
+            svl.spot_idx,
+            svl.stay_seconds,
+            svl.viewed_at,
+            st.name AS spot_name,
+            (
+                SELECT GROUP_CONCAT(tl.tag_name ORDER BY tl.tag_name SEPARATOR ',')
+                FROM   SPOT_TAG      s_tag
+                JOIN   SPOT_TAG_LIST tl ON tl.tag_idx = s_tag.tag_idx
+                WHERE  s_tag.spot_idx = svl.spot_idx
+            ) AS tags_concat,
+            (
+                SELECT COUNT(*)
+                FROM   SPOT_VIEW_LOG svl2
+                WHERE  svl2.user_idx = svl.user_idx
+                  AND  svl2.spot_idx = svl.spot_idx
+            ) AS visit_count
+        FROM   SPOT_VIEW_LOG svl
+        JOIN   SPOT_TRAVEL   st ON st.spot_idx = svl.spot_idx
+        WHERE  svl.user_idx = #{userIdx}
+        ORDER  BY svl.viewed_at DESC
+        LIMIT  #{limit}
+    </select>
+
+    <!-- =============================================
+         미방문 후보 여행지 (태그 매칭 점수 포함)
+
+         tag_match_score: 유저 관심 태그(interestTags)와
+                          각 여행지 태그가 몇 개나 일치하는지 카운트
+                          → 점수 높은 여행지를 앞으로 정렬
+         visited_flag:    0=미방문(우선), 1=방문(폴백)
+         이전 추천(SPOT_RECOMMEND)에 있는 spot 제외 → 반복 방지
+         ============================================= -->
+    <select id="selectCandidateSpots" resultMap="CandidateMap">
+        SELECT
+            st.spot_idx,
+            st.name,
+            st.region,
+            (
+                SELECT GROUP_CONCAT(tl.tag_name ORDER BY tl.tag_name SEPARATOR ',')
+                FROM   SPOT_TAG      s_tag
+                JOIN   SPOT_TAG_LIST tl ON tl.tag_idx = s_tag.tag_idx
+                WHERE  s_tag.spot_idx = st.spot_idx
+            ) AS tags_concat,
+            CASE WHEN EXISTS (
+                SELECT 1 FROM SPOT_VIEW_LOG svl
+                WHERE svl.spot_idx = st.spot_idx AND svl.user_idx = #{userIdx}
+            ) THEN 1 ELSE 0 END AS visited_flag,
+            /* ★ 태그 매칭 점수: 관심 태그와 일치하는 태그 수 (1순위 정렬) */
+            <choose>
+                <when test="interestTags != null and interestTags != ''">
+                (
+                    SELECT COUNT(*)
+                    FROM   SPOT_TAG      s_tag2
+                    JOIN   SPOT_TAG_LIST tl2 ON tl2.tag_idx = s_tag2.tag_idx
+                    WHERE  s_tag2.spot_idx = st.spot_idx
+                      AND  FIND_IN_SET(tl2.tag_name,
+                               REPLACE(#{interestTags}, ', ', ',')) > 0
+                )
+                </when>
+                <otherwise>0</otherwise>
+            </choose>
+            AS tag_match_score
+        FROM SPOT_TRAVEL st
+        WHERE
+            /* 이전 추천 결과 spot 제외 */
+            NOT EXISTS (
+                SELECT 1 FROM SPOT_RECOMMEND sr
+                WHERE  sr.spot_idx  = st.spot_idx
+                  AND  sr.user_idx  = #{userIdx}
+                  AND  sr.created_at >= DATE_SUB(NOW(), INTERVAL 30 MINUTE)
+            )
+            /* ★ 현재 보고 있는 여행지 제외 */
+            <if test="currentSpotIdx != null">
+            AND st.spot_idx != #{currentSpotIdx}
+            </if>
+        ORDER BY
+            tag_match_score DESC,    /* ★ 1순위: 태그 일치 많을수록 앞으로 */
+            visited_flag    ASC,     /* 2순위: 미방문(0) 우선               */
+            RAND()                   /* 동점이면 랜덤                        */
+        LIMIT 50
+    </select>
+
+    <!-- =============================================
+         요즘 뜨는 여행지 (AI 추천 없을 때 폴백)
+         최근 7일 조회 횟수 + 좋아요 수 기준
+         ============================================= -->
+    <select id="selectTrendingSpots" resultMap="RecommendMap">
+        SELECT
+            0           AS rec_idx,
+            0           AS user_idx,
+            st.spot_idx,
+            ''          AS rec_reason,
+            0           AS rec_score,
+            st.name     AS spot_name,
+            st.region,
+            (
+                SELECT si.image_url FROM SPOT_IMAGE si
+                WHERE  si.spot_idx = st.spot_idx
+                ORDER  BY si.image_idx ASC LIMIT 1
+            ) AS thumb_url,
+            COALESCE((
+                SELECT ROUND(AVG(r.rating), 1) FROM SPOT_REVIEW r
+                WHERE  r.spot_idx = st.spot_idx
+            ), 0.0) AS rating_avg_real,
+            (SELECT COUNT(*) FROM SPOT_REVIEW r  WHERE r.spot_idx  = st.spot_idx) AS review_count_real,
+            (SELECT COUNT(*) FROM SPOT_LIKE   sl WHERE sl.spot_idx = st.spot_idx) AS like_count_real,
+            0 AS tag_match_count
+        FROM SPOT_TRAVEL st
+        WHERE 1=1
+            /* ★ 현재 보고 있는 여행지 제외 */
+            <if test="currentSpotIdx != null">
+            AND st.spot_idx != #{currentSpotIdx}
+            </if>
+        ORDER BY
+            (
+                SELECT COUNT(*) FROM SPOT_VIEW_LOG svl
+                WHERE  svl.spot_idx = st.spot_idx
+                  AND  svl.viewed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+            ) DESC,
+            (SELECT COUNT(*) FROM SPOT_LIKE sl WHERE sl.spot_idx = st.spot_idx) DESC
+        LIMIT 3
+    </select>
+
+    <!-- =============================================
+         유효한 추천 캐시 조회 (5분 이내)
+         ============================================= -->
+    <select id="selectCachedRecommends" resultMap="RecommendMap">
+        SELECT rec_idx, user_idx, spot_idx, rec_reason, rec_score
+        FROM   SPOT_RECOMMEND
+        WHERE  user_idx    = #{userIdx}
+          AND  created_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+        ORDER BY rec_score DESC
+        LIMIT 3
+    </select>
+
+    <!-- =============================================
+         이전 추천 spot_idx 목록 (반복 방지)
+         ============================================= -->
+    <select id="selectPreviousRecommendSpotIds" resultType="long">
+        SELECT DISTINCT spot_idx
+        FROM   SPOT_RECOMMEND
+        WHERE  user_idx = #{userIdx}
+    </select>
+
+    <!-- =============================================
+         기존 추천 캐시 삭제
+         ============================================= -->
+    <delete id="deleteRecommends">
+        DELETE FROM SPOT_RECOMMEND WHERE user_idx = #{userIdx}
+    </delete>
+
+    <!-- =============================================
+         추천 결과 저장
+         ============================================= -->
+    <insert id="insertRecommend" useGeneratedKeys="true" keyProperty="recIdx">
+        INSERT INTO SPOT_RECOMMEND (user_idx, spot_idx, rec_reason, rec_score, created_at)
+        VALUES (#{userIdx}, #{spotIdx}, #{recReason}, #{recScore}, NOW())
+    </insert>
+
+    <!-- =============================================
+         추천 spot 상세 정보 조회 (카드 렌더링용) - 기본
+         ============================================= -->
+    <select id="selectRecommendSpots" resultMap="RecommendMap">
+        SELECT
+            sr.rec_idx, sr.user_idx, sr.spot_idx, sr.rec_reason, sr.rec_score,
+            st.name AS spot_name, st.region,
+            (
+                SELECT si.image_url FROM SPOT_IMAGE si
+                WHERE  si.spot_idx = st.spot_idx
+                ORDER  BY si.image_idx ASC LIMIT 1
+            ) AS thumb_url,
+            COALESCE((
+                SELECT ROUND(AVG(r.rating), 1) FROM SPOT_REVIEW r
+                WHERE  r.spot_idx = st.spot_idx
+            ), 0.0) AS rating_avg_real,
+            (SELECT COUNT(*) FROM SPOT_REVIEW r  WHERE r.spot_idx  = st.spot_idx) AS review_count_real,
+            (SELECT COUNT(*) FROM SPOT_LIKE   sl WHERE sl.spot_idx = st.spot_idx) AS like_count_real,
+            0 AS tag_match_count
+        FROM  SPOT_RECOMMEND sr
+        JOIN  SPOT_TRAVEL     st ON st.spot_idx = sr.spot_idx
+        WHERE sr.user_idx   = #{userIdx}
+          AND sr.created_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+        ORDER BY sr.rec_score DESC
+        LIMIT 3
+    </select>
+
+    <!-- =============================================
+         추천 spot 조회 + 사용자 관심 태그 일치 수 계산
+         tag_match_count: 일치 많을수록 상단 노출
+         정렬: tag_match_count DESC → rec_score DESC
+         ============================================= -->
+    <select id="selectRecommendSpotsWithTagMatch" resultMap="RecommendMap">
+        SELECT
+            sr.rec_idx,
+            sr.user_idx,
+            sr.spot_idx,
+            sr.rec_reason,
+            sr.rec_score,
+            st.name   AS spot_name,
+            st.region,
+            (
+                SELECT si.image_url FROM SPOT_IMAGE si
+                WHERE  si.spot_idx = st.spot_idx
+                ORDER  BY si.image_idx ASC LIMIT 1
+            ) AS thumb_url,
+            COALESCE((
+                SELECT ROUND(AVG(r.rating), 1) FROM SPOT_REVIEW r
+                WHERE  r.spot_idx = st.spot_idx
+            ), 0.0) AS rating_avg_real,
+            (SELECT COUNT(*) FROM SPOT_REVIEW r  WHERE r.spot_idx  = st.spot_idx) AS review_count_real,
+            (SELECT COUNT(*) FROM SPOT_LIKE   sl WHERE sl.spot_idx = st.spot_idx) AS like_count_real,
+            /* ★ 관심 태그와 이 여행지 태그의 실제 일치 수 계산 */
+            <choose>
+                <when test="interestTags != null and interestTags != ''">
+                (
+                    SELECT COUNT(*)
+                    FROM   SPOT_TAG      s_tag
+                    JOIN   SPOT_TAG_LIST tl ON tl.tag_idx = s_tag.tag_idx
+                    WHERE  s_tag.spot_idx = st.spot_idx
+                      AND  FIND_IN_SET(tl.tag_name,
+                               REPLACE(#{interestTags}, ', ', ',')) > 0
+                )
+                </when>
+                <otherwise>0</otherwise>
+            </choose>
+            AS tag_match_count
+        FROM  SPOT_RECOMMEND sr
+        JOIN  SPOT_TRAVEL     st ON st.spot_idx = sr.spot_idx
+        WHERE sr.user_idx   = #{userIdx}
+          AND sr.created_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+          /* ★ 현재 보고 있는 여행지 제외 */
+          <if test="currentSpotIdx != null">
+          AND sr.spot_idx != #{currentSpotIdx}
+          </if>
+        ORDER BY
+            tag_match_count DESC,   /* ★ 1순위: 태그 일치 많을수록 상단 */
+            sr.rec_score    DESC    /* 2순위: Gemini 점수 순             */
+        LIMIT 3
+    </select>
+
+</mapper>

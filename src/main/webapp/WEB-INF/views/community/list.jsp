@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%--
   커뮤니티 목록 페이지
   Controller: GET /community/list
@@ -30,16 +31,16 @@
             <div>
                 <h1><a href="${pageContext.request.contextPath}/community/list"
                        onclick="sessionStorage.removeItem('todayPopularClosed')"
-                       style="color:inherit;text-decoration:none;cursor:pointer;">트립 모먼트</a></h1>
-                <p class="comm-sub">전 세계 여행자들의 생생한 여행 이야기</p>
+                       style="color:inherit;text-decoration:none;cursor:pointer;"><spring:message code="community.title"/></a></h1>
+                <p class="comm-sub"><spring:message code="community.subtitle"/></p>
             </div>
         </div>
 
         <%-- 오늘 인기 여행 이야기 섹션 --%>
         <c:if test="${not empty todayPopularList}">
             <div class="comm-section-title comm-section-title-today">
-                &#128293; 오늘 인기 여행 이야기
-                <button class="comm-section-toggle" id="todayToggleBtn" onclick="toggleTodaySection()">목록 닫기</button>
+                <spring:message code="community.today.title"/>
+                <button class="comm-section-toggle" id="todayToggleBtn" onclick="toggleTodaySection()"><spring:message code="community.today.close"/></button>
             </div>
             <div id="todayPopularGrid">
                 <div class="comm-carousel-outer">
@@ -66,31 +67,31 @@
                                         </c:choose>
                                         <span class="post-type-badge type-${post.postType}">
                                             <c:choose>
-                                                <c:when test="${post.postType eq 'review'}">여행후기</c:when>
-                                                <c:when test="${post.postType eq 'photo'}">사진</c:when>
-                                                <c:when test="${post.postType eq 'tip'}">여행팁</c:when>
-                                                <c:when test="${post.postType eq 'question'}">질문</c:when>
+                                                <c:when test="${post.postType eq 'review'}"><spring:message code="community.type.review"/></c:when>
+                                                <c:when test="${post.postType eq 'photo'}"><spring:message code="community.type.photo"/></c:when>
+                                                <c:when test="${post.postType eq 'tip'}"><spring:message code="community.type.tip"/></c:when>
+                                                <c:when test="${post.postType eq 'question'}"><spring:message code="community.type.question"/></c:when>
                                             </c:choose>
                                         </span>
                                         <c:if test="${post.postType eq 'tip' and not empty post.tipCategory}">
                                             <span class="post-type-badge type-tip-sub ${post.tipCategory}">
                                                 <c:choose>
-                                                    <c:when test="${post.tipCategory eq 'transport'}">교통</c:when>
-                                                    <c:when test="${post.tipCategory eq 'accom'}">숙소</c:when>
-                                                    <c:when test="${post.tipCategory eq 'food'}">맛집</c:when>
-                                                    <c:when test="${post.tipCategory eq 'money'}">환전</c:when>
-                                                    <c:when test="${post.tipCategory eq 'safety'}">안전</c:when>
-                                                    <c:otherwise>기타</c:otherwise>
+                                                    <c:when test="${post.tipCategory eq 'transport'}"><spring:message code="community.tip.transport"/></c:when>
+                                                    <c:when test="${post.tipCategory eq 'accom'}"><spring:message code="community.tip.accom"/></c:when>
+                                                    <c:when test="${post.tipCategory eq 'food'}"><spring:message code="community.tip.food"/></c:when>
+                                                    <c:when test="${post.tipCategory eq 'money'}"><spring:message code="community.tip.money"/></c:when>
+                                                    <c:when test="${post.tipCategory eq 'safety'}"><spring:message code="community.tip.safety"/></c:when>
+                                                    <c:otherwise><spring:message code="community.tip.etc"/></c:otherwise>
                                                 </c:choose>
                                             </span>
                                         </c:if>
                                         <c:if test="${post.postType eq 'question'}">
                                             <c:choose>
                                                 <c:when test="${post.isSolved}">
-                                                    <span class="post-type-badge type-question-sub solved">해결됨</span>
+                                                    <span class="post-type-badge type-question-sub solved"><spring:message code="community.question.solved"/></span>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <span class="post-type-badge type-question-sub unsolved">해결중</span>
+                                                    <span class="post-type-badge type-question-sub unsolved"><spring:message code="community.question.unsolved"/></span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </c:if>
@@ -117,35 +118,35 @@
         <div class="region-tabs">
             <a href="${pageContext.request.contextPath}/community/list?region=all&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${empty param.region or param.region eq 'all' ? 'active' : ''}">
-                전체
+                <spring:message code="community.region.all"/>
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=asia&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'asia' ? 'active' : ''}">
-                아시아
+                <spring:message code="community.region.asia"/>
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=europe&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'europe' ? 'active' : ''}">
-                유럽
+                <spring:message code="community.region.europe"/>
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=africa&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'africa' ? 'active' : ''}">
-                아프리카
+                <spring:message code="community.region.africa"/>
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=north_america&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'north_america' ? 'active' : ''}">
-                북아메리카
+                <spring:message code="community.region.northAmerica"/>
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=south_america&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'south_america' ? 'active' : ''}">
-                남아메리카
+                <spring:message code="community.region.southAmerica"/>
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=oceania&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'oceania' ? 'active' : ''}">
-                오세아니아
+                <spring:message code="community.region.oceania"/>
             </a>
             <a href="${pageContext.request.contextPath}/community/list?region=etc&type=${param.type}&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
                class="region-tab ${param.region eq 'etc' ? 'active' : ''}">
-                기타
+                <spring:message code="community.region.etc"/>
             </a>
         </div>
 
@@ -158,23 +159,23 @@
                     <input type="hidden" name="sort" value="${param.sort}">
                     <div class="comm-search-box">
                         <select name="searchType" class="comm-search-select">
-                            <option value="all"    ${empty param.searchType or param.searchType eq 'all'     ? 'selected' : ''}>제목+내용+해시태그</option>
-                            <option value="title"   ${param.searchType eq 'title'   ? 'selected' : ''}>제목</option>
-                            <option value="content" ${param.searchType eq 'content' ? 'selected' : ''}>내용</option>
-                            <option value="tag"     ${param.searchType eq 'tag'     ? 'selected' : ''}>해시태그</option>
-                            <option value="author"  ${param.searchType eq 'author'  ? 'selected' : ''}>글쓴이</option>
-                            <option value="comment" ${param.searchType eq 'comment' ? 'selected' : ''}>댓글</option>
+                            <option value="all"    ${empty param.searchType or param.searchType eq 'all'     ? 'selected' : ''}><spring:message code="community.search.all"/></option>
+                            <option value="title"   ${param.searchType eq 'title'   ? 'selected' : ''}><spring:message code="community.search.title"/></option>
+                            <option value="content" ${param.searchType eq 'content' ? 'selected' : ''}><spring:message code="community.search.content"/></option>
+                            <option value="tag"     ${param.searchType eq 'tag'     ? 'selected' : ''}><spring:message code="community.search.tag"/></option>
+                            <option value="author"  ${param.searchType eq 'author'  ? 'selected' : ''}><spring:message code="community.search.author"/></option>
+                            <option value="comment" ${param.searchType eq 'comment' ? 'selected' : ''}><spring:message code="community.search.comment"/></option>
                         </select>
                         <span class="comm-search-divider"></span>
                         <input type="text" name="keyword" class="comm-search-input"
                                value="${param.keyword}"
-                               placeholder="여행 이야기를 검색해보세요">
+                               placeholder="<spring:message code="community.search.placeholder"/>">
                         <button type="submit" class="comm-search-btn">&#128269;</button>
                     </div>
                 </form>
                 <button class="btn-write"
                         onclick="location.href='${pageContext.request.contextPath}/community/write'">
-                    &#43; 글쓰기
+                    &#43; <spring:message code="community.write"/>
                 </button>
             </div>
         </div>
@@ -189,62 +190,62 @@
     <div class="comm-filter-bar">
         <div class="type-filters">
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=all&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="type-btn ${empty param.type or param.type eq 'all' ? 'active' : ''}">전체</a>
+               class="type-btn ${empty param.type or param.type eq 'all' ? 'active' : ''}"><spring:message code="community.region.all"/></a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=review&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="type-btn ${param.type eq 'review' ? 'active' : ''}">&#128172; 여행후기</a>
+               class="type-btn ${param.type eq 'review' ? 'active' : ''}">&#128172; <spring:message code="community.type.review"/></a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=photo&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="type-btn ${param.type eq 'photo' ? 'active' : ''}">&#128247; 사진</a>
+               class="type-btn ${param.type eq 'photo' ? 'active' : ''}">&#128247; <spring:message code="community.type.photo"/></a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=tip&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="type-btn ${param.type eq 'tip' ? 'active' : ''}">&#128161; 여행팁</a>
+               class="type-btn ${param.type eq 'tip' ? 'active' : ''}">&#128161; <spring:message code="community.type.tip"/></a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=question&sort=${param.sort}&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="type-btn ${param.type eq 'question' ? 'active' : ''}">&#10067; 질문</a>
+               class="type-btn ${param.type eq 'question' ? 'active' : ''}">&#10067; <spring:message code="community.type.question"/></a>
         </div>
         <div class="sort-area">
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=latest&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="sort-btn ${empty param.sort or param.sort eq 'latest' ? 'active' : ''}">최신순</a>
+               class="sort-btn ${empty param.sort or param.sort eq 'latest' ? 'active' : ''}"><spring:message code="community.sort.latest"/></a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=popular&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="sort-btn ${param.sort eq 'popular' ? 'active' : ''}">인기순</a>
+               class="sort-btn ${param.sort eq 'popular' ? 'active' : ''}"><spring:message code="community.sort.popular"/></a>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=views&searchType=${param.searchType}&keyword=${param.keyword}"
-               class="sort-btn ${param.sort eq 'views' ? 'active' : ''}">조회순</a>
-            <span class="total-count">총 <strong>${totalCount}</strong>개</span>
+               class="sort-btn ${param.sort eq 'views' ? 'active' : ''}"><spring:message code="community.sort.views"/></a>
+            <span class="total-count"><spring:message code="community.total" arguments="${totalCount}"/></span>
         </div>
     </div>
 
     <%-- 검색 결과 표시 --%>
     <c:if test="${not empty param.keyword}">
         <div class="search-result-bar">
-            <span>'<strong>${param.keyword}</strong>' 검색 결과</span>
+            <span><spring:message code="community.search.result" arguments="${param.keyword}"/></span>
             <a href="${pageContext.request.contextPath}/community/list?region=${param.region}&type=${param.type}&sort=${param.sort}"
-               class="search-clear-btn">&#10005; 검색 초기화</a>
+               class="search-clear-btn">&#10005; <spring:message code="community.search.clear"/></a>
         </div>
     </c:if>
 
     <%-- 최신 여행 이야기 섹션 타이틀 --%>
-    <div class="comm-section-title">&#128336; 최신 여행 이야기</div>
+    <div class="comm-section-title"><spring:message code="community.latest.title"/></div>
 
     <%-- 어드민 일괄 처리 툴바 --%>
     <c:if test="${isAdminMode}">
         <div class="comm-admin-toolbar" id="adminToolbar">
             <label class="comm-admin-chk-all">
-                <input type="checkbox" id="chkAll"> 전체선택
+                <input type="checkbox" id="chkAll"> <spring:message code="community.admin.selectAll"/>
             </label>
-            <span class="comm-admin-selected-count" id="selectedCount">0개 선택됨</span>
+            <span class="comm-admin-selected-count" id="selectedCount"><spring:message code="community.admin.selected" arguments="0"/></span>
             <div class="comm-admin-actions">
-                <button class="comm-admin-btn btn-delete" onclick="doBulkAction('delete')">삭제</button>
+                <button class="comm-admin-btn btn-delete" onclick="doBulkAction('delete')"><spring:message code="community.admin.delete"/></button>
                 <div class="comm-admin-dropdown">
-                    <button class="comm-admin-btn btn-block-user">차단 ▾</button>
+                    <button class="comm-admin-btn btn-block-user"><spring:message code="community.admin.block"/> ▾</button>
                     <div class="comm-admin-dropdown-menu">
-                        <button onclick="doBulkAction('blockUser')">아이디 차단</button>
-                        <button onclick="doBulkAction('blockIp')">아이피 차단</button>
-                        <button onclick="doBulkAction('blockBoth')">아이디+아이피 차단</button>
+                        <button onclick="doBulkAction('blockUser')"><spring:message code="community.admin.block.user"/></button>
+                        <button onclick="doBulkAction('blockIp')"><spring:message code="community.admin.block.ip"/></button>
+                        <button onclick="doBulkAction('blockBoth')"><spring:message code="community.admin.block.both"/></button>
                     </div>
                 </div>
                 <div class="comm-admin-dropdown">
-                    <button class="comm-admin-btn btn-block-delete">차단+삭제 ▾</button>
+                    <button class="comm-admin-btn btn-block-delete"><spring:message code="community.admin.blockDelete"/> ▾</button>
                     <div class="comm-admin-dropdown-menu">
-                        <button onclick="doBulkAction('blockUserAndDelete')">아이디 차단+삭제</button>
-                        <button onclick="doBulkAction('blockIpAndDelete')">아이피 차단+삭제</button>
-                        <button onclick="doBulkAction('blockAndDelete')">아이디+아이피+삭제</button>
+                        <button onclick="doBulkAction('blockUserAndDelete')"><spring:message code="community.admin.blockDelete.user"/></button>
+                        <button onclick="doBulkAction('blockIpAndDelete')"><spring:message code="community.admin.blockDelete.ip"/></button>
+                        <button onclick="doBulkAction('blockAndDelete')"><spring:message code="community.admin.blockDelete.both"/></button>
                     </div>
                 </div>
             </div>
@@ -266,15 +267,15 @@
                     <div class="empty-icon">&#9992;</div>
                     <c:choose>
                         <c:when test="${not empty param.keyword}">
-                            <p>'${param.keyword}' 검색 결과가 없어요.</p>
+                            <p><spring:message code="community.empty.search" arguments="${param.keyword}"/></p>
                         </c:when>
                         <c:otherwise>
-                            <p>아직 게시글이 없어요. 첫 번째 여행 이야기를 들려주세요!</p>
+                            <p><spring:message code="community.empty.default"/></p>
                         </c:otherwise>
                     </c:choose>
                     <button class="btn-write"
                             onclick="location.href='${pageContext.request.contextPath}/community/write'">
-                        글쓰기
+                        <spring:message code="community.write"/>
                     </button>
                 </div>
             </c:when>
@@ -312,31 +313,31 @@
                                     </c:choose>
                                     <span class="post-type-badge type-${post.postType}">
     <c:choose>
-        <c:when test="${post.postType eq 'review'}">여행후기</c:when>
-        <c:when test="${post.postType eq 'photo'}">사진</c:when>
-        <c:when test="${post.postType eq 'tip'}">여행팁</c:when>
-        <c:when test="${post.postType eq 'question'}">질문</c:when>
+        <c:when test="${post.postType eq 'review'}"><spring:message code="community.type.review"/></c:when>
+        <c:when test="${post.postType eq 'photo'}"><spring:message code="community.type.photo"/></c:when>
+        <c:when test="${post.postType eq 'tip'}"><spring:message code="community.type.tip"/></c:when>
+        <c:when test="${post.postType eq 'question'}"><spring:message code="community.type.question"/></c:when>
     </c:choose>
 </span>
 <c:if test="${post.postType eq 'tip' and not empty post.tipCategory}">
     <span class="post-type-badge type-tip-sub ${post.tipCategory}">
         <c:choose>
-            <c:when test="${post.tipCategory eq 'transport'}">교통</c:when>
-            <c:when test="${post.tipCategory eq 'accom'}">숙소</c:when>
-            <c:when test="${post.tipCategory eq 'food'}">맛집</c:when>
-            <c:when test="${post.tipCategory eq 'money'}">환전</c:when>
-            <c:when test="${post.tipCategory eq 'safety'}">안전</c:when>
-            <c:otherwise>기타</c:otherwise>
+            <c:when test="${post.tipCategory eq 'transport'}"><spring:message code="community.tip.transport"/></c:when>
+            <c:when test="${post.tipCategory eq 'accom'}"><spring:message code="community.tip.accom"/></c:when>
+            <c:when test="${post.tipCategory eq 'food'}"><spring:message code="community.tip.food"/></c:when>
+            <c:when test="${post.tipCategory eq 'money'}"><spring:message code="community.tip.money"/></c:when>
+            <c:when test="${post.tipCategory eq 'safety'}"><spring:message code="community.tip.safety"/></c:when>
+            <c:otherwise><spring:message code="community.tip.etc"/></c:otherwise>
         </c:choose>
     </span>
 </c:if>
 <c:if test="${post.postType eq 'question'}">
     <c:choose>
         <c:when test="${post.isSolved}">
-            <span class="post-type-badge type-question-sub solved">해결됨</span>
+            <span class="post-type-badge type-question-sub solved"><spring:message code="community.question.solved"/></span>
         </c:when>
         <c:otherwise>
-            <span class="post-type-badge type-question-sub unsolved">해결중</span>
+            <span class="post-type-badge type-question-sub unsolved"><spring:message code="community.question.unsolved"/></span>
         </c:otherwise>
     </c:choose>
 </c:if>
@@ -364,20 +365,19 @@
                                 </div>
                             </div>
                             <c:if test="${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode}">
-                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)">⚠️ 신고된 콘텐츠입니다. 클릭하여
-                                    확인
+                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)"><spring:message code="community.blocked.report"/>
                                 </div>
                             </c:if>
                             <c:if test="${isAdminMode}">
                                 <c:choose>
                                     <c:when test="${post.postStatus eq 'BLOCKED' and post.reportCount >= 3}">
-                                        <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
+                                        <span class="blocked-badge"><spring:message code="community.badge.report"/></span>
                                     </c:when>
                                     <c:when test="${post.postStatus eq 'BLOCKED'}">
-                                        <span class="blocked-badge">🚫 차단된 게시글</span>
+                                        <span class="blocked-badge"><spring:message code="community.badge.post"/></span>
                                     </c:when>
                                     <c:when test="${post.accountStatus eq 'BLOCKED'}">
-                                        <span class="blocked-badge">🚫 차단된 유저</span>
+                                        <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
                                     </c:when>
                                 </c:choose>
                             </c:if>
@@ -415,23 +415,23 @@
                 <input type="hidden" name="sort" value="${param.sort}">
                 <div class="comm-search-box">
                     <select name="searchType" class="comm-search-select">
-                        <option value="all"    ${empty param.searchType or param.searchType eq 'all'     ? 'selected' : ''}>제목+내용+해시태그</option>
-                        <option value="title"   ${param.searchType eq 'title'   ? 'selected' : ''}>제목</option>
-                        <option value="content" ${param.searchType eq 'content' ? 'selected' : ''}>내용</option>
-                        <option value="tag"     ${param.searchType eq 'tag'     ? 'selected' : ''}>해시태그</option>
-                        <option value="author"  ${param.searchType eq 'author'  ? 'selected' : ''}>글쓴이</option>
-                        <option value="comment" ${param.searchType eq 'comment' ? 'selected' : ''}>댓글</option>
+                        <option value="all"    ${empty param.searchType or param.searchType eq 'all'     ? 'selected' : ''}><spring:message code="community.search.all"/></option>
+                        <option value="title"   ${param.searchType eq 'title'   ? 'selected' : ''}><spring:message code="community.search.title"/></option>
+                        <option value="content" ${param.searchType eq 'content' ? 'selected' : ''}><spring:message code="community.search.content"/></option>
+                        <option value="tag"     ${param.searchType eq 'tag'     ? 'selected' : ''}><spring:message code="community.search.tag"/></option>
+                        <option value="author"  ${param.searchType eq 'author'  ? 'selected' : ''}><spring:message code="community.search.author"/></option>
+                        <option value="comment" ${param.searchType eq 'comment' ? 'selected' : ''}><spring:message code="community.search.comment"/></option>
                     </select>
                     <span class="comm-search-divider"></span>
                     <input type="text" name="keyword" class="comm-search-input"
                            value="${param.keyword}"
-                           placeholder="여행 이야기를 검색해보세요">
+                           placeholder="<spring:message code="community.search.placeholder"/>">
                     <button type="submit" class="comm-search-btn">&#128269;</button>
                 </div>
             </form>
             <button class="btn-write"
                     onclick="location.href='${pageContext.request.contextPath}/community/write'">
-                &#43; 글쓰기
+                &#43; <spring:message code="community.write"/>
             </button>
         </div>
     </div>
@@ -448,11 +448,11 @@
         if (!grid) return;
         if (grid.style.display === 'none') {
             grid.style.display = '';
-            btn.textContent = '목록 닫기';
+            btn.textContent = '<spring:message code="community.today.close" javaScriptEscape="true"/>';
             sessionStorage.removeItem(STORAGE_KEY);
         } else {
             grid.style.display = 'none';
-            btn.textContent = '목록 열기';
+            btn.textContent = '<spring:message code="community.today.open" javaScriptEscape="true"/>';
             sessionStorage.setItem(STORAGE_KEY, '1');
         }
     }
@@ -462,7 +462,7 @@
         var btn  = document.getElementById('todayToggleBtn');
         if (sessionStorage.getItem(STORAGE_KEY) === '1') {
             if (grid) grid.style.display = 'none';
-            if (btn)  btn.textContent = '목록 열기';
+            if (btn)  btn.textContent = '<spring:message code="community.today.open" javaScriptEscape="true"/>';
         }
     })();
 
@@ -550,14 +550,14 @@
 
     function adminDeletePost(event, postId) {
         event.stopPropagation();
-        if (!confirm('이 게시글을 삭제하시겠습니까?')) return;
+        if (!confirm('<spring:message code="community.admin.delete.confirm" javaScriptEscape="true"/>')) return;
         fetch('${pageContext.request.contextPath}/community/' + postId, {
             method: 'DELETE',
             headers: {'X-Requested-With': 'XMLHttpRequest'}
         })
             .then(function (res) {
                 if (res.ok) location.reload();
-                else alert('삭제에 실패했습니다.');
+                else alert('<spring:message code="community.admin.delete.fail" javaScriptEscape="true"/>');
             });
     }
 
@@ -580,7 +580,7 @@
 
         function updateCount() {
             var n = getChecked().length;
-            countLabel.textContent = n + '개 선택됨';
+            countLabel.textContent = '<spring:message code="community.admin.selected" arguments="__COUNT__" javaScriptEscape="true"/>'.replace('__COUNT__', n);
         }
 
         /* 전체선택 */
@@ -603,17 +603,17 @@
 
     window.doBulkAction = function (action) {
         var checked = Array.from(document.querySelectorAll('.comm-admin-chk:checked'));
-        if (checked.length === 0) { alert('선택된 게시글이 없습니다.'); return; }
+            if (checked.length === 0) { alert('<spring:message code="community.admin.noneSelected" javaScriptEscape="true"/>'); return; }
 
         var labels = {
-            'delete':              '삭제',
-            'blockUser':           '아이디 차단',
-            'blockIp':             '아이피 차단',
-            'blockBoth':           '아이디+아이피 차단',
-            'blockUserAndDelete':  '아이디 차단+삭제',
-            'blockIpAndDelete':    '아이피 차단+삭제',
-            'blockAndDelete':      '아이디+아이피+삭제'
-        };
+                'delete':              '<spring:message code="community.admin.delete" javaScriptEscape="true"/>',
+                'blockUser':           '<spring:message code="community.admin.block.user" javaScriptEscape="true"/>',
+                'blockIp':             '<spring:message code="community.admin.block.ip" javaScriptEscape="true"/>',
+                'blockBoth':           '<spring:message code="community.admin.block.both" javaScriptEscape="true"/>',
+                'blockUserAndDelete':  '<spring:message code="community.admin.blockDelete.user" javaScriptEscape="true"/>',
+                'blockIpAndDelete':    '<spring:message code="community.admin.blockDelete.ip" javaScriptEscape="true"/>',
+                'blockAndDelete':      '<spring:message code="community.admin.blockDelete.both" javaScriptEscape="true"/>'
+            };
         if (!confirm(checked.length + '개 게시글에 대해 [' + labels[action] + '] 을(를) 실행하시겠습니까?')) return;
 
         var postIds = checked.map(function (c) { return c.getAttribute('data-id'); });

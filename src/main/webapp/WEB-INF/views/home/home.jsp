@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:set var="pageCSS" value="home/home.css"/>
 <%@ include file="../common/header.jsp" %>
@@ -12,14 +13,14 @@
     <div class="hero-bg"></div>
     <div class="hero-ov"></div>
     <div class="hero-c">
-        <h1>세계를 탐험하세요</h1>
-        <p>AI가 추천하는 완벽한 여행 계획</p>
+        <h1><spring:message code="home.hero.title"/></h1>
+        <p><spring:message code="home.hero.subtitle"/></p>
         <div class="hero-btns">
             <button class="btn-pri" onclick="location.href='${pageContext.request.contextPath}/explore'">
-                &#128205; 여행지 탐색
+                &#128205; <spring:message code="home.hero.explore"/>
             </button>
             <button class="btn-sec" onclick="location.href='${pageContext.request.contextPath}/assistant'">
-                &#10024; AI 추천받기
+                &#10024; <spring:message code="home.hero.ai"/>
             </button>
         </div>
     </div>
@@ -31,19 +32,19 @@
         <div class="feat-grid">
             <div class="feat-card">
                 <div class="feat-icon fi-b">&#10024;</div>
-                <h3>AI 여행 도우미</h3>
-                <p>AI가 당신의 취향에 맞는 완벽한 여행지와 일정을 추천해드립니다</p>
+                <h3><spring:message code="home.feature.ai.title"/></h3>
+                <p><spring:message code="home.feature.ai.desc"/></p>
             </div>
             <div class="feat-card">
                 <div class="feat-icon fi-p">&#128197;</div>
-                <h3>일정 자동 생성</h3>
-                <p>여행 기간과 선호도만 입력하면 최적의 일정이 자동으로 생성됩니다</p>
+                <h3><spring:message code="home.feature.schedule.title"/></h3>
+                <p><spring:message code="home.feature.schedule.desc"/></p>
             </div>
             <div class="feat-card" style="cursor:pointer;"
                  onclick="location.href='${pageContext.request.contextPath}/community/list'">
                 <div class="feat-icon fi-g">&#128172;</div>
-                <h3>커뮤니티</h3>
-                <p>전 세계 여행자들과 경험을 공유하고 유용한 정보를 얻으세요</p>
+                <h3><spring:message code="home.feature.community.title"/></h3>
+                <p><spring:message code="home.feature.community.desc"/></p>
             </div>
         </div>
     </div>
@@ -53,8 +54,8 @@
 <section class="cs">
     <div class="si">
         <div class="sh">
-            <h2 class="st">인기 여행지</h2>
-            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/explore'">더보기 &#8594;</button>
+            <h2 class="st"><spring:message code="home.popular.title"/></h2>
+            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/explore'"><spring:message code="home.more"/> &#8594;</button>
         </div>
         <div class="cg" id="home-dest">
             <!-- 샘플 카드 - 실제 서비스 시 서버 데이터로 대체 -->
@@ -128,8 +129,8 @@
 <section class="cs bg">
     <div class="si">
         <div class="sh">
-            <h2 class="st">트렌딩 여행 코스</h2>
-            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/courses'">더보기 &#8594;</button>
+            <h2 class="st"><spring:message code="home.courses.title"/></h2>
+            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/courses'"><spring:message code="home.more"/> &#8594;</button>
         </div>
         <div class="cg" id="home-trips">
 
@@ -186,12 +187,12 @@
 <section class="cs">
     <div class="si">
         <div class="sh">
-            <h2 class="st">&#128293; 오늘 인기 여행 이야기</h2>
-            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/community/list'">더보기 &#8594;
+            <h2 class="st"><spring:message code="home.community.title"/></h2>
+            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="home.more"/> &#8594;
             </button>
         </div>
         <div id="popularSection">
-            <div style="padding:40px;text-align:center;color:var(--gray-400);">불러오는 중...</div>
+            <div style="padding:40px;text-align:center;color:var(--gray-400);"><spring:message code="home.loading"/></div>
         </div>
     </div>
 </section>
@@ -200,7 +201,15 @@
     var ctx       = '${pageContext.request.contextPath}';
     var adminMode = ${isAdminMode};
 
-    var TYPE_LABELS = { review: '여행후기', photo: '사진', tip: '팁', question: '질문' };
+    var TYPE_LABELS = {
+        review: '<spring:message code="home.postType.review" javaScriptEscape="true"/>',
+        photo: '<spring:message code="home.postType.photo" javaScriptEscape="true"/>',
+        tip: '<spring:message code="home.postType.tip" javaScriptEscape="true"/>',
+        question: '<spring:message code="home.postType.question" javaScriptEscape="true"/>'
+    };
+    var BLOCKED_REPORT = '<spring:message code="home.blocked.report" javaScriptEscape="true"/>';
+    var BLOCKED_POST = '<spring:message code="home.blocked.post" javaScriptEscape="true"/>';
+    var BLOCKED_USER = '<spring:message code="home.blocked.user" javaScriptEscape="true"/>';
 
     function escHtml(s) {
         return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -217,9 +226,9 @@
 
         var dateStr = p.createdAt ? p.createdAt.substring(0, 10).replace(/-/g, '.') : '';
         var badge   = adminMode
-            ? (p.postStatus === 'BLOCKED' && p.reportCount >= 3 ? '<span class="blocked-badge">🚨 신고에 의해 차단됨</span>'
-             : p.postStatus === 'BLOCKED'                       ? '<span class="blocked-badge">🚫 차단된 게시글</span>'
-             : p.accountStatus === 'BLOCKED'                    ? '<span class="blocked-badge">🚫 차단된 유저</span>' : '') : '';
+            ? (p.postStatus === 'BLOCKED' && p.reportCount >= 3 ? '<span class="blocked-badge">' + escHtml(BLOCKED_REPORT) + '</span>'
+             : p.postStatus === 'BLOCKED'                       ? '<span class="blocked-badge">' + escHtml(BLOCKED_POST) + '</span>'
+             : p.accountStatus === 'BLOCKED'                    ? '<span class="blocked-badge">' + escHtml(BLOCKED_USER) + '</span>' : '') : '';
         var blurOverlay = isReportBlur
             ? '<div class="report-blurred-overlay" onclick="removeReportBlur(this)">⚠️ 신고된 콘텐츠입니다. 클릭하여 확인</div>' : '';
 

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,36 +23,37 @@
             <span class="logo-text">TripTogether</span>
         </div>
         <nav>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'">여행지 탐색</button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses/list'">여행 코스</button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/assistant'">AI 도우미</button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'">커뮤니티</button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'">마이페이지</button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'"><spring:message code="header.nav.explore"/></button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses/list'"><spring:message code="header.nav.courses"/></button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/assistant'"><spring:message code="header.nav.assistant"/></button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="header.nav.community"/></button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'"><spring:message code="header.nav.mypage"/></button>
             <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">
-    <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'">관리자</button>
+    <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'"><spring:message code="header.nav.admin"/></button>
     <button class="admin-mode-btn ${isAdminMode ? 'admin' : 'user'}"
             onclick="toggleViewMode()">
-        ${isAdminMode ? '🛡️ 관리자모드' : '👤 유저경험모드'}
+        ${isAdminMode ? '🛡️ ' : '👤 '}
+        <spring:message code="${isAdminMode ? 'header.mode.admin' : 'header.mode.user'}"/>
     </button>
 </c:if>
 
         </nav>
         <div class="hr">
             <label>
-                <select class="lang-sel">
-                    <option value="ko">한국어</option>
-                    <option value="en">English</option>
-                    <option value="ja">日本語</option>
-                    <option value="zh">中文</option>
+                <select class="lang-sel" id="langSel">
+                    <option value="ko" ${pageContext.response.locale.language == 'ko' ? 'selected' : ''}><spring:message code="header.lang.ko"/></option>
+                    <option value="en" ${pageContext.response.locale.language == 'en' ? 'selected' : ''}><spring:message code="header.lang.en"/></option>
+                    <option value="ja" ${pageContext.response.locale.language == 'ja' ? 'selected' : ''}><spring:message code="header.lang.ja"/></option>
+                    <option value="zh" ${pageContext.response.locale.language == 'zh' ? 'selected' : ''}><spring:message code="header.lang.zh"/></option>
                 </select>
             </label>
             <c:choose>
                 <c:when test="${not empty sessionScope.loginUser}">
                     <span class="user-nick">${sessionScope.loginUser.nickname}</span>
-                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/logout'">로그아웃</button>
+                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/logout'"><spring:message code="header.auth.logout"/></button>
                 </c:when>
                 <c:otherwise>
-                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/login'">로그인</button>
+                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/login'"><spring:message code="header.auth.login"/></button>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -72,3 +74,16 @@ function toggleViewMode() {
 }
 </script>
 </c:if>
+
+<script>
+(function () {
+    const langSel = document.getElementById('langSel');
+    if (!langSel) return;
+
+    langSel.addEventListener('change', function () {
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', this.value);
+        window.location.href = url.toString();
+    });
+})();
+</script>

@@ -60,10 +60,9 @@
             <a class="adm-nav-item ${activeMenu=='community'?'active':''}" href="${pageContext.request.contextPath}/admin/community">
                 <span class="adm-nav-icon">📝</span> 커뮤니티 관리
             </a>
-            <span class="adm-nav-item disabled">
+            <a class="adm-nav-item ${activeMenu=='explore'?'active':''}" href="${pageContext.request.contextPath}/admin/explore">
                 <span class="adm-nav-icon">📍</span> 여행지 관리
-                <span class="adm-nav-badge soon">회의 후</span>
-            </span>
+            </a>
             <span class="adm-nav-item disabled">
                 <span class="adm-nav-icon">🗺️</span> 코스 관리
                 <span class="adm-nav-badge soon">회의 후</span>
