@@ -16,6 +16,7 @@ import org.triptogether.auth.vo.UsersVO;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 /**
  * 인증 관련 진입점 컨트롤러.
@@ -546,13 +547,8 @@ public class AuthController {
         return "redirect:/auth/login";
     }
 
-    @FunctionalInterface
-    interface InfoExtractor {
-        String[] extract() throws Exception;
-    }
-
     private String handleLinkCallback(String provider,
-                                      InfoExtractor extractor,
+                                      Callable<String[]> extractor,
                                       HttpSession session,
                                       RedirectAttributes ra) {
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
@@ -560,7 +556,7 @@ public class AuthController {
             return "redirect:/auth/login";
         }
         try {
-            String[] info = extractor.extract();
+            String[] info = extractor.call();
             authService.linkSocial(loginUser.getUserIdx(), provider, info[0]);
             ra.addFlashAttribute("successMsg", provider + " 계정이 연동되었습니다.");
         } catch (IllegalStateException e) {

@@ -2,10 +2,18 @@ package org.triptogether.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Locale;
 
 /**
  * Spring MVC 공통 설정.
@@ -33,6 +41,52 @@ public class WebConfig implements WebMvcConfigurer {
     private final ActivityLogInterceptor activityLogInterceptor;
     private final IpBlockInterceptor ipBlockInterceptor;
 
+    /**
+     * 다국어 메시지 파일을 읽는 스프링 기본 MessageSource 빈.
+     *
+     * <p>basename 이 {@code classpath:messages/messages} 이므로 아래 파일들을 자동으로 읽는다.</p>
+     * <ul>
+     *     <li>messages_ko.properties</li>
+     *     <li>messages_en.properties</li>
+     *     <li>messages_ja.properties</li>
+     *     <li>messages_zh.properties</li>
+     * </ul>
+     */
+    @Bean
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:messages/messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        // 키를 아직 번역 파일에 넣지 못한 경우, 에러 대신 키 자체를 보여주면 누락 확인이 쉽다.
+        messageSource.setUseCodeAsDefaultMessage(true);
+        return messageSource;
+    }
+
+    /**
+     * 현재 사용자의 언어 정보를 세션에 저장한다.
+     *
+     * <p>예를 들어 헤더에서 영어를 선택하면 세션에 {@code en} 이 저장되고,
+     * 이후 같은 브라우저 세션에서는 계속 영어 문구를 우선 사용한다.</p>
+     */
+    @Bean
+    public LocaleResolver localeResolver() {
+        SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+        localeResolver.setDefaultLocale(Locale.KOREAN);
+        return localeResolver;
+    }
+
+    /**
+     * 요청 파라미터 {@code lang} 값을 보고 언어를 바꾼다.
+     *
+     * <p>예: {@code /explore?lang=en}</p>
+     */
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        interceptor.setParamName("lang");
+        return interceptor;
+    }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Windows / Linux / macOS 모두 동일하게 처리되도록 경로 구분자를 정규화한다.
@@ -46,6 +100,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // 헤더 언어 선택 시 ?lang=en 같은 파라미터를 읽어 세션 locale 을 바꾼다.
+        registry.addInterceptor(localeChangeInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/resources/**", "/upload/**", "/favicon.ico",
+                        "/error", "/css/**", "/js/**", "/images/**"
+                );
+
         // IP 차단
         registry.addInterceptor(ipBlockInterceptor)
                 .addPathPatterns("/**")

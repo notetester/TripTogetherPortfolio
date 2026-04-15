@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
 <html lang="ko">
@@ -11,25 +12,25 @@
       <div class="auth-logo-icon">🌐</div><span class="auth-logo-text">TripTogether</span>
     </div>
 
-    <h1 class="auth-title">아이디 찾기 🔍</h1>
-    <p class="auth-sub">가입 시 등록한 인증된 이메일 주소를 입력하시면<br>확인 가능한 계정이 있는 경우 아이디 힌트를 안내해드립니다.</p>
+    <h1 class="auth-title"><spring:message code="auth.findId.title"/></h1>
+    <p class="auth-sub"><spring:message code="auth.findId.subtitle" htmlEscape="false"/></p>
 
     <div id="successBanner" class="auth-error-banner"
          style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d;display:none;"></div>
     <div id="errorBanner" class="auth-error-banner"></div>
 
     <div class="form-group">
-      <label class="form-label" for="email">인증된 이메일 주소</label>
+      <label class="form-label" for="email"><spring:message code="auth.findId.email"/></label>
       <input class="form-input" type="email" id="email" placeholder="example@email.com">
       <div class="field-msg" id="emailMsg"></div>
     </div>
 
-    <button type="button" class="btn-submit" id="sendBtn">아이디 안내 요청</button>
+    <button type="button" class="btn-submit" id="sendBtn"><spring:message code="auth.findId.submit"/></button>
 
     <div class="auth-footer" style="margin-top:16px;">
-      <a href="${pageContext.request.contextPath}/auth/login">← 로그인으로</a>
+      <a href="${pageContext.request.contextPath}/auth/login"><spring:message code="auth.common.backToLogin"/></a>
       &nbsp;·&nbsp;
-      <a href="${pageContext.request.contextPath}/auth/find-pw">비밀번호 찾기</a>
+      <a href="${pageContext.request.contextPath}/auth/find-pw"><spring:message code="auth.login.findPw"/></a>
     </div>
   </div>
 </div>
@@ -38,7 +39,7 @@ document.getElementById('sendBtn').addEventListener('click', async function () {
   const email = document.getElementById('email').value.trim();
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     document.getElementById('emailMsg').className = 'field-msg error';
-    document.getElementById('emailMsg').textContent = '유효한 이메일을 입력해주세요.';
+    document.getElementById('emailMsg').textContent = '<spring:message code="auth.findId.invalid" javaScriptEscape="true"/>';
     return;
   }
   document.getElementById('emailMsg').className = 'field-msg';

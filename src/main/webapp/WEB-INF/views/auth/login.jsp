@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
@@ -13,8 +14,8 @@
       <span class="auth-logo-text">TripTogether</span>
     </div>
 
-    <h1 class="auth-title">다시 만나서 반가워요 👋</h1>
-    <p class="auth-sub">계정에 로그인하고 여행을 시작하세요</p>
+    <h1 class="auth-title"><spring:message code="auth.login.title"/></h1>
+    <p class="auth-sub"><spring:message code="auth.login.subtitle"/></p>
 
     <c:if test="${not empty errorMsg}">
       <div class="auth-error-banner show">⚠️ ${errorMsg}</div>
@@ -24,11 +25,11 @@
     <div class="social-btns">
       <a href="${pageContext.request.contextPath}/auth/kakao" class="social-btn kakao">
         <span class="social-icon kakao-mark">k</span>
-        카카오로 로그인
+        <spring:message code="auth.login.kakao"/>
       </a>
       <a href="${pageContext.request.contextPath}/auth/naver" class="social-btn naver">
         <span class="social-icon" style="font-weight:900;font-size:14px;">N</span>
-        네이버로 로그인
+        <spring:message code="auth.login.naver"/>
       </a>
       <a href="${pageContext.request.contextPath}/auth/google" class="social-btn google">
         <span class="social-icon">
@@ -39,46 +40,46 @@
             <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           </svg>
         </span>
-        Google로 로그인
+        <spring:message code="auth.login.google"/>
       </a>
     </div>
 
-    <div class="auth-divider">또는 계정으로 로그인</div>
+    <div class="auth-divider"><spring:message code="auth.login.or"/></div>
 
     <form id="loginForm" onsubmit="return false;">
       <input type="hidden" id="redirect" value="${redirect}">
 
       <div class="form-group">
-        <label class="form-label" for="identifier">아이디 또는 이메일</label>
+        <label class="form-label" for="identifier"><spring:message code="auth.login.identifier"/></label>
         <input class="form-input" type="text" id="identifier" name="identifier"
-               placeholder="아이디 또는 이메일 입력" autocomplete="username" required>
+               placeholder="<spring:message code="auth.login.identifier.placeholder"/>" autocomplete="username" required>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password">비밀번호</label>
+        <label class="form-label" for="password"><spring:message code="auth.login.password"/></label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="password" name="password"
-                 placeholder="비밀번호 입력" autocomplete="current-password" required>
-          <button type="button" class="pw-toggle" id="pwToggle" title="비밀번호 표시">👁</button>
+                 placeholder="<spring:message code="auth.login.password.placeholder"/>" autocomplete="current-password" required>
+          <button type="button" class="pw-toggle" id="pwToggle" title="<spring:message code="auth.login.password.title"/>">👁</button>
         </div>
       </div>
 
       <div class="auth-row">
         <label class="checkbox-label">
-          <input type="checkbox" id="rememberMe"> 로그인 상태 유지
+          <input type="checkbox" id="rememberMe"> <spring:message code="auth.login.remember"/>
         </label>
         <div style="display:flex; gap:10px; align-items:center;">
-          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-id">아이디 찾기</a>
-          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-pw">비밀번호 찾기</a>
+          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-id"><spring:message code="auth.login.findId"/></a>
+          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-pw"><spring:message code="auth.login.findPw"/></a>
         </div>
       </div>
 
-      <button type="submit" class="btn-submit" id="loginBtn">로그인</button>
+      <button type="submit" class="btn-submit" id="loginBtn"><spring:message code="header.auth.login"/></button>
     </form>
 
     <div class="auth-footer">
-      계정이 없으신가요?
-      <a href="${pageContext.request.contextPath}/auth/register">회원가입</a>
+      <spring:message code="auth.login.noAccount"/>
+      <a href="${pageContext.request.contextPath}/auth/register"><spring:message code="auth.login.register"/></a>
     </div>
 
   </div>
@@ -103,7 +104,7 @@
     const errorBanner = document.getElementById('loginError');
 
     if (!identifier || !password) {
-      showError('아이디(이메일)와 비밀번호를 모두 입력해주세요.');
+      showError('<spring:message code="auth.login.error.required" javaScriptEscape="true"/>');
       return;
     }
 
@@ -122,10 +123,10 @@
       if (data.success) {
         location.href = data.redirect;
       } else {
-        showError(data.message || '로그인에 실패했습니다.');
+        showError(data.message || '<spring:message code="auth.login.error.fail" javaScriptEscape="true"/>');
       }
     } catch (e) {
-      showError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      showError('<spring:message code="auth.login.error.server" javaScriptEscape="true"/>');
     } finally {
       btn.classList.remove('loading');
       btn.disabled = false;

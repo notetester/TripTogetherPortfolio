@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminExploreMapper">
+
+    <resultMap id="spotRM" type="org.triptogether.admin.vo.AdminExploreSpotVO">
+        <id     property="spotIdx"     column="spot_idx"/>
+        <result property="spotId"      column="spot_id"/>
+        <result property="userIdx"     column="user_idx"/>
+        <result property="userId"      column="user_id"/>
+        <result property="nickname"    column="nickname"/>
+        <result property="name"        column="name"/>
+        <result property="region"      column="region"/>
+        <result property="address"     column="address"/>
+        <result property="latitude"    column="latitude"/>
+        <result property="longitude"   column="longitude"/>
+        <result property="description" column="description"/>
+        <result property="spotActive"  column="spot_active"/>
+        <result property="thumbUrl"    column="thumb_url"/>
+        <result property="ratingAvg"   column="rating_avg"/>
+        <result property="reviewCount" column="review_count"/>
+        <result property="likeCount"   column="like_count"/>
+        <result property="tagCount"    column="tag_count"/>
+        <result property="createdAt"   column="created_at"/>
+    </resultMap>
+
+    <resultMap id="reviewRM" type="org.triptogether.admin.vo.AdminExploreReviewVO">
+        <id     property="reviewIdx"   column="review_idx"/>
+        <result property="spotIdx"     column="spot_idx"/>
+        <result property="spotName"    column="spot_name"/>
+        <result property="userIdx"     column="user_idx"/>
+        <result property="userId"      column="user_id"/>
+        <result property="nickname"    column="nickname"/>
+        <result property="rating"      column="rating"/>
+        <result property="content"     column="content"/>
+        <result property="reviewBlock" column="review_block"/>
+        <result property="createdAt"   column="created_at"/>
+    </resultMap>
+
+    <sql id="spotSearchWhere">
+        <where>
+            <if test="status != null and status != 'ALL'">
+                <choose>
+                    <when test="status == 'ACTIVE'">
+                        AND COALESCE(st.spot_active, 0) = 0
+                    </when>
+                    <when test="status == 'DELETED'">
+                        AND COALESCE(st.spot_active, 0) = 1
+                    </when>
+                </choose>
+            </if>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'name'">
+                        AND st.name LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'region'">
+                        AND st.region LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'address'">
+                        AND st.address LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'description'">
+                        AND st.description LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'nickname'">
+                        AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'userId'">
+                        AND u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (
+                            st.name LIKE CONCAT('%', #{keyword}, '%')
+                            OR st.region LIKE CONCAT('%', #{keyword}, '%')
+                            OR st.address LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <sql id="reviewSearchWhere">
+        <where>
+            <if test="reviewStatus != null and reviewStatus != 'ALL'">
+                <choose>
+                    <when test="reviewStatus == 'ACTIVE'">
+                        AND COALESCE(sr.review_block, 0) = 0
+                    </when>
+                    <when test="reviewStatus == 'BLOCKED'">
+                        AND COALESCE(sr.review_block, 0) = 1
+                    </when>
+                </choose>
+            </if>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'nickname'">
+                        AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'name'">
+                        AND st.name LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'content'">
+                        AND sr.content LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (
+                            st.name LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                            OR sr.content LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <select id="getStats" resultType="org.triptogether.admin.vo.AdminExploreStatsVO">
+        SELECT
+            (SELECT COUNT(*) FROM SPOT_TRAVEL) AS totalSpots,
+            (SELECT COUNT(*) FROM SPOT_TRAVEL WHERE COALESCE(spot_active, 0) = 0) AS activeSpots,
+            (SELECT COUNT(*) FROM SPOT_TRAVEL WHERE COALESCE(spot_active, 0) = 1) AS deletedSpots,
+            (SELECT COUNT(*) FROM SPOT_REVIEW) AS totalReviews,
+            (SELECT COUNT(*) FROM SPOT_REVIEW WHERE COALESCE(review_block, 0) = 0) AS activeReviews,
+            (SELECT COUNT(*) FROM SPOT_REVIEW WHERE COALESCE(review_block, 0) = 1) AS blockedReviews
+        FROM DUAL
+    </select>
+
+    <select id="findSpots" resultMap="spotRM">
+        SELECT
+            st.spot_idx,
+            st.spot_id,
+            st.user_idx,
+            u.user_id,
+            u.nickname,
+            st.name,
+            st.region,
+            st.address,
+            st.latitude,
+            st.longitude,
+            st.description,
+            COALESCE(st.spot_active, 0) AS spot_active,
+            (
+                SELECT si.image_url
+                FROM SPOT_IMAGE si
+                WHERE si.spot_idx = st.spot_idx
+                ORDER BY si.image_idx ASC
+                LIMIT 1
+            ) AS thumb_url,
+            COALESCE((
+                SELECT ROUND(AVG(sr.rating), 1)
+                FROM SPOT_REVIEW sr
+                WHERE sr.spot_idx = st.spot_idx
+                  AND COALESCE(sr.review_block, 0) = 0
+            ), 0) AS rating_avg,
+            (
+                SELECT COUNT(*)
+                FROM SPOT_REVIEW sr
+                WHERE sr.spot_idx = st.spot_idx
+                  AND COALESCE(sr.review_block, 0) = 0
+            ) AS review_count,
+            (
+                SELECT COUNT(*)
+                FROM SPOT_LIKE sl
+                WHERE sl.spot_idx = st.spot_idx
+            ) AS like_count,
+            (
+                SELECT COUNT(*)
+                FROM SPOT_TAG s_tag
+                WHERE s_tag.spot_idx = st.spot_idx
+            ) AS tag_count,
+            COALESCE((
+                SELECT MIN(sr.created_at)
+                FROM SPOT_REVIEW sr
+                WHERE sr.spot_idx = st.spot_idx
+            ), NOW()) AS created_at
+        FROM SPOT_TRAVEL st
+        LEFT JOIN USERS u ON u.user_idx = st.user_idx
+        <include refid="spotSearchWhere"/>
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'reviewCount'">review_count DESC, st.spot_idx DESC</when>
+            <when test="sortBy == 'likeCount'">like_count DESC, st.spot_idx DESC</when>
+            <when test="sortBy == 'ratingAvg'">rating_avg DESC, st.spot_idx DESC</when>
+            <otherwise>st.spot_idx DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countSpots" resultType="int">
+        SELECT COUNT(*)
+        FROM SPOT_TRAVEL st
+        LEFT JOIN USERS u ON u.user_idx = st.user_idx
+        <include refid="spotSearchWhere"/>
+    </select>
+
+    <select id="findSpotDetail" resultMap="spotRM">
+        SELECT
+            st.spot_idx,
+            st.spot_id,
+            st.user_idx,
+            u.user_id,
+            u.nickname,
+            st.name,
+            st.region,
+            st.address,
+            st.latitude,
+            st.longitude,
+            st.description,
+            COALESCE(st.spot_active, 0) AS spot_active,
+            (
+                SELECT si.image_url
+                FROM SPOT_IMAGE si
+                WHERE si.spot_idx = st.spot_idx
+                ORDER BY si.image_idx ASC
+                LIMIT 1
+            ) AS thumb_url,
+            COALESCE((
+                SELECT ROUND(AVG(sr.rating), 1)
+                FROM SPOT_REVIEW sr
+                WHERE sr.spot_idx = st.spot_idx
+                  AND COALESCE(sr.review_block, 0) = 0
+            ), 0) AS rating_avg,
+            (
+                SELECT COUNT(*)
+                FROM SPOT_REVIEW sr
+                WHERE sr.spot_idx = st.spot_idx
+                  AND COALESCE(sr.review_block, 0) = 0
+            ) AS review_count,
+            (
+                SELECT COUNT(*)
+                FROM SPOT_LIKE sl
+                WHERE sl.spot_idx = st.spot_idx
+            ) AS like_count,
+            (
+                SELECT COUNT(*)
+                FROM SPOT_TAG s_tag
+                WHERE s_tag.spot_idx = st.spot_idx
+            ) AS tag_count,
+            COALESCE((
+                SELECT MIN(sr.created_at)
+                FROM SPOT_REVIEW sr
+                WHERE sr.spot_idx = st.spot_idx
+            ), NOW()) AS created_at
+        FROM SPOT_TRAVEL st
+        LEFT JOIN USERS u ON u.user_idx = st.user_idx
+        WHERE st.spot_idx = #{spotIdx}
+    </select>
+
+    <select id="findSpotTags" resultType="string">
+        SELECT tl.tag_name
+        FROM SPOT_TAG st
+        JOIN SPOT_TAG_LIST tl ON tl.tag_idx = st.tag_idx
+        WHERE st.spot_idx = #{spotIdx}
+        ORDER BY tl.tag_name ASC
+    </select>
+
+    <select id="findReviews" resultMap="reviewRM">
+        SELECT
+            sr.review_idx,
+            sr.spot_idx,
+            st.name AS spot_name,
+            sr.user_idx,
+            u.user_id,
+            u.nickname,
+            sr.rating,
+            sr.content,
+            COALESCE(sr.review_block, 0) AS review_block,
+            sr.created_at
+        FROM SPOT_REVIEW sr
+        JOIN SPOT_TRAVEL st ON st.spot_idx = sr.spot_idx
+        JOIN USERS u ON u.user_idx = sr.user_idx
+        <include refid="reviewSearchWhere"/>
+        ORDER BY sr.created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countReviews" resultType="int">
+        SELECT COUNT(*)
+        FROM SPOT_REVIEW sr
+        JOIN SPOT_TRAVEL st ON st.spot_idx = sr.spot_idx
+        JOIN USERS u ON u.user_idx = sr.user_idx
+        <include refid="reviewSearchWhere"/>
+    </select>
+
+    <select id="findReviewsBySpot" resultMap="reviewRM">
+        SELECT
+            sr.review_idx,
+            sr.spot_idx,
+            st.name AS spot_name,
+            sr.user_idx,
+            u.user_id,
+            u.nickname,
+            sr.rating,
+            sr.content,
+            COALESCE(sr.review_block, 0) AS review_block,
+            sr.created_at
+        FROM SPOT_REVIEW sr
+        JOIN SPOT_TRAVEL st ON st.spot_idx = sr.spot_idx
+        JOIN USERS u ON u.user_idx = sr.user_idx
+        WHERE sr.spot_idx = #{spotIdx}
+        ORDER BY sr.created_at DESC
+    </select>
+
+    <update id="updateSpotActive">
+        UPDATE SPOT_TRAVEL
+        SET spot_active = #{spotActive}
+        WHERE spot_idx = #{spotIdx}
+    </update>
+
+    <update id="bulkUpdateSpotActive">
+        UPDATE SPOT_TRAVEL
+        SET spot_active = #{spotActive}
+        WHERE spot_idx IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateReviewBlock">
+        UPDATE SPOT_REVIEW
+        SET review_block = #{reviewBlock}
+        WHERE review_idx = #{reviewIdx}
+    </update>
+
+    <update id="bulkUpdateReviewBlock">
+        UPDATE SPOT_REVIEW
+        SET review_block = #{reviewBlock}
+        WHERE review_idx IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>
