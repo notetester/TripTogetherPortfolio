@@ -30,9 +30,6 @@ public class DetailController {
     @Value("${google.maps.api-key}")
     private String mapsApiKey;
 
-    /* ============================================================
-       GET /detail/{spotIdx}  →  여행지 상세 페이지
-       ============================================================ */
     @GetMapping("/{spotIdx}")
     public String detail(@PathVariable Long spotIdx,
                          Model model,
@@ -46,14 +43,15 @@ public class DetailController {
         boolean canWrite = (loginUserIdx != null)
                 && exploreService.canWriteReview(spotIdx, loginUserIdx);
 
-        model.addAttribute("spot",         spot);
-        model.addAttribute("reviewList",   reviewList);
-        model.addAttribute("canWrite",     canWrite);
-        model.addAttribute("isLoggedIn",   loginUserIdx != null);
+        model.addAttribute("spot", spot);
+        model.addAttribute("reviewList", reviewList);
+        model.addAttribute("canWrite", canWrite);
+        model.addAttribute("isLoggedIn", loginUserIdx != null);
         model.addAttribute("loginUserIdx", loginUserIdx);
-        model.addAttribute("mapsApiKey",   mapsApiKey);
+        model.addAttribute("mapsApiKey", mapsApiKey);
         model.addAttribute("writeTagList", exploreService.getWriteTagList());
         model.addAttribute("isAdminMode", isAdminMode(session));
+        model.addAttribute("canEditSpot", canEditSpot(session, spot));
 
         if (!model.containsAttribute("adminEditForm")) {
             model.addAttribute("adminEditForm", buildEditForm(spot));
@@ -65,17 +63,15 @@ public class DetailController {
         return "detail/detail";
     }
 
-    /* ============================================================
-       POST /detail/{spotIdx}/admin/update  →  관리자 여행지 수정
-       ============================================================ */
     @PostMapping("/{spotIdx}/admin/update")
     public String updateSpot(@PathVariable Long spotIdx,
                              @ModelAttribute("adminEditForm") ExploreCreateDto adminEditForm,
                              HttpSession session,
                              RedirectAttributes redirectAttributes) {
 
-        if (!isAdminMode(session)) {
-            redirectAttributes.addFlashAttribute("adminEditError", "관리자모드에서만 여행지를 수정할 수 있습니다.");
+        ExploreVO spot = exploreService.getSpotDetail(spotIdx, getLoginUserIdx(session));
+        if (spot == null || !canEditSpot(session, spot)) {
+            redirectAttributes.addFlashAttribute("adminEditError", "관리자 또는 작성자 본인만 여행지를 수정할 수 있습니다.");
             return "redirect:/detail/" + spotIdx;
         }
 
@@ -92,9 +88,6 @@ public class DetailController {
         return "redirect:/detail/" + spotIdx;
     }
 
-    /* ============================================================
-       POST /detail/{spotIdx}/admin/delete  →  관리자 여행지 삭제(soft delete)
-       ============================================================ */
     @PostMapping("/{spotIdx}/admin/delete")
     public String deleteSpot(@PathVariable Long spotIdx,
                              HttpSession session,
@@ -110,14 +103,11 @@ public class DetailController {
         return "redirect:/explore";
     }
 
-    /* ============================================================
-       POST /detail/{spotIdx}/review  →  리뷰 작성 (AJAX)
-       ============================================================ */
     @PostMapping("/{spotIdx}/review")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> writeReview(
             @PathVariable Long spotIdx,
-            @RequestBody  Map<String, Object> body,
+            @RequestBody Map<String, Object> body,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -130,14 +120,14 @@ public class DetailController {
         }
         if (!exploreService.canWriteReview(spotIdx, userIdx)) {
             result.put("success", false);
-            result.put("message", "이미 리뷰를 작성하셨습니다.");
+            result.put("message", "이미 리뷰를 작성했습니다.");
             return ResponseEntity.ok(result);
         }
 
         int rating;
         String content;
         try {
-            rating  = Integer.parseInt(String.valueOf(body.get("rating")));
+            rating = Integer.parseInt(String.valueOf(body.get("rating")));
             content = String.valueOf(body.get("content")).trim();
         } catch (Exception e) {
             result.put("success", false);
@@ -152,7 +142,7 @@ public class DetailController {
         }
         if (content.isEmpty() || content.length() > 500) {
             result.put("success", false);
-            result.put("message", "리뷰 내용을 1~500자로 입력해 주세요.");
+            result.put("message", "리뷰 내용은 1~500자로 입력해주세요.");
             return ResponseEntity.ok(result);
         }
 
@@ -168,9 +158,6 @@ public class DetailController {
         return ResponseEntity.ok(result);
     }
 
-    /* ============================================================
-       DELETE /detail/{spotIdx}/review/{reviewIdx}  →  리뷰 삭제
-       ============================================================ */
     @DeleteMapping("/{spotIdx}/review/{reviewIdx}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteReview(
@@ -193,9 +180,6 @@ public class DetailController {
         return ResponseEntity.ok(result);
     }
 
-    /* ============================================================
-       POST /detail/{spotIdx}/review/{reviewIdx}/block  →  관리자 리뷰 차단
-       ============================================================ */
     @PostMapping("/{spotIdx}/review/{reviewIdx}/block")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> blockReview(
@@ -217,9 +201,6 @@ public class DetailController {
         return ResponseEntity.ok(result);
     }
 
-    /* ============================================================
-       POST /detail/{spotIdx}/review/block-bulk  →  관리자 리뷰 선택/일괄 차단
-       ============================================================ */
     @PostMapping("/{spotIdx}/review/block-bulk")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> blockReviews(
@@ -254,7 +235,6 @@ public class DetailController {
         return ResponseEntity.ok(result);
     }
 
-    /* ── 세션에서 로그인 사용자 idx ── */
     private Long getLoginUserIdx(HttpSession session) {
         UsersVO loginUser = getLoginUser(session);
         return loginUser != null ? loginUser.getUserIdx() : null;
@@ -268,10 +248,6 @@ public class DetailController {
         return null;
     }
 
-    /**
-     * 관리자 권한 + 현재 세션이 관리자모드인지 함께 확인한다.
-     * 헤더 버튼은 UI 전환용일 뿐이고, 실제 권한 제한은 서버에서 다시 검증해야 안전하다.
-     */
     private boolean isAdminMode(HttpSession session) {
         UsersVO loginUser = getLoginUser(session);
         if (loginUser == null || !"ADMIN".equals(loginUser.getUserRole())) {
@@ -279,6 +255,20 @@ public class DetailController {
         }
         String viewMode = (String) session.getAttribute("viewMode");
         return !"user".equals(viewMode);
+    }
+
+    private boolean canEditSpot(HttpSession session, ExploreVO spot) {
+        if (spot == null) {
+            return false;
+        }
+        if (isAdminMode(session)) {
+            return true;
+        }
+
+        UsersVO loginUser = getLoginUser(session);
+        return loginUser != null
+                && spot.getUserIdx() != null
+                && spot.getUserIdx().equals(loginUser.getUserIdx());
     }
 
     private ExploreCreateDto buildEditForm(ExploreVO spot) {
@@ -293,10 +283,6 @@ public class DetailController {
         return dto;
     }
 
-    /**
-     * 관리자 수정에서도 일반 등록과 동일한 기준으로 값 검증을 맞춘다.
-     * 잘못된 좌표나 과도하게 긴 문자열이 들어오면 DB 반영 전에 차단한다.
-     */
     private String validateSpotForm(ExploreCreateDto form) {
         if (form == null) return "수정 정보가 올바르지 않습니다.";
 

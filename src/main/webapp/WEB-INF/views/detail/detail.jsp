@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -9,7 +9,7 @@
 <body>
 <style>
 html { scrollbar-gutter: stable; }
-/* ── 히어로 ── */
+/* 히어로 영역 */
 .det-hero { position:relative; height:420px; overflow:hidden; background:var(--gray-200); }
 .det-hero img { width:100%; height:100%; object-fit:cover; display:block; }
 .det-hero-ov { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(0,0,0,.1),rgba(0,0,0,.55)); }
@@ -18,7 +18,7 @@ html { scrollbar-gutter: stable; }
 .det-hero-meta { display:flex; align-items:center; gap:16px; font-size:15px; font-weight:500; text-shadow:0 1px 4px rgba(0,0,0,.4); }
 .det-hero-rat .star { color:#fbbf24; font-size:18px; }
 
-/* ── 본문 ── */
+/* 본문 레이아웃 */
 .det-body {
   max-width:960px;
   width:100%;
@@ -27,7 +27,7 @@ html { scrollbar-gutter: stable; }
   box-sizing:border-box;
 }
 
-/* ── 액션 버튼 ── */
+/* 액션 버튼 영역 */
 .det-actions { display:flex; gap:12px; margin-bottom:36px; flex-wrap:wrap; }
 .det-action-btn {
   display:flex; align-items:center; gap:8px;
@@ -50,7 +50,7 @@ html { scrollbar-gutter: stable; }
 }
 .det-back-btn:hover { color:var(--blue); }
 
-/* ── 섹션 카드 ── */
+/* 섹션 카드 공통 */
 .det-section {
   background:#fff; border-radius:var(--radius);
   padding:28px 32px; margin-bottom:24px;
@@ -63,7 +63,7 @@ html { scrollbar-gutter: stable; }
   margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--gray-100);
 }
 
-/* ── 정보 그리드 ── */
+/* 기본 정보 그리드 */
 .info-grid { display:grid; gap:14px; }
 .info-row { display:flex; align-items:flex-start; gap:12px; font-size:14px; }
 .info-label { width:70px; flex-shrink:0; color:var(--gray-500); font-weight:500; }
@@ -71,7 +71,7 @@ html { scrollbar-gutter: stable; }
 .det-desc { font-size:15px; color:var(--gray-700); line-height:1.8; }
 .det-tags { display:flex; flex-wrap:wrap; gap:8px; }
 
-/* ── 지도 플레이스홀더 ── */
+/* 지도 플레이스홀더 */
 .map-placeholder {
   width:100%; height:220px;
   background:linear-gradient(135deg,var(--blue-light),#f5f3ff);
@@ -80,7 +80,7 @@ html { scrollbar-gutter: stable; }
 }
 .map-placeholder .map-icon { font-size:36px; }
 
-/* ── 리뷰 요약 헤더 ── */
+/* 리뷰 요약 헤더 */
 .review-summary-wrap {
   display:flex; align-items:center; gap:32px;
   padding-bottom:24px; margin-bottom:24px;
@@ -90,12 +90,12 @@ html { scrollbar-gutter: stable; }
 .review-stars-big { font-size:22px; letter-spacing:3px; margin:6px 0 4px; }
 .review-sub { font-size:13px; color:var(--gray-400); }
 
-/* ── 별점 선택기 (리뷰 작성) ── */
+/* 별점 선택기 */
 .star-picker { display:flex; gap:6px; margin-bottom:12px; }
 .star-picker .sp { font-size:28px; cursor:pointer; color:var(--gray-200); transition:color .1s; }
 .star-picker .sp.on { color:#f59e0b; }
 
-/* ── 리뷰 작성 폼 ── */
+/* 리뷰 작성 폼 */
 .review-form-box {
   background:var(--gray-50); border-radius:10px;
   padding:20px; margin-bottom:28px;
@@ -120,7 +120,7 @@ html { scrollbar-gutter: stable; }
 .review-submit-btn:hover { background:#1d4ed8; }
 .review-submit-btn:disabled { opacity:.5; cursor:not-allowed; }
 
-/* ── 로그인 유도 박스 ── */
+/* 로그인 유도 박스 */
 .review-login-box {
   background:var(--blue-light); border-radius:10px;
   padding:20px 24px; margin-bottom:28px;
@@ -136,7 +136,7 @@ html { scrollbar-gutter: stable; }
 }
 .review-login-link:hover { background:#1d4ed8; }
 
-/* ── 리뷰 카드 목록 ── */
+/* 리뷰 카드 목록 */
 .review-list { display:flex; flex-direction:column; gap:16px; }
 .review-admin-tools {
   display:flex;
@@ -225,7 +225,7 @@ html { scrollbar-gutter: stable; }
   font-size: 14px;
 }
 
-/* ── 관리자 전용 영역 ── */
+/* 관리자 편집 영역 */
 .det-admin-bar {
   display:flex;
   align-items:center;
@@ -369,7 +369,7 @@ html { scrollbar-gutter: stable; }
   flex-wrap:wrap;
 }
 
-/* ── 반응형 ── */
+/* 반응형 대응 */
 @media (max-width:640px) {
   .det-hero { height:280px; }
   .det-hero-content h1 { font-size:1.6rem; }
@@ -429,29 +429,31 @@ html { scrollbar-gutter: stable; }
     </button>
   </div>
 
-  <c:if test="${isAdminMode}">
+  <c:if test="${canEditSpot}">
     <div class="det-admin-bar">
       <div class="det-admin-copy">
-        <strong>🛡️ 관리자모드</strong><br>
-        현재 여행지 정보를 수정하거나, 소프트 삭제 처리할 수 있습니다.
+        <strong>${isAdminMode ? '🛡️ 관리자모드' : '✏️ 내 여행지 수정'}</strong><br>
+        ${isAdminMode ? '현재 여행지 정보를 수정하거나, 소프트 삭제 처리할 수 있습니다.' : '여행지를 정보를 언제든지 수정하실 수 있습니다.'}
       </div>
       <div class="det-admin-actions">
         <button type="button" class="det-admin-btn" id="openAdminEditBtn">여행지 수정</button>
-        <form method="post" action="${pageContext.request.contextPath}/detail/${spot.spotIdx}/admin/delete"
-              onsubmit="return confirm('이 여행지를 삭제 처리하시겠습니까? 삭제 처리 후에는 목록과 상세에서 노출되지 않습니다.');">
-          <button type="submit" class="det-admin-btn danger">여행지 삭제</button>
-        </form>
+        <c:if test="${isAdminMode}">
+          <form method="post" action="${pageContext.request.contextPath}/detail/${spot.spotIdx}/admin/delete"
+                onsubmit="return confirm('이 여행지를 삭제 처리하시겠습니까? 삭제 처리 후에는 목록과 상세에서 노출되지 않습니다.');">
+            <button type="submit" class="det-admin-btn danger">여행지 삭제</button>
+          </form>
+        </c:if>
       </div>
     </div>
   </c:if>
 
-  <c:if test="${isAdminMode}">
+  <c:if test="${canEditSpot}">
     <div class="det-admin-modal ${openAdminEditModal ? 'show' : ''}" id="adminEditModal">
       <div class="det-admin-dialog">
         <div class="det-admin-head">
           <div>
             <h3>여행지 정보 수정</h3>
-            <p>관리자모드에서만 수정이 가능하며, 빈 값이나 잘못된 좌표는 저장되지 않습니다.</p>
+            <p>관리자 또는 작성자 본인만 수정할 수 있으며, 빈 값이나 잘못된 좌표는 저장되지 않습니다.</p>
           </div>
           <button type="button" class="det-admin-close" id="closeAdminEditBtn">&#215;</button>
         </div>
@@ -594,9 +596,7 @@ html { scrollbar-gutter: stable; }
     </div>
   </c:if>
 
-  <!-- ════════════════════════════════════════
-       리뷰 섹션
-       ════════════════════════════════════════ -->
+  <!-- 리뷰 섹션 -->
   <div class="det-section">
     <h2>&#128172; 리뷰</h2>
 
@@ -628,7 +628,7 @@ html { scrollbar-gutter: stable; }
     <!-- 리뷰 작성 영역 -->
     <div id="reviewWriteArea">
     <c:choose>
-      <%-- ① 로그인 O + 아직 리뷰 미작성 → 작성 폼 표시 --%>
+      <%-- 로그인했고 아직 리뷰를 작성하지 않은 경우 작성 폼 표시 --%>
       <c:when test="${canWrite}">
         <div class="review-form-box" id="reviewFormBox">
           <h3>&#9997; 리뷰 작성</h3>
@@ -647,15 +647,15 @@ html { scrollbar-gutter: stable; }
           </div>
         </div>
       </c:when>
-      <%-- ② 로그인 O + 이미 리뷰 작성함 → 안내 문구 --%>
+      <%-- 로그인했고 이미 리뷰를 작성한 경우 안내 문구 --%>
       <c:when test="${isLoggedIn and not canWrite}">
         <div id="alreadyReviewBox"
              style="background:var(--gray-50);border-radius:10px;padding:16px 20px;margin-bottom:28px;
                     font-size:14px;color:var(--gray-500);border:1px solid var(--gray-200);">
-          &#10003; 이미 리뷰를 작성하셨습니다.
+          &#10003; 이미 리뷰를 작성했습니다.
         </div>
       </c:when>
-      <%-- ③ 비로그인 → 로그인 유도 --%>
+      <%-- 비로그인 시 로그인 유도 --%>
       <c:otherwise>
         <div class="review-login-box">
           <p>&#128172; 리뷰를 작성하려면 로그인이 필요합니다.</p>
@@ -740,9 +740,7 @@ html { scrollbar-gutter: stable; }
 
   </div><!-- /리뷰 섹션 -->
 
-  <!-- ════════════════════════════════════════
-       AI 맞춤 여행지 추천 섹션 (로그인 사용자만)
-       ════════════════════════════════════════ -->
+  <!-- AI 맞춤 여행지 추천 섹션 (로그인 사용자만) -->
   <c:if test="${isLoggedIn}">
   <div class="det-section" id="aiRecommendSection">
     <h2 id="aiRecTitle">&#x1F916; AI 맞춤 추천 여행지</h2>
@@ -756,7 +754,7 @@ html { scrollbar-gutter: stable; }
       </div>
       <div class="spot-grid" id="recGrid" style="display:none;"></div>
       <div id="recEmptyMsg" class="ai-rec-state" style="display:none;">
-        아직 방문 기록이 부족합니다. 여행지를 더 둘러보시면 맞춤 추천을 드릴게요! ✈️
+        아직 방문 기록이 부족합니다. 여행지를 둘러보시면 맞춤 추천이 더 정확해져요! 😊
       </div>
     </div>
   </div>
@@ -791,7 +789,7 @@ html { scrollbar-gutter: stable; }
     document.body.classList.add('modal-open');
   }
 
-  /* ── 토스트 ── */
+  /* 토스트 */
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -804,9 +802,7 @@ html { scrollbar-gutter: stable; }
     showToast(successMsg.dataset.message);
   }
 
-  /* ══════════════════════════════════════
-     관리자 여행지 수정 모달
-     ══════════════════════════════════════ */
+  /* 관리자 여행지 수정 모달 */
   function openAdminModal() {
     if (!adminEditModal) return;
     adminEditModal.classList.add('show');
@@ -850,9 +846,7 @@ html { scrollbar-gutter: stable; }
     });
   });
 
-  /* ══════════════════════════════════════
-     찜 / 좋아요 토글
-     ══════════════════════════════════════ */
+  /* 찜 / 좋아요 토글 */
   function toggleAction(endpoint, btn, onText, offText, onMsg, offMsg, key) {
     fetch(ctx + endpoint, { method: 'POST' })
       .then(r => r.json())
@@ -877,17 +871,15 @@ html { scrollbar-gutter: stable; }
 
   favBtn && favBtn.addEventListener('click', function () {
     toggleAction('/explore/favorite/' + spotIdx, this,
-                 '찜 완료', '찜하기', '⭐ 찜 추가됨', '찜 취소됨', 'favorited');
+                 '찜 완료', '찜하기', '⭐ 찜 추가', '찜 취소', 'favorited');
   });
 
   likeBtn && likeBtn.addEventListener('click', function () {
     toggleAction('/explore/like/' + spotIdx, this,
-                 '좋아요 완료', '좋아요', '❤️ 좋아요!', '좋아요 취소됨', 'liked');
+                 '좋아요 완료', '좋아요', '❤️ 좋아요', '좋아요 취소', 'liked');
   });
 
-  /* ══════════════════════════════════════
-     별점 선택기
-     ══════════════════════════════════════ */
+  /* 별점 선택기 */
   let selectedRating = 0;
 
   function bindStarPicker() {
@@ -913,9 +905,7 @@ html { scrollbar-gutter: stable; }
     btn.disabled = !(selectedRating > 0 && area.value.trim().length > 0);
   }
 
-  /* ══════════════════════════════════════
-     리뷰 등록
-     ══════════════════════════════════════ */
+  /* 리뷰 등록 */
   function bindSubmitBtn() {
     const textarea  = document.getElementById('reviewContent');
     const submitBtn = document.getElementById('reviewSubmitBtn');
@@ -946,7 +936,7 @@ html { scrollbar-gutter: stable; }
           submitBtn.textContent = '등록하기';
           return;
         }
-        showToast('리뷰가 등록되었습니다 ✅');
+        showToast('리뷰가 등록되었습니다.');
         setTimeout(() => location.reload(), 800);
       })
       .catch(() => {
@@ -961,9 +951,7 @@ html { scrollbar-gutter: stable; }
   if (document.getElementById('starPicker'))   bindStarPicker();
   if (document.getElementById('reviewSubmitBtn')) bindSubmitBtn();
 
-  /* ══════════════════════════════════════
-     리뷰 삭제
-     ══════════════════════════════════════ */
+  /* 리뷰 삭제 */
   function bindDeleteBtns() {
     document.querySelectorAll('.review-delete-btn').forEach(btn => {
       btn.addEventListener('click', function () {
@@ -981,13 +969,13 @@ html { scrollbar-gutter: stable; }
             card && card.remove();
             showToast('리뷰가 삭제되었습니다.');
 
-            // 2. 리뷰 목록이 비었으면 빈 상태 메시지
+            // 2. 리뷰 목록이 비었으면 빈 상태 메시지 표시
             const list = document.getElementById('reviewList');
             if (list && list.querySelectorAll('.review-card').length === 0) {
               list.innerHTML = '<div class="review-empty">아직 작성된 리뷰가 없습니다. 첫 번째 리뷰를 남겨보세요! 😊</div>';
             }
 
-            // 3. "이미 작성" 안내 박스 제거 → 작성 폼 복원
+            // 3. "이미 작성" 안내 박스를 지우고 작성 폼 복원
             const alreadyBox = document.getElementById('alreadyReviewBox');
             if (alreadyBox) alreadyBox.remove();
             showWriteForm();
@@ -997,9 +985,7 @@ html { scrollbar-gutter: stable; }
     });
   }
 
-  /* ══════════════════════════════════════
-     관리자 리뷰 차단
-     ══════════════════════════════════════ */
+  /* 관리자 리뷰 차단 */
   function bindBlockBtns() {
     document.querySelectorAll('[data-block-review-idx]').forEach(btn => {
       btn.addEventListener('click', function () {
@@ -1032,9 +1018,7 @@ html { scrollbar-gutter: stable; }
     });
   }
 
-  /* ══════════════════════════════════════
-     관리자 리뷰 선택 / 전체선택 / 선택 차단
-     ══════════════════════════════════════ */
+  /* 관리자 리뷰 선택 / 전체선택 / 선택 차단 */
   const reviewSelectAll = document.getElementById('reviewSelectAll');
   const blockSelectedReviewsBtn = document.getElementById('blockSelectedReviewsBtn');
 
@@ -1139,12 +1123,12 @@ html { scrollbar-gutter: stable; }
   function showWriteForm() {
     const area = document.getElementById('reviewWriteArea');
     if (!area) return;
-    // 이미 폼이 있으면 중복 방지
+    // 이미 폼이 있으면 중복 생성 방지
     if (area.querySelector('#reviewFormBox')) return;
 
     area.innerHTML = `
       <div class="review-form-box" id="reviewFormBox">
-        <h3>✏️ 리뷰 작성</h3>
+        <h3>✍ 리뷰 작성</h3>
         <div class="star-picker" id="starPicker">
           <span class="sp" data-v="1">★</span>
           <span class="sp" data-v="2">★</span>
@@ -1173,26 +1157,22 @@ html { scrollbar-gutter: stable; }
 })();
 </script>
 
-<%-- ═══════════════════════════════════════════════════════
-     Google Maps (위도/경도가 있는 경우만 로드)
-     ═══════════════════════════════════════════════════════ --%>
+<%-- Google Maps: 위도/경도가 있는 경우만 로드 --%>
 <c:if test="${not empty spot.latitude and not empty spot.longitude and spot.latitude != 0 and spot.longitude != 0}">
 <script>
-/* ── 여행지 좌표 & 정보 ── */
+/* 여행지 좌표와 이름 */
 var SPOT_LAT  = parseFloat('<fmt:formatNumber value="${spot.latitude}"  pattern="0.######" groupingUsed="false"/>');
 var SPOT_LNG  = parseFloat('<fmt:formatNumber value="${spot.longitude}" pattern="0.######" groupingUsed="false"/>');
 var SPOT_NAME = '${fn:escapeXml(spot.name)}';
 
-/* 서울(인천) */
+/* 서울 기준 좌표 */
 var SEOUL_LAT = 37.5665;
 var SEOUL_LNG = 126.9780;
 
 var googleMap, destinationMarker, seoulMarker, routeLine, labelOverlay;
 var lineVisible = false;
 
-/* ══════════════════════════════════════
-   1. 도시명 라벨 (OverlayView — 항상 표시)
-   ══════════════════════════════════════ */
+/* 1. 도시명 라벨 (OverlayView 커스텀 표시) */
 function CityLabel(position, map) {
   this.position_ = position;
   this.div_      = null;
@@ -1253,9 +1233,7 @@ function cityLabel_onRemove() {
   }
 }
 
-/* ══════════════════════════════════════
-   2. Google Maps 초기화
-   ══════════════════════════════════════ */
+/* 2. Google Maps 초기화 */
 function initMap() {
   if (isNaN(SPOT_LAT) || isNaN(SPOT_LNG)) {
     document.getElementById('googleMap').innerHTML =
@@ -1264,7 +1242,7 @@ function initMap() {
     return;
   }
 
-  /* google.maps 로드 후 OverlayView 상속 */
+  /* google.maps 로드 후 OverlayView 연결 */
   CityLabel.prototype = Object.create(google.maps.OverlayView.prototype);
   CityLabel.prototype.constructor = CityLabel;
   CityLabel.prototype.onAdd    = cityLabel_onAdd;
@@ -1285,13 +1263,13 @@ function initMap() {
     fullscreenControl: true
   });
 
-  /* 두 지점 포함 Bounds */
+  /* 목적지 포함 Bounds */
   var bounds = new google.maps.LatLngBounds();
   bounds.extend(new google.maps.LatLng(SPOT_LAT,  SPOT_LNG));
   bounds.extend(new google.maps.LatLng(SEOUL_LAT, SEOUL_LNG));
   googleMap.fitBounds(bounds, { top: 100, right: 60, bottom: 60, left: 60 });
 
-  /* ── 여행지 마커 (빨간 원) ── */
+  /* 목적지 여행지 마커 (빨간 핀) */
   destinationMarker = new google.maps.Marker({
     position:  destLatLng,
     map:       googleMap,
@@ -1308,7 +1286,7 @@ function initMap() {
     animation: google.maps.Animation.DROP
   });
 
-  /* ── 서울 마커 (파란 원) ── */
+  /* 서울 기준 마커 (파란 핀) */
   seoulMarker = new google.maps.Marker({
     position:  seoulLatLng,
     map:       googleMap,
@@ -1338,13 +1316,13 @@ function initMap() {
     }
   });
 
-  /* ── 도시명 라벨 (항상 표시) ── */
+  /* 목적지 도시명 라벨 (항상 표시) */
   labelOverlay = new CityLabel(
     new google.maps.LatLng(SPOT_LAT, SPOT_LNG),
     googleMap
   );
 
-  /* ── 대권 노선 Polyline (초기 숨김) ── */
+  /* 목적지 연결선 Polyline (초기 숨김) */
   routeLine = new google.maps.Polyline({
     path:          [seoulLatLng, destLatLng],
     geodesic:      true,
@@ -1359,7 +1337,7 @@ function initMap() {
     map: googleMap
   });
 
-  /* ── 여행지 마커 클릭: 노선 토글 ── */
+  /* 여행지 마커 클릭: 연결선 토글 */
   destinationMarker.addListener('click', function () {
     if (lineVisible) {
       routeLine.setOptions({ strokeOpacity: 0 });
@@ -1377,7 +1355,7 @@ function initMap() {
     setTimeout(function() { destinationMarker.setAnimation(null); }, 1200);
   });
 
-  /* 지도 클릭 시 노선 닫기 */
+  /* 지도 클릭 시 연결선 닫기 */
   googleMap.addListener('click', function () {
     routeLine.setOptions({ strokeOpacity: 0 });
     lineVisible = false;
@@ -1391,9 +1369,7 @@ function initMap() {
   async defer></script>
 </c:if>
 
-<%-- ═══════════════════════════════════════════════════════
-     체류 시간 기록 + AI 추천 (로그인 사용자만)
-     ═══════════════════════════════════════════════════════ --%>
+<%-- 체류 시간 기록 + AI 추천 (로그인 사용자만) --%>
 <c:if test="${isLoggedIn}">
 <script>
 (function() {
@@ -1402,7 +1378,7 @@ function initMap() {
   var pageEnter    = Date.now();
   var logSent      = false;
 
-  /* ── 체류 시간 전송: fetch + keepalive (sendBeacon 대신 → Content-Type 정상 전달) ── */
+  /* 체류 시간 전송: fetch + keepalive 사용 */
   function sendViewLog() {
     if (logSent) return;
     var staySeconds = Math.round((Date.now() - pageEnter) / 1000);
@@ -1414,7 +1390,7 @@ function initMap() {
       body: JSON.stringify({ spotIdx: SPOT_IDX_REC, staySeconds: staySeconds }),
       keepalive: true
     }).then(function() {
-      /* ★ 체류 전송 완료 → 추천 섹션 즉시 새로고침 (실시간 반영) */
+      /* 체류 시간 전송 완료 후 추천 섹션 즉시 새로고침 */
       refreshRecommendations();
     }).catch(function() { /* 무시 */ });
   }
@@ -1423,7 +1399,7 @@ function initMap() {
     if (document.visibilityState === 'hidden') sendViewLog();
   });
 
-  /* ── 추천 카드 HTML 생성 ── */
+  /* 추천 카드 HTML 생성 */
   function buildRecCard(spot) {
     var thumb = spot.thumbUrl ||
       'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80';
@@ -1459,7 +1435,7 @@ function initMap() {
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  /* ── AI 추천 조회 (최초 로드 - 로딩 메시지 포함) ── */
+  /* AI 추천 조회 (최초 로드) */
   function loadRecommendations() {
     fetch(CTX_REC + '/recommend/spots?currentSpotIdx=' + SPOT_IDX_REC)
       .then(function(r) { return r.json(); })
@@ -1473,12 +1449,12 @@ function initMap() {
           if (emptyMsg) emptyMsg.style.display = 'block';
           return;
         }
-        /* ★ 트렌딩 폴백이면 섹션 제목 변경 */
+        /* 인기 추천 응답이면 섹션 제목 변경 */
         var title = document.getElementById('aiRecTitle');
         var desc  = document.getElementById('aiRecDesc');
         if (data.isTrending) {
-          if (title) title.textContent = '\uD83D\uDD25 요즘 뜨는 여행지 추천';
-          if (desc)  desc.textContent  = '최근 가장 많은 관심을 받고 있는 여행지를 소개해드립니다.';
+          if (title) title.textContent = '\uD83D\uDD25 ?붿쬁 ?⑤뒗 ?ы뻾吏 異붿쿇';
+          if (desc)  desc.textContent  = '理쒓렐 媛??留롮? 愿?ъ쓣 諛쏄퀬 ?덈뒗 ?ы뻾吏瑜??뚭컻?대뱶由쎈땲??';
         } else {
           if (title) title.innerHTML = '&#x1F916; AI 맞춤 추천 여행지';
           if (desc)  desc.textContent = '회원님의 관심 여행지를 분석해 비슷한 취향의 여행지를 추천해드립니다.';
@@ -1492,11 +1468,11 @@ function initMap() {
       })
       .catch(function() {
         var loadMsg = document.getElementById('recLoadingMsg');
-        if (loadMsg) loadMsg.textContent = '추천 정보를 불러오지 못했습니다.';
+        if (loadMsg) loadMsg.textContent = '異붿쿇 ?뺣낫瑜?遺덈윭?ㅼ? 紐삵뻽?듬땲??';
       });
   }
 
-  /* ★ 추천 조용히 새로고침 (체류 기록 전송 후 호출 - 로딩 메시지 없이 카드만 교체) */
+  /* 추천만 조용히 새로고침 (체류 기록 전송 후) */
   function refreshRecommendations() {
     fetch(CTX_REC + '/recommend/spots?currentSpotIdx=' + SPOT_IDX_REC)
       .then(function(r) { return r.json(); })
@@ -1521,3 +1497,8 @@ function initMap() {
 
 </body>
 </html>
+
+
+
+
+
