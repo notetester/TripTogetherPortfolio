@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:set var="pageCSS" value="explore/explore.css"/>
 <%@ include file="../common/header.jsp" %>
@@ -9,44 +10,44 @@
 <body>
 <div class="exp-header">
   <div class="exp-header-inner">
-    <h1>&#128205; 여행지 탐색</h1>
+    <h1>&#128205; <spring:message code="explore.title"/></h1>
 
     <div class="search-wrap">
       <span class="search-icon">&#128269;</span>
       <input type="text"
              id="searchInput"
              class="search-input"
-             placeholder="도시, 지역, 주소로 검색"
+             placeholder="<spring:message code="explore.search.placeholder"/>"
              value="${fn:escapeXml(search.keyword)}"
              autocomplete="off"/>
       <button class="search-clear ${not empty search.keyword ? 'visible' : ''}"
               id="searchClear"
-              title="검색 초기화">&#215;</button>
+              title="<spring:message code="explore.search.clear"/>">&#215;</button>
       <%-- ★ 자동완성 드롭다운: 검색어 입력 시 AJAX로 후보 목록을 받아 표시 --%>
       <ul class="suggest-dropdown" id="suggestDropdown"></ul>
     </div>
 
     <div class="exp-header-actions">
-      <p class="exp-header-note">찾는 여행지가 없다면, 새로운 여행지를 커뮤니티와 공유해보세요.</p>
+      <p class="exp-header-note"><spring:message code="explore.note"/></p>
       <c:if test="${not empty sessionScope.loginUser}">
         <button type="button" class="exp-primary-btn" id="openSpotWriteBtn">
-          &#9998; 여행지 추가
+          &#9998; <spring:message code="explore.add"/>
         </button>
       </c:if>
     </div>
 
     <div class="exp-tab-bar" role="tablist">
-      <button class="exp-tab-btn ${search.tab == 'all' ? 'active' : ''}" data-tab="all" role="tab">&#10024; 전체</button>
-      <button class="exp-tab-btn ${search.tab == 'region' ? 'active' : ''}" data-tab="region" role="tab">&#128205; 지역별</button>
-      <button class="exp-tab-btn ${search.tab == 'theme' ? 'active' : ''}" data-tab="theme" role="tab">&#128506; 테마별</button>
-      <button class="exp-tab-btn ${search.tab == 'rating' ? 'active' : ''}" data-tab="rating" role="tab">&#11088; 평점순</button>
-      <button class="exp-tab-btn ${search.tab == 'likes' ? 'active' : ''}" data-tab="likes" role="tab">&#10084; 좋아요순</button>
+      <button class="exp-tab-btn ${search.tab == 'all' ? 'active' : ''}" data-tab="all" role="tab">&#10024; <spring:message code="explore.tab.all"/></button>
+      <button class="exp-tab-btn ${search.tab == 'region' ? 'active' : ''}" data-tab="region" role="tab">&#128205; <spring:message code="explore.tab.region"/></button>
+      <button class="exp-tab-btn ${search.tab == 'theme' ? 'active' : ''}" data-tab="theme" role="tab">&#128506; <spring:message code="explore.tab.theme"/></button>
+      <button class="exp-tab-btn ${search.tab == 'rating' ? 'active' : ''}" data-tab="rating" role="tab">&#11088; <spring:message code="explore.tab.rating"/></button>
+      <button class="exp-tab-btn ${search.tab == 'likes' ? 'active' : ''}" data-tab="likes" role="tab">&#10084; <spring:message code="explore.tab.likes"/></button>
       <%-- ★ 찜한 여행지 탭: 로그인 사용자에게만 노출 --%>
       <c:if test="${not empty sessionScope.loginUser}">
-        <button class="exp-tab-btn ${search.tab == 'favorite' ? 'active' : ''}" data-tab="favorite" role="tab">&#x1F4CC; 찜한 여행지</button>
+        <button class="exp-tab-btn ${search.tab == 'favorite' ? 'active' : ''}" data-tab="favorite" role="tab">&#x1F4CC; <spring:message code="explore.tab.favorite"/></button>
       </c:if>
       <c:if test="${not empty sessionScope.loginUser}">
-        <button class="exp-tab-btn ${search.tab == 'ai' ? 'active' : ''}" data-tab="ai" role="tab">&#x1F916; AI 추천</button>
+        <button class="exp-tab-btn ${search.tab == 'ai' ? 'active' : ''}" data-tab="ai" role="tab">&#x1F916; <spring:message code="explore.tab.ai"/></button>
       </c:if>
     </div>
   </div>
@@ -57,10 +58,10 @@
   <div class="spot-write-dialog">
     <div class="spot-write-head">
       <div>
-        <h2>여행지 추가</h2>
-        <p>위치를 검색한 후, 여행지 정보를 입력해주세요.</p>
+        <h2><spring:message code="explore.modal.title"/></h2>
+        <p><spring:message code="explore.modal.subtitle"/></p>
       </div>
-      <button type="button" class="spot-write-close" id="closeSpotWriteBtn" aria-label="닫기">&#215;</button>
+      <button type="button" class="spot-write-close" id="closeSpotWriteBtn" aria-label="<spring:message code="explore.modal.close"/>">&#215;</button>
     </div>
 
     <c:if test="${not empty writeError}">
@@ -73,30 +74,30 @@
       <c:set var="selectedWriteTags" value="${empty writeForm.tags ? '' : fn:join(writeForm.tags, '|')}"/>
       <div class="spot-write-grid">
         <div class="spot-write-fields">
-        <label class="spot-write-label">위치 검색</label>
+        <label class="spot-write-label"><spring:message code="explore.form.location"/></label>
           <%-- 새 Google Places API: PlaceAutocompleteElement가 여기에 삽입됩니다 --%>
           <div id="spotLocationSearchWrap"></div>
-          <p class="spot-write-help">검색 결과를 선택하면 주소와 좌표가 자동으로 입력됩니다.</p>
+          <p class="spot-write-help"><spring:message code="explore.form.location.help"/></p>
 
-          <label class="spot-write-label" for="spotName">여행지 이름</label>
+          <label class="spot-write-label" for="spotName"><spring:message code="explore.form.name"/></label>
           <input type="text" id="spotName" name="name" maxlength="100"
-                 value="${fn:escapeXml(writeForm.name)}" placeholder="예) N서울타워" required>
+                 value="${fn:escapeXml(writeForm.name)}" placeholder="<spring:message code="explore.form.name.placeholder"/>" required>
 
-          <label class="spot-write-label" for="spotRegion">지역</label>
+          <label class="spot-write-label" for="spotRegion"><spring:message code="explore.form.region"/></label>
           <input type="text" id="spotRegion" name="region" maxlength="100"
-                 value="${fn:escapeXml(writeForm.region)}" placeholder="예) 대한민국" required>
+                 value="${fn:escapeXml(writeForm.region)}" placeholder="<spring:message code="explore.form.region.placeholder"/>" required>
 
-          <label class="spot-write-label" for="spotAddress">주소</label>
+          <label class="spot-write-label" for="spotAddress"><spring:message code="explore.form.address"/></label>
           <input type="text" id="spotAddress" name="address" maxlength="255"
-                 value="${fn:escapeXml(writeForm.address)}" placeholder="선택된 주소" required>
+                 value="${fn:escapeXml(writeForm.address)}" placeholder="<spring:message code="explore.form.address.placeholder"/>" required>
 
           <div class="spot-write-coords">
             <div>
-              <label class="spot-write-label" for="spotLatitude">위도</label>
+              <label class="spot-write-label" for="spotLatitude"><spring:message code="explore.form.lat"/></label>
               <input type="text" id="spotLatitude" value="${writeForm.latitude}" readonly>
             </div>
             <div>
-              <label class="spot-write-label" for="spotLongitude">경도</label>
+              <label class="spot-write-label" for="spotLongitude"><spring:message code="explore.form.lng"/></label>
               <input type="text" id="spotLongitude" value="${writeForm.longitude}" readonly>
             </div>
           </div>
@@ -104,10 +105,10 @@
           <input type="hidden" id="spotLatitudeHidden" name="latitude" value="${writeForm.latitude}">
           <input type="hidden" id="spotLongitudeHidden" name="longitude" value="${writeForm.longitude}">
 
-          <label class="spot-write-label" for="spotDescription">설명</label>
+          <label class="spot-write-label" for="spotDescription"><spring:message code="explore.form.description"/></label>
           <textarea id="spotDescription" name="description" maxlength="2000"
-                    placeholder="여행지의 분위기, 볼거리, 방문 팁 등을 작성해주세요." required>${fn:escapeXml(writeForm.description)}</textarea>
-          <label class="spot-write-label">태그 선택</label>
+                    placeholder="<spring:message code="explore.form.description.placeholder"/>" required>${fn:escapeXml(writeForm.description)}</textarea>
+          <label class="spot-write-label"><spring:message code="explore.form.tags"/></label>
           <div class="spot-write-tag-picker">
             <c:forEach var="tag" items="${writeTagList}">
               <label class="spot-write-tag-option">
@@ -117,12 +118,12 @@
               </label>
             </c:forEach>
           </div>
-          <p class="spot-write-help">최대 4개의 태그를 선택 할 수 있습니다.</p>
+          <p class="spot-write-help"><spring:message code="explore.form.tags.help"/></p>
         </div>
 
         <%-- ── 이미지 업로드 영역 (기존 지도 영역 대체) ── --%>
         <div class="spot-write-image-wrap">
-          <label class="spot-write-label">여행지 이미지</label>
+          <label class="spot-write-label"><spring:message code="explore.form.image"/></label>
           <div class="spot-image-upload-area" id="spotImageDropZone">
             <div class="spot-image-preview" id="spotImagePreview" style="display:none;">
               <img id="spotPreviewImg" src="" alt="미리보기">
@@ -130,8 +131,8 @@
             </div>
             <div class="spot-image-placeholder" id="spotImagePlaceholder">
               <span style="font-size:48px;">&#128247;</span>
-              <p>클릭하거나 이미지를 드래그하여 업로드</p>
-              <p class="spot-write-help">JPG, PNG, GIF, WEBP (최대 10MB)</p>
+              <p><spring:message code="explore.form.image.placeholder"/></p>
+              <p class="spot-write-help"><spring:message code="explore.form.image.help"/></p>
             </div>
             <input type="file" id="spotImageFile" name="image"
                    accept=".jpg,.jpeg,.png,.gif,.webp" style="display:none;">
@@ -140,8 +141,8 @@
       </div>
 
       <div class="spot-write-actions">
-        <button type="button" class="exp-secondary-btn" id="cancelSpotWriteBtn">취소</button>
-        <button type="submit" class="exp-primary-btn">여행지 저장</button>
+        <button type="button" class="exp-secondary-btn" id="cancelSpotWriteBtn"><spring:message code="explore.cancel"/></button>
+        <button type="submit" class="exp-primary-btn"><spring:message code="explore.save"/></button>
       </div>
     </form>
   </div>
@@ -152,9 +153,9 @@
   <div id="tab-all" class="tab-panel ${search.tab == 'all' ? 'active' : ''}">
     <div class="result-bar">
       <p class="result-count">
-        <strong>${totalCount}</strong>개의 여행지
+        <strong>${totalCount}</strong><spring:message code="explore.count"/>
         <c:if test="${not empty search.keyword}">
-          "<strong>${fn:escapeXml(search.keyword)}</strong>" 검색 결과
+          "<strong>${fn:escapeXml(search.keyword)}</strong>" <spring:message code="explore.search.result"/>
         </c:if>
       </p>
     </div>
@@ -168,7 +169,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#128205;</div>
-            <p>검색 결과에 해당하는 여행지가 없습니다.</p>
+            <p><spring:message code="explore.empty.search"/></p>
           </div>
         </c:otherwise>
       </c:choose>
@@ -177,7 +178,7 @@
 
   <div id="tab-region" class="tab-panel ${search.tab == 'region' ? 'active' : ''}">
     <div class="filter-row" id="regionFilters">
-      <button class="filter-btn ${empty search.region ? 'active' : ''}" data-region="">전체</button>
+      <button class="filter-btn ${empty search.region ? 'active' : ''}" data-region=""><spring:message code="explore.tab.all"/></button>
       <c:forEach var="r" items="${regionList}">
         <button class="filter-btn ${search.region == r ? 'active' : ''}" data-region="${r}">${r}</button>
       </c:forEach>
@@ -186,11 +187,11 @@
       <p class="result-count">
         <c:choose>
           <c:when test="${not empty search.region}">
-            지역 <strong>${fn:escapeXml(search.region)}</strong>
+            <spring:message code="explore.filter.region"/> <strong>${fn:escapeXml(search.region)}</strong>
           </c:when>
-          <c:otherwise>전체 지역</c:otherwise>
+          <c:otherwise><spring:message code="explore.filter.allRegion"/></c:otherwise>
         </c:choose>
-        , <strong>${totalCount}</strong>개의 여행지
+        , <strong>${totalCount}</strong><spring:message code="explore.count"/>
       </p>
     </div>
     <div class="spot-grid" id="grid-region">
@@ -203,7 +204,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#127758;</div>
-            <p>이 지역에 해당하는 여행지가 없습니다.</p>
+            <p><spring:message code="explore.empty.region"/></p>
           </div>
         </c:otherwise>
       </c:choose>
@@ -212,7 +213,7 @@
 
   <div id="tab-theme" class="tab-panel ${search.tab == 'theme' ? 'active' : ''}">
     <div class="filter-row" id="themeFilters">
-      <button class="filter-btn ${empty search.theme ? 'active' : ''}" data-theme="">전체</button>
+      <button class="filter-btn ${empty search.theme ? 'active' : ''}" data-theme=""><spring:message code="explore.tab.all"/></button>
       <c:forEach var="tag" items="${tagList}">
         <button class="filter-btn ${search.theme == tag ? 'active' : ''}" data-theme="${tag}">${tag}</button>
       </c:forEach>
@@ -221,11 +222,11 @@
       <p class="result-count">
         <c:choose>
           <c:when test="${not empty search.theme}">
-            테마 <strong>${fn:escapeXml(search.theme)}</strong>
+            <spring:message code="explore.filter.theme"/> <strong>${fn:escapeXml(search.theme)}</strong>
           </c:when>
-          <c:otherwise>전체 테마</c:otherwise>
+          <c:otherwise><spring:message code="explore.filter.allTheme"/></c:otherwise>
         </c:choose>
-        , <strong>${totalCount}</strong>개의 여행지
+        , <strong>${totalCount}</strong><spring:message code="explore.count"/>
       </p>
     </div>
     <div class="spot-grid" id="grid-theme">
@@ -238,7 +239,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#127914;</div>
-            <p>이 테마에 해당하는 여행지가 없습니다.</p>
+            <p><spring:message code="explore.empty.theme"/></p>
           </div>
         </c:otherwise>
       </c:choose>
@@ -247,7 +248,7 @@
 
   <div id="tab-rating" class="tab-panel ${search.tab == 'rating' ? 'active' : ''}">
     <div class="result-bar">
-      <p class="result-count">평점 높은 여행지: <strong>${totalCount}</strong>개</p>
+      <p class="result-count"><spring:message code="explore.rating.top"/>: <strong>${totalCount}</strong><spring:message code="explore.count"/></p>
     </div>
     <div class="spot-grid" id="grid-rating">
       <c:choose>
@@ -259,7 +260,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#x1F4CC;</div>
-            <p>아직 평점이 등록된 여행지가 없습니다.</p>
+            <p><spring:message code="explore.empty.rating"/></p>
           </div>
         </c:otherwise>
       </c:choose>
@@ -268,7 +269,7 @@
 
   <div id="tab-likes" class="tab-panel ${search.tab == 'likes' ? 'active' : ''}">
     <div class="result-bar">
-      <p class="result-count">좋아요 많은 여행지: <strong>${totalCount}</strong>개</p>
+      <p class="result-count"><spring:message code="explore.likes.top"/>: <strong>${totalCount}</strong><spring:message code="explore.count"/></p>
     </div>
     <div class="spot-grid" id="grid-likes">
       <c:choose>
@@ -280,7 +281,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#10084;</div>
-            <p>아직 좋아요가 등록된 여행지가 없습니다.</p>
+            <p><spring:message code="explore.empty.likes"/></p>
           </div>
         </c:otherwise>
       </c:choose>
@@ -291,7 +292,7 @@
   <c:if test="${not empty sessionScope.loginUser}">
   <div id="tab-favorite" class="tab-panel ${search.tab == 'favorite' ? 'active' : ''}">
     <div class="result-bar">
-      <p class="result-count">&#x1F4CC; 내가 찜한 여행지: <strong>${totalCount}</strong>개</p>
+      <p class="result-count">&#x1F4CC; <spring:message code="explore.favorite.mine"/>: <strong>${totalCount}</strong><spring:message code="explore.count"/></p>
     </div>
     <div class="spot-grid" id="grid-favorite">
       <c:choose>
@@ -305,9 +306,9 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#x1F4CC;</div>
-            <p>아직 찜한 여행지가 없습니다.</p>
+            <p><spring:message code="explore.empty.favorite"/></p>
             <p style="font-size:14px;color:var(--gray-400);margin-top:8px;">
-              여행지 카드의 ☆ 버튼을 눌러 찜해보세요!
+              <spring:message code="explore.empty.favorite.help"/>
             </p>
           </div>
         </c:otherwise>
@@ -320,23 +321,23 @@
   <div id="tab-ai" class="tab-panel ${search.tab == 'ai' ? 'active' : ''}">
     <div class="result-bar">
       <p class="result-count">
-        <span id="aiResultLabel">&#x1F916; 맞춤 <strong>AI 여행지 추천</strong></span>
+        <span id="aiResultLabel"><spring:message code="explore.ai.title"/></span>
       </p>
     </div>
     <div id="aiLoadingMsg" style="text-align:center;padding:60px 24px;color:var(--gray-400);">
       <div style="font-size:40px;margin-bottom:12px;">&#x1F916;</div>
-      <p style="font-size:15px;">AI가 회원님의 여행 취향을 분석 중입니다...</p>
+      <p style="font-size:15px;"><spring:message code="explore.ai.loading"/></p>
     </div>
     <div class="spot-grid" id="aiGrid" style="display:none;"></div>
     <div id="aiEmptyMsg" style="display:none;text-align:center;padding:60px 24px;color:var(--gray-400);">
       <div style="font-size:40px;margin-bottom:12px;">&#x1F4CC;</div>
       <p style="font-size:15px;">
-        아직 방문 기록이 충분하지 않습니다.<br>
-        여행지 상세 페이지를 더 둘러보시면 더 정확한 AI 추천을 받을 수 있어요.
+        <spring:message code="explore.ai.empty"/><br>
+        <spring:message code="explore.ai.empty.help"/>
       </p>
       <button class="exp-tab-btn" style="margin-top:16px;background:#fff;border:1.5px solid var(--blue);color:var(--blue);"
               onclick="document.querySelector('[data-tab=all]').click()">
-        전체 여행지 둘러보기
+        <spring:message code="explore.ai.browse"/>
       </button>
     </div>
   </div>

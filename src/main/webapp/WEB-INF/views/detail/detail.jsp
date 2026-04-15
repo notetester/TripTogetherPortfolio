@@ -2,6 +2,7 @@
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:set var="pageCSS" value="explore/explore.css"/>
 <%@ include file="../common/header.jsp" %>
@@ -397,9 +398,9 @@ html { scrollbar-gutter: stable; }
       <span class="det-hero-rat">
         <span class="star">&#11088;</span>
         <fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/>
-        <span style="font-size:13px;opacity:.8">(${spot.reviewCount}개 리뷰)</span>
+        <span style="font-size:13px;opacity:.8">(${spot.reviewCount}<spring:message code="detail.review.countSuffix"/>)</span>
       </span>
-      <span>&#10084; ${spot.likeCount}</span>
+      <span>&#10084; ${spot.likeCount} <spring:message code="detail.like.count"/></span>
     </div>
   </div>
 </div>
@@ -408,7 +409,7 @@ html { scrollbar-gutter: stable; }
 <div class="det-body">
 
   <button class="det-back-btn" onclick="history.back()">
-    &#8592; 여행지 목록으로 돌아가기
+    &#8592; <spring:message code="detail.back"/>
   </button>
 
   <!-- 액션 버튼 -->
@@ -416,31 +417,50 @@ html { scrollbar-gutter: stable; }
     <button class="det-action-btn fav-btn ${spot.favorited ? 'active' : ''}"
             data-spot-idx="${spot.spotIdx}">
       <span class="det-action-icon">${spot.favorited ? '⭐' : '☆'}</span>
-      <span class="det-action-label">${spot.favorited ? '찜 완료' : '찜하기'}</span>
+      <span class="det-action-label">
+        <c:choose>
+          <c:when test="${spot.favorited}"><spring:message code="detail.fav.done"/></c:when>
+          <c:otherwise><spring:message code="detail.fav.do"/></c:otherwise>
+        </c:choose>
+      </span>
     </button>
     <button class="det-action-btn like-btn ${spot.liked ? 'active' : ''}"
             data-spot-idx="${spot.spotIdx}">
       <span class="det-action-icon">${spot.liked ? '❤️' : '🤍'}</span>
-      <span class="det-action-label">${spot.liked ? '좋아요 완료' : '좋아요'}</span>
+      <span class="det-action-label">
+        <c:choose>
+          <c:when test="${spot.liked}"><spring:message code="detail.like.done"/></c:when>
+          <c:otherwise><spring:message code="detail.like.do"/></c:otherwise>
+        </c:choose>
+      </span>
     </button>
     <button class="det-action-btn"
             onclick="location.href='${pageContext.request.contextPath}/assistant'">
-      &#10024; AI에게 여행 계획 짜기
+      &#10024; <spring:message code="detail.ai.plan"/>
     </button>
   </div>
 
   <c:if test="${canEditSpot}">
     <div class="det-admin-bar">
       <div class="det-admin-copy">
-        <strong>${isAdminMode ? '🛡️ 관리자모드' : '✏️ 내 여행지 수정'}</strong><br>
-        ${isAdminMode ? '현재 여행지 정보를 수정하거나, 소프트 삭제 처리할 수 있습니다.' : '여행지를 정보를 언제든지 수정하실 수 있습니다.'}
+        <strong>
+          ${isAdminMode ? '🛡️ ' : '✏️ '}
+          <c:choose>
+            <c:when test="${isAdminMode}"><spring:message code="detail.edit.admin"/></c:when>
+            <c:otherwise><spring:message code="detail.edit.mine"/></c:otherwise>
+          </c:choose>
+        </strong><br>
+        <c:choose>
+          <c:when test="${isAdminMode}"><spring:message code="detail.edit.admin.desc"/></c:when>
+          <c:otherwise><spring:message code="detail.edit.user.desc"/></c:otherwise>
+        </c:choose>
       </div>
       <div class="det-admin-actions">
-        <button type="button" class="det-admin-btn" id="openAdminEditBtn">여행지 수정</button>
+        <button type="button" class="det-admin-btn" id="openAdminEditBtn"><spring:message code="detail.edit.open"/></button>
         <c:if test="${isAdminMode}">
           <form method="post" action="${pageContext.request.contextPath}/detail/${spot.spotIdx}/admin/delete"
-                onsubmit="return confirm('이 여행지를 삭제 처리하시겠습니까? 삭제 처리 후에는 목록과 상세에서 노출되지 않습니다.');">
-            <button type="submit" class="det-admin-btn danger">여행지 삭제</button>
+                onsubmit="return confirm('<spring:message code="detail.delete.confirm" javaScriptEscape="true"/>');">
+            <button type="submit" class="det-admin-btn danger"><spring:message code="detail.delete"/></button>
           </form>
         </c:if>
       </div>
@@ -452,8 +472,8 @@ html { scrollbar-gutter: stable; }
       <div class="det-admin-dialog">
         <div class="det-admin-head">
           <div>
-            <h3>여행지 정보 수정</h3>
-            <p>관리자 또는 작성자 본인만 수정할 수 있으며, 빈 값이나 잘못된 좌표는 저장되지 않습니다.</p>
+            <h3><spring:message code="detail.edit.title"/></h3>
+            <p><spring:message code="detail.edit.subtitle"/></p>
           </div>
           <button type="button" class="det-admin-close" id="closeAdminEditBtn">&#215;</button>
         </div>
@@ -468,40 +488,40 @@ html { scrollbar-gutter: stable; }
               id="adminEditForm">
           <div class="det-admin-grid">
             <div class="det-admin-field">
-              <label for="adminSpotName">여행지 이름</label>
+              <label for="adminSpotName"><spring:message code="explore.form.name"/></label>
               <input type="text" id="adminSpotName" name="name" maxlength="100"
                      value="${fn:escapeXml(adminEditForm.name)}" required>
             </div>
             <div class="det-admin-field">
-              <label for="adminSpotRegion">지역</label>
+              <label for="adminSpotRegion"><spring:message code="detail.info.region"/></label>
               <input type="text" id="adminSpotRegion" name="region" maxlength="100"
                      value="${fn:escapeXml(adminEditForm.region)}" required>
             </div>
             <div class="det-admin-field full">
-              <label for="adminSpotAddress">주소</label>
+              <label for="adminSpotAddress"><spring:message code="detail.info.address"/></label>
               <input type="text" id="adminSpotAddress" name="address" maxlength="255"
                      value="${fn:escapeXml(adminEditForm.address)}" required>
             </div>
             <div class="det-admin-field">
-              <label for="adminSpotLat">위도</label>
+              <label for="adminSpotLat"><spring:message code="explore.form.lat"/></label>
               <input type="number" id="adminSpotLat" name="latitude" step="0.000001"
                      value="${adminEditForm.latitude}" required>
             </div>
             <div class="det-admin-field">
-              <label for="adminSpotLng">경도</label>
+              <label for="adminSpotLng"><spring:message code="explore.form.lng"/></label>
               <input type="number" id="adminSpotLng" name="longitude" step="0.000001"
                      value="${adminEditForm.longitude}" required>
             </div>
             <div class="det-admin-field full">
-              <label for="adminSpotDesc">설명</label>
+              <label for="adminSpotDesc"><spring:message code="explore.form.description"/></label>
               <textarea id="adminSpotDesc" name="description" maxlength="2000" required>${fn:escapeXml(adminEditForm.description)}</textarea>
             </div>
             <div class="det-admin-field full">
-              <label for="adminSpotImage">대표 이미지 교체</label>
+              <label for="adminSpotImage"><spring:message code="explore.form.image"/></label>
               <input type="file" id="adminSpotImage" name="image" accept=".jpg,.jpeg,.png,.gif,.webp">
             </div>
             <div class="det-admin-field full">
-              <label>태그 선택</label>
+              <label><spring:message code="explore.form.tags"/></label>
               <div class="det-admin-tag-box">
                 <c:forEach var="tag" items="${writeTagList}">
                   <label class="det-admin-tag">
@@ -516,8 +536,8 @@ html { scrollbar-gutter: stable; }
             </div>
           </div>
           <div class="det-admin-foot">
-            <button type="button" class="det-action-btn" id="cancelAdminEditBtn">취소</button>
-            <button type="submit" class="det-action-btn active">수정 저장</button>
+            <button type="button" class="det-action-btn" id="cancelAdminEditBtn"><spring:message code="explore.cancel"/></button>
+            <button type="submit" class="det-action-btn active"><spring:message code="explore.save"/></button>
           </div>
         </form>
       </div>
@@ -526,36 +546,36 @@ html { scrollbar-gutter: stable; }
 
   <!-- 기본 정보 -->
   <div class="det-section">
-    <h2>&#127760; 기본 정보</h2>
+    <h2>&#127760; <spring:message code="detail.info.title"/></h2>
     <div class="info-grid">
       <c:if test="${not empty spot.region}">
         <div class="info-row">
-          <span class="info-label">지역</span>
+          <span class="info-label"><spring:message code="detail.info.region"/></span>
           <span class="info-value">${fn:escapeXml(spot.region)}</span>
         </div>
       </c:if>
       <c:if test="${not empty spot.address}">
         <div class="info-row">
-          <span class="info-label">주소</span>
+          <span class="info-label"><spring:message code="detail.info.address"/></span>
           <span class="info-value">${fn:escapeXml(spot.address)}</span>
         </div>
       </c:if>
       <div class="info-row">
-        <span class="info-label">평점</span>
+        <span class="info-label"><spring:message code="detail.info.rating"/></span>
         <span class="info-value">
           &#11088;
           <c:choose>
             <c:when test="${spot.reviewCount > 0}">
               <fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/> / 5.0
-              &nbsp;(리뷰 ${spot.reviewCount}개)
+              &nbsp;(<spring:message code="detail.review.title"/> ${spot.reviewCount}<spring:message code="explore.count"/>)
             </c:when>
-            <c:otherwise>아직 리뷰가 없습니다.</c:otherwise>
+            <c:otherwise><spring:message code="detail.info.noReview"/></c:otherwise>
           </c:choose>
         </span>
       </div>
       <div class="info-row">
-        <span class="info-label">좋아요</span>
-        <span class="info-value">&#10084; ${spot.likeCount}개</span>
+        <span class="info-label"><spring:message code="detail.info.like"/></span>
+        <span class="info-value">&#10084; ${spot.likeCount}<spring:message code="explore.count"/></span>
       </div>
     </div>
   </div>
@@ -563,7 +583,7 @@ html { scrollbar-gutter: stable; }
   <!-- 소개 -->
   <c:if test="${not empty spot.description}">
     <div class="det-section">
-      <h2>&#128214; 여행지 소개</h2>
+      <h2>&#128214; <spring:message code="detail.intro.title"/></h2>
       <p class="det-desc">${fn:escapeXml(spot.description)}</p>
     </div>
   </c:if>
@@ -571,7 +591,7 @@ html { scrollbar-gutter: stable; }
   <!-- 태그 -->
   <c:if test="${not empty spot.tags}">
     <div class="det-section">
-      <h2>&#127914; 테마 태그</h2>
+      <h2>&#127914; <spring:message code="detail.tags.title"/></h2>
       <div class="det-tags">
         <c:forEach var="tag" items="${spot.tags}">
           <span class="spot-tag">${fn:escapeXml(tag)}</span>
@@ -583,7 +603,7 @@ html { scrollbar-gutter: stable; }
   <!-- 위치 -->
   <c:if test="${not empty spot.latitude and not empty spot.longitude and spot.latitude != 0 and spot.longitude != 0}">
     <div class="det-section">
-      <h2>&#128506; 위치</h2>
+      <h2>&#128506; <spring:message code="detail.location.title"/></h2>
 
       <!-- 지도 컨테이너 -->
       <div id="googleMap" style="
@@ -598,7 +618,7 @@ html { scrollbar-gutter: stable; }
 
   <!-- 리뷰 섹션 -->
   <div class="det-section">
-    <h2>&#128172; 리뷰</h2>
+    <h2>&#128172; <spring:message code="detail.review.title"/></h2>
 
     <!-- 리뷰 요약 -->
     <div class="review-summary-wrap">
@@ -621,7 +641,7 @@ html { scrollbar-gutter: stable; }
             <c:otherwise>☆☆☆☆☆</c:otherwise>
           </c:choose>
         </div>
-        <div class="review-sub">총 ${spot.reviewCount}개의 리뷰</div>
+        <div class="review-sub"><spring:message code="detail.review.total" arguments="${spot.reviewCount}"/></div>
       </div>
     </div>
 
@@ -631,7 +651,7 @@ html { scrollbar-gutter: stable; }
       <%-- 로그인했고 아직 리뷰를 작성하지 않은 경우 작성 폼 표시 --%>
       <c:when test="${canWrite}">
         <div class="review-form-box" id="reviewFormBox">
-          <h3>&#9997; 리뷰 작성</h3>
+          <h3>&#9997; <spring:message code="detail.review.write"/></h3>
           <div class="star-picker" id="starPicker">
             <span class="sp" data-v="1">&#9733;</span>
             <span class="sp" data-v="2">&#9733;</span>
@@ -640,10 +660,10 @@ html { scrollbar-gutter: stable; }
             <span class="sp" data-v="5">&#9733;</span>
           </div>
           <textarea class="review-textarea" id="reviewContent"
-                    maxlength="500" placeholder="여행지에 대한 솔직한 후기를 남겨주세요. (최대 500자)"></textarea>
+                    maxlength="500" placeholder="<spring:message code="detail.review.placeholder"/>"></textarea>
           <div class="review-form-foot">
             <span class="review-char"><span id="charCount">0</span> / 500</span>
-            <button class="review-submit-btn" id="reviewSubmitBtn" disabled>등록하기</button>
+            <button class="review-submit-btn" id="reviewSubmitBtn" disabled><spring:message code="detail.review.submit"/></button>
           </div>
         </div>
       </c:when>
@@ -652,14 +672,14 @@ html { scrollbar-gutter: stable; }
         <div id="alreadyReviewBox"
              style="background:var(--gray-50);border-radius:10px;padding:16px 20px;margin-bottom:28px;
                     font-size:14px;color:var(--gray-500);border:1px solid var(--gray-200);">
-          &#10003; 이미 리뷰를 작성했습니다.
+          &#10003; <spring:message code="detail.review.written"/>
         </div>
       </c:when>
       <%-- 비로그인 시 로그인 유도 --%>
       <c:otherwise>
         <div class="review-login-box">
-          <p>&#128172; 리뷰를 작성하려면 로그인이 필요합니다.</p>
-          <a href="${pageContext.request.contextPath}/auth/login" class="review-login-link">로그인하기</a>
+          <p>&#128172; <spring:message code="detail.review.login.need"/></p>
+          <a href="${pageContext.request.contextPath}/auth/login" class="review-login-link"><spring:message code="detail.review.login"/></a>
         </div>
       </c:otherwise>
     </c:choose>
@@ -671,12 +691,12 @@ html { scrollbar-gutter: stable; }
         <div class="review-admin-left">
           <label class="review-admin-select-all">
             <input type="checkbox" id="reviewSelectAll">
-            <span>전체 선택</span>
+            <span><spring:message code="detail.review.admin.selectAll"/></span>
           </label>
-          <span class="review-sub">선택한 리뷰만 차단하거나, 전체 선택 후 일괄 차단할 수 있습니다.</span>
+          <span class="review-sub"><spring:message code="detail.review.admin.help"/></span>
         </div>
         <button type="button" class="review-admin-bulk-btn" id="blockSelectedReviewsBtn" disabled>
-          선택 차단
+          <spring:message code="detail.review.admin.blockSelected"/>
         </button>
       </div>
     </c:if>
@@ -722,7 +742,7 @@ html { scrollbar-gutter: stable; }
                     <button class="det-admin-review-btn"
                             type="button"
                             data-block-review-idx="${rv.reviewIdx}"
-                            data-block-spot-idx="${spot.spotIdx}">차단</button>
+                            data-block-spot-idx="${spot.spotIdx}"><spring:message code="detail.review.block"/></button>
                   </c:if>
                 </div>
               </div>
@@ -732,7 +752,7 @@ html { scrollbar-gutter: stable; }
         </c:when>
         <c:otherwise>
           <div class="review-empty" id="reviewEmpty">
-            아직 작성된 리뷰가 없습니다. 첫 번째 리뷰를 남겨보세요! &#128512;
+            <spring:message code="detail.review.empty"/>
           </div>
         </c:otherwise>
       </c:choose>
@@ -743,18 +763,18 @@ html { scrollbar-gutter: stable; }
   <!-- AI 맞춤 여행지 추천 섹션 (로그인 사용자만) -->
   <c:if test="${isLoggedIn}">
   <div class="det-section" id="aiRecommendSection">
-    <h2 id="aiRecTitle">&#x1F916; AI 맞춤 추천 여행지</h2>
+    <h2 id="aiRecTitle"><spring:message code="detail.ai.title"/></h2>
     <p id="aiRecDesc" style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">
-      회원님의 관심 여행지를 분석해 비슷한 취향의 여행지를 추천해드립니다.
+      <spring:message code="detail.ai.desc"/>
     </p>
     <div class="ai-rec-content">
       <div id="recLoadingMsg" class="ai-rec-state">
         <span style="font-size:24px;display:block;margin-bottom:8px;">&#x1F916;</span>
-        AI가 맞춤 여행지를 분석 중입니다...
+        <spring:message code="detail.ai.loading"/>
       </div>
       <div class="spot-grid" id="recGrid" style="display:none;"></div>
       <div id="recEmptyMsg" class="ai-rec-state" style="display:none;">
-        아직 방문 기록이 부족합니다. 여행지를 둘러보시면 맞춤 추천이 더 정확해져요! 😊
+        <spring:message code="detail.ai.empty"/>
       </div>
     </div>
   </div>
@@ -765,7 +785,7 @@ html { scrollbar-gutter: stable; }
     <button class="det-action-btn"
             onclick="location.href='${pageContext.request.contextPath}/explore'"
             style="margin:0 auto;">
-      &#128269; 다른 여행지 탐색하기
+      &#128269; <spring:message code="detail.explore.more"/>
     </button>
   </div>
 
