@@ -16,6 +16,8 @@ public class MyPageServiceImpl implements MyPageService {
 
     private final MyPageMapper myPageMapper;
 
+    // ===== 커뮤니티 =====
+
     @Override
     public List<MyPageCommunityDto> getMyCommunityList(Long userIdx) {
         return myPageMapper.selectMyCommunityList(userIdx);
@@ -25,6 +27,8 @@ public class MyPageServiceImpl implements MyPageService {
     public int getMyCommunityCount(Long userIdx) {
         return myPageMapper.selectMyCommunityCount(userIdx);
     }
+
+    // ===== 문의 =====
 
     @Override
     public List<MyPageInquiryDto> getMyInquiryList(Long userIdx) {
@@ -36,6 +40,8 @@ public class MyPageServiceImpl implements MyPageService {
         return myPageMapper.selectMyInquiryCount(userIdx);
     }
 
+    // ===== 신고 =====
+
     @Override
     public List<MyPageReportDto> getMyReportList(Long userIdx) {
         return myPageMapper.selectMyReportList(userIdx);
@@ -46,14 +52,11 @@ public class MyPageServiceImpl implements MyPageService {
         return myPageMapper.selectMyReportCount(userIdx);
     }
 
+    // ===== 알림 =====
+
     @Override
     public List<FeedNotificationDto> getNotifications(Long userIdx) {
         return myPageMapper.selectNotifications(userIdx);
-    }
-
-    @Override
-    public List<FeedNotificationDto> getAllNotifications(Long userIdx) {
-        return myPageMapper.selectAllNotifications(userIdx);
     }
 
     @Override
@@ -77,7 +80,13 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
+    public List<FeedNotificationDto> getAllNotifications(Long userIdx) {
+        return myPageMapper.selectAllNotifications(userIdx);
+    }
+
+    @Override
     public void deleteAllNotifications(Long userIdx) {
         myPageMapper.deleteAllNotifications(userIdx);
     }
+
 }

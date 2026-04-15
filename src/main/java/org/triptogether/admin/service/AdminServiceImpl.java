@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.triptogether.admin.mapper.AdminMapper;
 import org.triptogether.admin.vo.*;
 import org.triptogether.auth.vo.UserLoginHistoryVO;
+import org.triptogether.report.vo.ReportSearchDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +23,14 @@ public class AdminServiceImpl implements AdminService {
 
     private final AdminMapper adminMapper;
 
+    // ===== 대시보드 통계 =====
+
     @Override
     public AdminStatsVO getStats() {
         return adminMapper.getStats();
     }
+
+    // ===== 회원 관리 =====
 
     @Override
     public Map<String, Object> getMemberList(AdminSearchVO search) {
@@ -79,6 +84,8 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.findCommentAuthorIdx(commentId);
     }
 
+    // ===== 문의 관리 =====
+
     @Override
     public AdminInquiryVO getInquiryDetail(Long inquiryId) {
         return adminMapper.findInquiryDetail(inquiryId);
@@ -130,6 +137,8 @@ public class AdminServiceImpl implements AdminService {
         return result;
     }
 
+    // ===== 로그인 감사 =====
+
     @Override
     public Map<String, Object> getLoginAuditList(AdminLoginAuditSearchVO search) {
         List<AdminLoginAuditVO> list = adminMapper.findLoginAudits(search);
@@ -143,6 +152,8 @@ public class AdminServiceImpl implements AdminService {
         result.put("search", search);
         return result;
     }
+
+    // ===== 보안 이력 감사 =====
 
     @Override
     public Map<String, Object> getSecurityAuditList(AdminSecurityAuditSearchVO search) {
@@ -158,6 +169,8 @@ public class AdminServiceImpl implements AdminService {
         return result;
     }
 
+    // ===== 이메일 액션 요청 이력 =====
+
     @Override
     public Map<String, Object> getEmailVerificationRequestList(AdminEmailVerificationRequestSearchVO search) {
         List<AdminEmailVerificationRequestVO> list = adminMapper.findEmailVerificationRequests(search);
@@ -171,6 +184,8 @@ public class AdminServiceImpl implements AdminService {
         result.put("search", search);
         return result;
     }
+
+    // ===== 이메일 액션 토큰 이력 =====
 
     @Override
     public Map<String, Object> getEmailVerificationList(AdminEmailVerificationSearchVO search) {
@@ -186,6 +201,8 @@ public class AdminServiceImpl implements AdminService {
         return result;
     }
 
+    // ===== 일반 활동 로그 =====
+
     @Override
     public Map<String, Object> getActivityLogList(AdminActivityLogSearchVO search) {
         List<AdminActivityLogVO> list = adminMapper.findActivityLogs(search);
@@ -198,5 +215,26 @@ public class AdminServiceImpl implements AdminService {
         result.put("total", total);
         result.put("search", search);
         return result;
+    }
+
+    // ===== 신고 관리 =====
+
+    @Override
+    public Map<String, Object> getAdminReportList(ReportSearchDto search) {
+        List<AdminReportVO> list  = adminMapper.findReports(search);
+        int total                 = adminMapper.countReports(search);
+        AdminPageVO paging        = AdminPageVO.of(total, search.getPage(), search.getPageSize(), 10);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("list",   list);
+        result.put("paging", paging);
+        result.put("total",  total);
+        result.put("search", search);
+        return result;
+    }
+
+    @Override
+    public AdminReportVO getAdminReport(Long reportId) {
+        return adminMapper.findReport(reportId);
     }
 }

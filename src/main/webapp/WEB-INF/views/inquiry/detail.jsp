@@ -7,15 +7,17 @@
   URL: GET /inquiry/{inquiryId}
   =============================================
   [model 필요]
-  - inquiry : InquiryPostDto  - 문의 내용
-  - answer  : InquiryAnswerDto - 운영진 답변 (없으면 null)
-  - isAdmin : boolean          - 운영진 여부
-  - isOwner : boolean          - 작성자 본인 여부
+  - inquiry     : InquiryPostDto   - 문의 내용
+  - answer      : InquiryAnswerDto - 운영진 답변 (없으면 null)
+  - isAdmin     : boolean          - 운영진 여부
+  - isOwner     : boolean          - 작성자 본인 여부
+  - isAdminMode : boolean          - 관리자모드 여부 (AdminModeInterceptor 자동 주입)
+                                     false(유저경험모드)이면 관리자 패널 숨김
 
   [페이지 구성]
   1. 문의 본문 카드 (제목, 카테고리, 상태, 내용)
   2. 답변 영역 (답변 있으면 답변 카드, 없으면 대기 안내)
-  3. 어드민 전용 답변 입력 폼
+  3. 어드민 전용 답변 입력 폼 (관리자모드일 때만 표시)
   4. 수정 폼 (PENDING + 본인/어드민만 표시)
   5. 하단 액션 버튼 (목록/수정/삭제)
   6. 스크립트 (답변 등록 + 수정 + 삭제)
@@ -158,10 +160,10 @@
 
     <%-- =============================================
          3. 어드민 전용 답변 입력 폼
-         - 어드민만 표시
+         - 어드민이고 관리자모드일 때만 표시 (유저경험모드 시 숨김)
          - 이미 답변이 있으면 textarea 비활성화
          ============================================= --%>
-    <c:if test="${isAdmin}">
+    <c:if test="${isAdmin and isAdminMode}">
       <div class="inq-admin-form">
         <div class="inq-admin-form-title">🛡️ 관리자 패널</div>
 

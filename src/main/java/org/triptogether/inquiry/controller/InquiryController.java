@@ -382,6 +382,10 @@ public class InquiryController {
     /* =============================================
        POST /inquiry/{inquiryId}/status - 관리자 상태 변경
        ============================================= */
+    /**
+     * 관리자가 문의 처리 상태를 변경한다.
+     * - 운영진이 아니면 403 반환
+     */
     @PostMapping("/{inquiryId}/status")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> changeStatus(
@@ -408,6 +412,10 @@ public class InquiryController {
     /* =============================================
        POST /inquiry/{inquiryId}/answer/edit - 관리자 답변 수정
        ============================================= */
+    /**
+     * 관리자가 기존 답변 내용을 수정한다.
+     * - 운영진이 아니면 403 반환
+     */
     @PostMapping("/{inquiryId}/answer/edit")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> editAnswer(
@@ -434,6 +442,10 @@ public class InquiryController {
     /* =============================================
        POST /inquiry/{inquiryId}/user-complete - 유저 직접 완료 처리
        ============================================= */
+    /**
+     * 유저가 직접 문의를 완료 처리한다.
+     * - 본인만 가능 (403), IN_PROGRESS 또는 COMPLETED 상태일 때만 가능
+     */
     @PostMapping("/{inquiryId}/user-complete")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> userComplete(
@@ -464,6 +476,10 @@ public class InquiryController {
     /* =============================================
        POST /inquiry/{inquiryId}/cancel - 유저 문의 취소
        ============================================= */
+    /**
+     * 유저가 문의를 취소한다.
+     * - 본인만 가능 (403), PENDING 또는 IN_PROGRESS 상태일 때만 가능
+     */
     @PostMapping("/{inquiryId}/cancel")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> cancelInquiry(
@@ -493,6 +509,10 @@ public class InquiryController {
     /* =============================================
        POST /inquiry/{inquiryId}/delete-request - 유저 삭제 요청
        ============================================= */
+    /**
+     * 유저가 문의 삭제를 요청한다.
+     * - 본인만 가능 (403), COMPLETED 상태일 때만 가능
+     */
     @PostMapping("/{inquiryId}/delete-request")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteRequest(
@@ -522,6 +542,10 @@ public class InquiryController {
     /* =============================================
        POST /inquiry/{inquiryId}/visibility-request - 유저 비공개/공개 요청
        ============================================= */
+    /**
+     * 유저가 문의 공개·비공개 전환을 요청한다.
+     * - 본인만 가능 (403), type: "public" / "private"
+     */
     @PostMapping("/{inquiryId}/visibility-request")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> visibilityRequest(
@@ -548,6 +572,10 @@ public class InquiryController {
     /* =============================================
        POST /inquiry/{inquiryId}/delete-approve - 관리자 삭제 요청 수락
        ============================================= */
+    /**
+     * 관리자가 유저의 삭제 요청을 수락하여 문의를 삭제한다.
+     * - 운영진이 아니면 403 반환, DELETE_REQUESTED 상태일 때만 가능
+     */
     @PostMapping("/{inquiryId}/delete-approve")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteApprove(
@@ -628,6 +656,10 @@ public class InquiryController {
     /* =============================================
        POST /inquiry/{inquiryId}/visibility-approve - 관리자 공개/비공개 수락
        ============================================= */
+    /**
+     * 관리자가 유저의 공개·비공개 전환 요청을 수락한다.
+     * - 운영진이 아니면 403 반환, type: "public" / "private"
+     */
     @PostMapping("/{inquiryId}/visibility-approve")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> visibilityApprove(

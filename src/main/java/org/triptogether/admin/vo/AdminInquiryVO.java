@@ -16,27 +16,25 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class
-
-AdminInquiryVO {
+public class AdminInquiryVO {
     private Long inquiryId;
     private Long userIdx;
-    private String userId;
-    private String nickname;
-    private String accountStatus;
+    private String userId;              // 작성자 로그인 ID
+    private String nickname;            // 작성자 닉네임
+    private String accountStatus;       // 작성자 계정 상태 (ACTIVE / BLOCKED)
     private String title;
     private String content;
-    private String category;
-    private boolean privateFlag;
-    private String status;
+    private String category;            // 문의 카테고리 (service / payment / account / bug / etc)
+    private boolean privateFlag;        // 비공개 여부
+    private String status;              // 문의 상태 (PENDING / IN_PROGRESS / COMPLETED)
     private int viewCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Long answerId;
-    private String answerContent;
-    private String answerAdminNickname;
-    private LocalDateTime answeredAt;
+    private Long answerId;              // 답변 ID (답변 없으면 null)
+    private String answerContent;       // 답변 내용
+    private String answerAdminNickname; // 답변 작성 관리자 닉네임
+    private LocalDateTime answeredAt;   // 답변 작성 시각
 
     public Date getCreatedAt() {
         return createdAt == null ? null : Date.from(createdAt.atZone(ZoneId.systemDefault()).toInstant());

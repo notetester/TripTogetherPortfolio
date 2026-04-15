@@ -2,7 +2,7 @@
 -- 호스트:                          localhost
 -- 서버 버전:                        8.0.45-0ubuntu0.24.04.1 - (Ubuntu)
 -- 서버 OS:                        Linux
--- HeidiSQL 버전:                  12.17.0.7270
+-- HeidiSQL 버전:                  12.14.0.7165
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -13,6 +13,11 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+-- team1_db 데이터베이스 구조 내보내기
+CREATE DATABASE IF NOT EXISTS `team1_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `team1_db`;
 
 -- 테이블 team1_db.CHAT_COMMENT 구조 내보내기
 CREATE TABLE IF NOT EXISTS `CHAT_COMMENT` (
@@ -51,6 +56,7 @@ CREATE TABLE IF NOT EXISTS `COMMUNITY_COMMENT` (
   `post_id` bigint NOT NULL COMMENT '게시글 ID (COMMUNITY_POST.post_id 참조)',
   `user_idx` bigint NOT NULL COMMENT '작성자 ID (USERS.user_idx 참조)',
   `content` varchar(500) NOT NULL COMMENT '댓글 내용',
+  `ip_address` varchar(45) DEFAULT NULL COMMENT '댓글 작성 IP',
   `comment_status` varchar(20) NOT NULL DEFAULT 'ACTIVE' COMMENT '상태 (ACTIVE/DELETED)',
   `like_count` int NOT NULL DEFAULT '0' COMMENT '댓글 좋아요 수',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성일시',
@@ -66,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `COMMUNITY_COMMENT` (
   CONSTRAINT `fk_cc_post` FOREIGN KEY (`post_id`) REFERENCES `COMMUNITY_POST` (`post_id`) ON DELETE RESTRICT,
   CONSTRAINT `fk_cc_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE RESTRICT,
   CONSTRAINT `fk_comment_parent` FOREIGN KEY (`parent_comment_id`) REFERENCES `COMMUNITY_COMMENT` (`comment_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='댓글';
+) ENGINE=InnoDB AUTO_INCREMENT=125 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='댓글';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -89,6 +95,7 @@ CREATE TABLE IF NOT EXISTS `COMMUNITY_POST` (
   `user_idx` bigint NOT NULL COMMENT '작성자 ID (USERS.user_idx 참조)',
   `title` varchar(100) NOT NULL COMMENT '제목',
   `content` text NOT NULL COMMENT '본문',
+  `ip_address` varchar(45) DEFAULT NULL COMMENT '게시글 작성 IP',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성일시',
   `region` enum('asia','europe','africa','north_america','south_america','oceania','etc') NOT NULL DEFAULT 'etc' COMMENT '지역',
   `post_type` varchar(20) NOT NULL DEFAULT 'review' COMMENT '유형 (review/photo/tip/question)',
@@ -110,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `COMMUNITY_POST` (
   KEY `idx_cpd_status` (`post_status`),
   KEY `idx_cpd_like` (`like_count` DESC),
   CONSTRAINT `fk_cp_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='커뮤니티 게시글';
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='커뮤니티 게시글';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -125,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `COMMUNITY_POST_IMAGE` (
   KEY `idx_cpi_post` (`post_id`),
   KEY `idx_cpi_order` (`post_id`,`sort_order`),
   CONSTRAINT `fk_cpi_post` FOREIGN KEY (`post_id`) REFERENCES `COMMUNITY_POST` (`post_id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='게시글 이미지 (여러 장 지원)';
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='게시글 이미지 (여러 장 지원)';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -156,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `COMMUNITY_POST_TAG` (
   KEY `idx_cpt_tag` (`tag_id`),
   CONSTRAINT `fk_cpt_post` FOREIGN KEY (`post_id`) REFERENCES `COMMUNITY_POST` (`post_id`) ON DELETE RESTRICT,
   CONSTRAINT `fk_cpt_tag` FOREIGN KEY (`tag_id`) REFERENCES `COMMUNITY_TAG` (`tag_id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=219 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='게시글-태그 연결';
+) ENGINE=InnoDB AUTO_INCREMENT=220 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='게시글-태그 연결';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -169,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `COMMUNITY_TAG` (
   PRIMARY KEY (`tag_id`),
   UNIQUE KEY `uq_tag_name` (`tag_name`),
   KEY `idx_tag_use_count` (`use_count` DESC)
-) ENGINE=InnoDB AUTO_INCREMENT=230 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='태그 목록';
+) ENGINE=InnoDB AUTO_INCREMENT=231 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='태그 목록';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -328,6 +335,16 @@ CREATE TABLE IF NOT EXISTS `INQUIRY_POST` (
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
+-- 테이블 team1_db.IP_BLOCKLIST 구조 내보내기
+CREATE TABLE IF NOT EXISTS `IP_BLOCKLIST` (
+  `ip_address` varchar(45) NOT NULL COMMENT '차단된 IP 주소',
+  `blocked_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '차단 일시',
+  `reason` varchar(255) DEFAULT NULL COMMENT '차단 사유',
+  PRIMARY KEY (`ip_address`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='IP 차단 목록';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
 -- 테이블 team1_db.MYPAGE_FEED_NOTIFICATION 구조 내보내기
 CREATE TABLE IF NOT EXISTS `MYPAGE_FEED_NOTIFICATION` (
   `notification_id` bigint NOT NULL AUTO_INCREMENT,
@@ -444,7 +461,7 @@ CREATE TABLE IF NOT EXISTS `SPOT_RECOMMEND` (
   KEY `fk_sr_spot` (`spot_idx`),
   CONSTRAINT `fk_sr_spot` FOREIGN KEY (`spot_idx`) REFERENCES `SPOT_TRAVEL` (`spot_idx`) ON DELETE CASCADE,
   CONSTRAINT `fk_sr_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=462 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI 여행지 추천 결과 캐시 (5분 TTL)';
+) ENGINE=InnoDB AUTO_INCREMENT=558 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI 여행지 추천 결과 캐시 (5분 TTL)';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -457,6 +474,7 @@ CREATE TABLE IF NOT EXISTS `SPOT_REVIEW` (
   `rating` int DEFAULT NULL COMMENT '평점',
   `content` text COMMENT '리뷰 내용',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '작성 시각',
+  `review_block` int DEFAULT '0',
   PRIMARY KEY (`review_idx`),
   UNIQUE KEY `review_id` (`review_id`),
   KEY `fk_review_user` (`user_idx`),
@@ -522,8 +540,12 @@ CREATE TABLE IF NOT EXISTS `SPOT_TRAVEL` (
   `description` text COMMENT '설명',
   `rating_avg` float DEFAULT '0' COMMENT '평균 평점',
   `review_count` int DEFAULT '0' COMMENT '리뷰 수',
+  `spot_active` int NOT NULL DEFAULT '0' COMMENT '게시글 삭제',
+  `user_idx` bigint NOT NULL COMMENT '여행지 등록자 FK',
   PRIMARY KEY (`spot_idx`),
-  UNIQUE KEY `spot_id` (`spot_id`)
+  UNIQUE KEY `spot_id` (`spot_id`),
+  KEY `fk_spot_travel_user` (`user_idx`),
+  CONSTRAINT `fk_spot_travel_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='여행 스팟 테이블';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
@@ -541,7 +563,7 @@ CREATE TABLE IF NOT EXISTS `SPOT_VIEW_LOG` (
   KEY `idx_svl_viewed` (`user_idx`,`viewed_at`),
   CONSTRAINT `fk_svl_spot` FOREIGN KEY (`spot_idx`) REFERENCES `SPOT_TRAVEL` (`spot_idx`) ON DELETE CASCADE,
   CONSTRAINT `fk_svl_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=394 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자 여행지 페이지 체류 기록';
+) ENGINE=InnoDB AUTO_INCREMENT=427 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자 여행지 페이지 체류 기록';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -597,7 +619,7 @@ CREATE TABLE IF NOT EXISTS `USER_ACTIVITY_LOG` (
   KEY `idx_ual_request_uri` (`request_uri`),
   KEY `idx_ual_created_at` (`created_at`),
   CONSTRAINT `fk_activity_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=761 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='회원/비회원의 일반 활동(페이지 방문, 요청 호출 등)을 기록하는 범용 활동 로그';
+) ENGINE=InnoDB AUTO_INCREMENT=1560 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='회원/비회원의 일반 활동(페이지 방문, 요청 호출 등)을 기록하는 범용 활동 로그';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -616,7 +638,7 @@ CREATE TABLE IF NOT EXISTS `USER_LOGIN_HISTORY` (
   PRIMARY KEY (`login_idx`),
   KEY `fk_login_user` (`user_idx`),
   CONSTRAINT `fk_login_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=638 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 시도 및 결과 이력 (보안, 감사, 통계 분석용)';
+) ENGINE=InnoDB AUTO_INCREMENT=688 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 시도 및 결과 이력 (보안, 감사, 통계 분석용)';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 

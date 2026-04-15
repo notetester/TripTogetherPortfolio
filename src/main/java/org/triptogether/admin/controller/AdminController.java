@@ -11,7 +11,6 @@ import org.triptogether.admin.service.AdminService;
 import org.triptogether.admin.vo.*;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.report.service.ReportService;
-import org.triptogether.report.vo.ReportDto;
 import org.triptogether.report.vo.ReportSearchDto;
 
 import java.util.HashMap;
@@ -115,6 +114,9 @@ public class AdminController {
         return result;
     }
 
+    /**
+     * 문의 목록 페이지.
+     */
     @GetMapping("/inquiries")
     public String inquiryList(AdminInquirySearchVO search, Model model) {
         model.addAllAttributes(adminService.getInquiryList(search));
@@ -123,6 +125,9 @@ public class AdminController {
         return "admin/inquiry/list";
     }
 
+    /**
+     * 문의 상세 페이지.
+     */
     @GetMapping("/inquiries/{inquiryId}")
     public String inquiryDetail(@PathVariable Long inquiryId, Model model) {
         AdminInquiryVO inquiry = adminService.getInquiryDetail(inquiryId);
@@ -134,6 +139,9 @@ public class AdminController {
         return "admin/inquiry/detail";
     }
 
+    /**
+     * 문의 답변 등록/수정.
+     */
     @PostMapping("/inquiries/{inquiryId}/answer")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> saveInquiryAnswer(
@@ -154,6 +162,9 @@ public class AdminController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 문의 답변 삭제.
+     */
     @PostMapping("/inquiries/{inquiryId}/answer/delete")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteInquiryAnswer(@PathVariable Long inquiryId) {
@@ -170,6 +181,9 @@ public class AdminController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 문의 상태 변경 (PENDING / IN_PROGRESS / COMPLETED).
+     */
     @PostMapping("/inquiries/{inquiryId}/status")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> changeInquiryStatus(
@@ -188,6 +202,9 @@ public class AdminController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 문의 삭제.
+     */
     @PostMapping("/inquiries/{inquiryId}/delete")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteInquiry(@PathVariable Long inquiryId) {
@@ -204,20 +221,29 @@ public class AdminController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 신고 목록 페이지.
+     * - 검색 조건(status / targetType / reason / keyword)과 페이지네이션 적용
+     * - 신고 현황 통계(stats)도 함께 전달
+     */
     @GetMapping("/reports")
     public String reportList(@ModelAttribute ReportSearchDto search, Model model) {
-        model.addAttribute("reportList",  reportService.getReportList(search));
-        model.addAttribute("totalCount",  reportService.getTotalCount(search));
-        model.addAttribute("totalPage",   reportService.getTotalPage(search));
-        model.addAttribute("search",      search);
-        model.addAttribute("stats",       reportService.getReportStats());
-        model.addAttribute("activeMenu",  "reports");
+        var data = adminService.getAdminReportList(search);
+        model.addAttribute("reportList", data.get("list"));
+        model.addAttribute("paging",     data.get("paging"));
+        model.addAttribute("totalCount", data.get("total"));
+        model.addAttribute("search",     search);
+        model.addAttribute("stats",      reportService.getReportStats());
+        model.addAttribute("activeMenu", "reports");
         return "admin/report/list";
     }
 
+    /**
+     * 신고 상세 페이지.
+     */
     @GetMapping("/reports/{reportId}")
     public String reportDetail(@PathVariable Long reportId, Model model) {
-        var report = reportService.getReport(reportId);
+        AdminReportVO report = adminService.getAdminReport(reportId);
         if (report == null) {
             return "redirect:/admin/reports";
         }
@@ -244,7 +270,7 @@ public class AdminController {
 
         Map<String, Object> result = new HashMap<>();
 
-        ReportDto report = reportService.getReport(reportId);
+        AdminReportVO report = adminService.getAdminReport(reportId);
         if (report == null) {
             result.put("success", false);
             result.put("message", "신고를 찾을 수 없습니다.");

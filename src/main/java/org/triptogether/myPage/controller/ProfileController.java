@@ -271,6 +271,11 @@ public class ProfileController {
     }
 
     // ── 마이페이지 메인 ──────────────────────────
+
+    /**
+     * 마이페이지 메인 페이지.
+     * 커뮤니티/문의/신고 최근 목록·개수, 알림 목록·개수를 모델에 담아 반환한다.
+     */
     @GetMapping("")
     public String myPage(HttpSession session, Model model) {
         UsersVO user = loginUser(session);
@@ -291,6 +296,11 @@ public class ProfileController {
     /* =============================================
    POST /mypage/notification/{notificationId}/read - 알림 삭제 및 리다이렉트 URL 반환
    ============================================= */
+
+    /**
+     * 알림 클릭 처리.
+     * 알림을 삭제하고 연결된 콘텐츠(커뮤니티/문의/신고)의 리다이렉트 URL을 반환한다.
+     */
     @PostMapping("/notification/{notificationId}/read")
     @ResponseBody
     public Map<String, Object> deleteNotification(@PathVariable Long notificationId) {
@@ -339,6 +349,11 @@ public class ProfileController {
     /* =============================================
    GET /mypage/notifications/all - 모든 알림 조회 (무제한)
    ============================================= */
+
+    /**
+     * 전체 알림 목록 조회 (무제한).
+     * 메인에서 최신 10개만 보여주고, 더보기 시 이 API로 전체를 불러온다.
+     */
     @GetMapping("/notifications/all")
     @ResponseBody
     public Map<String, Object> getAllNotifications(HttpSession session) {
@@ -361,6 +376,11 @@ public class ProfileController {
     /* =============================================
    POST /mypage/notifications/read-all - 모든 알림 삭제
    ============================================= */
+
+    /**
+     * 모든 알림 삭제.
+     * 해당 유저의 알림을 전부 삭제한다.
+     */
     @PostMapping("/notifications/read-all")
     @ResponseBody
     public Map<String, Object> deleteAllNotifications(HttpSession session) {

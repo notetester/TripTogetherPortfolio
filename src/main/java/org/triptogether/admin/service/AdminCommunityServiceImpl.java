@@ -15,10 +15,14 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
 
     private final AdminCommunityMapper adminCommunityMapper;
 
+    // ===== 통계 =====
+
     @Override
     public AdminCommunityStatsVO getStats() {
         return adminCommunityMapper.getStats();
     }
+
+    // ===== 게시글 목록/상세 =====
 
     @Override
     public Map<String, Object> getPostList(AdminCommunitySearchVO search) {
@@ -61,6 +65,8 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
         return result;
     }
 
+    // ===== 게시글 차단/삭제 =====
+
     @Override
     public void blockPost(Long postId) {
         adminCommunityMapper.updatePostStatus(postId, "BLOCKED");
@@ -85,6 +91,8 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
         }
     }
 
+    // ===== 댓글 차단/삭제 =====
+
     @Override
     public void blockComment(Long commentId) {
         adminCommunityMapper.updateCommentStatus(commentId, "BLOCKED");
@@ -108,4 +116,5 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
             adminCommunityMapper.bulkUpdateCommentStatus(ids, "DELETED");
         }
     }
+
 }

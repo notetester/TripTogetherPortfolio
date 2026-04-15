@@ -185,6 +185,14 @@
             </div>
         </c:if>
     </div>
+
+    <%-- ── 유저 화면 바로가기 ── --%>
+    <div style="margin-top:16px;padding:0 10px;">
+        <a class="adm-nav-item" href="${pageContext.request.contextPath}/inquiry/list" target="_blank"
+           style="background:#1e2330;color:#64748b;">
+            <span class="adm-nav-icon">↗️</span> 문의 게시판 사이트 보기
+        </a>
+    </div>
 </div>
 
 <script>

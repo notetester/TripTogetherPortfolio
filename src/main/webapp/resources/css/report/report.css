@@ -378,8 +378,8 @@
 }
 
 .rpt-btn-cancel {
-    padding: 8px 14px;
-    border-radius: 8px;
+    padding: 6px 16px;
+    border-radius: 20px;
     background: var(--gray-100);
     color: var(--gray-600);
     border: none;
@@ -457,20 +457,19 @@
    9. 관리자 패널
 ══════════════════════════════════════════════ */
 .rpt-admin-form {
-    background: #f8fafc;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 20px 24px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    padding: 24px 28px;
     margin-top: 20px;
+    border: 1.5px dashed var(--gray-200, #e5e7eb);
 }
 
 .rpt-admin-form-title {
     font-size: 14px;
     font-weight: 700;
-    color: #334155;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #e2e8f0;
+    color: var(--gray-700, #374151);
+    margin-bottom: 14px;
 }
 
 .rpt-admin-action-bar {
@@ -478,7 +477,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
 }
 
 .rpt-admin-action-label {
@@ -491,29 +490,28 @@
 .rpt-btn-submit,
 .rpt-btn-danger,
 .rpt-btn-warn {
-    padding: 8px 14px;
-    border-radius: 8px;
-    color: #fff;
+    padding: 6px 16px;
+    border-radius: 20px;
     border: none;
     font-family: inherit;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
-    transition: opacity .15s;
+    transition: opacity .15s, transform .15s;
 }
 
-.rpt-btn-submit  { background: var(--blue, #3b82f6); }
-.rpt-btn-danger  { background: #ef4444; }
-.rpt-btn-warn    { background: #f59e0b; }
+.rpt-btn-submit  { background: var(--blue, #3b82f6); color: #fff; }
+.rpt-btn-danger  { background: #dcfce7; color: #15803d; }
+.rpt-btn-warn    { background: #fef9c3; color: #854d0e; }
 
 .rpt-btn-submit:hover,
 .rpt-btn-danger:hover,
-.rpt-btn-warn:hover    { opacity: .85; }
+.rpt-btn-warn:hover    { opacity: .85; transform: translateY(-1px); }
 
 .rpt-btn-submit:disabled,
 .rpt-btn-danger:disabled,
-.rpt-btn-warn:disabled { opacity: .5; cursor: not-allowed; }
+.rpt-btn-warn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
 .rpt-admin-done {
     font-size: 13px;

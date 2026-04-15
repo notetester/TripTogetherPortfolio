@@ -2,14 +2,17 @@ package org.triptogether.admin.service;
 
 import org.triptogether.admin.vo.*;
 import org.triptogether.auth.vo.UserLoginHistoryVO;
+import org.triptogether.report.vo.ReportSearchDto;
 
 import java.util.List;
 import java.util.Map;
 
 public interface AdminService {
 
+    // ===== 대시보드 통계 =====
     AdminStatsVO getStats();
 
+    // ===== 회원 관리 =====
     Map<String, Object> getMemberList(AdminSearchVO search);
     AdminMemberVO getMemberDetail(Long userIdx);
     List<UserLoginHistoryVO> getLoginHistory(Long userIdx);
@@ -18,6 +21,7 @@ public interface AdminService {
     Long getPostAuthorIdx(Long postId);
     Long getCommentAuthorIdx(Long commentId);
 
+    // ===== 문의 관리 =====
     Map<String, Object> getInquiryList(AdminInquirySearchVO search);
     AdminInquiryVO getInquiryDetail(Long inquiryId);
     AdminInquiryStatsVO getInquiryStats();
@@ -25,9 +29,23 @@ public interface AdminService {
     void deleteInquiryAnswer(Long inquiryId);
     void updateInquiryStatus(Long inquiryId, String status);
     void deleteInquiry(Long inquiryId);
+
+    // ===== 신고 관리 =====
+    Map<String, Object> getAdminReportList(ReportSearchDto search);
+    AdminReportVO getAdminReport(Long reportId);
+
+    // ===== 로그인 감사 =====
     Map<String, Object> getLoginAuditList(AdminLoginAuditSearchVO search);
+
+    // ===== 보안 이력 감사 =====
     Map<String, Object> getSecurityAuditList(AdminSecurityAuditSearchVO search);
+
+    // ===== 이메일 액션 요청 이력 =====
     Map<String, Object> getEmailVerificationRequestList(AdminEmailVerificationRequestSearchVO search);
+
+    // ===== 이메일 액션 토큰 이력 =====
     Map<String, Object> getEmailVerificationList(AdminEmailVerificationSearchVO search);
+
+    // ===== 일반 활동 로그 =====
     Map<String, Object> getActivityLogList(AdminActivityLogSearchVO search);
 }

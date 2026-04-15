@@ -24,6 +24,9 @@ public class AdminCommunityController {
     private final AdminCommunityService adminCommunityService;
     private final AdminService adminService;
 
+    /**
+     * 커뮤니티 게시글 목록 페이지.
+     */
     @GetMapping({"", "/"})
     public String postList(AdminCommunitySearchVO search, Model model) {
         model.addAllAttributes(adminCommunityService.getPostList(search));
@@ -32,6 +35,9 @@ public class AdminCommunityController {
         return "admin/community/list";
     }
 
+    /**
+     * 커뮤니티 댓글 목록 페이지.
+     */
     @GetMapping("/comments")
     public String commentList(AdminCommunitySearchVO search, Model model) {
         model.addAllAttributes(adminCommunityService.getCommentList(search));
@@ -40,6 +46,9 @@ public class AdminCommunityController {
         return "admin/community/comments";
     }
 
+    /**
+     * 커뮤니티 게시글 상세 페이지.
+     */
     @GetMapping("/posts/{postId}")
     public String postDetail(@PathVariable Long postId, Model model) {
         model.addAllAttributes(adminCommunityService.getPostDetail(postId));
@@ -48,6 +57,10 @@ public class AdminCommunityController {
     }
 
     // ── 게시글 단건 차단 ──────────────────────────────────
+
+    /**
+     * 게시글 단건 차단. post_status를 BLOCKED로 변경한다.
+     */
     @PostMapping("/posts/{postId}/block")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> blockPost(@PathVariable Long postId) {
@@ -65,6 +78,10 @@ public class AdminCommunityController {
     }
 
     // ── 게시글 단건 삭제 ──────────────────────────────────
+
+    /**
+     * 게시글 단건 삭제. post_status를 DELETED로 변경한다.
+     */
     @PostMapping("/posts/{postId}/delete")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deletePost(@PathVariable Long postId) {
@@ -82,6 +99,10 @@ public class AdminCommunityController {
     }
 
     // ── 게시글 일괄 처리 ──────────────────────────────────
+
+    /**
+     * 게시글 일괄 처리. action: block(차단) / delete(삭제).
+     */
     @PostMapping("/posts/bulk-action")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> bulkPostAction(
@@ -116,6 +137,10 @@ public class AdminCommunityController {
     }
 
     // ── 댓글 단건 차단 ──────────────────────────────────
+
+    /**
+     * 댓글 단건 차단. comment_status를 BLOCKED로 변경한다.
+     */
     @PostMapping("/comments/{commentId}/block")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> blockComment(@PathVariable Long commentId) {
@@ -133,6 +158,10 @@ public class AdminCommunityController {
     }
 
     // ── 댓글 단건 삭제 ──────────────────────────────────
+
+    /**
+     * 댓글 단건 삭제. comment_status를 DELETED로 변경한다.
+     */
     @PostMapping("/comments/{commentId}/delete")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteComment(@PathVariable Long commentId) {
@@ -150,6 +179,10 @@ public class AdminCommunityController {
     }
 
     // ── 댓글 일괄 처리 ──────────────────────────────────
+
+    /**
+     * 댓글 일괄 처리. action: block(차단) / delete(삭제).
+     */
     @PostMapping("/comments/bulk-action")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> bulkCommentAction(
@@ -184,6 +217,11 @@ public class AdminCommunityController {
     }
 
     // ── 작성자 계정 차단 (게시글/댓글 상세에서) ──────────
+
+    /**
+     * 작성자 계정 차단. account_status를 BLOCKED로 변경한다.
+     * 자기 자신은 차단할 수 없다.
+     */
     @PostMapping("/users/{userIdx}/block")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> blockUser(@PathVariable Long userIdx,

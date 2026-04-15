@@ -19,6 +19,19 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * 커뮤니티 대표 이미지 스케줄러.
+ *
+ * <p>Pixabay API로 대륙별 풍경 이미지를 검색한 뒤 Cloudinary에 업로드하고,
+ * 결과 URL을 인메모리 캐시({@code imageCache})에 보관한다.
+ * 커뮤니티 게시글 목록의 대표 이미지가 없을 때 이 캐시에서 꺼내 사용한다.</p>
+ *
+ * <ul>
+ *   <li>앱 시작 시 {@link #initCache()}가 백그라운드 스레드에서 1회 실행</li>
+ *   <li>이후 24시간 주기로 {@link #refreshCache()}가 자동 갱신</li>
+ *   <li>대륙 키: asia / europe / africa / north_america / south_america / oceania / etc</li>
+ * </ul>
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -81,6 +94,15 @@ public class CommunityImageScheduler {
         return imageCache.get(region);
     }
 
+    /**
+     * 지정 대륙의 Pixabay 이미지 1장을 Cloudinary에 업로드하고 캐시를 갱신한다.
+     *
+     * <p>동일 region은 고정 publicId로 덮어쓰기(overwrite)되므로
+     * Cloudinary에 이미지가 누적되지 않는다.</p>
+     *
+     * @param region  대륙 키 (예: "asia", "europe")
+     * @param keyword Pixabay 검색 키워드 (예: "asia landscape")
+     */
     private void refreshRegion(String region, String keyword) {
         try {
             String encodedKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
