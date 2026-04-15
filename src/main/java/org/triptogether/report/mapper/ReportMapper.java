@@ -60,15 +60,15 @@ public interface ReportMapper {
                       @Param("reason") String reason,
                       @Param("description") String description);
 
-    // ===== 신고 취소 =====
-
-    // 신고 취소 (status → CANCELLED)
-    void cancelReport(@Param("reportId") Long reportId);
-
     // ===== 신고 삭제 =====
 
     // 신고 삭제
     void deleteReport(@Param("reportId") Long reportId);
+
+    // ===== 신고 취소 =====
+
+    // 신고 취소 (status → CANCELLED)
+    void cancelReport(@Param("reportId") Long reportId);
 
     // ===== 상태 변경 (어드민) =====
 

@@ -26,7 +26,7 @@
                                 <c:otherwise>${report.status}</c:otherwise>
                             </c:choose>
                         </span>
-                        <%-- post/comment 대상일 때 원글/댓글 보기 링크 --%>
+                        <%-- post: 해당 게시글로 이동 / comment: sourceId(게시글 ID)로 원글 이동 --%>
                         <c:if test="${report.targetType eq 'post'}">
                             <a href="${pageContext.request.contextPath}/community/${report.targetId}"
                                target="_blank"
@@ -34,10 +34,10 @@
                                style="font-size:12px;text-decoration:none;">원글 보기</a>
                         </c:if>
                         <c:if test="${report.targetType eq 'comment'}">
-                            <a href="${pageContext.request.contextPath}/community/comment/${report.targetId}"
+                            <a href="${pageContext.request.contextPath}/community/${report.sourceId}"
                                target="_blank"
                                class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;">댓글 보기</a>
+                               style="font-size:12px;text-decoration:none;">원글 보기</a>
                         </c:if>
                     </div>
                 </div>

@@ -22,6 +22,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * =============================================
+ * CommunityController - 커뮤니티 게시판 컨트롤러
+ * =============================================
+ * 담당 URL: /community/**
+ *
+ * [기능 목록]
+ * - 게시글 목록 / 상세 조회
+ * - 게시글 작성 / 수정 / 삭제
+ * - 게시글 좋아요 토글
+ * - 댓글 / 대댓글 작성 / 삭제 / 좋아요
+ * - 질문 댓글 채택
+ * - 신고 접수 (게시글 / 댓글)
+ * - 관리자: 게시글/댓글/유저 차단·해제, 일괄 처리, 뷰 모드 전환
+ *
+ * [권한 구조]
+ * - 비로그인  : 목록/상세 조회만 가능
+ * - 일반 유저 : 게시글/댓글 작성·수정·삭제, 좋아요, 신고 가능
+ * - 관리자    : 차단·해제, 일괄 처리, 뷰 모드 전환 가능
+ * =============================================
+ */
 @Slf4j
 @Controller
 @RequestMapping("/community")
@@ -37,18 +58,36 @@ public class CommunityController {
     private Long systemUserIdx;
 
     /* =============================================
-       GET /community/list - 커뮤니티 목록
-       파라미터: region, type, sort, page
-       ============================================= */
-    /* =============================================
        GET /community/api/popular - 오늘 인기글 JSON (홈 페이지 AJAX용)
        ============================================= */
+    /**
+     * 오늘의 인기글 목록을 JSON으로 반환한다.
+     * 홈 페이지 AJAX 호출용.
+     */
     @GetMapping("/api/popular")
     @ResponseBody
     public ResponseEntity<List<CommunityPostDto>> getPopularPosts() {
         return ResponseEntity.ok(communityService.getTodayPopularList());
     }
 
+    /* =============================================
+       GET /community, /community/ - 루트 리다이렉트
+       ============================================= */
+    /** /community, /community/ → /community/list 로 리다이렉트 */
+    @GetMapping({"", "/"})
+    public String communityRoot() {
+        return "redirect:/community/list";
+    }
+
+    /* =============================================
+       GET /community/list - 커뮤니티 목록
+       파라미터: region, type, sort, keyword, searchType, page
+       ============================================= */
+    /**
+     * 커뮤니티 목록 페이지를 보여준다.
+     * - region / type / sort / keyword / searchType / page 조건으로 필터링
+     * - 전체 조건일 때만 todayPopularList 추가 제공
+     */
     @GetMapping("/list")
     public String list(@RequestParam(defaultValue = "all")    String region,
                        @RequestParam(defaultValue = "all")    String type,
@@ -83,6 +122,11 @@ public class CommunityController {
     /* =============================================
        GET /community/{postId} - 커뮤니티 상세
        ============================================= */
+    /**
+     * 커뮤니티 게시글 상세 페이지를 보여준다.
+     * - 조회수 증가, 관련글 / 최신글 목록 포함
+     * - 로그인 유저의 좋아요 여부 / 소유자 여부 포함
+     */
     @GetMapping("/{postId}")
     public String detail(@PathVariable Long postId,
                          @RequestParam(defaultValue = "1") int latestPage,
@@ -131,6 +175,10 @@ public class CommunityController {
        GET /community/{postId}/comments - 댓글 목록 AJAX 프래그먼트
        파라미터: sort=created|latest|replies
        ============================================= */
+    /**
+     * 댓글 목록 HTML 프래그먼트를 반환한다. (AJAX용)
+     * - sort: created(등록순) / latest(최신순) / replies(답글많은순)
+     */
     @GetMapping("/{postId}/comments")
     public String commentFragment(@PathVariable Long postId,
                                   @RequestParam(defaultValue = "created") String sort,
@@ -151,6 +199,10 @@ public class CommunityController {
     /* =============================================
        GET /community/write - 글쓰기 폼
        ============================================= */
+    /**
+     * 글쓰기 폼 페이지를 보여준다.
+     * - 비로그인 시 로그인 페이지로 리다이렉트
+     */
     @GetMapping("/write")
     public String writeForm(HttpSession session) {
 
@@ -163,6 +215,12 @@ public class CommunityController {
     /* =============================================
        POST /community/write - 글쓰기 등록
        ============================================= */
+    /**
+     * 게시글을 등록한다.
+     * - 비로그인 시 401, 차단된 계정 시 403 반환
+     * - Perspective AI 욕설 감지: 감지 시 toxicityDetected=true 반환 (강제 등록 가능)
+     * - 강제 등록 시 시스템 계정으로 toxicity 신고 자동 접수
+     */
     @PostMapping("/write")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> write(
@@ -222,6 +280,10 @@ public class CommunityController {
     /* =============================================
        GET /community/edit/{postId} - 수정 폼
        ============================================= */
+    /**
+     * 게시글 수정 폼 페이지를 보여준다.
+     * - 비로그인 시 로그인 페이지로 리다이렉트
+     */
     @GetMapping("/edit/{postId}")
     public String editForm(@PathVariable Long postId,
                            HttpSession session,
@@ -245,6 +307,11 @@ public class CommunityController {
     /* =============================================
    POST /community/edit/{postId} - 수정 처리
    ============================================= */
+    /**
+     * 게시글을 수정한다.
+     * - 비로그인 시 401 반환
+     * - 소유자 또는 관리자만 수정 가능
+     */
     @PostMapping("/edit/{postId}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> edit(
@@ -280,6 +347,11 @@ public class CommunityController {
        DELETE /community/{postId} - 게시글 삭제
        post_status = 'DELETED' 로 변경 (실제 삭제 X)
        ============================================= */
+    /**
+     * 게시글을 삭제한다.
+     * - 비로그인 시 401 반환
+     * - post_status = 'DELETED' 로 변경 (실제 삭제 X)
+     */
     @DeleteMapping("/{postId}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> delete(
@@ -301,6 +373,11 @@ public class CommunityController {
     /* =============================================
        POST /community/{postId}/like - 좋아요 토글
        ============================================= */
+    /**
+     * 게시글 좋아요를 토글한다.
+     * - 비로그인 시 401 반환
+     * - liked(현재 좋아요 여부), likeCount(총 좋아요 수) 반환
+     */
     @PostMapping("/{postId}/like")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> like(
@@ -333,6 +410,11 @@ public class CommunityController {
     /* =============================================
        POST /community/{postId}/comment - 댓글 등록
        ============================================= */
+    /**
+     * 댓글을 등록한다.
+     * - 비로그인 시 401, 차단된 계정 시 403 반환
+     * - Perspective AI 욕설 감지: 감지 시 toxicityDetected=true 반환 (강제 등록 가능)
+     */
     @PostMapping("/{postId}/comment")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> addComment(
@@ -387,6 +469,11 @@ public class CommunityController {
        DELETE /community/comment/{commentId} - 댓글 삭제
        comment_status = 'DELETED' 로 변경 (실제 삭제 X)
        ============================================= */
+    /**
+     * 댓글을 삭제한다.
+     * - 비로그인 시 401 반환
+     * - comment_status = 'DELETED' 로 변경 (실제 삭제 X)
+     */
     @DeleteMapping("/comment/{commentId}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteComment(
@@ -408,6 +495,11 @@ public class CommunityController {
     /* =============================================
    POST /community/{postId}/comment/{commentId}/reply - 대댓글 등록
    ============================================= */
+    /**
+     * 대댓글을 등록한다.
+     * - 비로그인 시 401, 차단된 계정 시 403 반환
+     * - Perspective AI 욕설 감지: 감지 시 toxicityDetected=true 반환 (강제 등록 가능)
+     */
     @PostMapping("/{postId}/comment/{commentId}/reply")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> addReply(
@@ -463,6 +555,11 @@ public class CommunityController {
     /* =============================================
    POST /community/{postId}/accept/{commentId} - 댓글 채택
    ============================================= */
+    /**
+     * 질문 게시글에서 댓글을 채택한다.
+     * - 비로그인 시 401 반환
+     * - 게시글 작성자 본인만 채택 가능 (타인 시도 시 403 반환)
+     */
     @PostMapping("/{postId}/accept/{commentId}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> acceptComment(
@@ -502,6 +599,11 @@ public class CommunityController {
     /* =============================================
        POST /community/comment/{commentId}/like - 댓글 좋아요 토글
        ============================================= */
+    /**
+     * 댓글 좋아요를 토글한다.
+     * - 비로그인 시 401 반환
+     * - liked(현재 좋아요 여부), likeCount(총 좋아요 수) 반환
+     */
     @PostMapping("/comment/{commentId}/like")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> commentLike(
@@ -535,6 +637,11 @@ public class CommunityController {
     /* =============================================
        POST /community/{postId}/report - 신고
        ============================================= */
+    /**
+     * 게시글을 신고한다.
+     * - 비로그인 시 401 반환
+     * - 중복 신고 방지, 신고 접수 시 report_count 캐시 업데이트
+     */
     @PostMapping("/{postId}/report")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> report(
@@ -568,6 +675,11 @@ public class CommunityController {
     /* =============================================
    POST /community/comment/{commentId}/report - 댓글 신고
    ============================================= */
+    /**
+     * 댓글을 신고한다.
+     * - 비로그인 시 401 반환
+     * - 중복 신고 방지, 신고 접수 시 report_count 캐시 업데이트
+     */
     @PostMapping("/comment/{commentId}/report")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> reportComment(
@@ -583,7 +695,10 @@ public class CommunityController {
 
         try {
             Long loginUserIdx = getLoginUserIdx(session);
-            boolean reported = reportService.submitReport("comment", commentId, loginUserIdx, null, null, null, null);
+            // 댓글이 속한 게시글 ID를 sourceId로 전달 (어드민 신고 상세의 원글보기용)
+            CommunityCommentDto comment = communityService.getComment(commentId);
+            Long postId = comment != null ? comment.getPostId() : null;
+            boolean reported = reportService.submitReport("comment", commentId, loginUserIdx, null, null, "post", postId);
             if (reported) {
                 communityService.updateCommentReportCache(commentId);
             }
@@ -600,6 +715,15 @@ public class CommunityController {
     /* =============================================
    POST /community/user/{userIdx}/block - 유저 차단
    ============================================= */
+    /* =============================================
+       POST /community/user/{userIdx}/block - 유저 차단 (어드민)
+       POST /community/user/{userIdx}/unblock - 유저 차단 해제 (어드민)
+       ============================================= */
+    /**
+     * 유저 계정을 차단한다. (관리자 전용)
+     * - 비관리자 시 403 반환
+     * - account_status = 'BLOCKED' 로 변경
+     */
     @PostMapping("/user/{userIdx}/block")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> blockUser(
@@ -626,6 +750,10 @@ public class CommunityController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 유저 계정 차단을 해제한다. (관리자 전용)
+     * - 비관리자 시 403 반환
+     */
     @PostMapping("/user/{userIdx}/unblock")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> unblockUser(
@@ -654,7 +782,15 @@ public class CommunityController {
 
 
 
-    /* 게시글 차단/해제 */
+    /* =============================================
+       POST /community/{postId}/block   - 게시글 차단 (어드민)
+       POST /community/{postId}/unblock - 게시글 차단 해제 (어드민)
+       ============================================= */
+    /**
+     * 게시글을 차단한다. (관리자 전용)
+     * - 비관리자 시 403 반환
+     * - post_status = 'DORMANT' 로 변경
+     */
     @PostMapping("/{postId}/block")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> blockPost(
@@ -668,6 +804,10 @@ public class CommunityController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 게시글 차단을 해제한다. (관리자 전용)
+     * - 비관리자 시 403 반환
+     */
     @PostMapping("/{postId}/unblock")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> unblockPost(
@@ -681,7 +821,15 @@ public class CommunityController {
         return ResponseEntity.ok(result);
     }
 
-    /* 댓글/대댓글 차단/해제 */
+    /* =============================================
+       POST /community/comment/{commentId}/block   - 댓글 차단 (어드민)
+       POST /community/comment/{commentId}/unblock - 댓글 차단 해제 (어드민)
+       ============================================= */
+    /**
+     * 댓글을 차단한다. (관리자 전용)
+     * - 비관리자 시 403 반환
+     * - comment_status = 'BLOCKED' 로 변경
+     */
     @PostMapping("/comment/{commentId}/block")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> blockComment(
@@ -695,6 +843,10 @@ public class CommunityController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 댓글 차단을 해제한다. (관리자 전용)
+     * - 비관리자 시 403 반환
+     */
     @PostMapping("/comment/{commentId}/unblock")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> unblockComment(
@@ -708,6 +860,14 @@ public class CommunityController {
         return ResponseEntity.ok(result);
     }
 
+    /* =============================================
+       POST /community/admin/viewmode - 관리자 뷰 모드 전환 (어드민)
+       ============================================= */
+    /**
+     * 관리자의 뷰 모드를 토글한다. (admin ↔ user)
+     * - 비관리자 시 403 반환
+     * - 관리자가 일반 유저 시점으로 화면을 확인할 때 사용
+     */
     @PostMapping("/admin/viewmode")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> toggleViewMode(HttpSession session) {
@@ -729,6 +889,11 @@ public class CommunityController {
        POST /community/admin/bulk — 게시글 일괄 처리
        action: delete / blockUser / blockIp / blockBoth / blockAndDelete
        ============================================= */
+    /**
+     * 게시글 일괄 처리. (관리자 전용)
+     * - action: delete / blockUser / blockIp / blockBoth / blockUserAndDelete / blockIpAndDelete / blockAndDelete
+     * - 비관리자 시 403 반환
+     */
     @PostMapping("/admin/bulk")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> bulkAction(
@@ -793,6 +958,11 @@ public class CommunityController {
        POST /community/admin/bulk/comment — 댓글/대댓글 일괄 처리
        action: delete / blockUser / blockIp / blockBoth / blockAndDelete
        ============================================= */
+    /**
+     * 댓글/대댓글 일괄 처리. (관리자 전용)
+     * - action: delete / blockUser / blockIp / blockBoth / blockUserAndDelete / blockIpAndDelete / blockAndDelete
+     * - 비관리자 시 403 반환
+     */
     @PostMapping("/admin/bulk/comment")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> bulkCommentAction(
@@ -857,6 +1027,11 @@ public class CommunityController {
    로그인 사용자 userIdx 추출 유틸
    로그인 담당자 UserDto의 getUserIdx() 메서드 호출
    ============================================= */
+    /**
+     * 세션에서 로그인한 유저의 idx를 꺼낸다.
+     * 로그인 안 했거나 오류 시 null 반환.
+     * auth 모듈 VO를 직접 import 하지 않고 리플렉션으로 접근 (담당자 간 의존성 최소화)
+     */
     private Long getLoginUserIdx(HttpSession session) {
         Object loginUser = session.getAttribute("loginUser");
         if (loginUser == null) return null;
@@ -868,6 +1043,9 @@ public class CommunityController {
         }
     }
 
+    /**
+     * 세션에서 로그인한 유저가 관리자(ADMIN)인지 확인한다.
+     */
     private boolean isAdminUser(HttpSession session) {
         try {
             Object loginUser = session.getAttribute("loginUser");
@@ -879,6 +1057,9 @@ public class CommunityController {
         }
     }
 
+    /**
+     * 세션에서 로그인한 유저가 차단된 계정인지 확인한다.
+     */
     private boolean isBlocked(HttpSession session) {
         try {
             Object loginUser = session.getAttribute("loginUser");
@@ -890,6 +1071,10 @@ public class CommunityController {
         }
     }
 
+    /**
+     * 클라이언트의 실제 IP를 추출한다.
+     * 프록시 / 로드밸런서 헤더를 순서대로 확인하고, 없으면 remoteAddr 반환.
+     */
     private String getClientIp(HttpServletRequest request) {
         String[] headers = {
                 "X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP",
@@ -904,6 +1089,10 @@ public class CommunityController {
         return request.getRemoteAddr();
     }
 
+    /**
+     * IP 목록을 일괄 차단한다.
+     * 빈 목록이면 아무 작업도 하지 않는다.
+     */
     private void bulkBlockIps(List<String> ips, String reason) {
         if (ips == null || ips.isEmpty()) return;
         ipBlockMapper.insertBlockedIps(ips, reason);

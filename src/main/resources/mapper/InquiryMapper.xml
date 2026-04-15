@@ -197,39 +197,8 @@
         VALUES (#{userIdx}, #{title}, #{content}, #{category}, #{isPrivate}, 'PENDING', NOW(), NOW())
     </insert>
 
-    <!-- 도배 방지: 최근 N분 내 작성 수 조회 -->
-    <select id="countRecentInquiriesByUser" resultType="int">
-        SELECT COUNT(*)
-        FROM INQUIRY_POST
-        WHERE user_idx = #{userIdx}
-          AND created_at >= DATE_SUB(NOW(), INTERVAL #{minutes} MINUTE)
-    </select>
-
     <!-- =============================================
-         7. 답변 등록
-         - 운영진이 문의에 답변을 저장
-         - 답변 등록 후 반드시 updateStatus로 상태를 COMPLETED로 변경해야 함
-           (Service에서 @Transactional로 묶어서 처리)
-         ============================================= -->
-    <insert id="insertAnswer" useGeneratedKeys="true" keyProperty="answerId">
-        INSERT INTO INQUIRY_ANSWER (inquiry_id, admin_user_idx, content, created_at, updated_at)
-        VALUES (#{inquiryId}, #{adminUserIdx}, #{content}, NOW(), NOW())
-    </insert>
-
-    <!-- =============================================
-         8. 문의 상태 변경
-         - status 값: PENDING(대기중) / IN_PROGRESS(처리중) / COMPLETED(완료)
-         - 답변 등록 시 COMPLETED로 변경하는 데 주로 사용
-         ============================================= -->
-    <update id="updateStatus">
-        UPDATE INQUIRY_POST
-        SET status     = #{status},
-        updated_at = NOW()
-        WHERE inquiry_id = #{inquiryId}
-    </update>
-
-    <!-- =============================================
-         9. 문의 수정
+         7. 문의 수정
          - 제목, 내용, 카테고리, 공개여부 수정
          - PENDING 상태일 때만 가능 (Controller에서 체크)
          ============================================= -->
@@ -244,7 +213,7 @@
     </update>
 
     <!-- =============================================
-         10. 문의 삭제
+         8. 문의 삭제
          - PENDING 상태일 때만 가능 (Controller에서 체크)
          ============================================= -->
     <delete id="deleteInquiry">
@@ -253,17 +222,48 @@
     </delete>
 
     <!-- =============================================
-         11. 공개여부 변경
+         9. 답변 등록
+         - 운영진이 문의에 답변을 저장
+         - 답변 등록 후 반드시 updateStatus로 상태를 COMPLETED로 변경해야 함
+           (Service에서 @Transactional로 묶어서 처리)
          ============================================= -->
-    <update id="updateIsPrivate">
-        UPDATE INQUIRY_POST
-        SET is_private = #{isPrivate},
+    <insert id="insertAnswer" useGeneratedKeys="true" keyProperty="answerId">
+        INSERT INTO INQUIRY_ANSWER (inquiry_id, admin_user_idx, content, created_at, updated_at)
+        VALUES (#{inquiryId}, #{adminUserIdx}, #{content}, NOW(), NOW())
+    </insert>
+
+    <!-- =============================================
+         10. 답변 수정
+         ============================================= -->
+    <update id="updateAnswer">
+        UPDATE INQUIRY_ANSWER
+        SET content    = #{content},
             updated_at = NOW()
         WHERE inquiry_id = #{inquiryId}
     </update>
 
     <!-- =============================================
-         12. 상태 변경 (시간 기록 포함)
+         11. 답변 삭제
+         ============================================= -->
+    <delete id="deleteAnswer">
+        DELETE FROM INQUIRY_ANSWER
+        WHERE inquiry_id = #{inquiryId}
+    </delete>
+
+    <!-- =============================================
+         12. 상태 변경
+         - status 값: PENDING(대기중) / IN_PROGRESS(처리중) / COMPLETED(완료)
+         - 답변 등록 시 COMPLETED로 변경하는 데 주로 사용
+         ============================================= -->
+    <update id="updateStatus">
+        UPDATE INQUIRY_POST
+        SET status     = #{status},
+        updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <!-- =============================================
+         13. 상태 변경 (시간 기록 포함)
          ============================================= -->
     <update id="updateStatusWithTime">
         UPDATE INQUIRY_POST
@@ -278,22 +278,14 @@
     </update>
 
     <!-- =============================================
-         13. 답변 수정
+         14. 공개여부 변경
          ============================================= -->
-    <update id="updateAnswer">
-        UPDATE INQUIRY_ANSWER
-        SET content    = #{content},
+    <update id="updateIsPrivate">
+        UPDATE INQUIRY_POST
+        SET is_private = #{isPrivate},
             updated_at = NOW()
         WHERE inquiry_id = #{inquiryId}
     </update>
-
-    <!-- =============================================
-         14. 답변 삭제
-         ============================================= -->
-    <delete id="deleteAnswer">
-        DELETE FROM INQUIRY_ANSWER
-        WHERE inquiry_id = #{inquiryId}
-    </delete>
 
     <!-- =============================================
          15. 첨부파일 등록
@@ -320,5 +312,16 @@
         DELETE FROM INQUIRY_ATTACHMENT
         WHERE attachment_id = #{attachmentId}
     </delete>
+
+    <!-- =============================================
+         18. 도배 방지
+         - 최근 N분 내 해당 유저의 문의 작성 수 조회
+         ============================================= -->
+    <select id="countRecentInquiriesByUser" resultType="int">
+        SELECT COUNT(*)
+        FROM INQUIRY_POST
+        WHERE user_idx = #{userIdx}
+          AND created_at >= DATE_SUB(NOW(), INTERVAL #{minutes} MINUTE)
+    </select>
 
 </mapper>

@@ -161,6 +161,25 @@
         <result property="createdAt" column="created_at"/>
     </resultMap>
 
+    <resultMap id="reportRM" type="org.triptogether.admin.vo.AdminReportVO">
+        <id     property="reportId"          column="report_id"/>
+        <result property="userIdx"           column="user_idx"/>
+        <result property="userId"            column="user_id"/>
+        <result property="nickname"          column="nickname"/>
+        <result property="accountStatus"     column="account_status"/>
+        <result property="targetType"        column="target_type"/>
+        <result property="targetId"          column="target_id"/>
+        <result property="sourceType"        column="source_type"/>
+        <result property="sourceId"          column="source_id"/>
+        <result property="reason"            column="reason"/>
+        <result property="description"       column="description"/>
+        <result property="status"            column="status"/>
+        <result property="resolveAction"     column="resolve_action"/>
+        <result property="targetReportCount" column="target_report_count"/>
+        <result property="createdAt"         column="created_at"/>
+        <result property="resolvedAt"        column="resolved_at"/>
+    </resultMap>
+
     <!-- ══════════════════════════════════════════
          회원 목록
     ══════════════════════════════════════════ -->
@@ -696,6 +715,90 @@
     <select id="countActivityLogs" resultType="int">
         SELECT COUNT(*)
         <include refid="activityLogSearchBase"/>
+    </select>
+
+    <!-- ===== 신고 목록 검색 조건 ===== -->
+    <sql id="reportSearchBase">
+        FROM REPORT r
+        LEFT JOIN USERS u ON r.user_idx = u.user_idx
+        <where>
+            <if test="status != null and status != ''">
+                AND r.status = #{status}
+            </if>
+            <if test="targetType != null and targetType != ''">
+                AND r.target_type = #{targetType}
+            </if>
+            <if test="reason != null and reason != ''">
+                AND r.reason = #{reason}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+        </where>
+    </sql>
+
+    <!-- ===== 신고 목록 조회 ===== -->
+    <select id="findReports" resultMap="reportRM">
+        SELECT
+            r.report_id,
+            r.user_idx,
+            r.target_type,
+            r.target_id,
+            r.reason,
+            r.description,
+            r.status,
+            r.created_at,
+            r.resolved_at,
+            r.resolve_action,
+            r.source_type,
+            r.source_id,
+            u.nickname,
+            u.user_id,
+            u.account_status,
+            (
+                SELECT COUNT(*)
+                FROM REPORT r2
+                WHERE r2.target_type = r.target_type
+                  AND r2.target_id   = r.target_id
+            ) AS target_report_count
+        <include refid="reportSearchBase"/>
+        ORDER BY r.created_at DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- ===== 신고 목록 총 개수 조회 ===== -->
+    <select id="countReports" resultType="int">
+        SELECT COUNT(*)
+        <include refid="reportSearchBase"/>
+    </select>
+
+    <!-- ===== 신고 단건 조회 ===== -->
+    <select id="findReport" resultMap="reportRM">
+        SELECT
+            r.report_id,
+            r.user_idx,
+            r.target_type,
+            r.target_id,
+            r.reason,
+            r.description,
+            r.status,
+            r.created_at,
+            r.resolved_at,
+            r.resolve_action,
+            r.source_type,
+            r.source_id,
+            u.nickname,
+            u.user_id,
+            u.account_status,
+            (
+                SELECT COUNT(*)
+                FROM REPORT r2
+                WHERE r2.target_type = r.target_type
+                  AND r2.target_id   = r.target_id
+            ) AS target_report_count
+        FROM REPORT r
+        LEFT JOIN USERS u ON r.user_idx = u.user_idx
+        WHERE r.report_id = #{reportId}
     </select>
 
 </mapper>

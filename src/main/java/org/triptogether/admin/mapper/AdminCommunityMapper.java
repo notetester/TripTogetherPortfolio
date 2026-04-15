@@ -9,8 +9,11 @@ import java.util.List;
 @Mapper
 public interface AdminCommunityMapper {
 
-    // 대시보드 통계
+    // ===== 통계 =====
+
     AdminCommunityStatsVO getStats();
+
+    // ===== 게시글 목록/상세 =====
 
     // 게시글 목록
     List<AdminCommunityPostVO> findPosts(AdminCommunitySearchVO search);
@@ -29,15 +32,20 @@ public interface AdminCommunityMapper {
     List<AdminCommunityCommentVO> findComments(AdminCommunitySearchVO search);
     int countComments(AdminCommunitySearchVO search);
 
+    // ===== 게시글 차단/삭제 =====
+
     // 게시글 상태 변경 (단건)
     void updatePostStatus(@Param("postId") Long postId, @Param("status") String status);
 
     // 게시글 상태 일괄 변경
     void bulkUpdatePostStatus(@Param("ids") List<Long> ids, @Param("status") String status);
 
+    // ===== 댓글 차단/삭제 =====
+
     // 댓글 상태 변경 (단건)
     void updateCommentStatus(@Param("commentId") Long commentId, @Param("status") String status);
 
     // 댓글 상태 일괄 변경
     void bulkUpdateCommentStatus(@Param("ids") List<Long> ids, @Param("status") String status);
+
 }

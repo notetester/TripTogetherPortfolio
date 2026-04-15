@@ -7,13 +7,18 @@
   URL: GET /report/{reportId}
   =============================================
   [model 필요]
-  - report  : ReportDto - 신고 내용
-  - isAdmin : boolean   - 운영진 여부
+  - report      : ReportDto - 신고 내용
+  - isAdmin     : boolean   - 운영진 여부
+  - isAdminMode : boolean   - 관리자모드 여부 (AdminModeInterceptor 자동 주입)
+                              false(유저경험모드)이면 관리자 패널 숨김
 
   [페이지 구성]
   1. 신고 내용 카드 (대상 유형, 사유, 상세 내용)
   2. 처리 결과 영역 (처리완료/반려/검토중)
-  3. 하단 액션 버튼
+  3. 관리자 패널 (관리자모드일 때만 표시)
+  4. 수정 폼 (IN_REVIEW + isOwner만 표시)
+  5. 하단 액션 버튼
+  6. 스크립트 (관리자 액션 / 본인 액션)
   =============================================
 --%>
 <!DOCTYPE html>
@@ -209,8 +214,8 @@
           </span>
         </div>
 
-        <%-- 어드민 전용: 신고자 정보 --%>
-        <c:if test="${isAdmin}">
+        <%-- 어드민 전용: 신고자 정보 (관리자모드일 때만 표시) --%>
+        <c:if test="${isAdmin and isAdminMode}">
           <div class="rpt-detail-row">
             <span class="rpt-detail-label">신고자</span>
             <span class="rpt-detail-value">${report.nickname} (#${report.userIdx})</span>
@@ -281,9 +286,10 @@
     </c:choose>
 
     <%-- =============================================
-         3. 관리자 패널 (isAdmin일 때만)
+         3. 관리자 패널
+         - 관리자이고 관리자모드일 때만 표시 (유저경험모드 시 숨김)
          ============================================= --%>
-    <c:if test="${isAdmin}">
+    <c:if test="${isAdmin and isAdminMode}">
       <div class="rpt-admin-form">
         <div class="rpt-admin-form-title">🛡️ 관리자 패널</div>
 
@@ -297,7 +303,7 @@
               <div class="rpt-admin-action-bar">
                 <button class="rpt-btn-danger" id="btnDeleteAndBlock">🗑️🚫 게시글 삭제 + 작성자 차단 후 처리완료</button>
                 <button class="rpt-btn-danger" id="btnDeleteContent">🗑️ 게시글 삭제 후 처리완료</button>
-                <button class="rpt-btn-warn"   id="btnBlockAuthor">🚫 작성자 차단 후 처리완료</button>
+                <button class="rpt-btn-danger" id="btnBlockAuthor">🚫 작성자 차단 후 처리완료</button>
               </div>
               <div class="rpt-admin-action-bar">
                 <button class="rpt-btn-cancel" id="btnDismiss">✖ 유지 (반려)</button>
@@ -309,7 +315,7 @@
               <div class="rpt-admin-action-bar">
                 <button class="rpt-btn-danger" id="btnDeleteAndBlock">🗑️🚫 댓글 삭제 + 작성자 차단 후 처리완료</button>
                 <button class="rpt-btn-danger" id="btnDeleteContent">🗑️ 댓글 삭제 후 처리완료</button>
-                <button class="rpt-btn-warn"   id="btnBlockAuthor">🚫 작성자 차단 후 처리완료</button>
+                <button class="rpt-btn-danger" id="btnBlockAuthor">🚫 작성자 차단 후 처리완료</button>
               </div>
               <div class="rpt-admin-action-bar">
                 <button class="rpt-btn-cancel" id="btnDismiss">✖ 유지 (반려)</button>
@@ -407,8 +413,9 @@
                 style="background:#ef4444;">🗑️ 삭제</button>
       </c:if>
 
-      <%-- 어드민: 삭제 (상태 무관) --%>
-      <c:if test="${isAdmin}">
+      <%-- 어드민: 삭제 (상태 무관, 관리자모드 + 소유자가 아닐 때만)
+           소유자이면 위 소유자 블록에 삭제 버튼이 이미 있으므로 중복 방지 --%>
+      <c:if test="${isAdmin and isAdminMode and not isOwner}">
         <button class="rpt-btn-submit" id="deleteBtn"
                 style="background:#ef4444;">🗑️ 삭제</button>
       </c:if>
@@ -430,7 +437,7 @@ function goBackToList() {
 }
 </script>
 
-<c:if test="${isAdmin}">
+<c:if test="${isAdmin and isAdminMode}">
 <script>
 (function () {
   var ctx      = '${pageContext.request.contextPath}';

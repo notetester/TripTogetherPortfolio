@@ -313,6 +313,12 @@ public class ReportController {
        POST /report/{reportId}/edit - 신고 내용 수정 (본인 + IN_REVIEW)
        ============================================= */
 
+    /**
+     * 신고 내용을 수정한다.
+     * - 비로그인 시 401 반환
+     * - 본인만 수정 가능 (403), 존재하지 않으면 404 반환
+     * - IN_REVIEW 상태일 때만 수정 가능
+     */
     @PostMapping("/{reportId}/edit")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> editReport(
@@ -354,6 +360,11 @@ public class ReportController {
        POST /report/{reportId}/delete - 신고 삭제 (본인)
        ============================================= */
 
+    /**
+     * 신고를 삭제한다.
+     * - 비로그인 시 401 반환
+     * - 본인 또는 관리자만 삭제 가능 (403), 존재하지 않으면 404 반환
+     */
     @PostMapping("/{reportId}/delete")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteReport(
@@ -388,6 +399,12 @@ public class ReportController {
        POST /report/{reportId}/cancel - 신고 취소 (본인 + IN_REVIEW)
        ============================================= */
 
+    /**
+     * 신고를 취소한다.
+     * - 비로그인 시 401 반환
+     * - 본인만 취소 가능 (403), 존재하지 않으면 404 반환
+     * - IN_REVIEW 상태일 때만 취소 가능
+     */
     @PostMapping("/{reportId}/cancel")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> cancelReport(

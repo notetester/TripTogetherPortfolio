@@ -10,6 +10,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Cloudinary 이미지 업로드 서비스.
+ *
+ * <p>커뮤니티·문의 게시판 등 이미지 업로드가 필요한 모듈에서 공통으로 사용한다.</p>
+ * <ul>
+ *   <li>허용 확장자: jpg / jpeg / png / gif / webp</li>
+ *   <li>업로드 성공 시 Cloudinary secure_url 반환, 실패 시 null 반환 (예외 전파 없음)</li>
+ * </ul>
+ */
 @Slf4j
 @Service
 public class CloudinaryService {

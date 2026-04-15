@@ -43,15 +43,15 @@ public interface ReportService {
     // 신고 내용 수정함 (본인 + IN_REVIEW 상태만 가능)
     void updateReport(Long reportId, String reason, String description);
 
-    // ===== 신고 취소 =====
-
-    // 신고 취소함. status를 CANCELLED로 바꿈 (본인만 가능)
-    void cancelReport(Long reportId);
-
     // ===== 신고 삭제 =====
 
     // 신고 삭제함 (본인만 가능)
     void deleteReport(Long reportId);
+
+    // ===== 신고 취소 =====
+
+    // 신고 취소함. status를 CANCELLED로 바꿈 (본인만 가능)
+    void cancelReport(Long reportId);
 
     // ===== 상태 변경 (어드민) =====
 
