@@ -1,139 +1,95 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%--
-  =============================================
-  문의 게시판 작성 페이지
-  URL: GET  /inquiry/write → 폼 표시
-       POST /inquiry/write → 등록 처리 (@ResponseBody JSON 반환)
-  =============================================
-  [페이지 구성]
-  1. 페이지 헤더 (뒤로가기 + 제목)
-  2. 폼 카드
-     2-1. 문의 유형 선택
-     2-2. 제목 입력
-     2-3. 내용 입력 (글자수 카운터)
-     2-4. 비공개 여부 토글
-     2-5. 취소/등록 버튼
-  3. 스크립트 (유효성 검사 + 등록 처리)
-  =============================================
---%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="inquiry/inquiry.css"/>
 <%@ include file="../common/header.jsp" %>
 <body>
-
 <div class="inq-write-wrap">
   <div class="inq-write-inner">
-
-    <%-- =============================================
-         1. 페이지 헤더
-         ============================================= --%>
     <div class="inq-write-header">
-      <button class="inq-back-btn"
-              onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
-        &#8592; 목록으로
+      <button class="inq-back-btn" onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
+        &#8592; <spring:message code="inquiry.write.back"/>
       </button>
-      <h1>문의하기</h1>
-      <p>최대한 빠르게 답변 드리겠습니다</p>
+      <h1><spring:message code="inquiry.write.title"/></h1>
+      <p><spring:message code="inquiry.write.subtitle"/></p>
     </div>
 
-    <%-- =============================================
-         2. 폼 카드
-         ============================================= --%>
     <div class="inq-write-card">
-
-      <%-- 2-1. 문의 유형 선택 --%>
       <div class="inq-form-group">
         <label class="inq-form-label" for="category">
-          문의 유형 <span class="inq-required">*</span>
+          <spring:message code="inquiry.write.type"/> <span class="inq-required">*</span>
         </label>
         <select class="inq-form-select" id="category" name="category">
-          <option value="">유형을 선택해주세요</option>
-          <option value="service">서비스 이용</option>
-          <option value="payment">결제 / 환불</option>
-          <option value="account">계정 / 로그인</option>
-          <option value="bug">오류 신고</option>
-          <option value="etc">기타</option>
+          <option value=""><spring:message code="inquiry.write.type.placeholder"/></option>
+          <option value="service"><spring:message code="inquiry.write.type.service"/></option>
+          <option value="payment"><spring:message code="inquiry.write.type.payment"/></option>
+          <option value="account"><spring:message code="inquiry.write.type.account"/></option>
+          <option value="bug"><spring:message code="inquiry.write.type.bug"/></option>
+          <option value="etc"><spring:message code="inquiry.write.type.etc"/></option>
         </select>
-        <%-- 유효성 검사 메시지 출력 영역 --%>
         <div class="inq-field-msg" id="categoryMsg"></div>
       </div>
 
-      <%-- 2-2. 제목 입력 --%>
       <div class="inq-form-group">
         <label class="inq-form-label" for="title">
-          제목 <span class="inq-required">*</span>
+          <spring:message code="inquiry.write.subject"/> <span class="inq-required">*</span>
         </label>
         <input class="inq-form-input" type="text" id="title" name="title"
-               placeholder="문의 제목을 입력해주세요" maxlength="200">
+               placeholder="<spring:message code='inquiry.write.subject.placeholder'/>" maxlength="200">
         <div class="inq-field-msg" id="titleMsg"></div>
       </div>
 
-      <%-- 2-3. 내용 입력 + 글자수 카운터 --%>
       <div class="inq-form-group">
         <label class="inq-form-label" for="content">
-          내용 <span class="inq-required">*</span>
+          <spring:message code="inquiry.write.content"/> <span class="inq-required">*</span>
         </label>
         <textarea class="inq-form-textarea" id="content" name="content"
-                  placeholder="문의 내용을 자세히 입력해주세요&#10;&#10;• 발생한 문제나 궁금한 점을 구체적으로 작성해주세요&#10;• 스크린샷이 있다면 내용에 상황을 자세히 설명해주세요"
+                  placeholder="<spring:message code='inquiry.write.content.placeholder'/>"
                   rows="10" maxlength="5000"></textarea>
         <div class="inq-textarea-footer">
           <div class="inq-field-msg" id="contentMsg"></div>
-          <%-- 현재 글자수 / 최대 글자수 표시 --%>
           <span class="inq-char-count"><span id="contentCount">0</span> / 5000</span>
         </div>
       </div>
 
-      <%-- 2-4. 파일 첨부 --%>
       <div class="inq-form-group">
-        <label class="inq-form-label">첨부파일 <span style="font-size:12px;color:var(--gray-400);">(jpg/jpeg/png/gif/webp, 최대 10MB)</span></label>
-        <input type="file" class="inq-form-input" id="images" name="images"
-               multiple accept=".jpg,.jpeg,.png,.gif,.webp">
+        <label class="inq-form-label"><spring:message code="inquiry.write.attach"/> <span style="font-size:12px;color:var(--gray-400);"><spring:message code="inquiry.write.attach.help"/></span></label>
+        <input type="file" class="inq-form-input" id="images" name="images" multiple accept=".jpg,.jpeg,.png,.gif,.webp">
         <div class="inq-attach-preview" id="attachPreview"></div>
       </div>
 
-      <%-- 2-5. 비공개 여부 토글
-               - 체크 시 본인과 운영진만 열람 가능 --%>
       <div class="inq-form-group">
         <label class="inq-private-toggle">
           <input type="checkbox" id="isPrivate">
           <span class="inq-toggle-slider"></span>
-          <span class="inq-toggle-label">비공개로 등록</span>
+          <span class="inq-toggle-label"><spring:message code="inquiry.write.private"/></span>
         </label>
-        <div class="inq-private-hint">비공개 설정 시 본인과 운영진만 열람할 수 있습니다</div>
+        <div class="inq-private-hint"><spring:message code="inquiry.write.private.help"/></div>
       </div>
 
-      <%-- 2-6. 취소 / 등록 버튼 --%>
       <div class="inq-write-actions">
-        <button class="inq-btn-cancel"
-                onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
-          취소
+        <button class="inq-btn-cancel" onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
+          <spring:message code="inquiry.write.cancel"/>
         </button>
         <button class="inq-btn-submit" id="submitBtn">
-          문의 등록
+          <spring:message code="inquiry.write.submit"/>
         </button>
       </div>
-
-    </div><%-- /inq-write-card --%>
+    </div>
   </div>
 </div>
 
-<%-- =============================================
-     3. 스크립트
-     ============================================= --%>
 <script>
 (function () {
   const ctx = '${pageContext.request.contextPath}';
-
-  // 글자수 카운터
   const contentEl = document.getElementById('content');
-  const countEl   = document.getElementById('contentCount');
+  const countEl = document.getElementById('contentCount');
   contentEl.addEventListener('input', function () {
     countEl.textContent = this.value.length;
   });
 
-  // 파일 선택 시 미리보기 목록 표시
   document.getElementById('images').addEventListener('change', function () {
     const preview = document.getElementById('attachPreview');
     preview.innerHTML = '';
@@ -145,69 +101,66 @@
     });
   });
 
-  // 등록 버튼 클릭
   document.getElementById('submitBtn').addEventListener('click', async function () {
-    const category  = document.getElementById('category').value;
-    const title     = document.getElementById('title').value.trim();
-    const content   = contentEl.value.trim();
+    const category = document.getElementById('category').value;
+    const title = document.getElementById('title').value.trim();
+    const content = contentEl.value.trim();
     const isPrivate = document.getElementById('isPrivate').checked ? 1 : 0;
 
-    // 유효성 검사
     let valid = true;
     if (!category) {
-      setMsg('categoryMsg', '문의 유형을 선택해주세요.', 'error'); valid = false;
+      setMsg('categoryMsg', '<spring:message code="inquiry.write.error.category" javaScriptEscape="true"/>', 'error');
+      valid = false;
     } else { clearMsg('categoryMsg'); }
 
     if (!title) {
-      setMsg('titleMsg', '제목을 입력해주세요.', 'error'); valid = false;
+      setMsg('titleMsg', '<spring:message code="inquiry.write.error.title" javaScriptEscape="true"/>', 'error');
+      valid = false;
     } else if (title.length < 5) {
-      setMsg('titleMsg', '제목은 5자 이상 입력해주세요.', 'error'); valid = false;
+      setMsg('titleMsg', '<spring:message code="inquiry.write.error.title.length" javaScriptEscape="true"/>', 'error');
+      valid = false;
     } else { clearMsg('titleMsg'); }
 
     if (!content) {
-      setMsg('contentMsg', '내용을 입력해주세요.', 'error'); valid = false;
+      setMsg('contentMsg', '<spring:message code="inquiry.write.error.content" javaScriptEscape="true"/>', 'error');
+      valid = false;
     } else if (content.length < 10) {
-      setMsg('contentMsg', '내용은 10자 이상 입력해주세요.', 'error'); valid = false;
+      setMsg('contentMsg', '<spring:message code="inquiry.write.error.content.length" javaScriptEscape="true"/>', 'error');
+      valid = false;
     } else { clearMsg('contentMsg'); }
 
     if (!valid) return;
 
     this.disabled = true;
     this.classList.add('loading');
-
     const btn = this;
     try {
-      // FormData로 텍스트 + 파일 동시 전송
       const formData = new FormData();
-      formData.append('category',  category);
-      formData.append('title',     title);
-      formData.append('content',   content);
+      formData.append('category', category);
+      formData.append('title', title);
+      formData.append('content', content);
       formData.append('isPrivate', isPrivate);
-
       const imageInput = document.getElementById('images');
       Array.from(imageInput.files).forEach(function (file) {
         formData.append('images', file);
       });
 
-      const res  = await fetch(ctx + '/inquiry/write', {
-        method: 'POST',
-        body: formData
-      });
+      const res = await fetch(ctx + '/inquiry/write', { method: 'POST', body: formData });
       const data = await res.json();
 
       if (data.toxicityDetected) {
         btn.disabled = false;
         btn.classList.remove('loading');
-        if (confirm(data.message || '부적절한 표현이 감지되었습니다. 그래도 등록하시겠습니까?')) {
+        if (confirm(data.message || '<spring:message code="inquiry.write.toxicity" javaScriptEscape="true"/>')) {
           btn.disabled = true;
           btn.classList.add('loading');
           formData.append('forceSubmit', 'true');
-          const res2  = await fetch(ctx + '/inquiry/write', { method: 'POST', body: formData });
+          const res2 = await fetch(ctx + '/inquiry/write', { method: 'POST', body: formData });
           const data2 = await res2.json();
           if (data2.success) {
             location.href = ctx + '/inquiry/' + data2.inquiryId;
           } else {
-            alert('등록에 실패했습니다. 다시 시도해주세요.');
+            alert('<spring:message code="inquiry.write.fail" javaScriptEscape="true"/>');
             btn.disabled = false;
             btn.classList.remove('loading');
           }
@@ -218,12 +171,12 @@
       if (data.success) {
         location.href = ctx + '/inquiry/' + data.inquiryId;
       } else {
-        alert('등록에 실패했습니다. 다시 시도해주세요.');
+        alert('<spring:message code="inquiry.write.fail" javaScriptEscape="true"/>');
         btn.disabled = false;
         btn.classList.remove('loading');
       }
     } catch (e) {
-      alert('오류가 발생했습니다. 다시 시도해주세요.');
+      alert('<spring:message code="inquiry.write.server" javaScriptEscape="true"/>');
       btn.disabled = false;
       btn.classList.remove('loading');
     }
