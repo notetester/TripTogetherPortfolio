@@ -760,7 +760,7 @@ html { scrollbar-gutter: stable; }
 
   </div><!-- /리뷰 섹션 -->
 
-  <!-- AI 맞춤 여행지 추천 섹션 (로그인 사용자만) -->
+  <!-- AI 맞춤 여행지 추천 섹션 <로그인 사용자만> -->
   <c:if test="${isLoggedIn}">
   <div class="det-section" id="aiRecommendSection">
     <h2 id="aiRecTitle"><spring:message code="detail.ai.title"/></h2>
