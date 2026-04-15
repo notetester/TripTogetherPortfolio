@@ -27,6 +27,7 @@ public class TravelPlanVO {
     private String destination;
     private Integer is_public;
     private String share_token;
+    private String plan_source;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 

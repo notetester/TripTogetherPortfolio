@@ -212,6 +212,31 @@
                 grid-template-columns: 1fr;
             }
         }
+        .top-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .create-btn,
+        .ai-create-btn {
+            display: inline-block;
+            padding: 14px 22px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .create-btn {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .ai-create-btn {
+            background-color: #0f172a;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -223,7 +248,13 @@
         </div>
 
         <%-- 작성 페이지 엔드포인트 만들면 연결 --%>
-        <a href="${pageContext.request.contextPath}/courses/write" class="write-btn">+ 새 일정 만들기</a>
+        <a href="${pageContext.request.contextPath}/courses/write" class="write-btn">
+            + 새 일정 만들기
+        </a>
+        <a href="${pageContext.request.contextPath}/courses/ai/form" class="ai-create-btn">
+            AI로 일정 생성하기
+        </a>
+
     </div>
 
     <c:choose>
