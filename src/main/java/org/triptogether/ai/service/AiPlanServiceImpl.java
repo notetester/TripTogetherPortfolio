@@ -2,11 +2,13 @@ package org.triptogether.ai.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.ai.dto.AiDayDTO;
 import org.triptogether.ai.dto.AiPlanRequestDTO;
 import org.triptogether.ai.dto.AiPlanResponseDTO;
 import org.triptogether.ai.dto.AiSpotDTO;
 import org.triptogether.courses.service.TravelPlanService;
+import org.triptogether.courses.vo.PlanSpotVO;
 import org.triptogether.courses.vo.TravelPlanVO;
 
 import java.sql.Date;
@@ -15,86 +17,99 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+// 요청값 검증, GPT 서비스 호출, DB 저장
 @Service
 @RequiredArgsConstructor
 public class AiPlanServiceImpl implements AiPlanService {
 
     private final TravelPlanService travelPlanService;
+    private final AiPlanGPTService aiPlanGPTService;
 
+    // AI 일정 생성 후 DB에 저장하는 메인 메서드
+    // 폼에서 받은 여행 조건을 검사 -> GPT한테 일정 제목 같은 걸 받아오고
+    //      -> TRAVEL_PLAN 테이블에 저장 후 -> 생성된 plan_id를 반환
     @Override
+    @Transactional
     public Long generateAndSavePlan(AiPlanRequestDTO requestDTO, Long userIdx) {
-        AiPlanResponseDTO responseDTO = buildAiPlan(requestDTO);
+        validateRequest(requestDTO);    // 입력값 검사
 
-        // 아직 DB 저장 안 붙였으면 임시값
-        // Long planId = 1L;
+        // 진짜 AI 생성 역할을 GPT 서비스에 맡김
+        AiPlanResponseDTO responseDTO = aiPlanGPTService.generatePlan(requestDTO);
 
-        // 나중에 여기서 TRAVEL_PLAN, PLAN_SPOT 저장
-        // return planId;
-
+        // 사용자가 입력한 문자열 날짜를 자바 날짜 객체(LocalDate)로 바꾸는 부분
         LocalDate start = LocalDate.parse(requestDTO.getStartDate());
         LocalDate end = LocalDate.parse(requestDTO.getEndDate());
 
+        // 1. TRAVEL_PLAN 저장
+        // DB에 넣을 여행일정 객체 생성
         TravelPlanVO travelPlanVO = new TravelPlanVO();
+        // 이 일정이 누구 것인지 저장
         travelPlanVO.setUser_idx(userIdx);
+        // 일정 제목은 GPT가 만들어준 걸 사용
         travelPlanVO.setTitle(responseDTO.getTitle());
+        // 여행지는 사용자가 입력한 값 저장
         travelPlanVO.setDestination(requestDTO.getDestination());
+        // LocalDate를 DB용 Date로 바꿔서 저장
         travelPlanVO.setStart_date(Date.valueOf(start));
         travelPlanVO.setEnd_date(Date.valueOf(end));
+        // 공개여부: 비공개, 공유토큰: 아직 없음, 생성방식: AI
         travelPlanVO.setIs_public(0);
         travelPlanVO.setShare_token(null);
         travelPlanVO.setPlan_source("AI");
 
-        // 지금은 헤더만 저장
+        // 실제로 TRAVEL_PLAN 테이블에 insert 하는 부분
         travelPlanService.insertTravelPlan(travelPlanVO);
 
-        return travelPlanVO.getPlan_id();
+        Long planId = travelPlanVO.getPlan_id();
+
+        // 2. PLAN_SPOT 저장
+        savePlanSpots(planId, responseDTO);
+
+        return planId;
     }
 
-    private AiPlanResponseDTO buildAiPlan(AiPlanRequestDTO requestDTO) {
-        validateRequest(requestDTO);
 
-        LocalDate start = LocalDate.parse(requestDTO.getStartDate());
-        LocalDate end = LocalDate.parse(requestDTO.getEndDate());
+    // AI가 만들어준 날짜별 장소 목록을 PLAN_SPOT 테이블에 저장하는 역할
+    // responseDTO 안에 들어있는 day들 -> 각 day 안의 spot들 -> 하나씩 꺼내서 DB에 insert
+    private void savePlanSpots(Long planId, AiPlanResponseDTO responseDTO){
+        if (responseDTO == null || responseDTO.getDays() == null) return;
 
-        long totalDays = ChronoUnit.DAYS.between(start, end) + 1;
+        // day 하나씩 반복
+        for (AiDayDTO day : responseDTO.getDays()) {
+            Date visitDate = Date.valueOf(day.getDate());
 
-        String destination = safeValue(requestDTO.getDestination(), "여행지");
-        String companion = safeValue(requestDTO.getCompanion(), "동행");
-        String style = safeValue(requestDTO.getStyle(), "균형형");
-        String budget = safeValue(requestDTO.getBudget(), "중간");
-        String requestText = safeValue(requestDTO.getRequestText(), "");
+            // 그 날짜의 장소 목록 꺼내기
+            List<AiSpotDTO> spots = day.getSpots();
 
-        String title = destination + " " + totalDays + "일 AI 추천 일정";
+            // 장소가 없으면 다음 날짜로 넘어감
+            if (spots == null || spots.isEmpty()) {
+                continue;
+            }
 
-        String summary = destination + "에서 " + companion + "와(과) 함께하는 "
-                + style + " 중심의 " + totalDays + "일 여행 일정입니다. "
-                + "예산은 " + budget + " 기준으로 무리 없게 구성했습니다.";
+            // 장소(spot) 하나씩 반복
+            for (AiSpotDTO spot : spots) {
+                // DB 저장용 객체 생성
+                PlanSpotVO planSpotVO = new PlanSpotVO();
+                planSpotVO.setPlan_id(planId);
 
-        if (!requestText.isBlank()) {
-            summary += " 추가 요청사항도 반영했습니다.";
+                // 실제 SPOT_TRAVEL의 spot_id와 매칭 전까지는 null 또는 임시값 사용
+                // planSpotVO.setSpot_id(null);
+                planSpotVO.setSpot_id("AI_" + planId + "_" + day.getDayNo() + "_" + spot.getVisitOrder());
+
+                // getPlaceName() 이 없으면 getName() 등으로 바꾸면 됨
+                planSpotVO.setPlace_name(spot.getName());
+
+                // day 날짜를 visit_date 로 저장
+                planSpotVO.setVisit_date(visitDate);
+
+                // 방문 순서 저장
+                // AiSpotDTO.visitOrder -> PLAN_SPOT.visit_order
+                planSpotVO.setVisit_order(spot.getVisitOrder());
+
+                // 실제 DB insert
+                travelPlanService.insertPlanSpot(planSpotVO);
+            }
         }
-
-        List<AiDayDTO> dayList = new ArrayList<>();
-
-        for (int i = 0; i < totalDays; i++) {
-            LocalDate currentDate = start.plusDays(i);
-            int dayNo = i + 1;
-
-            AiDayDTO day = new AiDayDTO();
-            day.setDayNo(dayNo);
-            day.setDate(currentDate.toString());
-            day.setTheme(getThemeByDay(dayNo, style));
-            day.setSpots(createSpotsByDay(dayNo, destination, style, requestText));
-
-            dayList.add(day);
-        }
-
-        AiPlanResponseDTO responseDTO = new AiPlanResponseDTO();
-        responseDTO.setTitle(title);
-        responseDTO.setSummary(summary);
-        responseDTO.setDays(dayList);
-
-        return responseDTO;
     }
 
     private void validateRequest(AiPlanRequestDTO requestDTO) {
@@ -116,40 +131,6 @@ public class AiPlanServiceImpl implements AiPlanService {
         if (end.isBefore(start)) {
             throw new IllegalArgumentException("종료일은 시작일보다 빠를 수 없습니다.");
         }
-    }
-
-    private List<AiSpotDTO> createSpotsByDay(int dayNo, String destination, String style, String requestText) {
-        List<AiSpotDTO> spots = new ArrayList<>();
-
-        if (dayNo == 1) {
-            spots.add(new AiSpotDTO(destination + " 대표 관광지", "도착 후 가볍게 둘러보기 좋은 장소입니다.", 1));
-            spots.add(new AiSpotDTO(style.contains("카페") ? "감성 카페" : "현지 인기 맛집", "첫날 부담 없이 즐기기 좋은 코스입니다.", 2));
-            spots.add(new AiSpotDTO("저녁 산책 스팟", "첫날 분위기 있게 마무리할 수 있는 장소입니다.", 3));
-        } else if (dayNo == 2) {
-            spots.add(new AiSpotDTO(destination + " 핵심 명소", "여행지의 대표 코스를 중심으로 구성했습니다.", 1));
-            spots.add(new AiSpotDTO(style.contains("액티비티") ? "체험형 액티비티 장소" : "로컬 체험 장소", "여행 스타일을 반영한 일정입니다.", 2));
-            spots.add(new AiSpotDTO(style.contains("사진") ? "포토 스팟" : "야경 명소", "하루 마무리로 추천하는 장소입니다.", 3));
-        } else {
-            spots.add(new AiSpotDTO("로컬 시장", "마지막 날 가볍게 들르기 좋은 장소입니다.", 1));
-            spots.add(new AiSpotDTO(style.contains("맛집") ? "현지 대표 음식점" : "브런치 카페", "출발 전 부담 없이 즐기기 좋은 코스입니다.", 2));
-            spots.add(new AiSpotDTO(
-                    requestText.isBlank() ? "마무리 산책 코스" : "추가 요청 반영 장소",
-                    requestText.isBlank() ? "여행을 여유롭게 마무리할 수 있는 장소입니다." : "사용자 요청사항을 반영한 추천 장소입니다.",
-                    3
-            ));
-        }
-
-        return spots;
-    }
-
-    private String getThemeByDay(int dayNo, String style) {
-        if (dayNo == 1) return "도착 및 가벼운 일정";
-        if (dayNo == 2) return "중심 핵심 일정";
-        return "여유로운 마무리 일정";
-    }
-
-    private String safeValue(String value, String defaultValue) {
-        return isBlank(value) ? defaultValue : value.trim();
     }
 
     private boolean isBlank(String value) {
