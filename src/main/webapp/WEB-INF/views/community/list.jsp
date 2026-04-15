@@ -222,6 +222,35 @@
     <%-- 최신 여행 이야기 섹션 타이틀 --%>
     <div class="comm-section-title">&#128336; 최신 여행 이야기</div>
 
+    <%-- 어드민 일괄 처리 툴바 --%>
+    <c:if test="${isAdminMode}">
+        <div class="comm-admin-toolbar" id="adminToolbar">
+            <label class="comm-admin-chk-all">
+                <input type="checkbox" id="chkAll"> 전체선택
+            </label>
+            <span class="comm-admin-selected-count" id="selectedCount">0개 선택됨</span>
+            <div class="comm-admin-actions">
+                <button class="comm-admin-btn btn-delete" onclick="doBulkAction('delete')">삭제</button>
+                <div class="comm-admin-dropdown">
+                    <button class="comm-admin-btn btn-block-user">차단 ▾</button>
+                    <div class="comm-admin-dropdown-menu">
+                        <button onclick="doBulkAction('blockUser')">아이디 차단</button>
+                        <button onclick="doBulkAction('blockIp')">아이피 차단</button>
+                        <button onclick="doBulkAction('blockBoth')">아이디+아이피 차단</button>
+                    </div>
+                </div>
+                <div class="comm-admin-dropdown">
+                    <button class="comm-admin-btn btn-block-delete">차단+삭제 ▾</button>
+                    <div class="comm-admin-dropdown-menu">
+                        <button onclick="doBulkAction('blockUserAndDelete')">아이디 차단+삭제</button>
+                        <button onclick="doBulkAction('blockIpAndDelete')">아이피 차단+삭제</button>
+                        <button onclick="doBulkAction('blockAndDelete')">아이디+아이피+삭제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </c:if>
+
     <%--
       게시글 목록
       CommunityPostDto 필드:
@@ -255,6 +284,8 @@
                         <div class="post-card-wrap ${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}"
                              data-id="${post.postId}">
                             <c:if test="${isAdminMode}">
+                                <input type="checkbox" class="comm-admin-chk" data-id="${post.postId}"
+                                       onclick="event.stopPropagation()">
                                 <button class="post-admin-delete-btn" onclick="adminDeletePost(event, ${post.postId})">
                                     ✕
                                 </button>
@@ -531,11 +562,81 @@
     }
 
     function removeReportBlur(overlay) {
-    var wrap = overlay.closest('.report-blurred-wrap');
-    wrap.classList.remove('report-blurred-wrap');
-    overlay.closest('.post-card').classList.remove('report-blurred');
-    overlay.remove();
-}
+        var wrap = overlay.closest('.report-blurred-wrap');
+        wrap.classList.remove('report-blurred-wrap');
+        overlay.closest('.post-card').classList.remove('report-blurred');
+        overlay.remove();
+    }
+
+    /* ===== 어드민 일괄 처리 ===== */
+    (function () {
+        var chkAll      = document.getElementById('chkAll');
+        var countLabel  = document.getElementById('selectedCount');
+        if (!chkAll) return;
+
+        function getChecked() {
+            return Array.from(document.querySelectorAll('.comm-admin-chk:checked'));
+        }
+
+        function updateCount() {
+            var n = getChecked().length;
+            countLabel.textContent = n + '개 선택됨';
+        }
+
+        /* 전체선택 */
+        chkAll.addEventListener('change', function () {
+            document.querySelectorAll('.comm-admin-chk').forEach(function (c) {
+                c.checked = chkAll.checked;
+            });
+            updateCount();
+        });
+
+        /* 개별 체크 */
+        document.addEventListener('change', function (e) {
+            if (e.target.classList.contains('comm-admin-chk')) {
+                if (!e.target.checked) chkAll.checked = false;
+                updateCount();
+            }
+        });
+
+    })();
+
+    window.doBulkAction = function (action) {
+        var checked = Array.from(document.querySelectorAll('.comm-admin-chk:checked'));
+        if (checked.length === 0) { alert('선택된 게시글이 없습니다.'); return; }
+
+        var labels = {
+            'delete':              '삭제',
+            'blockUser':           '아이디 차단',
+            'blockIp':             '아이피 차단',
+            'blockBoth':           '아이디+아이피 차단',
+            'blockUserAndDelete':  '아이디 차단+삭제',
+            'blockIpAndDelete':    '아이피 차단+삭제',
+            'blockAndDelete':      '아이디+아이피+삭제'
+        };
+        if (!confirm(checked.length + '개 게시글에 대해 [' + labels[action] + '] 을(를) 실행하시겠습니까?')) return;
+
+        var postIds = checked.map(function (c) { return c.getAttribute('data-id'); });
+        var params  = new URLSearchParams();
+        params.append('action', action);
+        postIds.forEach(function (id) { params.append('postIds', id); });
+
+        fetch('${pageContext.request.contextPath}/community/admin/bulk', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+            body:    params.toString()
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (data.success) {
+                alert('처리가 완료되었습니다.');
+                location.reload();
+            } else {
+                alert('처리 중 오류가 발생했습니다: ' + (data.message || ''));
+            }
+        })
+        .catch(function () { alert('요청 중 오류가 발생했습니다.'); });
+    };
 </script>
 
 <%@ include file="../common/footer.jsp" %>

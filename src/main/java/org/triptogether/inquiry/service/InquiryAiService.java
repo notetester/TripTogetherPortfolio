@@ -12,11 +12,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 문의게시판 전용 Claude AI 답변 초안 생성 서비스.
- * inquiry.claude.api.key (Victor 개인 계정) 만 사용합니다.
- * 다른 팀원의 claude.api.key 와 완전히 독립됩니다.
- */
+// 문의게시판 전용 Claude AI 답변 초안 생성 서비스
+// inquiry.claude.api.key (Victor 개인 계정) 만 사용함
+// 다른 팀원의 claude.api.key 와 완전히 독립됨
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,9 +25,9 @@ public class InquiryAiService {
 
     private final RestTemplate restTemplate;
 
-    private static final String API_URL   = "https://api.anthropic.com/v1/messages";
-    private static final String API_VER   = "2023-06-01";
-    private static final String MODEL     = "claude-haiku-4-5-20251001";
+    private static final String API_URL    = "https://api.anthropic.com/v1/messages";
+    private static final String API_VER    = "2023-06-01";
+    private static final String MODEL      = "claude-haiku-4-5-20251001";
     private static final int    MAX_TOKENS = 1024;
 
     private static final String SYSTEM_PROMPT =
@@ -49,10 +47,7 @@ public class InquiryAiService {
             "etc",     "기타"
     );
 
-    /**
-     * 문의 내용을 바탕으로 답변 초안을 생성한다.
-     * 실패 시 빈 문자열 반환 (호출부에서 안내 처리).
-     */
+    // 문의 내용을 바탕으로 답변 초안 생성함. 실패 시 빈 문자열 반환
     @SuppressWarnings("unchecked")
     public String generateDraft(String category, String title, String content) {
         try {
@@ -64,8 +59,8 @@ public class InquiryAiService {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("x-api-key",         apiKey);
-            headers.set("anthropic-version",  API_VER);
+            headers.set("x-api-key",        apiKey);
+            headers.set("anthropic-version", API_VER);
 
             Map<String, Object> body = Map.of(
                     "model",      MODEL,
@@ -88,4 +83,5 @@ public class InquiryAiService {
             return "";
         }
     }
+
 }

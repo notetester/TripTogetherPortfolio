@@ -385,3 +385,113 @@
 }
 .post-type-badge.type-question-sub.solved   { background: #f0fdf4; color: #16a34a; }
 .post-type-badge.type-question-sub.unsolved { background: #fff7ed; color: #ea580c; }
+
+/* =============================================
+   어드민 일괄 처리 툴바
+   ============================================= */
+.comm-admin-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+}
+
+.comm-admin-chk-all {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.comm-admin-selected-count {
+    font-size: 13px;
+    color: #92400e;
+    font-weight: 600;
+    min-width: 70px;
+}
+
+.comm-admin-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+
+.comm-admin-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+.comm-admin-btn:hover { opacity: 0.8; }
+
+.btn-delete        { background: #fee2e2; color: #b91c1c; }
+.btn-block-user    { background: #fce7f3; color: #be185d; }
+.btn-block-ip      { background: #ede9fe; color: #6d28d9; }
+.btn-block-both    { background: #ffedd5; color: #c2410c; }
+.btn-block-delete  { background: #1f2937; color: #f9fafb; }
+
+/* 카드 체크박스 */
+.comm-admin-chk {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    z-index: 10;
+    accent-color: #f59e0b;
+}
+
+.post-card-wrap { position: relative; }
+
+/* =============================================
+   어드민 드롭다운
+   ============================================= */
+.comm-admin-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.comm-admin-dropdown:hover .comm-admin-dropdown-menu,
+.comm-admin-dropdown:focus-within .comm-admin-dropdown-menu {
+    display: block;
+}
+.comm-admin-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 100;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    min-width: 150px;
+    padding: 4px 0;
+    white-space: nowrap;
+}
+.comm-admin-dropdown-menu button {
+    display: block;
+    width: 100%;
+    padding: 8px 14px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 13px;
+    cursor: pointer;
+    color: #374151;
+}
+.comm-admin-dropdown-menu button:hover {
+    background: #f3f4f6;
+}

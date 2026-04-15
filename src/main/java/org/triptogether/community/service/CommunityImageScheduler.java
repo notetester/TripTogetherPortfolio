@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.triptogether.cloudinary.CloudinaryService;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -27,8 +28,11 @@ public class CommunityImageScheduler {
     private String apiKey;
 
     private final RestTemplate restTemplate;
+    private final CloudinaryService cloudinaryService;
 
-    private final Map<String, List<String>> imageCache = new ConcurrentHashMap<>();
+    /** region → Cloudinary URL */
+    private final Map<String, String> imageCache = new ConcurrentHashMap<>();
+
     private static final Random random = new Random();
 
     private static final Map<String, String> REGION_KEYWORDS = new LinkedHashMap<>();
@@ -46,35 +50,45 @@ public class CommunityImageScheduler {
     public void initCache() {
         new Thread(() -> {
             log.info("Pixabay 초기 캐시 로드 시작");
-            refreshCache();
+            for (Map.Entry<String, String> entry : REGION_KEYWORDS.entrySet()) {
+                refreshRegion(entry.getKey(), entry.getValue());
+                try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+            }
+            log.info("Pixabay → Cloudinary 초기 캐시 로드 완료");
         }).start();
     }
 
-    /** 24시간마다 캐시 갱신 */
-    @Scheduled(fixedRate = 24 * 60 * 60 * 1000L)
+    /** 24시간마다 캐시 갱신 (초기 실행은 @PostConstruct가 담당) */
+    @Scheduled(initialDelay = 24 * 60 * 60 * 1000L, fixedRate = 24 * 60 * 60 * 1000L)
     public void refreshCache() {
         for (Map.Entry<String, String> entry : REGION_KEYWORDS.entrySet()) {
             refreshRegion(entry.getKey(), entry.getValue());
+            try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
         }
-        log.info("Pixabay 캐시 갱신 완료");
+        log.info("Pixabay → Cloudinary 캐시 갱신 완료");
     }
 
+    /**
+     * 대륙별 이미지 1개 반환.
+     * etc는 6개 대륙 중 랜덤으로 하나 사용.
+     */
     public String getRandomImage(String region) {
-        List<String> urls = "etc".equals(region)
-                ? imageCache.values().stream().flatMap(List::stream).collect(Collectors.toList())
-                : imageCache.getOrDefault(region, Collections.emptyList());
-        if (urls.isEmpty()) return null;
-        return urls.get(random.nextInt(urls.size()));
+        if ("etc".equals(region)) {
+            List<String> all = new ArrayList<>(imageCache.values());
+            if (all.isEmpty()) return null;
+            return all.get(random.nextInt(all.size()));
+        }
+        return imageCache.get(region);
     }
 
     private void refreshRegion(String region, String keyword) {
         try {
             String encodedKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
-            String url = "https://pixabay.com/api/?key=" + apiKey
+            String apiUrl = "https://pixabay.com/api/?key=" + apiKey
                     + "&q=" + encodedKeyword
                     + "&image_type=photo&per_page=100&safesearch=true&orientation=horizontal";
 
-            String response = restTemplate.getForObject(url, String.class);
+            String response = restTemplate.getForObject(apiUrl, String.class);
             JsonObject root = JsonParser.parseString(response).getAsJsonObject();
             JsonArray hits = root.getAsJsonArray("hits");
 
@@ -83,21 +97,37 @@ public class CommunityImageScheduler {
                 return;
             }
 
-            List<String> urls = new ArrayList<>();
+            // webformatURL 수집 후 랜덤 1개 선택
+            List<String> webUrls = new ArrayList<>();
             for (JsonElement elem : hits) {
-                JsonElement urlElem = elem.getAsJsonObject().get("previewURL");
+                JsonElement urlElem = elem.getAsJsonObject().get("webformatURL");
                 if (urlElem != null && !urlElem.isJsonNull()) {
-                    urls.add(urlElem.getAsString());
+                    webUrls.add(urlElem.getAsString());
                 }
             }
-            Collections.shuffle(urls);
-            List<String> selected = urls.subList(0, Math.min(3, urls.size()));
+            if (webUrls.isEmpty()) return;
 
-            imageCache.put(region, new ArrayList<>(selected));
-            log.info("Pixabay 캐시 갱신: region={}, count={}", region, selected.size());
+            String pickedUrl = webUrls.get(random.nextInt(webUrls.size()));
+
+            // Pixabay 이미지 바이트 다운로드
+            byte[] imageBytes = restTemplate.getForObject(pickedUrl, byte[].class);
+            if (imageBytes == null || imageBytes.length == 0) {
+                log.warn("Pixabay 이미지 다운로드 실패: region={}", region);
+                return;
+            }
+
+            // Cloudinary 업로드 (고정 publicId로 덮어쓰기)
+            String cloudinaryUrl = cloudinaryService.uploadImageFromBytes(imageBytes, "community_default", region);
+            if (cloudinaryUrl == null) {
+                log.warn("Cloudinary 업로드 실패: region={}", region);
+                return;
+            }
+
+            imageCache.put(region, cloudinaryUrl);
+            log.info("Pixabay→Cloudinary 갱신 완료: region={}, url={}", region, cloudinaryUrl);
 
         } catch (Exception e) {
-            log.error("Pixabay 캐시 갱신 실패: region={}, error={}", region, e.getMessage());
+            log.error("캐시 갱신 실패: region={}, error={}", region, e.getMessage());
         }
     }
 }
