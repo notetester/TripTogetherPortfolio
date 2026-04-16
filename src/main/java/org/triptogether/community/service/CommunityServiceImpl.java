@@ -605,6 +605,12 @@ public class CommunityServiceImpl implements CommunityService {
         return communityMapper.selectTodayPopularList();
     }
 
+    // 전체 기간 좋아요 순 상위 목록 가져옴
+    @Override
+    public List<CommunityPostDto> getPopularList(int limit) {
+        return communityMapper.selectPopularList(limit);
+    }
+
     // ===== private 유틸 =====
 
     // Pixabay 자동추천 이미지 배정함 (이미지 없는 게시글에 지역별 기본 이미지 넣어줌)

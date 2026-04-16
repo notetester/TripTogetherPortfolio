@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.home.mapper.HomeMapper">
+
+    <!-- 인기 여행지 (review_count 내림차순, 이미지 서브쿼리) -->
+    <select id="getPopularSpots" resultType="org.triptogether.home.vo.HomeSpotVO">
+        SELECT
+            st.spot_idx   AS spotIdx,
+            st.name       AS name,
+            st.region     AS region,
+            st.description AS description,
+            st.rating_avg  AS ratingAvg,
+            (SELECT si.image_url
+             FROM SPOT_IMAGE si
+             WHERE si.spot_idx = st.spot_idx
+             LIMIT 1)     AS imageUrl
+        FROM SPOT_TRAVEL st
+        WHERE st.spot_active = 0
+        ORDER BY st.review_count DESC
+        LIMIT 6
+    </select>
+
+    <!-- 트렌딩 여행 코스 (공개 일정, 최신순) -->
+    <select id="getTrendingPlans" resultType="org.triptogether.home.vo.HomePlanVO">
+        SELECT
+            tp.plan_id    AS planId,
+            tp.title      AS title,
+            tp.destination AS destination,
+            u.nickname    AS nickname,
+            DATEDIFF(tp.end_date, tp.start_date) AS nights
+        FROM TRAVEL_PLAN tp
+        JOIN USERS u ON tp.user_idx = u.user_idx
+        WHERE tp.is_public = 1
+        ORDER BY tp.created_at DESC
+        LIMIT 6
+    </select>
+
+</mapper>

@@ -288,6 +288,10 @@ public class ProfileController {
         model.addAttribute("inquiryCount",   myPageService.getMyInquiryCount(user.getUserIdx()));
         model.addAttribute("reportList",     myPageService.getMyReportList(user.getUserIdx()));
         model.addAttribute("reportCount",    myPageService.getMyReportCount(user.getUserIdx()));
+        model.addAttribute("reviewList",     myPageService.getMyReviewList(user.getUserIdx()));
+        model.addAttribute("reviewCount",    myPageService.getMyReviewCount(user.getUserIdx()));
+        model.addAttribute("planList",       myPageService.getMyPlanList(user.getUserIdx()));
+        model.addAttribute("planCount",      myPageService.getMyPlanCount(user.getUserIdx()));
         model.addAttribute("notifications", myPageService.getNotifications(user.getUserIdx()));
         model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(user.getUserIdx()));
         return "mypage/index";

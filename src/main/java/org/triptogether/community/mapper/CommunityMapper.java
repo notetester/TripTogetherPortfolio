@@ -196,6 +196,10 @@ public interface CommunityMapper {
     // 오늘 작성된 게시글 중 좋아요 순 상위 목록 조회
     List<CommunityPostDto> selectTodayPopularList();
 
+    // ===== 인기 게시글 (전체 기간) =====
+    // 좋아요 순 상위 목록 조회 (limit 지정)
+    List<CommunityPostDto> selectPopularList(@Param("limit") int limit);
+
     // ===== 도배 방지 =====
     // 최근 N분 내 해당 유저의 게시글 작성 수 조회
     int countRecentPostsByUser(@Param("userIdx") Long userIdx, @Param("minutes") int minutes);

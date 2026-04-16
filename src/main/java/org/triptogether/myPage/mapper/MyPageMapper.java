@@ -5,7 +5,9 @@ import org.apache.ibatis.annotations.Param;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
+import org.triptogether.myPage.vo.MyPageReviewDto;
 
 import java.util.List;
 
@@ -26,6 +28,16 @@ public interface MyPageMapper {
 
     List<MyPageReportDto> selectMyReportList(@Param("userIdx") Long userIdx);
     int selectMyReportCount(@Param("userIdx") Long userIdx);
+
+    // ===== 리뷰 =====
+
+    List<MyPageReviewDto> selectMyReviewList(@Param("userIdx") Long userIdx);
+    int selectMyReviewCount(@Param("userIdx") Long userIdx);
+
+    // ===== 여행 일정 =====
+
+    List<MyPagePlanDto> selectMyPlanList(@Param("userIdx") Long userIdx);
+    int selectMyPlanCount(@Param("userIdx") Long userIdx);
 
     // ===== 알림 =====
 
