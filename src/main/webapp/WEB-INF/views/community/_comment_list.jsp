@@ -17,7 +17,7 @@
       <c:forEach var="comment" items="${commentList}">
         <c:if test="${empty comment.parentCommentId}">
           <c:choose>
-            <%-- 관리자 직접 차단 (report_count < 3): blind --%>
+            <%-- 관리자 직접 차단 (report_count < 3): blind ㅇ--%>
             <c:when test="${(comment.accountStatus eq 'BLOCKED' or (comment.commentStatus eq 'BLOCKED' and comment.reportCount < 3)) and !isAdminMode}">
             </c:when>
             <c:otherwise>

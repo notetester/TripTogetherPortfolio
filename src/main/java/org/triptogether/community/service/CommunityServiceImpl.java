@@ -32,7 +32,9 @@ public class CommunityServiceImpl implements CommunityService {
     // 검색 조건에 맞는 게시글 목록 가져옴
     @Override
     public List<CommunityPostDto> getPostList(CommunitySearchDto search) {
-        return communityMapper.selectPostList(search);
+        List<CommunityPostDto> postList = communityMapper.selectPostList(search);
+        spotTextTranslationService.translateCommunityPosts(postList);
+        return postList;
     }
 
     // 검색 조건에 맞는 게시글 총 개수 가져옴 (페이지네이션용)
@@ -67,7 +69,8 @@ public class CommunityServiceImpl implements CommunityService {
     // 게시글에 달린 태그 목록 가져옴
     @Override
     public List<String> getTagList(Long postId) {
-        return communityMapper.selectTagList(postId);
+        List<String> tagList = communityMapper.selectTagList(postId);
+        return spotTextTranslationService.translateCommunityTags(tagList);
     }
 
     // 댓글 목록 가져옴 (기본 정렬: 최신순)
@@ -108,14 +111,18 @@ public class CommunityServiceImpl implements CommunityService {
     // 같은 태그 기반 추천 게시글 목록 가져옴
     @Override
     public List<CommunityPostDto> getRelatedList(Long postId) {
-        return communityMapper.selectRelatedList(postId);
+        List<CommunityPostDto> relatedList = communityMapper.selectRelatedList(postId);
+        spotTextTranslationService.translateCommunityPosts(relatedList);
+        return relatedList;
     }
 
     // 최신 게시글 목록 가져옴 (이미 보여준 게시글 ID는 excludeIds로 제외)
     @Override
     public List<CommunityPostDto> getLatestList(List<Long> excludeIds, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
-        return communityMapper.selectLatestList(excludeIds, pageSize, offset);
+        List<CommunityPostDto> latestList = communityMapper.selectLatestList(excludeIds, pageSize, offset);
+        spotTextTranslationService.translateCommunityPosts(latestList);
+        return latestList;
     }
 
     // 최신 게시글 총 개수 가져옴
@@ -610,7 +617,9 @@ public class CommunityServiceImpl implements CommunityService {
     // 오늘 작성된 게시글 중 좋아요 순 상위 목록 가져옴
     @Override
     public List<CommunityPostDto> getTodayPopularList() {
-        return communityMapper.selectTodayPopularList();
+        List<CommunityPostDto> todayPopularList = communityMapper.selectTodayPopularList();
+        spotTextTranslationService.translateCommunityPosts(todayPopularList);
+        return todayPopularList;
     }
 
     // 전체 기간 좋아요 순 상위 목록 가져옴
