@@ -38,6 +38,7 @@ public class SpotTextTranslationService {
     private static final String SOURCE_TYPE_REVIEW = "SPOT_REVIEW";
     private static final String SOURCE_TYPE_COMMUNITY_POST = "COMMUNITY_POST";
     private static final String SOURCE_TYPE_COMMUNITY_COMMENT = "COMMUNITY_COMMENT";
+    private static final String SOURCE_TYPE_COMMUNITY_TAG = "COMMUNITY_TAG";
     private static final String PROVIDER = "google-cloud-translation-v2";
     private static final String GOOGLE_TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2?key=%s";
 
@@ -146,6 +147,13 @@ public class SpotTextTranslationService {
         }
 
         Long sourcePk = post.getPostId() == null ? 0L : post.getPostId();
+        post.setTitle(translateText(
+                SOURCE_TYPE_COMMUNITY_POST,
+                sourcePk,
+                "title",
+                post.getTitle(),
+                targetLang
+        ));
         post.setContent(translateText(
                 SOURCE_TYPE_COMMUNITY_POST,
                 sourcePk,
@@ -153,6 +161,17 @@ public class SpotTextTranslationService {
                 post.getContent(),
                 targetLang
         ));
+    }
+
+    public void translateCommunityPosts(List<CommunityPostDto> posts) {
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || posts == null || posts.isEmpty()) {
+            return;
+        }
+
+        for (CommunityPostDto post : posts) {
+            translateCommunityPost(post);
+        }
     }
 
     public void translateCommunityComments(List<CommunityCommentDto> comments) {
@@ -174,6 +193,10 @@ public class SpotTextTranslationService {
                     targetLang
             ));
         }
+    }
+
+    public List<String> translateCommunityTags(List<String> tags) {
+        return translateCommonTexts(tags, SOURCE_TYPE_COMMUNITY_TAG, "tag_name");
     }
 
     public String translateText(String sourceType, Long sourcePk, String fieldName, String sourceText, String targetLang) {
