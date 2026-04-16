@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%--
   댓글 목록 AJAX 프래그먼트
   model 필요: post, commentList, acceptedCommentId, isOwner, isAdminMode (interceptor 자동 주입)
@@ -11,7 +12,7 @@
 <div class="comment-list">
   <c:choose>
     <c:when test="${empty commentList}">
-      <div class="comment-empty">아직 댓글이 없어요. 첫 댓글을 남겨보세요!</div>
+      <div class="comment-empty"><spring:message code="community.detail.comments.empty"/></div>
     </c:when>
     <c:otherwise>
       <c:forEach var="comment" items="${commentList}">
@@ -44,10 +45,10 @@
                           </c:choose>
                           <c:choose>
                             <c:when test="${comment.commentStatus eq 'BLOCKED'}">
-                              <button class="block-btn unblock" onclick="unblockComment(${comment.commentId})">🚫 댓글차단해제</button>
+                              <button class="block-btn unblock" onclick="unblockComment(${comment.commentId})"><spring:message code="community.detail.comment.unblock"/></button>
                             </c:when>
                             <c:otherwise>
-                              <button class="block-btn" onclick="blockComment(${comment.commentId})">🚫 댓글차단</button>
+                              <button class="block-btn" onclick="blockComment(${comment.commentId})"><spring:message code="community.detail.comment.block"/></button>
                             </c:otherwise>
                           </c:choose>
                         </c:if>
@@ -61,7 +62,7 @@
                           <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})">채택하기</button>
                         </c:if>
                         <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne comment.userIdx and not isAdminMode}">
-                          <span class="comment-author-link rpt-user-link" data-user-idx="${comment.userIdx}" data-source-type="comment" data-source-id="${comment.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;">(유저신고)</span>
+                          <span class="comment-author-link rpt-user-link" data-user-idx="${comment.userIdx}" data-source-type="comment" data-source-id="${comment.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
                           <button class="report-btn" data-comment-id="${comment.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">&#9888; 신고</button>
                         </c:if>
                         <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq comment.userIdx or isAdminMode)}">
@@ -102,7 +103,7 @@
                       <c:if test="${not empty sessionScope.loginUser}">
                         <div class="reply-input-wrap hidden" id="replyInput_${comment.commentId}">
                           <textarea class="reply-textarea" id="replyText_${comment.commentId}"
-                                    placeholder="답글을 입력하세요..." rows="2"
+                                    placeholder="<spring:message code='community.detail.reply.placeholder'/>" rows="2"
                                     onkeydown="if(event.key==='Enter' && !event.shiftKey)\u007Bevent.preventDefault(); submitReply(${post.postId}, ${comment.commentId});\u007D"></textarea>
                           <div class="reply-input-actions">
                             <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.commentId})">취소</button>
@@ -153,10 +154,10 @@
                                     </c:choose>
                                     <c:choose>
                                       <c:when test="${reply.commentStatus eq 'BLOCKED'}">
-                                        <button class="block-btn unblock" onclick="unblockComment(${reply.commentId})">🚫 댓글차단해제</button>
+                                        <button class="block-btn unblock" onclick="unblockComment(${reply.commentId})"><spring:message code="community.detail.comment.unblock"/></button>
                                       </c:when>
                                       <c:otherwise>
-                                        <button class="block-btn" onclick="blockComment(${reply.commentId})">🚫 댓글차단</button>
+                                        <button class="block-btn" onclick="blockComment(${reply.commentId})"><spring:message code="community.detail.comment.block"/></button>
                                       </c:otherwise>
                                     </c:choose>
                                   </c:if>
@@ -164,7 +165,7 @@
                                     <fmt:formatDate value="${reply.createdAt}" pattern="yyyy-MM-dd"/>
                                   </span>
                                   <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne reply.userIdx and not isAdminMode}">
-                                    <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;">(유저신고)</span>
+                                    <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
                                     <button class="report-btn" data-comment-id="${reply.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">&#9888; 신고</button>
                                   </c:if>
                                   <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq reply.userIdx or isAdminMode)}">

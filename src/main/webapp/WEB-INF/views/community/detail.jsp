@@ -18,7 +18,7 @@
 <div class="detail-wrap">
 
   <button class="back-btn" onclick="location.href='${pageContext.request.contextPath}/community/list'">
-    &#8592; 목록으로
+    &#8592; <spring:message code="community.detail.back"/>
   </button>
 
   <main class="detail-main">
@@ -38,7 +38,7 @@
           <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
             <c:if test="${not empty sessionScope.loginUser and not isOwner and not isAdminMode}">
               <span class="detail-author-name rpt-user-link" data-user-idx="${post.userIdx}" data-source-type="post" data-source-id="${post.postId}">${post.nickname}</span>
-              <span class="comment-author-link rpt-user-link" data-user-idx="${post.userIdx}" data-source-type="post" data-source-id="${post.postId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;">(유저신고)</span>
+              <span class="comment-author-link rpt-user-link" data-user-idx="${post.userIdx}" data-source-type="post" data-source-id="${post.postId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
             </c:if>
             <c:if test="${empty sessionScope.loginUser or isOwner or isAdminMode}">
               <span class="detail-author-name">${post.nickname}</span>
@@ -68,10 +68,10 @@
         </div>
         <span class="detail-type-badge type-${post.postType}">
           <c:choose>
-            <c:when test="${post.postType eq 'review'}">여행후기</c:when>
-            <c:when test="${post.postType eq 'photo'}">사진</c:when>
-            <c:when test="${post.postType eq 'tip'}">여행팁</c:when>
-            <c:when test="${post.postType eq 'question'}">질문</c:when>
+            <c:when test="${post.postType eq 'review'}"><spring:message code="community.type.review"/></c:when>
+            <c:when test="${post.postType eq 'photo'}"><spring:message code="community.type.photo"/></c:when>
+            <c:when test="${post.postType eq 'tip'}"><spring:message code="community.type.tip"/></c:when>
+            <c:when test="${post.postType eq 'question'}"><spring:message code="community.type.question"/></c:when>
           </c:choose>
         </span>
         <c:if test="${isOwner or isAdminMode}">
@@ -180,17 +180,17 @@
       <%-- 댓글 상단 툴바 --%>
       <div class="comm-comment-toolbar" id="commentToolbarTop">
         <div class="comm-toolbar-left">
-          <span class="comm-comment-total">전체 댓글 <strong class="comm-comment-count-val">${post.commentCount}</strong>개</span>
+          <span class="comm-comment-total"><spring:message code="community.detail.comments.total" arguments="${post.commentCount}"/></span>
           <div class="comm-sort-btns">
-            <button class="comm-sort-btn active" data-sort="created" onclick="sortComments('created')">등록순</button>
-            <button class="comm-sort-btn" data-sort="latest" onclick="sortComments('latest')">최신순</button>
-            <button class="comm-sort-btn" data-sort="replies" onclick="sortComments('replies')">답글순</button>
+            <button class="comm-sort-btn active" data-sort="created" onclick="sortComments('created')"><spring:message code="community.detail.comments.sort.created"/></button>
+            <button class="comm-sort-btn" data-sort="latest" onclick="sortComments('latest')"><spring:message code="community.detail.comments.sort.latest"/></button>
+            <button class="comm-sort-btn" data-sort="replies" onclick="sortComments('replies')"><spring:message code="community.detail.comments.sort.replies"/></button>
           </div>
         </div>
         <div class="comm-toolbar-right">
-          <button class="comm-tool-btn" onclick="scrollToPost()">본문 보기</button>
-          <button class="comm-tool-btn" id="commToggleBtnTop" onclick="toggleCommentSection()">댓글 닫기</button>
-          <button class="comm-tool-btn" onclick="refreshComments()">새로고침</button>
+          <button class="comm-tool-btn" onclick="scrollToPost()"><spring:message code="community.detail.comments.viewPost"/></button>
+          <button class="comm-tool-btn" id="commToggleBtnTop" onclick="toggleCommentSection()"><spring:message code="community.detail.comments.close"/></button>
+          <button class="comm-tool-btn" onclick="refreshComments()"><spring:message code="community.detail.comments.refresh"/></button>
         </div>
       </div>
 
@@ -228,7 +228,7 @@
         <div class="comment-list">
           <c:choose>
             <c:when test="${empty commentList}">
-              <div class="comment-empty">아직 댓글이 없어요. 첫 댓글을 남겨보세요!</div>
+              <div class="comment-empty"><spring:message code="community.detail.comments.empty"/></div>
             </c:when>
             <c:otherwise>
               <c:forEach var="comment" items="${commentList}">
@@ -268,10 +268,10 @@
                                   </c:choose>
                                   <c:choose>
                                     <c:when test="${comment.commentStatus eq 'BLOCKED'}">
-                                      <button class="block-btn unblock" onclick="unblockComment(${comment.commentId})">🚫 댓글차단해제</button>
+                                      <button class="block-btn unblock" onclick="unblockComment(${comment.commentId})"><spring:message code="community.detail.comment.unblock"/></button>
                                     </c:when>
                                     <c:otherwise>
-                                      <button class="block-btn" onclick="blockComment(${comment.commentId})">🚫 댓글차단</button>
+                                      <button class="block-btn" onclick="blockComment(${comment.commentId})"><spring:message code="community.detail.comment.block"/></button>
                                     </c:otherwise>
                                   </c:choose>
                                 </c:if>
@@ -285,7 +285,7 @@
                                   <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})">채택하기</button>
                                 </c:if>
                                 <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne comment.userIdx and not isAdminMode}">
-                                  <span class="comment-author-link rpt-user-link" data-user-idx="${comment.userIdx}" data-source-type="comment" data-source-id="${comment.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;">(유저신고)</span>
+                                  <span class="comment-author-link rpt-user-link" data-user-idx="${comment.userIdx}" data-source-type="comment" data-source-id="${comment.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
                                   <button class="report-btn" data-comment-id="${comment.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">&#9888; 신고</button>
                                 </c:if>
                                 <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq comment.userIdx or isAdminMode)}">
@@ -327,7 +327,7 @@
                               <c:if test="${not empty sessionScope.loginUser}">
                                 <div class="reply-input-wrap hidden" id="replyInput_${comment.commentId}">
                                   <textarea class="reply-textarea" id="replyText_${comment.commentId}"
-                                            placeholder="답글을 입력하세요..." rows="2"
+                                            placeholder="<spring:message code='community.detail.reply.placeholder'/>" rows="2"
                                             onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); submitReply(${post.postId}, ${comment.commentId});}"></textarea>
                                   <div class="reply-input-actions">
                                     <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.commentId})">취소</button>
@@ -384,10 +384,10 @@
                                             </c:choose>
                                             <c:choose>
                                               <c:when test="${reply.commentStatus eq 'BLOCKED'}">
-                                                <button class="block-btn unblock" onclick="unblockComment(${reply.commentId})">🚫 댓글차단해제</button>
+                                                <button class="block-btn unblock" onclick="unblockComment(${reply.commentId})"><spring:message code="community.detail.comment.unblock"/></button>
                                               </c:when>
                                               <c:otherwise>
-                                                <button class="block-btn" onclick="blockComment(${reply.commentId})">🚫 댓글차단</button>
+                                                <button class="block-btn" onclick="blockComment(${reply.commentId})"><spring:message code="community.detail.comment.block"/></button>
                                               </c:otherwise>
                                             </c:choose>
                                           </c:if>
@@ -395,7 +395,7 @@
                                             <fmt:formatDate value="${reply.createdAt}" pattern="yyyy-MM-dd"/>
                                           </span>
                                           <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne reply.userIdx and not isAdminMode}">
-                                            <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;">(유저신고)</span>
+                                            <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
                                             <button class="report-btn" data-comment-id="${reply.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">&#9888; 신고</button>
                                           </c:if>
                                           <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq reply.userIdx or isAdminMode)}">
@@ -467,17 +467,17 @@
       <%-- 댓글 하단 툴바 --%>
       <div class="comm-comment-toolbar comm-comment-toolbar-bottom" id="commentToolbarBottom">
         <div class="comm-toolbar-left">
-          <span class="comm-comment-total">전체 댓글 <strong class="comm-comment-count-val">${post.commentCount}</strong>개</span>
+          <span class="comm-comment-total"><spring:message code="community.detail.comments.total" arguments="${post.commentCount}"/></span>
           <div class="comm-sort-btns">
-            <button class="comm-sort-btn active" data-sort="created" onclick="sortComments('created')">등록순</button>
-            <button class="comm-sort-btn" data-sort="latest" onclick="sortComments('latest')">최신순</button>
-            <button class="comm-sort-btn" data-sort="replies" onclick="sortComments('replies')">답글순</button>
+            <button class="comm-sort-btn active" data-sort="created" onclick="sortComments('created')"><spring:message code="community.detail.comments.sort.created"/></button>
+            <button class="comm-sort-btn" data-sort="latest" onclick="sortComments('latest')"><spring:message code="community.detail.comments.sort.latest"/></button>
+            <button class="comm-sort-btn" data-sort="replies" onclick="sortComments('replies')"><spring:message code="community.detail.comments.sort.replies"/></button>
           </div>
         </div>
         <div class="comm-toolbar-right">
-          <button class="comm-tool-btn" onclick="scrollToPost()">본문 보기</button>
-          <button class="comm-tool-btn" id="commToggleBtnBottom" onclick="toggleCommentSection()">댓글 닫기</button>
-          <button class="comm-tool-btn" onclick="refreshComments()">새로고침</button>
+          <button class="comm-tool-btn" onclick="scrollToPost()"><spring:message code="community.detail.comments.viewPost"/></button>
+          <button class="comm-tool-btn" id="commToggleBtnBottom" onclick="toggleCommentSection()"><spring:message code="community.detail.comments.close"/></button>
+          <button class="comm-tool-btn" onclick="refreshComments()"><spring:message code="community.detail.comments.refresh"/></button>
         </div>
       </div>
 
@@ -487,9 +487,9 @@
           <c:when test="${not empty sessionScope.loginUser}">
             <div class="comment-input-box">
               <textarea class="comment-textarea" id="commentText"
-                        placeholder="여행 이야기를 댓글로 나눠보세요" rows="3"
+                        placeholder="<spring:message code='community.detail.comment.placeholder'/>" rows="3"
                         onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); submitComment(${post.postId});}"></textarea>
-              <button class="comment-submit-btn" onclick="submitComment(${post.postId})">등록</button>
+              <button class="comment-submit-btn" onclick="submitComment(${post.postId})"><spring:message code="community.detail.reply.submit"/></button>
             </div>
           </c:when>
           <c:otherwise>
@@ -506,7 +506,7 @@
   <%-- 추천 여행 이야기 --%>
   <c:if test="${not empty relatedList}">
     <div class="detail-bottom-section">
-      <h3 class="detail-bottom-title">&#10024; 추천 여행 이야기</h3>
+      <h3 class="detail-bottom-title"><spring:message code="community.detail.related.title"/></h3>
       <c:if test="${isAdminMode}">
         <div class="comm-admin-toolbar" id="adminRelatedToolbar">
           <label class="comm-admin-chk-all">
@@ -560,10 +560,10 @@
                 </c:choose>
                 <span class="post-type-badge type-${r.postType}">
                   <c:choose>
-                    <c:when test="${r.postType eq 'review'}">여행후기</c:when>
-                    <c:when test="${r.postType eq 'photo'}">사진</c:when>
-                    <c:when test="${r.postType eq 'tip'}">여행팁</c:when>
-                    <c:when test="${r.postType eq 'question'}">질문</c:when>
+                    <c:when test="${r.postType eq 'review'}"><spring:message code="community.type.review"/></c:when>
+                    <c:when test="${r.postType eq 'photo'}"><spring:message code="community.type.photo"/></c:when>
+                    <c:when test="${r.postType eq 'tip'}"><spring:message code="community.type.tip"/></c:when>
+                    <c:when test="${r.postType eq 'question'}"><spring:message code="community.type.question"/></c:when>
                   </c:choose>
                 </span>
               </div>
@@ -595,7 +595,7 @@
 
   <%-- 최신글 목록 --%>
   <div class="detail-bottom-section">
-    <h3 class="detail-bottom-title">&#128336; 최신 여행 이야기</h3>
+    <h3 class="detail-bottom-title"><spring:message code="community.latest.title"/></h3>
     <c:if test="${isAdminMode}">
       <div class="comm-admin-toolbar" id="adminLatestToolbar">
         <label class="comm-admin-chk-all">
@@ -654,10 +654,10 @@
                   </c:choose>
                   <span class="post-type-badge type-${l.postType}">
                     <c:choose>
-                      <c:when test="${l.postType eq 'review'}">여행후기</c:when>
-                      <c:when test="${l.postType eq 'photo'}">사진</c:when>
-                      <c:when test="${l.postType eq 'tip'}">여행팁</c:when>
-                      <c:when test="${l.postType eq 'question'}">질문</c:when>
+                      <c:when test="${l.postType eq 'review'}"><spring:message code="community.type.review"/></c:when>
+                      <c:when test="${l.postType eq 'photo'}"><spring:message code="community.type.photo"/></c:when>
+                      <c:when test="${l.postType eq 'tip'}"><spring:message code="community.type.tip"/></c:when>
+                      <c:when test="${l.postType eq 'question'}"><spring:message code="community.type.question"/></c:when>
                     </c:choose>
                   </span>
                 </div>
@@ -720,7 +720,7 @@
         </select>
         <span class="detail-search-divider"></span>
         <input type="text" name="keyword" class="detail-search-input"
-               placeholder="여행 이야기를 검색해보세요">
+               placeholder="<spring:message code='community.search.placeholder'/>">
         <button type="submit" class="detail-search-btn">&#128269;</button>
       </div>
     </form>
@@ -730,6 +730,8 @@
 
 <script>
 var CTX = '${pageContext.request.contextPath}';
+var COMMENT_CLOSE_LABEL = '<spring:message code="community.detail.comments.close" javaScriptEscape="true"/>';
+var COMMENT_OPEN_LABEL = '<spring:message code="community.detail.comments.open" javaScriptEscape="true"/>';
 
 /* ===== 하단 카드 클릭 이동 ===== */
 document.addEventListener('click', function(e) {
@@ -776,6 +778,7 @@ function toggleCommentSection() {
   container.style.display = COMMENT_SECTION_OPEN ? '' : 'none';
   if (pagination) pagination.style.display = COMMENT_SECTION_OPEN ? '' : 'none';
   var label = COMMENT_SECTION_OPEN ? '댓글 닫기' : '댓글 열기';
+  label = COMMENT_SECTION_OPEN ? COMMENT_CLOSE_LABEL : COMMENT_OPEN_LABEL;
   document.getElementById('commToggleBtnTop').textContent = label;
   document.getElementById('commToggleBtnBottom').textContent = label;
 }
