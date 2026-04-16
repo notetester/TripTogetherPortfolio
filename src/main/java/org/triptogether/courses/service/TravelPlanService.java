@@ -1,5 +1,6 @@
 package org.triptogether.courses.service;
 
+import org.triptogether.courses.vo.PlanSpotVO;
 import org.triptogether.courses.vo.SpotTravelVO;
 import org.triptogether.courses.vo.TravelPlanVO;
 
@@ -17,4 +18,7 @@ public interface TravelPlanService {
     void updateTravelPlan(TravelPlanVO travelPlanVO);
 
     void deleteTravelPlan(TravelPlanVO travelPlanVO);
+
+    // TravelPlanService.java
+    void insertPlanSpot(PlanSpotVO planSpotVO);
 }

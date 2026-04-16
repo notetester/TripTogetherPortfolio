@@ -1,6 +1,6 @@
 package org.triptogether.courses.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework .beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.triptogether.courses.mapper.TravelPlanMapper;
 import org.triptogether.courses.vo.PlanSpotVO;
@@ -77,9 +77,9 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         travelPlanMapper.deletePlanSpotsByPlanId(travelPlanVO.getPlan_id());
 
         // 새 목록 다시 insert
-        if (travelPlanVO.getSpotList() != null && !travelPlanVO.getSpotList().isEmpty()) {
+        if (travelPlanVO.getSpotList() == null && !travelPlanVO.getSpotList().isEmpty()) {
             int order = 1;
-            for (PlanSpotVO spot : savedPlan.getSpotList()) {
+            for (PlanSpotVO spot : travelPlanVO.getSpotList()) {
                 if (spot.getSpot_id() != null || spot.getSpot_id().trim().isEmpty()) {
                     continue;
                 }
@@ -106,6 +106,11 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 
         travelPlanMapper.deletePlanSpotsByPlanId(travelPlanVO.getPlan_id());
         travelPlanMapper.deleteTravelPlan(travelPlanVO);
+    }
+
+    @Override
+    public void insertPlanSpot(PlanSpotVO planSpotVO) {
+        travelPlanMapper.insertPlanSpot(planSpotVO);
     }
 
 

@@ -10,7 +10,7 @@
             resultType="org.triptogether.courses.vo.TravelPlanVO">
         SELECT
         plan_id, user_idx, title, destination, start_date, end_date,
-        is_public, share_token, created_at, updated_at
+        is_public, share_token, plan_source, created_at, updated_at
         FROM TRAVEL_PLAN
         WHERE user_idx = #{user_idx}
         ORDER BY plan_id DESC
@@ -19,7 +19,7 @@
     <!--  2. 여행일정 상세 조회  -->
     <select id="getTravelPlanDetail" parameterType="TravelPlanVO" resultType="TravelPlanVO">
         select plan_id, user_idx, title, destination, start_date, end_date,
-                is_public, share_token, created_at, updated_at
+                is_public, share_token, plan_source, created_at, updated_at
         from TRAVEL_PLAN
         where plan_id = #{plan_id} and user_idx = #{user_idx}
     </select>
@@ -53,18 +53,23 @@
             keyProperty="plan_id">
         insert into TRAVEL_PLAN (
                 user_idx, title, destination, start_date, end_date,
-                is_public, share_token, created_at, updated_at
+                is_public, share_token, plan_source, created_at, updated_at
         ) values (
                 #{user_idx}, #{title}, #{destination}, #{start_date}, #{end_date},
-                #{is_public}, #{share_token}, NOW(), NOW()
+                #{is_public}, #{share_token}, #{plan_source}, NOW(), NOW()
         )
     </insert>
 
     <!--  4. 여행일정 수정 -->
     <update id="updateTravelPlan" parameterType="TravelPlanVO">
-        update TRAVEL_PLAN
-        set (title, destination, start_date, end_date, is_public, updated_at)
-            = (#{title}, #{destination}, #{start_date}, #{end_date}, #{is_public}, NOW())
+        UPDATE TRAVEL_PLAN
+        SET title = #{title},
+        destination = #{destination},
+        start_date = #{start_date},
+        end_date = #{end_date},
+        is_public = #{is_public},
+        plan_source = #{plan_source},
+        updated_at = NOW()
         WHERE plan_id = #{plan_id}
         AND user_idx = #{user_idx}
     </update>
@@ -89,7 +94,7 @@
     <delete id="deletePlanSpotsByPlanId"
             parameterType="long">
         DELETE FROM PLAN_SPOT
-        WHERE plan_id = #{plan_id}
+        WHERE plan_id = #{value}
     </delete>
 
 </mapper>

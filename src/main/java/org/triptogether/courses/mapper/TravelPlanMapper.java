@@ -35,5 +35,4 @@ public interface TravelPlanMapper {
 
     // 일정 안 장소 전체 삭제
     void deletePlanSpotsByPlanId(Long plan_id);
-
 }
