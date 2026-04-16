@@ -229,7 +229,9 @@ public class ExploreServiceImpl implements ExploreService {
 
     @Override
     public List<ReviewVO> getReviewList(Long spotIdx) {
-        return exploreMapper.selectReviewList(spotIdx);
+        List<ReviewVO> reviews = exploreMapper.selectReviewList(spotIdx);
+        spotTextTranslationService.translateReviews(reviews);
+        return reviews;
     }
 
     @Override
