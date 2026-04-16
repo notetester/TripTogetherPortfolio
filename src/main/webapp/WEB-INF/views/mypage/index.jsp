@@ -11,6 +11,10 @@
     - communityCount : int
     - inquiryList    : List<MyPageInquiryDto>
     - inquiryCount   : int
+    - reviewList     : List<MyPageReviewDto>
+    - reviewCount    : int
+    - planList       : List<MyPagePlanDto>
+    - planCount      : int
 --%>
 <!DOCTYPE html>
 <html lang="ko">
@@ -185,35 +189,112 @@
         </div>
 
         <%-- ══════════════════════════════════════════
-             내 리뷰 (가칭)
+             내 리뷰
         ══════════════════════════════════════════ --%>
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">⭐</span> 내 리뷰 (가칭)
+                    <span class="mp-card-icon">⭐</span>
+                    내 리뷰
+                    <span class="mp-card-count">${reviewCount}</span>
                 </div>
             </div>
-            <div class="mp-placeholder">
-                <div class="mp-placeholder-icon">🚧</div>
-                <div class="mp-placeholder-msg">추후 구현 예정</div>
-                <div class="mp-placeholder-sub">기능이 완성되면 여기서 확인할 수 있어요</div>
+            <div class="mp-card-body">
+                <c:choose>
+                    <c:when test="${empty reviewList}">
+                        <div class="mp-empty">
+                            <div class="mp-empty-icon">⭐</div>
+                            작성한 리뷰가 없습니다
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="review" items="${reviewList}">
+                            <a href="${pageContext.request.contextPath}/detail/${review.spotIdx}"
+                               class="mp-list-item">
+                                <div class="mp-list-content">
+                                    <div class="mp-list-title">${review.spotName}</div>
+                                    <div class="mp-list-meta">
+                                        <span class="mp-review-stars">
+                                            <c:forEach begin="1" end="5" var="i">
+                                                <c:choose>
+                                                    <c:when test="${i <= review.rating}">★</c:when>
+                                                    <c:otherwise>☆</c:otherwise>
+                                                </c:choose>
+                                            </c:forEach>
+                                        </span>
+                                        <c:if test="${not empty review.content}">
+                                            <span class="mp-review-excerpt">${fn:substring(review.content, 0, 40)}<c:if test="${fn:length(review.content) > 40}">…</c:if></span>
+                                        </c:if>
+                                        <span><fmt:formatDate value="${review.createdAt}" pattern="yyyy-MM-dd"/></span>
+                                    </div>
+                                </div>
+                                <div class="mp-list-badges">
+                                    <span class="mp-badge mp-badge-rating">${review.rating}점</span>
+                                </div>
+                            </a>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
 
 
         <%-- ══════════════════════════════════════════
-             내 여행 일정 (가칭)
+             내 여행 일정
         ══════════════════════════════════════════ --%>
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">🗺️</span> 내 여행 일정 (가칭)
+                    <span class="mp-card-icon">🗺️</span>
+                    내 여행 일정
+                    <span class="mp-card-count">${planCount}</span>
                 </div>
+                <a href="${pageContext.request.contextPath}/courses/list"
+                   class="mp-card-more">전체보기 →</a>
             </div>
-            <div class="mp-placeholder">
-                <div class="mp-placeholder-icon">🚧</div>
-                <div class="mp-placeholder-msg">추후 구현 예정</div>
-                <div class="mp-placeholder-sub">기능이 완성되면 여기서 확인할 수 있어요</div>
+            <div class="mp-card-body">
+                <c:choose>
+                    <c:when test="${empty planList}">
+                        <div class="mp-empty">
+                            <div class="mp-empty-icon">🗺️</div>
+                            등록된 여행 일정이 없습니다
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="plan" items="${planList}">
+                            <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.planId}"
+                               class="mp-list-item">
+                                <div class="mp-list-content">
+                                    <div class="mp-list-title">${plan.title}</div>
+                                    <div class="mp-list-meta">
+                                        <c:if test="${not empty plan.destination}">
+                                            <span>${plan.destination}</span>
+                                        </c:if>
+                                        <span>
+                                            <fmt:formatDate value="${plan.startDate}" pattern="yyyy-MM-dd"/>
+                                            ~
+                                            <fmt:formatDate value="${plan.endDate}" pattern="yyyy-MM-dd"/>
+                                        </span>
+                                        <span><fmt:formatDate value="${plan.createdAt}" pattern="yyyy-MM-dd"/></span>
+                                    </div>
+                                </div>
+                                <div class="mp-list-badges">
+                                    <c:choose>
+                                        <c:when test="${plan.isPublic}">
+                                            <span class="mp-badge mp-badge-public">공개</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="mp-badge mp-badge-private">비공개</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <c:if test="${plan.planSource eq 'AI'}">
+                                        <span class="mp-badge mp-badge-ai">AI</span>
+                                    </c:if>
+                                </div>
+                            </a>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
 
@@ -382,7 +463,7 @@
                                 <div class="mp-list-badges">
                                     <span class="mp-badge mp-badge-${rpt.status}">
                                         <c:choose>
-                                            <c:when test="${rpt.status eq 'PENDING'}">검토중</c:when>
+                                            <c:when test="${rpt.status eq 'IN_REVIEW'}">검토중</c:when>
                                             <c:when test="${rpt.status eq 'RESOLVED'}">처리완료</c:when>
                                             <c:when test="${rpt.status eq 'DISMISSED'}">반려</c:when>
                                             <c:otherwise>${rpt.status}</c:otherwise>

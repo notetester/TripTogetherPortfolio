@@ -933,6 +933,32 @@
         LIMIT 10
     </select>
 
+    <!-- 전체 기간 인기 게시글 (limit 파라미터) -->
+    <select id="selectPopularList" resultMap="PostResultMap">
+        SELECT
+            cp.post_id,
+            cp.user_idx,
+            u.nickname,
+            cp.title,
+            cp.content,
+            cp.created_at,
+            cp.post_type,
+            cp.post_status,
+            cp.like_count,
+            cp.comment_count,
+            cp.view_count,
+            cp.report_count,
+            u.account_status,
+            cpi.image_url AS thumb_url
+        FROM COMMUNITY_POST cp
+        LEFT JOIN USERS u ON cp.user_idx = u.user_idx
+        LEFT JOIN COMMUNITY_POST_IMAGE cpi
+            ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
+        WHERE cp.post_status != 'DELETED'
+        ORDER BY cp.like_count DESC, cp.created_at DESC
+        LIMIT #{limit}
+    </select>
+
     <!-- =============================================
          도배 방지: 최근 N분 내 작성 수 조회
          ============================================= -->

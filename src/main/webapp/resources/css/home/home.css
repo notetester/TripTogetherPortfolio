@@ -133,7 +133,7 @@
   transition: transform .2s, box-shadow .2s;
 }
 .dc:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-.dc-iw { overflow: hidden; }
+.dc-iw { overflow: hidden; position: relative; }
 .dc-img {
   width: 100%;
   height: 200px;
@@ -173,11 +173,11 @@
   transition: transform .4s;
 }
 .tc:hover .tc-img { transform: scale(1.05); }
-.tc-badge {
+.dc-badge {
   position: absolute;
   top: 12px;
-  right: 12px;
-  background: rgba(0,0,0,.6);
+  left: 12px;
+  background: rgba(148, 163, 184, 0.85);
   color: #fff;
   padding: 4px 10px;
   border-radius: 20px;
@@ -185,6 +185,25 @@
   font-weight: 600;
   backdrop-filter: blur(4px);
 }
+.dc-badge-excellent { background: rgba(67, 56, 202, 0.9); }
+.dc-badge-verygood  { background: rgba(37, 99, 235, 0.9); }
+.dc-badge-good      { background: rgba(96, 165, 250, 0.9); }
+.dc-badge-average   { background: rgba(148, 163, 184, 0.85); }
+.tc-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0,0,0,.6);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+}
+.tc-badge-short    { background: rgba(6, 78, 59, 0.85); }
+.tc-badge-standard { background: rgba(30, 58, 138, 0.85); }
+.tc-badge-long     { background: rgba(88, 28, 135, 0.85); }
 .tc-b { padding: 20px; }
 .tc-title { font-size: 17px; font-weight: 600; margin-bottom: 12px; }
 .tc-foot { display: flex; justify-content: space-between; align-items: center; }
@@ -232,13 +251,18 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: var(--blue);
+  background: rgba(30, 75, 200, 0.8);
   color: #fff;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+  backdrop-filter: blur(4px);
 }
+.cc-badge-review   { background: rgba(30, 75, 200, 0.75); }
+.cc-badge-photo    { background: rgba(124, 58, 237, 0.75); }
+.cc-badge-tip      { background: rgba(50, 130, 80, 0.75); }
+.cc-badge-question { background: rgba(225, 29, 72, 0.75); }
 .cc-b { padding: 20px; }
 .cc-title { font-size: 17px; font-weight: 600; margin-bottom: 14px; }
 .cc-foot  { display: flex; justify-content: space-between; align-items: center; }
@@ -288,6 +312,45 @@
   z-index: 10;
 }
 
+
+/* ===== 여행지 placeholder ===== */
+.dc-img-placeholder {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+.dc-ph-icon { font-size: 38px; }
+.dc-ph-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.3);
+}
+
+/* ===== 코스 placeholder / dest ===== */
+.tc-img-placeholder {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+}
+.tc-ph-icon { font-size: 38px; }
+.tc-ph-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.3);
+}
+.tc-dest { font-size: 13px; color: var(--gray-500); }
 
 /* ===== 반응형 ===== */
 @media (max-width: 768px) {

@@ -3,7 +3,9 @@ package org.triptogether.myPage.service;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
+import org.triptogether.myPage.vo.MyPageReviewDto;
 
 import java.util.List;
 
@@ -23,6 +25,16 @@ public interface MyPageService {
 
     List<MyPageReportDto> getMyReportList(Long userIdx);
     int getMyReportCount(Long userIdx);
+
+    // ===== 리뷰 =====
+
+    List<MyPageReviewDto> getMyReviewList(Long userIdx);
+    int getMyReviewCount(Long userIdx);
+
+    // ===== 여행 일정 =====
+
+    List<MyPagePlanDto> getMyPlanList(Long userIdx);
+    int getMyPlanCount(Long userIdx);
 
     // ===== 알림 =====
 

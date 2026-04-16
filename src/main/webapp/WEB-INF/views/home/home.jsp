@@ -30,12 +30,14 @@
 <section class="feat-sec">
     <div class="si">
         <div class="feat-grid">
-            <div class="feat-card">
+            <div class="feat-card" style="cursor:pointer;"
+                 onclick="location.href='${pageContext.request.contextPath}/assistant'">
                 <div class="feat-icon fi-b">&#10024;</div>
                 <h3><spring:message code="home.feature.ai.title"/></h3>
                 <p><spring:message code="home.feature.ai.desc"/></p>
             </div>
-            <div class="feat-card">
+            <div class="feat-card" style="cursor:pointer;"
+                 onclick="location.href='${pageContext.request.contextPath}/courses/list'">
                 <div class="feat-icon fi-p">&#128197;</div>
                 <h3><spring:message code="home.feature.schedule.title"/></h3>
                 <p><spring:message code="home.feature.schedule.desc"/></p>
@@ -57,70 +59,67 @@
             <h2 class="st"><spring:message code="home.popular.title"/></h2>
             <button class="vm" onclick="location.href='${pageContext.request.contextPath}/explore'"><spring:message code="home.more"/> &#8594;</button>
         </div>
-        <div class="cg" id="home-dest">
-            <!-- 샘플 카드 - 실제 서비스 시 서버 데이터로 대체 -->
-            <div class="dc" onclick="location.href='${pageContext.request.contextPath}/detail/1'">
-                <div class="dc-iw">
-                    <img class="dc-img" src="https://images.unsplash.com/photo-1691929607102-5284d991921f?w=600&q=80"
-                         alt="도쿄">
-                </div>
-                <div class="dc-b">
-                    <div class="dc-top">
-                        <div>
-                            <div class="dc-name">도쿄</div>
-                            <div class="dc-ctry">&#128205; 일본</div>
+        <div id="spotsSection">
+            <c:choose>
+                <c:when test="${empty popularSpots}">
+                    <div style="padding:40px;text-align:center;color:var(--gray-400);">등록된 여행지가 없습니다</div>
+                </c:when>
+                <c:otherwise>
+                    <div class="comm-g-outer">
+                        <button class="comm-g-btn comm-g-prev">&#8249;</button>
+                        <div class="comm-g-vp">
+                            <div class="comm-g-track">
+                                <c:forEach var="spot" items="${popularSpots}">
+                                    <div class="cc-wrap" data-spot-id="${spot.spotIdx}">
+                                        <div class="dc">
+                                            <div class="dc-iw">
+                                                <c:choose>
+                                                    <c:when test="${not empty spot.imageUrl}">
+                                                        <img class="dc-img" src="${spot.imageUrl}" alt="${spot.name}"
+                                                             onerror="spotImgError(this)">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <div class="dc-img-placeholder">
+                                                            <span class="dc-ph-icon">&#9992;</span>
+                                                            <span class="dc-ph-name">${spot.name}</span>
+                                                        </div>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:if test="${not empty spot.ratingAvg and spot.ratingAvg > 0}">
+                                                    <c:choose>
+                                                        <c:when test="${spot.ratingAvg >= 4.8}">
+                                                            <span class="dc-badge dc-badge-excellent">&#9733; <fmt:formatNumber value="${spot.ratingAvg}" maxFractionDigits="1"/></span>
+                                                        </c:when>
+                                                        <c:when test="${spot.ratingAvg >= 4.5}">
+                                                            <span class="dc-badge dc-badge-verygood">&#9733; <fmt:formatNumber value="${spot.ratingAvg}" maxFractionDigits="1"/></span>
+                                                        </c:when>
+                                                        <c:when test="${spot.ratingAvg >= 4.0}">
+                                                            <span class="dc-badge dc-badge-good">&#9733; <fmt:formatNumber value="${spot.ratingAvg}" maxFractionDigits="1"/></span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="dc-badge dc-badge-average">&#9733; <fmt:formatNumber value="${spot.ratingAvg}" maxFractionDigits="1"/></span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:if>
+                                            </div>
+                                            <div class="dc-b">
+                                                <div class="dc-name">${spot.name}</div>
+                                                <c:if test="${not empty spot.region}">
+                                                    <div class="dc-ctry">&#128205; ${spot.region}</div>
+                                                </c:if>
+                                                <c:if test="${not empty spot.description}">
+                                                    <div class="dc-desc">${spot.description}</div>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </div>
                         </div>
-                        <div class="dc-rat">&#11088; 4.8 <span class="dc-rev">(2,453)</span></div>
+                        <button class="comm-g-btn comm-g-next">&#8250;</button>
                     </div>
-                    <div class="dc-desc">전통과 현대가 공존하는 매력적인 도시</div>
-                    <div class="dc-tags">
-                        <span class="tag">도시 여행</span>
-                        <span class="tag">문화 체험</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dc" onclick="location.href='${pageContext.request.contextPath}/detail/2'">
-                <div class="dc-iw">
-                    <img class="dc-img" src="https://images.unsplash.com/photo-1642947392578-b37fbd9a4d45?w=600&q=80"
-                         alt="파리">
-                </div>
-                <div class="dc-b">
-                    <div class="dc-top">
-                        <div>
-                            <div class="dc-name">파리</div>
-                            <div class="dc-ctry">&#128205; 프랑스</div>
-                        </div>
-                        <div class="dc-rat">&#11088; 4.9 <span class="dc-rev">(3,241)</span></div>
-                    </div>
-                    <div class="dc-desc">세계에서 가장 낭만적인 도시</div>
-                    <div class="dc-tags">
-                        <span class="tag">도시 여행</span>
-                        <span class="tag">로맨틱</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dc" onclick="location.href='${pageContext.request.contextPath}/detail/8'">
-                <div class="dc-iw">
-                    <img class="dc-img" src="https://images.unsplash.com/photo-1573481726566-9d98bb795fff?w=600&q=80"
-                         alt="산토리니">
-                </div>
-                <div class="dc-b">
-                    <div class="dc-top">
-                        <div>
-                            <div class="dc-name">산토리니</div>
-                            <div class="dc-ctry">&#128205; 그리스</div>
-                        </div>
-                        <div class="dc-rat">&#11088; 4.9 <span class="dc-rev">(3,412)</span></div>
-                    </div>
-                    <div class="dc-desc">에게해의 보석</div>
-                    <div class="dc-tags">
-                        <span class="tag">해변 휴양</span>
-                        <span class="tag">로맨틱</span>
-                    </div>
-                </div>
-            </div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 </section>
@@ -130,55 +129,62 @@
     <div class="si">
         <div class="sh">
             <h2 class="st"><spring:message code="home.courses.title"/></h2>
-            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/courses'"><spring:message code="home.more"/> &#8594;</button>
+            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/courses/list'"><spring:message code="home.more"/> &#8594;</button>
         </div>
-        <div class="cg" id="home-trips">
-
-            <div class="tc">
-                <div class="tc-iw">
-                    <img class="tc-img" src="https://images.unsplash.com/photo-1691929607102-5284d991921f?w=600&q=80"
-                         alt="도쿄 3박4일">
-                    <span class="tc-badge">3박 4일</span>
-                </div>
-                <div class="tc-b">
-                    <div class="tc-title">도쿄 완벽 여행 코스</div>
-                    <div class="tc-foot">
-                        <span class="tc-auth">by TravelBug</span>
-                        <span class="tc-likes">&#10084; 234</span>
+        <div id="plansSection">
+            <c:choose>
+                <c:when test="${empty trendingPlans}">
+                    <div style="padding:40px;text-align:center;color:var(--gray-400);">등록된 여행 코스가 없습니다</div>
+                </c:when>
+                <c:otherwise>
+                    <div class="comm-g-outer">
+                        <button class="comm-g-btn comm-g-prev">&#8249;</button>
+                        <div class="comm-g-vp">
+                            <div class="comm-g-track">
+                                <c:forEach var="plan" items="${trendingPlans}">
+                                    <div class="cc-wrap" data-plan-id="${plan.planId}">
+                                        <div class="tc">
+                                            <div class="tc-iw">
+                                                <c:choose>
+                                                    <c:when test="${not empty plan.imageUrl}">
+                                                        <img class="tc-img" src="${plan.imageUrl}" alt="${plan.title}">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <div class="tc-img-placeholder">&#9992;</div>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:if test="${not empty plan.nights}">
+                                                    <c:choose>
+                                                        <c:when test="${plan.nights <= 1}">
+                                                            <span class="tc-badge tc-badge-short">${plan.nights}박 <c:out value="${plan.nights + 1}"/>일</span>
+                                                        </c:when>
+                                                        <c:when test="${plan.nights == 2}">
+                                                            <span class="tc-badge tc-badge-standard">${plan.nights}박 <c:out value="${plan.nights + 1}"/>일</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="tc-badge tc-badge-long">${plan.nights}박 <c:out value="${plan.nights + 1}"/>일</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:if>
+                                            </div>
+                                            <div class="tc-b">
+                                                <div class="tc-title">${plan.title}</div>
+                                                <div class="tc-foot">
+                                                    <span class="tc-auth">by ${plan.nickname}</span>
+                                                    <c:if test="${not empty plan.destination}">
+                                                        <span class="tc-dest">&#128205; ${plan.destination}</span>
+                                                    </c:if>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </div>
+                        <button class="comm-g-btn comm-g-next">&#8250;</button>
                     </div>
-                </div>
-            </div>
-
-            <div class="tc">
-                <div class="tc-iw">
-                    <img class="tc-img" src="https://images.unsplash.com/photo-1642947392578-b37fbd9a4d45?w=600&q=80"
-                         alt="파리 5박6일">
-                    <span class="tc-badge">5박 6일</span>
-                </div>
-                <div class="tc-b">
-                    <div class="tc-title">파리 & 런던 유럽 핵심 코스</div>
-                    <div class="tc-foot">
-                        <span class="tc-auth">by EuroWanderer</span>
-                        <span class="tc-likes">&#10084; 412</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tc">
-                <div class="tc-iw">
-                    <img class="tc-img" src="https://images.unsplash.com/photo-1657788781951-d6beac09d66c?w=600&q=80"
-                         alt="발리 7일">
-                    <span class="tc-badge">7박 8일</span>
-                </div>
-                <div class="tc-b">
-                    <div class="tc-title">발리 힐링 여행 코스</div>
-                    <div class="tc-foot">
-                        <span class="tc-auth">by IslandHopper</span>
-                        <span class="tc-likes">&#10084; 189</span>
-                    </div>
-                </div>
-            </div>
-
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 </section>
@@ -188,67 +194,116 @@
     <div class="si">
         <div class="sh">
             <h2 class="st"><spring:message code="home.community.title"/></h2>
-            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="home.more"/> &#8594;
-            </button>
+            <button class="vm" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="home.more"/> &#8594;</button>
         </div>
-        <div id="popularSection">
-            <div style="padding:40px;text-align:center;color:var(--gray-400);"><spring:message code="home.loading"/></div>
+        <div id="communitySection">
+            <c:choose>
+                <c:when test="${empty popularPosts}">
+                    <div style="padding:40px;text-align:center;color:var(--gray-400);">아직 게시글이 없습니다</div>
+                </c:when>
+                <c:otherwise>
+                    <div class="comm-g-outer">
+                        <button class="comm-g-btn comm-g-prev">&#8249;</button>
+                        <div class="comm-g-vp">
+                            <div class="comm-g-track">
+                                <c:forEach var="post" items="${popularPosts}">
+                                    <c:set var="isBlocked" value="${post.postStatus == 'BLOCKED' or post.accountStatus == 'BLOCKED'}"/>
+                                    <c:if test="${not isBlocked or isAdminMode}">
+                                        <c:set var="isReportBlur" value="${post.reportCount >= 3 and post.postStatus == 'BLOCKED' and not isAdminMode}"/>
+                                        <c:set var="wrapClass" value="cc-wrap"/>
+                                        <c:if test="${isReportBlur}"><c:set var="wrapClass" value="${wrapClass} report-blurred-wrap"/></c:if>
+                                        <div class="${wrapClass}" data-id="${post.postId}">
+                                            <c:set var="cardClass" value="cc"/>
+                                            <c:if test="${isReportBlur}"><c:set var="cardClass" value="${cardClass} report-blurred"/></c:if>
+                                            <div class="${cardClass}">
+                                                <div class="cc-iw">
+                                                    <c:choose>
+                                                        <c:when test="${not empty post.thumbUrl and fn:startsWith(post.thumbUrl, 'http')}">
+                                                            <img class="cc-img" src="${post.thumbUrl}" alt="${post.title}">
+                                                        </c:when>
+                                                        <c:when test="${not empty post.thumbUrl}">
+                                                            <img class="cc-img" src="${pageContext.request.contextPath}${post.thumbUrl}" alt="${post.title}">
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <div class="cc-img" style="background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:40px;">&#9992;</div>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                    <span class="cc-badge cc-badge-${post.postType}">
+                                                        <c:choose>
+                                                            <c:when test="${post.postType == 'review'}"><spring:message code="home.postType.review"/></c:when>
+                                                            <c:when test="${post.postType == 'photo'}"><spring:message code="home.postType.photo"/></c:when>
+                                                            <c:when test="${post.postType == 'tip'}"><spring:message code="home.postType.tip"/></c:when>
+                                                            <c:when test="${post.postType == 'question'}"><spring:message code="home.postType.question"/></c:when>
+                                                            <c:otherwise>${post.postType}</c:otherwise>
+                                                        </c:choose>
+                                                    </span>
+                                                </div>
+                                                <div class="cc-b">
+                                                    <div class="cc-title">${post.title}</div>
+                                                    <div class="cc-foot">
+                                                        <div class="cc-auth">
+                                                            <div class="cc-av">${fn:substring(post.nickname, 0, 1)}</div>
+                                                            <div>
+                                                                <div class="cc-an">${post.nickname}</div>
+                                                                <div class="cc-dt"><fmt:formatDate value="${post.createdAt}" pattern="yyyy.MM.dd"/></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="cc-stats">
+                                                            <span>&#10084; ${post.likeCount}</span>
+                                                            <span>&#128172; ${post.commentCount}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <c:if test="${isReportBlur}">
+                                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)">&#9888;&#65039; 신고된 콘텐츠입니다. 클릭하여 확인</div>
+                                            </c:if>
+                                            <c:if test="${isAdminMode}">
+                                                <c:choose>
+                                                    <c:when test="${post.postStatus == 'BLOCKED' and post.reportCount >= 3}">
+                                                        <span class="blocked-badge"><spring:message code="home.blocked.report"/></span>
+                                                    </c:when>
+                                                    <c:when test="${post.postStatus == 'BLOCKED'}">
+                                                        <span class="blocked-badge"><spring:message code="home.blocked.post"/></span>
+                                                    </c:when>
+                                                    <c:when test="${post.accountStatus == 'BLOCKED'}">
+                                                        <span class="blocked-badge"><spring:message code="home.blocked.user"/></span>
+                                                    </c:when>
+                                                </c:choose>
+                                            </c:if>
+                                        </div>
+                                    </c:if>
+                                </c:forEach>
+                            </div>
+                        </div>
+                        <button class="comm-g-btn comm-g-next">&#8250;</button>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 </section>
 
 <script>
-    var ctx       = '${pageContext.request.contextPath}';
-    var adminMode = ${isAdminMode};
+    var ctx            = '${pageContext.request.contextPath}';
+    var adminMode      = ${isAdminMode};
+    var fallbackImgUrl = '${fallbackImageUrl}';
 
-    var TYPE_LABELS = {
-        review: '<spring:message code="home.postType.review" javaScriptEscape="true"/>',
-        photo: '<spring:message code="home.postType.photo" javaScriptEscape="true"/>',
-        tip: '<spring:message code="home.postType.tip" javaScriptEscape="true"/>',
-        question: '<spring:message code="home.postType.question" javaScriptEscape="true"/>'
-    };
-    var BLOCKED_REPORT = '<spring:message code="home.blocked.report" javaScriptEscape="true"/>';
-    var BLOCKED_POST = '<spring:message code="home.blocked.post" javaScriptEscape="true"/>';
-    var BLOCKED_USER = '<spring:message code="home.blocked.user" javaScriptEscape="true"/>';
+
+    function spotImgError(img) {
+        if (fallbackImgUrl) {
+            img.onerror = null;
+            img.src = fallbackImgUrl;
+        } else {
+            img.outerHTML = '<div class="dc-img-placeholder">'
+                + '<span class="dc-ph-icon">&#9992;</span>'
+                + '<span class="dc-ph-name">' + escHtml(img.alt) + '</span>'
+                + '</div>';
+        }
+    }
 
     function escHtml(s) {
         return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    function buildCard(p) {
-        var blocked = (p.accountStatus === 'BLOCKED' || p.postStatus === 'BLOCKED');
-        if (blocked && !adminMode) return '';
-
-        var isReportBlur = p.reportCount >= 3 && p.postStatus === 'BLOCKED' && !adminMode;
-        var imgHtml = p.thumbUrl
-            ? '<img class="cc-img" src="' + escHtml(p.thumbUrl.startsWith('http') ? p.thumbUrl : ctx + p.thumbUrl) + '" alt="' + escHtml(p.title) + '">'
-            : '<div class="cc-img" style="background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:40px;">✈️</div>';
-
-        var dateStr = p.createdAt ? p.createdAt.substring(0, 10).replace(/-/g, '.') : '';
-        var badge   = adminMode
-            ? (p.postStatus === 'BLOCKED' && p.reportCount >= 3 ? '<span class="blocked-badge">' + escHtml(BLOCKED_REPORT) + '</span>'
-             : p.postStatus === 'BLOCKED'                       ? '<span class="blocked-badge">' + escHtml(BLOCKED_POST) + '</span>'
-             : p.accountStatus === 'BLOCKED'                    ? '<span class="blocked-badge">' + escHtml(BLOCKED_USER) + '</span>' : '') : '';
-        var blurOverlay = isReportBlur
-            ? '<div class="report-blurred-overlay" onclick="removeReportBlur(this)">⚠️ 신고된 콘텐츠입니다. 클릭하여 확인</div>' : '';
-
-        return '<div class="cc-wrap' + (isReportBlur ? ' report-blurred-wrap' : '') + '" data-id="' + p.postId + '" style="cursor:pointer;">'
-             + '  <div class="cc' + (isReportBlur ? ' report-blurred' : '') + '">'
-             + '    <div class="cc-iw">' + imgHtml
-             + '      <span class="cc-badge">' + escHtml(TYPE_LABELS[p.postType] || p.postType) + '</span>'
-             + '    </div>'
-             + '    <div class="cc-b">'
-             + '      <div class="cc-title">' + escHtml(p.title) + '</div>'
-             + '      <div class="cc-foot">'
-             + '        <div class="cc-auth"><div class="cc-av">' + escHtml((p.nickname || '?').charAt(0)) + '</div>'
-             + '          <div><div class="cc-an">' + escHtml(p.nickname) + '</div><div class="cc-dt">' + dateStr + '</div></div>'
-             + '        </div>'
-             + '        <div class="cc-stats"><span>❤ ' + (p.likeCount||0) + '</span><span>💬 ' + (p.commentCount||0) + '</span></div>'
-             + '      </div>'
-             + '    </div>'
-             + '  </div>'
-             + blurOverlay + badge
-             + '</div>';
     }
 
     function removeReportBlur(overlay) {
@@ -259,16 +314,10 @@
     }
 
     function initCarousel(section) {
-        var track   = section.querySelector('#homeCarouselTrack');
-        var prevBtn = section.querySelector('#homeCarouselPrev');
-        var nextBtn = section.querySelector('#homeCarouselNext');
+        var track   = section.querySelector('.comm-g-track');
+        var prevBtn = section.querySelector('.comm-g-prev');
+        var nextBtn = section.querySelector('.comm-g-next');
         if (!track || !track.children.length) return;
-
-        track.querySelectorAll('.cc-wrap[data-id]').forEach(function (wrap) {
-            wrap.addEventListener('click', function () {
-                location.href = ctx + '/community/' + this.getAttribute('data-id');
-            });
-        });
 
         var cards   = track.children;
         var total   = cards.length;
@@ -283,7 +332,7 @@
             var w = (vpWidth - gap * (visible - 1)) / visible;
             Array.from(cards).forEach(function (wrap) {
                 wrap.style.width = w + 'px';
-                var inner = wrap.querySelector('.cc');
+                var inner = wrap.querySelector('.cc, .dc, .tc');
                 if (inner) inner.style.width = w + 'px';
             });
             track.style.gap = gap + 'px';
@@ -315,36 +364,49 @@
         function startAuto() { autoTimer = setInterval(next, 2500); }
         function stopAuto()  { clearInterval(autoTimer); }
 
-        nextBtn.addEventListener('click', function () { stopAuto(); next(); startAuto(); });
-        prevBtn.addEventListener('click', function () { stopAuto(); prev(); startAuto(); });
+        if (nextBtn) nextBtn.addEventListener('click', function () { stopAuto(); next(); startAuto(); });
+        if (prevBtn) prevBtn.addEventListener('click', function () { stopAuto(); prev(); startAuto(); });
         window.addEventListener('resize', function () { stopAuto(); setCardWidths(); goTo(current); startAuto(); });
 
         setCardWidths();
         startAuto();
     }
 
-    /* ===== 인기글 AJAX 로드 ===== */
-    fetch(ctx + '/community/api/popular')
-        .then(function (res) { return res.json(); })
-        .then(function (posts) {
-            var section = document.getElementById('popularSection');
-            if (!posts || posts.length === 0) {
-                section.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-400);">아직 게시글이 없습니다</div>';
-                return;
-            }
-            var cards = posts.map(buildCard).join('');
-            section.innerHTML =
-                '<div class="comm-g-outer">'
-              + '  <button class="comm-g-btn comm-g-prev" id="homeCarouselPrev">&#8249;</button>'
-              + '  <div class="comm-g-vp"><div class="comm-g-track" id="homeCarouselTrack">' + cards + '</div></div>'
-              + '  <button class="comm-g-btn comm-g-next" id="homeCarouselNext">&#8250;</button>'
-              + '</div>';
-            initCarousel(section);
-        })
-        .catch(function () {
-            document.getElementById('popularSection').innerHTML =
-                '<div style="padding:40px;text-align:center;color:var(--gray-400);">불러오기 실패</div>';
+    /* ===== 인기 여행지 캐러셀 ===== */
+    var spotsSection = document.getElementById('spotsSection');
+    if (spotsSection && spotsSection.querySelector('.comm-g-track')) {
+        initCarousel(spotsSection);
+        spotsSection.querySelectorAll('.cc-wrap[data-spot-id]').forEach(function (wrap) {
+            wrap.style.cursor = 'pointer';
+            wrap.addEventListener('click', function () {
+                location.href = ctx + '/detail/' + this.getAttribute('data-spot-id');
+            });
         });
+    }
+
+    /* ===== 트렌딩 코스 캐러셀 ===== */
+    var plansSection = document.getElementById('plansSection');
+    if (plansSection && plansSection.querySelector('.comm-g-track')) {
+        initCarousel(plansSection);
+        plansSection.querySelectorAll('.cc-wrap[data-plan-id]').forEach(function (wrap) {
+            wrap.style.cursor = 'pointer';
+            wrap.addEventListener('click', function () {
+                location.href = ctx + '/courses/detail?planId=' + this.getAttribute('data-plan-id');
+            });
+        });
+    }
+
+    /* ===== 인기 여행 이야기 캐러셀 ===== */
+    var communitySection = document.getElementById('communitySection');
+    if (communitySection && communitySection.querySelector('.comm-g-track')) {
+        initCarousel(communitySection);
+        communitySection.querySelectorAll('.cc-wrap[data-id]').forEach(function (wrap) {
+            wrap.style.cursor = 'pointer';
+            wrap.addEventListener('click', function () {
+                location.href = ctx + '/community/' + this.getAttribute('data-id');
+            });
+        });
+    }
 </script>
 
 <%@ include file="../common/footer.jsp" %>
