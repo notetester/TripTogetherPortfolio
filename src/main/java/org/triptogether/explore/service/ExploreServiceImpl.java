@@ -29,6 +29,7 @@ import java.util.UUID;
 public class ExploreServiceImpl implements ExploreService {
 
     private final ExploreMapper exploreMapper;
+    private final SpotTextTranslationService spotTextTranslationService;
 
     /** application.properties의 file.upload.path 값 (예: src/main/resources/upload/) */
     @Value("${file.upload.path}")
@@ -43,6 +44,7 @@ public class ExploreServiceImpl implements ExploreService {
         List<ExploreVO> list = exploreMapper.selectSpotList(search);
         splitTags(list);
         applyUserActionState(list, search.getLoginUserIdx());
+        spotTextTranslationService.translateExploreSpots(list);
         return list;
     }
 
@@ -51,6 +53,7 @@ public class ExploreServiceImpl implements ExploreService {
         List<ExploreVO> list = exploreMapper.selectRatingSpotList(search);
         splitTags(list);
         applyUserActionState(list, search.getLoginUserIdx());
+        spotTextTranslationService.translateExploreSpots(list);
         return list;
     }
 
@@ -59,6 +62,7 @@ public class ExploreServiceImpl implements ExploreService {
         List<ExploreVO> list = exploreMapper.selectLikesSpotList(search);
         splitTags(list);
         applyUserActionState(list, search.getLoginUserIdx());
+        spotTextTranslationService.translateExploreSpots(list);
         return list;
     }
 
@@ -79,6 +83,7 @@ public class ExploreServiceImpl implements ExploreService {
         splitTags(list);
         // 각 카드에 현재 사용자의 찜/좋아요 상태를 표시하기 위해 설정
         applyUserActionState(list, search.getLoginUserIdx());
+        spotTextTranslationService.translateExploreSpots(list);
         return list;
     }
 
@@ -114,17 +119,20 @@ public class ExploreServiceImpl implements ExploreService {
 
     @Override
     public List<String> getRegionList() {
-        return exploreMapper.selectRegionList();
+        return spotTextTranslationService.translateCommonTexts(
+                exploreMapper.selectRegionList(), "SPOT_REGION", "region");
     }
 
     @Override
     public List<String> getTagList() {
-        return exploreMapper.selectTagList();
+        return spotTextTranslationService.translateCommonTexts(
+                exploreMapper.selectTagList(), "SPOT_TAG", "tag_name");
     }
 
     @Override
     public List<String> getWriteTagList() {
-        return exploreMapper.selectAllTagList();
+        return spotTextTranslationService.translateCommonTexts(
+                exploreMapper.selectAllTagList(), "SPOT_TAG", "tag_name");
     }
 
     /* ============================================================
@@ -142,6 +150,7 @@ public class ExploreServiceImpl implements ExploreService {
             vo.setFavorited(exploreMapper.selectFavoriteCount(spotIdx, loginUserIdx) > 0);
             vo.setLiked(exploreMapper.selectLikeCount(spotIdx, loginUserIdx) > 0);
         }
+        spotTextTranslationService.translateExploreSpot(vo);
         return vo;
     }
 
@@ -220,7 +229,9 @@ public class ExploreServiceImpl implements ExploreService {
 
     @Override
     public List<ReviewVO> getReviewList(Long spotIdx) {
-        return exploreMapper.selectReviewList(spotIdx);
+        List<ReviewVO> reviews = exploreMapper.selectReviewList(spotIdx);
+        spotTextTranslationService.translateReviews(reviews);
+        return reviews;
     }
 
     @Override
@@ -272,7 +283,8 @@ public class ExploreServiceImpl implements ExploreService {
         if (keyword == null || keyword.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        return exploreMapper.selectSuggestList(keyword.trim());
+        java.util.List<java.util.Map<String, Object>> suggestions = exploreMapper.selectSuggestList(keyword.trim());
+        return spotTextTranslationService.translateSuggestList(suggestions);
     }
 
     @Override

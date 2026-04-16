@@ -34,6 +34,7 @@ public class RecommendService {
 
     private final RecommendMapper recommendMapper;
     private final ExploreMapper   exploreMapper;
+    private final SpotTextTranslationService spotTextTranslationService;
     private final RestTemplate    restTemplate;
 
     @Value("${gemini.api.key}")
@@ -93,6 +94,7 @@ public class RecommendService {
         if (cached.size() >= RECOMMENDATION_LIMIT) {
             log.info("[Recommend] 캐시 적중: userIdx={}, {}건 (관심태그 정렬 적용)", userIdx, cached.size());
             splitTags(cached);
+            spotTextTranslationService.translateRecommendSpots(cached);
             return cached.stream().limit(RECOMMENDATION_LIMIT).collect(Collectors.toList());
         }
 
@@ -170,6 +172,7 @@ public class RecommendService {
                 : recommendMapper.selectRecommendSpotsWithTagMatch(userIdx, interestTags, currentSpotIdx);
         result = ensureExactRecommendationCount(result, candidates, currentSpotTags, interestProfile, currentSpotIdx);
         splitTags(result);
+        spotTextTranslationService.translateRecommendSpots(result);
         log.info("[Recommend] 최종 반환: {}건 (tagMatchCount 기준 정렬)", result.size());
         if (!result.isEmpty()) {
             result.forEach(r -> log.info("  → spot_idx={}, 이름={}, tagMatch={}, score={}",
@@ -185,6 +188,7 @@ public class RecommendService {
         try {
             List<RecommendVO> trending = recommendMapper.selectTrendingSpots(currentSpotIdx);
             splitTags(trending);
+            spotTextTranslationService.translateRecommendSpots(trending);
             log.info("[Recommend] 트렌딩 폴백 반환: {}건", trending.size());
             return trending.stream().limit(RECOMMENDATION_LIMIT).collect(Collectors.toList());
         } catch (Exception e) {

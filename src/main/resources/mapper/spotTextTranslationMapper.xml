@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.explore.mapper.SpotTextTranslationMapper">
+
+    <resultMap id="SpotTextTranslationMap" type="org.triptogether.explore.vo.SpotTextTranslationVO">
+        <id property="cacheIdx" column="cache_idx"/>
+        <result property="cacheId" column="cache_id"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="sourcePk" column="source_pk"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="sourceText" column="source_text"/>
+        <result property="sourceTextHash" column="source_text_hash"/>
+        <result property="targetLang" column="target_lang"/>
+        <result property="translatedText" column="translated_text"/>
+        <result property="provider" column="provider"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="selectCache" resultMap="SpotTextTranslationMap">
+        SELECT
+            cache_idx,
+            cache_id,
+            source_type,
+            source_pk,
+            field_name,
+            source_text,
+            source_text_hash,
+            target_lang,
+            translated_text,
+            provider,
+            created_at,
+            updated_at
+        FROM SPOT_TEXT_TRANSLATION_CACHE
+        WHERE source_type = #{sourceType}
+          AND source_pk = #{sourcePk}
+          AND field_name = #{fieldName}
+          AND source_text_hash = #{sourceTextHash}
+          AND target_lang = #{targetLang}
+        LIMIT 1
+    </select>
+
+    <insert id="upsertCache">
+        INSERT INTO SPOT_TEXT_TRANSLATION_CACHE (
+            cache_id,
+            source_type,
+            source_pk,
+            field_name,
+            source_text,
+            source_text_hash,
+            target_lang,
+            translated_text,
+            provider
+        ) VALUES (
+            #{cacheId},
+            #{sourceType},
+            #{sourcePk},
+            #{fieldName},
+            #{sourceText},
+            #{sourceTextHash},
+            #{targetLang},
+            #{translatedText},
+            #{provider}
+        )
+        ON DUPLICATE KEY UPDATE
+            translated_text = VALUES(translated_text),
+            provider = VALUES(provider),
+            updated_at = CURRENT_TIMESTAMP
+    </insert>
+
+</mapper>
