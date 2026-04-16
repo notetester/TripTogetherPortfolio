@@ -9,6 +9,7 @@ import org.triptogether.cloudinary.CloudinaryService;
 import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.community.vo.*;
 import org.triptogether.config.IpBlockMapper;
+import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 
@@ -24,6 +25,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final CloudinaryService cloudinaryService;
     private final MyPageService myPageService;
     private final IpBlockMapper ipBlockMapper;
+    private final SpotTextTranslationService spotTextTranslationService;
 
     // ===== 목록 =====
 
@@ -51,7 +53,9 @@ public class CommunityServiceImpl implements CommunityService {
     // 게시글 하나 가져옴
     @Override
     public CommunityPostDto getPost(Long postId) {
-        return communityMapper.selectPost(postId);
+        CommunityPostDto post = communityMapper.selectPost(postId);
+        spotTextTranslationService.translateCommunityPost(post);
+        return post;
     }
 
     // 게시글에 첨부된 이미지 목록 가져옴
@@ -69,13 +73,17 @@ public class CommunityServiceImpl implements CommunityService {
     // 댓글 목록 가져옴 (기본 정렬: 최신순)
     @Override
     public List<CommunityCommentDto> getCommentList(Long postId) {
-        return communityMapper.selectCommentList(postId, "created");
+        List<CommunityCommentDto> commentList = communityMapper.selectCommentList(postId, "created");
+        spotTextTranslationService.translateCommunityComments(commentList);
+        return commentList;
     }
 
     // 댓글 목록 가져옴 (sort: created=최신순 / likes=좋아요순)
     @Override
     public List<CommunityCommentDto> getCommentList(Long postId, String sort) {
-        return communityMapper.selectCommentList(postId, sort);
+        List<CommunityCommentDto> commentList = communityMapper.selectCommentList(postId, sort);
+        spotTextTranslationService.translateCommunityComments(commentList);
+        return commentList;
     }
 
     // 댓글 하나 가져옴 (대댓글 알림 발송할 때 부모 댓글 조회에 씀)

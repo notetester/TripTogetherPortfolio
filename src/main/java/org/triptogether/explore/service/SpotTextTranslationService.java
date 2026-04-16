@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.HtmlUtils;
+import org.triptogether.community.vo.CommunityCommentDto;
+import org.triptogether.community.vo.CommunityPostDto;
 import org.triptogether.explore.mapper.SpotTextTranslationMapper;
 import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.explore.vo.RecommendVO;
@@ -34,6 +36,8 @@ public class SpotTextTranslationService {
     private static final String SOURCE_TYPE_REGION = "SPOT_REGION";
     private static final String SOURCE_TYPE_TAG = "SPOT_TAG";
     private static final String SOURCE_TYPE_REVIEW = "SPOT_REVIEW";
+    private static final String SOURCE_TYPE_COMMUNITY_POST = "COMMUNITY_POST";
+    private static final String SOURCE_TYPE_COMMUNITY_COMMENT = "COMMUNITY_COMMENT";
     private static final String PROVIDER = "google-cloud-translation-v2";
     private static final String GOOGLE_TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2?key=%s";
 
@@ -132,6 +136,43 @@ public class SpotTextTranslationService {
             Long sourcePk = review.getReviewIdx() == null ? 0L : review.getReviewIdx();
             review.setContent(translateText(SOURCE_TYPE_REVIEW, sourcePk, "content",
                     review.getContent(), targetLang));
+        }
+    }
+
+    public void translateCommunityPost(CommunityPostDto post) {
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || post == null) {
+            return;
+        }
+
+        Long sourcePk = post.getPostId() == null ? 0L : post.getPostId();
+        post.setContent(translateText(
+                SOURCE_TYPE_COMMUNITY_POST,
+                sourcePk,
+                "content",
+                post.getContent(),
+                targetLang
+        ));
+    }
+
+    public void translateCommunityComments(List<CommunityCommentDto> comments) {
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || comments == null || comments.isEmpty()) {
+            return;
+        }
+
+        for (CommunityCommentDto comment : comments) {
+            if (comment == null) {
+                continue;
+            }
+            Long sourcePk = comment.getCommentId() == null ? 0L : comment.getCommentId();
+            comment.setContent(translateText(
+                    SOURCE_TYPE_COMMUNITY_COMMENT,
+                    sourcePk,
+                    "content",
+                    comment.getContent(),
+                    targetLang
+            ));
         }
     }
 
