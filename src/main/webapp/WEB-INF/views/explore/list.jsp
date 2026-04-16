@@ -23,7 +23,7 @@
       <button class="search-clear ${not empty search.keyword ? 'visible' : ''}"
               id="searchClear"
               title="<spring:message code="explore.search.clear"/>">&#215;</button>
-      <%-- ★ 자동완성 드롭다운: 검색어 입력 시 AJAX로 후보 목록을 받아 표시 --%>
+      <%-- Suggest dropdown rendered via AJAX --%>
       <ul class="suggest-dropdown" id="suggestDropdown"></ul>
     </div>
 
@@ -42,7 +42,7 @@
       <button class="exp-tab-btn ${search.tab == 'theme' ? 'active' : ''}" data-tab="theme" role="tab">&#128506; <spring:message code="explore.tab.theme"/></button>
       <button class="exp-tab-btn ${search.tab == 'rating' ? 'active' : ''}" data-tab="rating" role="tab">&#11088; <spring:message code="explore.tab.rating"/></button>
       <button class="exp-tab-btn ${search.tab == 'likes' ? 'active' : ''}" data-tab="likes" role="tab">&#10084; <spring:message code="explore.tab.likes"/></button>
-      <%-- ★ 찜한 여행지 탭: 로그인 사용자에게만 노출 --%>
+      <%-- Favorite tab is shown only to logged-in users --%>
       <c:if test="${not empty sessionScope.loginUser}">
         <button class="exp-tab-btn ${search.tab == 'favorite' ? 'active' : ''}" data-tab="favorite" role="tab">&#x1F4CC; <spring:message code="explore.tab.favorite"/></button>
       </c:if>
@@ -75,7 +75,7 @@
       <div class="spot-write-grid">
         <div class="spot-write-fields">
         <label class="spot-write-label"><spring:message code="explore.form.location"/></label>
-          <%-- 새 Google Places API: PlaceAutocompleteElement가 여기에 삽입됩니다 --%>
+          <%-- Google Places API injects PlaceAutocompleteElement here --%>
           <div id="spotLocationSearchWrap"></div>
           <p class="spot-write-help"><spring:message code="explore.form.location.help"/></p>
 
@@ -121,7 +121,7 @@
           <p class="spot-write-help"><spring:message code="explore.form.tags.help"/></p>
         </div>
 
-        <%-- ── 이미지 업로드 영역 (기존 지도 영역 대체) ── --%>
+        <%-- Image upload area --%>
         <div class="spot-write-image-wrap">
           <label class="spot-write-label"><spring:message code="explore.form.image"/></label>
           <div class="spot-image-upload-area" id="spotImageDropZone">
@@ -288,7 +288,7 @@
     </div>
   </div>
 
-  <%-- ★ 찜한 여행지 탭 패널: 로그인 사용자에게만 노출 --%>
+  <%-- Favorite list panel is shown only to logged-in users --%>
   <c:if test="${not empty sessionScope.loginUser}">
   <div id="tab-favorite" class="tab-panel ${search.tab == 'favorite' ? 'active' : ''}">
     <div class="result-bar">
@@ -296,13 +296,13 @@
     </div>
     <div class="spot-grid" id="grid-favorite">
       <c:choose>
-        <%-- 찜한 여행지가 있으면 spotCard.jsp를 이용해 카드 목록 출력 --%>
+        <%-- Render favorite spot cards --%>
         <c:when test="${not empty spotList}">
           <c:forEach var="spot" items="${spotList}">
             <%@ include file="spotCard.jsp" %>
           </c:forEach>
         </c:when>
-        <%-- 찜한 여행지가 없으면 안내 메시지 출력 --%>
+        <%-- Empty state for favorites --%>
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#x1F4CC;</div>
@@ -345,7 +345,7 @@
 
   <c:if test="${totalPage > 1}">
     <div class="pagination" id="pagination">
-      <button class="page-btn" data-page="${currentPage - 1}" ${currentPage <= 1 ? 'disabled' : ''} title="이전">&#8592;</button>
+      <button class="page-btn" data-page="${currentPage - 1}" ${currentPage <= 1 ? 'disabled' : ''} title="&#xC774;&#xC804;">&#8592;</button>
 
       <c:set var="startPage" value="${currentPage - 2 > 1 ? currentPage - 2 : 1}"/>
       <c:set var="endPage" value="${startPage + 4 < totalPage ? startPage + 4 : totalPage}"/>
@@ -364,7 +364,7 @@
         <button class="page-btn" data-page="${totalPage}">${totalPage}</button>
       </c:if>
 
-      <button class="page-btn" data-page="${currentPage + 1}" ${currentPage >= totalPage ? 'disabled' : ''} title="다음">&#8594;</button>
+      <button class="page-btn" data-page="${currentPage + 1}" ${currentPage >= totalPage ? 'disabled' : ''} title="&#xB2E4;&#xC74C;">&#8594;</button>
     </div>
   </c:if>
 </div>
@@ -388,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (checked.length > max) {
         this.checked = false;
-        alert("태그는 최대 4개까지 선택할 수 있습니다.");
+        alert("\uD0DC\uADF8\uB294 \uCD5C\uB300 4\uAC1C\uAE4C\uC9C0 \uC120\uD0DD\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
       }
     });
   });
@@ -448,46 +448,46 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    /* ══════════════════════════════════════════════════════════
-       자동완성(Suggest) 기능
-       - 사용자가 검색창에 2글자 이상 입력하면 서버에 AJAX 요청
-       - /explore/suggest?q=키워드 → 최대 7건의 후보를 드롭다운으로 표시
-       - 후보를 클릭하면 해당 키워드로 즉시 검색 실행
-       ══════════════════════════════════════════════════════════ */
+    /* ------------------------------------------------------------
+       Suggest dropdown logic
+       - Send AJAX request when keyword length is 2 or more
+       - Render up to 7 suggestions from /explore/suggest
+       - Search immediately when the user picks a suggestion
+       ------------------------------------------------------------ */
     const suggestDropdown = document.getElementById('suggestDropdown');
-    let searchTimer;      // 검색 실행용 디바운스 타이머
-    let suggestTimer;     // 자동완성 요청용 디바운스 타이머
-    let selectedSuggestIdx = -1;  // 키보드 화살표로 선택 중인 항목 인덱스
+    let searchTimer;      // debounce timer for search
+    let suggestTimer;     // debounce timer for suggestions
+    let selectedSuggestIdx = -1;  // highlighted suggestion index
 
     /**
-     * 서버에서 자동완성 후보를 가져와 드롭다운에 렌더링
-     * @param {string} keyword - 사용자가 입력한 검색어
+     * Fetch suggestions from the server and render the dropdown.
+     * @param {string} keyword - current search keyword
      */
     function fetchSuggestions(keyword) {
-      // 2글자 미만이면 드롭다운 숨김 (너무 광범위한 결과 방지)
+      // Close dropdown when the keyword is shorter than 2 characters.
       if (!keyword || keyword.length < 2) {
         suggestDropdown.innerHTML = '';
         suggestDropdown.classList.remove('show');
         return;
       }
 
-      // 서버에 자동완성 API 요청
+      // Request suggestions from the server.
       fetch(ctx + '/explore/suggest?q=' + encodeURIComponent(keyword))
         .then(r => r.json())
         .then(data => {
-          // 키보드 선택 인덱스 초기화
+          // Reset highlighted suggestion index.
           selectedSuggestIdx = -1;
 
-          // 결과가 없으면 드롭다운 숨김
+          // Hide dropdown when there are no results.
           if (!data || data.length === 0) {
             suggestDropdown.innerHTML = '';
             suggestDropdown.classList.remove('show');
             return;
           }
 
-          // 각 후보를 <li> 요소로 만들어 드롭다운에 렌더링
+          // Build suggestion items.
           suggestDropdown.innerHTML = data.map(function(item, idx) {
-            // name에서 검색어와 매칭되는 부분을 <mark>로 하이라이트
+            // Highlight the matching part in the suggestion name.
             var name = escapeHtml(item.name || '');
             var region = escapeHtml(item.region || '');
             var address = escapeHtml(item.address || '');
@@ -495,21 +495,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
             return '<li class="suggest-item" data-idx="' + idx + '" data-name="' + name + '">'
               + '<span class="suggest-name">' + highlighted + '</span>'
-              + '<span class="suggest-region">' + region + (address ? ' · ' + address : '') + '</span>'
+              + '<span class="suggest-region">' + region + (address ? ' / ' + address : '') + '</span>'
               + '</li>';
           }).join('');
 
           suggestDropdown.classList.add('show');
 
-          // 각 후보 항목에 클릭 이벤트 등록
+          // Register click handler for each suggestion item.
           suggestDropdown.querySelectorAll('.suggest-item').forEach(function(li) {
             li.addEventListener('mousedown', function(e) {
-              // mousedown 사용 (blur보다 먼저 발생하므로 클릭이 정상 동작)
+              // Use mousedown so it runs before blur.
               e.preventDefault();
               var selectedName = this.dataset.name;
               searchInput.value = selectedName;
               suggestDropdown.classList.remove('show');
-              // 선택한 항목으로 즉시 검색 실행
+              // Run search immediately with the selected keyword.
               clearTimeout(searchTimer);
               navigate(mergedParams({ keyword: selectedName, page: 1 }));
             });
@@ -521,7 +521,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /**
-     * HTML 특수문자 이스케이프 (XSS 방지)
+     * Escape HTML special characters to prevent XSS.
      */
     function escapeHtml(str) {
       if (!str) return '';
@@ -530,10 +530,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /**
-     * 텍스트에서 keyword와 매칭되는 부분을 <mark>로 감싸서 하이라이트
-     * @param {string} text - 원본 텍스트
-     * @param {string} keyword - 하이라이트할 키워드
-     * @returns {string} 하이라이트된 HTML 문자열
+     * Highlight the matching keyword with <mark> tags.
+     * @param {string} text - source text
+     * @param {string} keyword - keyword to highlight
+     * @returns {string} highlighted HTML string
      */
     function highlightMatch(text, keyword) {
   if (!keyword) return text;
@@ -542,34 +542,34 @@ document.addEventListener("DOMContentLoaded", function () {
   return text.replace(regex, '<mark>$1</mark>');
 }
 
-    // 검색창 입력 이벤트: 자동완성 드롭다운만 업데이트 (검색 실행은 하지 않음)
-    // ※ 실제 검색은 드롭다운 항목 클릭 또는 Enter 키를 눌러야만 실행됨
+    // Update suggestions on input, but do not search immediately.
+    // Search runs only on Enter or suggestion click.
     searchInput.addEventListener('input', function () {
       var val = this.value.trim();
       // X 버튼 표시/숨김 토글
       searchClear.classList.toggle('visible', this.value.length > 0);
 
-      // 자동완성 드롭다운 업데이트 (300ms 디바운스: 빠른 타이핑 시 요청 최소화)
+      // Refresh suggestions with a 300ms debounce.
       clearTimeout(suggestTimer);
       suggestTimer = setTimeout(function() { fetchSuggestions(val); }, 300);
     });
 
-    // 키보드 이벤트: Enter, 위/아래 화살표, Escape 처리
+    // Handle keyboard interaction for the suggestion dropdown.
     searchInput.addEventListener('keydown', function (e) {
       var items = suggestDropdown.querySelectorAll('.suggest-item');
 
       if (e.key === 'ArrowDown') {
-        // ▼ 아래 화살표: 다음 항목 선택
+        // ArrowDown: move to the next suggestion.
         e.preventDefault();
         selectedSuggestIdx = Math.min(selectedSuggestIdx + 1, items.length - 1);
         updateSuggestHighlight(items);
       } else if (e.key === 'ArrowUp') {
-        // ▲ 위 화살표: 이전 항목 선택
+        // ArrowUp: move to the previous suggestion.
         e.preventDefault();
         selectedSuggestIdx = Math.max(selectedSuggestIdx - 1, 0);
         updateSuggestHighlight(items);
       } else if (e.key === 'Enter') {
-        // Enter: 선택된 항목이 있으면 해당 항목으로, 없으면 현재 입력값으로 검색
+        // Enter: use selected suggestion or current input value.
         e.preventDefault();
         clearTimeout(searchTimer);
         clearTimeout(suggestTimer);
@@ -583,42 +583,42 @@ document.addEventListener("DOMContentLoaded", function () {
           navigate(mergedParams({ keyword: this.value.trim(), page: 1 }));
         }
       } else if (e.key === 'Escape') {
-        // Escape: 드롭다운 닫기
+        // Escape: close the suggestion dropdown.
         suggestDropdown.classList.remove('show');
         selectedSuggestIdx = -1;
       }
     });
 
     /**
-     * 키보드 화살표로 선택 중인 항목에 하이라이트 클래스 적용
-     * @param {NodeList} items - 드롭다운 내 모든 <li> 요소
+     * Apply highlight class to the currently selected suggestion.
+     * @param {NodeList} items - all dropdown <li> elements
      */
     function updateSuggestHighlight(items) {
       items.forEach(function(li, i) {
         li.classList.toggle('highlighted', i === selectedSuggestIdx);
       });
-      // 선택된 항목의 텍스트를 검색창에 미리보기
+      // Preview selected suggestion text in the search input.
       if (selectedSuggestIdx >= 0 && items[selectedSuggestIdx]) {
         searchInput.value = items[selectedSuggestIdx].dataset.name;
       }
     }
 
-    // 검색창에서 포커스가 벗어나면 드롭다운 닫기
+    // Close dropdown when the search input loses focus.
     searchInput.addEventListener('blur', function () {
-      // 약간의 딜레이를 줘서 mousedown 클릭이 먼저 처리되도록 함
+      // Delay to allow suggestion click handling first.
       setTimeout(function() {
         suggestDropdown.classList.remove('show');
       }, 200);
     });
 
-    // 검색창에 포커스가 돌아오면 입력값이 있으면 다시 자동완성 표시
+    // Show suggestions again on focus when the keyword is long enough.
     searchInput.addEventListener('focus', function () {
       if (this.value.trim().length >= 2) {
         fetchSuggestions(this.value.trim());
       }
     });
 
-    // X 버튼 클릭: 검색어 초기화 + 드롭다운 닫기
+    // Clear search keyword and hide the suggestion dropdown.
     searchClear.addEventListener('click', function () {
       searchInput.value = '';
       searchClear.classList.remove('visible');
@@ -656,7 +656,7 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         const idx = this.closest('.spot-card').dataset.spotIdx;
-        toggleAction('/explore/favorite/' + idx, this, '⭐', '☆', '찜 추가됨', '찜 취소됨', 'favorited');
+        toggleAction('/explore/favorite/' + idx, this, '\uD83D\uDCCC', '\uD83D\uDCCD', '\uCC1C \uCD94\uAC00', '\uCC1C \uCDE8\uC18C', 'favorited');
       });
     });
 
@@ -664,72 +664,72 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         const idx = this.closest('.spot-card').dataset.spotIdx;
-        toggleAction('/explore/like/' + idx, this, '❤️', '🤍', '좋아요!', '좋아요 취소됨', 'liked');
+        toggleAction('/explore/like/' + idx, this, '\u2764', '\u2661', '\uC88B\uC544\uC694', '\uC88B\uC544\uC694 \uCDE8\uC18C', 'liked');
       });
     });
 
     /**
-     * 찜/좋아요 토글 공통 함수
-     * - 서버에 POST 요청 후 버튼 상태 업데이트
-     * - 현재 "찜한 여행지" 탭에서 찜 해제 시, 해당 카드를 DOM에서 즉시 제거
+     * Shared handler for favorite and like actions.
+     * - Sends POST request and updates button state.
+     * - Removes a card immediately after favorite cancellation in the favorite tab.
      */
     function toggleAction(endpoint, btn, onIcon, offIcon, onMsg, offMsg, key) {
-      // 토글 요청을 보내기 전에, 해당 카드의 참조를 미리 저장해둠
+      // Keep a reference to the current card before sending the request.
       const card = btn.closest('.spot-card');
 
       fetch(ctx + endpoint, { method: 'POST' })
         .then(r => r.json())
         .then(data => {
           if (!data.success) {
-            showToast('로그인이 필요합니다.');
+            showToast('\uB85C\uADF8\uC778\uC774 \uD544\uC694\uD569\uB2C8\uB2E4.');
             setTimeout(() => { window.location.href = ctx + '/auth/login'; }, 1500);
             return;
           }
 
-          // 서버 응답에서 현재 상태(true=활성, false=비활성) 가져오기
+          // Read the current active state from the server response.
           const active = data[key];
-          // 버튼 아이콘과 active 클래스를 업데이트
+          // Update button icon and active class.
           btn.textContent = active ? onIcon : offIcon;
           btn.classList.toggle('active', active);
           showToast(active ? onMsg : offMsg);
 
-          /* ── 찜한 여행지 탭에서 찜 해제 시, 카드를 DOM에서 즉시 제거 ── */
-          // key === 'favorited': 찜 버튼을 눌렀을 때만 해당
-          // !active: 찜이 해제된 상태일 때만 해당
-          // currentTab === 'favorite': 현재 "찜한 여행지" 탭에 있을 때만 해당
+          /* Remove a card immediately when favorite is canceled in the favorite tab. */
+          // key === 'favorited': favorite button action only
+          // !active: only when favorite has been canceled
+          // currentTab === 'favorite': only inside the favorite tab
           if (key === 'favorited' && !active && currentTab === 'favorite' && card) {
-            // 카드를 부드럽게 사라지게 하는 CSS 트랜지션 적용
+            // Apply a fade-out transition before removal.
             card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
             card.style.opacity = '0';
             card.style.transform = 'scale(0.95)';
 
-            // 트랜지션 완료 후 DOM에서 카드 요소 제거
+            // Remove the card after the transition finishes.
             setTimeout(() => {
               card.remove();
 
-              // 남은 카드 개수를 세어 카운트 텍스트 업데이트
+              // Update the result count with remaining cards.
               const grid = document.getElementById('grid-favorite');
               const remaining = grid ? grid.querySelectorAll('.spot-card').length : 0;
 
-              // 결과 카운트 업데이트 ("📌 내가 찜한 여행지: N개")
+              // Refresh the result count label.
               const countEl = document.querySelector('#tab-favorite .result-count strong');
               if (countEl) countEl.textContent = remaining;
 
-              // 카드가 0개가 되면 빈 상태 안내 메시지 표시
+              // Show the empty state when there are no cards left.
               if (remaining === 0 && grid) {
                 grid.innerHTML =
                   '<div class="empty-state" style="grid-column:1/-1">' +
                     '<div class="empty-icon">\u{1F4CC}</div>' +
-                    '<p>아직 찜한 여행지가 없습니다.</p>' +
+                    '<p>\uC544\uC9C1 \uCC1C\uD55C \uC5EC\uD589\uC9C0\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.</p>' +
                     '<p style="font-size:14px;color:var(--gray-400);margin-top:8px;">' +
-                      '여행지 카드의 ☆ 버튼을 눌러 찜해보세요!' +
+                      '\uC5EC\uD589\uC9C0 \uCE74\uB4DC\uC758 \uD540 \uBC84\uD2BC\uC744 \uB20C\uB7EC \uCC1C\uD574\uBCF4\uC138\uC694.' +
                     '</p>' +
                   '</div>';
               }
             }, 300);
           }
         })
-        .catch(() => showToast('요청 처리 중 오류가 발생했습니다.'));
+        .catch(() => showToast('\uC694\uCCAD \uCC98\uB9AC \uC911 \uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4.'));
     }
   })();
 </script>
@@ -737,13 +737,13 @@ document.addEventListener("DOMContentLoaded", function () {
 <c:if test="${not empty sessionScope.loginUser}">
 <script>
   (function () {
-    /* ══════════════════════════════════════════════════════════
-       여행지 추가 모달 JS
-       - Google Places 새 API (PlaceAutocompleteElement) + gmp-select 이벤트
-       - 이미지 업로드 드래그앤드롭 지원
-       ══════════════════════════════════════════════════════════ */
+    /* ------------------------------------------------------------
+       Spot write modal script
+       - Uses Google Places API and gmp-select event
+       - Supports drag and drop image upload
+       ------------------------------------------------------------ */
 
-    /* ── DOM 요소 참조 ── */
+    /* Modal-related DOM references */
     var modal          = document.getElementById('spotWriteModal');
     var openBtn        = document.getElementById('openSpotWriteBtn');
     var closeBtn       = document.getElementById('closeSpotWriteBtn');
@@ -758,7 +758,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var lngHiddenInput = document.getElementById('spotLongitudeHidden');
     var shouldOpenOnLoad = '${openWriteModal}' === 'true';
 
-    /* ── 이미지 업로드 관련 DOM ── */
+    /* Image upload DOM references */
     var dropZone    = document.getElementById('spotImageDropZone');
     var fileInput   = document.getElementById('spotImageFile');
     var previewWrap = document.getElementById('spotImagePreview');
@@ -766,9 +766,9 @@ document.addEventListener("DOMContentLoaded", function () {
     var placeholder = document.getElementById('spotImagePlaceholder');
     var removeBtn   = document.getElementById('spotImageRemoveBtn');
 
-    /* ══════════════════════════════════════
-       위도/경도 동기화
-       ══════════════════════════════════════ */
+    /* Coordinate sync ------------------------------------------------
+       Keep visible inputs and hidden fields in sync.
+       ------------------------------------------------------------ */
     function syncCoords(lat, lng) {
       var latValue = typeof lat === 'number' ? lat.toFixed(6) : '';
       var lngValue = typeof lng === 'number' ? lng.toFixed(6) : '';
@@ -778,9 +778,9 @@ document.addEventListener("DOMContentLoaded", function () {
       lngHiddenInput.value = lngValue;
     }
 
-    /* ══════════════════════════════════════
-       address_components에서 시/도 추출
-       ══════════════════════════════════════ */
+    /* Extract region name from address components --------------------
+       Country > admin area > locality fallback order.
+       ------------------------------------------------------------ */
     function extractRegionFromComponents(components) {
       if (!components || !components.length) return '';
       for (var i = 0; i < components.length; i++) {
@@ -804,9 +804,9 @@ document.addEventListener("DOMContentLoaded", function () {
       return '';
     }
 
-    /* ══════════════════════════════════════
-       선택된 장소를 폼 필드에 자동 입력
-       ══════════════════════════════════════ */
+    /* Apply selected place data to the form fields -------------------
+       Fill name, address, region, latitude, and longitude.
+       ------------------------------------------------------------ */
     function applyPlace(place) {
       if (!place || !place.location) return;
 
@@ -827,17 +827,17 @@ document.addEventListener("DOMContentLoaded", function () {
       if (region) regionInput.value = region;
     }
 
-    /* ══════════════════════════════════════
-       이미지 업로드 - 드래그앤드롭 / 클릭
-       ══════════════════════════════════════ */
+    /* Image upload: drag-and-drop / click upload ---------------------
+       Validate file size and MIME type first.
+       ------------------------------------------------------------ */
     function showPreview(file) {
       if (file.size > 10 * 1024 * 1024) {
-        alert('이미지 크기는 10MB 이하만 가능합니다.');
+        alert('\uC774\uBBF8\uC9C0 \uD06C\uAE30\uB294 10MB \uC774\uD558\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4.');
         return;
       }
       var allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
       if (allowed.indexOf(file.type) === -1) {
-        alert('JPG, PNG, GIF, WEBP 형식만 업로드 가능합니다.');
+        alert('JPG, PNG, GIF, WEBP \uD615\uC2DD\uB9CC \uC5C5\uB85C\uB4DC \uAC00\uB2A5\uD569\uB2C8\uB2E4.');
         return;
       }
       var reader = new FileReader();
@@ -890,9 +890,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    /* ══════════════════════════════════════
-       모달 열기 / 닫기
-       ══════════════════════════════════════ */
+    /* Modal open / close ---------------------------------------------
+       Support buttons, backdrop click, and ESC key.
+       ------------------------------------------------------------ */
     function openModal() {
       if (!modal) return;
       modal.classList.add('show');
@@ -921,22 +921,22 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    /* ══════════════════════════════════════
-       폼 제출 전 좌표 미입력 검증
-       ══════════════════════════════════════ */
+    /* Validate coordinates before submit -----------------------------
+       Block submission when the user has not selected a place.
+       ------------------------------------------------------------ */
     if (form) {
       form.addEventListener('submit', function (e) {
         if (!latHiddenInput.value || !lngHiddenInput.value) {
           e.preventDefault();
-          alert('위치 검색에서 장소를 선택하여 주소와 좌표를 입력해주세요.');
+          alert('\uC704\uCE58 \uAC80\uC0C9\uC5D0\uC11C \uC7A5\uC18C\uB97C \uC120\uD0DD\uD574 \uC8FC\uC18C\uC640 \uC88C\uD45C\uB97C \uC785\uB825\uD574\uC8FC\uC138\uC694.');
         }
       });
     }
 
-    /* ══════════════════════════════════════════════════════════
-       Google Maps Places API 초기화
-       - gmp-select 이벤트 + event.placePrediction.toPlace() 사용
-       ══════════════════════════════════════════════════════════ */
+    /* ------------------------------------------------------------
+       Initialize Google Maps Places API
+       - Use gmp-select and event.placePrediction.toPlace()
+       ------------------------------------------------------------ */
     window.initExploreWriteMap = async function () {
       if (!window.google || !window.google.maps) return;
 
@@ -949,7 +949,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var searchWrap = document.getElementById('spotLocationSearchWrap');
         if (searchWrap) searchWrap.appendChild(placeAutocomplete);
 
-        /* gmp-select 이벤트: placePrediction.toPlace()로 Place 객체 획득 */
+        /* Convert gmp-select prediction into a Place object. */
         placeAutocomplete.addEventListener('gmp-select', async function (event) {
           var prediction = event.placePrediction;
           if (!prediction) return;
@@ -962,11 +962,11 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
       } catch (err) {
-        console.warn('PlaceAutocompleteElement 사용 불가, 기존 Autocomplete로 폴백:', err);
+        console.warn('PlaceAutocompleteElement unavailable, fallback to Autocomplete:', err);
 
         var fallbackInput = document.createElement('input');
         fallbackInput.type = 'text';
-        fallbackInput.placeholder = '장소명 또는 주소로 검색';
+        fallbackInput.placeholder = '\uC7A5\uC18C\uBA85 \uB610\uB294 \uC8FC\uC18C\uB85C \uAC80\uC0C9';
         fallbackInput.autocomplete = 'off';
         fallbackInput.className = 'spot-write-fallback-input';
 
@@ -980,7 +980,7 @@ document.addEventListener("DOMContentLoaded", function () {
         autocomplete.addListener('place_changed', function () {
           var p = autocomplete.getPlace();
           if (!p || !p.geometry) {
-            alert('검색 결과에서 올바른 장소를 선택해주세요.');
+            alert('\uAC80\uC0C9 \uACB0\uACFC\uC5D0\uC11C \uC62C\uBC14\uB978 \uC7A5\uC18C\uB97C \uC120\uD0DD\uD574\uC8FC\uC138\uC694.');
             return;
           }
           applyPlace({
@@ -1010,6 +1010,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <script>
 (function() {
   var CTX_AI = '${pageContext.request.contextPath}';
+  var AI_DEFAULT_TITLE = '<spring:message code="explore.ai.title"/>';
 
   function escHtml(str) {
     if (!str) return '';
@@ -1068,12 +1069,11 @@ document.addEventListener("DOMContentLoaded", function () {
           if (empty) empty.style.display = 'block';
           return;
         }
-
         if (label) {
-          label.innerHTML = data.isTrending
-            ? '&#x1F525; 요즘 뜨는 여행지 추천'
-            : '&#x1F916; 맞춤 <strong>AI 여행지 추천</strong>';
+          label.innerHTML = data.isTrending ? '&#x1F525; \uC9C0\uAE08 \uB728\uB294 \uC778\uAE30 \uC5EC\uD589\uC9C0 \uCD94\uCC9C' : escHtml(AI_DEFAULT_TITLE);
         }
+
+
         if (grid) {
           grid.innerHTML = data.spots.map(buildAiCard).join('');
           grid.style.display = '';
@@ -1082,7 +1082,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch(function() {
         var loading = document.getElementById('aiLoadingMsg');
-        if (loading) loading.textContent = 'AI 추천 정보를 불러오지 못했습니다.';
+        if (loading) loading.textContent = '\u0041\u0049 \uCD94\uCC9C \uC815\uBCF4\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.';
       });
   }
 

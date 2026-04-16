@@ -1395,6 +1395,8 @@ function initMap() {
 (function() {
   var CTX_REC      = '${pageContext.request.contextPath}';
   var SPOT_IDX_REC = '${spot.spotIdx}';
+  var AI_DEFAULT_TITLE = '<spring:message code="detail.ai.title"/>';
+  var AI_DEFAULT_DESC = '<spring:message code="detail.ai.desc"/>';
   var pageEnter    = Date.now();
   var logSent      = false;
 
@@ -1476,8 +1478,8 @@ function initMap() {
           if (title) title.textContent = '\uD83D\uDD25 ?붿쬁 ?⑤뒗 ?ы뻾吏 異붿쿇';
           if (desc)  desc.textContent  = '理쒓렐 媛??留롮? 愿?ъ쓣 諛쏄퀬 ?덈뒗 ?ы뻾吏瑜??뚭컻?대뱶由쎈땲??';
         } else {
-          if (title) title.innerHTML = '&#x1F916; AI 맞춤 추천 여행지';
-          if (desc)  desc.textContent = '회원님의 관심 여행지를 분석해 비슷한 취향의 여행지를 추천해드립니다.';
+          if (title) title.textContent = AI_DEFAULT_TITLE;
+          if (desc)  desc.textContent = AI_DEFAULT_DESC;
         }
         if (grid) {
           grid.innerHTML     = data.spots.map(buildRecCard).join('');
