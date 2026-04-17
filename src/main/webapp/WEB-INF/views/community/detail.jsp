@@ -172,6 +172,14 @@
         </c:if>
       </div>
 
+      <%-- 본문 하단 배너 광고 --%>
+      <div class="comm-ad-banner">
+          <div class="comm-ad-banner-inner">
+              <span class="comm-ad-label">AD</span>
+              <span class="comm-ad-size">970 × 90</span>
+          </div>
+      </div>
+
   </main>
 
   <%-- 댓글 섹션 --%>
