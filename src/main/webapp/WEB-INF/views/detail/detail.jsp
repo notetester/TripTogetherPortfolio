@@ -1397,6 +1397,8 @@ function initMap() {
   var SPOT_IDX_REC = '${spot.spotIdx}';
   var AI_DEFAULT_TITLE = '<spring:message code="detail.ai.title"/>';
   var AI_DEFAULT_DESC = '<spring:message code="detail.ai.desc"/>';
+  var AI_TRENDING_TITLE = '<spring:message code="detail.ai.trending.title"/>';
+  var AI_TRENDING_DESC = '<spring:message code="detail.ai.trending.desc"/>';
   var pageEnter    = Date.now();
   var logSent      = false;
 
@@ -1475,8 +1477,8 @@ function initMap() {
         var title = document.getElementById('aiRecTitle');
         var desc  = document.getElementById('aiRecDesc');
         if (data.isTrending) {
-          if (title) title.textContent = '\uD83D\uDD25 ?붿쬁 ?⑤뒗 ?ы뻾吏 異붿쿇';
-          if (desc)  desc.textContent  = '理쒓렐 媛??留롮? 愿?ъ쓣 諛쏄퀬 ?덈뒗 ?ы뻾吏瑜??뚭컻?대뱶由쎈땲??';
+          if (title) title.textContent = AI_TRENDING_TITLE;
+          if (desc)  desc.textContent  = AI_TRENDING_DESC;
         } else {
           if (title) title.textContent = AI_DEFAULT_TITLE;
           if (desc)  desc.textContent = AI_DEFAULT_DESC;

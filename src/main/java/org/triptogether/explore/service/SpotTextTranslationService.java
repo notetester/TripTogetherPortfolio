@@ -3,6 +3,7 @@ package org.triptogether.explore.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -39,11 +40,13 @@ public class SpotTextTranslationService {
     private static final String SOURCE_TYPE_COMMUNITY_POST = "COMMUNITY_POST";
     private static final String SOURCE_TYPE_COMMUNITY_COMMENT = "COMMUNITY_COMMENT";
     private static final String SOURCE_TYPE_COMMUNITY_TAG = "COMMUNITY_TAG";
+    private static final String SOURCE_TYPE_RECOMMEND = "RECOMMEND";
     private static final String PROVIDER = "google-cloud-translation-v2";
     private static final String GOOGLE_TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2?key=%s";
 
     private final SpotTextTranslationMapper translationMapper;
     private final RestTemplate restTemplate;
+    private final MessageSource messageSource;
 
     @Value("${gcp.translate.api.key:}")
     private String googleTranslateApiKey;
@@ -114,6 +117,7 @@ public class SpotTextTranslationService {
                     recommend.getSpotName(), targetLang));
             recommend.setRegion(translateText(SOURCE_TYPE_SPOT, recommend.getSpotIdx(), "region",
                     recommend.getRegion(), targetLang));
+            recommend.setRecReason(translateRecommendReason(recommend, targetLang));
             if (recommend.getTags() != null && !recommend.getTags().isEmpty()) {
                 List<String> translatedTags = new ArrayList<>(recommend.getTags().size());
                 for (String tag : recommend.getTags()) {
@@ -239,6 +243,43 @@ public class SpotTextTranslationService {
         translationMapper.upsertCache(cache);
 
         return translatedText;
+    }
+
+    /**
+     * 추천 사유는 일부가 고정 코드값이고, 일부는 AI가 만든 자유 문장이다.
+     * 고정값은 메시지 번들로 우선 번역하고, 나머지는 일반 번역 캐시를 사용한다.
+     */
+    private String translateRecommendReason(RecommendVO recommend, String targetLang) {
+        if (recommend == null || recommend.getRecReason() == null || recommend.getRecReason().isBlank()) {
+            return recommend == null ? null : recommend.getRecReason();
+        }
+
+        String localizedReason = resolveRecommendReasonMessage(recommend.getRecReason());
+        if (!localizedReason.equals(recommend.getRecReason())) {
+            return localizedReason;
+        }
+
+        Long sourcePk = recommend.getSpotIdx() == null ? 0L : recommend.getSpotIdx();
+        return translateText(SOURCE_TYPE_RECOMMEND, sourcePk, "rec_reason", recommend.getRecReason(), targetLang);
+    }
+
+    private String resolveRecommendReasonMessage(String reason) {
+        if (reason == null) {
+            return "";
+        }
+
+        String normalized = reason.trim().replace(" ", "");
+        String messageCode = switch (normalized) {
+            case "태그유사" -> "recommend.reason.tagMatch";
+            case "취향반영" -> "recommend.reason.preference";
+            default -> null;
+        };
+
+        if (messageCode == null) {
+            return reason;
+        }
+
+        return messageSource.getMessage(messageCode, null, reason, LocaleContextHolder.getLocale());
     }
 
     private void translateExploreSpot(ExploreVO spot, String targetLang) {
