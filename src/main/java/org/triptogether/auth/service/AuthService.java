@@ -66,6 +66,12 @@ public interface AuthService {
     /** 이메일 로그인 활성화/비활성화 토글 */
     void toggleEmailLogin(Long userIdx, boolean enable, LoginRequestContext context);
 
+    /** 휴면 계정 해제 */
+    UsersVO releaseDormantUser(Long userIdx, LoginRequestContext context);
+
+    /** 1년 이상 미접속 회원을 휴면 전환 */
+    void processDormantAccounts();
+
     // ─── 소셜 OAuth URL 생성 ────────────────────
     String getKakaoAuthUrl();
     String getKakaoAuthUrl(boolean linkMode);

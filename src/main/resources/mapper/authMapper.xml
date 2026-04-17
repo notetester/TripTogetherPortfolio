@@ -18,6 +18,22 @@
         <result property="emailLoginEnabled"   column="email_login_enabled"/>
         <result property="accountStatus"    column="account_status"/>
         <result property="userRole"         column="user_role"/>
+        <result property="memberGrade"      column="member_grade"/>
+        <result property="verifiedMember"   column="is_verified_member"/>
+        <result property="cashBalance"      column="cash_balance"/>
+        <result property="mileageBalance"   column="mileage_balance"/>
+        <result property="pointBalance"     column="point_balance"/>
+        <result property="levelNo"          column="level_no"/>
+        <result property="expPoints"        column="exp_points"/>
+        <result property="totalPostCount"   column="total_post_count"/>
+        <result property="totalCommentCount" column="total_comment_count"/>
+        <result property="lastLoginAt"      column="last_login_at"/>
+        <result property="dormantAt"        column="dormant_at"/>
+        <result property="dormantReleaseRequired" column="dormant_release_required"/>
+        <result property="blockedUntil"     column="blocked_until"/>
+        <result property="blockedReason"    column="blocked_reason"/>
+        <result property="adminPositionCode" column="admin_position_code"/>
+        <result property="adminPermissionCode" column="admin_permission_code"/>
         <result property="statusChangedAt"  column="status_changed_at"/>
         <result property="nickname"         column="nickname"/>
         <result property="nationality"      column="nationality"/>
@@ -189,6 +205,59 @@
         UPDATE USERS
         SET user_password    = #{encodedPassword},
             password_enabled = TRUE
+        WHERE user_idx = #{userIdx}
+    </update>
+
+
+    <update id="updateLastLoginAt">
+        UPDATE USERS
+        SET last_login_at = NOW()
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="refreshVerifiedMemberFlag">
+        UPDATE USERS u
+        SET is_verified_member = CASE
+            WHEN u.email_verified = TRUE
+              OR EXISTS (SELECT 1 FROM USER_SOCIAL s WHERE s.user_idx = u.user_idx)
+            THEN TRUE ELSE FALSE END
+        WHERE u.user_idx = #{userIdx}
+    </update>
+
+    <select id="findDormantCandidates" resultMap="userRM">
+        SELECT *
+        FROM USERS
+        WHERE account_status = 'ACTIVE'
+          AND COALESCE(last_login_at, created_at) &lt;= #{cutoff}
+    </select>
+
+    <update id="markUserDormant">
+        UPDATE USERS
+        SET account_status = 'DORMANT',
+            dormant_at = NOW(),
+            dormant_release_required = TRUE,
+            status_changed_at = NOW()
+        WHERE user_idx = #{userIdx}
+          AND account_status = 'ACTIVE'
+    </update>
+
+    <update id="releaseDormantUser">
+        UPDATE USERS
+        SET account_status = 'ACTIVE',
+            dormant_at = NULL,
+            dormant_release_required = FALSE,
+            status_changed_at = NOW(),
+            last_login_at = NOW()
+        WHERE user_idx = #{userIdx}
+    </update>
+
+
+    <update id="clearBlockState">
+        UPDATE USERS
+        SET account_status = 'ACTIVE',
+            blocked_until = NULL,
+            blocked_reason = NULL,
+            status_changed_at = NOW()
         WHERE user_idx = #{userIdx}
     </update>
 

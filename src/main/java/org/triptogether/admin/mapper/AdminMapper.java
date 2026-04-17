@@ -19,7 +19,25 @@ public interface AdminMapper {
     int countMembers(AdminSearchVO search);
     AdminMemberVO findMemberDetail(Long userIdx);
     void updateMemberStatus(@Param("userIdx") Long userIdx, @Param("status") String status);
+    void markMemberDormant(@Param("userIdx") Long userIdx);
+    void releaseMemberDormant(@Param("userIdx") Long userIdx);
+    void markMemberBlocked(@Param("userIdx") Long userIdx,
+                           @Param("blockedUntil") java.time.LocalDateTime blockedUntil,
+                           @Param("blockedReason") String blockedReason);
+    void clearMemberBlockState(@Param("userIdx") Long userIdx);
+    void updateMemberMeta(AdminMemberVO member);
+    void insertUserBlockHistory(@Param("userIdx") Long userIdx,
+                                @Param("blockType") String blockType,
+                                @Param("blockedIp") String blockedIp,
+                                @Param("reason") String reason,
+                                @Param("blockedByUserIdx") Long blockedByUserIdx,
+                                @Param("expiresAt") java.time.LocalDateTime expiresAt);
+    java.util.List<String> findActiveBlockedIpsByUser(@Param("userIdx") Long userIdx);
+    void deactivateActiveBlocksByUser(@Param("userIdx") Long userIdx,
+                                      @Param("releasedByUserIdx") Long releasedByUserIdx);
     void updateMemberRole(@Param("userIdx") Long userIdx, @Param("role") String role);
+    boolean hasEffectivePermission(@Param("userIdx") Long userIdx,
+                                   @Param("permissionCode") String permissionCode);
 
     // ===== 회원 로그인 이력 =====
     List<UserLoginHistoryVO> findLoginHistory(@Param("userIdx") Long userIdx,
