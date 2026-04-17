@@ -105,8 +105,13 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 - dev 브랜치에서 직접 작업 절대 금지
 
 ## Victor 담당 모듈
-- community, inquiry, myPage, report, home만 수정 가능
-- auth, admin, courses, assistant, explore, detail, common 건드리지 말 것
+- 모든 모듈 수정 가능
+
+## superAdmin 모듈
+- 관리자(admin 계정)를 관리하는 페이지
+- URL prefix: `/superAdmin/**`
+- CSS 프리픽스: `sa-`
+- 최고관리자(SUPERADMIN 역할)만 접근 가능
 
 ## CSS 프리픽스 규칙
 - 커뮤니티: `comm-`
