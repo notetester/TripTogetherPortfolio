@@ -227,14 +227,18 @@
          보유 권한 목록
     ══════════════════════════════════════════ -->
 
-    <select id="findPermissionsByUser" resultMap="permissionRM">
-        SELECT ap.admin_permission_idx, ap.user_idx, ap.permission_code,
-               ap.is_active, ap.created_at,
-               app.display_name, app.description
-        FROM ADMIN_PERMISSION ap
-        JOIN ADMIN_PERMISSION_POLICY app ON ap.permission_code = app.permission_code
-        WHERE ap.user_idx = #{userIdx} AND ap.is_active = 1
-        ORDER BY app.priority DESC
+    <select id="findPermissionsByUser" resultType="org.triptogether.superAdmin.vo.SuperAdminPermissionVO">
+        SELECT v.user_idx        AS userIdx,
+               v.permission_code AS permissionCode,
+               1                 AS active,
+               pp.display_name   AS displayName,
+               pp.description    AS description,
+               v.permission_source   AS permissionSource,
+               v.source_group_code   AS sourceGroupCode
+        FROM ADMIN_EFFECTIVE_PERMISSION_VW v
+        JOIN ADMIN_PERMISSION_POLICY pp ON v.permission_code = pp.permission_code
+        WHERE v.user_idx = #{userIdx}
+        ORDER BY pp.priority DESC
     </select>
 
     <!-- ══════════════════════════════════════════
@@ -502,6 +506,79 @@
     </update>
 
     <!-- ══════════════════════════════════════════
+         그룹 소속 관리
+    ══════════════════════════════════════════ -->
+
+    <select id="findAdminGroups" resultType="org.triptogether.superAdmin.vo.SuperAdminAdminGroupVO">
+        SELECT apg.admin_permission_group_idx  AS adminPermissionGroupIdx,
+               apg.user_idx                   AS userIdx,
+               apg.group_code                 AS groupCode,
+               policy.display_name            AS displayName,
+               policy.description             AS description,
+               apg.is_active                  AS active,
+               gb.nickname                    AS grantedByNickname,
+               apg.granted_at                 AS grantedAt
+        FROM ADMIN_PERMISSION_GROUP apg
+        JOIN ADMIN_PERMISSION_GROUP_POLICY policy ON apg.group_code = policy.group_code
+        LEFT JOIN USERS gb ON apg.granted_by_user_idx = gb.user_idx
+        WHERE apg.user_idx = #{userIdx} AND apg.is_active = 1
+        ORDER BY apg.granted_at DESC
+    </select>
+
+    <select id="findGroupMembers" resultType="org.triptogether.superAdmin.vo.SuperAdminGroupMemberVO">
+        SELECT apg.admin_permission_group_idx  AS adminPermissionGroupIdx,
+               apg.user_idx                   AS userIdx,
+               apg.group_code                 AS groupCode,
+               apg.is_active                  AS active,
+               u.nickname                     AS nickname,
+               u.user_id                      AS userId,
+               gb.nickname                    AS grantedByNickname,
+               apg.granted_at                 AS grantedAt
+        FROM ADMIN_PERMISSION_GROUP apg
+        JOIN USERS u ON apg.user_idx = u.user_idx
+        LEFT JOIN USERS gb ON apg.granted_by_user_idx = gb.user_idx
+        WHERE apg.group_code = #{groupCode} AND apg.is_active = 1
+        ORDER BY apg.granted_at DESC
+    </select>
+
+    <select id="findGroupAuditLog" resultType="org.triptogether.superAdmin.vo.SuperAdminAdminGroupVO">
+        SELECT apg.admin_permission_group_idx AS adminPermissionGroupIdx,
+               apg.user_idx                  AS userIdx,
+               apg.group_code                AS groupCode,
+               policy.display_name           AS displayName,
+               apg.is_active                 AS active,
+               gb.nickname                   AS grantedByNickname,
+               apg.granted_at                AS grantedAt,
+               apg.revoked_at                AS revokedAt
+        FROM ADMIN_PERMISSION_GROUP apg
+        JOIN ADMIN_PERMISSION_GROUP_POLICY policy ON apg.group_code = policy.group_code
+        LEFT JOIN USERS gb ON apg.granted_by_user_idx = gb.user_idx
+        WHERE apg.user_idx = #{userIdx}
+        ORDER BY apg.granted_at DESC
+    </select>
+
+    <insert id="insertAdminGroup">
+        INSERT INTO ADMIN_PERMISSION_GROUP
+            (user_idx, group_code, is_active, granted_by_user_idx, granted_at,
+             created_by_user_idx, updated_by_user_idx, priority)
+        VALUES
+            (#{userIdx}, #{groupCode}, 1, #{grantedBy}, NOW(),
+             #{grantedBy}, #{grantedBy}, 1)
+        ON DUPLICATE KEY UPDATE
+            is_active = 1,
+            granted_by_user_idx = #{grantedBy},
+            revoked_at = NULL,
+            updated_by_user_idx = #{grantedBy},
+            updated_at = NOW()
+    </insert>
+
+    <update id="revokeAdminGroup">
+        UPDATE ADMIN_PERMISSION_GROUP
+        SET is_active = 0, revoked_at = NOW()
+        WHERE user_idx = #{userIdx} AND group_code = #{groupCode}
+    </update>
+
+    <!-- ══════════════════════════════════════════
          권한 그룹 정책 목록
     ══════════════════════════════════════════ -->
 
@@ -516,9 +593,12 @@
         ORDER BY p.priority DESC, p.created_at DESC
     </select>
 
-    <select id="findGroupItems" resultMap="groupItemRM">
-        SELECT i.admin_permission_group_item_idx, i.group_code, i.permission_code,
-               pp.display_name, i.is_active
+    <select id="findGroupItems" resultType="org.triptogether.superAdmin.vo.SuperAdminGroupItemVO">
+        SELECT i.admin_permission_group_item_idx AS adminPermissionGroupItemIdx,
+               i.group_code                     AS groupCode,
+               i.permission_code                AS permissionCode,
+               pp.display_name                  AS displayName,
+               i.is_active                      AS active
         FROM ADMIN_PERMISSION_GROUP_ITEM i
         JOIN ADMIN_PERMISSION_POLICY pp ON i.permission_code = pp.permission_code
         WHERE i.group_code = #{groupCode} AND i.is_active = 1
@@ -549,6 +629,18 @@
         UPDATE ADMIN_PERMISSION_GROUP_ITEM SET is_active = 0
         WHERE group_code = #{groupCode} AND permission_code = #{permissionCode}
     </update>
+
+    <delete id="deleteGroupMembers">
+        DELETE FROM ADMIN_PERMISSION_GROUP WHERE group_code = #{groupCode}
+    </delete>
+
+    <delete id="deleteGroupItems">
+        DELETE FROM ADMIN_PERMISSION_GROUP_ITEM WHERE group_code = #{groupCode}
+    </delete>
+
+    <delete id="deleteGroupPolicy">
+        DELETE FROM ADMIN_PERMISSION_GROUP_POLICY WHERE group_code = #{groupCode}
+    </delete>
 
     <!-- ══════════════════════════════════════════
          권한 요청 워크플로우

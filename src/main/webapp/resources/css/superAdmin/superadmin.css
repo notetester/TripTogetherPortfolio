@@ -23,6 +23,10 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-perm-item input { width:16px; height:16px; cursor:pointer; }
 .sa-perm-name  { font-size:14px; font-weight:500; flex:1; }
 .sa-perm-code  { font-size:11px; color:#94a3b8; font-family:monospace; }
+.sa-perm-item.sa-perm-from-group { opacity:.75; cursor:default; background:#f8fafc; }
+.sa-perm-item.sa-perm-from-group:hover { background:#f8fafc; }
+.sa-perm-item.sa-perm-from-group input { cursor:not-allowed; }
+.sa-perm-source { font-size:11px; color:#6366f1; background:#ede9fe; border-radius:4px; padding:1px 6px; white-space:nowrap; }
 
 /* ── 유저 검색 결과 행 ── */
 .sa-user-row { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border:1px solid #e2e8f0; border-radius:6px; margin-bottom:8px; }
@@ -308,13 +312,25 @@ body.sa-light .mem-name             { color:#1e293b; }
 body.sa-light .mem-uid              { color:#94a3b8; }
 
 /* 모달 */
-body.sa-light .adm-modal-box        { background:#fff; border-color:#e2e8f0; }
-body.sa-light .adm-modal-head       { border-bottom-color:#e2e8f0; }
+body.sa-light .adm-modal            { background:#fff; border-color:#e2e8f0; }
+body.sa-light .adm-modal-head       { border-bottom-color:#e2e8f0; background:#fff; }
 body.sa-light .adm-modal-title      { color:#1e293b; }
-body.sa-light .adm-modal-close      { color:#94a3b8; }
+body.sa-light .adm-modal-close      { color:#94a3b8; background:#f1f5f9; }
 body.sa-light .adm-modal-close:hover { color:#ef4444; background:#fef2f2; }
 body.sa-light .adm-modal-body       { color:#334155; }
 body.sa-light .adm-modal-foot       { border-top-color:#e2e8f0; background:#f8fafc; }
+
+/* 기본/고급 모드 토글 */
+.sa-adv { display: none; }
+.sa-mode-advanced .sa-adv { display: block; }
+.sa-mode-toggle-wrap { padding:12px 16px; border-top:1px solid #1e2330; margin-top:8px; }
+.sa-mode-toggle { display:flex; background:#1a2035; border-radius:8px; padding:3px; }
+.sa-mode-toggle button { flex:1; border:none; border-radius:6px; padding:6px 0; font-size:12px; font-weight:600; cursor:pointer; background:transparent; color:#64748b; transition:all .15s; }
+.sa-mode-toggle button.active { background:#6366f1; color:#fff; }
+body.sa-light .sa-mode-toggle-wrap { border-top-color:#e2e8f0; }
+body.sa-light .sa-mode-toggle { background:#f1f5f9; }
+body.sa-light .sa-mode-toggle button { color:#94a3b8; }
+body.sa-light .sa-mode-toggle button.active { background:#6366f1; color:#fff; }
 
 /* sa- 요소 */
 body.sa-light .sa-detail-label      { color:#64748b; }

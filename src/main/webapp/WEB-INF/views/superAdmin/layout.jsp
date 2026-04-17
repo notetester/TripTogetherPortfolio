@@ -41,12 +41,7 @@
             <a class="adm-nav-item ${activeMenu=='groups'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/groups">
                 <span class="adm-nav-icon">🔐</span> 권한 그룹
             </a>
-            <a class="adm-nav-item ${activeMenu=='requests'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/permissions/requests">
-                <span class="adm-nav-icon">📋</span> 권한 요청
-                <span class="sa-req-badge" id="pendingBadge" style="display:none;"></span>
-            </a>
-
-            <div class="adm-nav-section" style="margin-top:16px;">현황 분석</div>
+<div class="adm-nav-section" style="margin-top:16px;">현황 분석</div>
             <a class="adm-nav-item ${activeMenu=='salary'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/salary">
                 <span class="adm-nav-icon">💰</span> 급여/역량 현황
             </a>
@@ -89,13 +84,6 @@
         </div>
         <div id="adm-toast-container"></div>
 <script>
-(function(){
-    fetch('${pageContext.request.contextPath}/superAdmin/permissions/requests/count')
-        .then(function(r){ return r.json(); })
-        .then(function(d){ if(d.count>0){ var b=document.getElementById('pendingBadge'); if(b){b.textContent=d.count;b.style.display='inline';} } })
-        .catch(function(){});
-})();
-
 (function(){
     var btn = document.getElementById('saThemeBtn');
     var t   = localStorage.getItem('sa_theme') || '';

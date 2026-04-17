@@ -45,6 +45,13 @@
                 <a class="sa-profile-menu-item"        data-section="manager" onclick="showSection('manager',this)">상급자</a>
             </nav>
 
+            <div class="sa-mode-toggle-wrap">
+                <div class="sa-mode-toggle">
+                    <button id="btn-basic"    class="active" onclick="setMode('basic')">기본</button>
+                    <button id="btn-advanced"             onclick="setMode('advanced')">고급</button>
+                </div>
+            </div>
+
             <div style="padding:16px;">
                 <a href="${pageContext.request.contextPath}/superAdmin/members"
                    class="adm-btn adm-btn-ghost" style="width:100%;text-align:center;">← 목록으로</a>
@@ -52,7 +59,7 @@
         </aside>
 
         <%-- ── 오른쪽 콘텐츠 ── --%>
-        <div class="sa-profile-content">
+        <div class="sa-profile-content" id="sa-profile-content">
 
             <%-- 조직 정보 --%>
             <section class="sa-profile-section active" id="sec-org">
@@ -61,14 +68,14 @@
                 </div>
                 <div class="sa-profile-section-body">
                     <div class="sa-form-grid">
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">소속 조직</label>
                             <select class="adm-select sa-full-select" name="adminOrganization" form="editForm">
                                 <option value="">-- 선택 --</option>
                                 <option value="TripTogether Corp." ${member.adminOrganization == 'TripTogether Corp.' ? 'selected' : ''}>TripTogether Corp.</option>
                             </select>
                         </div>
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">본부</label>
                             <select class="adm-select sa-full-select" name="adminDivision" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -86,7 +93,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">유닛</label>
                             <select class="adm-select sa-full-select" name="adminUnit" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -104,7 +111,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">근무지</label>
                             <select class="adm-select sa-full-select" name="adminLocation" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -127,7 +134,7 @@
                 </div>
                 <div class="sa-profile-section-body">
                     <div class="sa-form-grid">
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">직무경로 (Track)</label>
                             <select class="adm-select sa-full-select" name="adminTrack" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -136,7 +143,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">직무계열 (Family)</label>
                             <select class="adm-select sa-full-select" name="adminFamily" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -145,7 +152,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">직무기능군 (Function)</label>
                             <select class="adm-select sa-full-select" name="adminFunction" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -154,7 +161,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">세부분야 (Discipline)</label>
                             <select class="adm-select sa-full-select" name="adminDiscipline" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -186,7 +193,7 @@
                 </div>
                 <div class="sa-profile-section-body">
                     <div class="sa-form-grid">
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">직책 코드</label>
                             <select class="adm-select sa-full-select" name="adminPositionCode" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -215,7 +222,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">조직내서열 (Rank)</label>
                             <select class="adm-select sa-full-select" name="adminRank" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -247,7 +254,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">직무티어 (Tier)</label>
                             <select class="adm-select sa-full-select" name="adminTier" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -256,7 +263,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">직무단계 (Level)</label>
                             <select class="adm-select sa-full-select" name="adminLevel" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -297,7 +304,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="sa-form-group">
+                        <div class="sa-form-group sa-adv">
                             <label class="sa-form-label">호봉 (Step)</label>
                             <select class="adm-select sa-full-select" name="adminStep" form="editForm">
                                 <option value="">-- 선택 --</option>
@@ -344,6 +351,23 @@
                                 </c:forEach>
                             </select>
                         </div>
+                        <c:if test="${not empty groupList}">
+                        <div class="sa-form-group" style="grid-column:1/-1;">
+                            <label class="sa-form-label">그룹으로 권한 일괄 적용</label>
+                            <div style="display:flex;gap:8px;">
+                                <select class="adm-select" id="editGroupApplySelect" style="flex:1;">
+                                    <option value="">-- 권한 그룹 선택 --</option>
+                                    <c:forEach var="g" items="${groupList}">
+                                        <c:if test="${g.active}">
+                                            <option value="${fn:escapeXml(g.groupCode)}">${fn:escapeXml(g.displayName)}</option>
+                                        </c:if>
+                                    </c:forEach>
+                                </select>
+                                <button class="adm-btn adm-btn-ghost" type="button" onclick="applyGroupPerms()">적용</button>
+                            </div>
+                            <div style="font-size:12px;color:#94a3b8;margin-top:4px;">기존 권한을 그룹 권한으로 교체합니다.</div>
+                        </div>
+                        </c:if>
                     </div>
                 </div>
                 <div class="sa-profile-section-foot">
@@ -389,6 +413,18 @@
 var CTX_EDIT = '${pageContext.request.contextPath}';
 var MEMBER_IDX = '${member.userIdx}';
 
+function setMode(mode) {
+    var content = document.getElementById('sa-profile-content');
+    if (mode === 'advanced') {
+        content.classList.add('sa-mode-advanced');
+    } else {
+        content.classList.remove('sa-mode-advanced');
+    }
+    document.getElementById('btn-basic').classList.toggle('active', mode === 'basic');
+    document.getElementById('btn-advanced').classList.toggle('active', mode === 'advanced');
+}
+
+
 function showSection(key, el) {
     document.querySelectorAll('.sa-profile-section').forEach(function(s) { s.classList.remove('active'); });
     document.querySelectorAll('.sa-profile-menu-item').forEach(function(a) { a.classList.remove('active'); });
@@ -410,6 +446,32 @@ function saveSection() {
         else              { adm_toast(data.message || '저장 실패', 'error'); }
     })
     .catch(function() { adm_toast('저장 중 오류가 발생했습니다.', 'error'); });
+}
+
+function applyGroupPerms() {
+    var sel = document.getElementById('editGroupApplySelect');
+    if (!sel || !sel.value) { adm_toast('그룹을 선택하세요.', 'error'); return; }
+    var groupName = sel.options[sel.selectedIndex].text;
+    if (!confirm('[' + groupName + '] 그룹 권한을 적용하시겠습니까?\n기존 권한이 모두 교체됩니다.')) return;
+
+    fetch(CTX_EDIT + '/superAdmin/groups/' + encodeURIComponent(sel.value))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.items || data.items.length === 0) { adm_toast('그룹에 권한이 없습니다.', 'error'); return; }
+            var params = new URLSearchParams();
+            data.items.forEach(function(i) { params.append('permissionCodes', i.permissionCode); });
+            return fetch(CTX_EDIT + '/superAdmin/members/' + MEMBER_IDX + '/permissions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+                body: params.toString()
+            });
+        })
+        .then(function(r) { return r ? r.json() : null; })
+        .then(function(data) {
+            if (data && data.success) adm_toast('그룹 권한이 적용되었습니다.');
+            else if (data) adm_toast(data.message || '적용 실패', 'error');
+        })
+        .catch(function() { adm_toast('오류가 발생했습니다.', 'error'); });
 }
 </script>
 

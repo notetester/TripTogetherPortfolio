@@ -16,4 +16,8 @@ public class SuperAdminPermissionVO {
     // ── ADMIN_PERMISSION_POLICY JOIN ──
     private String displayName;
     private String description;
+
+    // ── 뷰 추가 컬럼 ──
+    private String permissionSource;
+    private String sourceGroupCode;
 }

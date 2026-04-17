@@ -201,7 +201,6 @@
         </div>
         <div class="adm-modal-foot">
             <button class="adm-btn adm-btn-ghost"   onclick="closeModal('detailModal')">닫기</button>
-            <button class="adm-btn adm-btn-ghost"    id="reqPermBtn"  onclick="requestPermissions()" style="display:none;">변경 요청</button>
             <button class="adm-btn adm-btn-primary"  id="savePermBtn" onclick="savePermissions()">권한 저장</button>
         </div>
     </div>
@@ -258,6 +257,79 @@ let currentUserIdx  = null;
 let allPolicies     = [];
 let activeCodes     = [];
 
+const GROUP_LIST = [
+<c:forEach var="g" items="${groupList}"><c:if test="${g.active}">{code:'${fn:escapeXml(g.groupCode)}',name:'${fn:escapeXml(g.displayName)}'},
+</c:if></c:forEach>
+];
+
+function buildGroupAssignSection(adminGroups) {
+    if (GROUP_LIST.length === 0) return '';
+    var currentCodes = (adminGroups || []).map(function(g){ return g.groupCode; });
+    var currentHtml = (adminGroups && adminGroups.length > 0)
+        ? adminGroups.map(function(g){
+            return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+                '<span class="adm-badge adm-badge-green" style="font-size:12px;">' + g.displayName + '</span>' +
+                '<button class="adm-btn adm-btn-sm adm-btn-danger" ' +
+                    'data-gcode="' + g.groupCode + '" ' +
+                    'onclick="revokeGroup(this.getAttribute(\'data-gcode\'))">해제</button>' +
+                '</div>';
+          }).join('')
+        : '<div style="color:#94a3b8;font-size:13px;margin-bottom:8px;">소속 그룹 없음</div>';
+
+    var assignableGroups = GROUP_LIST.filter(function(g){ return !currentCodes.includes(g.code); });
+    var assignHtml = assignableGroups.length > 0
+        ? '<div style="display:flex;gap:8px;margin-top:8px;">' +
+          '<select class="adm-select" id="grpAssignSel" style="flex:1;">' +
+          '<option value="">-- 그룹 배정 --</option>' +
+          assignableGroups.map(function(g){ return '<option value="' + g.code + '">' + g.name + '</option>'; }).join('') +
+          '</select>' +
+          '<button class="adm-btn adm-btn-primary" onclick="assignGroup()">배정</button>' +
+          '</div>'
+        : '';
+
+    return '<div class="sa-section-title">소속 그룹</div>' +
+           '<div id="adminGroupList">' + currentHtml + '</div>' + assignHtml;
+}
+
+function assignGroup() {
+    var sel = document.getElementById('grpAssignSel');
+    if (!sel || !sel.value) { adm_toast('그룹을 선택하세요.', 'error'); return; }
+    fetch(CTX + '/superAdmin/members/' + currentUserIdx + '/groups/assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'groupCode=' + encodeURIComponent(sel.value)
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (data.success) { adm_toast('그룹이 배정되었습니다.'); reloadDetailModal(); }
+        else adm_toast(data.message || '배정 실패', 'error');
+    });
+}
+
+function revokeGroup(groupCode) {
+    if (!confirm('이 그룹에서 해제하시겠습니까?')) return;
+    fetch(CTX + '/superAdmin/members/' + currentUserIdx + '/groups/revoke', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'groupCode=' + encodeURIComponent(groupCode)
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+        if (data.success) { adm_toast('그룹에서 해제되었습니다.'); reloadDetailModal(); }
+        else adm_toast(data.message || '해제 실패', 'error');
+    });
+}
+
+function reloadDetailModal() {
+    fetch(CTX + '/superAdmin/members/' + currentUserIdx)
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+            allPolicies = data.permissionPolicies;
+            activeCodes = (data.member.permissions || []).map(function(p){ return p.permissionCode; });
+            renderDetailModal(data.member, data.permissionPolicies, data.adminGroups);
+        });
+}
+
 /* ── 탭 전환 ── */
 function switchTab(tab, btn) {
     document.querySelectorAll('.sa-tab-btn').forEach(b => b.classList.remove('active'));
@@ -267,10 +339,8 @@ function switchTab(tab, btn) {
 
     if (tab === 'info') {
         document.getElementById('savePermBtn').style.display = '';
-        document.getElementById('reqPermBtn').style.display  = '';
     } else {
         document.getElementById('savePermBtn').style.display = 'none';
-        document.getElementById('reqPermBtn').style.display  = 'none';
         loadAuditLog();
     }
 }
@@ -283,7 +353,6 @@ function openDetailModal(userIdx) {
     document.getElementById('detailModalBody').innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;">불러오는 중...</div>';
     document.getElementById('auditBody').innerHTML       = '<div style="text-align:center;padding:40px;color:#94a3b8;">불러오는 중...</div>';
     document.getElementById('savePermBtn').style.display = '';
-    document.getElementById('reqPermBtn').style.display  = '';
     document.querySelectorAll('.sa-tab-btn').forEach((b,i) => b.classList.toggle('active', i===0));
     document.querySelectorAll('.sa-tab-panel').forEach((p,i) => p.classList.toggle('active', i===0));
 
@@ -292,20 +361,51 @@ function openDetailModal(userIdx) {
         .then(data => {
             allPolicies = data.permissionPolicies;
             activeCodes = (data.member.permissions || []).map(p => p.permissionCode);
-            renderDetailModal(data.member, data.permissionPolicies);
+            renderDetailModal(data.member, data.permissionPolicies, data.adminGroups);
         });
 }
 
-function renderDetailModal(m, policies) {
+function renderDetailModal(m, policies, adminGroups) {
     document.getElementById('detailModalTitle').textContent = (m.nickname || '') + ' 상세';
 
+    // 권한별 소스 맵 구성
+    var sourceMap = {};
+    (m.permissions || []).forEach(function(p) {
+        if (!sourceMap[p.permissionCode]) sourceMap[p.permissionCode] = { isDirect: false, groupSources: [] };
+        if (p.permissionSource === 'DIRECT') {
+            sourceMap[p.permissionCode].isDirect = true;
+        } else {
+            var label = p.sourceGroupCode || p.permissionSource;
+            if (label && !sourceMap[p.permissionCode].groupSources.includes(label))
+                sourceMap[p.permissionCode].groupSources.push(label);
+        }
+    });
+
+    activeCodes = Object.keys(sourceMap).filter(function(code) { return sourceMap[code].isDirect; });
+
     var permHtml = policies.map(function(p) {
-        return '<label class="sa-perm-item">' +
-            '<input type="checkbox" name="permissionCodes" value="' + p.permissionCode + '"' +
-            (activeCodes.includes(p.permissionCode) ? ' checked' : '') + '>' +
-            '<span class="sa-perm-name">' + (p.displayName || '') + '</span>' +
-            '<span class="sa-perm-code">' + (p.permissionCode || '') + '</span>' +
-            '</label>';
+        var info = sourceMap[p.permissionCode];
+        var hasGroup = info && info.groupSources.length > 0;
+        var isDirect = info && info.isDirect;
+        var sourceLabel = hasGroup ? ('그룹: ' + info.groupSources.join(', ')) : '';
+
+        if (hasGroup && !isDirect) {
+            // 그룹에서만 부여 → disabled
+            return '<label class="sa-perm-item sa-perm-from-group">' +
+                '<input type="checkbox" disabled checked>' +
+                '<span class="sa-perm-name">' + (p.displayName || '') + '</span>' +
+                '<span class="sa-perm-code">' + (p.permissionCode || '') + '</span>' +
+                '<span class="sa-perm-source">' + sourceLabel + '</span>' +
+                '</label>';
+        } else {
+            return '<label class="sa-perm-item">' +
+                '<input type="checkbox" name="permissionCodes" value="' + p.permissionCode + '"' +
+                (isDirect ? ' checked' : '') + '>' +
+                '<span class="sa-perm-name">' + (p.displayName || '') + '</span>' +
+                '<span class="sa-perm-code">' + (p.permissionCode || '') + '</span>' +
+                (hasGroup ? '<span class="sa-perm-source">' + sourceLabel + ' + 직접</span>' : '') +
+                '</label>';
+        }
     }).join('');
 
     document.getElementById('detailModalBody').innerHTML =
@@ -318,7 +418,9 @@ function renderDetailModal(m, policies) {
             '<div class="sa-detail-row"><span class="sa-detail-label">부서</span><span>' + (m.adminDepartment || '-') + '</span></div>' +
             '<div class="sa-detail-row"><span class="sa-detail-label">팀</span><span>' + (m.adminTeam || '-') + '</span></div>' +
         '</div>' +
-        '<div class="sa-section-title">보유 권한</div>' +
+        buildGroupAssignSection(adminGroups) +
+        '<div class="sa-section-title" style="margin-top:16px;">보유 권한</div>' +
+        '<div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">그룹 소속 권한(보라색)은 그룹 해제로만 제거할 수 있습니다.</div>' +
         '<div class="sa-perm-list">' + permHtml + '</div>';
 }
 
@@ -328,29 +430,55 @@ function loadAuditLog() {
     fetch(CTX + '/superAdmin/members/' + currentUserIdx + '/audit')
         .then(r => r.json())
         .then(data => {
-            if (!data.logs || data.logs.length === 0) {
-                document.getElementById('auditBody').innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;">변경 이력이 없습니다.</div>';
-                return;
+            var html = '';
+
+            // 그룹 배정 이력
+            var gLogs = data.groupLogs || [];
+            if (gLogs.length > 0) {
+                var gRows = gLogs.map(function(l) {
+                    var status = l.active
+                        ? '<span class="sa-status-active">활성</span>'
+                        : '<span class="sa-status-inactive">해제</span>';
+                    var at = l.grantedAt ? new Date(l.grantedAt).toLocaleString('ko-KR') : '-';
+                    return '<tr>' +
+                        '<td><span class="sa-perm-code" style="background:#d1fae5;color:#065f46;border-radius:4px;padding:1px 6px;">' + (l.groupCode || '') + '</span></td>' +
+                        '<td>' + (l.displayName || '-') + '</td>' +
+                        '<td>' + status + '</td>' +
+                        '<td>' + (l.grantedByNickname || '-') + '</td>' +
+                        '<td style="font-size:12px;color:#94a3b8;">' + at + '</td>' +
+                        '</tr>';
+                }).join('');
+                html += '<div class="sa-section-title" style="margin-bottom:8px;">그룹 배정 이력</div>' +
+                    '<table class="sa-audit-table" style="margin-bottom:20px;">' +
+                    '<thead><tr><th>그룹코드</th><th>그룹명</th><th>상태</th><th>처리자</th><th>일시</th></tr></thead>' +
+                    '<tbody>' + gRows + '</tbody></table>';
             }
-            var rows = data.logs.map(function(l) {
-                var status = l.active
-                    ? '<span class="sa-status-active">활성</span>'
-                    : (l.revokedAt ? '<span class="sa-status-inactive">거절/회수</span>' : '<span class="sa-status-pending">대기</span>');
-                var grantedBy = l.approvedByNickname || l.grantedByNickname || l.requestedByNickname || '-';
-                var updatedAt = l.updatedAt ? new Date(l.updatedAt).toLocaleString('ko-KR') : '-';
-                return '<tr>' +
-                    '<td><span class="sa-perm-code" style="background:#e0e7ff;color:#4338ca;border-radius:4px;padding:1px 6px;">' + (l.permissionCode || '') + '</span></td>' +
-                    '<td>' + (l.displayName || '-') + '</td>' +
-                    '<td>' + status + '</td>' +
-                    '<td>' + grantedBy + '</td>' +
-                    '<td style="font-size:12px;color:#94a3b8;">' + updatedAt + '</td>' +
-                    '</tr>';
-            }).join('');
-            document.getElementById('auditBody').innerHTML =
-                '<table class="sa-audit-table">' +
-                    '<thead><tr><th>코드</th><th>권한명</th><th>상태</th><th>처리자</th><th>수정일시</th></tr></thead>' +
-                    '<tbody>' + rows + '</tbody>' +
-                '</table>';
+
+            // 직접 권한 이력
+            var pLogs = (data.logs || []).filter(function(l) { return l.grantedByNickname || l.active; });
+            if (pLogs.length > 0) {
+                var pRows = pLogs.map(function(l) {
+                    var status = l.active
+                        ? '<span class="sa-status-active">활성</span>'
+                        : '<span class="sa-status-inactive">비활성</span>';
+                    var grantedBy = l.grantedByNickname || '-';
+                    var updatedAt = l.updatedAt ? new Date(l.updatedAt).toLocaleString('ko-KR') : '-';
+                    return '<tr>' +
+                        '<td><span class="sa-perm-code" style="background:#e0e7ff;color:#4338ca;border-radius:4px;padding:1px 6px;">' + (l.permissionCode || '') + '</span></td>' +
+                        '<td>' + (l.displayName || '-') + '</td>' +
+                        '<td>' + status + '</td>' +
+                        '<td>' + grantedBy + '</td>' +
+                        '<td style="font-size:12px;color:#94a3b8;">' + updatedAt + '</td>' +
+                        '</tr>';
+                }).join('');
+                html += '<div class="sa-section-title" style="margin-bottom:8px;">직접 권한 이력</div>' +
+                    '<table class="sa-audit-table">' +
+                    '<thead><tr><th>코드</th><th>권한명</th><th>상태</th><th>처리자</th><th>일시</th></tr></thead>' +
+                    '<tbody>' + pRows + '</tbody></table>';
+            }
+
+            document.getElementById('auditBody').innerHTML = html ||
+                '<div style="text-align:center;padding:40px;color:#94a3b8;">변경 이력이 없습니다.</div>';
         });
 }
 
@@ -370,30 +498,6 @@ function savePermissions() {
     .then(data => {
         if (data.success) { adm_toast('권한이 저장되었습니다.'); closeModal('detailModal'); location.reload(); }
         else adm_toast(data.message || '저장 실패', 'error');
-    });
-}
-
-/* ── 권한 변경 요청 ── */
-function requestPermissions() {
-    const checked = [...document.querySelectorAll('input[name="permissionCodes"]:checked')]
-                        .map(el => el.value);
-    const newlyChecked = checked.filter(c => !activeCodes.includes(c));
-    if (newlyChecked.length === 0) { adm_toast('새로 추가할 권한을 선택하세요.', 'error'); return; }
-
-    const params = new URLSearchParams();
-    newlyChecked.forEach(c => params.append('permissionCodes', c));
-
-    fetch(CTX + '/superAdmin/members/' + currentUserIdx + '/permissions/request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-        body: params.toString()
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            adm_toast('변경 요청이 생성되었습니다. 권한 요청 페이지에서 승인하세요.');
-            closeModal('detailModal');
-        } else adm_toast(data.message || '요청 실패', 'error');
     });
 }
 
@@ -546,7 +650,7 @@ function openBulkPermModal() {
             });
         return;
     }
-    document.getElementById('bulkPermList').innerHTML = `<div class="sa-perm-list">${permHtml}</div>`;
+    document.getElementById('bulkPermList').innerHTML = buildGroupSelect('bulkPermCodes') + '<div class="sa-perm-list">' + permHtml + '</div>';
     document.getElementById('bulkPermModal').classList.add('open');
 }
 

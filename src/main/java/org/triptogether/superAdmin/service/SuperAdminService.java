@@ -37,6 +37,13 @@ public interface SuperAdminService {
     // ── 권한 변경 이력 ──
     List<SuperAdminAuditLogVO> getPermissionAuditLog(Long userIdx);
 
+    // ── 그룹 소속 관리 ──
+    List<SuperAdminAdminGroupVO> getAdminGroups(Long userIdx);
+    List<SuperAdminAdminGroupVO> getGroupAuditLog(Long userIdx);
+    List<SuperAdminGroupMemberVO> getGroupMembers(String groupCode);
+    void assignAdminToGroup(Long userIdx, String groupCode, Long grantedBy);
+    void revokeAdminFromGroup(Long userIdx, String groupCode);
+
     // ── 권한 그룹 관리 ──
     List<SuperAdminGroupPolicyVO> getAllGroupPolicies();
     List<SuperAdminGroupItemVO> getGroupItems(String groupCode);
@@ -44,6 +51,7 @@ public interface SuperAdminService {
     void toggleGroupActive(String groupCode, boolean active, Long updatedBy);
     void addGroupItem(String groupCode, String permissionCode, Long createdBy);
     void removeGroupItem(String groupCode, String permissionCode);
+    void deleteGroup(String groupCode);
 
     // ── 권한 요청 워크플로우 ──
     List<SuperAdminPermissionRequestVO> getPendingRequests();

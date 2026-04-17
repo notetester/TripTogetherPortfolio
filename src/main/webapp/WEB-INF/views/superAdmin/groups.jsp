@@ -59,6 +59,10 @@
                                             onclick="toggleGroup(this.getAttribute('data-code'), true)">활성화</button>
                                 </c:otherwise>
                             </c:choose>
+                            <button class="adm-btn adm-btn-sm"
+                                    style="background:#1e2330;color:#94a3b8;border:1px solid #2d3748;"
+                                    data-code="${g.groupCode}" data-cnt="${g.itemCount}"
+                                    onclick="deleteGroup(this.getAttribute('data-code'))">삭제</button>
                         </div>
                     </div>
                     </c:forEach>
@@ -115,7 +119,7 @@
                 <div style="text-align:center;padding:20px;color:#94a3b8;">불러오는 중...</div>
             </div>
             <div class="sa-section-title">권한 추가</div>
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;gap:8px;margin-bottom:20px;">
                 <select class="adm-select" id="addPermSelect" style="flex:1;">
                     <option value="">-- 권한 선택 --</option>
                     <c:forEach var="p" items="${permissionPolicies}">
@@ -123,6 +127,10 @@
                     </c:forEach>
                 </select>
                 <button class="adm-btn adm-btn-primary" onclick="addItem()">추가</button>
+            </div>
+            <div class="sa-section-title">소속 관리자</div>
+            <div id="groupMemberList">
+                <div style="text-align:center;padding:20px;color:#94a3b8;">불러오는 중...</div>
             </div>
         </div>
         <div class="adm-modal-foot">
@@ -181,6 +189,7 @@ function openDetailModal(groupCode, groupName) {
     document.getElementById('detailModalTitle').textContent = groupName + ' — 상세';
     document.getElementById('detailModal').classList.add('open');
     loadGroupItems();
+    loadGroupMembers();
 }
 
 function loadGroupItems() {
@@ -188,19 +197,59 @@ function loadGroupItems() {
     fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(currentGroupCode))
         .then(r => r.json())
         .then(data => {
-            if (!data.items || data.items.length === 0) {
+            var items = data.items || [];
+            if (items.length === 0) {
                 document.getElementById('groupItemList').innerHTML = '<div style="color:#94a3b8;padding:8px 0;">포함된 권한이 없습니다.</div>';
+            } else {
+                document.getElementById('groupItemList').innerHTML = items.map(i => `
+                    <div class="sa-group-item-row">
+                        <span class="sa-group-item-name">\${i.displayName}</span>
+                        <span class="sa-group-item-code">\${i.permissionCode}</span>
+                        <button class="adm-btn adm-btn-sm adm-btn-danger"
+                                data-code="\${i.permissionCode}"
+                                onclick="removeItem(this.getAttribute('data-code'))">삭제</button>
+                    </div>`).join('');
+            }
+            var btn = document.querySelector('.sa-group-row button[data-code="' + currentGroupCode + '"]');
+            if (btn) {
+                var cnt = btn.closest('.sa-group-row').querySelector('.sa-group-cnt');
+                if (cnt) cnt.textContent = '권한 ' + items.length + '개';
+            }
+        });
+}
+
+function loadGroupMembers() {
+    document.getElementById('groupMemberList').innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;">불러오는 중...</div>';
+    fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(currentGroupCode) + '/members')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.members || data.members.length === 0) {
+                document.getElementById('groupMemberList').innerHTML = '<div style="color:#94a3b8;padding:8px 0;">소속 관리자가 없습니다.</div>';
                 return;
             }
-            document.getElementById('groupItemList').innerHTML = data.items.map(i => `
+            document.getElementById('groupMemberList').innerHTML = data.members.map(m => `
                 <div class="sa-group-item-row">
-                    <span class="sa-group-item-name">${i.displayName}</span>
-                    <span class="sa-group-item-code">${i.permissionCode}</span>
+                    <span class="sa-group-item-name">\${m.nickname}</span>
+                    <span class="sa-group-item-code">\${m.userId}</span>
                     <button class="adm-btn adm-btn-sm adm-btn-danger"
-                            data-code="${i.permissionCode}"
-                            onclick="removeItem(this.getAttribute('data-code'))">삭제</button>
+                            data-uid="\${m.userIdx}"
+                            onclick="revokeMemberGroup(this.getAttribute('data-uid'))">해제</button>
                 </div>`).join('');
         });
+}
+
+function revokeMemberGroup(userIdx) {
+    if (!confirm('이 관리자를 그룹에서 해제하시겠습니까?')) return;
+    fetch(CTX + '/superAdmin/members/' + userIdx + '/groups/revoke', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'groupCode=' + encodeURIComponent(currentGroupCode)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) { adm_toast('해제되었습니다.'); loadGroupMembers(); }
+        else adm_toast(data.message || '해제 실패', 'error');
+    });
 }
 
 function addItem() {
@@ -230,6 +279,27 @@ function removeItem(permCode) {
         if (data.success) { adm_toast('권한이 제거되었습니다.'); loadGroupItems(); }
         else adm_toast(data.message || '제거 실패', 'error');
     });
+}
+
+function deleteGroup(groupCode) {
+    fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(groupCode) + '/members')
+        .then(r => r.json())
+        .then(data => {
+            var memberCount = (data.members || []).length;
+            var msg = memberCount > 0
+                ? '이 그룹을 삭제하시겠습니까?\n소속 관리자 ' + memberCount + '명의 그룹 배정이 해제되고 그룹 기반 권한이 박탈됩니다.'
+                : '이 그룹을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.';
+            if (!confirm(msg)) return;
+            fetch(CTX + '/superAdmin/groups/' + encodeURIComponent(groupCode) + '/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) { adm_toast('그룹이 삭제되었습니다.'); location.reload(); }
+                else adm_toast(d.message || '삭제 실패', 'error');
+            });
+        });
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }

@@ -94,6 +94,16 @@ public interface SuperAdminMapper {
     // ── 권한 변경 이력 ──
     List<SuperAdminAuditLogVO> findPermissionAuditLog(@Param("userIdx") Long userIdx);
 
+    // ── 그룹 소속 관리 ──
+    List<SuperAdminAdminGroupVO> findAdminGroups(@Param("userIdx") Long userIdx);
+    List<SuperAdminAdminGroupVO> findGroupAuditLog(@Param("userIdx") Long userIdx);
+    List<SuperAdminGroupMemberVO> findGroupMembers(@Param("groupCode") String groupCode);
+    void insertAdminGroup(@Param("userIdx") Long userIdx,
+                          @Param("groupCode") String groupCode,
+                          @Param("grantedBy") Long grantedBy);
+    void revokeAdminGroup(@Param("userIdx") Long userIdx,
+                          @Param("groupCode") String groupCode);
+
     // ── 권한 그룹 정책 목록 ──
     List<SuperAdminGroupPolicyVO> findAllGroupPolicies();
 
@@ -119,6 +129,11 @@ public interface SuperAdminMapper {
     // ── 그룹 구성 권한 삭제 ──
     void removeGroupItem(@Param("groupCode") String groupCode,
                          @Param("permissionCode") String permissionCode);
+
+    // ── 그룹 삭제 (소속원 해제 → 아이템 삭제 → 정책 삭제) ──
+    void deleteGroupMembers(@Param("groupCode") String groupCode);
+    void deleteGroupItems(@Param("groupCode") String groupCode);
+    void deleteGroupPolicy(@Param("groupCode") String groupCode);
 
     // ── 대기 중 권한 요청 목록 ──
     List<SuperAdminPermissionRequestVO> findPendingRequests();

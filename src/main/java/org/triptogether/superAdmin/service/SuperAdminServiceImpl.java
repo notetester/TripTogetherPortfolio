@@ -150,6 +150,35 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         return superAdminMapper.findPermissionAuditLog(userIdx);
     }
 
+    // ── 그룹 소속 관리 ──
+
+    @Override
+    public List<SuperAdminAdminGroupVO> getAdminGroups(Long userIdx) {
+        return superAdminMapper.findAdminGroups(userIdx);
+    }
+
+    @Override
+    public List<SuperAdminAdminGroupVO> getGroupAuditLog(Long userIdx) {
+        return superAdminMapper.findGroupAuditLog(userIdx);
+    }
+
+    @Override
+    public List<SuperAdminGroupMemberVO> getGroupMembers(String groupCode) {
+        return superAdminMapper.findGroupMembers(groupCode);
+    }
+
+    @Override
+    @Transactional
+    public void assignAdminToGroup(Long userIdx, String groupCode, Long grantedBy) {
+        superAdminMapper.insertAdminGroup(userIdx, groupCode, grantedBy);
+    }
+
+    @Override
+    @Transactional
+    public void revokeAdminFromGroup(Long userIdx, String groupCode) {
+        superAdminMapper.revokeAdminGroup(userIdx, groupCode);
+    }
+
     // ── 권한 그룹 관리 ──
 
     @Override
@@ -184,6 +213,14 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     @Transactional
     public void removeGroupItem(String groupCode, String permissionCode) {
         superAdminMapper.removeGroupItem(groupCode, permissionCode);
+    }
+
+    @Override
+    @Transactional
+    public void deleteGroup(String groupCode) {
+        superAdminMapper.deleteGroupMembers(groupCode);
+        superAdminMapper.deleteGroupItems(groupCode);
+        superAdminMapper.deleteGroupPolicy(groupCode);
     }
 
     // ── 권한 요청 워크플로우 ──

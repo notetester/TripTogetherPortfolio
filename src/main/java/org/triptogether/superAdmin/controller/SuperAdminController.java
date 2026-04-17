@@ -38,6 +38,7 @@ public class SuperAdminController {
         model.addAttribute("positionPolicies",        superAdminService.getAllPositionPolicies());
         model.addAttribute("permissionCodePolicies",  superAdminService.getAllPermissionCodePolicies());
         model.addAttribute("allAdmins",               superAdminService.getAllAdmins());
+        model.addAttribute("groupList",               superAdminService.getAllGroupPolicies());
         model.addAttribute("activeMenu", "members");
         return "superAdmin/member/list";
     }
@@ -49,6 +50,52 @@ public class SuperAdminController {
         Map<String, Object> result = new HashMap<>();
         result.put("member", superAdminService.getAdminDetail(userIdx));
         result.put("permissionPolicies", superAdminService.getAllPermissionPolicies());
+        result.put("adminGroups", superAdminService.getAdminGroups(userIdx));
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 그룹 소속 관리자 목록 (Ajax) ──
+    @GetMapping("/groups/{groupCode}/members")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> groupMembers(@PathVariable String groupCode) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("members", superAdminService.getGroupMembers(groupCode));
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 그룹 배정 ──
+    @PostMapping("/members/{userIdx}/groups/assign")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> assignGroup(
+            @PathVariable Long userIdx,
+            @RequestParam String groupCode,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            superAdminService.assignAdminToGroup(userIdx, groupCode, loginUser.getUserIdx());
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 그룹 소속 해제 ──
+    @PostMapping("/members/{userIdx}/groups/revoke")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> revokeGroup(
+            @PathVariable Long userIdx,
+            @RequestParam String groupCode) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            superAdminService.revokeAdminFromGroup(userIdx, groupCode);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
         return ResponseEntity.ok(result);
     }
 
@@ -57,7 +104,8 @@ public class SuperAdminController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> auditLog(@PathVariable Long userIdx) {
         Map<String, Object> result = new HashMap<>();
-        result.put("logs", superAdminService.getPermissionAuditLog(userIdx));
+        result.put("logs",      superAdminService.getPermissionAuditLog(userIdx));
+        result.put("groupLogs", superAdminService.getGroupAuditLog(userIdx));
         return ResponseEntity.ok(result);
     }
 
@@ -150,6 +198,7 @@ public class SuperAdminController {
         model.addAttribute("positionPolicies",     superAdminService.getAllPositionPolicies());
         model.addAttribute("permissionCodePolicies", superAdminService.getAllPermissionCodePolicies());
         model.addAttribute("allAdmins",            superAdminService.getAllAdmins());
+        model.addAttribute("groupList",            superAdminService.getAllGroupPolicies());
         model.addAttribute("activeMenu",           "members");
         return "superAdmin/member/edit";
     }
@@ -244,26 +293,6 @@ public class SuperAdminController {
         return ResponseEntity.ok(result);
     }
 
-    // ── 권한 변경 요청 생성 ──
-    @PostMapping("/members/{userIdx}/permissions/request")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> requestPermissions(
-            @PathVariable Long userIdx,
-            @RequestParam(required = false) List<String> permissionCodes,
-            @RequestParam(required = false, defaultValue = "") String description,
-            HttpSession session) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
-            superAdminService.requestPermissions(userIdx, permissionCodes, loginUser.getUserIdx(), description);
-            result.put("success", true);
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
-        return ResponseEntity.ok(result);
-    }
-
     // ── 권한 그룹 목록 ──
     @GetMapping("/groups")
     public String groupsPage(Model model) {
@@ -340,6 +369,22 @@ public class SuperAdminController {
         return ResponseEntity.ok(result);
     }
 
+    // ── 그룹 삭제 ──
+    @PostMapping("/groups/{groupCode}/delete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteGroup(
+            @PathVariable String groupCode) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            superAdminService.deleteGroup(groupCode);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
     // ── 그룹 권한 삭제 ──
     @PostMapping("/groups/{groupCode}/items/remove")
     @ResponseBody
@@ -357,56 +402,5 @@ public class SuperAdminController {
         return ResponseEntity.ok(result);
     }
 
-    // ── 권한 요청 목록 ──
-    @GetMapping("/permissions/requests")
-    public String requestsPage(Model model) {
-        model.addAttribute("requestList", superAdminService.getPendingRequests());
-        model.addAttribute("activeMenu", "requests");
-        return "superAdmin/permissions/requests";
-    }
 
-    // ── 대기 요청 수 (Ajax, 사이드바 뱃지용) ──
-    @GetMapping("/permissions/requests/count")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> pendingCount() {
-        Map<String, Object> result = new HashMap<>();
-        result.put("count", superAdminService.getPendingRequestCount());
-        return ResponseEntity.ok(result);
-    }
-
-    // ── 권한 요청 승인 ──
-    @PostMapping("/permissions/requests/{adminPermissionIdx}/approve")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> approveRequest(
-            @PathVariable Long adminPermissionIdx,
-            HttpSession session) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
-            superAdminService.approvePermissionRequest(adminPermissionIdx, loginUser.getUserIdx());
-            result.put("success", true);
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
-        return ResponseEntity.ok(result);
-    }
-
-    // ── 권한 요청 거절 ──
-    @PostMapping("/permissions/requests/{adminPermissionIdx}/reject")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> rejectRequest(
-            @PathVariable Long adminPermissionIdx,
-            HttpSession session) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
-            superAdminService.rejectPermissionRequest(adminPermissionIdx, loginUser.getUserIdx());
-            result.put("success", true);
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
-        return ResponseEntity.ok(result);
-    }
 }
