@@ -183,6 +183,14 @@
     </div>
 </div>
 
+<%-- 상단 배너 광고 --%>
+<div class="comm-ad-banner">
+    <div class="comm-ad-banner-inner">
+        <span class="comm-ad-label">AD</span>
+        <span class="comm-ad-size">970 × 90</span>
+    </div>
+</div>
+
 <%-- 본문 --%>
 <div class="comm-body-wrap">
 
@@ -638,6 +646,7 @@
         .catch(function () { alert('요청 중 오류가 발생했습니다.'); });
     };
 </script>
+
 
 <%@ include file="../common/footer.jsp" %>
 </body>

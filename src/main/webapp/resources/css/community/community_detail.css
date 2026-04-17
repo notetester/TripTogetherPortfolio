@@ -3,7 +3,7 @@
    community/community_detail.css
    ============================================= */
 
-.detail-wrap { max-width:860px; margin:0 auto; padding:24px 24px 60px; width:100%; box-sizing:border-box; }
+.detail-wrap { max-width:1080px; margin:0 auto; padding:24px 24px 60px; width:100%; box-sizing:border-box; }
 
 /* ===== 뒤로가기 ===== */
 .back-btn {
@@ -608,3 +608,22 @@
 .comm-admin-dropdown-menu button:hover {
     background: #f3f4f6;
 }
+
+/* ===== 배너 광고 ===== */
+.comm-ad-banner { width: 100%; padding: 16px 0; }
+.comm-ad-banner-inner {
+    width: 970px;
+    height: 90px;
+    margin: 0 auto;
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #94a3b8;
+}
+.comm-ad-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; }
+.comm-ad-size  { font-size: 0.7rem; }
+@media (max-width: 1100px) { .comm-ad-banner-inner { width: 100%; border-radius: 0; border-left: none; border-right: none; } }
