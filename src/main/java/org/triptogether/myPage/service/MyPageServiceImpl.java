@@ -6,7 +6,9 @@ import org.triptogether.myPage.mapper.MyPageMapper;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
+import org.triptogether.myPage.vo.MyPageReviewDto;
 
 import java.util.List;
 
@@ -50,6 +52,30 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public int getMyReportCount(Long userIdx) {
         return myPageMapper.selectMyReportCount(userIdx);
+    }
+
+    // ===== 리뷰 =====
+
+    @Override
+    public List<MyPageReviewDto> getMyReviewList(Long userIdx) {
+        return myPageMapper.selectMyReviewList(userIdx);
+    }
+
+    @Override
+    public int getMyReviewCount(Long userIdx) {
+        return myPageMapper.selectMyReviewCount(userIdx);
+    }
+
+    // ===== 여행 일정 =====
+
+    @Override
+    public List<MyPagePlanDto> getMyPlanList(Long userIdx) {
+        return myPageMapper.selectMyPlanList(userIdx);
+    }
+
+    @Override
+    public int getMyPlanCount(Long userIdx) {
+        return myPageMapper.selectMyPlanCount(userIdx);
     }
 
     // ===== 알림 =====

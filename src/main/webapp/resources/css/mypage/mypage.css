@@ -508,7 +508,26 @@
 .mp-badge-IN_REVIEW   { background: #dbeafe; color: #1e40af; }
 .mp-badge-RESOLVED    { background: #dcfce7; color: #15803d; }
 .mp-badge-DISMISSED   { background: #f3f4f6; color: #6b7280; }
-.mp-badge-comment { background: #f3f4f6; color: var(--gray-600); }
+.mp-badge-comment  { background: #f3f4f6; color: var(--gray-600); }
+.mp-badge-rating   { background: #fef3c7; color: #92400e; }
+.mp-badge-public   { background: #dcfce7; color: #15803d; }
+.mp-badge-private  { background: #f3f4f6; color: #6b7280; }
+.mp-badge-ai       { background: #ede9fe; color: #6d28d9; }
+
+/* ── 리뷰 별점 ── */
+.mp-review-stars {
+    color: #f59e0b;
+    letter-spacing: 1px;
+    font-size: 13px;
+}
+.mp-review-excerpt {
+    color: var(--gray-500);
+    font-size: 12px;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 /* ── 빈 상태 ── */
 .mp-empty {

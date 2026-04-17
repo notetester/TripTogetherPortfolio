@@ -138,4 +138,8 @@ public interface CommunityService {
     // 오늘 작성된 게시글 중 좋아요 순 상위 목록 가져옴
     List<CommunityPostDto> getTodayPopularList();
 
+    // ===== 인기 게시글 (전체 기간) =====
+    // 좋아요 순 상위 목록 가져옴 (limit 지정)
+    List<CommunityPostDto> getPopularList(int limit);
+
 }

@@ -222,11 +222,12 @@
 .post-type-badge {
   position:absolute; top:8px; left:8px; padding:3px 9px;
   border-radius:20px; font-size:11px; font-weight:700; color:#fff;
+  backdrop-filter: blur(4px);
 }
-.type-review   { background:#2563eb; }
-.type-photo    { background:#7c3aed; }
-.type-tip      { background:#16a34a; }
-.type-question { background:#ea580c; }
+.type-review   { background: rgba(30, 75, 200, 0.75); }
+.type-photo    { background: rgba(124, 58, 237, 0.75); }
+.type-tip      { background: rgba(50, 130, 80, 0.75); }
+.type-question { background: rgba(225, 29, 72, 0.75); }
 
 .post-card-body {
   flex:1; padding:16px; display:flex; flex-direction:column; gap:8px; min-width:0;
@@ -359,32 +360,27 @@
 }
 
 .post-type-badge.type-tip-sub {
-  background: #f0fdf4;
-  color: #15803d;
-}
-
-.post-type-badge.type-tip-sub {
-  background: #f0fdf4;
-  color: #15803d;
   position: absolute;
-  top: 36px;  /* 첫 번째 뱃지 아래 */
+  top: 36px;
   left: 8px;
+  color: #fff;
 }
 
-.post-type-badge.type-tip-sub.transport { background: #dbeafe; color: #1d4ed8; } /* 파란색: 교통 */
-.post-type-badge.type-tip-sub.accom     { background: #fce7f3; color: #be185d; } /* 핑크색: 숙소 */
-.post-type-badge.type-tip-sub.food      { background: #fef9c3; color: #92400e; } /* 노란색: 맛집 */
-.post-type-badge.type-tip-sub.money     { background: #ffedd5; color: #c2410c; } /* 주황색: 환전 */
-.post-type-badge.type-tip-sub.safety    { background: #fee2e2; color: #b91c1c; } /* 빨간색: 안전 */
-.post-type-badge.type-tip-sub.other     { background: #f3f4f6; color: #374151; } /* 회색: 기타 */
+.post-type-badge.type-tip-sub.transport { background: rgba(29, 78, 216, 0.75); }
+.post-type-badge.type-tip-sub.accom     { background: rgba(190, 24, 93, 0.75); }
+.post-type-badge.type-tip-sub.food      { background: rgba(146, 64, 14, 0.75); }
+.post-type-badge.type-tip-sub.money     { background: rgba(194, 65, 12, 0.75); }
+.post-type-badge.type-tip-sub.safety    { background: rgba(185, 28, 28, 0.75); }
+.post-type-badge.type-tip-sub.other     { background: rgba(55, 65, 81, 0.75); }
 
 .post-type-badge.type-question-sub {
   position: absolute;
   top: 36px;
   left: 8px;
+  color: #fff;
 }
-.post-type-badge.type-question-sub.solved   { background: #f0fdf4; color: #16a34a; }
-.post-type-badge.type-question-sub.unsolved { background: #fff7ed; color: #ea580c; }
+.post-type-badge.type-question-sub.solved   { background: rgba(22, 163, 74, 0.75); }
+.post-type-badge.type-question-sub.unsolved { background: rgba(217, 119, 6, 0.75); }
 
 /* =============================================
    어드민 일괄 처리 툴바

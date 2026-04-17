@@ -40,8 +40,8 @@
 .detail-type-badge { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; color:#fff; }
 .detail-type-badge.type-review   { background:#2563eb; }
 .detail-type-badge.type-photo    { background:#7c3aed; }
-.detail-type-badge.type-tip      { background:#16a34a; }
-.detail-type-badge.type-question { background:#ea580c; }
+.detail-type-badge.type-tip      { background: rgb(50, 130, 80); }
+.detail-type-badge.type-question { background: rgb(225, 29, 72); }
 
 .detail-actions { display:flex; gap:8px; margin-left:auto; }
 .action-btn {
@@ -233,11 +233,12 @@
 .post-type-badge {
   position:absolute; top:8px; left:8px; padding:3px 9px;
   border-radius:20px; font-size:11px; font-weight:700; color:#fff; white-space:nowrap;
+  backdrop-filter: blur(4px);
 }
-.type-review   { background:#2563eb; }
-.type-photo    { background:#7c3aed; }
-.type-tip      { background:#16a34a; }
-.type-question { background:#ea580c; }
+.type-review   { background: rgba(30, 75, 200, 0.75); }
+.type-photo    { background: rgba(124, 58, 237, 0.75); }
+.type-tip      { background: rgba(50, 130, 80, 0.75); }
+.type-question { background: rgba(225, 29, 72, 0.75); }
 .post-card-body {
   flex:1; padding:14px 16px; display:flex; flex-direction:column; gap:6px; min-width:0;
 }

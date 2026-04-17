@@ -85,6 +85,10 @@ public class CommunityImageScheduler {
      * 대륙별 이미지 1개 반환.
      * etc는 6개 대륙 중 랜덤으로 하나 사용.
      */
+    public List<String> getAllImages() {
+        return new ArrayList<>(imageCache.values());
+    }
+
     public String getRandomImage(String region) {
         if ("etc".equals(region)) {
             List<String> all = new ArrayList<>(imageCache.values());
