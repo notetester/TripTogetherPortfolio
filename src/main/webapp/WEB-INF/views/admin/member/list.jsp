@@ -154,6 +154,7 @@
                                 </div>
                                 <div>
                                     <div class="mem-name">${m.nickname}</div>
+                                    <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${m.memberGrade} · Lv.${m.levelNo}</div>
                                     <div class="mem-uid">
                                         <c:choose>
                                             <c:when test="${not empty m.userId}">@${m.userId}</c:when>
@@ -175,6 +176,9 @@
                                 </c:when>
                                 <c:otherwise><span style="color:#475569;font-size:12px;">—</span></c:otherwise>
                             </c:choose>
+                            <div style="font-size:10px;color:${m.verifiedMember ? '#4ade80' : '#64748b'};margin-top:2px;">
+                                ${m.verifiedMember ? '인증 회원' : '비인증 회원'}
+                            </div>
                         </td>
 
                         <%-- 상태 --%>
@@ -185,6 +189,9 @@
                         <%-- 권한 --%>
                         <td>
                             <span class="role-badge ${m.userRole}">${m.userRole}</span>
+                            <c:if test="${not empty m.adminPositionCode}">
+                                <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${m.adminPositionCode}</div>
+                            </c:if>
                         </td>
 
                         <%-- 소셜 연동 --%>
@@ -252,7 +259,7 @@
                                         </c:if>
                                         <c:if test="${m.accountStatus != 'BLOCKED'}">
                                             <button class="action-menu-item"
-                                                    onclick="changeStatus(${m.userIdx}, 'BLOCKED', this)">
+                                                    onclick="openBlockModal(${m.userIdx}, '${m.nickname}')">
                                                 ⛔ 차단 처리
                                             </button>
                                         </c:if>
@@ -330,6 +337,43 @@
         </div>
         <div class="adm-modal-foot">
             <button class="adm-btn adm-btn-ghost" onclick="closeDetail()">닫기</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="adm-modal-overlay" id="blockModal">
+    <div class="adm-modal" style="max-width:520px;">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="blockModalTitle">회원 차단</div>
+            <button class="adm-modal-close" onclick="closeBlockModal()">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <input type="hidden" id="blockUserIdx">
+            <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label">차단 유형</label>
+                <select id="blockType" class="adm-select" style="width:100%;">
+                    <option value="USER_ONLY">아이디 차단</option>
+                    <option value="IP_ONLY">IP 차단</option>
+                    <option value="USER_IP">아이디 + IP 차단</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label">차단 IP (IP 차단 유형일 때 입력)</label>
+                <input id="blockedIp" class="adm-input" type="text" placeholder="예: 203.0.113.10">
+            </div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <label class="form-label">차단 만료 시각 (선택)</label>
+                <input id="blockedUntil" class="adm-input" type="datetime-local">
+            </div>
+            <div class="form-group">
+                <label class="form-label">차단 사유</label>
+                <textarea id="blockedReason" class="adm-input" style="min-height:90px;resize:vertical;" placeholder="차단 사유를 입력하세요."></textarea>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" onclick="closeBlockModal()">닫기</button>
+            <button class="adm-btn adm-btn-primary" onclick="submitBlock()">차단 적용</button>
         </div>
     </div>
 </div>
@@ -438,6 +482,42 @@ function toggleMenu(btn) {
         if (m !== menu) m.classList.remove('open');
     });
     menu.classList.toggle('open');
+}
+
+function openBlockModal(userIdx, nickname) {
+    document.getElementById('blockUserIdx').value = userIdx;
+    document.getElementById('blockModalTitle').textContent = `${nickname} 회원 차단`;
+    document.getElementById('blockType').value = 'USER_ONLY';
+    document.getElementById('blockedIp').value = '';
+    document.getElementById('blockedUntil').value = '';
+    document.getElementById('blockedReason').value = '';
+    document.getElementById('blockModal').classList.add('open');
+}
+
+function closeBlockModal() {
+    document.getElementById('blockModal').classList.remove('open');
+}
+
+async function submitBlock() {
+    const userIdx = document.getElementById('blockUserIdx').value;
+    const blockType = document.getElementById('blockType').value;
+    const blockedIp = document.getElementById('blockedIp').value.trim();
+    const blockedUntil = document.getElementById('blockedUntil').value;
+    const reason = document.getElementById('blockedReason').value.trim();
+
+    const res = await fetch(`${ctx}/admin/members/${userIdx}/block`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ blockType, blockedIp, expiresAt: blockedUntil, reason })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+        closeBlockModal();
+        adm_toast(data.message || '차단이 적용되었습니다.');
+        setTimeout(() => location.reload(), 800);
+    } else {
+        adm_toast(data.message || '차단 적용 중 오류가 발생했습니다.', 'error');
+    }
 }
 
 /* ── 상태 변경 ── */

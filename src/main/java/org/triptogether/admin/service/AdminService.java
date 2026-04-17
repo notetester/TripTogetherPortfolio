@@ -17,7 +17,10 @@ public interface AdminService {
     AdminMemberVO getMemberDetail(Long userIdx);
     List<UserLoginHistoryVO> getLoginHistory(Long userIdx);
     void changeMemberStatus(Long userIdx, String status);
+    void blockMember(Long userIdx, String blockType, String blockedIp, String reason, java.time.LocalDateTime expiresAt, Long actorUserIdx);
+    void updateMemberMeta(AdminMemberVO member);
     void changeMemberRole(Long userIdx, String role);
+    boolean hasEffectivePermission(Long userIdx, String permissionCode);
     Long getPostAuthorIdx(Long postId);
     Long getCommentAuthorIdx(Long commentId);
 
