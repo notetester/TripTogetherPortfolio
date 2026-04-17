@@ -333,6 +333,14 @@ public class CommunityServiceImpl implements CommunityService {
                 myPageService.addNotification(notification);
 
                 rewardService.awardAction(
+                        userIdx,
+                        "COMMUNITY_POST_LIKE_ACTION",
+                        buildRewardSourceId(postId, userIdx),
+                        0L,
+                        "커뮤니티 게시글 좋아요 실행 보상"
+                );
+
+                rewardService.awardAction(
                         post.getUserIdx(),
                         "COMMUNITY_POST_LIKE",
                         buildRewardSourceId(postId, userIdx),
@@ -475,6 +483,14 @@ public class CommunityServiceImpl implements CommunityService {
 
             CommunityCommentDto comment = communityMapper.selectComment(commentId);
             if (comment != null && !comment.getUserIdx().equals(userIdx)) {
+                rewardService.awardAction(
+                        userIdx,
+                        "COMMUNITY_COMMENT_LIKE_ACTION",
+                        buildRewardSourceId(commentId, userIdx),
+                        0L,
+                        "커뮤니티 댓글 좋아요 실행 보상"
+                );
+
                 rewardService.awardAction(
                         comment.getUserIdx(),
                         "COMMUNITY_COMMENT_LIKE",

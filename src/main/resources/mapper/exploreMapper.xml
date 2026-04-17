@@ -37,6 +37,9 @@
         <result property="content"    column="content"/>
         <result property="createdAt"  column="created_at"/>
         <result property="reviewBlock" column="review_block"/>
+        <result property="likeCount"  column="like_count"/>
+        <result property="reportCount" column="report_count"/>
+        <result property="likedByLoginUser" column="liked_by_login_user"/>
         <result property="nickname"   column="nickname"/>
     </resultMap>
 
@@ -433,6 +436,21 @@
             sr.content,
             sr.created_at,
             sr.review_block,
+            COALESCE(sr.like_count, 0) AS like_count,
+            COALESCE(sr.report_count, 0) AS report_count,
+            <choose>
+                <when test="loginUserIdx != null">
+                    CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM SPOT_REVIEW_LIKE srl
+                        WHERE srl.review_idx = sr.review_idx
+                          AND srl.user_idx = #{loginUserIdx}
+                    ) THEN 1 ELSE 0 END AS liked_by_login_user,
+                </when>
+                <otherwise>
+                    0 AS liked_by_login_user,
+                </otherwise>
+            </choose>
             u.nickname
         FROM   SPOT_REVIEW sr
         JOIN   USERS u ON u.user_idx = sr.user_idx
@@ -446,6 +464,25 @@
         FROM   SPOT_REVIEW
         WHERE  spot_idx = #{spotIdx}
           AND  user_idx = #{userIdx}
+    </select>
+
+    <select id="selectReview" resultMap="ReviewResultMap">
+        SELECT
+            sr.review_idx,
+            sr.review_id,
+            sr.user_idx,
+            sr.spot_idx,
+            sr.rating,
+            sr.content,
+            sr.created_at,
+            sr.review_block,
+            COALESCE(sr.like_count, 0) AS like_count,
+            COALESCE(sr.report_count, 0) AS report_count,
+            0 AS liked_by_login_user,
+            u.nickname
+        FROM   SPOT_REVIEW sr
+        JOIN   USERS u ON u.user_idx = sr.user_idx
+        WHERE  sr.review_idx = #{reviewIdx}
     </select>
 
     <insert id="insertReview" useGeneratedKeys="true" keyProperty="reviewIdx">
@@ -474,6 +511,39 @@
           <foreach collection="reviewIdxList" item="reviewIdx" open="(" separator="," close=")">
               #{reviewIdx}
           </foreach>
+    </update>
+
+    <select id="selectReviewLikeCount" resultType="int">
+        SELECT COUNT(*)
+        FROM SPOT_REVIEW_LIKE
+        WHERE review_idx = #{reviewIdx}
+          AND user_idx = #{userIdx}
+    </select>
+
+    <insert id="insertReviewLike">
+        INSERT INTO SPOT_REVIEW_LIKE (review_idx, user_idx, created_at)
+        VALUES (#{reviewIdx}, #{userIdx}, NOW())
+    </insert>
+
+    <delete id="deleteReviewLike">
+        DELETE FROM SPOT_REVIEW_LIKE
+        WHERE review_idx = #{reviewIdx}
+          AND user_idx = #{userIdx}
+    </delete>
+
+    <update id="increaseReviewLikeCount">
+        UPDATE SPOT_REVIEW
+        SET like_count = COALESCE(like_count, 0) + 1
+        WHERE review_idx = #{reviewIdx}
+    </update>
+
+    <update id="decreaseReviewLikeCount">
+        UPDATE SPOT_REVIEW
+        SET like_count = CASE
+            WHEN COALESCE(like_count, 0) > 0 THEN like_count - 1
+            ELSE 0
+        END
+        WHERE review_idx = #{reviewIdx}
     </update>
 
     <!-- =============================================

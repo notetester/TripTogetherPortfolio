@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.CommunityCommentDto;
 import org.triptogether.community.vo.CommunityPostDto;
+import org.triptogether.explore.service.ExploreService;
+import org.triptogether.explore.vo.ReviewVO;
 import org.triptogether.report.mapper.ReportMapper;
 import org.triptogether.report.service.ReportService;
 import org.triptogether.report.vo.ReportDto;
@@ -44,6 +46,7 @@ public class ReportController {
 
     private final ReportService reportService;
     private final CommunityService communityService;
+    private final ExploreService exploreService;
     private final ReportMapper reportMapper;
 
     /* =============================================
@@ -165,6 +168,15 @@ public class ReportController {
             } else {
                 model.addAttribute("targetDeleted", true);
             }
+        } else if ("review".equals(targetType)) {
+            ReviewVO review = exploreService.getReview(targetId);
+            if (review != null) {
+                model.addAttribute("targetContent", review.getContent());
+                model.addAttribute("targetSpotId", review.getSpotIdx());
+                model.addAttribute("targetNickname", review.getNickname());
+            } else {
+                model.addAttribute("targetDeleted", true);
+            }
         } else if ("user".equals(targetType)) {
             String targetNickname = reportMapper.selectTargetUserNickname(targetId);
             model.addAttribute("targetNickname", targetNickname);
@@ -182,6 +194,14 @@ public class ReportController {
                 if (sourceComment != null) {
                     model.addAttribute("sourceContent", sourceComment.getContent());
                     model.addAttribute("sourcePostId",  sourceComment.getPostId());
+                } else {
+                    model.addAttribute("sourceDeleted", true);
+                }
+            } else if ("review".equals(report.getSourceType()) && report.getSourceId() != null) {
+                ReviewVO sourceReview = exploreService.getReview(report.getSourceId());
+                if (sourceReview != null) {
+                    model.addAttribute("sourceContent", sourceReview.getContent());
+                    model.addAttribute("sourceSpotId",  sourceReview.getSpotIdx());
                 } else {
                     model.addAttribute("sourceDeleted", true);
                 }
@@ -220,7 +240,8 @@ public class ReportController {
         }
 
         // 유효한 타입만 허용
-        if (!"post".equals(targetType) && !"comment".equals(targetType) && !"user".equals(targetType)) {
+        if (!"post".equals(targetType) && !"comment".equals(targetType)
+                && !"review".equals(targetType) && !"user".equals(targetType)) {
             result.put("success", false);
             result.put("message", "잘못된 신고 대상입니다.");
             return ResponseEntity.status(400).body(result);

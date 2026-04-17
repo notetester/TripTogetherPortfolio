@@ -54,7 +54,8 @@ public interface ExploreService {
     /* 리뷰 관련 기능 */
 
     /** 리뷰 목록 조회 */
-    List<ReviewVO> getReviewList(Long spotIdx);
+    List<ReviewVO> getReviewList(Long spotIdx, Long loginUserIdx);
+    ReviewVO getReview(Long reviewIdx);
 
     /** 리뷰 작성 가능 여부 확인 (로그인 + 중복 작성 체크) */
     boolean canWriteReview(Long spotIdx, Long userIdx);
@@ -64,6 +65,7 @@ public interface ExploreService {
 
     /** 리뷰 삭제 */
     void deleteReview(Long reviewIdx, Long userIdx);
+    boolean toggleReviewLike(Long reviewIdx, Long userIdx);
 
     /** 관리자 리뷰 차단 */
     void blockReview(Long spotIdx, Long reviewIdx);

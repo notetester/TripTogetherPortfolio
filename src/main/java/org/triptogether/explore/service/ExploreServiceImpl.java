@@ -240,10 +240,20 @@ public class ExploreServiceImpl implements ExploreService {
        ============================================================ */
 
     @Override
-    public List<ReviewVO> getReviewList(Long spotIdx) {
-        List<ReviewVO> reviews = exploreMapper.selectReviewList(spotIdx);
+    public List<ReviewVO> getReviewList(Long spotIdx, Long loginUserIdx) {
+        List<ReviewVO> reviews = exploreMapper.selectReviewList(spotIdx, loginUserIdx);
         spotTextTranslationService.translateReviews(reviews);
         return reviews;
+    }
+
+    @Override
+    public ReviewVO getReview(Long reviewIdx) {
+        ReviewVO review = exploreMapper.selectReview(reviewIdx);
+        if (review == null) {
+            return null;
+        }
+        spotTextTranslationService.translateReviews(Collections.singletonList(review));
+        return review;
     }
 
     @Override
@@ -267,6 +277,38 @@ public class ExploreServiceImpl implements ExploreService {
     @Override
     public void deleteReview(Long reviewIdx, Long userIdx) {
         exploreMapper.deleteReview(reviewIdx, userIdx);
+    }
+
+    @Override
+    public boolean toggleReviewLike(Long reviewIdx, Long userIdx) {
+        boolean already = exploreMapper.selectReviewLikeCount(reviewIdx, userIdx) > 0;
+        if (already) {
+            exploreMapper.deleteReviewLike(reviewIdx, userIdx);
+            exploreMapper.decreaseReviewLikeCount(reviewIdx);
+            return false;
+        }
+
+        exploreMapper.insertReviewLike(reviewIdx, userIdx);
+        exploreMapper.increaseReviewLikeCount(reviewIdx);
+
+        ReviewVO review = exploreMapper.selectReview(reviewIdx);
+        if (review != null && review.getUserIdx() != null && !review.getUserIdx().equals(userIdx)) {
+            rewardService.awardAction(
+                    userIdx,
+                    "SPOT_REVIEW_LIKE_ACTION",
+                    buildRewardSourceId(reviewIdx, userIdx),
+                    0L,
+                    "여행지 리뷰 좋아요 실행 보상"
+            );
+            rewardService.awardAction(
+                    review.getUserIdx(),
+                    "SPOT_REVIEW_LIKE",
+                    buildRewardSourceId(reviewIdx, userIdx),
+                    0L,
+                    "여행지 리뷰 좋아요 수신 보상"
+            );
+        }
+        return true;
     }
 
     @Override
@@ -322,6 +364,14 @@ public class ExploreServiceImpl implements ExploreService {
 
             ExploreVO spot = exploreMapper.selectSpotDetail(spotIdx);
             if (spot != null && spot.getUserIdx() != null && !spot.getUserIdx().equals(userIdx)) {
+                rewardService.awardAction(
+                        userIdx,
+                        "SPOT_LIKE_ACTION",
+                        buildRewardSourceId(spotIdx, userIdx),
+                        0L,
+                        "여행지 좋아요 실행 보상"
+                );
+
                 rewardService.awardAction(
                         spot.getUserIdx(),
                         "SPOT_LIKE",

@@ -98,7 +98,9 @@ public interface ExploreMapper {
        ============================================================ */
 
     /** 해당 여행지의 리뷰 목록 조회 (최신순) */
-    List<ReviewVO> selectReviewList(@Param("spotIdx") Long spotIdx);
+    List<ReviewVO> selectReviewList(@Param("spotIdx") Long spotIdx,
+                                    @Param("loginUserIdx") Long loginUserIdx);
+    ReviewVO selectReview(@Param("reviewIdx") Long reviewIdx);
 
     /** 현재 로그인 사용자가 이미 리뷰를 작성했는지 확인 */
     int selectMyReviewCount(@Param("spotIdx") Long spotIdx,
@@ -114,6 +116,14 @@ public interface ExploreMapper {
                      @Param("spotIdx") Long spotIdx);
     void blockReviews(@Param("spotIdx") Long spotIdx,
                       @Param("reviewIdxList") List<Long> reviewIdxList);
+    int  selectReviewLikeCount(@Param("reviewIdx") Long reviewIdx,
+                               @Param("userIdx") Long userIdx);
+    void insertReviewLike(@Param("reviewIdx") Long reviewIdx,
+                          @Param("userIdx") Long userIdx);
+    void deleteReviewLike(@Param("reviewIdx") Long reviewIdx,
+                          @Param("userIdx") Long userIdx);
+    void increaseReviewLikeCount(@Param("reviewIdx") Long reviewIdx);
+    void decreaseReviewLikeCount(@Param("reviewIdx") Long reviewIdx);
 
     /* ============================================================
        찜 (SPOT_FAVORITE)
