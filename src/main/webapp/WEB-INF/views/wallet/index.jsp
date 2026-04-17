@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -179,6 +179,58 @@
                     </div>
                 </c:otherwise>
             </c:choose>
+        </section>
+
+        <section class="wallet-card">
+            <div class="wallet-card__head">
+                <h2><spring:message code="wallet.benefit.title"/></h2>
+                <p><spring:message code="wallet.benefit.desc"/></p>
+            </div>
+
+            <div class="wallet-benefit-banner">
+                <span class="wallet-benefit-banner__badge"><spring:message code="wallet.benefit.banner.badge"/></span>
+                <p>
+                    <spring:message code="wallet.benefit.banner.line1"/><br>
+                    <spring:message code="wallet.benefit.banner.line2"/>
+                </p>
+            </div>
+
+            <div class="wallet-benefit-table-wrap">
+                <table class="wallet-benefit-table">
+                    <thead>
+                    <tr>
+                        <th><spring:message code="wallet.benefit.col.grade"/></th>
+                        <th><spring:message code="wallet.benefit.col.monthlyPayment"/></th>
+                        <th><spring:message code="wallet.benefit.col.discountRate"/></th>
+                        <th><spring:message code="wallet.benefit.col.description"/></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:choose>
+                        <c:when test="${empty gradePolicies}">
+                            <tr>
+                                <td colspan="4"><spring:message code="wallet.benefit.empty"/></td>
+                            </tr>
+                        </c:when>
+                        <c:otherwise>
+                            <c:forEach var="policy" items="${gradePolicies}">
+                                <tr class="${user.memberGrade eq policy.memberGrade ? 'is-current-grade' : ''}">
+                                    <td>
+                                        <strong>${policy.memberGrade}</strong>
+                                        <c:if test="${user.memberGrade eq policy.memberGrade}">
+                                            <span class="wallet-current-badge"><spring:message code="wallet.benefit.current"/></span>
+                                        </c:if>
+                                    </td>
+                                    <td><fmt:formatNumber value="${policy.minMonthlyPayment}" pattern="#,##0"/> <spring:message code="wallet.currency"/></td>
+                                    <td><fmt:formatNumber value="${policy.discountRate}" pattern="#,##0.##"/>%</td>
+                                    <td>${policy.description}</td>
+                                </tr>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                    </tbody>
+                </table>
+            </div>
         </section>
     </div>
 </div>

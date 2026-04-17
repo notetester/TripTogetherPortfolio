@@ -37,6 +37,7 @@ public class WalletController {
         model.addAttribute("user", freshUser);
         model.addAttribute("paymentHistory", walletService.getRecentPaymentHistory(freshUser.getUserIdx()));
         model.addAttribute("walletHistory", walletService.getRecentWalletHistory(freshUser.getUserIdx()));
+        model.addAttribute("gradePolicies", walletService.getActiveMemberGradePolicies());
         return "wallet/index";
     }
 

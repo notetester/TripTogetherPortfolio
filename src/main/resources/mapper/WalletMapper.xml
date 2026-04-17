@@ -72,6 +72,18 @@
         <result property="createdAt" column="created_at"/>
     </resultMap>
 
+    <resultMap id="WalletMemberGradePolicyMap" type="org.triptogether.myPage.vo.WalletMemberGradePolicyDto">
+        <id property="memberGradeIdx" column="member_grade_idx"/>
+        <result property="policyName" column="policy_name"/>
+        <result property="memberGrade" column="member_grade"/>
+        <result property="minMonthlyPayment" column="min_monthly_payment"/>
+        <result property="discountRate" column="discount_rate"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="active" column="is_active"/>
+        <result property="description" column="description"/>
+        <result property="priority" column="priority"/>
+    </resultMap>
+
     <select id="selectUserByIdx" resultMap="WalletUserMap">
         SELECT *
         FROM USERS
@@ -128,6 +140,22 @@
         WHERE user_idx = #{userIdx}
         ORDER BY created_at DESC
         LIMIT 20
+    </select>
+
+    <select id="selectActiveMemberGradePolicies" resultMap="WalletMemberGradePolicyMap">
+        SELECT
+            member_grade_idx,
+            policy_name,
+            member_grade,
+            min_monthly_payment,
+            discount_rate,
+            sort_order,
+            is_active,
+            description,
+            priority
+        FROM MEMBER_GRADE_POLICY
+        WHERE is_active = 1
+        ORDER BY sort_order ASC, priority ASC, member_grade_idx ASC
     </select>
 
 </mapper>

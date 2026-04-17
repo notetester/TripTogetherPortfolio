@@ -307,6 +307,129 @@
   color: #0f172a;
 }
 
+.wallet-benefit-banner {
+  margin-top: 20px;
+  border-radius: 22px;
+  padding: 24px 26px;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a 58%, #0f766e);
+  color: #fff;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
+}
+
+.wallet-benefit-banner__badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.wallet-benefit-banner p {
+  margin: 14px 0 0;
+  font-size: 22px;
+  line-height: 1.55;
+  font-weight: 800;
+}
+
+.wallet-benefit-table-wrap {
+  overflow-x: auto;
+  margin-top: 18px;
+  border: 1px solid #dbe4f0;
+  border-radius: 22px;
+  background: #fff;
+}
+
+.wallet-benefit-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.wallet-benefit-table th,
+.wallet-benefit-table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 16px 14px;
+  text-align: center;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.wallet-benefit-table th {
+  position: sticky;
+  top: 0;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.wallet-benefit-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.wallet-benefit-table tbody tr:hover {
+  background: #eef6ff;
+}
+
+.wallet-benefit-table td:first-child,
+.wallet-benefit-table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.wallet-benefit-table th:first-child {
+  z-index: 2;
+  background: #dbeafe;
+}
+
+.wallet-benefit-table td:first-child {
+  background: inherit;
+  min-width: 160px;
+  text-align: left;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.wallet-benefit-table td:last-child {
+  min-width: 260px;
+  text-align: left;
+}
+
+.wallet-benefit-table .is-current-grade {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(16, 185, 129, 0.08));
+}
+
+.wallet-benefit-table .is-current-grade td {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.wallet-benefit-table .is-current-grade td:first-child {
+  color: #1d4ed8;
+}
+
+.wallet-current-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.wallet-benefit-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 @media (max-width: 960px) {
   .wallet-summary-grid,
   .wallet-two-col {
@@ -341,5 +464,13 @@
   .wallet-summary-grid,
   .wallet-charge-preview {
     grid-template-columns: 1fr;
+  }
+
+  .wallet-benefit-banner {
+    padding: 20px 18px;
+  }
+
+  .wallet-benefit-banner p {
+    font-size: 18px;
   }
 }
