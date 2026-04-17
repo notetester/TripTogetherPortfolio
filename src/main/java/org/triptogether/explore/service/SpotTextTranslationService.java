@@ -200,7 +200,16 @@ public class SpotTextTranslationService {
     }
 
     public List<String> translateCommunityTags(List<String> tags) {
-        return translateCommonTexts(tags, SOURCE_TYPE_COMMUNITY_TAG, "tag_name");
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || tags == null || tags.isEmpty()) {
+            return tags;
+        }
+
+        List<String> translated = new ArrayList<>(tags.size());
+        for (String tag : tags) {
+            translated.add(translateCommunityTag(tag, targetLang));
+        }
+        return translated;
     }
 
     public String translateText(String sourceType, Long sourcePk, String fieldName, String sourceText, String targetLang) {
@@ -280,6 +289,41 @@ public class SpotTextTranslationService {
         }
 
         return messageSource.getMessage(messageCode, null, reason, LocaleContextHolder.getLocale());
+    }
+
+    /**
+     * 커뮤니티 태그는 한두 글자짜리 짧은 값이 많아서 기계 번역 품질이 흔들릴 수 있다.
+     * 자주 쓰는 고정 태그는 메시지 번들로 먼저 처리하고, 나머지만 일반 번역 API를 사용한다.
+     */
+    private String translateCommunityTag(String tag, String targetLang) {
+        if (tag == null || tag.isBlank()) {
+            return tag;
+        }
+
+        String localizedTag = resolveCommunityTagMessage(tag);
+        if (!localizedTag.equals(tag)) {
+            return localizedTag;
+        }
+
+        return translateText(SOURCE_TYPE_COMMUNITY_TAG, 0L, "tag_name", tag, targetLang);
+    }
+
+    private String resolveCommunityTagMessage(String tag) {
+        if (tag == null) {
+            return "";
+        }
+
+        String normalized = tag.trim().replace(" ", "");
+        String messageCode = switch (normalized) {
+            case "후기" -> "community.tag.review";
+            default -> null;
+        };
+
+        if (messageCode == null) {
+            return tag;
+        }
+
+        return messageSource.getMessage(messageCode, null, tag, LocaleContextHolder.getLocale());
     }
 
     private void translateExploreSpot(ExploreVO spot, String targetLang) {
