@@ -12,6 +12,7 @@ import org.triptogether.config.IpBlockMapper;
 import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.reward.service.RewardService;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final MyPageService myPageService;
     private final IpBlockMapper ipBlockMapper;
     private final SpotTextTranslationService spotTextTranslationService;
+    private final RewardService rewardService;
 
     // ===== 목록 =====
 
@@ -212,6 +214,14 @@ public class CommunityServiceImpl implements CommunityService {
         // 7. 태그 공출현 업데이트
         updateTagRelation(postId);
 
+        rewardService.awardAction(
+                userIdx,
+                "COMMUNITY_POST",
+                postId,
+                0L,
+                "커뮤니티 게시글 작성 보상"
+        );
+
         return postId;
     }
 
@@ -359,6 +369,14 @@ public class CommunityServiceImpl implements CommunityService {
             notification.setMessage("내 글에 새 댓글이 달렸어요.");
             myPageService.addNotification(notification);
         }
+        rewardService.awardAction(
+                userIdx,
+                "COMMUNITY_COMMENT",
+                dto.getCommentId(),
+                0L,
+                "커뮤니티 댓글 작성 보상"
+        );
+
         return dto.getCommentId();
     }
 
@@ -416,6 +434,14 @@ public class CommunityServiceImpl implements CommunityService {
                 myPageService.addNotification(notification);
             }
         }
+        rewardService.awardAction(
+                userIdx,
+                "COMMUNITY_COMMENT",
+                dto.getCommentId(),
+                0L,
+                "커뮤니티 댓글 작성 보상"
+        );
+
         return dto.getCommentId();
     }
 

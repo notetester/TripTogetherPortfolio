@@ -9,6 +9,7 @@ import org.triptogether.myPage.vo.WalletChargeResultDto;
 import org.triptogether.myPage.vo.WalletHistoryDto;
 import org.triptogether.myPage.vo.WalletMemberGradePolicyDto;
 import org.triptogether.myPage.vo.WalletPaymentDto;
+import org.triptogether.reward.service.RewardService;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class WalletServiceImpl implements WalletService {
     private static final long MAX_CHARGE_AMOUNT = 1_000_000L;
 
     private final WalletMapper walletMapper;
+    private final RewardService rewardService;
 
     @Override
     public UsersVO getWalletUser(Long userIdx) {
@@ -76,6 +78,14 @@ public class WalletServiceImpl implements WalletService {
         payment.setEarnedMileage(earnedMileage);
         payment.setPaymentStatus("COMPLETED");
         walletMapper.insertPaymentHistory(payment);
+
+        rewardService.awardAction(
+                userIdx,
+                "PAYMENT",
+                payment.getPaymentIdx(),
+                amount,
+                "캐시 충전 시뮬레이션 결제 경험치"
+        );
 
         WalletHistoryDto cashHistory = new WalletHistoryDto();
         cashHistory.setUserIdx(userIdx);

@@ -11,6 +11,7 @@ import org.triptogether.explore.vo.ExploreCreateDto;
 import org.triptogether.explore.vo.ExploreSearchDto;
 import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.explore.vo.ReviewVO;
+import org.triptogether.reward.service.RewardService;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,7 @@ public class ExploreServiceImpl implements ExploreService {
 
     private final ExploreMapper exploreMapper;
     private final SpotTextTranslationService spotTextTranslationService;
+    private final RewardService rewardService;
 
     /** application.properties의 file.upload.path 값 (예: src/main/resources/upload/) */
     @Value("${file.upload.path}")
@@ -243,6 +245,13 @@ public class ExploreServiceImpl implements ExploreService {
     @Override
     public void writeReview(ReviewVO review) {
         exploreMapper.insertReview(review);
+        rewardService.awardAction(
+                review.getUserIdx(),
+                "SPOT_REVIEW",
+                review.getReviewIdx(),
+                0L,
+                "여행지 리뷰 작성 보상"
+        );
     }
 
     @Override

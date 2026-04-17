@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.reward.mapper.RewardMapper">
+
+    <resultMap id="RewardUserMap" type="org.triptogether.auth.vo.UsersVO">
+        <id property="userIdx" column="user_idx"/>
+        <result property="memberGrade" column="member_grade"/>
+        <result property="pointBalance" column="point_balance"/>
+        <result property="levelNo" column="level_no"/>
+        <result property="expPoints" column="exp_points"/>
+    </resultMap>
+
+    <resultMap id="RewardPolicyMap" type="org.triptogether.reward.vo.RewardPolicyDto">
+        <id property="policyIdx" column="policy_idx"/>
+        <result property="rewardCode" column="reward_code"/>
+        <result property="policyName" column="policy_name"/>
+        <result property="rewardType" column="reward_type"/>
+        <result property="rewardValue" column="reward_value"/>
+        <result property="unitAmount" column="unit_amount"/>
+        <result property="active" column="is_active"/>
+        <result property="description" column="description"/>
+        <result property="priority" column="priority"/>
+    </resultMap>
+
+    <resultMap id="LevelPolicyMap" type="org.triptogether.reward.vo.LevelPolicyDto">
+        <id property="expLevelPolicyIdx" column="exp_level_policy_idx"/>
+        <result property="policyName" column="policy_name"/>
+        <result property="policyMode" column="policy_mode"/>
+        <result property="quadraticA" column="quadratic_a"/>
+        <result property="quadraticB" column="quadratic_b"/>
+        <result property="quadraticC" column="quadratic_c"/>
+        <result property="expBase" column="exp_base"/>
+        <result property="expRate" column="exp_rate"/>
+        <result property="hybridSwitchLevel" column="hybrid_switch_level"/>
+        <result property="active" column="is_active"/>
+        <result property="description" column="description"/>
+        <result property="priority" column="priority"/>
+    </resultMap>
+
+    <resultMap id="LevelOverrideMap" type="org.triptogether.reward.vo.LevelOverrideDto">
+        <id property="expLevelOverrideIdx" column="exp_level_override_idx"/>
+        <result property="levelNo" column="level_no"/>
+        <result property="requiredTotalExp" column="required_total_exp"/>
+        <result property="active" column="is_active"/>
+        <result property="priority" column="priority"/>
+    </resultMap>
+
+    <select id="selectUserByIdxForUpdate" resultMap="RewardUserMap">
+        SELECT user_idx, member_grade, point_balance, level_no, exp_points
+        FROM USERS
+        WHERE user_idx = #{userIdx}
+        FOR UPDATE
+    </select>
+
+    <select id="selectPointRewardPolicy" resultMap="RewardPolicyMap">
+        SELECT
+            point_reward_policy_idx AS policy_idx,
+            reward_code,
+            policy_name,
+            reward_type,
+            reward_value,
+            unit_amount,
+            is_active,
+            description,
+            priority
+        FROM POINT_REWARD_POLICY
+        WHERE reward_code = #{rewardCode}
+          AND is_active = 1
+        ORDER BY priority ASC, point_reward_policy_idx ASC
+        LIMIT 1
+    </select>
+
+    <select id="selectExpRewardPolicy" resultMap="RewardPolicyMap">
+        SELECT
+            exp_reward_policy_idx AS policy_idx,
+            reward_code,
+            policy_name,
+            reward_type,
+            reward_value,
+            unit_amount,
+            is_active,
+            description,
+            priority
+        FROM EXP_REWARD_POLICY
+        WHERE reward_code = #{rewardCode}
+          AND is_active = 1
+        ORDER BY priority ASC, exp_reward_policy_idx ASC
+        LIMIT 1
+    </select>
+
+    <select id="countPointHistory" resultType="int">
+        SELECT COUNT(*)
+        FROM USER_POINT_HISTORY
+        WHERE user_idx = #{userIdx}
+          AND source_type = #{sourceType}
+          AND source_id = #{sourceId}
+          AND change_type = 'EARN'
+    </select>
+
+    <select id="countExpHistory" resultType="int">
+        SELECT COUNT(*)
+        FROM USER_EXP_HISTORY
+        WHERE user_idx = #{userIdx}
+          AND source_type = #{sourceType}
+          AND source_id = #{sourceId}
+    </select>
+
+    <update id="updateUserRewardState">
+        UPDATE USERS
+        SET point_balance = #{pointBalance},
+            exp_points = #{expPoints},
+            level_no = #{levelNo}
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <insert id="insertPointHistory">
+        INSERT INTO USER_POINT_HISTORY (
+            user_idx, change_type, source_type, source_id, amount, balance_after,
+            detail_message, actor_user_idx, related_purchase_idx, created_at
+        ) VALUES (
+            #{userIdx}, #{changeType}, #{sourceType}, #{sourceId}, #{amount}, #{balanceAfter},
+            #{detailMessage}, #{actorUserIdx}, #{relatedPurchaseIdx}, NOW()
+        )
+    </insert>
+
+    <insert id="insertExpHistory">
+        INSERT INTO USER_EXP_HISTORY (
+            user_idx, source_type, source_id, exp_amount, level_after, exp_after, detail_message, created_at
+        ) VALUES (
+            #{userIdx}, #{sourceType}, #{sourceId}, #{expAmount}, #{levelAfter}, #{expAfter}, #{detailMessage}, NOW()
+        )
+    </insert>
+
+    <select id="selectActiveLevelPolicy" resultMap="LevelPolicyMap">
+        SELECT
+            exp_level_policy_idx,
+            policy_name,
+            policy_mode,
+            quadratic_a,
+            quadratic_b,
+            quadratic_c,
+            exp_base,
+            exp_rate,
+            hybrid_switch_level,
+            is_active,
+            description,
+            priority
+        FROM EXP_LEVEL_POLICY
+        WHERE is_active = 1
+        ORDER BY priority ASC, exp_level_policy_idx ASC
+        LIMIT 1
+    </select>
+
+    <select id="selectActiveLevelOverrides" resultMap="LevelOverrideMap">
+        SELECT
+            exp_level_override_idx,
+            level_no,
+            required_total_exp,
+            is_active,
+            priority
+        FROM EXP_LEVEL_OVERRIDE
+        WHERE is_active = 1
+        ORDER BY level_no ASC, priority ASC, exp_level_override_idx ASC
+    </select>
+
+</mapper>
