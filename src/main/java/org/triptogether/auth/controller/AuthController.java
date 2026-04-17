@@ -94,10 +94,51 @@ public class AuthController {
             return result;
         }
 
+        if ("DORMANT".equals(user.getAccountStatus())) {
+            session.setAttribute("dormantPendingUserIdx", user.getUserIdx());
+            result.put("success", false);
+            result.put("dormantReleaseRequired", true);
+            result.put("message", "휴면 계정입니다. 휴면을 해제한 뒤 로그인할 수 있습니다.");
+            return result;
+        }
+
+        if ("BLOCKED".equals(user.getAccountStatus())) {
+            result.put("success", false);
+            result.put("blocked", true);
+            result.put("message", user.getBlockedReason() != null && !user.getBlockedReason().isBlank()
+                    ? "차단된 계정입니다. 사유: " + user.getBlockedReason()
+                    : "차단된 계정입니다.");
+            if (user.getBlockedUntil() != null) {
+                result.put("blockedUntil", user.getBlockedUntil().toString());
+            }
+            return result;
+        }
+
         session.setAttribute("loginUser", user);
         session.removeAttribute("currentSocialProvider");
         result.put("success", true);
         result.put("redirect", resolveLoginRedirect(request, safeRedirect(redirect)));
+        return result;
+    }
+
+    @PostMapping("/dormant/release")
+    @ResponseBody
+    public Map<String, Object> releaseDormant(HttpServletRequest request, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Long userIdx = (Long) session.getAttribute("dormantPendingUserIdx");
+        if (userIdx == null) {
+            result.put("success", false);
+            result.put("message", "휴면 해제 대상 계정이 없습니다.");
+            return result;
+        }
+        UsersVO released = authService.releaseDormantUser(userIdx, LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build());
+        session.removeAttribute("dormantPendingUserIdx");
+        session.setAttribute("loginUser", released);
+        result.put("success", true);
+        result.put("redirect", request.getContextPath() + "/");
         return result;
     }
 

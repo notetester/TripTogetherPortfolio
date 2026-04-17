@@ -55,7 +55,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:messages/messages");
+        messageSource.setBasenames(
+                "classpath:messages/messages",
+                "classpath:messages/community-detail-extra"
+        );
         messageSource.setDefaultEncoding("UTF-8");
         // 키를 아직 번역 파일에 넣지 못한 경우, 에러 대신 키 자체를 보여주면 누락 확인이 쉽다.
         messageSource.setUseCodeAsDefaultMessage(true);

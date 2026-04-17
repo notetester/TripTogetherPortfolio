@@ -122,6 +122,23 @@
 
       if (data.success) {
         location.href = data.redirect;
+      } else if (data.dormantReleaseRequired) {
+        const ok = confirm((data.message || '휴면 계정을 해제하시겠습니까?') + '\n\n확인을 누르면 즉시 휴면을 해제하고 로그인합니다.');
+        if (!ok) {
+          showError(data.message || '휴면 해제가 필요합니다.');
+          return;
+        }
+        const releaseRes = await fetch(ctx + '/auth/dormant/release', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({})
+        });
+        const releaseData = await releaseRes.json();
+        if (releaseData.success) {
+          location.href = releaseData.redirect;
+        } else {
+          showError(releaseData.message || '휴면 해제 중 오류가 발생했습니다.');
+        }
       } else {
         showError(data.message || '<spring:message code="auth.login.error.fail" javaScriptEscape="true"/>');
       }
