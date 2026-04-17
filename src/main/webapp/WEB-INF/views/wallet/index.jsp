@@ -116,7 +116,16 @@
                             <c:forEach var="payment" items="${paymentHistory}">
                                 <div class="wallet-history-item">
                                     <div class="wallet-history-item__main">
-                                        <strong>${payment.orderName}</strong>
+                                        <strong>
+                                            <c:choose>
+                                                <c:when test="${payment.sourceType eq 'MANUAL_CHARGE'}">
+                                                    <spring:message code="wallet.payment.order.manualCharge"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    ${payment.orderName}
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </strong>
                                         <span>${fn:replace(fn:substring(payment.createdAt, 0, 16), 'T', ' ')}</span>
                                     </div>
                                     <div class="wallet-history-item__sub">
@@ -171,7 +180,19 @@
                                         </c:choose>
                                     </td>
                                     <td><fmt:formatNumber value="${history.balanceAfter}" pattern="#,##0"/></td>
-                                    <td>${history.detailMessage}</td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${history.assetType eq 'CASH' and history.changeType eq 'CHARGE' and not empty history.relatedPaymentIdx}">
+                                                <spring:message code="wallet.history.detail.cashCharge"/>
+                                            </c:when>
+                                            <c:when test="${history.assetType eq 'MILEAGE' and history.changeType eq 'EARN' and not empty history.relatedPaymentIdx}">
+                                                <spring:message code="wallet.history.detail.mileageReward"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                ${history.detailMessage}
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
                                 </tr>
                             </c:forEach>
                             </tbody>
@@ -223,7 +244,28 @@
                                     </td>
                                     <td><fmt:formatNumber value="${policy.minMonthlyPayment}" pattern="#,##0"/> <spring:message code="wallet.benefit.amountUnit"/></td>
                                     <td><fmt:formatNumber value="${policy.discountRate}" pattern="#,##0.##"/>%</td>
-                                    <td>${policy.description}</td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${policy.memberGrade eq 'BRONZE'}">
+                                                <spring:message code="wallet.benefit.policy.bronze"/>
+                                            </c:when>
+                                            <c:when test="${policy.memberGrade eq 'SILVER'}">
+                                                <spring:message code="wallet.benefit.policy.silver"/>
+                                            </c:when>
+                                            <c:when test="${policy.memberGrade eq 'GOLD'}">
+                                                <spring:message code="wallet.benefit.policy.gold"/>
+                                            </c:when>
+                                            <c:when test="${policy.memberGrade eq 'DIAMOND'}">
+                                                <spring:message code="wallet.benefit.policy.diamond"/>
+                                            </c:when>
+                                            <c:when test="${policy.memberGrade eq 'PLATINUM'}">
+                                                <spring:message code="wallet.benefit.policy.platinum"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                ${policy.description}
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </c:otherwise>
