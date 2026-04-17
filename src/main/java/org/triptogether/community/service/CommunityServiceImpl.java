@@ -331,6 +331,14 @@ public class CommunityServiceImpl implements CommunityService {
                 notification.setSourceId(postId);
                 notification.setMessage("내 글에 좋아요가 달렸어요.");
                 myPageService.addNotification(notification);
+
+                rewardService.awardAction(
+                        post.getUserIdx(),
+                        "COMMUNITY_POST_LIKE",
+                        buildRewardSourceId(postId, userIdx),
+                        0L,
+                        "커뮤니티 게시글 좋아요 수신 보상"
+                );
             }
             return true;
         }
@@ -464,6 +472,17 @@ public class CommunityServiceImpl implements CommunityService {
         } else {
             communityMapper.insertCommentLike(commentId, userIdx);
             communityMapper.increaseCommentLikeCount(commentId);
+
+            CommunityCommentDto comment = communityMapper.selectComment(commentId);
+            if (comment != null && !comment.getUserIdx().equals(userIdx)) {
+                rewardService.awardAction(
+                        comment.getUserIdx(),
+                        "COMMUNITY_COMMENT_LIKE",
+                        buildRewardSourceId(commentId, userIdx),
+                        0L,
+                        "커뮤니티 댓글 좋아요 수신 보상"
+                );
+            }
             return true;
         }
     }
@@ -669,6 +688,18 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     // 이미지 파일 Cloudinary에 업로드하고 URL 반환함
+    /**
+     * 히스토리 테이블 source_id가 Long 하나만 받기 때문에
+     * 좋아요 대상 ID와 좋아요를 누른 사용자 ID를 합쳐서
+     * 동일 사용자-동일 대상 조합의 중복 지급을 막는다.
+     */
+    private Long buildRewardSourceId(Long targetId, Long actorUserIdx) {
+        if (targetId == null || actorUserIdx == null) {
+            return null;
+        }
+        return (targetId * 1_000_000L) + actorUserIdx;
+    }
+
     private String saveFile(MultipartFile file) {
         return cloudinaryService.uploadImage(file, "community");
     }

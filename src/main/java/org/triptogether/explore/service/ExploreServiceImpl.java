@@ -182,6 +182,16 @@ public class ExploreServiceImpl implements ExploreService {
 
         saveSpotTags(spot.getSpotIdx(), spotCreateDto.getTags());
 
+        if (loginUser != null && loginUser.getUserIdx() != null) {
+            rewardService.awardAction(
+                    loginUser.getUserIdx(),
+                    "SPOT_POST",
+                    spot.getSpotIdx(),
+                    0L,
+                    "여행지 게시글 작성 보상"
+            );
+        }
+
         return spot.getSpotIdx();
     }
 
@@ -307,7 +317,21 @@ public class ExploreServiceImpl implements ExploreService {
     public boolean toggleLike(Long spotIdx, Long userIdx) {
         boolean already = exploreMapper.selectLikeCount(spotIdx, userIdx) > 0;
         if (already) { exploreMapper.deleteLike(spotIdx, userIdx); return false; }
-        else          { exploreMapper.insertLike(spotIdx, userIdx); return true;  }
+        else {
+            exploreMapper.insertLike(spotIdx, userIdx);
+
+            ExploreVO spot = exploreMapper.selectSpotDetail(spotIdx);
+            if (spot != null && spot.getUserIdx() != null && !spot.getUserIdx().equals(userIdx)) {
+                rewardService.awardAction(
+                        spot.getUserIdx(),
+                        "SPOT_LIKE",
+                        buildRewardSourceId(spotIdx, userIdx),
+                        0L,
+                        "여행지 좋아요 수신 보상"
+                );
+            }
+            return true;
+        }
     }
 
     /* ============================================================
@@ -428,6 +452,17 @@ public class ExploreServiceImpl implements ExploreService {
     /**
      * 파일명에서 확장자를 추출한다. (예: "photo.jpg" -> ".jpg")
      */
+    /**
+     * 좋아요 1건을 "대상 ID + 행위자 ID" 조합으로 식별해서
+     * 같은 사용자가 같은 대상에 반복 토글해도 중복 지급되지 않게 만든다.
+     */
+    private Long buildRewardSourceId(Long targetId, Long actorUserIdx) {
+        if (targetId == null || actorUserIdx == null) {
+            return null;
+        }
+        return (targetId * 1_000_000L) + actorUserIdx;
+    }
+
     private String getExtension(String fileName) {
         if (fileName == null) return "";
         int dotIdx = fileName.lastIndexOf('.');
