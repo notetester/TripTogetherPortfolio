@@ -131,6 +131,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns(
                         "/mypage/**",
+                        "/wallet/**",
                         "/auth/link/**",
                         "/inquiry/**"
                 )
