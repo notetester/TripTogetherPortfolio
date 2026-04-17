@@ -50,32 +50,28 @@ function buildTree(nodes) {
 }
 
 function renderNode(node) {
-    const permBadge = node.permCode
-        ? `<span class="sa-org-badge">${node.permCode}</span>` : '';
-    const dept = node.department
-        ? `<div class="sa-org-dept">${node.department}</div>` : '';
-    const title = node.title
-        ? `<div class="sa-org-title">${node.title}</div>` : '';
+    var permBadge = node.permCode
+        ? '<span class="sa-org-badge">' + node.permCode + '</span>' : '';
+    var dept = node.department
+        ? '<div class="sa-org-dept">' + node.department + '</div>' : '';
+    var title = node.title
+        ? '<div class="sa-org-title">' + node.title + '</div>' : '';
 
-    const childrenHtml = node.children.length > 0
-        ? `<div class="sa-org-children">${node.children.map(renderNode).join('')}</div>`
+    var childrenHtml = node.children.length > 0
+        ? '<div class="sa-org-children">' + node.children.map(renderNode).join('') + '</div>'
         : '';
 
-    return `
-        <div class="sa-org-node-wrap">
-            <div class="sa-org-node">
-                <div class="sa-org-avatar">${node.nickname.charAt(0)}</div>
-                <div class="sa-org-info">
-                    <div class="sa-org-name">${node.nickname}</div>
-                    ${title}
-                    ${dept}
-                    ${permBadge}
-                </div>
-                <a href="${CTX}/superAdmin/members/${'$'}{node.userIdx}/edit" class="sa-org-edit">편집</a>
-            </div>
-            ${childrenHtml}
-        </div>
-    `;
+    return '<div class="sa-org-node-wrap">'
+        + '<div class="sa-org-node">'
+        + '<div class="sa-org-avatar">' + (node.nickname ? node.nickname.charAt(0) : '?') + '</div>'
+        + '<div class="sa-org-info">'
+        + '<div class="sa-org-name">' + node.nickname + '</div>'
+        + title + dept + permBadge
+        + '</div>'
+        + '<a href="' + CTX + '/superAdmin/members/' + node.userIdx + '/edit" class="sa-org-edit">편집</a>'
+        + '</div>'
+        + childrenHtml
+        + '</div>';
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -83,9 +79,9 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('org-empty').style.display = 'block';
         return;
     }
-    const tree = buildTree(admins);
+    var tree = buildTree(admins);
     document.getElementById('org-chart').innerHTML =
-        `<div class="sa-org-tree">${tree.map(renderNode).join('')}</div>`;
+        '<div class="sa-org-tree">' + tree.map(renderNode).join('') + '</div>';
 });
 </script>
 

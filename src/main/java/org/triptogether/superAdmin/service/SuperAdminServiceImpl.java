@@ -4,13 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.superAdmin.mapper.SuperAdminMapper;
-import org.triptogether.superAdmin.vo.SuperAdminEditVO;
-import org.triptogether.superAdmin.vo.SuperAdminMemberVO;
-import org.triptogether.superAdmin.vo.SuperAdminPermissionCodePolicyVO;
-import org.triptogether.superAdmin.vo.SuperAdminPermissionVO;
-import org.triptogether.superAdmin.vo.SuperAdminPositionPolicyVO;
-import org.triptogether.superAdmin.vo.SuperAdminSearchVO;
-import org.triptogether.superAdmin.vo.SuperAdminStatsVO;
+import org.triptogether.superAdmin.vo.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,15 +18,15 @@ public class SuperAdminServiceImpl implements SuperAdminService {
 
     @Override
     public Map<String, Object> getAdminList(SuperAdminSearchVO search) {
-        List<SuperAdminMemberVO> list  = superAdminMapper.findAdmins(search);
-        int total = superAdminMapper.countAdmins(search);
+        List<SuperAdminMemberVO> list = superAdminMapper.findAdmins(search);
+        int total     = superAdminMapper.countAdmins(search);
         int totalPage = (int) Math.ceil((double) total / search.getPageSize());
 
         Map<String, Object> result = new HashMap<>();
-        result.put("adminList", list);
-        result.put("total", total);
-        result.put("totalPage", totalPage);
-        result.put("search", search);
+        result.put("adminList",  list);
+        result.put("total",      total);
+        result.put("totalPage",  totalPage);
+        result.put("search",     search);
         return result;
     }
 
@@ -90,13 +84,24 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     }
 
     @Override
+    @Transactional
+    public void updateSalary(SuperAdminSalaryEditVO salaryVO) {
+        superAdminMapper.updateSalary(salaryVO);
+    }
+
+    @Override
     public List<SuperAdminMemberVO> getAdminsForOrgChart() {
         return superAdminMapper.findAdminsForOrgChart();
     }
 
     @Override
-    public List<SuperAdminMemberVO> getAllForSalaryTable() {
-        return superAdminMapper.findAllForSalaryTable();
+    public List<SuperAdminMemberVO> getAllForSalaryTable(SuperAdminSearchVO search) {
+        return superAdminMapper.findAllForSalaryTable(search);
+    }
+
+    @Override
+    public int getSalaryTableCount(SuperAdminSearchVO search) {
+        return superAdminMapper.countForSalaryTable(search);
     }
 
     @Override
@@ -113,14 +118,127 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     @Override
     @Transactional
     public void updatePermissions(Long userIdx, List<String> permissionCodes, Long grantedBy) {
-        // 기존 권한 전체 비활성화 후 선택된 권한만 다시 활성화
         superAdminMapper.revokeAllPermissions(userIdx);
         if (permissionCodes != null) {
             for (String code : permissionCodes) {
-                int exists = superAdminMapper.countPermission(userIdx, code);
-                if (exists > 0) {
-                    superAdminMapper.grantPermission(userIdx, code, grantedBy);
-                } else {
+                superAdminMapper.grantPermission(userIdx, code, grantedBy);
+            }
+        }
+    }
+
+    // ── 예외 현황 보고 ──
+
+    @Override
+    public List<SuperAdminMemberVO> getDormantAdmins() {
+        return superAdminMapper.findDormantAdmins();
+    }
+
+    @Override
+    public List<SuperAdminMemberVO> getAdminsWithoutPermissions() {
+        return superAdminMapper.findAdminsWithoutPermissions();
+    }
+
+    @Override
+    public List<SuperAdminMemberVO> getAdminsWithoutManager() {
+        return superAdminMapper.findAdminsWithoutManager();
+    }
+
+    // ── 권한 변경 이력 ──
+
+    @Override
+    public List<SuperAdminAuditLogVO> getPermissionAuditLog(Long userIdx) {
+        return superAdminMapper.findPermissionAuditLog(userIdx);
+    }
+
+    // ── 권한 그룹 관리 ──
+
+    @Override
+    public List<SuperAdminGroupPolicyVO> getAllGroupPolicies() {
+        return superAdminMapper.findAllGroupPolicies();
+    }
+
+    @Override
+    public List<SuperAdminGroupItemVO> getGroupItems(String groupCode) {
+        return superAdminMapper.findGroupItems(groupCode);
+    }
+
+    @Override
+    @Transactional
+    public void createGroup(String groupCode, String displayName, String description, Long createdBy) {
+        superAdminMapper.insertGroup(groupCode, displayName, description, createdBy);
+    }
+
+    @Override
+    @Transactional
+    public void toggleGroupActive(String groupCode, boolean active, Long updatedBy) {
+        superAdminMapper.toggleGroupActive(groupCode, active ? 1 : 0, updatedBy);
+    }
+
+    @Override
+    @Transactional
+    public void addGroupItem(String groupCode, String permissionCode, Long createdBy) {
+        superAdminMapper.addGroupItem(groupCode, permissionCode, createdBy);
+    }
+
+    @Override
+    @Transactional
+    public void removeGroupItem(String groupCode, String permissionCode) {
+        superAdminMapper.removeGroupItem(groupCode, permissionCode);
+    }
+
+    // ── 권한 요청 워크플로우 ──
+
+    @Override
+    public List<SuperAdminPermissionRequestVO> getPendingRequests() {
+        return superAdminMapper.findPendingRequests();
+    }
+
+    @Override
+    public int getPendingRequestCount() {
+        return superAdminMapper.countPendingRequests();
+    }
+
+    @Override
+    @Transactional
+    public void requestPermissions(Long userIdx, List<String> permissionCodes, Long requestedBy, String description) {
+        if (permissionCodes == null) return;
+        for (String code : permissionCodes) {
+            if (superAdminMapper.countActivePermission(userIdx, code) == 0) {
+                superAdminMapper.createPermissionRequest(userIdx, code, requestedBy, description);
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void approvePermissionRequest(Long adminPermissionIdx, Long approvedBy) {
+        superAdminMapper.approvePermissionRequest(adminPermissionIdx, approvedBy);
+    }
+
+    @Override
+    @Transactional
+    public void rejectPermissionRequest(Long adminPermissionIdx, Long approvedBy) {
+        superAdminMapper.rejectPermissionRequest(adminPermissionIdx, approvedBy);
+    }
+
+    // ── 일괄 처리 ──
+
+    @Override
+    @Transactional
+    public void bulkRevokeAdmin(List<Long> userIdxList) {
+        if (userIdxList == null || userIdxList.isEmpty()) return;
+        superAdminMapper.bulkRevokeAllPermissions(userIdxList);
+        superAdminMapper.bulkRevokeAdmin(userIdxList);
+    }
+
+    @Override
+    @Transactional
+    public void bulkUpdatePermissions(List<Long> userIdxList, List<String> permissionCodes, Long grantedBy) {
+        if (userIdxList == null || userIdxList.isEmpty()) return;
+        superAdminMapper.bulkRevokeAllPermissions(userIdxList);
+        if (permissionCodes != null) {
+            for (Long userIdx : userIdxList) {
+                for (String code : permissionCodes) {
                     superAdminMapper.grantPermission(userIdx, code, grantedBy);
                 }
             }
