@@ -612,20 +612,12 @@ public class CommunityServiceImpl implements CommunityService {
         return communityMapper.selectIpsByCommentIds(commentIds);
     }
 
-    // ===== 오늘 인기 게시글 =====
-
-    // 오늘 작성된 게시글 중 좋아요 순 상위 목록 가져옴
-    @Override
-    public List<CommunityPostDto> getTodayPopularList() {
-        List<CommunityPostDto> todayPopularList = communityMapper.selectTodayPopularList();
-        spotTextTranslationService.translateCommunityPosts(todayPopularList);
-        return todayPopularList;
-    }
-
     // 전체 기간 좋아요 순 상위 목록 가져옴
     @Override
     public List<CommunityPostDto> getPopularList(int limit) {
-        return communityMapper.selectPopularList(limit);
+        List<CommunityPostDto> popularList = communityMapper.selectPopularList(limit);
+        spotTextTranslationService.translateCommunityPosts(popularList);
+        return popularList;
     }
 
     // ===== private 유틸 =====
