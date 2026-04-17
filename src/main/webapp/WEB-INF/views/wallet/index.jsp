@@ -77,7 +77,7 @@
                     <label for="amount"><spring:message code="wallet.charge.amount"/></label>
                     <div class="wallet-charge-input">
                         <input id="amount" name="amount" type="number" min="1000" step="100" value="10000" required>
-                        <span><spring:message code="wallet.currency"/></span>
+                        <span><spring:message code="wallet.charge.currency"/></span>
                     </div>
 
                     <div class="wallet-charge-preview">
@@ -221,7 +221,7 @@
                                             <span class="wallet-current-badge"><spring:message code="wallet.benefit.current"/></span>
                                         </c:if>
                                     </td>
-                                    <td><fmt:formatNumber value="${policy.minMonthlyPayment}" pattern="#,##0"/> <spring:message code="wallet.currency"/></td>
+                                    <td><fmt:formatNumber value="${policy.minMonthlyPayment}" pattern="#,##0"/> <spring:message code="wallet.benefit.amountUnit"/></td>
                                     <td><fmt:formatNumber value="${policy.discountRate}" pattern="#,##0.##"/>%</td>
                                     <td>${policy.description}</td>
                                 </tr>
