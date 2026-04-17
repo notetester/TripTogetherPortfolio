@@ -120,17 +120,17 @@
             <%-- 재화 --%>
             <div class="mp-currency-grid">
                 <div class="mp-currency-item">
-                    <div class="mp-currency-icon">💎</div>
+                    <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-point.svg" alt="포인트" width="40" height="40"></div>
                     <div class="mp-currency-label">포인트</div>
                     <div class="mp-currency-value">0</div>
                 </div>
                 <div class="mp-currency-item">
-                    <div class="mp-currency-icon">✈️</div>
+                    <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-mileage.svg" alt="마일리지" width="40" height="40"></div>
                     <div class="mp-currency-label">마일리지</div>
                     <div class="mp-currency-value">0</div>
                 </div>
                 <div class="mp-currency-item">
-                    <div class="mp-currency-icon">💰</div>
+                    <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-cash.svg" alt="캐시" width="40" height="40"></div>
                     <div class="mp-currency-label">캐시</div>
                     <div class="mp-currency-value">0</div>
                 </div>
@@ -144,28 +144,24 @@
             --%>
             <div class="mp-stats-grid">
                 <div class="mp-stats-item">
-                    <div class="mp-stats-icon">✍️</div>
+                    <span class="mp-stats-source mp-stats-src-community">커뮤니티</span>
+                    <div class="mp-stats-value">0</div>
                     <div class="mp-stats-label">작성 글</div>
-                    <div class="mp-stats-value">0</div>
-                    <span class="mp-stats-source mp-stats-src-community">커뮤니티</span>
                 </div>
                 <div class="mp-stats-item">
-                    <div class="mp-stats-icon">💬</div>
+                    <span class="mp-stats-source mp-stats-src-community">커뮤니티</span>
+                    <div class="mp-stats-value">0</div>
                     <div class="mp-stats-label">작성 댓글</div>
-                    <div class="mp-stats-value">0</div>
-                    <span class="mp-stats-source mp-stats-src-community">커뮤니티</span>
                 </div>
                 <div class="mp-stats-item">
-                    <div class="mp-stats-icon">⭐</div>
-                    <div class="mp-stats-label">리뷰</div>
-                    <div class="mp-stats-value">0</div>
                     <span class="mp-stats-source mp-stats-src-explore">여행지탐색</span>
+                    <div class="mp-stats-value">0</div>
+                    <div class="mp-stats-label">리뷰</div>
                 </div>
                 <div class="mp-stats-item">
-                    <div class="mp-stats-icon">🗺️</div>
-                    <div class="mp-stats-label">여행코스</div>
-                    <div class="mp-stats-value">0</div>
                     <span class="mp-stats-source mp-stats-src-courses">여행코스</span>
+                    <div class="mp-stats-value">0</div>
+                    <div class="mp-stats-label">여행코스</div>
                 </div>
             </div>
         </div>
