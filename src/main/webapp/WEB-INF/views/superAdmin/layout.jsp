@@ -38,10 +38,17 @@
             </a>
 
             <div class="adm-nav-section" style="margin-top:16px;">권한 관리</div>
+            <a class="adm-nav-item ${activeMenu=='permissions'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/permissions">
+                <span class="adm-nav-icon">🔑</span> 권한 항목
+            </a>
             <a class="adm-nav-item ${activeMenu=='groups'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/groups">
                 <span class="adm-nav-icon">🔐</span> 권한 그룹
             </a>
-<div class="adm-nav-section" style="margin-top:16px;">현황 분석</div>
+            <a class="adm-nav-item ${activeMenu=='permissionCodes'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/permission-codes">
+                <span class="adm-nav-icon">🗂️</span> 권한 템플릿
+            </a>
+
+            <div class="adm-nav-section" style="margin-top:16px;">현황 분석</div>
             <a class="adm-nav-item ${activeMenu=='salary'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/salary">
                 <span class="adm-nav-icon">💰</span> 급여/역량 현황
             </a>

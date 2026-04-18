@@ -17,6 +17,10 @@ public class SuperAdminPermissionVO {
     private String displayName;
     private String description;
 
+    // ── ADMIN_PERMISSION_POLICY 전용 ──
+    private int    priority;
+    private int    usageCount;
+
     // ── 뷰 추가 컬럼 ──
     private String permissionSource;
     private String sourceGroupCode;

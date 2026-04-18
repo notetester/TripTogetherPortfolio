@@ -19,6 +19,9 @@ public interface SuperAdminMapper {
     // ── 일반 유저 검색 (관리자 등록용) ──
     List<SuperAdminMemberVO> searchUsers(SuperAdminSearchVO search);
 
+    // ── 관리자 검색 (권한/그룹/템플릿 배정용) ──
+    List<SuperAdminMemberVO> searchAdmins(SuperAdminSearchVO search);
+
     // ── 관리자 등록/해제 ──
     void grantAdmin(@Param("userIdx") Long userIdx);
     void revokeAdmin(@Param("userIdx") Long userIdx);
@@ -160,4 +163,57 @@ public interface SuperAdminMapper {
 
     // ── 일괄 모든 권한 비활성화 ──
     void bulkRevokeAllPermissions(@Param("list") List<Long> userIdxList);
+
+    // ── 실효 권한 코드 변경 ──
+    void updatePermissionCode(@Param("userIdx") Long userIdx,
+                              @Param("permissionCode") String permissionCode);
+
+    // ── 실효 권한 코드 정책 CRUD ──
+    List<SuperAdminPermissionCodePolicyVO> findAllPermissionCodePoliciesWithCount();
+    void insertPermissionCode(@Param("adminPermissionCode") String adminPermissionCode,
+                              @Param("displayName") String displayName,
+                              @Param("description") String description,
+                              @Param("createdBy") Long createdBy);
+    void togglePermissionCodeActive(@Param("adminPermissionCode") String adminPermissionCode,
+                                    @Param("active") int active,
+                                    @Param("updatedBy") Long updatedBy);
+    void deletePermissionCode(@Param("adminPermissionCode") String adminPermissionCode);
+    int countAdminsByPermissionCode(@Param("adminPermissionCode") String adminPermissionCode);
+
+    // ── 코드 번들 구성 항목 조회 ──
+    List<SuperAdminGroupItemVO> findCodePermissionItems(@Param("adminPermissionCode") String adminPermissionCode);
+    List<SuperAdminGroupPolicyVO> findCodeGroupItems(@Param("adminPermissionCode") String adminPermissionCode);
+
+    // ── 코드 번들 개별 권한 추가/제거 ──
+    void addCodePermissionItem(@Param("adminPermissionCode") String adminPermissionCode,
+                               @Param("permissionCode") String permissionCode,
+                               @Param("createdBy") Long createdBy);
+    void removeCodePermissionItem(@Param("adminPermissionCode") String adminPermissionCode,
+                                  @Param("permissionCode") String permissionCode);
+
+    // ── 코드 번들 그룹 추가/제거 ──
+    void addCodeGroupItem(@Param("adminPermissionCode") String adminPermissionCode,
+                          @Param("groupCode") String groupCode,
+                          @Param("createdBy") Long createdBy);
+    void removeCodeGroupItem(@Param("adminPermissionCode") String adminPermissionCode,
+                             @Param("groupCode") String groupCode);
+
+    // ── 코드 번들 배정 관리자 목록 ──
+    List<SuperAdminMemberVO> findAdminsByPermissionCode(@Param("adminPermissionCode") String adminPermissionCode);
+
+    // ── 개별 권한 정책 관리 ──
+    List<SuperAdminPermissionVO> findAllPermissionPoliciesForManage();
+    void insertPermissionPolicy(@Param("permissionCode") String permissionCode,
+                                @Param("displayName") String displayName,
+                                @Param("description") String description,
+                                @Param("createdBy") Long createdBy);
+    void togglePermissionPolicyActive(@Param("permissionCode") String permissionCode,
+                                      @Param("active") int active,
+                                      @Param("updatedBy") Long updatedBy);
+    void deletePermissionPolicy(@Param("permissionCode") String permissionCode);
+
+    // ── 권한 항목 상세 ──
+    List<SuperAdminGroupPolicyVO> findGroupsByPermissionCode(@Param("permissionCode") String permissionCode);
+    List<SuperAdminPermissionCodePolicyVO> findCodesByPermissionCode(@Param("permissionCode") String permissionCode);
+    List<SuperAdminMemberVO> findAdminsByDirectPermission(@Param("permissionCode") String permissionCode);
 }

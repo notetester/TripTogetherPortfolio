@@ -254,8 +254,9 @@
 <script>
 const CTX = '${pageContext.request.contextPath}';
 let currentUserIdx  = null;
-let allPolicies     = [];
-let activeCodes     = [];
+let allPolicies         = [];
+let allPermCodePolicies = [];
+let activeCodes         = [];
 
 const GROUP_LIST = [
 <c:forEach var="g" items="${groupList}"><c:if test="${g.active}">{code:'${fn:escapeXml(g.groupCode)}',name:'${fn:escapeXml(g.displayName)}'},
@@ -325,6 +326,7 @@ function reloadDetailModal() {
         .then(function(r){ return r.json(); })
         .then(function(data){
             allPolicies = data.permissionPolicies;
+            allPermCodePolicies = data.permissionCodePolicies || [];
             activeCodes = (data.member.permissions || []).map(function(p){ return p.permissionCode; });
             renderDetailModal(data.member, data.permissionPolicies, data.adminGroups);
         });
@@ -360,6 +362,7 @@ function openDetailModal(userIdx) {
         .then(r => r.json())
         .then(data => {
             allPolicies = data.permissionPolicies;
+            allPermCodePolicies = data.permissionCodePolicies || [];
             activeCodes = (data.member.permissions || []).map(p => p.permissionCode);
             renderDetailModal(data.member, data.permissionPolicies, data.adminGroups);
         });
@@ -375,7 +378,12 @@ function renderDetailModal(m, policies, adminGroups) {
         if (p.permissionSource === 'DIRECT') {
             sourceMap[p.permissionCode].isDirect = true;
         } else {
-            var label = p.sourceGroupCode || p.permissionSource;
+            var label;
+            if (p.permissionSource === 'CODE_DIRECT' || p.permissionSource === 'CODE_GROUP') {
+                label = '코드: ' + (p.sourceGroupCode || p.permissionSource);
+            } else {
+                label = '그룹: ' + (p.sourceGroupCode || p.permissionSource);
+            }
             if (label && !sourceMap[p.permissionCode].groupSources.includes(label))
                 sourceMap[p.permissionCode].groupSources.push(label);
         }
@@ -387,26 +395,39 @@ function renderDetailModal(m, policies, adminGroups) {
         var info = sourceMap[p.permissionCode];
         var hasGroup = info && info.groupSources.length > 0;
         var isDirect = info && info.isDirect;
-        var sourceLabel = hasGroup ? ('그룹: ' + info.groupSources.join(', ')) : '';
+        var sourceLabel = hasGroup ? info.groupSources.join(', ') : '';
 
         if (hasGroup && !isDirect) {
             // 그룹에서만 부여 → disabled
             return '<label class="sa-perm-item sa-perm-from-group">' +
                 '<input type="checkbox" disabled checked>' +
+                '<div class="sa-perm-info">' +
                 '<span class="sa-perm-name">' + (p.displayName || '') + '</span>' +
                 '<span class="sa-perm-code">' + (p.permissionCode || '') + '</span>' +
+                (p.description ? '<span class="sa-perm-desc">' + p.description + '</span>' : '') +
+                '</div>' +
                 '<span class="sa-perm-source">' + sourceLabel + '</span>' +
                 '</label>';
         } else {
             return '<label class="sa-perm-item">' +
                 '<input type="checkbox" name="permissionCodes" value="' + p.permissionCode + '"' +
                 (isDirect ? ' checked' : '') + '>' +
+                '<div class="sa-perm-info">' +
                 '<span class="sa-perm-name">' + (p.displayName || '') + '</span>' +
                 '<span class="sa-perm-code">' + (p.permissionCode || '') + '</span>' +
+                (p.description ? '<span class="sa-perm-desc">' + p.description + '</span>' : '') +
+                '</div>' +
                 (hasGroup ? '<span class="sa-perm-source">' + sourceLabel + ' + 직접</span>' : '') +
                 '</label>';
         }
     }).join('');
+
+    var codeOptions = '<option value="">' + (m.adminPermissionCode ? '없음으로 변경' : '없음') + '</option>';
+    allPermCodePolicies.forEach(function(cp) {
+        var sel = (m.adminPermissionCode === cp.adminPermissionCode) ? ' selected' : '';
+        codeOptions += '<option value="' + cp.adminPermissionCode + '"' + sel + '>' +
+            cp.displayName + ' (' + cp.adminPermissionCode + ')' + '</option>';
+    });
 
     document.getElementById('detailModalBody').innerHTML =
         '<div class="sa-detail-grid">' +
@@ -418,6 +439,12 @@ function renderDetailModal(m, policies, adminGroups) {
             '<div class="sa-detail-row"><span class="sa-detail-label">부서</span><span>' + (m.adminDepartment || '-') + '</span></div>' +
             '<div class="sa-detail-row"><span class="sa-detail-label">팀</span><span>' + (m.adminTeam || '-') + '</span></div>' +
         '</div>' +
+        '<div class="sa-section-title" style="margin-top:16px;">실효 권한 코드</div>' +
+        '<div class="sa-perm-code-row">' +
+            '<select class="adm-select sa-perm-code-select" id="permCodeSelect" style="flex:1;">' + codeOptions + '</select>' +
+            '<button class="adm-btn adm-btn-primary" onclick="savePermissionCode(' + m.userIdx + ')">저장</button>' +
+        '</div>' +
+        '<div style="font-size:12px;color:#94a3b8;margin-top:4px;margin-bottom:8px;">코드 번들로 부여된 권한(보라색)은 코드를 변경하거나 없음으로 설정해야 해제됩니다.</div>' +
         buildGroupAssignSection(adminGroups) +
         '<div class="sa-section-title" style="margin-top:16px;">보유 권한</div>' +
         '<div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">그룹 소속 권한(보라색)은 그룹 해제로만 제거할 수 있습니다.</div>' +
@@ -425,6 +452,26 @@ function renderDetailModal(m, policies, adminGroups) {
 }
 
 /* ── 이력 로드 ── */
+function savePermissionCode(userIdx) {
+    var code = document.getElementById('permCodeSelect').value;
+    var params = new URLSearchParams();
+    if (code) params.append('permissionCode', code);
+    fetch(CTX + '/superAdmin/members/' + userIdx + '/permission-code', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params.toString()
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast('실효 권한 코드가 변경되었습니다.');
+            reloadDetailModal();
+        } else {
+            showToast('저장 실패: ' + (data.message || ''), true);
+        }
+    });
+}
+
 function loadAuditLog() {
     if (!currentUserIdx) return;
     fetch(CTX + '/superAdmin/members/' + currentUserIdx + '/audit')
@@ -634,8 +681,11 @@ function openBulkPermModal() {
         ? allPolicies.map(function(p) {
             return '<label class="sa-perm-item">' +
                 '<input type="checkbox" name="bulkPermCodes" value="' + p.permissionCode + '">' +
+                '<div class="sa-perm-info">' +
                 '<span class="sa-perm-name">' + (p.displayName || '') + '</span>' +
                 '<span class="sa-perm-code">' + (p.permissionCode || '') + '</span>' +
+                (p.description ? '<span class="sa-perm-desc">' + p.description + '</span>' : '') +
+                '</div>' +
                 '</label>';
           }).join('')
         : '<div style="color:#94a3b8;text-align:center;padding:20px;">권한 정책이 없습니다.</div>';

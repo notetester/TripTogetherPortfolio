@@ -50,7 +50,25 @@ public class SuperAdminController {
         Map<String, Object> result = new HashMap<>();
         result.put("member", superAdminService.getAdminDetail(userIdx));
         result.put("permissionPolicies", superAdminService.getAllPermissionPolicies());
+        result.put("permissionCodePolicies", superAdminService.getAllPermissionCodePolicies());
         result.put("adminGroups", superAdminService.getAdminGroups(userIdx));
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 실효 권한 코드 변경 (Ajax) ──
+    @PostMapping("/members/{userIdx}/permission-code")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updatePermissionCode(
+            @PathVariable Long userIdx,
+            @RequestParam(required = false) String permissionCode) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            superAdminService.updatePermissionCode(userIdx, permissionCode);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
         return ResponseEntity.ok(result);
     }
 
@@ -106,6 +124,15 @@ public class SuperAdminController {
         Map<String, Object> result = new HashMap<>();
         result.put("logs",      superAdminService.getPermissionAuditLog(userIdx));
         result.put("groupLogs", superAdminService.getGroupAuditLog(userIdx));
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 관리자 검색 (권한/그룹/템플릿 배정용, Ajax) ──
+    @GetMapping("/admins/search")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> searchAdmins(SuperAdminSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("users", superAdminService.searchAdmins(search));
         return ResponseEntity.ok(result);
     }
 
@@ -285,6 +312,254 @@ public class SuperAdminController {
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             superAdminService.updatePermissions(userIdx, permissionCodes, loginUser.getUserIdx());
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 개별 권한 정책 페이지 ──
+    @GetMapping("/permissions")
+    public String permissionsPage(Model model) {
+        model.addAttribute("permissionList", superAdminService.getAllPermissionPoliciesForManage());
+        model.addAttribute("activeMenu", "permissions");
+        return "superAdmin/permissions";
+    }
+
+    // ── 개별 권한 생성 ──
+    @PostMapping("/permissions")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> createPermission(
+            @RequestParam String permissionCode,
+            @RequestParam String displayName,
+            @RequestParam(required = false, defaultValue = "") String description,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            superAdminService.createPermissionPolicy(permissionCode, displayName, description, loginUser.getUserIdx());
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 개별 권한 상세 (Ajax) ──
+    @GetMapping("/permissions/{permissionCode}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> permissionDetail(@PathVariable String permissionCode) {
+        return ResponseEntity.ok(superAdminService.getPermissionPolicyDetail(permissionCode));
+    }
+
+    // ── 직접 권한 부여 ──
+    @PostMapping("/permissions/{permissionCode}/grant/{userIdx}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> grantDirectPermission(
+            @PathVariable String permissionCode,
+            @PathVariable Long userIdx,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            superAdminService.grantDirectPermission(userIdx, permissionCode, loginUser.getUserIdx());
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 직접 부여 권한 해제 ──
+    @PostMapping("/permissions/{permissionCode}/revoke/{userIdx}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> revokeDirectPermission(
+            @PathVariable String permissionCode,
+            @PathVariable Long userIdx) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            superAdminService.revokeDirectPermission(userIdx, permissionCode);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 개별 권한 활성/비활성 토글 ──
+    @PostMapping("/permissions/{permissionCode}/toggle")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> togglePermission(
+            @PathVariable String permissionCode,
+            @RequestParam boolean active,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            superAdminService.togglePermissionPolicyActive(permissionCode, active, loginUser.getUserIdx());
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 개별 권한 삭제 ──
+    @PostMapping("/permissions/{permissionCode}/delete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deletePermission(@PathVariable String permissionCode) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            superAdminService.deletePermissionPolicy(permissionCode);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 실효 권한 코드 목록 페이지 ──
+    @GetMapping("/permission-codes")
+    public String permissionCodesPage(Model model) {
+        model.addAttribute("codeList",           superAdminService.getAllPermissionCodePoliciesWithCount());
+        model.addAttribute("permissionPolicies", superAdminService.getAllPermissionPolicies());
+        model.addAttribute("groupList",          superAdminService.getAllGroupPolicies());
+        model.addAttribute("activeMenu",         "permissionCodes");
+        return "superAdmin/permission-codes";
+    }
+
+    // ── 코드 번들 상세 (Ajax) ──
+    @GetMapping("/permission-codes/{adminPermissionCode}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> permissionCodeDetail(@PathVariable String adminPermissionCode) {
+        return ResponseEntity.ok(superAdminService.getPermissionCodeDetail(adminPermissionCode));
+    }
+
+    // ── 코드 번들 생성 ──
+    @PostMapping("/permission-codes")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> createPermissionCode(
+            @RequestParam String adminPermissionCode,
+            @RequestParam String displayName,
+            @RequestParam(required = false, defaultValue = "") String description,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            superAdminService.createPermissionCode(adminPermissionCode, displayName, description, loginUser.getUserIdx());
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 코드 번들 활성/비활성 토글 ──
+    @PostMapping("/permission-codes/{adminPermissionCode}/toggle")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> togglePermissionCode(
+            @PathVariable String adminPermissionCode,
+            @RequestParam boolean active,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            superAdminService.togglePermissionCodeActive(adminPermissionCode, active, loginUser.getUserIdx());
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 코드 번들 삭제 ──
+    @PostMapping("/permission-codes/{adminPermissionCode}/delete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deletePermissionCode(@PathVariable String adminPermissionCode) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            superAdminService.deletePermissionCode(adminPermissionCode);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 코드 번들 개별 권한 추가 ──
+    @PostMapping("/permission-codes/{adminPermissionCode}/permissions/add")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> addCodePermissionItem(
+            @PathVariable String adminPermissionCode,
+            @RequestParam String permissionCode,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            superAdminService.addCodePermissionItem(adminPermissionCode, permissionCode, loginUser.getUserIdx());
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 코드 번들 개별 권한 제거 ──
+    @PostMapping("/permission-codes/{adminPermissionCode}/permissions/remove")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> removeCodePermissionItem(
+            @PathVariable String adminPermissionCode,
+            @RequestParam String permissionCode) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            superAdminService.removeCodePermissionItem(adminPermissionCode, permissionCode);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 코드 번들 그룹 추가 ──
+    @PostMapping("/permission-codes/{adminPermissionCode}/groups/add")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> addCodeGroupItem(
+            @PathVariable String adminPermissionCode,
+            @RequestParam String groupCode,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            superAdminService.addCodeGroupItem(adminPermissionCode, groupCode, loginUser.getUserIdx());
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 코드 번들 그룹 제거 ──
+    @PostMapping("/permission-codes/{adminPermissionCode}/groups/remove")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> removeCodeGroupItem(
+            @PathVariable String adminPermissionCode,
+            @RequestParam String groupCode) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            superAdminService.removeCodeGroupItem(adminPermissionCode, groupCode);
             result.put("success", true);
         } catch (Exception e) {
             result.put("success", false);

@@ -45,6 +45,11 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     }
 
     @Override
+    public List<SuperAdminMemberVO> searchAdmins(SuperAdminSearchVO search) {
+        return superAdminMapper.searchAdmins(search);
+    }
+
+    @Override
     @Transactional
     public void grantAdmin(Long userIdx) {
         superAdminMapper.grantAdmin(userIdx);
@@ -280,5 +285,111 @@ public class SuperAdminServiceImpl implements SuperAdminService {
                 }
             }
         }
+    }
+
+    @Override
+    public List<SuperAdminPermissionVO> getAllPermissionPoliciesForManage() {
+        return superAdminMapper.findAllPermissionPoliciesForManage();
+    }
+
+    @Override
+    public Map<String, Object> getPermissionPolicyDetail(String permissionCode) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("groups",  superAdminMapper.findGroupsByPermissionCode(permissionCode));
+        result.put("codes",   superAdminMapper.findCodesByPermissionCode(permissionCode));
+        result.put("admins",  superAdminMapper.findAdminsByDirectPermission(permissionCode));
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public void grantDirectPermission(Long userIdx, String permissionCode, Long grantedBy) {
+        superAdminMapper.grantPermission(userIdx, permissionCode, grantedBy);
+    }
+
+    @Override
+    @Transactional
+    public void revokeDirectPermission(Long userIdx, String permissionCode) {
+        superAdminMapper.revokePermission(userIdx, permissionCode);
+    }
+
+    @Override
+    @Transactional
+    public void createPermissionPolicy(String permissionCode, String displayName, String description, Long createdBy) {
+        superAdminMapper.insertPermissionPolicy(permissionCode, displayName, description, createdBy);
+    }
+
+    @Override
+    @Transactional
+    public void togglePermissionPolicyActive(String permissionCode, boolean active, Long updatedBy) {
+        superAdminMapper.togglePermissionPolicyActive(permissionCode, active ? 1 : 0, updatedBy);
+    }
+
+    @Override
+    @Transactional
+    public void deletePermissionPolicy(String permissionCode) {
+        superAdminMapper.deletePermissionPolicy(permissionCode);
+    }
+
+    @Override
+    @Transactional
+    public void updatePermissionCode(Long userIdx, String permissionCode) {
+        superAdminMapper.updatePermissionCode(userIdx, permissionCode);
+    }
+
+    @Override
+    public List<SuperAdminPermissionCodePolicyVO> getAllPermissionCodePoliciesWithCount() {
+        return superAdminMapper.findAllPermissionCodePoliciesWithCount();
+    }
+
+    @Override
+    public Map<String, Object> getPermissionCodeDetail(String adminPermissionCode) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("permissionItems", superAdminMapper.findCodePermissionItems(adminPermissionCode));
+        result.put("groupItems",      superAdminMapper.findCodeGroupItems(adminPermissionCode));
+        result.put("admins",          superAdminMapper.findAdminsByPermissionCode(adminPermissionCode));
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public void createPermissionCode(String adminPermissionCode, String displayName, String description, Long createdBy) {
+        superAdminMapper.insertPermissionCode(adminPermissionCode, displayName, description, createdBy);
+    }
+
+    @Override
+    @Transactional
+    public void togglePermissionCodeActive(String adminPermissionCode, boolean active, Long updatedBy) {
+        superAdminMapper.togglePermissionCodeActive(adminPermissionCode, active ? 1 : 0, updatedBy);
+    }
+
+    @Override
+    @Transactional
+    public void deletePermissionCode(String adminPermissionCode) {
+        superAdminMapper.deletePermissionCode(adminPermissionCode);
+    }
+
+    @Override
+    @Transactional
+    public void addCodePermissionItem(String adminPermissionCode, String permissionCode, Long createdBy) {
+        superAdminMapper.addCodePermissionItem(adminPermissionCode, permissionCode, createdBy);
+    }
+
+    @Override
+    @Transactional
+    public void removeCodePermissionItem(String adminPermissionCode, String permissionCode) {
+        superAdminMapper.removeCodePermissionItem(adminPermissionCode, permissionCode);
+    }
+
+    @Override
+    @Transactional
+    public void addCodeGroupItem(String adminPermissionCode, String groupCode, Long createdBy) {
+        superAdminMapper.addCodeGroupItem(adminPermissionCode, groupCode, createdBy);
+    }
+
+    @Override
+    @Transactional
+    public void removeCodeGroupItem(String adminPermissionCode, String groupCode) {
+        superAdminMapper.removeCodeGroupItem(adminPermissionCode, groupCode);
     }
 }

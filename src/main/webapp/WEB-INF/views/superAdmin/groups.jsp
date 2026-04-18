@@ -12,7 +12,7 @@
         <div class="adm-card-body">
             <div style="display:flex;align-items:center;justify-content:space-between;">
                 <div>
-                    <div style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:4px;">권한 그룹 목록</div>
+                    <div style="font-size:15px;font-weight:700;margin-bottom:4px;">권한 그룹 목록</div>
                     <div style="font-size:13px;color:#94a3b8;">관리자에게 일괄 부여할 권한 묶음을 관리합니다.</div>
                 </div>
                 <button class="adm-btn adm-btn-primary" onclick="openCreateModal()">+ 그룹 생성</button>
@@ -129,6 +129,12 @@
                 <button class="adm-btn adm-btn-primary" onclick="addItem()">추가</button>
             </div>
             <div class="sa-section-title">소속 관리자</div>
+            <div style="display:flex;gap:8px;margin-bottom:10px;">
+                <input class="adm-input" id="memberSearchInput" type="text" placeholder="닉네임 또는 아이디 검색" style="flex:1;"
+                       onkeydown="if(event.key==='Enter') searchMembersToAdd()">
+                <button class="adm-btn adm-btn-primary" onclick="searchMembersToAdd()">검색</button>
+            </div>
+            <div id="memberSearchResult" style="margin-bottom:12px;"></div>
             <div id="groupMemberList">
                 <div style="text-align:center;padding:20px;color:#94a3b8;">불러오는 중...</div>
             </div>
@@ -236,6 +242,47 @@ function loadGroupMembers() {
                             onclick="revokeMemberGroup(this.getAttribute('data-uid'))">해제</button>
                 </div>`).join('');
         });
+}
+
+function searchMembersToAdd() {
+    const keyword = document.getElementById('memberSearchInput').value.trim();
+    if (!keyword) { adm_toast('검색어를 입력하세요.', 'error'); return; }
+    fetch(CTX + '/superAdmin/admins/search?keyword=' + encodeURIComponent(keyword) + '&excludeGroupCode=' + encodeURIComponent(currentGroupCode))
+        .then(r => r.json())
+        .then(data => {
+            var users = data.users || [];
+            if (users.length === 0) {
+                document.getElementById('memberSearchResult').innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:4px 0;">검색 결과가 없습니다.</div>';
+                return;
+            }
+            document.getElementById('memberSearchResult').innerHTML =
+                '<div style="border:1px solid #2d3748;border-radius:6px;overflow:hidden;">' +
+                users.map(u => `
+                    <div class="sa-group-item-row" style="cursor:pointer;" data-uid="\${u.userIdx}"
+                         onclick="addMemberToGroup(this.getAttribute('data-uid'), '\${u.nickname}')">
+                        <span class="sa-group-item-name">\${u.nickname}</span>
+                        <span class="sa-group-item-code">\${u.userId}</span>
+                        <span style="font-size:12px;color:#6366f1;">+ 추가</span>
+                    </div>`).join('') + '</div>';
+        });
+}
+
+function addMemberToGroup(userIdx, nickname) {
+    if (!confirm(nickname + '을(를) 그룹에 추가하시겠습니까?')) return;
+    fetch(CTX + '/superAdmin/members/' + userIdx + '/groups/assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: 'groupCode=' + encodeURIComponent(currentGroupCode)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            adm_toast('추가되었습니다.');
+            document.getElementById('memberSearchResult').innerHTML = '';
+            document.getElementById('memberSearchInput').value = '';
+            loadGroupMembers();
+        } else adm_toast(data.message || '추가 실패', 'error');
+    });
 }
 
 function revokeMemberGroup(userIdx) {

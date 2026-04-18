@@ -10,6 +10,7 @@ public interface SuperAdminService {
     Map<String, Object> getAdminList(SuperAdminSearchVO search);
     SuperAdminMemberVO getAdminDetail(Long userIdx);
     List<SuperAdminMemberVO> searchUsers(SuperAdminSearchVO search);
+    List<SuperAdminMemberVO> searchAdmins(SuperAdminSearchVO search);
 
     void grantAdmin(Long userIdx);
     void revokeAdmin(Long userIdx);
@@ -63,4 +64,27 @@ public interface SuperAdminService {
     // ── 일괄 처리 ──
     void bulkRevokeAdmin(List<Long> userIdxList);
     void bulkUpdatePermissions(List<Long> userIdxList, List<String> permissionCodes, Long grantedBy);
+
+    // ── 개별 권한 정책 관리 ──
+    List<SuperAdminPermissionVO> getAllPermissionPoliciesForManage();
+    Map<String, Object> getPermissionPolicyDetail(String permissionCode);
+    void createPermissionPolicy(String permissionCode, String displayName, String description, Long createdBy);
+    void togglePermissionPolicyActive(String permissionCode, boolean active, Long updatedBy);
+    void deletePermissionPolicy(String permissionCode);
+    void grantDirectPermission(Long userIdx, String permissionCode, Long grantedBy);
+    void revokeDirectPermission(Long userIdx, String permissionCode);
+
+    // ── 실효 권한 코드 변경 ──
+    void updatePermissionCode(Long userIdx, String permissionCode);
+
+    // ── 실효 권한 코드 정책 관리 ──
+    List<SuperAdminPermissionCodePolicyVO> getAllPermissionCodePoliciesWithCount();
+    Map<String, Object> getPermissionCodeDetail(String adminPermissionCode);
+    void createPermissionCode(String adminPermissionCode, String displayName, String description, Long createdBy);
+    void togglePermissionCodeActive(String adminPermissionCode, boolean active, Long updatedBy);
+    void deletePermissionCode(String adminPermissionCode);
+    void addCodePermissionItem(String adminPermissionCode, String permissionCode, Long createdBy);
+    void removeCodePermissionItem(String adminPermissionCode, String permissionCode);
+    void addCodeGroupItem(String adminPermissionCode, String groupCode, Long createdBy);
+    void removeCodeGroupItem(String adminPermissionCode, String groupCode);
 }
