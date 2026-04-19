@@ -463,6 +463,19 @@
         SELECT COUNT(*) FROM USERS WHERE user_role = 'ADMIN'
     </select>
 
+    <select id="countSuperAdmins" resultType="int">
+        SELECT COUNT(*) FROM USERS WHERE user_role = 'SUPERADMIN'
+    </select>
+
+    <select id="countSuperAdminsInList" resultType="int">
+        SELECT COUNT(*) FROM USERS
+        WHERE user_role = 'SUPERADMIN'
+        AND user_idx IN
+        <foreach collection="list" item="idx" open="(" separator="," close=")">
+            #{idx}
+        </foreach>
+    </select>
+
     <!-- ══════════════════════════════════════════
          예외 리포트
     ══════════════════════════════════════════ -->

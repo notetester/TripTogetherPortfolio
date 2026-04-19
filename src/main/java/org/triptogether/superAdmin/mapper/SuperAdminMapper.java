@@ -94,6 +94,10 @@ public interface SuperAdminMapper {
     // ── 통계: 총 관리자 수 ──
     int countAllAdmins();
 
+    // ── SUPERADMIN 수 ──
+    int countSuperAdmins();
+    int countSuperAdminsInList(@Param("list") List<Long> userIdxList);
+
     // ── 권한 변경 이력 ──
     List<SuperAdminAuditLogVO> findPermissionAuditLog(@Param("userIdx") Long userIdx);
 

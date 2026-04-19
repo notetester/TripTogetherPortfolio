@@ -89,7 +89,7 @@ Files are stored at `${file.upload.path}` (default: `src/main/resources/upload/`
 ---
 
 ## Database Schema
-DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 참고해.
+DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 참고.
 
 ---
 

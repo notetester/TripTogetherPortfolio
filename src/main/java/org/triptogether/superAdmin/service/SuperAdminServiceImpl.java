@@ -58,6 +58,12 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     @Override
     @Transactional
     public void revokeAdmin(Long userIdx) {
+        SuperAdminMemberVO member = superAdminMapper.findAdminDetail(userIdx);
+        if (member != null && "SUPERADMIN".equals(member.getUserRole())) {
+            if (superAdminMapper.countSuperAdmins() <= 1) {
+                throw new IllegalStateException("최소 1명의 SUPERADMIN이 유지되어야 합니다.");
+            }
+        }
         superAdminMapper.revokeAllPermissions(userIdx);
         superAdminMapper.revokeAdmin(userIdx);
     }
@@ -269,6 +275,11 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     @Transactional
     public void bulkRevokeAdmin(List<Long> userIdxList) {
         if (userIdxList == null || userIdxList.isEmpty()) return;
+        int totalSuperAdmins = superAdminMapper.countSuperAdmins();
+        int superAdminsInList = superAdminMapper.countSuperAdminsInList(userIdxList);
+        if (superAdminsInList > 0 && superAdminsInList >= totalSuperAdmins) {
+            throw new IllegalStateException("최소 1명의 SUPERADMIN이 유지되어야 합니다.");
+        }
         superAdminMapper.bulkRevokeAllPermissions(userIdxList);
         superAdminMapper.bulkRevokeAdmin(userIdxList);
     }
