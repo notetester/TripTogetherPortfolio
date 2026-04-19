@@ -108,6 +108,8 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 - Claude는 `git add` + `git commit`까지만 진행
 - `git pull`, `git push origin <branch>`, PR 생성(`gh pr create` 또는 GitHub UI)은 사용자가 직접 수행
 - 커밋 여러 개로 나눠야 할 땐 Claude가 단위 제안 → 사용자 승인 후 실행
+- **커밋 메시지는 Claude가 후보 제시 → 사용자 승인 후에만 실행**
+  (메시지 내용이 중간에 바뀌면 새로 승인 요청)
 - 커밋 메시지는 기존 로그 스타일(짧은 한국어 요약) 유지
 - `--no-verify`, `--amend`, `git push --force` 등 위험 옵션은 사용자 명시 요청 시에만 사용
 
