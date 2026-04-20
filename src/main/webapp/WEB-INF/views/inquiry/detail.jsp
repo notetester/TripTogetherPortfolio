@@ -107,8 +107,8 @@
           <div class="inq-attachment-title">📎 첨부파일</div>
           <c:forEach var="att" items="${attachmentList}">
             <div class="inq-attachment-item">
-              <a href="${pageContext.request.contextPath}${att.fileUrl}" target="_blank">
-                <img src="${pageContext.request.contextPath}${att.fileUrl}"
+              <a href="${att.fileUrl}" target="_blank">
+                <img src="${att.fileUrl}"
                      alt="${att.fileName}"
                      class="inq-attachment-img"/>
               </a>
@@ -213,7 +213,7 @@
             </c:when>
             <%-- 답변 없을 때: AI 초안 / 등록 / 답변+완료 동시처리 버튼 --%>
             <c:otherwise>
-              <button class="inq-btn-cancel" id="aiDraftBtn">🤖 AI 초안</button>
+              <button class="inq-btn-cancel" id="aiDraftBtn">AI 초안</button>
               <button class="inq-btn-cancel" id="answerBtn">답변 등록</button>
               <button class="inq-btn-submit" id="answerAndCompleteBtn">답변 + 완료 처리</button>
             </c:otherwise>
@@ -454,7 +454,7 @@ function goBackToList() {
         alert('오류가 발생했습니다. 다시 시도해주세요.');
       } finally {
         btn.disabled = false;
-        btn.textContent = '🤖 AI 초안';
+        btn.textContent = 'AI 초안';
       }
     });
   }

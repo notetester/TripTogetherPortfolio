@@ -22,9 +22,11 @@ public class AdminReportVO {
     private String userId;            // 신고자 로그인 ID (USERS JOIN)
     private String nickname;          // 신고자 닉네임 (USERS JOIN)
     private String accountStatus;     // 신고자 계정 상태 (ACTIVE / BLOCKED)
+    private String userRole;          // 신고자 권한 (USER / ADMIN / SYSTEM)
 
     private String targetType;        // 신고 대상 유형 (post / comment / user)
     private Long   targetId;          // 신고 대상 ID (post_id / comment_id / user_idx)
+    private String targetUserRole;    // 대상(또는 작성자)의 권한 (SYSTEM 계정 보호용)
     private String sourceType;        // 댓글 신고 시 원글 유형 (post)
     private Long   sourceId;          // 댓글 신고 시 원글 ID (post_id) — null이면 원글보기 버튼 미표시
 

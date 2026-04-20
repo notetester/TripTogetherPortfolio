@@ -113,7 +113,7 @@
     <%-- ══════════════════════════════════════════
          회원 목록 테이블
     ══════════════════════════════════════════ --%>
-    <div class="adm-card">
+    <div class="adm-card" style="overflow:visible;">
         <div class="adm-card-head">
             <div class="adm-card-title">
                 👥 회원 목록
@@ -130,7 +130,7 @@
             </select>
         </div>
 
-        <div class="adm-table-wrap">
+        <div class="adm-table-wrap" style="overflow:visible;">
             <table class="adm-table">
                 <thead>
                 <tr>
@@ -238,6 +238,7 @@
                             <div style="display:flex;gap:4px;align-items:center;">
                                 <button class="adm-row-btn detail"
                                         onclick="openDetail(${m.userIdx})">상세</button>
+                                <c:if test="${m.userRole != 'SYSTEM'}">
                                 <div class="action-menu-wrap">
                                     <button class="adm-row-btn detail"
                                             onclick="toggleMenu(this)">⋯</button>
@@ -291,6 +292,7 @@
                                         </c:if>
                                     </div>
                                 </div>
+                                </c:if>
                             </div>
                         </td>
                     </tr>

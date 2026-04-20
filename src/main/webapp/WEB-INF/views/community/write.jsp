@@ -314,6 +314,7 @@ function selectType(type, btn) {
     contentArea.style.color      = '#9ca3af';
     contentSection.style.opacity = '0.5';
   } else {
+    contentArea.readOnly    = false;
     contentArea.disabled    = false;
     contentArea.placeholder = '우리는 목적지에 닿아야 행복해지는 것이 아니라 여행하는 과정에서 행복을 느낀다.';
     contentArea.style.background = '';

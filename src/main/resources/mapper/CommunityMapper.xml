@@ -769,6 +769,7 @@
         UPDATE USERS
         SET account_status = 'BLOCKED'
         WHERE user_idx = #{userIdx}
+          AND user_role &lt;&gt; 'SYSTEM'
     </update>
 
     <!-- 유저 차단 해제 (account_status = 'ACTIVE') -->
@@ -867,6 +868,7 @@
         <foreach collection="userIdxes" item="idx" open="(" separator="," close=")">
             #{idx}
         </foreach>
+        AND user_role &lt;&gt; 'SYSTEM'
     </update>
 
     <!-- =============================================

@@ -182,8 +182,10 @@
         <result property="userId"            column="user_id"/>
         <result property="nickname"          column="nickname"/>
         <result property="accountStatus"     column="account_status"/>
+        <result property="userRole"          column="user_role"/>
         <result property="targetType"        column="target_type"/>
         <result property="targetId"          column="target_id"/>
+        <result property="targetUserRole"    column="target_user_role"/>
         <result property="sourceType"        column="source_type"/>
         <result property="sourceId"          column="source_id"/>
         <result property="reason"            column="reason"/>
@@ -329,6 +331,7 @@
         SET account_status = #{status},
             status_changed_at = NOW()
         WHERE user_idx = #{userIdx}
+          AND user_role &lt;&gt; 'SYSTEM'
     </update>
 
     <update id="markMemberDormant">
@@ -338,6 +341,7 @@
             dormant_release_required = TRUE,
             status_changed_at = NOW()
         WHERE user_idx = #{userIdx}
+          AND user_role &lt;&gt; 'SYSTEM'
     </update>
 
     <update id="releaseMemberDormant">
@@ -355,6 +359,7 @@
             blocked_reason = #{blockedReason},
             status_changed_at = NOW()
         WHERE user_idx = #{userIdx}
+          AND user_role &lt;&gt; 'SYSTEM'
     </update>
 
     <update id="clearMemberBlockState">
@@ -966,6 +971,7 @@
             u.nickname,
             u.user_id,
             u.account_status,
+            u.user_role,
             (
                 SELECT COUNT(*)
                 FROM REPORT r2
@@ -1001,12 +1007,18 @@
             u.nickname,
             u.user_id,
             u.account_status,
+            u.user_role,
             (
                 SELECT COUNT(*)
                 FROM REPORT r2
                 WHERE r2.target_type = r.target_type
                   AND r2.target_id   = r.target_id
-            ) AS target_report_count
+            ) AS target_report_count,
+            CASE r.target_type
+                WHEN 'user'    THEN (SELECT tu.user_role FROM USERS tu WHERE tu.user_idx = r.target_id)
+                WHEN 'post'    THEN (SELECT tu.user_role FROM COMMUNITY_POST p    JOIN USERS tu ON p.user_idx = tu.user_idx WHERE p.post_id = r.target_id)
+                WHEN 'comment' THEN (SELECT tu.user_role FROM COMMUNITY_COMMENT c JOIN USERS tu ON c.user_idx = tu.user_idx WHERE c.comment_id = r.target_id)
+            END AS target_user_role
         FROM REPORT r
         LEFT JOIN USERS u ON r.user_idx = u.user_idx
         WHERE r.report_id = #{reportId}
