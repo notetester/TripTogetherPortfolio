@@ -54,6 +54,13 @@
             </a>
             </c:if>
 
+            <c:if test="${hasAnyBlockAdmin}">
+            <div class="adm-nav-section" style="margin-top:8px;">보안 / 차단</div>
+            <a class="adm-nav-item ${activeMenu=='blocks'?'active':''}" href="${pageContext.request.contextPath}/admin/blocks">
+                <span class="adm-nav-icon">⛔</span> 차단 관리
+            </a>
+            </c:if>
+
             <c:if test="${hasInquiryAdmin or hasReportAdmin}">
             <div class="adm-nav-section" style="margin-top:8px;">운영</div>
             </c:if>
