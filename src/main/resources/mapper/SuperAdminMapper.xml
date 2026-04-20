@@ -5,7 +5,7 @@
 <mapper namespace="org.triptogether.superAdmin.mapper.SuperAdminMapper">
 
     <!-- ══════════════════════════════════════════
-         ResultMap
+         ResultMaps
     ══════════════════════════════════════════ -->
 
     <resultMap id="memberRM" type="org.triptogether.superAdmin.vo.SuperAdminMemberVO">
@@ -55,6 +55,52 @@
         <result property="description"     column="description"/>
     </resultMap>
 
+    <resultMap id="auditLogRM" type="org.triptogether.superAdmin.vo.SuperAdminAuditLogVO">
+        <id  property="adminPermissionIdx"    column="admin_permission_idx"/>
+        <result property="userIdx"            column="user_idx"/>
+        <result property="permissionCode"     column="permission_code"/>
+        <result property="displayName"        column="display_name"/>
+        <result property="active"             column="is_active"/>
+        <result property="grantedByNickname"  column="granted_by_nickname"/>
+        <result property="requestedByNickname" column="requested_by_nickname"/>
+        <result property="approvedByNickname" column="approved_by_nickname"/>
+        <result property="description"        column="description"/>
+        <result property="grantedAt"          column="granted_at"/>
+        <result property="revokedAt"          column="revoked_at"/>
+        <result property="createdAt"          column="created_at"/>
+        <result property="updatedAt"          column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="groupPolicyRM" type="org.triptogether.superAdmin.vo.SuperAdminGroupPolicyVO">
+        <id  property="adminPermissionGroupPolicyIdx" column="admin_permission_group_policy_idx"/>
+        <result property="groupCode"   column="group_code"/>
+        <result property="displayName" column="display_name"/>
+        <result property="description" column="description"/>
+        <result property="active"      column="is_active"/>
+        <result property="priority"    column="priority"/>
+        <result property="createdAt"   column="created_at"/>
+        <result property="itemCount"   column="item_count"/>
+    </resultMap>
+
+    <resultMap id="groupItemRM" type="org.triptogether.superAdmin.vo.SuperAdminGroupItemVO">
+        <id  property="adminPermissionGroupItemIdx" column="admin_permission_group_item_idx"/>
+        <result property="groupCode"      column="group_code"/>
+        <result property="permissionCode" column="permission_code"/>
+        <result property="displayName"    column="display_name"/>
+        <result property="active"         column="is_active"/>
+    </resultMap>
+
+    <resultMap id="permRequestRM" type="org.triptogether.superAdmin.vo.SuperAdminPermissionRequestVO">
+        <id  property="adminPermissionIdx"       column="admin_permission_idx"/>
+        <result property="userIdx"               column="user_idx"/>
+        <result property="userNickname"          column="user_nickname"/>
+        <result property="permissionCode"        column="permission_code"/>
+        <result property="permissionDisplayName" column="permission_display_name"/>
+        <result property="requestedByNickname"   column="requested_by_nickname"/>
+        <result property="description"           column="description"/>
+        <result property="createdAt"             column="created_at"/>
+    </resultMap>
+
     <!-- ══════════════════════════════════════════
          관리자 목록
     ══════════════════════════════════════════ -->
@@ -80,6 +126,15 @@
                 </otherwise>
             </choose>
         </if>
+        <if test="filterDepartment != null and filterDepartment != ''">
+            AND u.admin_department = #{filterDepartment}
+        </if>
+        <if test="filterPermissionCode != null and filterPermissionCode != ''">
+            AND u.admin_permission_code = #{filterPermissionCode}
+        </if>
+        <if test="filterAccountStatus != null and filterAccountStatus != ''">
+            AND u.account_status = #{filterAccountStatus}
+        </if>
         ORDER BY u.created_at DESC
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
@@ -98,6 +153,15 @@
                       OR u.user_email LIKE CONCAT('%', #{keyword}, '%'))
                 </otherwise>
             </choose>
+        </if>
+        <if test="filterDepartment != null and filterDepartment != ''">
+            AND u.admin_department = #{filterDepartment}
+        </if>
+        <if test="filterPermissionCode != null and filterPermissionCode != ''">
+            AND u.admin_permission_code = #{filterPermissionCode}
+        </if>
+        <if test="filterAccountStatus != null and filterAccountStatus != ''">
+            AND u.account_status = #{filterAccountStatus}
         </if>
     </select>
 
@@ -136,6 +200,33 @@
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
+    <select id="searchAdmins" resultMap="memberRM">
+        SELECT user_idx, user_id, user_email, nickname, account_status, user_role, created_at
+        FROM USERS
+        WHERE user_role = 'ADMIN'
+        <if test="keyword != null and keyword != ''">
+            AND (user_id LIKE CONCAT('%', #{keyword}, '%')
+              OR nickname LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="excludePermissionCode != null and excludePermissionCode != ''">
+            AND user_idx NOT IN (
+                SELECT user_idx FROM ADMIN_PERMISSION
+                WHERE permission_code = #{excludePermissionCode} AND is_active = 1
+            )
+        </if>
+        <if test="excludeGroupCode != null and excludeGroupCode != ''">
+            AND user_idx NOT IN (
+                SELECT user_idx FROM ADMIN_PERMISSION_GROUP
+                WHERE group_code = #{excludeGroupCode} AND is_active = 1
+            )
+        </if>
+        <if test="excludeTemplateCode != null and excludeTemplateCode != ''">
+            AND admin_permission_code != #{excludeTemplateCode}
+        </if>
+        ORDER BY nickname
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
     <!-- ══════════════════════════════════════════
          관리자 등록 / 해제
     ══════════════════════════════════════════ -->
@@ -163,14 +254,18 @@
          보유 권한 목록
     ══════════════════════════════════════════ -->
 
-    <select id="findPermissionsByUser" resultMap="permissionRM">
-        SELECT ap.admin_permission_idx, ap.user_idx, ap.permission_code,
-               ap.is_active, ap.created_at,
-               app.display_name, app.description
-        FROM ADMIN_PERMISSION ap
-        JOIN ADMIN_PERMISSION_POLICY app ON ap.permission_code = app.permission_code
-        WHERE ap.user_idx = #{userIdx} AND ap.is_active = 1
-        ORDER BY app.priority DESC
+    <select id="findPermissionsByUser" resultType="org.triptogether.superAdmin.vo.SuperAdminPermissionVO">
+        SELECT v.user_idx        AS userIdx,
+               v.permission_code AS permissionCode,
+               1                 AS active,
+               pp.display_name   AS displayName,
+               pp.description    AS description,
+               v.permission_source   AS permissionSource,
+               v.source_group_code   AS sourceGroupCode
+        FROM ADMIN_EFFECTIVE_PERMISSION_VW v
+        JOIN ADMIN_PERMISSION_POLICY pp ON v.permission_code = pp.permission_code
+        WHERE v.user_idx = #{userIdx}
+        ORDER BY pp.priority DESC
     </select>
 
     <!-- ══════════════════════════════════════════
@@ -182,10 +277,15 @@
         WHERE user_idx = #{userIdx} AND permission_code = #{permissionCode}
     </select>
 
+    <select id="countActivePermission" resultType="int">
+        SELECT COUNT(*) FROM ADMIN_PERMISSION
+        WHERE user_idx = #{userIdx} AND permission_code = #{permissionCode} AND is_active = 1
+    </select>
+
     <insert id="grantPermission">
         INSERT INTO ADMIN_PERMISSION (user_idx, permission_code, is_active, granted_by_user_idx, created_by_user_idx, updated_by_user_idx, priority)
         VALUES (#{userIdx}, #{permissionCode}, 1, #{grantedBy}, #{grantedBy}, #{grantedBy}, 1)
-        ON DUPLICATE KEY UPDATE is_active = 1, updated_by_user_idx = #{grantedBy}, updated_at = NOW()
+        ON DUPLICATE KEY UPDATE is_active = 1, granted_by_user_idx = #{grantedBy}, updated_by_user_idx = #{grantedBy}, updated_at = NOW()
     </insert>
 
     <update id="revokePermission">
@@ -197,6 +297,26 @@
     <update id="revokeAllPermissions">
         UPDATE ADMIN_PERMISSION SET is_active = 0 WHERE user_idx = #{userIdx}
     </update>
+
+    <!-- ══════════════════════════════════════════
+         권한 변경 이력
+    ══════════════════════════════════════════ -->
+
+    <select id="findPermissionAuditLog" resultMap="auditLogRM">
+        SELECT ap.admin_permission_idx, ap.user_idx, ap.permission_code,
+               pp.display_name, ap.is_active,
+               gb.nickname AS granted_by_nickname,
+               rb.nickname AS requested_by_nickname,
+               ab.nickname AS approved_by_nickname,
+               ap.description, ap.granted_at, ap.revoked_at, ap.created_at, ap.updated_at
+        FROM ADMIN_PERMISSION ap
+        JOIN ADMIN_PERMISSION_POLICY pp ON ap.permission_code = pp.permission_code
+        LEFT JOIN USERS gb ON ap.granted_by_user_idx  = gb.user_idx
+        LEFT JOIN USERS rb ON ap.granted_request_by_user_idx  = rb.user_idx
+        LEFT JOIN USERS ab ON ap.granted_approval_by_user_idx = ab.user_idx
+        WHERE ap.user_idx = #{userIdx}
+        ORDER BY ap.updated_at DESC
+    </select>
 
     <!-- ══════════════════════════════════════════
          계층 구조용 전체 관리자 조회
@@ -217,7 +337,7 @@
     ══════════════════════════════════════════ -->
 
     <select id="findAllPositionPolicies" resultType="org.triptogether.superAdmin.vo.SuperAdminPositionPolicyVO">
-        SELECT admin_position_code, display_name
+        SELECT admin_position_code AS adminPositionCode, display_name AS displayName
         FROM ADMIN_POSITION_POLICY
         WHERE is_active = 1
         ORDER BY sort_order ASC
@@ -228,7 +348,7 @@
     ══════════════════════════════════════════ -->
 
     <select id="findAllPermissionCodePolicies" resultType="org.triptogether.superAdmin.vo.SuperAdminPermissionCodePolicyVO">
-        SELECT admin_permission_code, display_name, description
+        SELECT admin_permission_code AS adminPermissionCode, display_name AS displayName, description
         FROM ADMIN_PERMISSION_CODE_POLICY
         WHERE is_active = 1
         ORDER BY priority DESC
@@ -246,7 +366,7 @@
     </select>
 
     <!-- ══════════════════════════════════════════
-         급여/역량 현황 일람표
+         급여/역량 현황 일람표 (서버사이드 필터·페이지네이션)
     ══════════════════════════════════════════ -->
 
     <select id="findAllForSalaryTable" resultMap="memberRM">
@@ -259,8 +379,57 @@
         FROM USERS u
         LEFT JOIN USERS m ON u.admin_manager = m.user_idx
         WHERE u.user_role = 'ADMIN'
+        <if test="keyword != null and keyword != ''">
+            AND (u.nickname        LIKE CONCAT('%', #{keyword}, '%')
+              OR u.admin_department LIKE CONCAT('%', #{keyword}, '%')
+              OR u.admin_title      LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="filterDepartment != null and filterDepartment != ''">
+            AND u.admin_department = #{filterDepartment}
+        </if>
+        <if test="filterPermissionCode != null and filterPermissionCode != ''">
+            AND u.admin_permission_code = #{filterPermissionCode}
+        </if>
+        <if test="filterAccountStatus != null and filterAccountStatus != ''">
+            AND u.account_status = #{filterAccountStatus}
+        </if>
         ORDER BY u.admin_department ASC, u.nickname ASC
+        LIMIT #{pageSize} OFFSET #{offset}
     </select>
+
+    <select id="countForSalaryTable" resultType="int">
+        SELECT COUNT(*) FROM USERS u
+        WHERE u.user_role = 'ADMIN'
+        <if test="keyword != null and keyword != ''">
+            AND (u.nickname        LIKE CONCAT('%', #{keyword}, '%')
+              OR u.admin_department LIKE CONCAT('%', #{keyword}, '%')
+              OR u.admin_title      LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="filterDepartment != null and filterDepartment != ''">
+            AND u.admin_department = #{filterDepartment}
+        </if>
+        <if test="filterPermissionCode != null and filterPermissionCode != ''">
+            AND u.admin_permission_code = #{filterPermissionCode}
+        </if>
+        <if test="filterAccountStatus != null and filterAccountStatus != ''">
+            AND u.account_status = #{filterAccountStatus}
+        </if>
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         급여/역량 수정
+    ══════════════════════════════════════════ -->
+
+    <update id="updateSalary">
+        UPDATE USERS SET
+            admin_seniority = #{adminSeniority},
+            admin_tier      = #{adminTier},
+            admin_level     = #{adminLevel},
+            admin_band      = #{adminBand},
+            admin_grade     = #{adminGrade},
+            admin_step      = #{adminStep}
+        WHERE user_idx = #{userIdx}
+    </update>
 
     <!-- ══════════════════════════════════════════
          통계: 분포 집계
@@ -268,38 +437,78 @@
 
     <select id="getStatsByPosition" resultType="org.triptogether.superAdmin.vo.SuperAdminStatsVO">
         SELECT COALESCE(admin_position_code, '미지정') AS label, COUNT(*) AS count
-        FROM USERS
-        WHERE user_role = 'ADMIN'
-        GROUP BY admin_position_code
-        ORDER BY count DESC
+        FROM USERS WHERE user_role = 'ADMIN'
+        GROUP BY admin_position_code ORDER BY count DESC
     </select>
 
     <select id="getStatsByPermissionCode" resultType="org.triptogether.superAdmin.vo.SuperAdminStatsVO">
         SELECT COALESCE(admin_permission_code, '미지정') AS label, COUNT(*) AS count
-        FROM USERS
-        WHERE user_role = 'ADMIN'
-        GROUP BY admin_permission_code
-        ORDER BY count DESC
+        FROM USERS WHERE user_role = 'ADMIN'
+        GROUP BY admin_permission_code ORDER BY count DESC
     </select>
 
     <select id="getStatsByTier" resultType="org.triptogether.superAdmin.vo.SuperAdminStatsVO">
         SELECT COALESCE(admin_tier, '미지정') AS label, COUNT(*) AS count
-        FROM USERS
-        WHERE user_role = 'ADMIN'
-        GROUP BY admin_tier
-        ORDER BY count DESC
+        FROM USERS WHERE user_role = 'ADMIN'
+        GROUP BY admin_tier ORDER BY count DESC
     </select>
 
     <select id="getStatsByDepartment" resultType="org.triptogether.superAdmin.vo.SuperAdminStatsVO">
         SELECT COALESCE(admin_department, '미지정') AS label, COUNT(*) AS count
-        FROM USERS
-        WHERE user_role = 'ADMIN'
-        GROUP BY admin_department
-        ORDER BY count DESC
+        FROM USERS WHERE user_role = 'ADMIN'
+        GROUP BY admin_department ORDER BY count DESC
     </select>
 
     <select id="countAllAdmins" resultType="int">
         SELECT COUNT(*) FROM USERS WHERE user_role = 'ADMIN'
+    </select>
+
+    <select id="countSuperAdmins" resultType="int">
+        SELECT COUNT(*) FROM USERS WHERE user_role = 'SUPERADMIN'
+    </select>
+
+    <select id="countSuperAdminsInList" resultType="int">
+        SELECT COUNT(*) FROM USERS
+        WHERE user_role = 'SUPERADMIN'
+        AND user_idx IN
+        <foreach collection="list" item="idx" open="(" separator="," close=")">
+            #{idx}
+        </foreach>
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         예외 리포트
+    ══════════════════════════════════════════ -->
+
+    <select id="findDormantAdmins" resultMap="memberRM">
+        SELECT user_idx, nickname, user_email, last_login_at,
+               admin_department, admin_title, admin_permission_code
+        FROM USERS
+        WHERE user_role = 'ADMIN'
+          AND (last_login_at IS NULL OR last_login_at &lt; DATE_SUB(NOW(), INTERVAL 90 DAY))
+        ORDER BY last_login_at ASC
+        LIMIT 50
+    </select>
+
+    <select id="findAdminsWithoutPermissions" resultMap="memberRM">
+        SELECT u.user_idx, u.nickname, u.user_email, u.admin_department, u.admin_title
+        FROM USERS u
+        WHERE u.user_role = 'ADMIN'
+          AND NOT EXISTS (
+              SELECT 1 FROM ADMIN_PERMISSION ap
+              WHERE ap.user_idx = u.user_idx AND ap.is_active = 1
+          )
+        ORDER BY u.nickname ASC
+        LIMIT 50
+    </select>
+
+    <select id="findAdminsWithoutManager" resultMap="memberRM">
+        SELECT user_idx, nickname, user_email, admin_department, admin_title
+        FROM USERS
+        WHERE user_role = 'ADMIN'
+          AND admin_manager IS NULL
+        ORDER BY nickname ASC
+        LIMIT 50
     </select>
 
     <!-- ══════════════════════════════════════════
@@ -308,32 +517,435 @@
 
     <update id="updateAdminInfo">
         UPDATE USERS SET
-            admin_organization  = #{adminOrganization},
-            admin_division      = #{adminDivision},
-            admin_department    = #{adminDepartment},
-            admin_unit          = #{adminUnit},
-            admin_team          = #{adminTeam},
-            admin_location      = #{adminLocation},
-            admin_track         = #{adminTrack},
-            admin_family        = #{adminFamily},
-            admin_function      = #{adminFunction},
-            admin_discipline    = #{adminDiscipline},
-            admin_role          = #{adminRole},
-            admin_position      = #{adminPosition},
-            admin_position_code = #{adminPositionCode},
-            admin_title         = #{adminTitle},
-            admin_rank          = #{adminRank},
-            admin_seniority     = #{adminSeniority},
-            admin_tier          = #{adminTier},
-            admin_level         = #{adminLevel},
-            admin_band          = #{adminBand},
-            admin_grade         = #{adminGrade},
-            admin_step          = #{adminStep},
-            admin_responsibility = #{adminResponsibility},
-            admin_permission    = #{adminPermission},
-            admin_permission_code = #{adminPermissionCode},
-            admin_manager       = #{adminManager}
+            admin_organization   = NULLIF(#{adminOrganization},  ''),
+            admin_division       = NULLIF(#{adminDivision},      ''),
+            admin_department     = NULLIF(#{adminDepartment},    ''),
+            admin_unit           = NULLIF(#{adminUnit},          ''),
+            admin_team           = NULLIF(#{adminTeam},          ''),
+            admin_location       = NULLIF(#{adminLocation},      ''),
+            admin_track          = NULLIF(#{adminTrack},         ''),
+            admin_family         = NULLIF(#{adminFamily},        ''),
+            admin_function       = NULLIF(#{adminFunction},      ''),
+            admin_discipline     = NULLIF(#{adminDiscipline},    ''),
+            admin_role           = NULLIF(#{adminRole},          ''),
+            admin_position       = NULLIF(#{adminPosition},      ''),
+            admin_position_code  = NULLIF(#{adminPositionCode},  ''),
+            admin_title          = NULLIF(#{adminTitle},         ''),
+            admin_rank           = NULLIF(#{adminRank},          ''),
+            admin_seniority      = NULLIF(#{adminSeniority},     ''),
+            admin_tier           = NULLIF(#{adminTier},          ''),
+            admin_level          = NULLIF(#{adminLevel},         ''),
+            admin_band           = NULLIF(#{adminBand},          ''),
+            admin_grade          = NULLIF(#{adminGrade},         ''),
+            admin_step           = NULLIF(#{adminStep},          ''),
+            admin_responsibility = NULLIF(#{adminResponsibility},''),
+            admin_permission     = NULLIF(#{adminPermission},    ''),
+            admin_permission_code = NULLIF(#{adminPermissionCode},''),
+            admin_manager        = #{adminManager}
         WHERE user_idx = #{userIdx}
     </update>
+
+    <!-- ══════════════════════════════════════════
+         그룹 소속 관리
+    ══════════════════════════════════════════ -->
+
+    <select id="findAdminGroups" resultType="org.triptogether.superAdmin.vo.SuperAdminAdminGroupVO">
+        SELECT apg.admin_permission_group_idx  AS adminPermissionGroupIdx,
+               apg.user_idx                   AS userIdx,
+               apg.group_code                 AS groupCode,
+               policy.display_name            AS displayName,
+               policy.description             AS description,
+               apg.is_active                  AS active,
+               gb.nickname                    AS grantedByNickname,
+               apg.granted_at                 AS grantedAt
+        FROM ADMIN_PERMISSION_GROUP apg
+        JOIN ADMIN_PERMISSION_GROUP_POLICY policy ON apg.group_code = policy.group_code
+        LEFT JOIN USERS gb ON apg.granted_by_user_idx = gb.user_idx
+        WHERE apg.user_idx = #{userIdx} AND apg.is_active = 1
+        ORDER BY apg.granted_at DESC
+    </select>
+
+    <select id="findGroupMembers" resultType="org.triptogether.superAdmin.vo.SuperAdminGroupMemberVO">
+        SELECT apg.admin_permission_group_idx  AS adminPermissionGroupIdx,
+               apg.user_idx                   AS userIdx,
+               apg.group_code                 AS groupCode,
+               apg.is_active                  AS active,
+               u.nickname                     AS nickname,
+               u.user_id                      AS userId,
+               gb.nickname                    AS grantedByNickname,
+               apg.granted_at                 AS grantedAt
+        FROM ADMIN_PERMISSION_GROUP apg
+        JOIN USERS u ON apg.user_idx = u.user_idx
+        LEFT JOIN USERS gb ON apg.granted_by_user_idx = gb.user_idx
+        WHERE apg.group_code = #{groupCode} AND apg.is_active = 1
+        ORDER BY apg.granted_at DESC
+    </select>
+
+    <select id="findGroupAuditLog" resultType="org.triptogether.superAdmin.vo.SuperAdminAdminGroupVO">
+        SELECT apg.admin_permission_group_idx AS adminPermissionGroupIdx,
+               apg.user_idx                  AS userIdx,
+               apg.group_code                AS groupCode,
+               policy.display_name           AS displayName,
+               apg.is_active                 AS active,
+               gb.nickname                   AS grantedByNickname,
+               apg.granted_at                AS grantedAt,
+               apg.revoked_at                AS revokedAt
+        FROM ADMIN_PERMISSION_GROUP apg
+        JOIN ADMIN_PERMISSION_GROUP_POLICY policy ON apg.group_code = policy.group_code
+        LEFT JOIN USERS gb ON apg.granted_by_user_idx = gb.user_idx
+        WHERE apg.user_idx = #{userIdx}
+        ORDER BY apg.granted_at DESC
+    </select>
+
+    <insert id="insertAdminGroup">
+        INSERT INTO ADMIN_PERMISSION_GROUP
+            (user_idx, group_code, is_active, granted_by_user_idx, granted_at,
+             created_by_user_idx, updated_by_user_idx, priority)
+        VALUES
+            (#{userIdx}, #{groupCode}, 1, #{grantedBy}, NOW(),
+             #{grantedBy}, #{grantedBy}, 1)
+        ON DUPLICATE KEY UPDATE
+            is_active = 1,
+            granted_by_user_idx = #{grantedBy},
+            revoked_at = NULL,
+            updated_by_user_idx = #{grantedBy},
+            updated_at = NOW()
+    </insert>
+
+    <update id="revokeAdminGroup">
+        UPDATE ADMIN_PERMISSION_GROUP
+        SET is_active = 0, revoked_at = NOW()
+        WHERE user_idx = #{userIdx} AND group_code = #{groupCode}
+    </update>
+
+    <!-- ══════════════════════════════════════════
+         권한 그룹 정책 목록
+    ══════════════════════════════════════════ -->
+
+    <select id="findAllGroupPolicies" resultMap="groupPolicyRM">
+        SELECT p.admin_permission_group_policy_idx, p.group_code, p.display_name, p.description,
+               p.is_active, p.priority, p.created_at,
+               COUNT(i.admin_permission_group_item_idx) AS item_count
+        FROM ADMIN_PERMISSION_GROUP_POLICY p
+        LEFT JOIN ADMIN_PERMISSION_GROUP_ITEM i ON p.group_code = i.group_code AND i.is_active = 1
+        GROUP BY p.admin_permission_group_policy_idx, p.group_code, p.display_name, p.description,
+                 p.is_active, p.priority, p.created_at
+        ORDER BY p.priority DESC, p.created_at DESC
+    </select>
+
+    <select id="findGroupItems" resultType="org.triptogether.superAdmin.vo.SuperAdminGroupItemVO">
+        SELECT i.admin_permission_group_item_idx AS adminPermissionGroupItemIdx,
+               i.group_code                     AS groupCode,
+               i.permission_code                AS permissionCode,
+               pp.display_name                  AS displayName,
+               i.is_active                      AS active
+        FROM ADMIN_PERMISSION_GROUP_ITEM i
+        JOIN ADMIN_PERMISSION_POLICY pp ON i.permission_code = pp.permission_code
+        WHERE i.group_code = #{groupCode} AND i.is_active = 1
+        ORDER BY pp.priority DESC
+    </select>
+
+    <insert id="insertGroup">
+        INSERT INTO ADMIN_PERMISSION_GROUP_POLICY
+            (group_code, display_name, description, is_active, created_by_user_idx, updated_by_user_idx, priority)
+        VALUES
+            (#{groupCode}, #{displayName}, #{description}, 1, #{createdBy}, #{createdBy}, 1)
+    </insert>
+
+    <update id="toggleGroupActive">
+        UPDATE ADMIN_PERMISSION_GROUP_POLICY
+        SET is_active = #{active}, updated_by_user_idx = #{updatedBy}, updated_at = NOW()
+        WHERE group_code = #{groupCode}
+    </update>
+
+    <insert id="addGroupItem">
+        INSERT INTO ADMIN_PERMISSION_GROUP_ITEM
+            (group_code, permission_code, is_active, created_by_user_idx, updated_by_user_idx, priority)
+        VALUES (#{groupCode}, #{permissionCode}, 1, #{createdBy}, #{createdBy}, 1)
+        ON DUPLICATE KEY UPDATE is_active = 1, updated_by_user_idx = #{createdBy}, updated_at = NOW()
+    </insert>
+
+    <update id="removeGroupItem">
+        UPDATE ADMIN_PERMISSION_GROUP_ITEM SET is_active = 0
+        WHERE group_code = #{groupCode} AND permission_code = #{permissionCode}
+    </update>
+
+    <delete id="deleteGroupMembers">
+        DELETE FROM ADMIN_PERMISSION_GROUP WHERE group_code = #{groupCode}
+    </delete>
+
+    <delete id="deleteGroupItems">
+        DELETE FROM ADMIN_PERMISSION_GROUP_ITEM WHERE group_code = #{groupCode}
+    </delete>
+
+    <delete id="deleteGroupPolicy">
+        DELETE FROM ADMIN_PERMISSION_GROUP_POLICY WHERE group_code = #{groupCode}
+    </delete>
+
+    <!-- ══════════════════════════════════════════
+         권한 요청 워크플로우
+    ══════════════════════════════════════════ -->
+
+    <select id="findPendingRequests" resultMap="permRequestRM">
+        SELECT ap.admin_permission_idx, ap.user_idx,
+               u.nickname  AS user_nickname,
+               ap.permission_code,
+               pp.display_name AS permission_display_name,
+               r.nickname  AS requested_by_nickname,
+               ap.description, ap.created_at
+        FROM ADMIN_PERMISSION ap
+        JOIN USERS u  ON ap.user_idx = u.user_idx
+        JOIN ADMIN_PERMISSION_POLICY pp ON ap.permission_code = pp.permission_code
+        LEFT JOIN USERS r ON ap.granted_request_by_user_idx = r.user_idx
+        WHERE ap.is_active = 0
+          AND ap.granted_request_by_user_idx  IS NOT NULL
+          AND ap.granted_approval_by_user_idx IS NULL
+          AND ap.revoked_at IS NULL
+        ORDER BY ap.created_at DESC
+    </select>
+
+    <select id="countPendingRequests" resultType="int">
+        SELECT COUNT(*) FROM ADMIN_PERMISSION
+        WHERE is_active = 0
+          AND granted_request_by_user_idx  IS NOT NULL
+          AND granted_approval_by_user_idx IS NULL
+          AND revoked_at IS NULL
+    </select>
+
+    <insert id="createPermissionRequest">
+        INSERT INTO ADMIN_PERMISSION
+            (user_idx, permission_code, is_active, granted_request_by_user_idx,
+             description, created_by_user_idx, updated_by_user_idx, priority)
+        VALUES
+            (#{userIdx}, #{permissionCode}, 0, #{requestedBy},
+             #{description}, #{requestedBy}, #{requestedBy}, 1)
+        ON DUPLICATE KEY UPDATE
+            granted_request_by_user_idx  = IF(is_active = 0, #{requestedBy}, granted_request_by_user_idx),
+            granted_approval_by_user_idx = IF(is_active = 0, NULL,           granted_approval_by_user_idx),
+            revoked_at                   = IF(is_active = 0, NULL,           revoked_at),
+            description                  = IF(is_active = 0, #{description}, description),
+            updated_by_user_idx          = #{requestedBy},
+            updated_at                   = NOW()
+    </insert>
+
+    <update id="approvePermissionRequest">
+        UPDATE ADMIN_PERMISSION
+        SET is_active                    = 1,
+            granted_by_user_idx          = #{approvedBy},
+            granted_approval_by_user_idx = #{approvedBy},
+            updated_by_user_idx          = #{approvedBy},
+            updated_at                   = NOW()
+        WHERE admin_permission_idx       = #{adminPermissionIdx}
+          AND is_active = 0
+          AND granted_request_by_user_idx  IS NOT NULL
+          AND granted_approval_by_user_idx IS NULL
+          AND revoked_at IS NULL
+    </update>
+
+    <update id="rejectPermissionRequest">
+        UPDATE ADMIN_PERMISSION
+        SET revoked_at                   = NOW(),
+            granted_approval_by_user_idx = #{approvedBy},
+            updated_by_user_idx          = #{approvedBy},
+            updated_at                   = NOW()
+        WHERE admin_permission_idx       = #{adminPermissionIdx}
+          AND is_active = 0
+          AND granted_request_by_user_idx  IS NOT NULL
+          AND granted_approval_by_user_idx IS NULL
+          AND revoked_at IS NULL
+    </update>
+
+    <!-- ══════════════════════════════════════════
+         일괄 처리
+    ══════════════════════════════════════════ -->
+
+    <update id="bulkRevokeAdmin">
+        UPDATE USERS SET user_role = 'USER'
+        WHERE user_idx IN
+        <foreach collection="list" item="idx" open="(" separator="," close=")">
+            #{idx}
+        </foreach>
+    </update>
+
+    <update id="bulkRevokeAllPermissions">
+        UPDATE ADMIN_PERMISSION SET is_active = 0
+        WHERE user_idx IN
+        <foreach collection="list" item="idx" open="(" separator="," close=")">
+            #{idx}
+        </foreach>
+    </update>
+
+    <!-- ══════════════════════════════════════════
+         실효 권한 코드 변경
+    ══════════════════════════════════════════ -->
+
+    <update id="updatePermissionCode">
+        UPDATE USERS
+        SET admin_permission_code = #{permissionCode, jdbcType=VARCHAR}
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <!-- ══════════════════════════════════════════
+         실효 권한 코드 정책 CRUD
+    ══════════════════════════════════════════ -->
+
+    <select id="findAllPermissionCodePoliciesWithCount" resultType="org.triptogether.superAdmin.vo.SuperAdminPermissionCodePolicyVO">
+        SELECT p.admin_permission_code    AS adminPermissionCode,
+               p.display_name            AS displayName,
+               p.description             AS description,
+               p.is_active               AS active,
+               COUNT(DISTINCT pi.admin_permission_code_permission_item_idx) AS permissionItemCount,
+               COUNT(DISTINCT gi.admin_permission_code_group_item_idx)      AS groupItemCount
+        FROM ADMIN_PERMISSION_CODE_POLICY p
+        LEFT JOIN ADMIN_PERMISSION_CODE_PERMISSION_ITEM pi
+               ON pi.admin_permission_code = p.admin_permission_code AND pi.is_active = 1
+        LEFT JOIN ADMIN_PERMISSION_CODE_GROUP_ITEM gi
+               ON gi.admin_permission_code = p.admin_permission_code AND gi.is_active = 1
+        GROUP BY p.admin_permission_code, p.display_name, p.description, p.is_active, p.priority
+        ORDER BY p.priority, p.admin_permission_code
+    </select>
+
+    <insert id="insertPermissionCode">
+        INSERT INTO ADMIN_PERMISSION_CODE_POLICY
+            (admin_permission_code, display_name, description, is_active, created_by_user_idx, created_at, updated_at, priority)
+        VALUES
+            (#{adminPermissionCode}, #{displayName}, #{description, jdbcType=VARCHAR}, 1,
+             #{createdBy, jdbcType=BIGINT}, NOW(), NOW(),
+             (SELECT COALESCE(MAX(priority), 0) + 1 FROM ADMIN_PERMISSION_CODE_POLICY p2))
+    </insert>
+
+    <update id="togglePermissionCodeActive">
+        UPDATE ADMIN_PERMISSION_CODE_POLICY
+        SET is_active = #{active}, updated_by_user_idx = #{updatedBy}, updated_at = NOW()
+        WHERE admin_permission_code = #{adminPermissionCode}
+    </update>
+
+    <delete id="deletePermissionCode">
+        DELETE FROM ADMIN_PERMISSION_CODE_POLICY WHERE admin_permission_code = #{adminPermissionCode}
+    </delete>
+
+    <select id="countAdminsByPermissionCode" resultType="int">
+        SELECT COUNT(*) FROM USERS WHERE admin_permission_code = #{adminPermissionCode}
+    </select>
+
+    <select id="findCodePermissionItems" resultType="org.triptogether.superAdmin.vo.SuperAdminGroupItemVO">
+        SELECT i.admin_permission_code_permission_item_idx AS adminPermissionGroupItemIdx,
+               i.permission_code AS permissionCode,
+               p.display_name    AS displayName
+        FROM ADMIN_PERMISSION_CODE_PERMISSION_ITEM i
+        JOIN ADMIN_PERMISSION_POLICY p ON p.permission_code = i.permission_code
+        WHERE i.admin_permission_code = #{adminPermissionCode} AND i.is_active = 1
+        ORDER BY i.priority, i.permission_code
+    </select>
+
+    <select id="findCodeGroupItems" resultType="org.triptogether.superAdmin.vo.SuperAdminGroupPolicyVO">
+        SELECT i.group_code   AS groupCode,
+               g.display_name AS displayName,
+               g.description  AS description
+        FROM ADMIN_PERMISSION_CODE_GROUP_ITEM i
+        JOIN ADMIN_PERMISSION_GROUP_POLICY g ON g.group_code = i.group_code
+        WHERE i.admin_permission_code = #{adminPermissionCode} AND i.is_active = 1
+        ORDER BY i.priority, i.group_code
+    </select>
+
+    <insert id="addCodePermissionItem">
+        INSERT INTO ADMIN_PERMISSION_CODE_PERMISSION_ITEM
+            (admin_permission_code, permission_code, is_active, created_by_user_idx, created_at, updated_at, priority)
+        VALUES
+            (#{adminPermissionCode}, #{permissionCode}, 1, #{createdBy, jdbcType=BIGINT}, NOW(), NOW(),
+             (SELECT COALESCE(MAX(priority), 0) + 1 FROM ADMIN_PERMISSION_CODE_PERMISSION_ITEM t2
+              WHERE t2.admin_permission_code = #{adminPermissionCode}))
+    </insert>
+
+    <update id="removeCodePermissionItem">
+        UPDATE ADMIN_PERMISSION_CODE_PERMISSION_ITEM
+        SET is_active = 0
+        WHERE admin_permission_code = #{adminPermissionCode} AND permission_code = #{permissionCode}
+    </update>
+
+    <insert id="addCodeGroupItem">
+        INSERT INTO ADMIN_PERMISSION_CODE_GROUP_ITEM
+            (admin_permission_code, group_code, is_active, created_by_user_idx, created_at, updated_at, priority)
+        VALUES
+            (#{adminPermissionCode}, #{groupCode}, 1, #{createdBy, jdbcType=BIGINT}, NOW(), NOW(),
+             (SELECT COALESCE(MAX(priority), 0) + 1 FROM ADMIN_PERMISSION_CODE_GROUP_ITEM t2
+              WHERE t2.admin_permission_code = #{adminPermissionCode}))
+    </insert>
+
+    <update id="removeCodeGroupItem">
+        UPDATE ADMIN_PERMISSION_CODE_GROUP_ITEM
+        SET is_active = 0
+        WHERE admin_permission_code = #{adminPermissionCode} AND group_code = #{groupCode}
+    </update>
+
+    <select id="findAdminsByPermissionCode" resultMap="memberRM">
+        SELECT user_idx, user_id, nickname, user_email, account_status
+        FROM USERS
+        WHERE admin_permission_code = #{adminPermissionCode}
+        ORDER BY nickname
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         개별 권한 정책 관리
+    ══════════════════════════════════════════ -->
+
+    <select id="findAllPermissionPoliciesForManage" resultType="org.triptogether.superAdmin.vo.SuperAdminPermissionVO">
+        SELECT p.permission_code  AS permissionCode,
+               p.display_name     AS displayName,
+               p.description      AS description,
+               p.is_active        AS active,
+               p.priority         AS priority,
+               (SELECT COUNT(*) FROM ADMIN_PERMISSION ap
+                WHERE ap.permission_code = p.permission_code AND ap.is_active = 1) AS usageCount
+        FROM ADMIN_PERMISSION_POLICY p
+        ORDER BY CASE WHEN p.permission_code = 'SUPER_ADMIN' THEN 0 ELSE 1 END, p.priority, p.permission_code
+    </select>
+
+    <select id="findGroupsByPermissionCode" resultType="org.triptogether.superAdmin.vo.SuperAdminGroupPolicyVO">
+        SELECT g.group_code   AS groupCode,
+               g.display_name AS displayName,
+               g.description  AS description
+        FROM ADMIN_PERMISSION_GROUP_ITEM i
+        JOIN ADMIN_PERMISSION_GROUP_POLICY g ON g.group_code = i.group_code
+        WHERE i.permission_code = #{permissionCode} AND i.is_active = 1
+        ORDER BY g.group_code
+    </select>
+
+    <select id="findCodesByPermissionCode" resultType="org.triptogether.superAdmin.vo.SuperAdminPermissionCodePolicyVO">
+        SELECT p.admin_permission_code AS adminPermissionCode,
+               p.display_name         AS displayName,
+               p.description          AS description
+        FROM ADMIN_PERMISSION_CODE_PERMISSION_ITEM i
+        JOIN ADMIN_PERMISSION_CODE_POLICY p ON p.admin_permission_code = i.admin_permission_code
+        WHERE i.permission_code = #{permissionCode} AND i.is_active = 1
+        ORDER BY p.admin_permission_code
+    </select>
+
+    <select id="findAdminsByDirectPermission" resultMap="memberRM">
+        SELECT u.user_idx, u.user_id, u.nickname, u.user_email, u.account_status
+        FROM ADMIN_PERMISSION ap
+        JOIN USERS u ON u.user_idx = ap.user_idx
+        WHERE ap.permission_code = #{permissionCode} AND ap.is_active = 1
+        ORDER BY u.nickname
+    </select>
+
+    <insert id="insertPermissionPolicy">
+        INSERT INTO ADMIN_PERMISSION_POLICY
+            (permission_code, display_name, description, is_active, created_by_user_idx, created_at, updated_at, priority)
+        VALUES
+            (#{permissionCode}, #{displayName}, #{description, jdbcType=VARCHAR}, 1,
+             #{createdBy, jdbcType=BIGINT}, NOW(), NOW(),
+             (SELECT COALESCE(MAX(priority), 0) + 1 FROM ADMIN_PERMISSION_POLICY p2))
+    </insert>
+
+    <update id="togglePermissionPolicyActive">
+        UPDATE ADMIN_PERMISSION_POLICY
+        SET is_active = #{active}, updated_by_user_idx = #{updatedBy}, updated_at = NOW()
+        WHERE permission_code = #{permissionCode}
+    </update>
+
+    <delete id="deletePermissionPolicy">
+        DELETE FROM ADMIN_PERMISSION_POLICY WHERE permission_code = #{permissionCode}
+    </delete>
 
 </mapper>

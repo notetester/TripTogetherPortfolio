@@ -89,7 +89,7 @@ Files are stored at `${file.upload.path}` (default: `src/main/resources/upload/`
 ---
 
 ## Database Schema
-DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 참고해.
+DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 참고.
 
 ---
 
@@ -103,6 +103,15 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 ## ⚠️ 작업 브랜치 규칙 (매우 중요)
 - 코드 작업은 반드시 Victor 브랜치에서만 할 것
 - dev 브랜치에서 직접 작업 절대 금지
+
+## ⚠️ Git 작업 분담 규칙
+- Claude는 `git add` + `git commit`까지만 진행
+- `git pull`, `git push origin <branch>`, PR 생성(`gh pr create` 또는 GitHub UI)은 사용자가 직접 수행
+- 커밋 여러 개로 나눠야 할 땐 Claude가 단위 제안 → 사용자 승인 후 실행
+- **커밋 메시지는 Claude가 후보 제시 → 사용자 승인 후에만 실행**
+  (메시지 내용이 중간에 바뀌면 새로 승인 요청)
+- 커밋 메시지는 기존 로그 스타일(짧은 한국어 요약) 유지
+- `--no-verify`, `--amend`, `git push --force` 등 위험 옵션은 사용자 명시 요청 시에만 사용
 
 ## Victor 담당 모듈
 - 모든 모듈 수정 가능
@@ -136,3 +145,15 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 ## 권한 체크 패턴
 - 소유자 OR 어드민만 수정/삭제 가능
 - 블로킹된 유저 → 글쓰기 시 403 반환
+
+## 커뮤니티 신고/차단 상태 규칙 (중요)
+- **신고 3회 이상 누적 (`report_count >= 3`)**:
+  - `post_status` / `comment_status`는 `'BLOCKED'`로 전환됨
+  - 그러나 일반 사용자 목록에 계속 표시됨 (리스트 쿼리 조건에 포함)
+  - 본문 BLUR 처리 + "⚠️ 신고된 콘텐츠입니다. 클릭하여 확인" 오버레이
+  - 클릭하면 블러 벗겨져 내용 공개 (점진적 공개 UX)
+- **관리자 직접 차단 (`report_count < 3` + `status='BLOCKED'`)**:
+  - 일반 사용자 목록에서 **완전 숨김** ("blind")
+  - 관리자 모드에서만 표시
+- 즉, `BLOCKED` 상태값 자체는 같음. `report_count` 조건으로 렌더링 분기
+- "BLOCKED = 안 보임"이라고 단정 금지. 반드시 `report_count`까지 확인할 것
