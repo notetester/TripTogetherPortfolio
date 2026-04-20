@@ -48,8 +48,12 @@
                     <div class="comm-carousel-vp">
                         <div class="comm-carousel-track" id="todayCarouselTrack">
                             <c:forEach var="post" items="${popularList}">
-                                <div class="comm-today-card" data-id="${post.postId}">
-                                    <div class="comm-today-card-iw">
+                                <c:set var="isBlocked"    value="${post.postStatus eq 'BLOCKED' or post.accountStatus eq 'BLOCKED'}"/>
+                                <c:set var="isReportOrAi" value="${post.reportCount >= 3 or post.aiFlagged}"/>
+                                <c:if test="${(not isBlocked) or isReportOrAi or isAdminMode}">
+                                <c:set var="isBlurred" value="${isReportOrAi and !isAdminMode}"/>
+                                <div class="comm-today-card ${isBlurred ? 'report-blurred-wrap' : ''}" data-id="${post.postId}">
+                                    <div class="comm-today-card-iw ${isBlurred ? 'report-blurred' : ''}">
                                         <c:choose>
                                             <c:when test="${not empty post.thumbUrl}">
                                                 <c:choose>
@@ -96,7 +100,7 @@
                                             </c:choose>
                                         </c:if>
                                     </div>
-                                    <div class="comm-today-card-body">
+                                    <div class="comm-today-card-body ${isBlurred ? 'report-blurred' : ''}">
                                         <div class="comm-today-card-title">${post.title}</div>
                                         <div class="comm-today-card-footer">
                                             <span class="comm-today-card-author">${post.nickname}</span>
@@ -105,7 +109,16 @@
                                             </span>
                                         </div>
                                     </div>
+                                    <c:if test="${isBlurred}">
+                                        <div class="report-blurred-overlay">
+                                            <c:choose>
+                                                <c:when test="${post.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                                                <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </c:if>
                                 </div>
+                                </c:if>
                             </c:forEach>
                         </div>
                     </div>
@@ -551,6 +564,13 @@
 
         track.querySelectorAll('.comm-today-card').forEach(function (card) {
             card.addEventListener('click', function () {
+                if (this.classList.contains('report-blurred-wrap')) {
+                    this.classList.remove('report-blurred-wrap');
+                    this.querySelectorAll('.report-blurred').forEach(function (el) { el.classList.remove('report-blurred'); });
+                    var ov = this.querySelector('.report-blurred-overlay');
+                    if (ov) ov.remove();
+                    return;
+                }
                 location.href = '${pageContext.request.contextPath}/community/' + this.getAttribute('data-id');
             });
         });

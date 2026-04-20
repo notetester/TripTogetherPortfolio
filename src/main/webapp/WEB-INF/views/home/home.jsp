@@ -208,8 +208,9 @@
                             <div class="comm-g-track">
                                 <c:forEach var="post" items="${popularPosts}">
                                     <c:set var="isBlocked" value="${post.postStatus == 'BLOCKED' or post.accountStatus == 'BLOCKED'}"/>
-                                    <c:if test="${not isBlocked or isAdminMode}">
-                                        <c:set var="isReportBlur" value="${post.reportCount >= 3 and post.postStatus == 'BLOCKED' and not isAdminMode}"/>
+                                    <c:set var="isReportOrAi" value="${post.reportCount >= 3 or post.aiFlagged}"/>
+                                    <c:if test="${not isBlocked or isReportOrAi or isAdminMode}">
+                                        <c:set var="isReportBlur" value="${isReportOrAi and not isAdminMode}"/>
                                         <c:set var="wrapClass" value="cc-wrap"/>
                                         <c:if test="${isReportBlur}"><c:set var="wrapClass" value="${wrapClass} report-blurred-wrap"/></c:if>
                                         <div class="${wrapClass}" data-id="${post.postId}">
@@ -256,10 +257,18 @@
                                                 </div>
                                             </div>
                                             <c:if test="${isReportBlur}">
-                                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)">&#9888;&#65039; 신고된 콘텐츠입니다. 클릭하여 확인</div>
+                                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)">
+                                                    <c:choose>
+                                                        <c:when test="${post.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                                                        <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                                    </c:choose>
+                                                </div>
                                             </c:if>
                                             <c:if test="${isAdminMode}">
                                                 <c:choose>
+                                                    <c:when test="${post.aiFlagged}">
+                                                        <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                                    </c:when>
                                                     <c:when test="${post.postStatus == 'BLOCKED' and post.reportCount >= 3}">
                                                         <span class="blocked-badge"><spring:message code="home.blocked.report"/></span>
                                                     </c:when>

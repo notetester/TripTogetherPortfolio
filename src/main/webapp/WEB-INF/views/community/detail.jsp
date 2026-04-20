@@ -576,12 +576,13 @@
       </c:if>
       <div class="detail-post-list">
         <c:forEach var="r" items="${relatedList}">
-          <div class="post-card-wrap" data-id="${r.postId}" data-href="${pageContext.request.contextPath}/community/${r.postId}">
+          <c:set var="isBlurred" value="${(r.reportCount >= 3 or r.aiFlagged) and !isAdminMode}"/>
+          <div class="post-card-wrap ${isBlurred ? 'report-blurred-wrap' : ''}" data-id="${r.postId}" data-href="${pageContext.request.contextPath}/community/${r.postId}">
             <c:if test="${isAdminMode}">
               <input type="checkbox" class="comm-admin-related-chk comm-admin-post-chk" data-id="${r.postId}" onclick="event.stopPropagation()">
               <button class="post-admin-delete-btn" onclick="adminDeletePost(event, ${r.postId})">✕</button>
             </c:if>
-            <div class="post-card">
+            <div class="post-card ${isBlurred ? 'report-blurred' : ''}">
               <div class="post-card-img-wrap">
                 <c:choose>
                   <c:when test="${not empty r.thumbUrl}">
@@ -627,6 +628,14 @@
                 </div>
               </div>
             </div>
+            <c:if test="${isBlurred}">
+              <div class="report-blurred-overlay">
+                <c:choose>
+                  <c:when test="${r.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                  <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                </c:choose>
+              </div>
+            </c:if>
           </div>
         </c:forEach>
       </div>
@@ -670,12 +679,13 @@
       <c:otherwise>
         <div class="detail-post-list">
           <c:forEach var="l" items="${latestList}">
-            <div class="post-card-wrap" data-id="${l.postId}" data-href="${pageContext.request.contextPath}/community/${l.postId}">
+            <c:set var="isBlurred" value="${(l.reportCount >= 3 or l.aiFlagged) and !isAdminMode}"/>
+            <div class="post-card-wrap ${isBlurred ? 'report-blurred-wrap' : ''}" data-id="${l.postId}" data-href="${pageContext.request.contextPath}/community/${l.postId}">
               <c:if test="${isAdminMode}">
                 <input type="checkbox" class="comm-admin-latest-chk comm-admin-post-chk" data-id="${l.postId}" onclick="event.stopPropagation()">
                 <button class="post-admin-delete-btn" onclick="adminDeletePost(event, ${l.postId})">✕</button>
               </c:if>
-              <div class="post-card">
+              <div class="post-card ${isBlurred ? 'report-blurred' : ''}">
                 <div class="post-card-img-wrap">
                   <c:choose>
                     <c:when test="${not empty l.thumbUrl}">
@@ -721,6 +731,14 @@
                   </div>
                 </div>
               </div>
+              <c:if test="${isBlurred}">
+                <div class="report-blurred-overlay">
+                  <c:choose>
+                    <c:when test="${l.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                    <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                  </c:choose>
+                </div>
+              </c:if>
             </div>
           </c:forEach>
         </div>
@@ -776,7 +794,16 @@ var COMMENT_OPEN_LABEL = '<spring:message code="community.detail.comments.open" 
 /* ===== 하단 카드 클릭 이동 ===== */
 document.addEventListener('click', function(e) {
   var card = e.target.closest('.post-card-wrap[data-href]');
-  if (card) location.href = card.getAttribute('data-href');
+  if (!card) return;
+  if (card.classList.contains('report-blurred-wrap')) {
+    card.classList.remove('report-blurred-wrap');
+    var inner = card.querySelector('.report-blurred');
+    if (inner) inner.classList.remove('report-blurred');
+    var ov = card.querySelector('.report-blurred-overlay');
+    if (ov) ov.remove();
+    return;
+  }
+  location.href = card.getAttribute('data-href');
 });
 
 /* ===== 댓글 툴바 ===== */
