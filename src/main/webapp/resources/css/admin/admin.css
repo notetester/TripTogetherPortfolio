@@ -61,7 +61,10 @@ body {
 .adm-brand-sub { font-size: 10px; color: #64748b; font-weight: 400; margin-top: 1px; }
 
 /* 네비게이션 */
-.adm-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+.adm-nav { flex: 1; padding: 12px 10px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #2d3748 transparent; }
+.adm-nav::-webkit-scrollbar { width: 4px; }
+.adm-nav::-webkit-scrollbar-track { background: transparent; }
+.adm-nav::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 2px; }
 
 .adm-nav-section {
     font-size: 10px; font-weight: 700;

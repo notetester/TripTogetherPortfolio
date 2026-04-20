@@ -112,7 +112,7 @@
     <%-- ══════════════════════════════════════════
          회원 목록 테이블
     ══════════════════════════════════════════ --%>
-    <div class="adm-card">
+    <div class="adm-card" style="overflow:visible;">
         <div class="adm-card-head">
             <div class="adm-card-title">
                 👥 회원 목록
@@ -129,7 +129,7 @@
             </select>
         </div>
 
-        <div class="adm-table-wrap">
+        <div class="adm-table-wrap" style="overflow:visible;">
             <table class="adm-table">
                 <thead>
                 <tr>
