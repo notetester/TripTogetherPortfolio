@@ -28,6 +28,7 @@
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/assistant'"><spring:message code="header.nav.assistant"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="header.nav.community"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/wallet'"><spring:message code="header.nav.wallet"/></button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/shop'"><spring:message code="header.nav.shop"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'"><spring:message code="header.nav.mypage"/></button>
             <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">
     <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'"><spring:message code="header.nav.admin"/></button>
