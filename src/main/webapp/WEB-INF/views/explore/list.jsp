@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<c:set var="pageCSS" value="explore/explore.css"/>
+<c:set var ="pageCSS" value="explore/explore.css"/>
 <%@ include file="../common/header.jsp" %>
 
 <body>

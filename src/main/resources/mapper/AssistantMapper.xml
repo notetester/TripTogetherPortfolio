@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.assistant.mapper.AssistantMapper">
+
+    <insert id="insertChatPost"
+            parameterType="org.triptogether.assistant.vo.ChatPostVO"
+            useGeneratedKeys="true"
+            keyProperty="chat_post_idx">
+        INSERT INTO CHAT_POST (
+        user_idx,
+        title,
+        created_at
+        ) VALUES (
+        #{user_idx},
+        #{title},
+        NOW()
+        )
+    </insert>
+
+    <insert id="insertChatComment"
+            parameterType="org.triptogether.assistant.vo.ChatCommentVO"
+            useGeneratedKeys="true"
+            keyProperty="chat_comment_idx">
+        INSERT INTO CHAT_COMMENT (
+        chat_post_idx,
+        user_idx,
+        comment_role,
+        content,
+        comment_order,
+        created_at
+        ) VALUES (
+        #{chat_post_idx},
+        #{user_idx},
+        #{comment_role},
+        #{content},
+        #{comment_order},
+        NOW()
+        )
+    </insert>
+
+</mapper>

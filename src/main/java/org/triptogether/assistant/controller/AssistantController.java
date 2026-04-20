@@ -6,10 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.assistant.service.AssistantService;
-import org.triptogether.assistant.vo.ChatMessageVO;
+import org.triptogether.auth.vo.UsersVO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -19,44 +21,62 @@ public class AssistantController {
 
     private final AssistantService assistantService;
 
-    // ─────────────────────────────────────────
-    // AI 어시스턴트 페이지
-    // ─────────────────────────────────────────
     @GetMapping("")
     public String assistantPage() {
         return "assistant/assistant";
     }
 
-    // ─────────────────────────────────────────
-    // 채팅 메시지 전송 (Ajax)
-    // ─────────────────────────────────────────
     @PostMapping("/chat")
     @ResponseBody
     public Map<String, Object> chat(
             @RequestBody Map<String, Object> payload,
             HttpSession session) {
 
-        String userMessage = (String) payload.get("message");
+        String userMessage = Objects.toString(payload.get("message"), "").trim();
 
-        // 세션에서 대화 기록 가져오기 (다중턴 지원)
+        if (userMessage.isEmpty()) {
+            return Map.of(
+                    "success", false,
+                    "answer", "메시지를 입력해주세요.",
+                    "history", new ArrayList<>()
+            );
+        }
+
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return Map.of(
+                    "success", false,
+                    "answer", "로그인 후 이용해주세요.",
+                    "history", new ArrayList<>()
+            );
+        }
+
+        // 네 UsersVO getter명에 맞게 수정
+        Long userIdx = loginUser.getUserIdx();
+
         @SuppressWarnings("unchecked")
-        List<Map<String, String>> history = (List<Map<String, String>>) session.getAttribute("chatHistory");
+        List<Map<String, String>> history =
+                (List<Map<String, String>>) session.getAttribute("chatHistory");
 
-        Map<String, Object> result = assistantService.chat(userMessage, history);
+        Long chatPostIdx = (Long) session.getAttribute("currentChatPostIdx");
 
-        // 업데이트된 대화 기록 세션에 저장
+        Map<String, Object> result =
+                assistantService.chat(userMessage, history, userIdx, chatPostIdx);
+
         session.setAttribute("chatHistory", result.get("history"));
+
+        if (result.get("chatPostIdx") != null) {
+            session.setAttribute("currentChatPostIdx", result.get("chatPostIdx"));
+        }
 
         return result;
     }
 
-    // ─────────────────────────────────────────
-    // 대화 기록 초기화 (Ajax)
-    // ─────────────────────────────────────────
     @PostMapping("/reset")
     @ResponseBody
     public Map<String, Object> resetChat(HttpSession session) {
         session.removeAttribute("chatHistory");
+        session.removeAttribute("currentChatPostIdx");
         return Map.of("success", true);
     }
 }

@@ -64,23 +64,20 @@ public class TravelPlanServiceImpl implements TravelPlanService {
     }
 
     @Override
-    public void updateTravelPlan(TravelPlanVO travelPlanVO) {
+    public void editTravelPlan(TravelPlanVO travelPlanVO) {
         TravelPlanVO savedPlan = travelPlanMapper.getTravelPlanDetail(travelPlanVO);
 
         if (savedPlan == null) {
             return;
         }
 
-        travelPlanMapper.updateTravelPlan(travelPlanVO);
-
-        // 기존 일정 내 장소 전부 삭제
+        travelPlanMapper.editTravelPlan(travelPlanVO);
         travelPlanMapper.deletePlanSpotsByPlanId(travelPlanVO.getPlan_id());
 
-        // 새 목록 다시 insert
-        if (travelPlanVO.getSpotList() == null && !travelPlanVO.getSpotList().isEmpty()) {
+        if (travelPlanVO.getSpotList() != null && !travelPlanVO.getSpotList().isEmpty()) {
             int order = 1;
             for (PlanSpotVO spot : travelPlanVO.getSpotList()) {
-                if (spot.getSpot_id() != null || spot.getSpot_id().trim().isEmpty()) {
+                if (spot.getSpot_id() == null || spot.getSpot_id().trim().isEmpty()) {
                     continue;
                 }
 
@@ -104,7 +101,6 @@ public class TravelPlanServiceImpl implements TravelPlanService {
             return;
         }
 
-        travelPlanMapper.deletePlanSpotsByPlanId(travelPlanVO.getPlan_id());
         travelPlanMapper.deleteTravelPlan(travelPlanVO);
     }
 

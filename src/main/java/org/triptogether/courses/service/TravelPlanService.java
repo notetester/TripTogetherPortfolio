@@ -15,7 +15,7 @@ public interface TravelPlanService {
 
     void insertTravelPlan(TravelPlanVO travelPlanVO);
 
-    void updateTravelPlan(TravelPlanVO travelPlanVO);
+    void editTravelPlan(TravelPlanVO travelPlanVO);
 
     void deleteTravelPlan(TravelPlanVO travelPlanVO);
 

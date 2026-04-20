@@ -1,6 +1,14 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%--<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/variables.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/reset.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/layout.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/header.css">
+
+<%@ include file="../common/header.jsp" %>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -512,7 +520,7 @@
     </style>
 </head>
 <body>
-<div class="page">
+<div class="page active">
 
     <div class="top-bar">
         <div class="title-wrap">
@@ -581,9 +589,10 @@
             </div>
 
             <div class="bottom-actions">
-                <button type="button" class="btn btn-primary" onclick="toggleEditForm()">
+                <a href="${pageContext.request.contextPath}/courses/edit?planId=${travelPlan.plan_id}"
+                   class="btn btn-primary">
                     수정하기
-                </button>
+                </a>
 
                 <form class="inline-form" method="post"
                       action="${pageContext.request.contextPath}/courses/delete"
@@ -665,10 +674,10 @@
                                         <c:out value="${visitDateStr}" />
                                     </div>
 
-                                    <div class="spot-meta-label">날짜 내 순서</div>
-                                    <div class="spot-meta-value">
-                                        <c:out value="${dayOrder}" />번째
-                                    </div>
+<%--                                    <div class="spot-meta-label">날짜 내 순서</div>--%>
+<%--                                    <div class="spot-meta-value">--%>
+<%--                                        <c:out value="${dayOrder}" />번째--%>
+<%--                                    </div>--%>
                                 </div>
                             </div>
                         </c:forEach>
@@ -684,8 +693,8 @@
             <h3 class="section-title">일정 수정</h3>
             <p class="section-desc">기본 정보와 방문 여행지를 수정한 뒤 저장할 수 있어요.</p>
 
-            <form id="updateForm"
-                  action="${pageContext.request.contextPath}/courses/update"
+            <form id="editForm"
+                  action="${pageContext.request.contextPath}/courses/edit"
                   method="post">
 
                 <input type="hidden" name="plan_id" value="${travelPlan.plan_id}">
@@ -963,5 +972,7 @@
     document.querySelectorAll("#editSpotList .edit-spot-item").forEach(bindCityInput);
     refreshEditSpotIndexes();
 </script>
+
+<%@ include file="../common/footer.jsp" %>
 </body>
 </html>
