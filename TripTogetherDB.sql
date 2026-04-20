@@ -12173,6 +12173,25 @@ DROP TABLE IF EXISTS `ADMIN_EFFECTIVE_PERMISSION_VW`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `ADMIN_EFFECTIVE_PERMISSION_VW` AS select distinct `p`.`user_idx` AS `user_idx`,`p`.`permission_code` AS `permission_code`,'DIRECT' AS `permission_source`,NULL AS `source_group_code` from `ADMIN_PERMISSION` `p` where (`p`.`is_active` = 1) union select distinct `g`.`user_idx` AS `user_idx`,`gi`.`permission_code` AS `permission_code`,'GROUP' AS `permission_source`,`g`.`group_code` AS `source_group_code` from (((`ADMIN_PERMISSION_GROUP` `g` join `ADMIN_PERMISSION_GROUP_POLICY` `gp` on(((`gp`.`group_code` = `g`.`group_code`) and (`gp`.`is_active` = 1)))) join `ADMIN_PERMISSION_GROUP_ITEM` `gi` on(((`gi`.`group_code` = `g`.`group_code`) and (`gi`.`is_active` = 1)))) join `ADMIN_PERMISSION_POLICY` `pp` on(((`pp`.`permission_code` = `gi`.`permission_code`) and (`pp`.`is_active` = 1)))) where (`g`.`is_active` = 1) union select distinct `u`.`user_idx` AS `user_idx`,`ci`.`permission_code` AS `permission_code`,'CODE_DIRECT' AS `permission_source`,`u`.`admin_permission_code` AS `source_group_code` from (((`USERS` `u` join `ADMIN_PERMISSION_CODE_POLICY` `cp` on(((`cp`.`admin_permission_code` = `u`.`admin_permission_code`) and (`cp`.`is_active` = 1)))) join `ADMIN_PERMISSION_CODE_PERMISSION_ITEM` `ci` on(((`ci`.`admin_permission_code` = `u`.`admin_permission_code`) and (`ci`.`is_active` = 1)))) join `ADMIN_PERMISSION_POLICY` `pp` on(((`pp`.`permission_code` = `ci`.`permission_code`) and (`pp`.`is_active` = 1)))) where ((`u`.`user_role` = 'ADMIN') and (`u`.`admin_permission_code` is not null)) union select distinct `u`.`user_idx` AS `user_idx`,`gi`.`permission_code` AS `permission_code`,'CODE_GROUP' AS `permission_source`,`cg`.`group_code` AS `source_group_code` from (((((`USERS` `u` join `ADMIN_PERMISSION_CODE_POLICY` `cp` on(((`cp`.`admin_permission_code` = `u`.`admin_permission_code`) and (`cp`.`is_active` = 1)))) join `ADMIN_PERMISSION_CODE_GROUP_ITEM` `cg` on(((`cg`.`admin_permission_code` = `u`.`admin_permission_code`) and (`cg`.`is_active` = 1)))) join `ADMIN_PERMISSION_GROUP_POLICY` `gp` on(((`gp`.`group_code` = `cg`.`group_code`) and (`gp`.`is_active` = 1)))) join `ADMIN_PERMISSION_GROUP_ITEM` `gi` on(((`gi`.`group_code` = `cg`.`group_code`) and (`gi`.`is_active` = 1)))) join `ADMIN_PERMISSION_POLICY` `pp` on(((`pp`.`permission_code` = `gi`.`permission_code`) and (`pp`.`is_active` = 1)))) where ((`u`.`user_role` = 'ADMIN') and (`u`.`admin_permission_code` is not null))
 ;
 
+-- 테이블 team1_db.CONTENT_MODERATION_POLICY 구조 내보내기
+CREATE TABLE IF NOT EXISTS `CONTENT_MODERATION_POLICY` (
+  `id` tinyint NOT NULL DEFAULT '1' COMMENT '단일 행 고정 (항상 1)',
+  `toxicity_level` enum('STRICT','NORMAL','LOOSE') NOT NULL DEFAULT 'NORMAL' COMMENT 'Perspective API 민감도 단계',
+  `post_window_minutes` int NOT NULL DEFAULT '5' COMMENT '게시글 도배 차단 시간창(분)',
+  `post_max_count` int NOT NULL DEFAULT '3' COMMENT '게시글 도배 차단 허용 개수',
+  `comment_window_minutes` int NOT NULL DEFAULT '1' COMMENT '댓글 도배 차단 시간창(분)',
+  `comment_max_count` int NOT NULL DEFAULT '5' COMMENT '댓글 도배 차단 허용 개수',
+  `inquiry_window_minutes` int NOT NULL DEFAULT '10' COMMENT '문의 도배 차단 시간창(분)',
+  `inquiry_max_count` int NOT NULL DEFAULT '3' COMMENT '문의 도배 차단 허용 개수',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '최종 수정 시각',
+  `updated_by_user_idx` bigint DEFAULT NULL COMMENT '최종 수정한 관리자 PK',
+  PRIMARY KEY (`id`),
+  CONSTRAINT `cmp_id_check` CHECK ((`id` = 1))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='콘텐츠 검열 정책 (단일 행)';
+
+-- 기본 정책 행 1건 삽입
+INSERT IGNORE INTO `CONTENT_MODERATION_POLICY` (`id`) VALUES (1);
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

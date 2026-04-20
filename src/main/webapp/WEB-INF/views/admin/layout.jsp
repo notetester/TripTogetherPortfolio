@@ -96,6 +96,11 @@
             <a class="adm-nav-item ${activeMenu=='superAdmin'?'active':''}" href="${pageContext.request.contextPath}/superAdmin">
                 <span class="adm-nav-icon">🔑</span> 관리자 계정 관리
             </a>
+            <c:if test="${hasContentModerationAdmin}">
+            <a class="adm-nav-item ${activeMenu=='moderation'?'active':''}" href="${pageContext.request.contextPath}/admin/moderation">
+                <span class="adm-nav-icon">🛡️</span> 콘텐츠 검열 정책
+            </a>
+            </c:if>
 
             <div style="margin-top:16px; padding: 0 10px;">
                 <a class="adm-nav-item adm-nav-ext" href="${pageContext.request.contextPath}/" target="_blank">
