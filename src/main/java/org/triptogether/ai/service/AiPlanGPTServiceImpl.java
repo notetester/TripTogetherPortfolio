@@ -1,100 +1,184 @@
 package org.triptogether.ai.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.triptogether.ai.dto.AiDayDTO;
+import org.springframework.web.client.RestTemplate;
 import org.triptogether.ai.dto.AiPlanRequestDTO;
 import org.triptogether.ai.dto.AiPlanResponseDTO;
-import org.triptogether.ai.dto.AiSpotDTO;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AiPlanGPTServiceImpl implements AiPlanGPTService {
+    private static final String TEST_API_KEY = "YOUR_OPENAI_API_KEY";
+
+    @Value("${openai.api.key}")
+    private String apiKey;
+
+    @Value("${openai.model}")
+    private String model;
+
+    private static final String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public AiPlanResponseDTO generatePlan(AiPlanRequestDTO requestDTO) {
-        LocalDate start = LocalDate.parse(requestDTO.getStartDate());
-        LocalDate end = LocalDate.parse(requestDTO.getEndDate());
 
-        long totalDays = ChronoUnit.DAYS.between(start, end) + 1;
+        System.out.println("apiKey exists = " + (apiKey != null && !apiKey.isBlank()));
+        System.out.println("model = " + model);
 
-        String destination = safeValue(requestDTO.getDestination(), "여행지");
-        String companion = safeValue(requestDTO.getCompanion(), "동행");
-        String style = safeValue(requestDTO.getStyle(), "균형형");
-        String budget = safeValue(requestDTO.getBudget(), "중간");
-        String requestText = safeValue(requestDTO.getRequestText(), "");
-
-        String title = destination + " " + totalDays + "일 AI 추천 일정";
-
-        String summary = destination + "에서 " + companion + "와(과) 함께하는 "
-                + style + " 중심의 " + totalDays + "일 여행 일정입니다. "
-                + "예산은 " + budget + " 기준으로 무리 없게 구성했습니다.";
-
-        if (!requestText.isBlank()) {
-            summary += " 추가 요청사항도 반영했습니다.";
+        if (apiKey != null && !apiKey.isBlank()) {
+            System.out.println("apiKey prefix = " + apiKey.substring(0, Math.min(12, apiKey.length())));
         }
 
-        List<AiDayDTO> dayList = new ArrayList<>();
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            // headers.setBearerAuth(apiKey);
+            headers.setBearerAuth(TEST_API_KEY.trim());
 
-        for (int i = 0; i < totalDays; i++) {
-            LocalDate currentDate = start.plusDays(i);
-            int dayNo = i + 1;
-
-            AiDayDTO day = new AiDayDTO();
-            day.setDayNo(dayNo);
-            day.setDate(currentDate.toString());
-            day.setTheme(getThemeByDay(dayNo, style));
-            day.setSpots(createSpotsByDay(dayNo, destination, style, requestText));
-
-            dayList.add(day);
-        }
-
-        AiPlanResponseDTO responseDTO = new AiPlanResponseDTO();
-        responseDTO.setTitle(title);
-        responseDTO.setSummary(summary);
-        responseDTO.setDays(dayList);
-
-        return responseDTO;
-    }
-
-    private List<AiSpotDTO> createSpotsByDay(int dayNo, String destination, String style, String requestText) {
-        List<AiSpotDTO> spots = new ArrayList<>();
-
-        if (dayNo == 1) {
-            spots.add(new AiSpotDTO(destination + " 대표 관광지", "도착 후 가볍게 둘러보기 좋은 장소입니다.", 1));
-            spots.add(new AiSpotDTO(style.contains("카페") ? "감성 카페" : "현지 인기 맛집", "첫날 부담 없이 즐기기 좋은 코스입니다.", 2));
-            spots.add(new AiSpotDTO("저녁 산책 스팟", "첫날 분위기 있게 마무리할 수 있는 장소입니다.", 3));
-        } else if (dayNo == 2) {
-            spots.add(new AiSpotDTO(destination + " 핵심 명소", "여행지의 대표 코스를 중심으로 구성했습니다.", 1));
-            spots.add(new AiSpotDTO(style.contains("액티비티") ? "체험형 액티비티 장소" : "로컬 체험 장소", "여행 스타일을 반영한 일정입니다.", 2));
-            spots.add(new AiSpotDTO(style.contains("사진") ? "포토 스팟" : "야경 명소", "하루 마무리로 추천하는 장소입니다.", 3));
-        } else {
-            spots.add(new AiSpotDTO("로컬 시장", "마지막 날 가볍게 들르기 좋은 장소입니다.", 1));
-            spots.add(new AiSpotDTO(style.contains("맛집") ? "현지 대표 음식점" : "브런치 카페", "출발 전 부담 없이 즐기기 좋은 코스입니다.", 2));
-            spots.add(new AiSpotDTO(
-                    requestText.isBlank() ? "마무리 산책 코스" : "추가 요청 반영 장소",
-                    requestText.isBlank() ? "여행을 여유롭게 마무리할 수 있는 장소입니다." : "사용자 요청사항을 반영한 추천 장소입니다.",
-                    3
+            Map<String, Object> body = new HashMap<>();
+            body.put("model", model);
+            body.put("messages", List.of(
+                    Map.of(
+                            "role", "developer",
+                            "content", buildDeveloperPrompt()
+                    ),
+                    Map.of(
+                            "role", "user",
+                            "content", buildUserPrompt(requestDTO)
+                    )
             ));
+
+            // Structured Outputs
+            body.put("response_format", buildJsonSchemaResponseFormat());
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    OPENAI_URL,
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+
+            String responseBody = response.getBody();
+            JsonNode root = objectMapper.readTree(responseBody);
+
+            String content = root.path("choices")
+                    .get(0)
+                    .path("message")
+                    .path("content")
+                    .asText();
+
+            return objectMapper.readValue(content, AiPlanResponseDTO.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("OpenAI 일정 생성 실패: " + e.getMessage(), e);
         }
-
-        return spots;
     }
 
-    private String getThemeByDay(int dayNo, String style) {
-        if (dayNo == 1) return "도착 및 가벼운 일정";
-        if (dayNo == 2) return "중심 핵심 일정";
-        return "여유로운 마무리 일정";
+    private String buildDeveloperPrompt() {
+        return """
+                너는 여행 일정 플래너다.
+                반드시 사용자의 조건에 맞는 현실적인 여행 일정을 생성한다.
+                반드시 응답은 지정된 JSON 스키마만 따른다.
+                JSON 외의 설명, 인사말, 코드블록, 마크다운은 절대 출력하지 않는다.
+                days 배열에는 날짜 순서대로 일정을 넣고,
+                각 day의 spots는 방문 순서대로 정렬한다.
+                place 이름은 자연스럽고 구체적으로 작성한다.
+                """;
     }
 
-    private String safeValue(String value, String defaultValue) {
-        return isBlank(value) ? defaultValue : value.trim();
+    private String buildUserPrompt(AiPlanRequestDTO requestDTO) {
+        return """
+                아래 조건으로 여행 일정을 생성해.
+
+                [여행 조건]
+                여행지: %s
+                시작일: %s
+                종료일: %s
+                동행: %s
+                여행스타일: %s
+                예산: %s
+                추가요청: %s
+
+                요구사항:
+                1. 일정 제목(title) 작성
+                2. 전체 요약(summary) 작성
+                3. days 배열에는 날짜별 일정 작성
+                4. 각 날짜마다 theme 작성
+                5. 각 날짜마다 최소 3개의 spots 작성
+                6. 각 spot은 name, description, visitOrder 포함
+                """.formatted(
+                nullSafe(requestDTO.getDestination()),
+                nullSafe(requestDTO.getStartDate()),
+                nullSafe(requestDTO.getEndDate()),
+                nullSafe(requestDTO.getCompanion()),
+                nullSafe(requestDTO.getStyle()),
+                nullSafe(requestDTO.getBudget()),
+                nullSafe(requestDTO.getRequestText())
+        );
     }
 
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
+    private Map<String, Object> buildJsonSchemaResponseFormat() {
+        Map<String, Object> schema = new LinkedHashMap<>();
+
+        schema.put("type", "object");
+        schema.put("additionalProperties", false);
+        schema.put("properties", Map.of(
+                "title", Map.of(
+                        "type", "string"
+                ),
+                "summary", Map.of(
+                        "type", "string"
+                ),
+                "days", Map.of(
+                        "type", "array",
+                        "items", Map.of(
+                                "type", "object",
+                                "additionalProperties", false,
+                                "properties", Map.of(
+                                        "dayNo", Map.of("type", "integer"),
+                                        "date", Map.of("type", "string"),
+                                        "theme", Map.of("type", "string"),
+                                        "spots", Map.of(
+                                                "type", "array",
+                                                "items", Map.of(
+                                                        "type", "object",
+                                                        "additionalProperties", false,
+                                                        "properties", Map.of(
+                                                                "name", Map.of("type", "string"),
+                                                                "description", Map.of("type", "string"),
+                                                                "visitOrder", Map.of("type", "integer")
+                                                        ),
+                                                        "required", List.of("name", "description", "visitOrder")
+                                                )
+                                        )
+                                ),
+                                "required", List.of("dayNo", "date", "theme", "spots")
+                        )
+                )
+        ));
+        schema.put("required", List.of("title", "summary", "days"));
+
+        return Map.of(
+                "type", "json_schema",
+                "json_schema", Map.of(
+                        "name", "travel_plan_response",
+                        "strict", true,
+                        "schema", schema
+                )
+        );
+    }
+
+    private String nullSafe(String value) {
+        return value == null ? "" : value.trim();
     }
 }

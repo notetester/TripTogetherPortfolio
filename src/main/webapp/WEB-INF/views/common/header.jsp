@@ -56,7 +56,7 @@
                     <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/logout'"><spring:message code="header.auth.logout"/></button>
                 </c:when>
                 <c:otherwise>
-                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/login'"><spring:message code="header.auth.login"/></button>
+                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search)"><spring:message code="header.auth.login"/></button>
                 </c:otherwise>
             </c:choose>
         </div>

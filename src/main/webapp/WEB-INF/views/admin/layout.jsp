@@ -12,6 +12,12 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/admin/admin.css">
 </head>
 <body>
+<script>
+(function(){
+    var t = localStorage.getItem('sa_theme');
+    if (t) document.body.classList.add(t);
+})();
+</script>
 <div class="adm-shell">
     <aside class="adm-sidebar" id="adm-sidebar">
         <a class="adm-brand" href="${pageContext.request.contextPath}/admin">
@@ -28,10 +34,15 @@
                 <span class="adm-nav-icon">📊</span> 대시보드
             </a>
 
+            <c:if test="${hasMemberAdmin or hasAuditAdmin}">
             <div class="adm-nav-section" style="margin-top:8px;">회원 / 인증</div>
+            </c:if>
+            <c:if test="${hasMemberAdmin}">
             <a class="adm-nav-item ${activeMenu=='members'?'active':''}" href="${pageContext.request.contextPath}/admin/members">
                 <span class="adm-nav-icon">👥</span> 회원 관리
             </a>
+            </c:if>
+            <c:if test="${hasAuditAdmin}">
             <a class="adm-nav-item ${activeMenu=='logins'?'active':''}" href="${pageContext.request.contextPath}/admin/logins">
                 <span class="adm-nav-icon">🔐</span> 로그인 감사
             </a>
@@ -47,22 +58,42 @@
             <a class="adm-nav-item ${activeMenu=='activityLogs'?'active':''}" href="${pageContext.request.contextPath}/admin/activity-logs">
                 <span class="adm-nav-icon">🧭</span> 일반 활동 로그
             </a>
+            </c:if>
 
+            <c:if test="${hasAnyBlockAdmin}">
+            <div class="adm-nav-section" style="margin-top:8px;">보안 / 차단</div>
+            <a class="adm-nav-item ${activeMenu=='blocks'?'active':''}" href="${pageContext.request.contextPath}/admin/blocks">
+                <span class="adm-nav-icon">⛔</span> 차단 관리
+            </a>
+            </c:if>
+
+            <c:if test="${hasInquiryAdmin or hasReportAdmin}">
             <div class="adm-nav-section" style="margin-top:8px;">운영</div>
+            </c:if>
+            <c:if test="${hasInquiryAdmin}">
             <a class="adm-nav-item ${activeMenu=='inquiries'?'active':''}" href="${pageContext.request.contextPath}/admin/inquiries">
                 <span class="adm-nav-icon">📩</span> 문의 관리
             </a>
+            </c:if>
+            <c:if test="${hasReportAdmin}">
             <a class="adm-nav-item ${activeMenu=='reports'?'active':''}" href="${pageContext.request.contextPath}/admin/reports">
                 <span class="adm-nav-icon">🚨</span> 신고 관리
             </a>
+            </c:if>
 
+            <c:if test="${hasCommunityAdmin or hasExploreAdmin}">
             <div class="adm-nav-section" style="margin-top:8px;">콘텐츠</div>
+            </c:if>
+            <c:if test="${hasCommunityAdmin}">
             <a class="adm-nav-item ${activeMenu=='community'?'active':''}" href="${pageContext.request.contextPath}/admin/community">
                 <span class="adm-nav-icon">📝</span> 커뮤니티 관리
             </a>
+            </c:if>
+            <c:if test="${hasExploreAdmin}">
             <a class="adm-nav-item ${activeMenu=='explore'?'active':''}" href="${pageContext.request.contextPath}/admin/explore">
                 <span class="adm-nav-icon">📍</span> 여행지 관리
             </a>
+            </c:if>
             <span class="adm-nav-item disabled">
                 <span class="adm-nav-icon">🗺️</span> 코스 관리
                 <span class="adm-nav-badge soon">회의 후</span>
@@ -70,11 +101,11 @@
 
             <div class="adm-nav-section" style="margin-top:8px;">시스템</div>
             <a class="adm-nav-item ${activeMenu=='superAdmin'?'active':''}" href="${pageContext.request.contextPath}/superAdmin">
-                <span class="adm-nav-icon">🔑</span> 관리자 관리
+                <span class="adm-nav-icon">🔑</span> 관리자 계정 관리
             </a>
 
             <div style="margin-top:16px; padding: 0 10px;">
-                <a class="adm-nav-item" href="${pageContext.request.contextPath}/" target="_blank" style="background:#1e2330; color:#64748b;">
+                <a class="adm-nav-item adm-nav-ext" href="${pageContext.request.contextPath}/" target="_blank">
                     <span class="adm-nav-icon">↗️</span> 사이트 보기
                 </a>
             </div>
@@ -97,9 +128,31 @@
             <button class="adm-btn adm-btn-ghost" style="display:none;padding:6px 8px;" id="sidebar-toggle"
                     onclick="document.getElementById('adm-sidebar').classList.toggle('open')">☰</button>
             <div class="adm-topbar-title">${pageTitle}</div>
+            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="테마 변경">☀️ 밝게</button>
             <div class="adm-topbar-path">
                 <span>Admin</span>
                 <c:if test="${not empty pageTitle}"><span>${pageTitle}</span></c:if>
             </div>
         </div>
         <div id="adm-toast-container"></div>
+<script>
+(function(){
+    var btn = document.getElementById('saThemeBtn');
+    var t   = localStorage.getItem('sa_theme') || '';
+    if (btn) btn.textContent = (t === 'sa-light') ? '🌙 어둡게' : '☀️ 밝게';
+})();
+
+function saToggleTheme() {
+    var body = document.body;
+    var btn  = document.getElementById('saThemeBtn');
+    if (body.classList.contains('sa-light')) {
+        body.classList.remove('sa-light');
+        localStorage.setItem('sa_theme', '');
+        if (btn) btn.textContent = '☀️ 밝게';
+    } else {
+        body.classList.add('sa-light');
+        localStorage.setItem('sa_theme', 'sa-light');
+        if (btn) btn.textContent = '🌙 어둡게';
+    }
+}
+</script>

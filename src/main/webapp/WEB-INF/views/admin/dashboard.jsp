@@ -76,19 +76,19 @@
         </div>
         <div class="adm-card-body">
             <div style="display:flex;gap:20px;flex-wrap:wrap;">
-                <div style="flex:1;min-width:120px;text-align:center;padding:16px;background:#1a2030;border-radius:10px;">
+                <div class="social-card" style="flex:1;min-width:120px;text-align:center;padding:16px;border-radius:10px;">
                     <div style="font-size:24px;margin-bottom:8px;">🟡</div>
-                    <div style="font-size:22px;font-weight:700;color:#f1f5f9;"><fmt:formatNumber value="${stats.kakaoLinked}" pattern="#,###"/></div>
+                    <div class="social-card-value" style="font-size:22px;font-weight:700;"><fmt:formatNumber value="${stats.kakaoLinked}" pattern="#,###"/></div>
                     <div style="font-size:11px;color:#64748b;margin-top:4px;">카카오</div>
                 </div>
-                <div style="flex:1;min-width:120px;text-align:center;padding:16px;background:#1a2030;border-radius:10px;">
+                <div class="social-card" style="flex:1;min-width:120px;text-align:center;padding:16px;border-radius:10px;">
                     <div style="font-size:24px;margin-bottom:8px;color:#03c75a;font-weight:900;">N</div>
-                    <div style="font-size:22px;font-weight:700;color:#f1f5f9;"><fmt:formatNumber value="${stats.naverLinked}" pattern="#,###"/></div>
+                    <div class="social-card-value" style="font-size:22px;font-weight:700;"><fmt:formatNumber value="${stats.naverLinked}" pattern="#,###"/></div>
                     <div style="font-size:11px;color:#64748b;margin-top:4px;">네이버</div>
                 </div>
-                <div style="flex:1;min-width:120px;text-align:center;padding:16px;background:#1a2030;border-radius:10px;">
-                    <div style="font-size:24px;margin-bottom:8px;">G</div>
-                    <div style="font-size:22px;font-weight:700;color:#f1f5f9;"><fmt:formatNumber value="${stats.googleLinked}" pattern="#,###"/></div>
+                <div class="social-card" style="flex:1;min-width:120px;text-align:center;padding:16px;border-radius:10px;">
+                    <div style="font-size:24px;margin-bottom:8px;color:#4285f4;font-weight:900;">G</div>
+                    <div class="social-card-value" style="font-size:22px;font-weight:700;"><fmt:formatNumber value="${stats.googleLinked}" pattern="#,###"/></div>
                     <div style="font-size:11px;color:#64748b;margin-top:4px;">Google</div>
                 </div>
             </div>

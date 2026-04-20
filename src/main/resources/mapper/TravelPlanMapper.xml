@@ -8,20 +8,22 @@
     <select id="getTravelList"
             parameterType="org.triptogether.courses.vo.TravelPlanVO"
             resultType="org.triptogether.courses.vo.TravelPlanVO">
-        SELECT
-        plan_id, user_idx, title, destination, start_date, end_date,
-        is_public, share_token, plan_source, created_at, updated_at
+        SELECT *
         FROM TRAVEL_PLAN
         WHERE user_idx = #{user_idx}
-        ORDER BY plan_id DESC
+        AND is_deleted = 0
+        ORDER BY created_at DESC
     </select>
 
     <!--  2. 여행일정 상세 조회  -->
-    <select id="getTravelPlanDetail" parameterType="TravelPlanVO" resultType="TravelPlanVO">
-        select plan_id, user_idx, title, destination, start_date, end_date,
-                is_public, share_token, plan_source, created_at, updated_at
-        from TRAVEL_PLAN
-        where plan_id = #{plan_id} and user_idx = #{user_idx}
+    <select id="getTravelPlanDetail"
+            parameterType="org.triptogether.courses.vo.TravelPlanVO"
+            resultType="org.triptogether.courses.vo.TravelPlanVO">
+        SELECT *
+        FROM TRAVEL_PLAN
+        WHERE plan_id = #{plan_id}
+        AND user_idx = #{user_idx}
+        AND is_deleted = 0
     </select>
 
     <!-- 일정 안 장소 목록 -->
@@ -61,25 +63,34 @@
     </insert>
 
     <!--  4. 여행일정 수정 -->
-    <update id="updateTravelPlan" parameterType="TravelPlanVO">
+    <update id="editTravelPlan" parameterType="TravelPlanVO">
         UPDATE TRAVEL_PLAN
-        SET title = #{title},
-        destination = #{destination},
-        start_date = #{start_date},
-        end_date = #{end_date},
-        is_public = #{is_public},
-        plan_source = #{plan_source},
-        updated_at = NOW()
+        <set>
+            title = #{title},
+            destination = #{destination},
+            start_date = #{start_date},
+            end_date = #{end_date},
+            is_public = #{is_public},
+            <if test="plan_source != null and plan_source != ''">
+                plan_source = #{plan_source},
+            </if>
+            updated_at = NOW()
+        </set>
         WHERE plan_id = #{plan_id}
         AND user_idx = #{user_idx}
+        AND is_deleted = 0
     </update>
 
     <!--  5. 여행일정 삭제  -->
-    <delete id="deleteTravelPlan" parameterType="TravelPlanVO">
-        delete from TRAVEL_PLAN
-        where plan_id = #{plan_id} and user_idx = #{user_idx}
-    </delete>
-
+    <update id="deleteTravelPlan"
+            parameterType="org.triptogether.courses.vo.TravelPlanVO">
+        UPDATE TRAVEL_PLAN
+        SET is_deleted = 1,
+        updated_at = NOW()
+        WHERE plan_id = #{plan_id}
+        AND user_idx = #{user_idx}
+        AND is_deleted = 0
+    </update>
     <!--  6. 일정에 여행지 추가  -->
     <insert id="insertPlanSpot" parameterType="PlanSpotVO">
         insert into PLAN_SPOT (

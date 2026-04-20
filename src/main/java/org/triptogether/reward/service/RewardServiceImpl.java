@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class RewardServiceImpl implements RewardService {
 
     private static final int MAX_LEVEL_SCAN = 10_000;

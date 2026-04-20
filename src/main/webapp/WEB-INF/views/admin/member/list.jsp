@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="activeMenu" value="members"/>
 <c:set var="pageTitle"  value="회원 관리"/>
 <%@ include file="../layout.jsp" %>
@@ -112,7 +113,7 @@
     <%-- ══════════════════════════════════════════
          회원 목록 테이블
     ══════════════════════════════════════════ --%>
-    <div class="adm-card">
+    <div class="adm-card" style="overflow:visible;">
         <div class="adm-card-head">
             <div class="adm-card-title">
                 👥 회원 목록
@@ -129,7 +130,7 @@
             </select>
         </div>
 
-        <div class="adm-table-wrap">
+        <div class="adm-table-wrap" style="overflow:visible;">
             <table class="adm-table">
                 <thead>
                 <tr>
@@ -237,6 +238,7 @@
                             <div style="display:flex;gap:4px;align-items:center;">
                                 <button class="adm-row-btn detail"
                                         onclick="openDetail(${m.userIdx})">상세</button>
+                                <c:if test="${m.userRole != 'SYSTEM'}">
                                 <div class="action-menu-wrap">
                                     <button class="adm-row-btn detail"
                                             onclick="toggleMenu(this)">⋯</button>
@@ -259,7 +261,9 @@
                                         </c:if>
                                         <c:if test="${m.accountStatus != 'BLOCKED'}">
                                             <button class="action-menu-item"
-                                                    onclick="openBlockModal(${m.userIdx}, '${m.nickname}')">
+                                                    data-user-idx="${m.userIdx}"
+                                                    data-nickname="${fn:escapeXml(m.nickname)}"
+                                                    onclick="openBlockModal(this)">
                                                 ⛔ 차단 처리
                                             </button>
                                         </c:if>
@@ -288,6 +292,7 @@
                                         </c:if>
                                     </div>
                                 </div>
+                                </c:if>
                             </div>
                         </td>
                     </tr>
@@ -352,7 +357,7 @@
             <input type="hidden" id="blockUserIdx">
             <div class="form-group" style="margin-bottom:12px;">
                 <label class="form-label">차단 유형</label>
-                <select id="blockType" class="adm-select" style="width:100%;">
+                <select id="blockType" class="adm-select" style="width:100%;" onchange="handleBlockTypeChange()">
                     <option value="USER_ONLY">아이디 차단</option>
                     <option value="IP_ONLY">IP 차단</option>
                     <option value="USER_IP">아이디 + IP 차단</option>
@@ -373,7 +378,7 @@
         </div>
         <div class="adm-modal-foot">
             <button class="adm-btn adm-btn-ghost" onclick="closeBlockModal()">닫기</button>
-            <button class="adm-btn adm-btn-primary" onclick="submitBlock()">차단 적용</button>
+            <button id="blockSubmitBtn" class="adm-btn adm-btn-primary" type="button" onclick="submitBlock()">차단 적용</button>
         </div>
     </div>
 </div>
@@ -434,12 +439,12 @@ function formatBooleanBadge(value) {
 
 function buildStatusBadge(status) {
     const safe = escapeHtml(status || '');
-    return `<span class="status-badge \${safe}">\${safe || '—'}</span>`;
+    return '<span class="status-badge ' + safe + '">' + (safe || '—') + '</span>';
 }
 
 function buildRoleBadge(role) {
     const safe = escapeHtml(role || '');
-    return `<span class="role-badge \${safe}">\${safe || '—'}</span>`;
+    return '<span class="role-badge ' + safe + '">' + (safe || '—') + '</span>';
 }
 
 function buildSocialHtml(linkedProviders) {
@@ -457,7 +462,7 @@ function buildSocialHtml(linkedProviders) {
         .split(',')
         .map(provider => provider.trim())
         .filter(provider => provider.length > 0)
-        .map(provider => `<span style="margin-right:8px;font-size:12px;color:#94a3b8;">\${escapeHtml(providerMap[provider] || provider)}</span>`)
+        .map(provider => '<span style="margin-right:8px;font-size:12px;color:#94a3b8;">' + escapeHtml(providerMap[provider] || provider) + '</span>')
         .join('') || '<span style="color:#475569;font-size:12px;">연동 없음</span>';
 }
 
@@ -484,13 +489,23 @@ function toggleMenu(btn) {
     menu.classList.toggle('open');
 }
 
-function openBlockModal(userIdx, nickname) {
+function openBlockModal(triggerOrUserIdx, nickname) {
+    const trigger = typeof triggerOrUserIdx === 'object' ? triggerOrUserIdx : null;
+    const userIdx = trigger ? trigger.dataset.userIdx : triggerOrUserIdx;
+    const resolvedNickname = trigger ? (trigger.dataset.nickname || '') : (nickname || '');
+
     document.getElementById('blockUserIdx').value = userIdx;
-    document.getElementById('blockModalTitle').textContent = `${nickname} 회원 차단`;
+    document.getElementById('blockModalTitle').textContent = (resolvedNickname || '') + ' 회원 차단';
     document.getElementById('blockType').value = 'USER_ONLY';
     document.getElementById('blockedIp').value = '';
+    document.getElementById('blockedIp').disabled = true;
     document.getElementById('blockedUntil').value = '';
     document.getElementById('blockedReason').value = '';
+    document.getElementById('blockSubmitBtn').disabled = false;
+
+    const menu = trigger ? trigger.closest('.action-menu') : null;
+    if (menu) menu.classList.remove('open');
+
     document.getElementById('blockModal').classList.add('open');
 }
 
@@ -498,25 +513,66 @@ function closeBlockModal() {
     document.getElementById('blockModal').classList.remove('open');
 }
 
+function handleBlockTypeChange() {
+    const blockType = document.getElementById('blockType').value;
+    const ipInput = document.getElementById('blockedIp');
+    const requiresIp = blockType === 'IP_ONLY' || blockType === 'USER_IP';
+
+    ipInput.disabled = !requiresIp;
+    if (!requiresIp) ipInput.value = '';
+}
+
 async function submitBlock() {
+    const submitBtn = document.getElementById('blockSubmitBtn');
     const userIdx = document.getElementById('blockUserIdx').value;
     const blockType = document.getElementById('blockType').value;
     const blockedIp = document.getElementById('blockedIp').value.trim();
     const blockedUntil = document.getElementById('blockedUntil').value;
     const reason = document.getElementById('blockedReason').value.trim();
 
-    const res = await fetch(`${ctx}/admin/members/${userIdx}/block`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ blockType, blockedIp, expiresAt: blockedUntil, reason })
-    });
-    const data = await res.json();
-    if (res.ok && data.success) {
-        closeBlockModal();
-        adm_toast(data.message || '차단이 적용되었습니다.');
-        setTimeout(() => location.reload(), 800);
-    } else {
-        adm_toast(data.message || '차단 적용 중 오류가 발생했습니다.', 'error');
+    if (!userIdx) {
+        adm_toast('차단 대상 회원을 찾지 못했습니다.', 'error');
+        return;
+    }
+    if ((blockType === 'IP_ONLY' || blockType === 'USER_IP') && !blockedIp) {
+        adm_toast('IP 차단 유형은 차단 IP를 입력해야 합니다.', 'error');
+        document.getElementById('blockedIp').focus();
+        return;
+    }
+
+    submitBtn.disabled = true;
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = '적용 중...';
+
+    try {
+        const res = await fetch(ctx + '/admin/members/' + userIdx + '/block', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ blockType, blockedIp, expiresAt: blockedUntil, reason })
+        });
+
+        let data = null;
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            data = await res.json();
+        } else {
+            const text = await res.text();
+            throw new Error(text || '차단 요청 응답을 해석하지 못했습니다.');
+        }
+
+        if (res.ok && data && data.success) {
+            closeBlockModal();
+            adm_toast(data.message || '차단이 적용되었습니다.');
+            setTimeout(() => location.reload(), 800);
+        } else {
+            adm_toast((data && data.message) || '차단 적용 중 오류가 발생했습니다.', 'error');
+        }
+    } catch (e) {
+        console.error(e);
+        adm_toast(e.message || '차단 적용 중 오류가 발생했습니다.', 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
     }
 }
 
@@ -528,12 +584,12 @@ async function changeStatus(userIdx, status, el) {
         BLOCKED: '차단 처리',
         DELETED: '탈퇴 처리'
     };
-    if (!confirm(`이 회원을 "\${labels[status] || status}" 하시겠습니까?`)) return;
+    if (!confirm('이 회원을 "' + (labels[status] || status) + '" 하시겠습니까?')) return;
 
     const menu = el.closest('.action-menu');
     if (menu) menu.classList.remove('open');
 
-    const res = await fetch(`\${ctx}/admin/members/\${userIdx}/status`, {
+    const res = await fetch(ctx + '/admin/members/' + userIdx + '/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ status })
@@ -558,12 +614,12 @@ async function changeStatus(userIdx, status, el) {
 /* ── 권한 변경 ── */
 async function changeRole(userIdx, role, el) {
     const labels = { ADMIN: '관리자 권한 부여', USER: '일반 유저로 변경' };
-    if (!confirm(`"\${labels[role] || role}" 하시겠습니까?`)) return;
+    if (!confirm('"' + (labels[role] || role) + '" 하시겠습니까?')) return;
 
     const menu = el.closest('.action-menu');
     if (menu) menu.classList.remove('open');
 
-    const res = await fetch(`\${ctx}/admin/members/\${userIdx}/role`, {
+    const res = await fetch(ctx + '/admin/members/' + userIdx + '/role', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ role })
@@ -591,28 +647,27 @@ async function openDetail(userIdx) {
     document.getElementById('modalBody').innerHTML =
         '<div style="text-align:center;padding:40px;color:#475569;">불러오는 중... ⏳</div>';
 
-    const res = await fetch(`\${ctx}/admin/members/\${userIdx}`);
+    const res = await fetch(ctx + '/admin/members/' + userIdx);
     const data = await res.json();
 
     if (!data.success) {
         document.getElementById('modalBody').innerHTML =
-            `<div style="text-align:center;padding:40px;color:#f87171;">\${escapeHtml(data.message || '오류가 발생했습니다.')}</div>`;
+            '<div style="text-align:center;padding:40px;color:#f87171;">' + escapeHtml(data.message || '오류가 발생했습니다.') + '</div>';
         return;
     }
 
     const m = data.member || {};
     const h = Array.isArray(data.history) ? data.history : [];
 
-    document.getElementById('modalTitle').textContent = `\${m.nickname || '회원'} 님 상세 정보`;
+    document.getElementById('modalTitle').textContent = (m.nickname || '회원') + ' 님 상세 정보';
 
-    document.getElementById('modalBody').innerHTML = `
-        <div class="adm-tabs">
-            <button class="adm-tab active" onclick="switchTab('info', this)">기본 정보</button>
-            <button class="adm-tab" onclick="switchTab('hist', this)">로그인 이력 (\${h.length})</button>
-        </div>
-        <div id="tab-info"></div>
-        <div id="tab-hist" style="display:none;"></div>
-    `;
+    document.getElementById('modalBody').innerHTML = ''
+        + '<div class="adm-tabs">'
+        + '<button class="adm-tab active" onclick="switchTab('info', this)">기본 정보</button>'
+        + '<button class="adm-tab" onclick="switchTab('hist', this)">로그인 이력 (' + h.length + ')</button>'
+        + '</div>'
+        + '<div id="tab-info"></div>'
+        + '<div id="tab-hist" style="display:none;"></div>';
 
     document.getElementById('tab-info').innerHTML = buildInfoTab(m);
     document.getElementById('tab-hist').innerHTML = buildHistTab(h);
@@ -624,39 +679,39 @@ function buildInfoTab(m) {
     const socialHtml = buildSocialHtml(m.linkedProviders);
     const lastLoginText = formatDateTime(m.lastLoginAt);
 
-    return `
-    <div class="detail-grid">
-        <div class="detail-item"><div class="detail-label">회원 번호</div><div class="detail-value">#\${escapeHtml(m.userIdx)}</div></div>
-        <div class="detail-item"><div class="detail-label">아이디</div><div class="detail-value">\${formatNullable(m.userId)}</div></div>
-        <div class="detail-item"><div class="detail-label">닉네임</div><div class="detail-value">\${formatNullable(m.nickname)}</div></div>
-        <div class="detail-item"><div class="detail-label">이메일</div><div class="detail-value" style="font-size:12px;">\${formatNullable(m.userEmail)}</div></div>
-        <div class="detail-item"><div class="detail-label">계정 상태</div><div class="detail-value">\${statusBadge}</div></div>
-        <div class="detail-item"><div class="detail-label">권한</div><div class="detail-value">\${roleBadge}</div></div>
-        <div class="detail-item"><div class="detail-label">국적</div><div class="detail-value">\${formatNullable(m.nationality)}</div></div>
-        <div class="detail-item"><div class="detail-label">선호 언어</div><div class="detail-value">\${formatNullable(m.preferredLang)}</div></div>
-        <div class="detail-item"><div class="detail-label">이메일 인증</div><div class="detail-value">\${formatBooleanBadge(m.emailVerified)}</div></div>
-        <div class="detail-item"><div class="detail-label">이메일 로그인</div><div class="detail-value">\${formatBooleanBadge(m.emailLoginEnabled)}</div></div>
-        <div class="detail-item"><div class="detail-label">비밀번호 로그인</div><div class="detail-value">\${formatBooleanBadge(m.passwordEnabled)}</div></div>
-        <div class="detail-item"><div class="detail-label">가입일</div><div class="detail-value" style="font-size:12px;">\${formatDateTime(m.createdAt)}</div></div>
-    </div>
-    <div class="detail-item" style="margin-top:12px;">
-        <div class="detail-label">소셜 연동</div>
-        <div class="detail-value" style="margin-top:4px;">\${socialHtml}</div>
-    </div>
-    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 성공</div>
-            <div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">\${escapeHtml(m.loginSuccessCount ?? 0)}</div>
-        </div>
-        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 실패</div>
-            <div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">\${escapeHtml(m.loginFailCount ?? 0)}</div>
-        </div>
-        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">최근 로그인</div>
-            <div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">\${escapeHtml(lastLoginText)}</div>
-        </div>
-    </div>`;
+    return ''
+        + '<div class="detail-grid">'
+        + '<div class="detail-item"><div class="detail-label">회원 번호</div><div class="detail-value">#' + escapeHtml(m.userIdx) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">아이디</div><div class="detail-value">' + formatNullable(m.userId) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">닉네임</div><div class="detail-value">' + formatNullable(m.nickname) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">이메일</div><div class="detail-value" style="font-size:12px;">' + formatNullable(m.userEmail) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">계정 상태</div><div class="detail-value">' + statusBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">권한</div><div class="detail-value">' + roleBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">국적</div><div class="detail-value">' + formatNullable(m.nationality) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">선호 언어</div><div class="detail-value">' + formatNullable(m.preferredLang) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">이메일 인증</div><div class="detail-value">' + formatBooleanBadge(m.emailVerified) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">이메일 로그인</div><div class="detail-value">' + formatBooleanBadge(m.emailLoginEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">비밀번호 로그인</div><div class="detail-value">' + formatBooleanBadge(m.passwordEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">가입일</div><div class="detail-value" style="font-size:12px;">' + formatDateTime(m.createdAt) + '</div></div>'
+        + '</div>'
+        + '<div class="detail-item" style="margin-top:12px;">'
+        + '<div class="detail-label">소셜 연동</div>'
+        + '<div class="detail-value" style="margin-top:4px;">' + socialHtml + '</div>'
+        + '</div>'
+        + '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">'
+        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 성공</div>'
+        + '<div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">' + escapeHtml(m.loginSuccessCount ?? 0) + '</div>'
+        + '</div>'
+        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 실패</div>'
+        + '<div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">' + escapeHtml(m.loginFailCount ?? 0) + '</div>'
+        + '</div>'
+        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">최근 로그인</div>'
+        + '<div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">' + escapeHtml(lastLoginText) + '</div>'
+        + '</div>'
+        + '</div>';
 }
 
 function buildHistTab(history) {
@@ -673,33 +728,25 @@ function buildHistTab(history) {
     };
 
     let rows = '';
-    history.forEach(item => {
+    history.forEach(function(item) {
         const ok = !!item.success;
-        rows += `
-            <tr>
-                <td>\${escapeHtml(formatHistoryDateTime(item.loginAt))}</td>
-                <td>\${escapeHtml(methodMap[item.loginMethod] || item.loginMethod || '—')}</td>
-                <td class="\${ok ? 'h-success' : 'h-fail'}">\${ok ? '✅ 성공' : '❌ 실패'}</td>
-                <td>\${escapeHtml(item.failReason || '—')}</td>
-                <td style="font-size:11px;color:#475569;">\${escapeHtml(item.ipAddress || '—')}</td>
-            </tr>`;
+        rows += ''
+            + '<tr>'
+            + '<td>' + escapeHtml(formatHistoryDateTime(item.loginAt)) + '</td>'
+            + '<td>' + escapeHtml(methodMap[item.loginMethod] || item.loginMethod || '—') + '</td>'
+            + '<td class="' + (ok ? 'h-success' : 'h-fail') + '">' + (ok ? '✅ 성공' : '❌ 실패') + '</td>'
+            + '<td>' + escapeHtml(item.failReason || '—') + '</td>'
+            + '<td style="font-size:11px;color:#475569;">' + escapeHtml(item.ipAddress || '—') + '</td>'
+            + '</tr>';
     });
 
-    return `
-    <div style="overflow-x:auto;max-height:340px;overflow-y:auto;">
-        <table class="history-table">
-            <thead>
-                <tr>
-                    <th>시각</th>
-                    <th>방법</th>
-                    <th>결과</th>
-                    <th>실패 사유</th>
-                    <th>IP</th>
-                </tr>
-            </thead>
-            <tbody>\${rows}</tbody>
-        </table>
-    </div>`;
+    return ''
+        + '<div style="overflow-x:auto;max-height:340px;overflow-y:auto;">'
+        + '<table class="history-table">'
+        + '<thead><tr><th>시각</th><th>방법</th><th>결과</th><th>실패 사유</th><th>IP</th></tr></thead>'
+        + '<tbody>' + rows + '</tbody>'
+        + '</table>'
+        + '</div>';
 }
 
 function switchTab(tab, btn) {
@@ -715,6 +762,10 @@ function closeDetail() {
 
 document.getElementById('detailModal').addEventListener('click', function (e) {
     if (e.target === this) closeDetail();
+});
+
+document.getElementById('blockModal').addEventListener('click', function (e) {
+    if (e.target === this) closeBlockModal();
 });
 </script>
 

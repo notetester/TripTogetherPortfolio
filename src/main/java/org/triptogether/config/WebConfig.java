@@ -37,6 +37,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final LoginInterceptor loginInterceptor;
     private final AdminInterceptor adminInterceptor;
+    private final SuperAdminInterceptor superAdminInterceptor;
     private final AdminModeInterceptor adminModeInterceptor;
     private final ActivityLogInterceptor activityLogInterceptor;
     private final IpBlockInterceptor ipBlockInterceptor;
@@ -143,6 +144,10 @@ public class WebConfig implements WebMvcConfigurer {
         // 관리자 전용 영역
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**");
+
+        // 최고관리자 전용 영역
+        registry.addInterceptor(superAdminInterceptor)
+                .addPathPatterns("/superAdmin/**");
 
         // 전체 페이지 어드민모드 인터셉터
         registry.addInterceptor(adminModeInterceptor)

@@ -15,6 +15,8 @@ import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.triptogether.auth.mapper.AuthMapper;
+import org.triptogether.admin.mapper.AdminMapper;
+import org.triptogether.config.IpBlockMapper;
 import org.triptogether.auth.vo.*;
 
 import java.net.URLEncoder;
@@ -32,6 +34,8 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
     private final AuthMapper authMapper;
+    private final AdminMapper adminMapper;
+    private final IpBlockMapper ipBlockMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RestTemplate restTemplate;
     private final JavaMailSender mailSender;
@@ -114,22 +118,26 @@ public class AuthServiceImpl implements AuthService {
         boolean isEmail = isValidEmailFormat(identifier);
         String loginMethod = isEmail ? "EMAIL" : "ID";
 
+        // 1. 사용자 조회
         UsersVO user = isEmail
                 ? authMapper.findByEmail(identifier)
                 : authMapper.findByUserId(identifier);
 
+        // 2. 사용자 없음
         if (user == null) {
             recordLoginResult(null, loginMethod, identifier,
                     false, "USER_NOT_FOUND", context);
             return null;
         }
 
+        // 3. 계정 상태
         if ("DELETED".equals(user.getAccountStatus())) {
             recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                     false, "ACCOUNT_DELETED", context);
             return null;
         }
 
+        // 4. 이메일 정책
         if (isEmail) {
             if (!user.isEmailVerified()) {
                 recordLoginResult(user.getUserIdx(), loginMethod, identifier,
@@ -144,12 +152,14 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
+        // 5. 비밀번호 로그인 가능 여부
         if (!user.isPasswordEnabled()) {
             recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                     false, "PASSWORD_LOGIN_DISABLED", context);
             return null;
         }
 
+        // 6. 비밀번호 검증
         if (!bCryptPasswordEncoder.matches(password, user.getUserPassword())) {
             recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                     false, "WRONG_PASSWORD", context);
@@ -158,6 +168,7 @@ public class AuthServiceImpl implements AuthService {
 
         if ("BLOCKED".equals(user.getAccountStatus())) {
             if (user.getBlockedUntil() != null && user.getBlockedUntil().isBefore(LocalDateTime.now())) {
+                releaseExpiredMemberBlocks(user.getUserIdx());
                 authMapper.clearBlockState(user.getUserIdx());
                 user = authMapper.findByIdx(user.getUserIdx());
             } else {
@@ -180,11 +191,64 @@ public class AuthServiceImpl implements AuthService {
         return authMapper.findByIdx(user.getUserIdx());
     }
 
+    private void releaseExpiredMemberBlocks(Long userIdx) {
+        java.util.List<String> blockedIps = adminMapper.findActiveBlockedIpsByUser(userIdx);
+        adminMapper.deactivateCurrentBlocklistByUser(userIdx, null);
+        adminMapper.deactivateActiveBlocksByUser(userIdx, null);
+        if (blockedIps != null) {
+            blockedIps.stream()
+                    .filter(ip -> ip != null && !ip.isBlank())
+                    .map(this::normalizeIp)
+                    .distinct()
+                    .forEach(this::refreshIpRuleFromHistory);
+        }
+    }
+
+    private void refreshIpRuleFromHistory(String ipAddress) {
+        if (ipAddress == null || ipAddress.isBlank()) return;
+        String normalizedIp = normalizeIp(ipAddress);
+        var latest = ipBlockMapper.findLatestActiveHistoryRuleByIp(normalizedIp);
+        if (latest == null) {
+            ipBlockMapper.deactivateBlockedIpByTargetKey(buildIpRuleTargetKey(normalizedIp), null);
+            return;
+        }
+        ipBlockMapper.upsertBlockedIpWithHistory(
+                normalizedIp,
+                buildIpRuleTargetKey(normalizedIp),
+                latest.getReason(),
+                latest.getUserIdx(),
+                latest.getBlockType(),
+                latest.getBlockedByUserIdx(),
+                latest.getExpiresAt(),
+                latest.getBlockRequestId(),
+                latest.getSourceHistoryBlockIdx(),
+                latest.getSourceBlocklistIdx()
+        );
+    }
+
+    private String buildIpRuleTargetKey(String blockedIp) {
+        return "IP:" + blockedIp;
+    }
+
+    private String normalizeIp(String ip) {
+        if (ip == null) return null;
+        String trimmed = ip.trim();
+        if (trimmed.isBlank()) return null;
+        if ("0:0:0:0:0:0:0:1".equals(trimmed) || "::1".equals(trimmed)) {
+            return "127.0.0.1";
+        }
+        if (trimmed.startsWith("::ffff:")) {
+            return trimmed.substring(7);
+        }
+        return trimmed;
+    }
+
     // ════════════════════════════════════════════
     // 일반 회원가입
     // ════════════════════════════════════════════
     @Override
     public void register(UsersVO user) {
+        // 비밀번호 해싱
         if (user.getUserPassword() != null && !user.getUserPassword().isBlank()) {
             user.setUserPassword(bCryptPasswordEncoder.encode(user.getUserPassword()));
             user.setPasswordEnabled(true);

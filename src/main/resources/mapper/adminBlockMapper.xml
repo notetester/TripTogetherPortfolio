@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.triptogether.admin.mapper.AdminBlockMapper">
+
+    <resultMap id="userBlockRM" type="org.triptogether.admin.vo.AdminUserBlockVO">
+        <id property="blockIdx" column="block_idx"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="blockType" column="block_type"/>
+        <result property="blockedIp" column="blocked_ip"/>
+        <result property="active" column="active"/>
+        <result property="reason" column="reason"/>
+        <result property="blockedByUserIdx" column="blocked_by_user_idx"/>
+        <result property="blockedByNickname" column="blocked_by_nickname"/>
+        <result property="releasedByUserIdx" column="released_by_user_idx"/>
+        <result property="releasedByNickname" column="released_by_nickname"/>
+        <result property="blockedAt" column="blocked_at"/>
+        <result property="releasedAt" column="released_at"/>
+        <result property="expiresAt" column="expires_at"/>
+        <result property="blockRequestId" column="block_request_id"/>
+        <result property="blockTargetKey" column="block_target_key"/>
+        <result property="snapshotStatus" column="snapshot_status"/>
+        <result property="lastHistoryAt" column="last_history_at"/>
+        <result property="syncedAt" column="synced_at"/>
+        <result property="blockScope" column="block_scope"/>
+        <result property="ipMatchType" column="ip_match_type"/>
+    </resultMap>
+
+    <resultMap id="ipBlockRM" type="org.triptogether.admin.vo.AdminIpBlockVO">
+        <id property="ipBlocklistIdx" column="ip_blocklist_idx"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="blockTargetKey" column="block_target_key"/>
+        <result property="matchType" column="match_type"/>
+        <result property="cidrNotation" column="cidr_notation"/>
+        <result property="rangeStartIp" column="range_start_ip"/>
+        <result property="rangeEndIp" column="range_end_ip"/>
+        <result property="countryCode" column="country_code"/>
+        <result property="asn" column="asn"/>
+        <result property="sourceScope" column="source_scope"/>
+        <result property="blockCategory" column="block_category"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="blockType" column="block_type"/>
+        <result property="blockedByUserIdx" column="blocked_by_user_idx"/>
+        <result property="blockedByNickname" column="blocked_by_nickname"/>
+        <result property="reason" column="reason"/>
+        <result property="active" column="active"/>
+        <result property="blockedAt" column="blocked_at"/>
+        <result property="expiresAt" column="expires_at"/>
+        <result property="releasedAt" column="released_at"/>
+        <result property="releasedByUserIdx" column="released_by_user_idx"/>
+        <result property="releasedByNickname" column="released_by_nickname"/>
+        <result property="riskScore" column="risk_score"/>
+        <result property="autoBlock" column="auto_block"/>
+        <result property="autoBlockSource" column="auto_block_source"/>
+        <result property="detailMessage" column="detail_message"/>
+        <result property="priority" column="priority"/>
+        <result property="ipBlockBatchIdx" column="ip_block_batch_idx"/>
+        <result property="batchCode" column="batch_code"/>
+        <result property="batchName" column="batch_name"/>
+    </resultMap>
+
+    <resultMap id="blockHistoryRM" type="org.triptogether.admin.vo.AdminBlockHistoryVO">
+        <id property="blockIdx" column="block_idx"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="blockType" column="block_type"/>
+        <result property="blockedIp" column="blocked_ip"/>
+        <result property="active" column="active"/>
+        <result property="reason" column="reason"/>
+        <result property="blockedByUserIdx" column="blocked_by_user_idx"/>
+        <result property="blockedByNickname" column="blocked_by_nickname"/>
+        <result property="releasedByUserIdx" column="released_by_user_idx"/>
+        <result property="releasedByNickname" column="released_by_nickname"/>
+        <result property="blockedAt" column="blocked_at"/>
+        <result property="releasedAt" column="released_at"/>
+        <result property="expiresAt" column="expires_at"/>
+        <result property="blockRequestId" column="block_request_id"/>
+        <result property="blockTargetKey" column="block_target_key"/>
+        <result property="historyKind" column="history_kind"/>
+        <result property="blockScope" column="block_scope"/>
+        <result property="ipMatchType" column="ip_match_type"/>
+        <result property="cidrNotation" column="cidr_notation"/>
+        <result property="rangeStartIp" column="range_start_ip"/>
+        <result property="rangeEndIp" column="range_end_ip"/>
+        <result property="ipBlockBatchIdx" column="ip_block_batch_idx"/>
+        <result property="listSyncedAt" column="list_synced_at"/>
+    </resultMap>
+
+    <resultMap id="batchRM" type="org.triptogether.admin.vo.AdminIpBlockBatchVO">
+        <id property="ipBlockBatchIdx" column="ip_block_batch_idx"/>
+        <result property="batchCode" column="batch_code"/>
+        <result property="batchName" column="batch_name"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="sourceName" column="source_name"/>
+        <result property="active" column="active"/>
+        <result property="description" column="description"/>
+        <result property="createdByUserIdx" column="created_by_user_idx"/>
+        <result property="createdByNickname" column="created_by_nickname"/>
+        <result property="updatedByUserIdx" column="updated_by_user_idx"/>
+        <result property="updatedByNickname" column="updated_by_nickname"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="totalRuleCount" column="total_rule_count"/>
+        <result property="activeRuleCount" column="active_rule_count"/>
+    </resultMap>
+
+    <sql id="keywordWhere">
+        <if test="keyword != null and keyword != ''">
+            AND (
+                u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
+                OR x.blocked_ip LIKE CONCAT('%', #{keyword}, '%')
+                OR x.reason LIKE CONCAT('%', #{keyword}, '%')
+                OR x.block_target_key LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+    </sql>
+
+    <select id="countActiveUserBlocks" resultType="long">
+        SELECT COUNT(*)
+        FROM USER_BLOCKLIST
+        WHERE is_active = 1
+    </select>
+
+    <select id="countActiveIpBlocks" resultType="long">
+        SELECT COUNT(*)
+        FROM IP_BLOCKLIST ip
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = ip.ip_block_batch_idx
+        WHERE ip.is_active = 1
+          AND (ip.expires_at IS NULL OR ip.expires_at &gt; NOW())
+          AND (ip.ip_block_batch_idx IS NULL OR COALESCE(b.is_active, 0) = 1)
+    </select>
+
+    <select id="countBlockHistories" resultType="long">
+        SELECT COUNT(*) FROM USER_BLOCK_HISTORY
+    </select>
+
+    <select id="countActiveBatches" resultType="long">
+        SELECT COUNT(*) FROM IP_BLOCK_BATCH WHERE is_active = 1
+    </select>
+
+    <select id="findUserBlocks" resultMap="userBlockRM">
+        SELECT
+            x.block_idx,
+            x.user_idx,
+            u.user_id,
+            u.nickname,
+            u.user_email,
+            x.block_type,
+            x.blocked_ip,
+            x.is_active AS active,
+            x.reason,
+            x.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            x.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            x.blocked_at,
+            x.released_at,
+            x.expires_at,
+            x.block_request_id,
+            x.block_target_key,
+            x.snapshot_status,
+            x.last_history_at,
+            x.synced_at,
+            h.block_scope,
+            h.ip_match_type
+        FROM USER_BLOCKLIST x
+        LEFT JOIN USERS u ON u.user_idx = x.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
+        WHERE 1=1
+        <if test="status != null and status != '' and status != 'ALL'">
+            <choose>
+                <when test="status == 'ACTIVE'">AND x.is_active = 1</when>
+                <otherwise>AND x.is_active = 0</otherwise>
+            </choose>
+        </if>
+        <if test="scope != null and scope != '' and scope != 'ALL'">
+            AND COALESCE(h.block_scope, 'USER_ACTION') = #{scope}
+        </if>
+        <if test="blockType != null and blockType != '' and blockType != 'ALL'">
+            AND x.block_type = #{blockType}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
+                OR x.blocked_ip LIKE CONCAT('%', #{keyword}, '%')
+                OR x.reason LIKE CONCAT('%', #{keyword}, '%')
+                OR x.block_target_key LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY x.is_active DESC, x.blocked_at DESC, x.block_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findIpBlocks" resultMap="ipBlockRM">
+        SELECT
+            ip.ip_blocklist_idx,
+            ip.ip_address,
+            ip.block_target_key,
+            ip.match_type,
+            ip.cidr_notation,
+            ip.range_start_ip,
+            ip.range_end_ip,
+            ip.country_code,
+            ip.asn,
+            ip.source_scope,
+            ip.block_category,
+            ip.user_idx,
+            ip.block_type,
+            ip.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            ip.reason,
+            ip.is_active AS active,
+            ip.blocked_at,
+            ip.expires_at,
+            ip.released_at,
+            ip.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            ip.risk_score,
+            ip.is_auto_block AS auto_block,
+            ip.auto_block_source,
+            ip.detail_message,
+            ip.priority,
+            ip.ip_block_batch_idx,
+            b.batch_code,
+            b.batch_name
+        FROM IP_BLOCKLIST ip
+        LEFT JOIN USERS bu ON bu.user_idx = ip.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = ip.released_by_user_idx
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = ip.ip_block_batch_idx
+        WHERE 1=1
+        <if test="status != null and status != '' and status != 'ALL'">
+            <choose>
+                <when test="status == 'ACTIVE'">AND ip.is_active = 1</when>
+                <otherwise>AND ip.is_active = 0</otherwise>
+            </choose>
+        </if>
+        <if test="scope != null and scope != '' and scope != 'ALL'">
+            AND ip.source_scope = #{scope}
+        </if>
+        <if test="matchType != null and matchType != '' and matchType != 'ALL'">
+            AND ip.match_type = #{matchType}
+        </if>
+        <if test="blockType != null and blockType != '' and blockType != 'ALL'">
+            AND ip.block_type = #{blockType}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                ip.ip_address LIKE CONCAT('%', #{keyword}, '%')
+                OR ip.block_target_key LIKE CONCAT('%', #{keyword}, '%')
+                OR ip.cidr_notation LIKE CONCAT('%', #{keyword}, '%')
+                OR ip.range_start_ip LIKE CONCAT('%', #{keyword}, '%')
+                OR ip.range_end_ip LIKE CONCAT('%', #{keyword}, '%')
+                OR ip.country_code LIKE CONCAT('%', #{keyword}, '%')
+                OR ip.asn LIKE CONCAT('%', #{keyword}, '%')
+                OR ip.reason LIKE CONCAT('%', #{keyword}, '%')
+                OR b.batch_name LIKE CONCAT('%', #{keyword}, '%')
+                OR b.batch_code LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY ip.is_active DESC, ip.priority DESC, ip.updated_at DESC, ip.ip_blocklist_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findBlockHistories" resultMap="blockHistoryRM">
+        SELECT
+            h.block_idx,
+            h.user_idx,
+            u.user_id,
+            u.nickname,
+            h.block_type,
+            h.blocked_ip,
+            h.is_active AS active,
+            h.reason,
+            h.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            h.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            h.blocked_at,
+            h.released_at,
+            h.expires_at,
+            h.block_request_id,
+            h.block_target_key,
+            h.history_kind,
+            h.block_scope,
+            h.ip_match_type,
+            h.cidr_notation,
+            h.range_start_ip,
+            h.range_end_ip,
+            h.ip_block_batch_idx,
+            h.list_synced_at
+        FROM USER_BLOCK_HISTORY h
+        LEFT JOIN USERS u ON u.user_idx = h.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = h.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = h.released_by_user_idx
+        WHERE 1=1
+        <if test="scope != null and scope != '' and scope != 'ALL'">
+            AND h.block_scope = #{scope}
+        </if>
+        <if test="matchType != null and matchType != '' and matchType != 'ALL'">
+            AND COALESCE(h.ip_match_type, 'SINGLE_IP') = #{matchType}
+        </if>
+        <if test="blockType != null and blockType != '' and blockType != 'ALL'">
+            AND h.block_type = #{blockType}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                OR h.blocked_ip LIKE CONCAT('%', #{keyword}, '%')
+                OR h.reason LIKE CONCAT('%', #{keyword}, '%')
+                OR h.block_target_key LIKE CONCAT('%', #{keyword}, '%')
+                OR h.cidr_notation LIKE CONCAT('%', #{keyword}, '%')
+                OR h.range_start_ip LIKE CONCAT('%', #{keyword}, '%')
+                OR h.range_end_ip LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY h.blocked_at DESC, h.block_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findIpBlockBatches" resultMap="batchRM">
+        SELECT
+            b.ip_block_batch_idx,
+            b.batch_code,
+            b.batch_name,
+            b.source_type,
+            b.source_name,
+            b.is_active AS active,
+            b.description,
+            b.created_by_user_idx,
+            cu.nickname AS created_by_nickname,
+            b.updated_by_user_idx,
+            uu.nickname AS updated_by_nickname,
+            b.created_at,
+            b.updated_at,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx) AS total_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.is_active = 1) AS active_rule_count
+        FROM IP_BLOCK_BATCH b
+        LEFT JOIN USERS cu ON cu.user_idx = b.created_by_user_idx
+        LEFT JOIN USERS uu ON uu.user_idx = b.updated_by_user_idx
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (
+                b.batch_code LIKE CONCAT('%', #{keyword}, '%')
+                OR b.batch_name LIKE CONCAT('%', #{keyword}, '%')
+                OR b.source_name LIKE CONCAT('%', #{keyword}, '%')
+                OR b.description LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY b.is_active DESC, b.updated_at DESC, b.ip_block_batch_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <insert id="insertIpBlockBatch">
+        INSERT INTO IP_BLOCK_BATCH (
+            batch_code, batch_name, source_type, source_name, is_active, description,
+            created_by_user_idx, created_at, updated_by_user_idx, updated_at
+        ) VALUES (
+            #{batchCode}, #{batchName}, #{sourceType}, #{sourceName}, 1, #{description},
+            #{createdByUserIdx}, NOW(), #{createdByUserIdx}, NOW()
+        )
+    </insert>
+
+    <update id="updateIpBlockBatchActive">
+        UPDATE IP_BLOCK_BATCH
+        SET is_active = #{active},
+            updated_by_user_idx = #{updatedByUserIdx},
+            updated_at = NOW()
+        WHERE ip_block_batch_idx = #{ipBlockBatchIdx}
+    </update>
+
+    <select id="findIpBlockById" resultMap="ipBlockRM">
+        SELECT
+            ip.ip_blocklist_idx,
+            ip.ip_address,
+            ip.block_target_key,
+            ip.match_type,
+            ip.cidr_notation,
+            ip.range_start_ip,
+            ip.range_end_ip,
+            ip.country_code,
+            ip.asn,
+            ip.source_scope,
+            ip.block_category,
+            ip.user_idx,
+            ip.block_type,
+            ip.blocked_by_user_idx,
+            ip.reason,
+            ip.is_active AS active,
+            ip.blocked_at,
+            ip.expires_at,
+            ip.released_at,
+            ip.released_by_user_idx,
+            ip.risk_score,
+            ip.is_auto_block AS auto_block,
+            ip.auto_block_source,
+            ip.detail_message,
+            ip.priority,
+            ip.ip_block_batch_idx,
+            b.batch_code,
+            b.batch_name
+        FROM IP_BLOCKLIST ip
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = ip.ip_block_batch_idx
+        WHERE ip.ip_blocklist_idx = #{ipBlocklistIdx}
+    </select>
+
+    <insert id="insertGlobalBlockHistory">
+        INSERT INTO USER_BLOCK_HISTORY (
+            block_request_id, block_target_key, history_kind, block_scope,
+            user_idx, block_type, blocked_ip, ip_match_type,
+            cidr_notation, range_start_ip, range_end_ip, ip_block_batch_idx,
+            is_active, reason, blocked_by_user_idx, blocked_at, expires_at,
+            created_by_user_idx, created_at, updated_by_user_idx, updated_at
+        ) VALUES (
+            #{blockRequestId}, #{blockTargetKey}, #{historyKind}, #{blockScope},
+            #{userIdx}, #{blockType}, #{blockedIp}, #{ipMatchType},
+            #{cidrNotation}, #{rangeStartIp}, #{rangeEndIp}, #{ipBlockBatchIdx},
+            1, #{reason}, #{blockedByUserIdx}, NOW(), #{expiresAt},
+            #{blockedByUserIdx}, NOW(), #{blockedByUserIdx}, NOW()
+        )
+    </insert>
+
+    <select id="findBlockHistoryIdxByRequestId" resultType="long">
+        SELECT block_idx FROM USER_BLOCK_HISTORY WHERE block_request_id = #{blockRequestId} LIMIT 1
+    </select>
+
+    <insert id="upsertIpBlockRule">
+        INSERT INTO IP_BLOCKLIST (
+            ip_address, block_request_id, block_target_key, source_history_block_idx, source_blocklist_idx,
+            ip_block_batch_idx, match_type, cidr_notation, range_start_ip, range_end_ip, country_code, asn,
+            source_scope, block_category, user_idx, block_type, blocked_by_user_idx,
+            blocked_at, reason, is_active, expires_at, released_at, released_by_user_idx,
+            risk_score, is_auto_block, auto_block_source, detail_message, priority, last_synced_at, updated_at
+        ) VALUES (
+            #{ipAddress}, #{blockRequestId}, #{blockTargetKey}, #{sourceHistoryBlockIdx}, NULL,
+            #{ipBlockBatchIdx}, #{matchType}, #{cidrNotation}, #{rangeStartIp}, #{rangeEndIp}, #{countryCode}, #{asn},
+            #{sourceScope}, #{blockCategory}, #{userIdx}, #{blockType}, #{blockedByUserIdx},
+            NOW(), #{reason}, 1, #{expiresAt}, NULL, NULL,
+            #{riskScore}, #{isAutoBlock}, #{autoBlockSource}, #{detailMessage}, #{priority}, NOW(), NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+            ip_address = VALUES(ip_address),
+            block_request_id = VALUES(block_request_id),
+            source_history_block_idx = VALUES(source_history_block_idx),
+            ip_block_batch_idx = VALUES(ip_block_batch_idx),
+            match_type = VALUES(match_type),
+            cidr_notation = VALUES(cidr_notation),
+            range_start_ip = VALUES(range_start_ip),
+            range_end_ip = VALUES(range_end_ip),
+            country_code = VALUES(country_code),
+            asn = VALUES(asn),
+            source_scope = VALUES(source_scope),
+            block_category = VALUES(block_category),
+            user_idx = VALUES(user_idx),
+            block_type = VALUES(block_type),
+            blocked_by_user_idx = VALUES(blocked_by_user_idx),
+            blocked_at = NOW(),
+            reason = VALUES(reason),
+            is_active = 1,
+            expires_at = VALUES(expires_at),
+            released_at = NULL,
+            released_by_user_idx = NULL,
+            risk_score = VALUES(risk_score),
+            is_auto_block = VALUES(is_auto_block),
+            auto_block_source = VALUES(auto_block_source),
+            detail_message = VALUES(detail_message),
+            priority = VALUES(priority),
+            last_synced_at = NOW(),
+            updated_at = NOW()
+    </insert>
+
+    <update id="updateIpBlockRuleActive">
+        UPDATE IP_BLOCKLIST
+        SET is_active = #{active},
+            released_at = CASE WHEN #{active} THEN NULL ELSE NOW() END,
+            released_by_user_idx = CASE WHEN #{active} THEN NULL ELSE #{releasedByUserIdx} END,
+            last_synced_at = NOW(),
+            updated_at = NOW()
+        WHERE ip_blocklist_idx = #{ipBlocklistIdx}
+    </update>
+
+    <update id="deactivateBlockHistoriesByTargetKey">
+        UPDATE USER_BLOCK_HISTORY
+        SET is_active = 0,
+            history_kind = #{historyKind},
+            released_at = NOW(),
+            released_by_user_idx = #{releasedByUserIdx},
+            ip_block_released_at = CASE WHEN blocked_ip IS NOT NULL THEN NOW() ELSE ip_block_released_at END,
+            updated_by_user_idx = #{releasedByUserIdx},
+            updated_at = NOW(),
+            list_synced_at = NOW()
+        WHERE block_target_key = #{blockTargetKey}
+          AND is_active = 1
+    </update>
+
+    <select id="findUserBlockByTargetKey" resultType="org.triptogether.admin.vo.AdminUserBlockVO">
+        SELECT x.block_idx, x.user_idx, x.block_type, x.blocked_ip, x.is_active AS active,
+               x.reason, x.blocked_at, x.released_at, x.expires_at, x.block_request_id,
+               x.block_target_key, x.snapshot_status
+        FROM USER_BLOCKLIST x
+        WHERE x.block_target_key = #{blockTargetKey}
+        LIMIT 1
+    </select>
+
+    <update id="updateUserBlocklistActiveByTargetKey">
+        UPDATE USER_BLOCKLIST
+        SET is_active = #{active},
+            snapshot_status = #{snapshotStatus},
+            released_at = CASE WHEN #{active} THEN NULL ELSE NOW() END,
+            released_by_user_idx = CASE WHEN #{active} THEN NULL ELSE #{releasedByUserIdx} END,
+            last_history_at = NOW(),
+            synced_at = NOW(),
+            updated_by_user_idx = #{releasedByUserIdx},
+            updated_at = NOW()
+        WHERE block_target_key = #{blockTargetKey}
+    </update>
+
+    <select id="countOtherActiveUserBlocks" resultType="long">
+        SELECT COUNT(*)
+        FROM USER_BLOCKLIST
+        WHERE user_idx = #{userIdx}
+          AND is_active = 1
+          AND block_target_key != #{excludeTargetKey}
+    </select>
+
+</mapper>
