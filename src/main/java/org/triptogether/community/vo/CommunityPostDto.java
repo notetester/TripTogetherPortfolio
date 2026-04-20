@@ -39,5 +39,8 @@ public class CommunityPostDto {
 
     private int reportCount;
 
+    // AI 욕설 감지 플래그 (0=일반, 1=AI 감지됨 → BLUR 오버레이 표시)
+    private boolean aiFlagged;
+
     private String tipCategory;
 }

@@ -26,6 +26,7 @@
         <result property="thumbUrl"     column="thumb_url"/>
         <result property="accountStatus" column="account_status"/>
         <result property="reportCount"  column="report_count"/>
+        <result property="aiFlagged"    column="ai_flagged"/>
         <result property="tipCategory"  column="tip_category"/>
     </resultMap>
 
@@ -50,6 +51,7 @@
         <result property="parentCommentId" column="parent_comment_id"/>
         <result property="accountStatus"   column="account_status"/>
         <result property="reportCount"     column="report_count"/>
+        <result property="aiFlagged"       column="ai_flagged"/>
     </resultMap>
 
     <!-- =============================================
@@ -78,6 +80,7 @@
             cp.is_solved,
             u.account_status,
             cp.report_count,
+            cp.ai_flagged,
             cp.tip_category
         FROM COMMUNITY_POST cp
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
@@ -219,7 +222,8 @@
             cp.like_count,
             cp.comment_count,
             cp.updated_at,
-            cp.report_count
+            cp.report_count,
+            cp.ai_flagged
         FROM COMMUNITY_POST cp
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
         WHERE cp.post_id = #{postId}
@@ -256,7 +260,8 @@
             cc.updated_at,
             cc.parent_comment_id,
             u.account_status,
-            cc.report_count
+            cc.report_count,
+            cc.ai_flagged
         FROM COMMUNITY_COMMENT cc
         LEFT JOIN USERS u ON cc.user_idx = u.user_idx
         WHERE cc.post_id = #{postId}
@@ -293,7 +298,8 @@
             cc.updated_at,
             cc.parent_comment_id,
             u.account_status,
-            cc.report_count
+            cc.report_count,
+            cc.ai_flagged
         FROM COMMUNITY_COMMENT cc
         LEFT JOIN USERS u ON cc.user_idx = u.user_idx
         WHERE cc.comment_id = #{commentId}
@@ -326,6 +332,7 @@
             cp.like_count,
             cp.comment_count,
             cp.report_count,
+            cp.ai_flagged,
             cp.created_at,
             cp.post_type,
             cp.region,
@@ -349,7 +356,7 @@
           AND cp.post_id != #{postId}
         GROUP BY cp.post_id, cp.user_idx, u.nickname, cp.title, cp.content,
                  cp.post_status, cp.view_count, cp.like_count, cp.comment_count,
-                 cp.report_count, cp.created_at, cp.post_type, cp.region,
+                 cp.report_count, cp.ai_flagged, cp.created_at, cp.post_type, cp.region,
                  cp.tip_category, cpi.image_url, u.account_status
         ORDER BY total_co_count DESC, cp.like_count DESC, cp.created_at DESC
         LIMIT 3
@@ -368,6 +375,7 @@
             cp.like_count,
             cp.comment_count,
             cp.report_count,
+            cp.ai_flagged,
             cp.created_at,
             cp.post_type,
             cp.region,
@@ -755,6 +763,38 @@
     </update>
 
     <!-- =============================================
+         AI 욕설 감지 플래그 (비동기 Perspective 검사 결과)
+         ============================================= -->
+
+    <!-- 게시글 ai_flagged=1 -->
+    <update id="setPostAiFlagged">
+        UPDATE COMMUNITY_POST
+        SET ai_flagged = 1
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 댓글 ai_flagged=1 -->
+    <update id="setCommentAiFlagged">
+        UPDATE COMMUNITY_COMMENT
+        SET ai_flagged = 1
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 게시글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0) -->
+    <update id="clearPostBlur">
+        UPDATE COMMUNITY_POST
+        SET ai_flagged = 0, report_count = 0
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 댓글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0) -->
+    <update id="clearCommentBlur">
+        UPDATE COMMUNITY_COMMENT
+        SET ai_flagged = 0, report_count = 0
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- =============================================
          차단 (어드민)
          ============================================= -->
 
@@ -915,6 +955,7 @@
             cp.comment_count,
             cp.view_count,
             cp.report_count,
+            cp.ai_flagged,
             u.account_status,
             cpi.image_url AS thumb_url
         FROM COMMUNITY_POST cp

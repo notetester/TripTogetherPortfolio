@@ -561,6 +561,36 @@ public class CommunityServiceImpl implements CommunityService {
         return communityMapper.selectPostReportCount(postId);
     }
 
+    // ===== AI 욕설 감지 =====
+
+    // 게시글 AI 감지 플래그 세팅 (비동기 Perspective 검사 후 호출됨)
+    @Override
+    @Transactional
+    public void flagPostAsToxic(Long postId) {
+        communityMapper.setPostAiFlagged(postId);
+    }
+
+    // 댓글 AI 감지 플래그 세팅
+    @Override
+    @Transactional
+    public void flagCommentAsToxic(Long commentId) {
+        communityMapper.setCommentAiFlagged(commentId);
+    }
+
+    // 게시글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
+    @Override
+    @Transactional
+    public void clearPostBlur(Long postId) {
+        communityMapper.clearPostBlur(postId);
+    }
+
+    // 댓글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
+    @Override
+    @Transactional
+    public void clearCommentBlur(Long commentId) {
+        communityMapper.clearCommentBlur(commentId);
+    }
+
     // 댓글 신고 횟수 가져옴
     @Override
     public int getCommentReportCount(Long commentId) {

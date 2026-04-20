@@ -290,7 +290,8 @@
             <c:otherwise>
                 <c:forEach var="post" items="${postList}">
                     <c:if test="${!(post.accountStatus eq 'BLOCKED' or post.postStatus eq 'BLOCKED') or isAdminMode}">
-                        <div class="post-card-wrap ${post.reportCount >= 3 and !isAdminMode ? 'report-blurred-wrap' : ''}"
+                        <c:set var="isBlurred" value="${(post.reportCount >= 3 or post.aiFlagged) and !isAdminMode}"/>
+                        <div class="post-card-wrap ${isBlurred ? 'report-blurred-wrap' : ''}"
                              data-id="${post.postId}">
                             <c:if test="${isAdminMode}">
                                 <input type="checkbox" class="comm-admin-chk" data-id="${post.postId}"
@@ -299,7 +300,7 @@
                                     ✕
                                 </button>
                             </c:if>
-                            <div class="post-card ${post.reportCount >= 3 and !isAdminMode ? 'report-blurred' : ''}">
+                            <div class="post-card ${isBlurred ? 'report-blurred' : ''}">
                                 <div class="post-card-img-wrap">
                                     <c:choose>
                                         <c:when test="${not empty post.thumbUrl}">
@@ -372,12 +373,19 @@
                                     </div>
                                 </div>
                             </div>
-                            <c:if test="${post.reportCount >= 3 and !isAdminMode}">
-                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)"><spring:message code="community.blocked.report"/>
+                            <c:if test="${isBlurred}">
+                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)">
+                                    <c:choose>
+                                        <c:when test="${post.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                                        <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                    </c:choose>
                                 </div>
                             </c:if>
                             <c:if test="${isAdminMode}">
                                 <c:choose>
+                                    <c:when test="${post.aiFlagged}">
+                                        <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                    </c:when>
                                     <c:when test="${post.postStatus eq 'ACTIVE' and post.reportCount >= 3}">
                                         <span class="blocked-badge"><spring:message code="community.badge.report"/></span>
                                     </c:when>
@@ -388,6 +396,12 @@
                                         <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
                                     </c:when>
                                 </c:choose>
+                                <c:if test="${post.aiFlagged or post.reportCount >= 3}">
+                                    <button class="post-admin-clear-blur-btn" data-id="${post.postId}"
+                                            onclick="adminClearPostBlur(event, ${post.postId})">
+                                        <spring:message code="community.admin.clearBlur"/>
+                                    </button>
+                                </c:if>
                             </c:if>
                         </div>
                     </c:if>
@@ -574,6 +588,19 @@
         wrap.classList.remove('report-blurred-wrap');
         overlay.closest('.post-card').classList.remove('report-blurred');
         overlay.remove();
+    }
+
+    function adminClearPostBlur(event, postId) {
+        event.stopPropagation();
+        if (!confirm('<spring:message code="community.admin.clearBlur.confirm" javaScriptEscape="true"/>')) return;
+        fetch('${pageContext.request.contextPath}/community/' + postId + '/clear-blur', {
+            method: 'POST',
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+            .then(function (res) {
+                if (res.ok) location.reload();
+                else alert('<spring:message code="community.admin.clearBlur.fail" javaScriptEscape="true"/>');
+            });
     }
 
     /* ===== 어드민 일괄 처리 ===== */

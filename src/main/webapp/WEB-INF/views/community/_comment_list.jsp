@@ -30,8 +30,9 @@
                       <c:otherwise>?</c:otherwise>
                     </c:choose>
                   </div>
-                  <div class="comment-body-wrap ${comment.reportCount >= 3 and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                    <div class="comment-body ${comment.reportCount >= 3 and !isAdminMode ? 'report-blurred' : ''}">
+                  <c:set var="cmtBlurred" value="${(comment.reportCount >= 3 or comment.aiFlagged) and !isAdminMode}"/>
+                  <div class="comment-body-wrap ${cmtBlurred ? 'report-blurred-wrap' : ''}">
+                    <div class="comment-body ${cmtBlurred ? 'report-blurred' : ''}">
                       <div class="comment-top">
                         <span class="comment-author">${comment.nickname}</span>
                         <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
@@ -70,8 +71,11 @@
                         </c:if>
                       </div>
                       <div class="comment-text">${comment.content}</div>
-                      <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= 3)}">
+                      <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= 3 or comment.aiFlagged)}">
                         <c:choose>
+                          <c:when test="${comment.aiFlagged}">
+                            <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                          </c:when>
                           <c:when test="${comment.commentStatus eq 'ACTIVE' and comment.reportCount >= 3}">
                             <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
                           </c:when>
@@ -112,13 +116,21 @@
                         </div>
                       </c:if>
                     </div><%-- /comment-body --%>
-                    <c:if test="${comment.reportCount >= 3 and !isAdminMode}">
+                    <c:if test="${cmtBlurred}">
                       <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
-                        &#9888; 신고된 콘텐츠입니다. 클릭하여 확인
+                        <c:choose>
+                          <c:when test="${comment.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                          <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                        </c:choose>
                       </div>
                     </c:if>
-                    <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= 3)}">
+                    <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= 3 or comment.aiFlagged)}">
                       <button class="post-admin-delete-btn" onclick="adminDeleteComment(event, ${comment.commentId})">&#10005;</button>
+                    </c:if>
+                    <c:if test="${isAdminMode and (comment.aiFlagged or comment.reportCount >= 3)}">
+                      <button class="post-admin-clear-blur-btn" onclick="adminClearCommentBlur(event, ${comment.commentId})">
+                        <spring:message code="community.admin.clearBlur"/>
+                      </button>
                     </c:if>
                   </div><%-- /comment-body-wrap --%>
                 </div>
@@ -139,8 +151,9 @@
                                 <c:otherwise>?</c:otherwise>
                               </c:choose>
                             </div>
-                            <div class="comment-body-wrap ${reply.reportCount >= 3 and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                              <div class="comment-body ${reply.reportCount >= 3 and !isAdminMode ? 'report-blurred' : ''}">
+                            <c:set var="rplBlurred" value="${(reply.reportCount >= 3 or reply.aiFlagged) and !isAdminMode}"/>
+                            <div class="comment-body-wrap ${rplBlurred ? 'report-blurred-wrap' : ''}">
+                              <div class="comment-body ${rplBlurred ? 'report-blurred' : ''}">
                                 <div class="comment-top">
                                   <span class="comment-author">${reply.nickname}</span>
                                   <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
@@ -173,8 +186,11 @@
                                   </c:if>
                                 </div>
                                 <div class="comment-text">${reply.content}</div>
-                                <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= 3)}">
+                                <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= 3 or reply.aiFlagged)}">
                                   <c:choose>
+                                    <c:when test="${reply.aiFlagged}">
+                                      <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                    </c:when>
                                     <c:when test="${reply.commentStatus eq 'ACTIVE' and reply.reportCount >= 3}">
                                       <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
                                     </c:when>
@@ -203,13 +219,21 @@
                                   </c:choose>
                                 </div>
                               </div><%-- /comment-body --%>
-                              <c:if test="${reply.reportCount >= 3 and !isAdminMode}">
+                              <c:if test="${rplBlurred}">
                                 <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
-                                  &#9888; 신고된 콘텐츠입니다. 클릭하여 확인
+                                  <c:choose>
+                                    <c:when test="${reply.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                                    <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                  </c:choose>
                                 </div>
                               </c:if>
-                              <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= 3)}">
+                              <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= 3 or reply.aiFlagged)}">
                                 <button class="post-admin-delete-btn" onclick="adminDeleteComment(event, ${reply.commentId})">&#10005;</button>
+                              </c:if>
+                              <c:if test="${isAdminMode and (reply.aiFlagged or reply.reportCount >= 3)}">
+                                <button class="post-admin-clear-blur-btn" onclick="adminClearCommentBlur(event, ${reply.commentId})">
+                                  <spring:message code="community.admin.clearBlur"/>
+                                </button>
                               </c:if>
                             </div><%-- /comment-body-wrap --%>
                           </div>

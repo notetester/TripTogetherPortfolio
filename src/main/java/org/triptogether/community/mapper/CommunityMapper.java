@@ -154,6 +154,16 @@ public interface CommunityMapper {
     // 댓글 신고 횟수 캐시 +1
     void increaseCommentReportCount(@Param("commentId") Long commentId);
 
+    // ===== AI 욕설 감지 플래그 =====
+    // 게시글 ai_flagged=1 (비동기 Perspective 검사로 욕설 감지됨)
+    void setPostAiFlagged(@Param("postId") Long postId);
+    // 댓글 ai_flagged=1
+    void setCommentAiFlagged(@Param("commentId") Long commentId);
+    // 게시글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
+    void clearPostBlur(@Param("postId") Long postId);
+    // 댓글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
+    void clearCommentBlur(@Param("commentId") Long commentId);
+
     // ===== 차단 (어드민) =====
     // 유저 차단 (account_status = 'BLOCKED')
     void blockUser(@Param("userIdx") Long userIdx);
