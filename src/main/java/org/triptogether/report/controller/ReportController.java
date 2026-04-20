@@ -260,6 +260,13 @@ public class ReportController {
                 return ResponseEntity.status(409).body(result);
             }
 
+            // 신고 접수 성공 시 게시글/댓글 report_count 캐시 증가 (3회 이상이면 JSP 에서 BLUR 처리)
+            if ("post".equals(targetType)) {
+                communityService.updatePostReportCache(targetId);
+            } else if ("comment".equals(targetType)) {
+                communityService.updateCommentReportCache(targetId);
+            }
+
             result.put("success", true);
             result.put("message", "신고가 접수되었습니다.");
 

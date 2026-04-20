@@ -243,11 +243,11 @@
                 <c:if test="${empty comment.parentCommentId}">
                   <c:choose>
                     <%-- 관리자 직접 차단 (report_count < 3): blind --%>
-                    <c:when test="${(comment.accountStatus eq 'BLOCKED' or (comment.commentStatus eq 'BLOCKED' and comment.reportCount < 3)) and !isAdminMode}">
+                    <c:when test="${(comment.accountStatus eq 'BLOCKED' or comment.commentStatus eq 'BLOCKED') and !isAdminMode}">
                     </c:when>
                     <c:otherwise>
                       <%-- ACTIVE 또는 신고차단(report>=3) 또는 관리자모드 --%>
-                      <c:if test="${comment.commentStatus eq 'ACTIVE' or (comment.commentStatus eq 'BLOCKED' and comment.reportCount >= 3) or isAdminMode}">
+                      <c:if test="${comment.commentStatus eq 'ACTIVE' or isAdminMode}">
                         <div class="comment-item" id="comment_${comment.commentId}">
                           <c:if test="${isAdminMode}">
                             <input type="checkbox" class="comm-admin-comment-chk" data-id="${comment.commentId}"
@@ -259,10 +259,10 @@
                               <c:otherwise>?</c:otherwise>
                             </c:choose>
                           </div>
-                          <%-- comment-body-wrap: 신고차단이면 report-blurred-wrap --%>
-                          <div class="comment-body-wrap ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                            <%-- comment-body: 신고차단이면 report-blurred --%>
-                            <div class="comment-body ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                          <%-- comment-body-wrap: 신고 3회 이상이면 report-blurred-wrap --%>
+                          <div class="comment-body-wrap ${comment.reportCount >= 3 and !isAdminMode ? 'report-blurred-wrap' : ''}">
+                            <%-- comment-body: 신고 3회 이상이면 report-blurred --%>
+                            <div class="comment-body ${comment.reportCount >= 3 and !isAdminMode ? 'report-blurred' : ''}">
                               <div class="comment-top">
                                 <span class="comment-author">${comment.nickname}</span>
                                 <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
@@ -302,9 +302,9 @@
                               </div>
                               <div class="comment-text">${comment.content}</div>
                               <%-- 관리자모드: 차단 뱃지 --%>
-                              <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED')}">
+                              <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= 3)}">
                                 <c:choose>
-                                  <c:when test="${comment.commentStatus eq 'BLOCKED' and comment.reportCount >= 3}">
+                                  <c:when test="${comment.commentStatus eq 'ACTIVE' and comment.reportCount >= 3}">
                                     <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
                                   </c:when>
                                   <c:when test="${comment.commentStatus eq 'BLOCKED'}">
@@ -344,13 +344,13 @@
                                 </div>
                               </c:if>
                             </div><%-- /comment-body --%>
-                            <%-- 신고차단 overlay: comment-body 밖, comment-body-wrap 안 --%>
-                            <c:if test="${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode}">
+                            <%-- 신고 3회 이상 overlay: comment-body 밖, comment-body-wrap 안 --%>
+                            <c:if test="${comment.reportCount >= 3 and !isAdminMode}">
                               <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
                                 ⚠️ 신고된 콘텐츠입니다. 클릭하여 확인
                               </div>
                             </c:if>
-                            <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED')}">
+                            <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= 3)}">
                               <button class="post-admin-delete-btn" onclick="adminDeleteComment(event, ${comment.commentId})">✕</button>
                             </c:if>
                           </div><%-- /comment-body-wrap --%>
@@ -361,10 +361,10 @@
                           <c:if test="${reply.parentCommentId eq comment.commentId}">
                             <c:choose>
                               <%-- 관리자 직접 차단: blind --%>
-                              <c:when test="${(reply.accountStatus eq 'BLOCKED' or (reply.commentStatus eq 'BLOCKED' and reply.reportCount < 3)) and !isAdminMode}">
+                              <c:when test="${(reply.accountStatus eq 'BLOCKED' or reply.commentStatus eq 'BLOCKED') and !isAdminMode}">
                               </c:when>
                               <c:otherwise>
-                                <c:if test="${reply.commentStatus eq 'ACTIVE' or (reply.commentStatus eq 'BLOCKED' and reply.reportCount >= 3) or isAdminMode}">
+                                <c:if test="${reply.commentStatus eq 'ACTIVE' or isAdminMode}">
                                   <div class="comment-item reply-item">
                                     <c:if test="${isAdminMode}">
                                       <input type="checkbox" class="comm-admin-comment-chk" data-id="${reply.commentId}"
@@ -377,8 +377,8 @@
                                         <c:otherwise>?</c:otherwise>
                                       </c:choose>
                                     </div>
-                                    <div class="comment-body-wrap ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                                      <div class="comment-body ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                                    <div class="comment-body-wrap ${reply.reportCount >= 3 and !isAdminMode ? 'report-blurred-wrap' : ''}">
+                                      <div class="comment-body ${reply.reportCount >= 3 and !isAdminMode ? 'report-blurred' : ''}">
                                         <div class="comment-top">
                                           <span class="comment-author">${reply.nickname}</span>
                                           <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
@@ -412,9 +412,9 @@
                                       </div>
                                       <div class="comment-text">${reply.content}</div>
                                       <%-- 관리자모드: 차단 뱃지 --%>
-                                      <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED')}">
+                                      <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= 3)}">
                                         <c:choose>
-                                          <c:when test="${reply.commentStatus eq 'BLOCKED' and reply.reportCount >= 3}">
+                                          <c:when test="${reply.commentStatus eq 'ACTIVE' and reply.reportCount >= 3}">
                                             <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
                                           </c:when>
                                           <c:when test="${reply.commentStatus eq 'BLOCKED'}">
@@ -442,13 +442,13 @@
                                         </c:choose>
                                       </div>
                                     </div><%-- /comment-body --%>
-                                    <%-- 신고차단 overlay: comment-body 밖, comment-body-wrap 안 --%>
-                                    <c:if test="${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode}">
+                                    <%-- 신고 3회 이상 overlay: comment-body 밖, comment-body-wrap 안 --%>
+                                    <c:if test="${reply.reportCount >= 3 and !isAdminMode}">
                                       <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
                                         ⚠️ 신고된 콘텐츠입니다. 클릭하여 확인
                                       </div>
                                     </c:if>
-                                    <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED')}">
+                                    <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= 3)}">
                                       <button class="post-admin-delete-btn" onclick="adminDeleteComment(event, ${reply.commentId})">✕</button>
                                     </c:if>
                                   </div><%-- /comment-body-wrap --%>

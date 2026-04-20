@@ -90,10 +90,7 @@
             AND cp.post_status IN ('ACTIVE', 'BLOCKED')
         </if>
         <if test="!adminMode">
-            AND (
-                cp.post_status = 'ACTIVE'
-                OR (cp.post_status = 'BLOCKED' AND cp.report_count >= 3)
-            )
+            AND cp.post_status = 'ACTIVE'
             AND (u.account_status IS NULL OR u.account_status != 'BLOCKED')
         </if>
         <if test="region != null and region != 'all'">
@@ -159,10 +156,7 @@
             AND cp.post_status IN ('ACTIVE', 'BLOCKED')
         </if>
         <if test="!adminMode">
-            AND (
-                cp.post_status = 'ACTIVE'
-                OR (cp.post_status = 'BLOCKED' AND cp.report_count >= 3)
-            )
+            AND cp.post_status = 'ACTIVE'
             AND (u.account_status IS NULL OR u.account_status != 'BLOCKED')
         </if>
         <if test="region != null and region != 'all'">

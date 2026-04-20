@@ -289,8 +289,8 @@
             </c:when>
             <c:otherwise>
                 <c:forEach var="post" items="${postList}">
-                    <c:if test="${!(post.accountStatus eq 'BLOCKED' or (post.postStatus eq 'BLOCKED' and post.reportCount < 3)) or isAdminMode}">
-                        <div class="post-card-wrap ${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}"
+                    <c:if test="${!(post.accountStatus eq 'BLOCKED' or post.postStatus eq 'BLOCKED') or isAdminMode}">
+                        <div class="post-card-wrap ${post.reportCount >= 3 and !isAdminMode ? 'report-blurred-wrap' : ''}"
                              data-id="${post.postId}">
                             <c:if test="${isAdminMode}">
                                 <input type="checkbox" class="comm-admin-chk" data-id="${post.postId}"
@@ -299,7 +299,7 @@
                                     ✕
                                 </button>
                             </c:if>
-                            <div class="post-card ${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                            <div class="post-card ${post.reportCount >= 3 and !isAdminMode ? 'report-blurred' : ''}">
                                 <div class="post-card-img-wrap">
                                     <c:choose>
                                         <c:when test="${not empty post.thumbUrl}">
@@ -372,13 +372,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <c:if test="${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode}">
+                            <c:if test="${post.reportCount >= 3 and !isAdminMode}">
                                 <div class="report-blurred-overlay" onclick="removeReportBlur(this)"><spring:message code="community.blocked.report"/>
                                 </div>
                             </c:if>
                             <c:if test="${isAdminMode}">
                                 <c:choose>
-                                    <c:when test="${post.postStatus eq 'BLOCKED' and post.reportCount >= 3}">
+                                    <c:when test="${post.postStatus eq 'ACTIVE' and post.reportCount >= 3}">
                                         <span class="blocked-badge"><spring:message code="community.badge.report"/></span>
                                     </c:when>
                                     <c:when test="${post.postStatus eq 'BLOCKED'}">

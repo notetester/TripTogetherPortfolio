@@ -541,20 +541,18 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 신고 =====
 
-    // 게시글 신고 횟수 캐시 업데이트함. 3회 이상이면 자동 차단함
+    // 게시글 신고 횟수 캐시 업데이트함. 3회 이상이면 리스트/상세에서 BLUR 처리됨 (post_status 는 ACTIVE 유지)
     @Override
+    @Transactional
     public void updatePostReportCache(Long postId) {
         communityMapper.increasePostReportCount(postId);
-        int reportCount = communityMapper.selectPostReportCount(postId);
-        if (reportCount >= 3) communityMapper.blockPost(postId);
     }
 
-    // 댓글 신고 횟수 캐시 업데이트함. 3회 이상이면 자동 차단함
+    // 댓글 신고 횟수 캐시 업데이트함. 3회 이상이면 리스트/상세에서 BLUR 처리됨 (comment_status 는 ACTIVE 유지)
     @Override
+    @Transactional
     public void updateCommentReportCache(Long commentId) {
         communityMapper.increaseCommentReportCount(commentId);
-        int reportCount = communityMapper.selectCommentReportCount(commentId);
-        if (reportCount >= 3) communityMapper.blockComment(commentId);
     }
 
     // 게시글 신고 횟수 가져옴

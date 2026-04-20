@@ -18,11 +18,11 @@
       <c:forEach var="comment" items="${commentList}">
         <c:if test="${empty comment.parentCommentId}">
           <c:choose>
-            <%-- 관리자 직접 차단 (report_count < 3): blind --%>
-            <c:when test="${(comment.accountStatus eq 'BLOCKED' or (comment.commentStatus eq 'BLOCKED' and comment.reportCount < 3)) and !isAdminMode}">
+            <%-- 관리자 직접 차단: blind --%>
+            <c:when test="${(comment.accountStatus eq 'BLOCKED' or comment.commentStatus eq 'BLOCKED') and !isAdminMode}">
             </c:when>
             <c:otherwise>
-              <c:if test="${comment.commentStatus eq 'ACTIVE' or (comment.commentStatus eq 'BLOCKED' and comment.reportCount >= 3) or isAdminMode}">
+              <c:if test="${comment.commentStatus eq 'ACTIVE' or isAdminMode}">
                 <div class="comment-item" id="comment_${comment.commentId}">
                   <div class="comment-av">
                     <c:choose>
@@ -30,8 +30,8 @@
                       <c:otherwise>?</c:otherwise>
                     </c:choose>
                   </div>
-                  <div class="comment-body-wrap ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                    <div class="comment-body ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                  <div class="comment-body-wrap ${comment.reportCount >= 3 and !isAdminMode ? 'report-blurred-wrap' : ''}">
+                    <div class="comment-body ${comment.reportCount >= 3 and !isAdminMode ? 'report-blurred' : ''}">
                       <div class="comment-top">
                         <span class="comment-author">${comment.nickname}</span>
                         <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
@@ -70,9 +70,9 @@
                         </c:if>
                       </div>
                       <div class="comment-text">${comment.content}</div>
-                      <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED')}">
+                      <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= 3)}">
                         <c:choose>
-                          <c:when test="${comment.commentStatus eq 'BLOCKED' and comment.reportCount >= 3}">
+                          <c:when test="${comment.commentStatus eq 'ACTIVE' and comment.reportCount >= 3}">
                             <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
                           </c:when>
                           <c:when test="${comment.commentStatus eq 'BLOCKED'}">
@@ -112,12 +112,12 @@
                         </div>
                       </c:if>
                     </div><%-- /comment-body --%>
-                    <c:if test="${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode}">
+                    <c:if test="${comment.reportCount >= 3 and !isAdminMode}">
                       <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
                         &#9888; 신고된 콘텐츠입니다. 클릭하여 확인
                       </div>
                     </c:if>
-                    <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED')}">
+                    <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= 3)}">
                       <button class="post-admin-delete-btn" onclick="adminDeleteComment(event, ${comment.commentId})">&#10005;</button>
                     </c:if>
                   </div><%-- /comment-body-wrap --%>
@@ -127,10 +127,10 @@
                 <c:forEach var="reply" items="${commentList}">
                   <c:if test="${reply.parentCommentId eq comment.commentId}">
                     <c:choose>
-                      <c:when test="${(reply.accountStatus eq 'BLOCKED' or (reply.commentStatus eq 'BLOCKED' and reply.reportCount < 3)) and !isAdminMode}">
+                      <c:when test="${(reply.accountStatus eq 'BLOCKED' or reply.commentStatus eq 'BLOCKED') and !isAdminMode}">
                       </c:when>
                       <c:otherwise>
-                        <c:if test="${reply.commentStatus eq 'ACTIVE' or (reply.commentStatus eq 'BLOCKED' and reply.reportCount >= 3) or isAdminMode}">
+                        <c:if test="${reply.commentStatus eq 'ACTIVE' or isAdminMode}">
                           <div class="comment-item reply-item">
                             <div class="reply-indent">&#8618;</div>
                             <div class="comment-av reply-av">
@@ -139,8 +139,8 @@
                                 <c:otherwise>?</c:otherwise>
                               </c:choose>
                             </div>
-                            <div class="comment-body-wrap ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                              <div class="comment-body ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                            <div class="comment-body-wrap ${reply.reportCount >= 3 and !isAdminMode ? 'report-blurred-wrap' : ''}">
+                              <div class="comment-body ${reply.reportCount >= 3 and !isAdminMode ? 'report-blurred' : ''}">
                                 <div class="comment-top">
                                   <span class="comment-author">${reply.nickname}</span>
                                   <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
@@ -173,9 +173,9 @@
                                   </c:if>
                                 </div>
                                 <div class="comment-text">${reply.content}</div>
-                                <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED')}">
+                                <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= 3)}">
                                   <c:choose>
-                                    <c:when test="${reply.commentStatus eq 'BLOCKED' and reply.reportCount >= 3}">
+                                    <c:when test="${reply.commentStatus eq 'ACTIVE' and reply.reportCount >= 3}">
                                       <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
                                     </c:when>
                                     <c:when test="${reply.commentStatus eq 'BLOCKED'}">
@@ -203,12 +203,12 @@
                                   </c:choose>
                                 </div>
                               </div><%-- /comment-body --%>
-                              <c:if test="${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode}">
+                              <c:if test="${reply.reportCount >= 3 and !isAdminMode}">
                                 <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
                                   &#9888; 신고된 콘텐츠입니다. 클릭하여 확인
                                 </div>
                               </c:if>
-                              <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED')}">
+                              <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= 3)}">
                                 <button class="post-admin-delete-btn" onclick="adminDeleteComment(event, ${reply.commentId})">&#10005;</button>
                               </c:if>
                             </div><%-- /comment-body-wrap --%>
