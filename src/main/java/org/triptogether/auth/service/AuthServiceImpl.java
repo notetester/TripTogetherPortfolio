@@ -118,22 +118,26 @@ public class AuthServiceImpl implements AuthService {
         boolean isEmail = isValidEmailFormat(identifier);
         String loginMethod = isEmail ? "EMAIL" : "ID";
 
+        // 1. 사용자 조회
         UsersVO user = isEmail
                 ? authMapper.findByEmail(identifier)
                 : authMapper.findByUserId(identifier);
 
+        // 2. 사용자 없음
         if (user == null) {
             recordLoginResult(null, loginMethod, identifier,
                     false, "USER_NOT_FOUND", context);
             return null;
         }
 
+        // 3. 계정 상태
         if ("DELETED".equals(user.getAccountStatus())) {
             recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                     false, "ACCOUNT_DELETED", context);
             return null;
         }
 
+        // 4. 이메일 정책
         if (isEmail) {
             if (!user.isEmailVerified()) {
                 recordLoginResult(user.getUserIdx(), loginMethod, identifier,
@@ -148,12 +152,14 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
+        // 5. 비밀번호 로그인 가능 여부
         if (!user.isPasswordEnabled()) {
             recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                     false, "PASSWORD_LOGIN_DISABLED", context);
             return null;
         }
 
+        // 6. 비밀번호 검증
         if (!bCryptPasswordEncoder.matches(password, user.getUserPassword())) {
             recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                     false, "WRONG_PASSWORD", context);
@@ -242,6 +248,7 @@ public class AuthServiceImpl implements AuthService {
     // ════════════════════════════════════════════
     @Override
     public void register(UsersVO user) {
+        // 비밀번호 해싱
         if (user.getUserPassword() != null && !user.getUserPassword().isBlank()) {
             user.setUserPassword(bCryptPasswordEncoder.encode(user.getUserPassword()));
             user.setPasswordEnabled(true);

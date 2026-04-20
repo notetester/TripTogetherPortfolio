@@ -28,10 +28,15 @@
                 <span class="adm-nav-icon">📊</span> 대시보드
             </a>
 
+            <c:if test="${hasMemberAdmin or hasAuditAdmin}">
             <div class="adm-nav-section" style="margin-top:8px;">회원 / 인증</div>
+            </c:if>
+            <c:if test="${hasMemberAdmin}">
             <a class="adm-nav-item ${activeMenu=='members'?'active':''}" href="${pageContext.request.contextPath}/admin/members">
                 <span class="adm-nav-icon">👥</span> 회원 관리
             </a>
+            </c:if>
+            <c:if test="${hasAuditAdmin}">
             <a class="adm-nav-item ${activeMenu=='logins'?'active':''}" href="${pageContext.request.contextPath}/admin/logins">
                 <span class="adm-nav-icon">🔐</span> 로그인 감사
             </a>
@@ -47,26 +52,44 @@
             <a class="adm-nav-item ${activeMenu=='activityLogs'?'active':''}" href="${pageContext.request.contextPath}/admin/activity-logs">
                 <span class="adm-nav-icon">🧭</span> 일반 활동 로그
             </a>
+            </c:if>
 
+            <c:if test="${hasInquiryAdmin or hasReportAdmin}">
             <div class="adm-nav-section" style="margin-top:8px;">운영</div>
+            </c:if>
+            <c:if test="${hasInquiryAdmin}">
             <a class="adm-nav-item ${activeMenu=='inquiries'?'active':''}" href="${pageContext.request.contextPath}/admin/inquiries">
                 <span class="adm-nav-icon">📩</span> 문의 관리
             </a>
+            </c:if>
+            <c:if test="${hasReportAdmin}">
             <a class="adm-nav-item ${activeMenu=='reports'?'active':''}" href="${pageContext.request.contextPath}/admin/reports">
                 <span class="adm-nav-icon">🚨</span> 신고 관리
             </a>
+            </c:if>
 
+            <c:if test="${hasCommunityAdmin or hasExploreAdmin}">
             <div class="adm-nav-section" style="margin-top:8px;">콘텐츠</div>
+            </c:if>
+            <c:if test="${hasCommunityAdmin}">
             <a class="adm-nav-item ${activeMenu=='community'?'active':''}" href="${pageContext.request.contextPath}/admin/community">
                 <span class="adm-nav-icon">📝</span> 커뮤니티 관리
             </a>
+            </c:if>
+            <c:if test="${hasExploreAdmin}">
             <a class="adm-nav-item ${activeMenu=='explore'?'active':''}" href="${pageContext.request.contextPath}/admin/explore">
                 <span class="adm-nav-icon">📍</span> 여행지 관리
             </a>
+            </c:if>
             <span class="adm-nav-item disabled">
                 <span class="adm-nav-icon">🗺️</span> 코스 관리
                 <span class="adm-nav-badge soon">회의 후</span>
             </span>
+
+            <div class="adm-nav-section" style="margin-top:8px;">시스템</div>
+            <a class="adm-nav-item ${activeMenu=='superAdmin'?'active':''}" href="${pageContext.request.contextPath}/superAdmin">
+                <span class="adm-nav-icon">🔑</span> 관리자 관리
+            </a>
 
             <div style="margin-top:16px; padding: 0 10px;">
                 <a class="adm-nav-item" href="${pageContext.request.contextPath}/" target="_blank" style="background:#1e2330; color:#64748b;">

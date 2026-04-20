@@ -37,6 +37,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final LoginInterceptor loginInterceptor;
     private final AdminInterceptor adminInterceptor;
+    private final SuperAdminInterceptor superAdminInterceptor;
     private final AdminModeInterceptor adminModeInterceptor;
     private final ActivityLogInterceptor activityLogInterceptor;
     private final IpBlockInterceptor ipBlockInterceptor;
@@ -55,7 +56,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:messages/messages");
+        messageSource.setBasenames(
+                "classpath:messages/messages",
+                "classpath:messages/community-detail-extra"
+        );
         messageSource.setDefaultEncoding("UTF-8");
         // 키를 아직 번역 파일에 넣지 못한 경우, 에러 대신 키 자체를 보여주면 누락 확인이 쉽다.
         messageSource.setUseCodeAsDefaultMessage(true);
@@ -128,6 +132,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns(
                         "/mypage/**",
+                        "/wallet/**",
                         "/auth/link/**",
                         "/inquiry/**"
                 )
@@ -139,6 +144,10 @@ public class WebConfig implements WebMvcConfigurer {
         // 관리자 전용 영역
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**");
+
+        // 최고관리자 전용 영역
+        registry.addInterceptor(superAdminInterceptor)
+                .addPathPatterns("/superAdmin/**");
 
         // 전체 페이지 어드민모드 인터셉터
         registry.addInterceptor(adminModeInterceptor)

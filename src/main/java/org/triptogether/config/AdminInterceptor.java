@@ -10,6 +10,8 @@ import org.triptogether.auth.vo.UsersVO;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 관리자 전용 페이지 보호 인터셉터.
@@ -53,6 +55,48 @@ public class AdminInterceptor implements HandlerInterceptor {
             return false;
         }
 
+        @SuppressWarnings("unchecked")
+        Set<String> adminPermissions = (Set<String>) session.getAttribute("adminPermissions");
+        if (adminPermissions == null) adminPermissions = Set.of();
+
+        if (adminPermissions.contains("SUPER_ADMIN")) return true;
+
+        String uri = request.getRequestURI().replaceFirst(request.getContextPath(), "");
+        String required = resolveRequiredPermission(uri);
+
+        if (required != null && !adminPermissions.contains(required)) {
+            log.warn("[AdminInterceptor] 권한 부족 - userIdx={}, path={}, required={}",
+                    loginUser.getUserIdx(), uri, required);
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return false;
+        }
+
         return true;
+    }
+
+    private static final Map<String, String> URL_PERMISSION_MAP = Map.of(
+        "/admin/community", "COMMUNITY_ADMIN",
+        "/admin/members",   "MEMBER_ADMIN",
+        "/admin/reports",   "REPORT_ADMIN",
+        "/admin/inquiries", "INQUIRY_ADMIN",
+        "/admin/explore",   "EXPLORE_ADMIN"
+    );
+
+    private static final Map<String, String> AUDIT_URLS = Map.of(
+        "/admin/logins",               "AUDIT_ADMIN",
+        "/admin/security",             "AUDIT_ADMIN",
+        "/admin/email-verifications",  "AUDIT_ADMIN",
+        "/admin/email-tokens",         "AUDIT_ADMIN",
+        "/admin/activity-logs",        "AUDIT_ADMIN"
+    );
+
+    private String resolveRequiredPermission(String uri) {
+        for (Map.Entry<String, String> entry : URL_PERMISSION_MAP.entrySet()) {
+            if (uri.startsWith(entry.getKey())) return entry.getValue();
+        }
+        for (Map.Entry<String, String> entry : AUDIT_URLS.entrySet()) {
+            if (uri.startsWith(entry.getKey())) return entry.getValue();
+        }
+        return null;
     }
 }

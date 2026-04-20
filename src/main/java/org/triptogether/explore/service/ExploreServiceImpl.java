@@ -11,6 +11,7 @@ import org.triptogether.explore.vo.ExploreCreateDto;
 import org.triptogether.explore.vo.ExploreSearchDto;
 import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.explore.vo.ReviewVO;
+import org.triptogether.reward.service.RewardService;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,7 @@ public class ExploreServiceImpl implements ExploreService {
 
     private final ExploreMapper exploreMapper;
     private final SpotTextTranslationService spotTextTranslationService;
+    private final RewardService rewardService;
 
     /** application.properties의 file.upload.path 값 (예: src/main/resources/upload/) */
     @Value("${file.upload.path}")
@@ -180,6 +182,16 @@ public class ExploreServiceImpl implements ExploreService {
 
         saveSpotTags(spot.getSpotIdx(), spotCreateDto.getTags());
 
+        if (loginUser != null && loginUser.getUserIdx() != null) {
+            rewardService.awardAction(
+                    loginUser.getUserIdx(),
+                    "SPOT_POST",
+                    spot.getSpotIdx(),
+                    0L,
+                    "여행지 게시글 작성 보상"
+            );
+        }
+
         return spot.getSpotIdx();
     }
 
@@ -228,10 +240,20 @@ public class ExploreServiceImpl implements ExploreService {
        ============================================================ */
 
     @Override
-    public List<ReviewVO> getReviewList(Long spotIdx) {
-        List<ReviewVO> reviews = exploreMapper.selectReviewList(spotIdx);
+    public List<ReviewVO> getReviewList(Long spotIdx, Long loginUserIdx) {
+        List<ReviewVO> reviews = exploreMapper.selectReviewList(spotIdx, loginUserIdx);
         spotTextTranslationService.translateReviews(reviews);
         return reviews;
+    }
+
+    @Override
+    public ReviewVO getReview(Long reviewIdx) {
+        ReviewVO review = exploreMapper.selectReview(reviewIdx);
+        if (review == null) {
+            return null;
+        }
+        spotTextTranslationService.translateReviews(Collections.singletonList(review));
+        return review;
     }
 
     @Override
@@ -243,11 +265,50 @@ public class ExploreServiceImpl implements ExploreService {
     @Override
     public void writeReview(ReviewVO review) {
         exploreMapper.insertReview(review);
+        rewardService.awardAction(
+                review.getUserIdx(),
+                "SPOT_REVIEW",
+                review.getReviewIdx(),
+                0L,
+                "여행지 리뷰 작성 보상"
+        );
     }
 
     @Override
     public void deleteReview(Long reviewIdx, Long userIdx) {
         exploreMapper.deleteReview(reviewIdx, userIdx);
+    }
+
+    @Override
+    public boolean toggleReviewLike(Long reviewIdx, Long userIdx) {
+        boolean already = exploreMapper.selectReviewLikeCount(reviewIdx, userIdx) > 0;
+        if (already) {
+            exploreMapper.deleteReviewLike(reviewIdx, userIdx);
+            exploreMapper.decreaseReviewLikeCount(reviewIdx);
+            return false;
+        }
+
+        exploreMapper.insertReviewLike(reviewIdx, userIdx);
+        exploreMapper.increaseReviewLikeCount(reviewIdx);
+
+        ReviewVO review = exploreMapper.selectReview(reviewIdx);
+        if (review != null && review.getUserIdx() != null && !review.getUserIdx().equals(userIdx)) {
+            rewardService.awardAction(
+                    userIdx,
+                    "SPOT_REVIEW_LIKE_ACTION",
+                    buildRewardSourceId(reviewIdx, userIdx),
+                    0L,
+                    "여행지 리뷰 좋아요 실행 보상"
+            );
+            rewardService.awardAction(
+                    review.getUserIdx(),
+                    "SPOT_REVIEW_LIKE",
+                    buildRewardSourceId(reviewIdx, userIdx),
+                    0L,
+                    "여행지 리뷰 좋아요 수신 보상"
+            );
+        }
+        return true;
     }
 
     @Override
@@ -298,7 +359,29 @@ public class ExploreServiceImpl implements ExploreService {
     public boolean toggleLike(Long spotIdx, Long userIdx) {
         boolean already = exploreMapper.selectLikeCount(spotIdx, userIdx) > 0;
         if (already) { exploreMapper.deleteLike(spotIdx, userIdx); return false; }
-        else          { exploreMapper.insertLike(spotIdx, userIdx); return true;  }
+        else {
+            exploreMapper.insertLike(spotIdx, userIdx);
+
+            ExploreVO spot = exploreMapper.selectSpotDetail(spotIdx);
+            if (spot != null && spot.getUserIdx() != null && !spot.getUserIdx().equals(userIdx)) {
+                rewardService.awardAction(
+                        userIdx,
+                        "SPOT_LIKE_ACTION",
+                        buildRewardSourceId(spotIdx, userIdx),
+                        0L,
+                        "여행지 좋아요 실행 보상"
+                );
+
+                rewardService.awardAction(
+                        spot.getUserIdx(),
+                        "SPOT_LIKE",
+                        buildRewardSourceId(spotIdx, userIdx),
+                        0L,
+                        "여행지 좋아요 수신 보상"
+                );
+            }
+            return true;
+        }
     }
 
     /* ============================================================
@@ -419,6 +502,17 @@ public class ExploreServiceImpl implements ExploreService {
     /**
      * 파일명에서 확장자를 추출한다. (예: "photo.jpg" -> ".jpg")
      */
+    /**
+     * 좋아요 1건을 "대상 ID + 행위자 ID" 조합으로 식별해서
+     * 같은 사용자가 같은 대상에 반복 토글해도 중복 지급되지 않게 만든다.
+     */
+    private Long buildRewardSourceId(Long targetId, Long actorUserIdx) {
+        if (targetId == null || actorUserIdx == null) {
+            return null;
+        }
+        return (targetId * 1_000_000L) + actorUserIdx;
+    }
+
     private String getExtension(String fileName) {
         if (fileName == null) return "";
         int dotIdx = fileName.lastIndexOf('.');
