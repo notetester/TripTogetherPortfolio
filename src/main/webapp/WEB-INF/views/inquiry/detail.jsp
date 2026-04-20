@@ -71,8 +71,19 @@
           </c:if>
         </div>
 
-        <%-- 제목 --%>
+        <%-- 제목 (BLUR 대상 아님 — 본문만 블러) --%>
         <h1 class="inq-detail-title">${inquiry.title}</h1>
+
+        <%-- 관리자 전용 AI 감지 배지 + BLUR 해제 버튼 --%>
+        <c:if test="${isAdmin and inquiry.aiFlagged}">
+          <div style="margin:8px 0;">
+            <span class="inq-ai-badge">AI 감지됨</span>
+            <button type="button" class="inq-admin-clear-blur-btn"
+                    id="postClearBlurBtn" data-id="${inquiry.inquiryId}">
+              BLUR 해제
+            </button>
+          </div>
+        </c:if>
 
         <%-- 작성자 / 날짜 / 조회수 --%>
         <div class="inq-detail-info">
@@ -96,7 +107,7 @@
         </div>
       </div>
 
-      <%-- 카드 본문: 문의 내용 --%>
+      <%-- 카드 본문: 문의 내용 (목록에서 BLUR 오버레이로 권한 확인 완료 → 상세는 일반 노출) --%>
       <div class="inq-detail-body">
         <pre class="inq-detail-content">${inquiry.content}</pre>
       </div>
@@ -388,6 +399,22 @@ function goBackToList() {
       body: new URLSearchParams(params)
     });
     return res.json();
+  }
+
+  /* =============================================
+     관리자: BLUR 해제 버튼
+     ============================================= */
+  var postClearBlurBtn = document.getElementById('postClearBlurBtn');
+  if (postClearBlurBtn) {
+    postClearBlurBtn.addEventListener('click', async function () {
+      if (!confirm('BLUR을 해제하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/clear-blur', {});
+        if (data.success) { location.reload(); }
+        else { alert(data.message || 'BLUR 해제에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
   }
 
   /* =============================================

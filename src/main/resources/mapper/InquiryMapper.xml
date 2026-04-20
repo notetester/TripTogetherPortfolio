@@ -28,6 +28,7 @@
         <result property="cancelledAt"           column="cancelled_at"/>
         <result property="deleteRequestedAt"     column="delete_requested_at"/>
         <result property="visibilityRequestedAt" column="visibility_requested_at"/>
+        <result property="aiFlagged"             column="ai_flagged"/>
     </resultMap>
 
     <!-- 답변 매핑 -->
@@ -67,7 +68,8 @@
         ip.status,
         ip.view_count,
         ip.created_at,
-        ip.updated_at
+        ip.updated_at,
+        ip.ai_flagged
         FROM INQUIRY_POST ip
         LEFT JOIN USERS u ON ip.user_idx = u.user_idx
         <where>
@@ -150,7 +152,8 @@
         ip.completed_at,
         ip.cancelled_at,
         ip.delete_requested_at,
-        ip.visibility_requested_at
+        ip.visibility_requested_at,
+        ip.ai_flagged
         FROM INQUIRY_POST ip
         LEFT JOIN USERS u ON ip.user_idx = u.user_idx
         WHERE ip.inquiry_id = #{inquiryId}
@@ -312,6 +315,26 @@
         DELETE FROM INQUIRY_ATTACHMENT
         WHERE attachment_id = #{attachmentId}
     </delete>
+
+    <!-- =============================================
+         19. AI 독성 감지 플래그 설정
+         ============================================= -->
+    <update id="setInquiryAiFlagged">
+        UPDATE INQUIRY_POST
+        SET ai_flagged = 1,
+            updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+    </update>
+
+    <!-- =============================================
+         20. 관리자 BLUR 해제 (ai_flagged + report_count 모두 초기화)
+         ============================================= -->
+    <update id="clearInquiryBlur">
+        UPDATE INQUIRY_POST
+        SET ai_flagged = 0,
+            updated_at = NOW()
+        WHERE inquiry_id = #{inquiryId}
+    </update>
 
     <!-- =============================================
          18. 도배 방지

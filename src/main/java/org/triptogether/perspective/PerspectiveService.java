@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.triptogether.community.service.CommunityService;
+import org.triptogether.inquiry.service.InquiryService;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class PerspectiveService {
 
     private final RestTemplate restTemplate;
     private final CommunityService communityService;
+    private final InquiryService inquiryService;
 
     /** 독성 판정 임계값. 0.0 ~ 1.0 중 0.8 이상이면 독성으로 간주한다. */
     private static final double TOXICITY_THRESHOLD = 0.8;
@@ -103,6 +105,21 @@ public class PerspectiveService {
             }
         } catch (Exception e) {
             log.warn("비동기 댓글 독성 검사 실패 (commentId={}): {}", commentId, e.getMessage());
+        }
+    }
+
+    /**
+     * 문의 본문을 비동기로 독성 검사함. 독성 감지 시 ai_flagged=1 세팅.
+     */
+    @Async
+    public void checkAndFlagInquiryAsync(Long inquiryId, String text) {
+        try {
+            if (isToxic(text)) {
+                inquiryService.flagInquiryAsToxic(inquiryId);
+                log.info("AI 독성 감지 → 문의 ai_flagged=1 처리 (inquiryId={})", inquiryId);
+            }
+        } catch (Exception e) {
+            log.warn("비동기 문의 독성 검사 실패 (inquiryId={}): {}", inquiryId, e.getMessage());
         }
     }
 }

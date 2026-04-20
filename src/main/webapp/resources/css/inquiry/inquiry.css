@@ -876,3 +876,66 @@
     border-radius: 4px;
     padding: 3px 8px;
 }
+
+/* =============================================
+   AI 독성 감지 BLUR 처리
+   - 목록: 제목 blur + 전체 오버레이 (커뮤니티 패턴)
+   - 상세: 본문 blur만 (오버레이 없음, 관리자 해제로만 공개)
+   ============================================= */
+.inq-title-blurred {
+    filter: blur(4px);
+    user-select: none;
+}
+
+.inq-blurred {
+    filter: blur(6px);
+    user-select: none;
+    pointer-events: none;
+}
+
+/* 목록 제목 셀 위에 올라가는 클릭 가능한 오버레이 */
+.inq-title-blur-wrap {
+    position: relative;
+}
+
+.inq-title-blur-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: rgba(255, 255, 255, 0.75);
+    font-size: 13px;
+    font-weight: 600;
+    color: #b91c1c;
+    padding: 0 12px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.inq-ai-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 8px;
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.inq-admin-clear-blur-btn {
+    margin-left: 6px;
+    padding: 3px 10px;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.inq-admin-clear-blur-btn:hover {
+    background: #2563eb;
+}

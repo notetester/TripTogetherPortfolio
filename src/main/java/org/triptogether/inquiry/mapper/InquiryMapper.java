@@ -95,4 +95,12 @@ public interface InquiryMapper {
     // 최근 N분 내 해당 유저의 문의 작성 수 조회
     int countRecentInquiriesByUser(@Param("userIdx") Long userIdx, @Param("minutes") int minutes);
 
+    // ===== AI 독성 감지 BLUR =====
+
+    // AI 독성 감지 플래그 설정 (비동기 Perspective API 결과 반영)
+    void setInquiryAiFlagged(@Param("inquiryId") Long inquiryId);
+
+    // 관리자 BLUR 해제 (ai_flagged 초기화)
+    void clearInquiryBlur(@Param("inquiryId") Long inquiryId);
+
 }
