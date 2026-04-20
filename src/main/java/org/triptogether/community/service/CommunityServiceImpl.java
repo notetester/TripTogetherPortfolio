@@ -12,6 +12,7 @@ import org.triptogether.config.IpBlockMapper;
 import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.reward.service.RewardService;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final MyPageService myPageService;
     private final IpBlockMapper ipBlockMapper;
     private final SpotTextTranslationService spotTextTranslationService;
+    private final RewardService rewardService;
 
     // ===== 목록 =====
 
@@ -212,6 +214,14 @@ public class CommunityServiceImpl implements CommunityService {
         // 7. 태그 공출현 업데이트
         updateTagRelation(postId);
 
+        rewardService.awardAction(
+                userIdx,
+                "COMMUNITY_POST",
+                postId,
+                0L,
+                "커뮤니티 게시글 작성 보상"
+        );
+
         return postId;
     }
 
@@ -321,6 +331,22 @@ public class CommunityServiceImpl implements CommunityService {
                 notification.setSourceId(postId);
                 notification.setMessage("내 글에 좋아요가 달렸어요.");
                 myPageService.addNotification(notification);
+
+                rewardService.awardAction(
+                        userIdx,
+                        "COMMUNITY_POST_LIKE_ACTION",
+                        buildRewardSourceId(postId, userIdx),
+                        0L,
+                        "커뮤니티 게시글 좋아요 실행 보상"
+                );
+
+                rewardService.awardAction(
+                        post.getUserIdx(),
+                        "COMMUNITY_POST_LIKE",
+                        buildRewardSourceId(postId, userIdx),
+                        0L,
+                        "커뮤니티 게시글 좋아요 수신 보상"
+                );
             }
             return true;
         }
@@ -359,6 +385,14 @@ public class CommunityServiceImpl implements CommunityService {
             notification.setMessage("내 글에 새 댓글이 달렸어요.");
             myPageService.addNotification(notification);
         }
+        rewardService.awardAction(
+                userIdx,
+                "COMMUNITY_COMMENT",
+                dto.getCommentId(),
+                0L,
+                "커뮤니티 댓글 작성 보상"
+        );
+
         return dto.getCommentId();
     }
 
@@ -416,6 +450,14 @@ public class CommunityServiceImpl implements CommunityService {
                 myPageService.addNotification(notification);
             }
         }
+        rewardService.awardAction(
+                userIdx,
+                "COMMUNITY_COMMENT",
+                dto.getCommentId(),
+                0L,
+                "커뮤니티 댓글 작성 보상"
+        );
+
         return dto.getCommentId();
     }
 
@@ -438,6 +480,25 @@ public class CommunityServiceImpl implements CommunityService {
         } else {
             communityMapper.insertCommentLike(commentId, userIdx);
             communityMapper.increaseCommentLikeCount(commentId);
+
+            CommunityCommentDto comment = communityMapper.selectComment(commentId);
+            if (comment != null && !comment.getUserIdx().equals(userIdx)) {
+                rewardService.awardAction(
+                        userIdx,
+                        "COMMUNITY_COMMENT_LIKE_ACTION",
+                        buildRewardSourceId(commentId, userIdx),
+                        0L,
+                        "커뮤니티 댓글 좋아요 실행 보상"
+                );
+
+                rewardService.awardAction(
+                        comment.getUserIdx(),
+                        "COMMUNITY_COMMENT_LIKE",
+                        buildRewardSourceId(commentId, userIdx),
+                        0L,
+                        "커뮤니티 댓글 좋아요 수신 보상"
+                );
+            }
             return true;
         }
     }
@@ -612,20 +673,12 @@ public class CommunityServiceImpl implements CommunityService {
         return communityMapper.selectIpsByCommentIds(commentIds);
     }
 
-    // ===== 오늘 인기 게시글 =====
-
-    // 오늘 작성된 게시글 중 좋아요 순 상위 목록 가져옴
-    @Override
-    public List<CommunityPostDto> getTodayPopularList() {
-        List<CommunityPostDto> todayPopularList = communityMapper.selectTodayPopularList();
-        spotTextTranslationService.translateCommunityPosts(todayPopularList);
-        return todayPopularList;
-    }
-
     // 전체 기간 좋아요 순 상위 목록 가져옴
     @Override
     public List<CommunityPostDto> getPopularList(int limit) {
-        return communityMapper.selectPopularList(limit);
+        List<CommunityPostDto> popularList = communityMapper.selectPopularList(limit);
+        spotTextTranslationService.translateCommunityPosts(popularList);
+        return popularList;
     }
 
     // ===== private 유틸 =====
@@ -643,6 +696,18 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     // 이미지 파일 Cloudinary에 업로드하고 URL 반환함
+    /**
+     * 히스토리 테이블 source_id가 Long 하나만 받기 때문에
+     * 좋아요 대상 ID와 좋아요를 누른 사용자 ID를 합쳐서
+     * 동일 사용자-동일 대상 조합의 중복 지급을 막는다.
+     */
+    private Long buildRewardSourceId(Long targetId, Long actorUserIdx) {
+        if (targetId == null || actorUserIdx == null) {
+            return null;
+        }
+        return (targetId * 1_000_000L) + actorUserIdx;
+    }
+
     private String saveFile(MultipartFile file) {
         return cloudinaryService.uploadImage(file, "community");
     }

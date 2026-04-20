@@ -17,6 +17,21 @@
         <result property="emailLoginEnabled" column="email_login_enabled"/>
         <result property="accountStatus" column="account_status"/>
         <result property="userRole" column="user_role"/>
+        <result property="memberGrade" column="member_grade"/>
+        <result property="verifiedMember" column="is_verified_member"/>
+        <result property="cashBalance" column="cash_balance"/>
+        <result property="mileageBalance" column="mileage_balance"/>
+        <result property="pointBalance" column="point_balance"/>
+        <result property="levelNo" column="level_no"/>
+        <result property="expPoints" column="exp_points"/>
+        <result property="totalPostCount" column="total_post_count"/>
+        <result property="totalCommentCount" column="total_comment_count"/>
+        <result property="dormantAt" column="dormant_at"/>
+        <result property="dormantReleaseRequired" column="dormant_release_required"/>
+        <result property="blockedUntil" column="blocked_until"/>
+        <result property="blockedReason" column="blocked_reason"/>
+        <result property="adminPositionCode" column="admin_position_code"/>
+        <result property="adminPermissionCode" column="admin_permission_code"/>
         <result property="statusChangedAt" column="status_changed_at"/>
         <result property="nickname" column="nickname"/>
         <result property="nationality" column="nationality"/>
@@ -249,12 +264,17 @@
         SELECT
             u.user_idx, u.user_id, u.user_email,
             u.password_enabled, u.email_verified, u.email_login_enabled,
-            u.account_status, u.user_role,
+            u.account_status, u.user_role, u.member_grade, u.is_verified_member,
+            u.cash_balance, u.mileage_balance, u.point_balance,
+            u.level_no, u.exp_points, u.total_post_count, u.total_comment_count,
+            u.dormant_at, u.dormant_release_required,
+            u.blocked_until, u.blocked_reason,
+            u.admin_position_code, u.admin_permission_code,
             u.nickname, u.nationality, u.preferred_lang,
             u.created_at, u.status_changed_at,
             IFNULL(s.social_count, 0) AS social_count,
             s.linked_providers,
-            h.last_login_at, h.last_login_method,
+            COALESCE(u.last_login_at, h.last_login_at) AS last_login_at, h.last_login_method,
             IFNULL(h.login_success_count, 0) AS login_success_count,
             IFNULL(h.login_fail_count, 0) AS login_fail_count
         <include refid="memberSearchBase"/>
@@ -280,7 +300,7 @@
         SELECT
             u.*, IFNULL(s.social_count, 0) AS social_count,
             s.linked_providers,
-            h.last_login_at, h.last_login_method,
+            COALESCE(u.last_login_at, h.last_login_at) AS last_login_at, h.last_login_method,
             IFNULL(h.login_success_count, 0) AS login_success_count,
             IFNULL(h.login_fail_count, 0) AS login_fail_count
         FROM USERS u
@@ -311,9 +331,95 @@
         WHERE user_idx = #{userIdx}
     </update>
 
+    <update id="markMemberDormant">
+        UPDATE USERS
+        SET account_status = 'DORMANT',
+            dormant_at = NOW(),
+            dormant_release_required = TRUE,
+            status_changed_at = NOW()
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="releaseMemberDormant">
+        UPDATE USERS
+        SET dormant_at = NULL,
+            dormant_release_required = FALSE,
+            status_changed_at = NOW()
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="markMemberBlocked">
+        UPDATE USERS
+        SET account_status = 'BLOCKED',
+            blocked_until = #{blockedUntil},
+            blocked_reason = #{blockedReason},
+            status_changed_at = NOW()
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="clearMemberBlockState">
+        UPDATE USERS
+        SET blocked_until = NULL,
+            blocked_reason = NULL,
+            status_changed_at = NOW()
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="updateMemberMeta">
+        UPDATE USERS
+        SET member_grade = #{memberGrade},
+            is_verified_member = #{verifiedMember},
+            cash_balance = #{cashBalance},
+            mileage_balance = #{mileageBalance},
+            point_balance = #{pointBalance},
+            level_no = #{levelNo},
+            exp_points = #{expPoints},
+            admin_position_code = #{adminPositionCode},
+            admin_permission_code = #{adminPermissionCode}
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <insert id="insertUserBlockHistory">
+        INSERT INTO USER_BLOCK_HISTORY (
+            user_idx, block_type, blocked_ip, is_active, reason,
+            blocked_by_user_idx, blocked_at, expires_at, created_at, updated_at
+        ) VALUES (
+            #{userIdx}, #{blockType}, #{blockedIp}, TRUE, #{reason},
+            #{blockedByUserIdx}, NOW(), #{expiresAt}, NOW(), NOW()
+        )
+    </insert>
+
+    <select id="findActiveBlockedIpsByUser" resultType="string">
+        SELECT blocked_ip
+        FROM USER_BLOCK_HISTORY
+        WHERE user_idx = #{userIdx}
+          AND is_active = TRUE
+          AND block_type IN ('IP_ONLY', 'USER_IP')
+          AND blocked_ip IS NOT NULL
+    </select>
+
+    <update id="deactivateActiveBlocksByUser">
+        UPDATE USER_BLOCK_HISTORY
+        SET is_active = FALSE,
+            released_by_user_idx = #{releasedByUserIdx},
+            released_at = NOW(),
+            updated_at = NOW()
+        WHERE user_idx = #{userIdx}
+          AND is_active = TRUE
+    </update>
+
+    <select id="hasEffectivePermission" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM ADMIN_EFFECTIVE_PERMISSION_VW
+        WHERE user_idx = #{userIdx}
+          AND permission_code = #{permissionCode}
+    </select>
+
     <update id="updateMemberRole">
         UPDATE USERS
-        SET user_role = #{role}
+        SET user_role = #{role},
+            admin_position_code = CASE WHEN #{role} = 'USER' THEN NULL ELSE admin_position_code END,
+            admin_permission_code = CASE WHEN #{role} = 'USER' THEN NULL ELSE admin_permission_code END
         WHERE user_idx = #{userIdx}
     </update>
 

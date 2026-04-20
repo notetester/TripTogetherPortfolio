@@ -28,11 +28,29 @@ public class UsersVO {
     /** 이메일 인증 완료 + 사용자 직접 활성화 시 이메일로도 로그인 가능 */
     private boolean emailLoginEnabled;
 
-    /** 계정 상태: ACTIVE / DORMANT / DELETED */
+    /** 계정 상태: ACTIVE / DORMANT / BLOCKED / DELETED */
     @Builder.Default
     private String accountStatus = "ACTIVE";
     @Builder.Default
     private String userRole="USER";
+
+    private String memberGrade;      // BRONZE / SILVER / GOLD / DIAMOND / PLATINUM
+    private boolean verifiedMember;  // 소셜 연동 회원 또는 이메일 인증 회원
+    private long cashBalance;        // 보유 캐쉬
+    private long mileageBalance;     // 보유 마일리지
+    private long pointBalance;       // 커뮤니티 포인트
+    private int levelNo;             // 현재 레벨
+    private long expPoints;          // 누적 경험치
+    private int totalPostCount;      // 작성 게시글 수
+    private int totalCommentCount;   // 작성 댓글 수
+    private LocalDateTime lastLoginAt;
+    private LocalDateTime dormantAt;
+    private boolean dormantReleaseRequired;
+    private LocalDateTime blockedUntil;
+    private String blockedReason;
+
+    private String adminPositionCode; // 관리자 직책 코드
+    private String adminPermissionCode; // 실효 권한 코드
 
     private LocalDateTime statusChangedAt;
 

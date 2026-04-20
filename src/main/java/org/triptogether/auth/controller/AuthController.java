@@ -12,11 +12,17 @@ import org.triptogether.auth.service.AuthService;
 import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.SocialTempVO;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.superAdmin.mapper.SuperAdminMapper;
+import org.triptogether.superAdmin.vo.SuperAdminPermissionVO;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 /**
  * 인증 관련 진입점 컨트롤러.
@@ -36,6 +42,7 @@ import java.util.concurrent.Callable;
 public class AuthController {
 
     private final AuthService authService;
+    private final SuperAdminMapper superAdminMapper;
 
     // ════════════════════════════════════════════
     // 로그인 페이지
@@ -94,10 +101,53 @@ public class AuthController {
             return result;
         }
 
+        if ("DORMANT".equals(user.getAccountStatus())) {
+            session.setAttribute("dormantPendingUserIdx", user.getUserIdx());
+            result.put("success", false);
+            result.put("dormantReleaseRequired", true);
+            result.put("message", "휴면 계정입니다. 휴면을 해제한 뒤 로그인할 수 있습니다.");
+            return result;
+        }
+
+        if ("BLOCKED".equals(user.getAccountStatus())) {
+            result.put("success", false);
+            result.put("blocked", true);
+            result.put("message", user.getBlockedReason() != null && !user.getBlockedReason().isBlank()
+                    ? "차단된 계정입니다. 사유: " + user.getBlockedReason()
+                    : "차단된 계정입니다.");
+            if (user.getBlockedUntil() != null) {
+                result.put("blockedUntil", user.getBlockedUntil().toString());
+            }
+            return result;
+        }
+
         session.setAttribute("loginUser", user);
         session.removeAttribute("currentSocialProvider");
+        loadAdminPermissions(session, user);
         result.put("success", true);
         result.put("redirect", resolveLoginRedirect(request, safeRedirect(redirect)));
+        return result;
+    }
+
+    @PostMapping("/dormant/release")
+    @ResponseBody
+    public Map<String, Object> releaseDormant(HttpServletRequest request, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Long userIdx = (Long) session.getAttribute("dormantPendingUserIdx");
+        if (userIdx == null) {
+            result.put("success", false);
+            result.put("message", "휴면 해제 대상 계정이 없습니다.");
+            return result;
+        }
+        UsersVO released = authService.releaseDormantUser(userIdx, LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .build());
+        session.removeAttribute("dormantPendingUserIdx");
+        session.setAttribute("loginUser", released);
+        loadAdminPermissions(session, released);
+        result.put("success", true);
+        result.put("redirect", request.getContextPath() + "/");
         return result;
     }
 
@@ -338,6 +388,7 @@ public class AuthController {
                 UsersVO freshUser = authService.getUserByIdx(loginUser.getUserIdx());
                 if (freshUser != null) {
                     session.setAttribute("loginUser", freshUser);
+                    loadAdminPermissions(session, freshUser);
                 }
             }
         } else {
@@ -523,6 +574,18 @@ public class AuthController {
     }
 
     // ════════════════════════════════════════════
+    private void loadAdminPermissions(HttpSession session, UsersVO user) {
+        if (!"ADMIN".equals(user.getUserRole())) {
+            session.removeAttribute("adminPermissions");
+            return;
+        }
+        List<SuperAdminPermissionVO> perms = superAdminMapper.findPermissionsByUser(user.getUserIdx());
+        Set<String> permSet = perms.stream()
+                .map(SuperAdminPermissionVO::getPermissionCode)
+                .collect(Collectors.toCollection(HashSet::new));
+        session.setAttribute("adminPermissions", permSet);
+    }
+
     // 내부 유틸
     // ════════════════════════════════════════════
 
@@ -537,6 +600,7 @@ public class AuthController {
         if (socialResult instanceof UsersVO user) {
             session.setAttribute("loginUser", user);
             session.setAttribute("currentSocialProvider", provider);
+            loadAdminPermissions(session, user);
             return "redirect:/";
         }
         if (socialResult instanceof SocialTempVO temp) {

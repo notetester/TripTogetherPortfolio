@@ -58,19 +58,6 @@ public class CommunityController {
     private Long systemUserIdx;
 
     /* =============================================
-       GET /community/api/popular - 오늘 인기글 JSON (홈 페이지 AJAX용)
-       ============================================= */
-    /**
-     * 오늘의 인기글 목록을 JSON으로 반환한다.
-     * 홈 페이지 AJAX 호출용.
-     */
-    @GetMapping("/api/popular")
-    @ResponseBody
-    public ResponseEntity<List<CommunityPostDto>> getPopularPosts() {
-        return ResponseEntity.ok(communityService.getTodayPopularList());
-    }
-
-    /* =============================================
        GET /community, /community/ - 루트 리다이렉트
        ============================================= */
     /** /community, /community/ → /community/list 로 리다이렉트 */
@@ -114,7 +101,7 @@ public class CommunityController {
         model.addAttribute("totalPage",         communityService.getTotalPage(search));
         boolean showSections = "all".equals(region) && "all".equals(type) && "all".equals(searchType) && keyword.isEmpty();
         if (showSections) {
-            model.addAttribute("todayPopularList", communityService.getTodayPopularList());
+            model.addAttribute("popularList", communityService.getPopularList(8));
         }
         return "community/list";
     }

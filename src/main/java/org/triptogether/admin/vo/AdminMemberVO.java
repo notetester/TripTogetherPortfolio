@@ -29,6 +29,21 @@ public class AdminMemberVO {
     private boolean       emailLoginEnabled;
     private String        accountStatus;    // ACTIVE / DORMANT / BLOCKED / DELETED
     private String        userRole;         // USER / ADMIN
+    private String        memberGrade;
+    private boolean       verifiedMember;
+    private long          cashBalance;
+    private long          mileageBalance;
+    private long          pointBalance;
+    private int           levelNo;
+    private long          expPoints;
+    private int           totalPostCount;
+    private int           totalCommentCount;
+    private LocalDateTime dormantAt;
+    private boolean       dormantReleaseRequired;
+    private LocalDateTime blockedUntil;
+    private String        blockedReason;
+    private String        adminPositionCode;
+    private String        adminPermissionCode;
     private String        nickname;
     private String        nationality;
     private String        preferredLang;

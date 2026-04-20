@@ -67,6 +67,105 @@
 
     <div class="mp-inner" style="padding-top: 48px;">
 
+
+        <div class="mp-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title"><span class="mp-card-icon">🏷️</span> 등급 · 자산 · 레벨</div>
+            </div>
+            <div class="mp-info-grid">
+                <div class="mp-info-item"><div class="mp-info-label">회원 등급</div><div class="mp-info-value">${user.memberGrade}</div></div>
+                <div class="mp-info-item"><div class="mp-info-label">인증 회원</div><div class="mp-info-value"><c:choose><c:when test="${user.verifiedMember}"><span style="color:#15803d;">● 인증 회원</span></c:when><c:otherwise><span style="color:#64748b;">○ 비인증 회원</span></c:otherwise></c:choose></div></div>
+                <div class="mp-info-item"><div class="mp-info-label">캐쉬</div><div class="mp-info-value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0"/></div></div>
+                <div class="mp-info-item"><div class="mp-info-label">마일리지</div><div class="mp-info-value"><fmt:formatNumber value="${user.mileageBalance}" pattern="#,##0"/></div></div>
+                <div class="mp-info-item"><div class="mp-info-label">포인트</div><div class="mp-info-value"><fmt:formatNumber value="${user.pointBalance}" pattern="#,##0"/></div></div>
+                <div class="mp-info-item"><div class="mp-info-label">레벨 / 경험치</div><div class="mp-info-value">Lv.${user.levelNo} / <fmt:formatNumber value="${user.expPoints}" pattern="#,##0"/> EXP</div></div>
+                <div class="mp-info-item"><div class="mp-info-label">게시글 수</div><div class="mp-info-value">${user.totalPostCount}</div></div>
+                <div class="mp-info-item"><div class="mp-info-label">댓글 수</div><div class="mp-info-value">${user.totalCommentCount}</div></div>
+            </div>
+        </div>
+
+        <%-- ══════════════════════════════════════════
+             내 등급 & 재화
+             TODO: UsersVO 필드 추가 후 EL 교체
+               - 등급: ${user.memberGrade}       (BRONZE/SILVER/GOLD/DIAMOND/PLATINUM)
+               - 인증: ${user.isVerifiedMember}  (boolean)
+               - 레벨: ${user.levelNo}
+               - 경험치: ${user.expPoints}
+               - 포인트: ${user.pointBalance}
+               - 마일리지: ${user.mileageBalance}
+               - 캐시: ${user.cashBalance}
+        ══════════════════════════════════════════ --%>
+        <div class="mp-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title">
+                    <span class="mp-card-icon">🏅</span> 내 등급 &amp; 재화
+                </div>
+            </div>
+            <%-- 등급 + 레벨/경험치 --%>
+            <div class="mp-grade-section">
+                <div class="mp-grade-badge-wrap">
+                    <span class="mp-grade-badge mp-grade-BRONZE">🥉 BRONZE</span>
+                    <span class="mp-grade-verified">✓ 인증 회원</span>
+                </div>
+                <div class="mp-level-wrap">
+                    <div class="mp-level-header">
+                        <span class="mp-level-label">Lv. 1</span>
+                        <span class="mp-level-xp">0 / 500 XP</span>
+                    </div>
+                    <div class="mp-xp-bar">
+                        <div class="mp-xp-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+            <%-- 재화 --%>
+            <div class="mp-currency-grid">
+                <div class="mp-currency-item">
+                    <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-point.svg" alt="포인트" width="40" height="40"></div>
+                    <div class="mp-currency-label">포인트</div>
+                    <div class="mp-currency-value">0</div>
+                </div>
+                <div class="mp-currency-item">
+                    <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-mileage.svg" alt="마일리지" width="40" height="40"></div>
+                    <div class="mp-currency-label">마일리지</div>
+                    <div class="mp-currency-value">0</div>
+                </div>
+                <div class="mp-currency-item">
+                    <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-cash.svg" alt="캐시" width="40" height="40"></div>
+                    <div class="mp-currency-label">캐시</div>
+                    <div class="mp-currency-value">0</div>
+                </div>
+            </div>
+            <%-- 활동 통계
+                 TODO: UsersVO 필드 추가 후 EL 교체
+                   - 작성글:    ${user.totalPostCount}
+                   - 작성댓글:  ${user.totalCommentCount}
+                   - 리뷰:      ${user.totalReviewCount}    (explore 팀 구현 후)
+                   - 여행코스:  ${user.totalCourseCount}    (courses 팀 구현 후)
+            --%>
+            <div class="mp-stats-grid">
+                <div class="mp-stats-item">
+                    <span class="mp-stats-source mp-stats-src-community">커뮤니티</span>
+                    <div class="mp-stats-value">0</div>
+                    <div class="mp-stats-label">작성 글</div>
+                </div>
+                <div class="mp-stats-item">
+                    <span class="mp-stats-source mp-stats-src-community">커뮤니티</span>
+                    <div class="mp-stats-value">0</div>
+                    <div class="mp-stats-label">작성 댓글</div>
+                </div>
+                <div class="mp-stats-item">
+                    <span class="mp-stats-source mp-stats-src-explore">여행지탐색</span>
+                    <div class="mp-stats-value">0</div>
+                    <div class="mp-stats-label">리뷰</div>
+                </div>
+                <div class="mp-stats-item">
+                    <span class="mp-stats-source mp-stats-src-courses">여행코스</span>
+                    <div class="mp-stats-value">0</div>
+                    <div class="mp-stats-label">여행코스</div>
+                </div>
+            </div>
+        </div>
+
         <%-- ══════════════════════════════════════════
              내 정보
         ══════════════════════════════════════════ --%>

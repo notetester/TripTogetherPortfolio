@@ -77,6 +77,24 @@ public interface AuthMapper {
     void resetPassword(@Param("userIdx") Long userIdx,
                        @Param("encodedPassword") String encodedPassword);
 
+    /** 마지막 로그인 시각 업데이트 */
+    void updateLastLoginAt(Long userIdx);
+
+    /** 인증 회원 여부 재계산 */
+    void refreshVerifiedMemberFlag(Long userIdx);
+
+    /** 휴면 자동 전환 대상 조회 */
+    List<UsersVO> findDormantCandidates(@Param("cutoff") java.time.LocalDateTime cutoff);
+
+    /** ACTIVE -> DORMANT 전환 */
+    void markUserDormant(Long userIdx);
+
+    /** DORMANT -> ACTIVE 해제 */
+    void releaseDormantUser(Long userIdx);
+
+    /** 차단 상태 해제 */
+    void clearBlockState(Long userIdx);
+
     // ─────────────────────────────────────────
     // USER_SOCIAL
     // ─────────────────────────────────────────

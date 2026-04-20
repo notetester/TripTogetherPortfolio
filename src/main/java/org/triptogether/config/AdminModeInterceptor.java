@@ -8,6 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * =============================================
@@ -71,6 +72,19 @@ public class AdminModeInterceptor implements HandlerInterceptor {
 
         modelAndView.addObject("isAdmin", isAdmin);
         modelAndView.addObject("isAdminMode", isAdminMode);
+
+        if (isAdmin) {
+            @SuppressWarnings("unchecked")
+            Set<String> perms = (Set<String>) session.getAttribute("adminPermissions");
+            if (perms == null) perms = Set.of();
+            boolean isSuperAdmin = perms.contains("SUPER_ADMIN");
+            modelAndView.addObject("hasCommunityAdmin", isSuperAdmin || perms.contains("COMMUNITY_ADMIN"));
+            modelAndView.addObject("hasMemberAdmin",    isSuperAdmin || perms.contains("MEMBER_ADMIN"));
+            modelAndView.addObject("hasReportAdmin",    isSuperAdmin || perms.contains("REPORT_ADMIN"));
+            modelAndView.addObject("hasInquiryAdmin",   isSuperAdmin || perms.contains("INQUIRY_ADMIN"));
+            modelAndView.addObject("hasExploreAdmin",   isSuperAdmin || perms.contains("EXPLORE_ADMIN"));
+            modelAndView.addObject("hasAuditAdmin",     isSuperAdmin || perms.contains("AUDIT_ADMIN"));
+        }
     }
 
     /**

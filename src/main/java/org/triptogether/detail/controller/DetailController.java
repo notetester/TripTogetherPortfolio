@@ -39,7 +39,7 @@ public class DetailController {
         ExploreVO spot = exploreService.getSpotDetail(spotIdx, loginUserIdx);
         if (spot == null) return "redirect:/explore";
 
-        List<ReviewVO> reviewList = exploreService.getReviewList(spotIdx);
+        List<ReviewVO> reviewList = exploreService.getReviewList(spotIdx, loginUserIdx);
         boolean canWrite = (loginUserIdx != null)
                 && exploreService.canWriteReview(spotIdx, loginUserIdx);
 
@@ -177,6 +177,40 @@ public class DetailController {
         exploreService.deleteReview(reviewIdx, userIdx);
         result.put("success", true);
         result.put("message", "리뷰가 삭제되었습니다.");
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/{spotIdx}/review/{reviewIdx}/like")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleReviewLike(
+            @PathVariable Long spotIdx,
+            @PathVariable Long reviewIdx,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+        Long userIdx = getLoginUserIdx(session);
+
+        if (userIdx == null) {
+            result.put("success", false);
+            result.put("message", "濡쒓렇?몄씠 ?꾩슂?⑸땲??");
+            return ResponseEntity.ok(result);
+        }
+
+        ReviewVO review = exploreService.getReview(reviewIdx);
+        if (review == null || !spotIdx.equals(review.getSpotIdx())) {
+            result.put("success", false);
+            result.put("message", "由щ럭??李얠쓣 ???놁뒿?덈떎.");
+            return ResponseEntity.ok(result);
+        }
+
+        boolean liked = exploreService.toggleReviewLike(reviewIdx, userIdx);
+        ReviewVO updatedReview = exploreService.getReview(reviewIdx);
+
+        result.put("success", true);
+        result.put("liked", liked);
+        result.put("likeCount", updatedReview != null && updatedReview.getLikeCount() != null
+                ? updatedReview.getLikeCount() : 0);
+        result.put("message", liked ? "由щ럭 醫뗭븘?붽? 諛섏쁺?섏뿀?듬땲??" : "由щ럭 醫뗭븘?붽? 痍⑥냼?섏뿀?듬땲??");
         return ResponseEntity.ok(result);
     }
 

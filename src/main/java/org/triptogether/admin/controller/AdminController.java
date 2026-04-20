@@ -13,6 +13,7 @@ import org.triptogether.community.service.CommunityService;
 import org.triptogether.report.service.ReportService;
 import org.triptogether.report.vo.ReportSearchDto;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,6 +92,33 @@ public class AdminController {
         return result;
     }
 
+    @PostMapping("/members/{userIdx}/block")
+    @ResponseBody
+    public Map<String, Object> blockMember(@PathVariable Long userIdx,
+                                           @RequestParam String blockType,
+                                           @RequestParam(required = false) String blockedIp,
+                                           @RequestParam(required = false) String reason,
+                                           @RequestParam(required = false) String expiresAt,
+                                           HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+            if (loginUser != null && loginUser.getUserIdx().equals(userIdx)) {
+                result.put("success", false);
+                result.put("message", "자신의 계정은 차단할 수 없습니다.");
+                return result;
+            }
+            LocalDateTime parsed = (expiresAt != null && !expiresAt.isBlank()) ? LocalDateTime.parse(expiresAt) : null;
+            adminService.blockMember(userIdx, blockType, blockedIp, reason, parsed, loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", "차단이 적용되었습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
     @PostMapping("/members/{userIdx}/role")
     @ResponseBody
     public Map<String, Object> changeRole(@PathVariable Long userIdx,
@@ -107,6 +135,42 @@ public class AdminController {
             adminService.changeMemberRole(userIdx, role);
             result.put("success", true);
             result.put("message", "권한이 변경되었습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/members/{userIdx}/meta")
+    @ResponseBody
+    public Map<String, Object> updateMemberMeta(@PathVariable Long userIdx,
+                                                @RequestParam(required = false) String memberGrade,
+                                                @RequestParam(defaultValue = "false") boolean verifiedMember,
+                                                @RequestParam(defaultValue = "0") long cashBalance,
+                                                @RequestParam(defaultValue = "0") long mileageBalance,
+                                                @RequestParam(defaultValue = "0") long pointBalance,
+                                                @RequestParam(defaultValue = "1") int levelNo,
+                                                @RequestParam(defaultValue = "0") long expPoints,
+                                                @RequestParam(required = false) String adminPositionCode,
+                                                @RequestParam(required = false) String adminPermissionCode) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            AdminMemberVO member = AdminMemberVO.builder()
+                    .userIdx(userIdx)
+                    .memberGrade(memberGrade)
+                    .verifiedMember(verifiedMember)
+                    .cashBalance(cashBalance)
+                    .mileageBalance(mileageBalance)
+                    .pointBalance(pointBalance)
+                    .levelNo(levelNo)
+                    .expPoints(expPoints)
+                    .adminPositionCode(adminPositionCode)
+                    .adminPermissionCode(adminPermissionCode)
+                    .build();
+            adminService.updateMemberMeta(member);
+            result.put("success", true);
+            result.put("message", "회원 부가 정보가 저장되었습니다.");
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());

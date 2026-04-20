@@ -37,7 +37,7 @@
         </div>
 
         <%-- 오늘 인기 여행 이야기 섹션 --%>
-        <c:if test="${not empty todayPopularList}">
+        <c:if test="${not empty popularList}">
             <div class="comm-section-title comm-section-title-today">
                 <spring:message code="community.today.title"/>
                 <button class="comm-section-toggle" id="todayToggleBtn" onclick="toggleTodaySection()"><spring:message code="community.today.close"/></button>
@@ -47,7 +47,7 @@
                     <button class="comm-carousel-btn comm-carousel-prev" id="todayCarouselPrev">&#8249;</button>
                     <div class="comm-carousel-vp">
                         <div class="comm-carousel-track" id="todayCarouselTrack">
-                            <c:forEach var="post" items="${todayPopularList}">
+                            <c:forEach var="post" items="${popularList}">
                                 <div class="comm-today-card" data-id="${post.postId}">
                                     <div class="comm-today-card-iw">
                                         <c:choose>
@@ -180,6 +180,14 @@
             </div>
         </div>
 
+    </div>
+</div>
+
+<%-- 상단 배너 광고 --%>
+<div class="comm-ad-banner">
+    <div class="comm-ad-banner-inner">
+        <span class="comm-ad-label">AD</span>
+        <span class="comm-ad-size">970 × 90</span>
     </div>
 </div>
 
@@ -638,6 +646,7 @@
         .catch(function () { alert('요청 중 오류가 발생했습니다.'); });
     };
 </script>
+
 
 <%@ include file="../common/footer.jsp" %>
 </body>
