@@ -32,7 +32,7 @@
             resultType="org.triptogether.courses.vo.PlanSpotVO">
         SELECT plan_spot_id, plan_id, spot_id, place_name,
                 visit_date, visit_order, created_at
-        FROM PLAN_SPOT
+        FROM plan_spot
         WHERE plan_id = #{value}
         ORDER BY
         CASE WHEN visit_date IS NULL THEN 1 ELSE 0 END,
@@ -93,7 +93,7 @@
     </update>
     <!--  6. 일정에 여행지 추가  -->
     <insert id="insertPlanSpot" parameterType="PlanSpotVO">
-        insert into PLAN_SPOT (
+        insert into plan_spot (
                 plan_id, spot_id, place_name, visit_date, visit_order, created_at
         ) values (
                 #{plan_id}, #{spot_id}, #{place_name},
@@ -104,7 +104,7 @@
     <!-- 7, 8, 9 처리용: 기존 일정 내 장소 전체 삭제 후 재삽입 -->
     <delete id="deletePlanSpotsByPlanId"
             parameterType="long">
-        DELETE FROM PLAN_SPOT
+        DELETE FROM plan_spot
         WHERE plan_id = #{value}
     </delete>
 
