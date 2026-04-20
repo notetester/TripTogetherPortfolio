@@ -130,6 +130,9 @@
                                     <c:when test="${r.targetType eq 'user'}">유저</c:when>
                                     <c:otherwise>${r.targetType}</c:otherwise>
                                 </c:choose>
+                                <c:if test="${r.targetStatus eq 'DELETED'}">
+                                    <span style="font-size:10px;color:#f87171;margin-left:4px;">(삭제됨)</span>
+                                </c:if>
                             </div>
                             <div class="mem-uid">#${r.targetId}</div>
                         </td>

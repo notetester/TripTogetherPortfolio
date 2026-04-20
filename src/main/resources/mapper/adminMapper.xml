@@ -186,6 +186,7 @@
         <result property="targetType"        column="target_type"/>
         <result property="targetId"          column="target_id"/>
         <result property="targetUserRole"    column="target_user_role"/>
+        <result property="targetStatus"      column="target_status"/>
         <result property="sourceType"        column="source_type"/>
         <result property="sourceId"          column="source_id"/>
         <result property="reason"            column="reason"/>
@@ -977,7 +978,12 @@
                 FROM REPORT r2
                 WHERE r2.target_type = r.target_type
                   AND r2.target_id   = r.target_id
-            ) AS target_report_count
+            ) AS target_report_count,
+            CASE r.target_type
+                WHEN 'post'    THEN (SELECT post_status    FROM COMMUNITY_POST    WHERE post_id    = r.target_id)
+                WHEN 'comment' THEN (SELECT comment_status FROM COMMUNITY_COMMENT WHERE comment_id = r.target_id)
+                WHEN 'user'    THEN (SELECT account_status FROM USERS             WHERE user_idx   = r.target_id)
+            END AS target_status
         <include refid="reportSearchBase"/>
         ORDER BY r.created_at DESC
         LIMIT #{pageSize} OFFSET #{offset}
@@ -1018,7 +1024,12 @@
                 WHEN 'user'    THEN (SELECT tu.user_role FROM USERS tu WHERE tu.user_idx = r.target_id)
                 WHEN 'post'    THEN (SELECT tu.user_role FROM COMMUNITY_POST p    JOIN USERS tu ON p.user_idx = tu.user_idx WHERE p.post_id = r.target_id)
                 WHEN 'comment' THEN (SELECT tu.user_role FROM COMMUNITY_COMMENT c JOIN USERS tu ON c.user_idx = tu.user_idx WHERE c.comment_id = r.target_id)
-            END AS target_user_role
+            END AS target_user_role,
+            CASE r.target_type
+                WHEN 'post'    THEN (SELECT post_status    FROM COMMUNITY_POST    WHERE post_id    = r.target_id)
+                WHEN 'comment' THEN (SELECT comment_status FROM COMMUNITY_COMMENT WHERE comment_id = r.target_id)
+                WHEN 'user'    THEN (SELECT account_status FROM USERS             WHERE user_idx   = r.target_id)
+            END AS target_status
         FROM REPORT r
         LEFT JOIN USERS u ON r.user_idx = u.user_idx
         WHERE r.report_id = #{reportId}
