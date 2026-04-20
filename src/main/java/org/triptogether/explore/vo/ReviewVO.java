@@ -18,6 +18,10 @@ public class ReviewVO {
     private Date   createdAt;   // java.util.Date (JSP fmt:formatDate 호환)
     private int    reviewBlock; // 0: 정상, 1: 차단
 
+    private Integer likeCount;
+    private Integer reportCount;
+    private Boolean likedByLoginUser;
+
     // JOIN: USERS.nickname
     private String nickname;
 }

@@ -212,6 +212,28 @@ html { scrollbar-gutter: stable; }
   border-radius:6px; transition:all .15s;
 }
 .review-delete-btn:hover { background:#fee2e2; color:#ef4444; }
+.review-action-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.review-like-btn,
+.review-report-btn {
+  background:none;
+  border:1px solid var(--gray-200);
+  color:var(--gray-500);
+  font-size:12px;
+  cursor:pointer;
+  padding:5px 9px;
+  border-radius:999px;
+  transition:all .15s;
+}
+.review-like-btn:hover,
+.review-report-btn:hover { border-color:var(--blue); color:var(--blue); }
+.review-like-btn.active { border-color:#fca5a5; color:#ef4444; background:#fff1f2; }
+.review-user-report-link {
+  font-size:11px;
+  color:var(--gray-400);
+  cursor:pointer;
+  text-decoration:underline;
+}
+.review-user-report-link:hover { color:var(--blue); }
 .review-empty { text-align:center; padding:36px; color:var(--gray-400); font-size:14px; }
 .ai-rec-content {
   min-height: 420px;
@@ -717,13 +739,21 @@ html { scrollbar-gutter: stable; }
                     ${fn:substring(rv.nickname, 0, 1)}
                   </div>
                   <div>
-                    <div class="review-nickname">${fn:escapeXml(rv.nickname)}</div>
+                    <div class="review-nickname">
+                      ${fn:escapeXml(rv.nickname)}
+                      <c:if test="${not empty sessionScope.loginUser and rv.userIdx ne loginUserIdx and not isAdminMode}">
+                        <span class="review-user-report-link rpt-user-link"
+                              data-user-idx="${rv.userIdx}"
+                              data-source-type="review"
+                              data-source-id="${rv.reviewIdx}"><spring:message code="community.detail.userReport"/></span>
+                      </c:if>
+                    </div>
                     <div class="review-date">
                       <fmt:formatDate value="${rv.createdAt}" pattern="yyyy.MM.dd" type="date"/>
                     </div>
                   </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;">
+                <div class="review-action-row">
                   <span class="review-stars-small">
                     <c:forEach begin="1" end="5" var="i">
                       <c:choose>
@@ -733,6 +763,20 @@ html { scrollbar-gutter: stable; }
                     </c:forEach>
                     (${rv.rating}/5)
                   </span>
+                  <c:if test="${not isAdminMode}">
+                    <button type="button"
+                            class="review-like-btn ${rv.likedByLoginUser ? 'active' : ''}"
+                            data-review-like-idx="${rv.reviewIdx}"
+                            data-spot-idx="${spot.spotIdx}">
+                      <span class="review-like-icon">${rv.likedByLoginUser ? '❤️' : '🤍'}</span>
+                      <span class="review-like-count">${rv.likeCount != null ? rv.likeCount : 0}</span>
+                    </button>
+                  </c:if>
+                  <c:if test="${not empty sessionScope.loginUser and rv.userIdx ne loginUserIdx and not isAdminMode}">
+                    <button type="button"
+                            class="review-report-btn"
+                            data-review-report-idx="${rv.reviewIdx}"><spring:message code="community.detail.report"/></button>
+                  </c:if>
                   <c:if test="${rv.userIdx == loginUserIdx}">
                     <button class="review-delete-btn"
                             data-review-idx="${rv.reviewIdx}"
@@ -794,6 +838,52 @@ html { scrollbar-gutter: stable; }
 <!-- 토스트 -->
 <div class="toast" id="toast"></div>
 <div id="adminEditSuccessMsg" data-message="${fn:escapeXml(adminEditSuccess)}" style="display:none;"></div>
+
+<div id="rpt-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;">⚠ 신고하기</div>
+    <input type="hidden" id="rptTargetType" value="">
+    <input type="hidden" id="rptTargetId" value="">
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">신고 사유 <span style="color:#ef4444;">*</span></label>
+      <select id="rptReason" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;">
+        <option value="">선택해주세요</option>
+        <option value="spam">스팸/광고</option>
+        <option value="abuse">욕설/비방</option>
+        <option value="privacy">개인정보 노출</option>
+        <option value="illegal">불법/유해 정보</option>
+        <option value="etc">기타</option>
+      </select>
+      <div id="rptReasonMsg" style="font-size:12px;color:#ef4444;margin-top:6px;"></div>
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">상세 설명</label>
+      <textarea id="rptDescription" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="신고 사유를 자세히 적어주세요."></textarea>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;">
+      <button type="button" id="rptCancelBtn" class="det-action-btn">취소</button>
+      <button type="button" id="rptSubmitBtn" class="det-action-btn active">신고 접수</button>
+    </div>
+  </div>
+</div>
+
+<div id="rpt-user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;">🚫 유저 신고</div>
+    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">신고 사유를 10자 이상 자세히 적어주세요.</div>
+    <input type="hidden" id="rptUserTargetIdx" value="">
+    <input type="hidden" id="rptUserSourceType" value="">
+    <input type="hidden" id="rptUserSourceId" value="">
+    <div style="margin-bottom:20px;">
+      <textarea id="rptUserDescription" rows="6" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="예: 허위 정보 반복 게시, 욕설, 도배 등"></textarea>
+      <div id="rptUserDescMsg" style="font-size:12px;color:#ef4444;margin-top:6px;"></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;">
+      <button type="button" id="rptUserCancelBtn" class="det-action-btn">취소</button>
+      <button type="button" id="rptUserSubmitBtn" class="det-action-btn active">신고 접수</button>
+    </div>
+  </div>
+</div>
 
 <%@ include file="../common/footer.jsp" %>
 
@@ -1173,6 +1263,156 @@ html { scrollbar-gutter: stable; }
   bindDeleteBtns();
   bindBlockBtns();
   bindReviewSelection();
+
+  function openReportModal(targetType, targetId) {
+    document.getElementById('rptTargetType').value = targetType;
+    document.getElementById('rptTargetId').value = targetId;
+    document.getElementById('rptReason').value = '';
+    document.getElementById('rptDescription').value = '';
+    document.getElementById('rptReasonMsg').textContent = '';
+    document.getElementById('rpt-modal').style.display = 'flex';
+  }
+
+  function openUserReportModal(targetUserIdx, sourceType, sourceId) {
+    document.getElementById('rptUserTargetIdx').value = targetUserIdx;
+    document.getElementById('rptUserSourceType').value = sourceType || '';
+    document.getElementById('rptUserSourceId').value = sourceId || '';
+    document.getElementById('rptUserDescription').value = '';
+    document.getElementById('rptUserDescMsg').textContent = '';
+    document.getElementById('rpt-user-modal').style.display = 'flex';
+  }
+
+  function bindReviewLikeBtns() {
+    document.querySelectorAll('[data-review-like-idx]').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const reviewIdx = this.dataset.reviewLikeIdx;
+        const currentSpotIdx = this.dataset.spotIdx;
+
+        fetch(ctx + '/detail/' + currentSpotIdx + '/review/' + reviewIdx + '/like', {
+          method: 'POST'
+        })
+          .then(r => r.json())
+          .then(data => {
+            if (!data.success) {
+              showToast(data.message || '처리 중 오류가 발생했습니다.');
+              return;
+            }
+
+            this.classList.toggle('active', !!data.liked);
+            const icon = this.querySelector('.review-like-icon');
+            const count = this.querySelector('.review-like-count');
+            if (icon) icon.textContent = data.liked ? '❤️' : '🤍';
+            if (count) count.textContent = data.likeCount;
+            showToast(data.message || '리뷰 좋아요가 반영되었습니다.');
+          })
+          .catch(() => showToast('처리 중 오류가 발생했습니다.'));
+      });
+    });
+  }
+
+  function bindReviewReportBtns() {
+    document.querySelectorAll('[data-review-report-idx]').forEach(btn => {
+      btn.addEventListener('click', function () {
+        openReportModal('review', this.dataset.reviewReportIdx);
+      });
+    });
+  }
+
+  const rptModal = document.getElementById('rpt-modal');
+  const rptCancelBtn = document.getElementById('rptCancelBtn');
+  const rptSubmitBtn = document.getElementById('rptSubmitBtn');
+  const rptReasonSel = document.getElementById('rptReason');
+  const rptReasonMsg = document.getElementById('rptReasonMsg');
+
+  rptCancelBtn && rptCancelBtn.addEventListener('click', function () {
+    rptModal.style.display = 'none';
+  });
+  rptModal && rptModal.addEventListener('click', function (e) {
+    if (e.target === rptModal) rptModal.style.display = 'none';
+  });
+  rptSubmitBtn && rptSubmitBtn.addEventListener('click', function () {
+    const targetType = document.getElementById('rptTargetType').value;
+    const targetId = document.getElementById('rptTargetId').value;
+    const reason = rptReasonSel.value;
+    const description = document.getElementById('rptDescription').value.trim();
+
+    if (!reason) {
+      rptReasonMsg.textContent = '신고 사유를 선택해주세요.';
+      return;
+    }
+    rptReasonMsg.textContent = '';
+
+    rptSubmitBtn.disabled = true;
+    fetch(ctx + '/report/' + targetType + '/' + targetId, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'reason=' + encodeURIComponent(reason) + '&description=' + encodeURIComponent(description)
+    })
+      .then(r => r.json())
+      .then(data => {
+        rptModal.style.display = 'none';
+        showToast(data.message || '신고가 접수되었습니다.');
+      })
+      .catch(() => showToast('처리 중 오류가 발생했습니다.'))
+      .finally(() => { rptSubmitBtn.disabled = false; });
+  });
+
+  const rptUserModal = document.getElementById('rpt-user-modal');
+  const rptUserCancelBtn = document.getElementById('rptUserCancelBtn');
+  const rptUserSubmitBtn = document.getElementById('rptUserSubmitBtn');
+  const rptUserDescArea = document.getElementById('rptUserDescription');
+  const rptUserDescMsg = document.getElementById('rptUserDescMsg');
+
+  rptUserCancelBtn && rptUserCancelBtn.addEventListener('click', function () {
+    rptUserModal.style.display = 'none';
+  });
+  rptUserModal && rptUserModal.addEventListener('click', function (e) {
+    if (e.target === rptUserModal) rptUserModal.style.display = 'none';
+  });
+  rptUserSubmitBtn && rptUserSubmitBtn.addEventListener('click', function () {
+    const targetUserIdx = document.getElementById('rptUserTargetIdx').value;
+    const sourceType = document.getElementById('rptUserSourceType').value;
+    const sourceId = document.getElementById('rptUserSourceId').value;
+    const description = rptUserDescArea.value.trim();
+
+    if (description.length < 10) {
+      rptUserDescMsg.textContent = '신고 사유를 10자 이상 입력해주세요.';
+      return;
+    }
+    rptUserDescMsg.textContent = '';
+
+    let body = 'description=' + encodeURIComponent(description);
+    if (sourceType) body += '&sourceType=' + encodeURIComponent(sourceType);
+    if (sourceId) body += '&sourceId=' + encodeURIComponent(sourceId);
+
+    rptUserSubmitBtn.disabled = true;
+    fetch(ctx + '/report/user/' + targetUserIdx, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body
+    })
+      .then(r => r.json())
+      .then(data => {
+        rptUserModal.style.display = 'none';
+        showToast(data.message || '신고가 접수되었습니다.');
+      })
+      .catch(() => showToast('처리 중 오류가 발생했습니다.'))
+      .finally(() => { rptUserSubmitBtn.disabled = false; });
+  });
+
+  document.addEventListener('click', function (e) {
+    const el = e.target.closest('.rpt-user-link[data-user-idx]');
+    if (!el) return;
+    e.preventDefault();
+    openUserReportModal(
+      el.getAttribute('data-user-idx'),
+      el.getAttribute('data-source-type'),
+      el.getAttribute('data-source-id')
+    );
+  });
+
+  bindReviewLikeBtns();
+  bindReviewReportBtns();
 
 })();
 </script>
