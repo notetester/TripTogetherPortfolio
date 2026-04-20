@@ -114,6 +114,7 @@
                                             <c:when test="${r.targetType eq 'post'}">게시글</c:when>
                                             <c:when test="${r.targetType eq 'comment'}">댓글</c:when>
                                             <c:when test="${r.targetType eq 'user'}">유저</c:when>
+                                            <c:when test="${r.targetType eq 'review'}">리뷰</c:when>
                                             <c:otherwise>${r.targetType}</c:otherwise>
                                         </c:choose>
                                     </span>
@@ -160,6 +161,7 @@
                                             <c:when test="${r.status eq 'IN_REVIEW'}">검토중</c:when>
                                             <c:when test="${r.status eq 'RESOLVED'}">처리완료</c:when>
                                             <c:when test="${r.status eq 'DISMISSED'}">반려</c:when>
+                                            <c:when test="${r.status eq 'CANCELLED'}">취소됨</c:when>
                                             <c:otherwise>${r.status}</c:otherwise>
                                         </c:choose>
                                     </span>
