@@ -49,10 +49,12 @@
                                     <c:otherwise>${post.postStatus}</c:otherwise>
                                 </c:choose>
                             </span>
-                            <a href="${pageContext.request.contextPath}/community/${post.postId}"
-                               target="_blank"
-                               class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;">원글 보기</a>
+                            <c:if test="${post.postStatus != 'DELETED'}">
+                                <a href="${pageContext.request.contextPath}/community/${post.postId}"
+                                   target="_blank"
+                                   class="adm-btn adm-btn-ghost"
+                                   style="font-size:12px;text-decoration:none;">원글 보기</a>
+                            </c:if>
                             <c:if test="${post.postStatus != 'BLOCKED'}">
                                 <button class="adm-btn adm-btn-ghost"
                                         style="font-size:12px;color:#f87171;border-color:#f87171;"
