@@ -576,6 +576,125 @@
             </div>
         </div>
 
+        <div class="mp-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title">
+                    <span class="mp-card-icon">ITEM</span> 내 꾸미기 아이템
+                </div>
+            </div>
+
+            <c:if test="${not empty itemMessage}">
+                <div class="mp-item-alert mp-item-alert--success">${itemMessage}</div>
+            </c:if>
+            <c:if test="${not empty itemError}">
+                <div class="mp-item-alert mp-item-alert--error">${itemError}</div>
+            </c:if>
+
+            <c:choose>
+                <c:when test="${empty inventoryItems}">
+                    <div class="mp-empty">
+                        <div class="mp-empty-icon">SHOP</div>
+                        <div>아직 보유한 꾸미기 아이템이 없습니다.</div>
+                        <button class="mp-item-shop-btn"
+                                type="button"
+                                onclick="location.href='${pageContext.request.contextPath}/shop'">
+                            상품 보러가기
+                        </button>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="hasNicknameColor" value="false"/>
+                    <c:set var="hasNicknameEffect" value="false"/>
+                    <c:set var="hasProfileBadge" value="false"/>
+                    <c:set var="hasBubbleStyle" value="false"/>
+
+                    <c:forEach var="item" items="${inventoryItems}">
+                        <c:if test="${item.itemType eq 'NICKNAME_COLOR'}"><c:set var="hasNicknameColor" value="true"/></c:if>
+                        <c:if test="${item.itemType eq 'NICKNAME_EFFECT'}"><c:set var="hasNicknameEffect" value="true"/></c:if>
+                        <c:if test="${item.itemType eq 'PROFILE_BADGE'}"><c:set var="hasProfileBadge" value="true"/></c:if>
+                        <c:if test="${item.itemType eq 'BUBBLE_STYLE'}"><c:set var="hasBubbleStyle" value="true"/></c:if>
+                    </c:forEach>
+
+                    <div class="mp-item-section-list">
+                        <c:if test="${hasNicknameColor}">
+                            <section class="mp-item-section">
+                                <div class="mp-item-section-head">
+                                    <span>NC</span>
+                                    <div>
+                                        <h3>닉네임 색상</h3>
+                                        <p>게시글, 댓글, 리뷰 작성자명에 적용할 기본 색상 상품입니다.</p>
+                                    </div>
+                                </div>
+                                <div class="mp-item-grid">
+                                    <c:forEach var="item" items="${inventoryItems}">
+                                        <c:if test="${item.itemType eq 'NICKNAME_COLOR'}">
+                                            <%@ include file="item-card-fragment.jspf" %>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </section>
+                        </c:if>
+
+                        <c:if test="${hasNicknameEffect}">
+                            <section class="mp-item-section">
+                                <div class="mp-item-section-head">
+                                    <span>NE</span>
+                                    <div>
+                                        <h3>닉네임 테두리/글로우</h3>
+                                        <p>닉네임을 더 눈에 띄게 만드는 효과형 상품입니다.</p>
+                                    </div>
+                                </div>
+                                <div class="mp-item-grid">
+                                    <c:forEach var="item" items="${inventoryItems}">
+                                        <c:if test="${item.itemType eq 'NICKNAME_EFFECT'}">
+                                            <%@ include file="item-card-fragment.jspf" %>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </section>
+                        </c:if>
+
+                        <c:if test="${hasProfileBadge}">
+                            <section class="mp-item-section">
+                                <div class="mp-item-section-head">
+                                    <span>PB</span>
+                                    <div>
+                                        <h3>프로필 뱃지</h3>
+                                        <p>나의 여행 취향과 활동 스타일을 보여주는 뱃지 상품입니다.</p>
+                                    </div>
+                                </div>
+                                <div class="mp-item-grid">
+                                    <c:forEach var="item" items="${inventoryItems}">
+                                        <c:if test="${item.itemType eq 'PROFILE_BADGE'}">
+                                            <%@ include file="item-card-fragment.jspf" %>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </section>
+                        </c:if>
+
+                        <c:if test="${hasBubbleStyle}">
+                            <section class="mp-item-section">
+                                <div class="mp-item-section-head">
+                                    <span>CB</span>
+                                    <div>
+                                        <h3>댓글/리뷰 말풍선</h3>
+                                        <p>댓글과 리뷰 카드의 분위기를 바꾸는 말풍선 스타일 상품입니다.</p>
+                                    </div>
+                                </div>
+                                <div class="mp-item-grid">
+                                    <c:forEach var="item" items="${inventoryItems}">
+                                        <c:if test="${item.itemType eq 'BUBBLE_STYLE'}">
+                                            <%@ include file="item-card-fragment.jspf" %>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </section>
+                        </c:if>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
     </div>
     <%-- /mp-inner --%>
 </div>

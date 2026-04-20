@@ -1,28 +1,76 @@
 package org.triptogether.shop.controller;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.shop.service.ShopService;
 import org.triptogether.shop.vo.ShopItemPreviewDto;
+import org.triptogether.shop.vo.ShopPurchaseResultDto;
 import org.triptogether.shop.vo.ShopSectionDto;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/shop")
 public class ShopController {
 
+    private final ShopService shopService;
+
     @GetMapping("")
     public String shopPage(HttpSession session, Model model) {
-        // 상품 구매 기능은 이후 단계에서 붙일 예정이므로,
-        // 현재는 로그인 사용자가 있으면 보유 포인트만 화면에 표시한다.
+        // 상품 구매/장착 기능은 ShopService에서 처리하고, 컨트롤러는 화면 데이터만 모델에 담는다.
+        // 로그인 사용자가 있으면 보유 상품 목록과 포인트 정보를 함께 보여준다.
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
         model.addAttribute("user", loginUser);
         model.addAttribute("shopSections", createPreviewSections());
+        model.addAttribute("ownedItemCodeMap", createOwnedItemCodeMap(loginUser));
         return "shop/index";
+    }
+
+    @PostMapping("/purchase")
+    public String purchaseItem(@RequestParam String itemCode,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("shopError", "로그인 후 구매할 수 있습니다.");
+            return "redirect:/auth/login";
+        }
+
+        try {
+            ShopPurchaseResultDto result = shopService.purchaseItem(loginUser.getUserIdx(), itemCode);
+            session.setAttribute("loginUser", result.getUser());
+            redirectAttributes.addFlashAttribute(
+                    "shopMessage",
+                    result.getItem().getItemName() + " 구매가 완료되었습니다."
+            );
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("shopError", e.getMessage());
+        }
+
+        return "redirect:/shop";
+    }
+
+    private Map<String, Boolean> createOwnedItemCodeMap(UsersVO loginUser) {
+        Map<String, Boolean> ownedItemCodeMap = new HashMap<>();
+        if (loginUser == null) {
+            return ownedItemCodeMap;
+        }
+
+        for (String itemCode : shopService.getOwnedItemCodes(loginUser.getUserIdx())) {
+            ownedItemCodeMap.put(itemCode, true);
+        }
+        return ownedItemCodeMap;
     }
 
     private List<ShopSectionDto> createPreviewSections() {
@@ -56,10 +104,10 @@ public class ShopController {
                         "PB",
                         "shop-accent-emerald",
                         List.of(
-                                item("BADGE_BEGINNER_TRAVELER", "shop.item.badge.beginner", "shop.item.badge.beginner.desc", "shop.type.profileBadge", "새싹", "preview-badge-green", 300),
-                                item("BADGE_FOOD_EXPLORER", "shop.item.badge.food", "shop.item.badge.food.desc", "shop.type.profileBadge", "미식", "preview-badge-orange", 500),
-                                item("BADGE_NIGHT_COLLECTOR", "shop.item.badge.night", "shop.item.badge.night.desc", "shop.type.profileBadge", "야경", "preview-badge-navy", 500),
-                                item("BADGE_REVIEW_MASTER", "shop.item.badge.review", "shop.item.badge.review.desc", "shop.type.profileBadge", "리뷰", "preview-badge-purple", 1000)
+                                item("BADGE_BEGINNER_TRAVELER", "shop.item.badge.beginner", "shop.item.badge.beginner.desc", "shop.type.profileBadge", "SPROUT", "preview-badge-green", 300),
+                                item("BADGE_FOOD_EXPLORER", "shop.item.badge.food", "shop.item.badge.food.desc", "shop.type.profileBadge", "FOOD", "preview-badge-orange", 500),
+                                item("BADGE_NIGHT_COLLECTOR", "shop.item.badge.night", "shop.item.badge.night.desc", "shop.type.profileBadge", "NIGHT", "preview-badge-navy", 500),
+                                item("BADGE_REVIEW_MASTER", "shop.item.badge.review", "shop.item.badge.review.desc", "shop.type.profileBadge", "REVIEW", "preview-badge-purple", 1000)
                         )
                 ),
                 new ShopSectionDto(
@@ -68,9 +116,9 @@ public class ShopController {
                         "CB",
                         "shop-accent-pink",
                         List.of(
-                                item("BUBBLE_PASTEL", "shop.item.bubble.pastel", "shop.item.bubble.pastel.desc", "shop.type.bubble", "좋은 여행이었어요!", "preview-bubble-pastel", 700),
-                                item("BUBBLE_MAP_PIN", "shop.item.bubble.map", "shop.item.bubble.map.desc", "shop.type.bubble", "여기 추천해요", "preview-bubble-map", 900),
-                                item("BUBBLE_SKY_CARD", "shop.item.bubble.sky", "shop.item.bubble.sky.desc", "shop.type.bubble", "다음에도 가고 싶어요", "preview-bubble-sky", 1200)
+                                item("BUBBLE_PASTEL", "shop.item.bubble.pastel", "shop.item.bubble.pastel.desc", "shop.type.bubble", "Pastel review", "preview-bubble-pastel", 700),
+                                item("BUBBLE_MAP_PIN", "shop.item.bubble.map", "shop.item.bubble.map.desc", "shop.type.bubble", "Map pin note", "preview-bubble-map", 900),
+                                item("BUBBLE_SKY_CARD", "shop.item.bubble.sky", "shop.item.bubble.sky.desc", "shop.type.bubble", "Sky card", "preview-bubble-sky", 1200)
                         )
                 )
         );

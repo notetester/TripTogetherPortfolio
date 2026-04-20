@@ -1,0 +1,36 @@
+﻿<article class="mp-item-card ${item.equipped ? 'is-equipped' : ''}">
+    <div class="mp-item-preview">
+        <span>${item.itemCode}</span>
+    </div>
+    <div class="mp-item-body">
+        <div class="mp-item-type">
+            <c:choose>
+                <c:when test="${item.itemType eq 'NICKNAME_COLOR'}">닉네임 색상</c:when>
+                <c:when test="${item.itemType eq 'NICKNAME_EFFECT'}">닉네임 효과</c:when>
+                <c:when test="${item.itemType eq 'PROFILE_BADGE'}">프로필 뱃지</c:when>
+                <c:when test="${item.itemType eq 'BUBBLE_STYLE'}">말풍선 스타일</c:when>
+                <c:otherwise>${item.itemType}</c:otherwise>
+            </c:choose>
+        </div>
+        <strong>${item.itemName}</strong>
+        <p>${item.description}</p>
+        <div class="mp-item-date">보유 수량 ${item.quantity}개</div>
+    </div>
+    <div class="mp-item-actions">
+        <c:choose>
+            <c:when test="${item.equipped}">
+                <span class="mp-equipped-badge">장착중</span>
+                <form method="post" action="${pageContext.request.contextPath}/mypage/items/unequip">
+                    <input type="hidden" name="equipSlot" value="${item.equipSlot}">
+                    <button type="submit" class="mp-item-btn mp-item-btn--ghost">해제</button>
+                </form>
+            </c:when>
+            <c:otherwise>
+                <form method="post" action="${pageContext.request.contextPath}/mypage/items/equip">
+                    <input type="hidden" name="itemCode" value="${item.itemCode}">
+                    <button type="submit" class="mp-item-btn">장착</button>
+                </form>
+            </c:otherwise>
+        </c:choose>
+    </div>
+</article>

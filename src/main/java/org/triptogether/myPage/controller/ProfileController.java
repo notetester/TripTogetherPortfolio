@@ -12,6 +12,8 @@ import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.shop.service.ShopService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +28,7 @@ public class ProfileController {
 
     private final AuthServiceImpl authService;
     private final MyPageService myPageService;
+    private final ShopService shopService;
 
     // ── 수정 전 비밀번호 확인 페이지 ──────────────
     @GetMapping("/edit-confirm")
@@ -300,7 +303,42 @@ public class ProfileController {
         model.addAttribute("planCount",      myPageService.getMyPlanCount(freshUser.getUserIdx()));
         model.addAttribute("notifications", myPageService.getNotifications(freshUser.getUserIdx()));
         model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(freshUser.getUserIdx()));
+        model.addAttribute("inventoryItems", shopService.getInventoryItems(freshUser.getUserIdx()));
         return "mypage/index";
+    }
+
+    @PostMapping("/items/equip")
+    public String equipPointItem(@RequestParam String itemCode,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+
+        try {
+            shopService.equipItem(user.getUserIdx(), itemCode);
+            redirectAttributes.addFlashAttribute("itemMessage", "아이템을 장착했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("itemError", e.getMessage());
+        }
+
+        return "redirect:/mypage";
+    }
+
+    @PostMapping("/items/unequip")
+    public String unequipPointItem(@RequestParam String equipSlot,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+
+        try {
+            shopService.unequipItem(user.getUserIdx(), equipSlot);
+            redirectAttributes.addFlashAttribute("itemMessage", "아이템 장착을 해제했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("itemError", e.getMessage());
+        }
+
+        return "redirect:/mypage";
     }
 
     /* =============================================

@@ -32,6 +32,13 @@
     </section>
 
     <section class="shop-container">
+        <c:if test="${not empty shopMessage}">
+            <div class="shop-alert shop-alert--success">${shopMessage}</div>
+        </c:if>
+        <c:if test="${not empty shopError}">
+            <div class="shop-alert shop-alert--error">${shopError}</div>
+        </c:if>
+
         <div class="shop-section-head">
             <div>
                 <p class="shop-section-kicker"><spring:message code="shop.preview.kicker"/></p>
@@ -66,9 +73,21 @@
                                     <span class="shop-product-price">
                                         <fmt:formatNumber value="${item.pointPrice}" pattern="#,##0"/> P
                                     </span>
-                                    <button type="button" class="shop-disabled-buy-btn" disabled>
-                                        <spring:message code="shop.button.prepare.short"/>
-                                    </button>
+                                    <c:choose>
+                                        <c:when test="${ownedItemCodeMap[item.itemCode]}">
+                                            <button type="button" class="shop-owned-btn" disabled>
+                                                <spring:message code="shop.button.owned"/>
+                                            </button>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <form method="post" action="${pageContext.request.contextPath}/shop/purchase">
+                                                <input type="hidden" name="itemCode" value="${item.itemCode}">
+                                                <button type="submit" class="shop-buy-btn">
+                                                    <spring:message code="shop.button.buy"/>
+                                                </button>
+                                            </form>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                             </article>
                         </c:forEach>
