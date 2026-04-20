@@ -78,6 +78,11 @@ public class AdminModeInterceptor implements HandlerInterceptor {
             Set<String> perms = (Set<String>) session.getAttribute("adminPermissions");
             if (perms == null) perms = Set.of();
             boolean isSuperAdmin = perms.contains("SUPER_ADMIN");
+            boolean hasUserBlockAdmin = isSuperAdmin || perms.contains("USER_BLOCK_ADMIN");
+            boolean hasIpBlockAdmin = isSuperAdmin || perms.contains("IP_BLOCK_ADMIN");
+            boolean hasBlockPolicyAdmin = isSuperAdmin || perms.contains("BLOCK_POLICY_ADMIN");
+            boolean hasBlockAuditAdmin = isSuperAdmin || perms.contains("BLOCK_AUDIT_ADMIN");
+
             modelAndView.addObject("hasCommunityAdmin", isSuperAdmin || perms.contains("COMMUNITY_ADMIN"));
             modelAndView.addObject("hasMemberAdmin",    isSuperAdmin || perms.contains("MEMBER_ADMIN"));
             modelAndView.addObject("hasReportAdmin",    isSuperAdmin || perms.contains("REPORT_ADMIN"));
@@ -85,6 +90,11 @@ public class AdminModeInterceptor implements HandlerInterceptor {
             modelAndView.addObject("hasExploreAdmin",   isSuperAdmin || perms.contains("EXPLORE_ADMIN"));
             modelAndView.addObject("hasAuditAdmin",     isSuperAdmin || perms.contains("AUDIT_ADMIN"));
             modelAndView.addObject("hasContentModerationAdmin", isSuperAdmin || perms.contains("CONTENT_MODERATION_ADMIN"));
+            modelAndView.addObject("hasUserBlockAdmin", hasUserBlockAdmin);
+            modelAndView.addObject("hasIpBlockAdmin", hasIpBlockAdmin);
+            modelAndView.addObject("hasBlockPolicyAdmin", hasBlockPolicyAdmin);
+            modelAndView.addObject("hasBlockAuditAdmin", hasBlockAuditAdmin);
+            modelAndView.addObject("hasAnyBlockAdmin", hasUserBlockAdmin || hasIpBlockAdmin || hasBlockPolicyAdmin || hasBlockAuditAdmin);
         }
     }
 

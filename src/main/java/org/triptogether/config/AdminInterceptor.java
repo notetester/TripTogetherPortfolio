@@ -62,6 +62,21 @@ public class AdminInterceptor implements HandlerInterceptor {
         if (adminPermissions.contains("SUPER_ADMIN")) return true;
 
         String uri = request.getRequestURI().replaceFirst(request.getContextPath(), "");
+
+        if (uri.startsWith("/admin/blocks")) {
+            boolean allowed = adminPermissions.contains("USER_BLOCK_ADMIN")
+                    || adminPermissions.contains("IP_BLOCK_ADMIN")
+                    || adminPermissions.contains("BLOCK_POLICY_ADMIN")
+                    || adminPermissions.contains("BLOCK_AUDIT_ADMIN");
+            if (!allowed) {
+                log.warn("[AdminInterceptor] 차단 관리 권한 부족 - userIdx={}, path={}",
+                        loginUser.getUserIdx(), uri);
+                response.sendRedirect(request.getContextPath() + "/admin");
+                return false;
+            }
+            return true;
+        }
+
         String required = resolveRequiredPermission(uri);
 
         if (required != null && !adminPermissions.contains(required)) {
