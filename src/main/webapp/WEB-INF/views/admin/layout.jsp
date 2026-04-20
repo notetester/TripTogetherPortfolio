@@ -12,6 +12,12 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/admin/admin.css">
 </head>
 <body>
+<script>
+(function(){
+    var t = localStorage.getItem('sa_theme');
+    if (t) document.body.classList.add(t);
+})();
+</script>
 <div class="adm-shell">
     <aside class="adm-sidebar" id="adm-sidebar">
         <a class="adm-brand" href="${pageContext.request.contextPath}/admin">
@@ -88,11 +94,11 @@
 
             <div class="adm-nav-section" style="margin-top:8px;">시스템</div>
             <a class="adm-nav-item ${activeMenu=='superAdmin'?'active':''}" href="${pageContext.request.contextPath}/superAdmin">
-                <span class="adm-nav-icon">🔑</span> 관리자 관리
+                <span class="adm-nav-icon">🔑</span> 관리자 계정 관리
             </a>
 
             <div style="margin-top:16px; padding: 0 10px;">
-                <a class="adm-nav-item" href="${pageContext.request.contextPath}/" target="_blank" style="background:#1e2330; color:#64748b;">
+                <a class="adm-nav-item adm-nav-ext" href="${pageContext.request.contextPath}/" target="_blank">
                     <span class="adm-nav-icon">↗️</span> 사이트 보기
                 </a>
             </div>
@@ -115,9 +121,31 @@
             <button class="adm-btn adm-btn-ghost" style="display:none;padding:6px 8px;" id="sidebar-toggle"
                     onclick="document.getElementById('adm-sidebar').classList.toggle('open')">☰</button>
             <div class="adm-topbar-title">${pageTitle}</div>
+            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="테마 변경">☀️ 밝게</button>
             <div class="adm-topbar-path">
                 <span>Admin</span>
                 <c:if test="${not empty pageTitle}"><span>${pageTitle}</span></c:if>
             </div>
         </div>
         <div id="adm-toast-container"></div>
+<script>
+(function(){
+    var btn = document.getElementById('saThemeBtn');
+    var t   = localStorage.getItem('sa_theme') || '';
+    if (btn) btn.textContent = (t === 'sa-light') ? '🌙 어둡게' : '☀️ 밝게';
+})();
+
+function saToggleTheme() {
+    var body = document.body;
+    var btn  = document.getElementById('saThemeBtn');
+    if (body.classList.contains('sa-light')) {
+        body.classList.remove('sa-light');
+        localStorage.setItem('sa_theme', '');
+        if (btn) btn.textContent = '☀️ 밝게';
+    } else {
+        body.classList.add('sa-light');
+        localStorage.setItem('sa_theme', 'sa-light');
+        if (btn) btn.textContent = '🌙 어둡게';
+    }
+}
+</script>

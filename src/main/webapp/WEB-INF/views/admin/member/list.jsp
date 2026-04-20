@@ -646,15 +646,15 @@ function buildInfoTab(m) {
         <div class="detail-value" style="margin-top:4px;">\${socialHtml}</div>
     </div>
     <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">
+        <div class="social-card" style="border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">
             <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 성공</div>
             <div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">\${escapeHtml(m.loginSuccessCount ?? 0)}</div>
         </div>
-        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">
+        <div class="social-card" style="border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">
             <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 실패</div>
             <div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">\${escapeHtml(m.loginFailCount ?? 0)}</div>
         </div>
-        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">
+        <div class="social-card" style="border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">
             <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">최근 로그인</div>
             <div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">\${escapeHtml(lastLoginText)}</div>
         </div>
