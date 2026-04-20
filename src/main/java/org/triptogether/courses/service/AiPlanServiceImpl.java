@@ -1,4 +1,4 @@
-package org.triptogether.ai.service;
+package org.triptogether.courses.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -7,14 +7,12 @@ import org.triptogether.ai.dto.AiDayDTO;
 import org.triptogether.ai.dto.AiPlanRequestDTO;
 import org.triptogether.ai.dto.AiPlanResponseDTO;
 import org.triptogether.ai.dto.AiSpotDTO;
-import org.triptogether.courses.service.TravelPlanService;
+import org.triptogether.ai.service.AiPlanGPTService;
 import org.triptogether.courses.vo.PlanSpotVO;
 import org.triptogether.courses.vo.TravelPlanVO;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 // 요청값 검증, GPT 서비스 호출, DB 저장
@@ -71,42 +69,30 @@ public class AiPlanServiceImpl implements AiPlanService {
 
     // AI가 만들어준 날짜별 장소 목록을 PLAN_SPOT 테이블에 저장하는 역할
     // responseDTO 안에 들어있는 day들 -> 각 day 안의 spot들 -> 하나씩 꺼내서 DB에 insert
-    private void savePlanSpots(Long planId, AiPlanResponseDTO responseDTO){
+    private void savePlanSpots(Long planId, AiPlanResponseDTO responseDTO) {
         if (responseDTO == null || responseDTO.getDays() == null) return;
 
-        // day 하나씩 반복
         for (AiDayDTO day : responseDTO.getDays()) {
             Date visitDate = Date.valueOf(day.getDate());
-
-            // 그 날짜의 장소 목록 꺼내기
             List<AiSpotDTO> spots = day.getSpots();
 
-            // 장소가 없으면 다음 날짜로 넘어감
             if (spots == null || spots.isEmpty()) {
                 continue;
             }
 
-            // 장소(spot) 하나씩 반복
             for (AiSpotDTO spot : spots) {
-                // DB 저장용 객체 생성
                 PlanSpotVO planSpotVO = new PlanSpotVO();
                 planSpotVO.setPlan_id(planId);
 
-                // 실제 SPOT_TRAVEL의 spot_id와 매칭 전까지는 null 또는 임시값 사용
-                // planSpotVO.setSpot_id(null);
-                planSpotVO.setSpot_id("AI_" + planId + "_" + day.getDayNo() + "_" + spot.getVisitOrder());
+                // AI가 만든 자유 장소명은 실제 SPOT_TRAVEL과 매칭하지 않으므로 null
+                planSpotVO.setSpot_id(null);
 
-                // getPlaceName() 이 없으면 getName() 등으로 바꾸면 됨
+                // 화면에 보여줄 장소 이름만 저장
                 planSpotVO.setPlace_name(spot.getName());
 
-                // day 날짜를 visit_date 로 저장
                 planSpotVO.setVisit_date(visitDate);
-
-                // 방문 순서 저장
-                // AiSpotDTO.visitOrder -> PLAN_SPOT.visit_order
                 planSpotVO.setVisit_order(spot.getVisitOrder());
 
-                // 실제 DB insert
                 travelPlanService.insertPlanSpot(planSpotVO);
             }
         }

@@ -106,8 +106,40 @@ public class TravelPlanController {
     }
 
     // 4. 여행일정 수정
-    @PostMapping("/update")
-    public String updateTravelPlan(TravelPlanVO travelPlanVO, HttpSession session) {
+    @GetMapping("/edit")
+    public String editTravelPlan(@RequestParam("planId") Long planId,
+                                 HttpSession session,
+                                 Model model) {
+        Long userIdx = getLoginUserIdx(session);
+
+        if (userIdx == null) {
+            return "redirect:/auth/login";
+        }
+
+        TravelPlanVO paramVO = new TravelPlanVO();
+        paramVO.setPlan_id(planId);
+        paramVO.setUser_idx(userIdx);
+
+        TravelPlanVO travelPlan = travelPlanService.getTravelPlanDetail(paramVO);
+
+        if (travelPlan == null) {
+            return "redirect:/courses/list";
+        }
+
+        if (!travelPlan.getUser_idx().equals(userIdx)) {
+            return "redirect:/courses/list";
+        }
+
+        List<SpotTravelVO> spotTravelList = travelPlanService.getSpotTravelList();
+        model.addAttribute("travelPlan", travelPlan);
+        model.addAttribute("spotTravelList", spotTravelList);
+
+        return "courses/edit";
+    }
+
+    // 수정 저장
+    @PostMapping("/edit")
+    public String editTravelPlan(TravelPlanVO travelPlanVO, HttpSession session) {
         Long userIdx = getLoginUserIdx(session);
 
         if (userIdx == null) {
@@ -115,10 +147,11 @@ public class TravelPlanController {
         }
 
         travelPlanVO.setUser_idx(userIdx);
-        travelPlanService.updateTravelPlan(travelPlanVO);
+        travelPlanService.editTravelPlan(travelPlanVO);
 
         return "redirect:/courses/detail?planId=" + travelPlanVO.getPlan_id();
     }
+
 
     // 5. 여행일정 삭제
     @PostMapping("/delete")

@@ -25,7 +25,7 @@ public interface TravelPlanMapper {
     void insertTravelPlan(TravelPlanVO travelPlanVO);
 
     // 여행일정 수정
-    void updateTravelPlan(TravelPlanVO travelPlanVO);
+    void editTravelPlan(TravelPlanVO travelPlanVO);
 
     // 여행일정 삭제
     void deleteTravelPlan(TravelPlanVO travelPlanVO);
