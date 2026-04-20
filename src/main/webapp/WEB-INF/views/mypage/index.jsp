@@ -104,16 +104,46 @@
             <%-- 등급 + 레벨/경험치 --%>
             <div class="mp-grade-section">
                 <div class="mp-grade-badge-wrap">
-                    <span class="mp-grade-badge mp-grade-BRONZE">🥉 BRONZE</span>
-                    <span class="mp-grade-verified">✓ 인증 회원</span>
+                    <%-- DB에서 가져온 회원 등급을 동적으로 표시 --%>
+                    <span class="mp-grade-badge mp-grade-${user.memberGrade}">
+                        <c:choose>
+                            <c:when test="${user.memberGrade eq 'BRONZE'}">🥉 BRONZE</c:when>
+                            <c:when test="${user.memberGrade eq 'SILVER'}">🥈 SILVER</c:when>
+                            <c:when test="${user.memberGrade eq 'GOLD'}">🥇 GOLD</c:when>
+                            <c:when test="${user.memberGrade eq 'DIAMOND'}">💎 DIAMOND</c:when>
+                            <c:when test="${user.memberGrade eq 'PLATINUM'}">👑 PLATINUM</c:when>
+                            <c:otherwise>${user.memberGrade}</c:otherwise>
+                        </c:choose>
+                    </span>
+                    <c:if test="${user.verifiedMember}">
+                        <span class="mp-grade-verified">✓ 인증 회원</span>
+                    </c:if>
                 </div>
                 <div class="mp-level-wrap">
+                    <%--
+                        경험치 바 계산 로직:
+                        - currentLevelExp : 현재 레벨에 진입하기 위해 필요했던 누적 EXP (시작점)
+                        - nextLevelExp    : 다음 레벨에 진입하기 위해 필요한 누적 EXP (끝점)
+                        - user.expPoints  : 유저의 현재 누적 EXP
+                        - 바 퍼센트 = (현재EXP - 현재레벨시작EXP) / (다음레벨EXP - 현재레벨시작EXP) × 100
+                    --%>
+                    <c:set var="expInLevel" value="${user.expPoints - currentLevelExp}" />
+                    <c:set var="expNeeded" value="${nextLevelExp - currentLevelExp}" />
+                    <c:set var="expPercent" value="${expNeeded > 0 ? (expInLevel * 100 / expNeeded) : 100}" />
+                    <%-- 퍼센트가 100을 넘지 않도록 보정 --%>
+                    <c:if test="${expPercent > 100}"><c:set var="expPercent" value="100" /></c:if>
+                    <c:if test="${expPercent < 0}"><c:set var="expPercent" value="0" /></c:if>
+
                     <div class="mp-level-header">
-                        <span class="mp-level-label">Lv. 1</span>
-                        <span class="mp-level-xp">0 / 500 XP</span>
+                        <span class="mp-level-label">Lv. ${user.levelNo}</span>
+                        <span class="mp-level-xp">
+                            <fmt:formatNumber value="${user.expPoints}" pattern="#,##0" />
+                            /
+                            <fmt:formatNumber value="${nextLevelExp}" pattern="#,##0" /> XP
+                        </span>
                     </div>
                     <div class="mp-xp-bar">
-                        <div class="mp-xp-fill" style="width: 0%;"></div>
+                        <div class="mp-xp-fill" style="width: ${expPercent}%;"></div>
                     </div>
                 </div>
             </div>
@@ -122,17 +152,17 @@
                 <div class="mp-currency-item">
                     <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-point.svg" alt="포인트" width="40" height="40"></div>
                     <div class="mp-currency-label">포인트</div>
-                    <div class="mp-currency-value">0</div>
+                    <div class="mp-currency-value"><fmt:formatNumber value="${user.pointBalance}" pattern="#,##0" /></div>
                 </div>
                 <div class="mp-currency-item">
                     <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-mileage.svg" alt="마일리지" width="40" height="40"></div>
                     <div class="mp-currency-label">마일리지</div>
-                    <div class="mp-currency-value">0</div>
+                    <div class="mp-currency-value"><fmt:formatNumber value="${user.mileageBalance}" pattern="#,##0" /></div>
                 </div>
                 <div class="mp-currency-item">
                     <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-cash.svg" alt="캐시" width="40" height="40"></div>
                     <div class="mp-currency-label">캐시</div>
-                    <div class="mp-currency-value">0</div>
+                    <div class="mp-currency-value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0" /></div>
                 </div>
             </div>
             <%-- 활동 통계
@@ -145,12 +175,12 @@
             <div class="mp-stats-grid">
                 <div class="mp-stats-item">
                     <span class="mp-stats-source mp-stats-src-community">커뮤니티</span>
-                    <div class="mp-stats-value">0</div>
+                    <div class="mp-stats-value">${user.totalPostCount}</div>
                     <div class="mp-stats-label">작성 글</div>
                 </div>
                 <div class="mp-stats-item">
                     <span class="mp-stats-source mp-stats-src-community">커뮤니티</span>
-                    <div class="mp-stats-value">0</div>
+                    <div class="mp-stats-value">${user.totalCommentCount}</div>
                     <div class="mp-stats-label">작성 댓글</div>
                 </div>
                 <div class="mp-stats-item">
@@ -743,6 +773,91 @@
     }
 
 </script>
+
+<%-- ══════════════════════════════════════════
+     레벨업 축하 팝업
+     Controller에서 levelUpLevel 값이 전달되면 자동으로 표시됩니다.
+══════════════════════════════════════════ --%>
+<c:if test="${not empty levelUpLevel}">
+<div id="levelup-overlay" class="levelup-overlay">
+    <div class="levelup-popup">
+        <div class="levelup-icon">🎉</div>
+        <div class="levelup-title">LEVEL UP!</div>
+        <div class="levelup-level">Lv.${levelUpLevel}</div>
+        <div class="levelup-msg">레벨업 달성! 축하합니다!</div>
+        <button class="levelup-close-btn" onclick="closeLevelUpPopup()">확인</button>
+    </div>
+</div>
+<style>
+    /* ── 레벨업 팝업 오버레이 ── */
+    .levelup-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 9999;
+        animation: levelup-fade-in 0.3s ease;
+    }
+    /* ── 팝업 카드 ── */
+    .levelup-popup {
+        background: #fff; border-radius: 20px; padding: 40px 48px;
+        text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: levelup-scale-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    /* ── 아이콘 ── */
+    .levelup-icon {
+        font-size: 56px; margin-bottom: 8px;
+        animation: levelup-bounce 0.6s ease 0.3s both;
+    }
+    /* ── LEVEL UP! 타이틀 ── */
+    .levelup-title {
+        font-size: 14px; font-weight: 700; letter-spacing: 4px;
+        color: #6366f1; margin-bottom: 4px;
+    }
+    /* ── 레벨 숫자 ── */
+    .levelup-level {
+        font-size: 40px; font-weight: 800;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; margin-bottom: 8px;
+    }
+    /* ── 축하 메시지 ── */
+    .levelup-msg {
+        font-size: 15px; color: #64748b; margin-bottom: 24px;
+    }
+    /* ── 확인 버튼 ── */
+    .levelup-close-btn {
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        color: #fff; border: none; border-radius: 12px;
+        padding: 12px 48px; font-size: 15px; font-weight: 600;
+        cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .levelup-close-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+    }
+    /* ── 애니메이션 ── */
+    @keyframes levelup-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes levelup-scale-in { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes levelup-bounce {
+        0% { transform: scale(0); }
+        60% { transform: scale(1.3); }
+        100% { transform: scale(1); }
+    }
+</style>
+<script>
+    /**
+     * 레벨업 팝업 닫기.
+     * 오버레이를 fade-out 시키고 DOM에서 제거합니다.
+     */
+    function closeLevelUpPopup() {
+        var overlay = document.getElementById('levelup-overlay');
+        if (overlay) {
+            overlay.style.animation = 'levelup-fade-in 0.2s ease reverse';
+            setTimeout(function() { overlay.remove(); }, 200);
+        }
+    }
+</script>
+</c:if>
 
 <%@ include file="../common/footer.jsp" %>
 </body>

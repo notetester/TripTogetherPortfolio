@@ -13,6 +13,7 @@ import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.shop.service.ShopService;
+import org.triptogether.reward.service.RewardService;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
@@ -29,6 +30,7 @@ public class ProfileController {
     private final AuthServiceImpl authService;
     private final MyPageService myPageService;
     private final ShopService shopService;
+    private final RewardService rewardService;
 
     // ── 수정 전 비밀번호 확인 페이지 ──────────────
     @GetMapping("/edit-confirm")
@@ -304,6 +306,31 @@ public class ProfileController {
         model.addAttribute("notifications", myPageService.getNotifications(freshUser.getUserIdx()));
         model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(freshUser.getUserIdx()));
         model.addAttribute("inventoryItems", shopService.getInventoryItems(freshUser.getUserIdx()));
+
+        // ── 경험치 바 렌더링용 데이터 ──
+        // 현재 레벨에 필요한 누적 경험치 (이 레벨의 시작점)
+        long currentLevelExp = rewardService.getRequiredExpForLevel(freshUser.getLevelNo());
+        // 다음 레벨에 필요한 누적 경험치 (이 레벨의 끝점 = 다음 레벨 진입 조건)
+        long nextLevelExp = rewardService.getRequiredExpForLevel(freshUser.getLevelNo() + 1);
+        model.addAttribute("currentLevelExp", currentLevelExp);
+        model.addAttribute("nextLevelExp", nextLevelExp);
+
+        // ── 레벨업 알림 팝업용: 가장 최근 levelup 알림이 있으면 전달 후 삭제 ──
+        List<FeedNotificationDto> allNotifications = myPageService.getNotifications(freshUser.getUserIdx());
+        FeedNotificationDto levelUpNoti = null;
+        for (FeedNotificationDto noti : allNotifications) {
+            if ("levelup".equals(noti.getSourceType())) {
+                levelUpNoti = noti;
+                break;
+            }
+        }
+        if (levelUpNoti != null) {
+            // 팝업에 표시할 새 레벨 번호를 model에 전달
+            model.addAttribute("levelUpLevel", levelUpNoti.getSourceId());
+            // 표시했으니 알림 삭제 (한 번만 팝업)
+            myPageService.deleteNotification(levelUpNoti.getNotificationId());
+        }
+
         return "mypage/index";
     }
 

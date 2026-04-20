@@ -1,9 +1,12 @@
 package org.triptogether.reward.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.myPage.service.MyPageService;
+import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.reward.mapper.RewardMapper;
 import org.triptogether.reward.vo.ExpHistoryCreateDto;
 import org.triptogether.reward.vo.LevelOverrideDto;
@@ -18,12 +21,23 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class RewardServiceImpl implements RewardService {
 
     private static final int MAX_LEVEL_SCAN = 10_000;
 
     private final RewardMapper rewardMapper;
+    private final MyPageService myPageService;
+
+    /**
+     * 생성자 주입.
+     * MyPageService에 @Lazy를 적용하여 순환 참조를 방지합니다.
+     * (RewardService → MyPageService → ... 순환 가능성 대비)
+     */
+    public RewardServiceImpl(RewardMapper rewardMapper,
+                             @Lazy MyPageService myPageService) {
+        this.rewardMapper = rewardMapper;
+        this.myPageService = myPageService;
+    }
 
     @Override
     @Transactional
@@ -54,9 +68,22 @@ public class RewardServiceImpl implements RewardService {
 
         long nextPointBalance = user.getPointBalance() + Math.max(pointAmount, 0L);
         long nextExpPoints = user.getExpPoints() + Math.max(expAmount, 0);
-        int nextLevel = expAmount > 0 ? resolveLevel(nextExpPoints) : user.getLevelNo();
+
+        // ── 레벨업 판정: 이전 레벨을 보관해두고, 경험치 갱신 후 새 레벨과 비교 ──
+        int prevLevel = user.getLevelNo();
+        int nextLevel = expAmount > 0 ? resolveLevel(nextExpPoints) : prevLevel;
 
         rewardMapper.updateUserRewardState(userIdx, nextPointBalance, nextExpPoints, nextLevel);
+
+        // ── 레벨이 올랐으면 마이페이지 알림 생성 ──
+        if (nextLevel > prevLevel) {
+            FeedNotificationDto levelUpNoti = new FeedNotificationDto();
+            levelUpNoti.setUserIdx(userIdx);
+            levelUpNoti.setSourceType("levelup");             // 레벨업 전용 sourceType
+            levelUpNoti.setSourceId((long) nextLevel);         // sourceId에 새 레벨 저장
+            levelUpNoti.setMessage("Lv." + nextLevel + " 달성! 축하합니다!");
+            myPageService.addNotification(levelUpNoti);
+        }
 
         if (pointAmount > 0) {
             PointHistoryCreateDto pointHistory = new PointHistoryCreateDto();
@@ -187,5 +214,21 @@ public class RewardServiceImpl implements RewardService {
 
     private BigDecimal safe(BigDecimal value) {
         return value != null ? value : BigDecimal.ZERO;
+    }
+
+    /**
+     * 특정 레벨에 도달하기 위해 필요한 누적 경험치를 반환합니다.
+     * 마이페이지 경험치 바에서 "현재 레벨 필요 EXP ~ 다음 레벨 필요 EXP" 구간을 계산할 때 사용합니다.
+     *
+     * @param levelNo 조회 대상 레벨
+     * @return 해당 레벨에 필요한 누적 경험치 (Lv.1이면 0)
+     */
+    @Override
+    public long getRequiredExpForLevel(int levelNo) {
+        // DB에서 현재 활성화된 레벨 정책과 오버라이드 목록을 조회
+        LevelPolicyDto levelPolicy = rewardMapper.selectActiveLevelPolicy();
+        Map<Integer, Long> overrideMap = toOverrideMap(rewardMapper.selectActiveLevelOverrides());
+        // 공식 또는 오버라이드 값으로 필요 경험치 계산
+        return getRequiredTotalExp(levelNo, levelPolicy, overrideMap);
     }
 }
