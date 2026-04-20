@@ -280,20 +280,26 @@ public class ProfileController {
     public String myPage(HttpSession session, Model model) {
         UsersVO user = loginUser(session);
         if (user == null) return "redirect:/auth/login";
+        UsersVO freshUser = authService.getUserByIdx(user.getUserIdx());
+        if (freshUser == null) {
+            session.invalidate();
+            return "redirect:/auth/login";
+        }
+        session.setAttribute("loginUser", freshUser);
 
-        model.addAttribute("user",           user);
-        model.addAttribute("communityList",  myPageService.getMyCommunityList(user.getUserIdx()));
-        model.addAttribute("communityCount", myPageService.getMyCommunityCount(user.getUserIdx()));
-        model.addAttribute("inquiryList",    myPageService.getMyInquiryList(user.getUserIdx()));
-        model.addAttribute("inquiryCount",   myPageService.getMyInquiryCount(user.getUserIdx()));
-        model.addAttribute("reportList",     myPageService.getMyReportList(user.getUserIdx()));
-        model.addAttribute("reportCount",    myPageService.getMyReportCount(user.getUserIdx()));
-        model.addAttribute("reviewList",     myPageService.getMyReviewList(user.getUserIdx()));
-        model.addAttribute("reviewCount",    myPageService.getMyReviewCount(user.getUserIdx()));
-        model.addAttribute("planList",       myPageService.getMyPlanList(user.getUserIdx()));
-        model.addAttribute("planCount",      myPageService.getMyPlanCount(user.getUserIdx()));
-        model.addAttribute("notifications", myPageService.getNotifications(user.getUserIdx()));
-        model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(user.getUserIdx()));
+        model.addAttribute("user",           freshUser);
+        model.addAttribute("communityList",  myPageService.getMyCommunityList(freshUser.getUserIdx()));
+        model.addAttribute("communityCount", myPageService.getMyCommunityCount(freshUser.getUserIdx()));
+        model.addAttribute("inquiryList",    myPageService.getMyInquiryList(freshUser.getUserIdx()));
+        model.addAttribute("inquiryCount",   myPageService.getMyInquiryCount(freshUser.getUserIdx()));
+        model.addAttribute("reportList",     myPageService.getMyReportList(freshUser.getUserIdx()));
+        model.addAttribute("reportCount",    myPageService.getMyReportCount(freshUser.getUserIdx()));
+        model.addAttribute("reviewList",     myPageService.getMyReviewList(freshUser.getUserIdx()));
+        model.addAttribute("reviewCount",    myPageService.getMyReviewCount(freshUser.getUserIdx()));
+        model.addAttribute("planList",       myPageService.getMyPlanList(freshUser.getUserIdx()));
+        model.addAttribute("planCount",      myPageService.getMyPlanCount(freshUser.getUserIdx()));
+        model.addAttribute("notifications", myPageService.getNotifications(freshUser.getUserIdx()));
+        model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(freshUser.getUserIdx()));
         return "mypage/index";
     }
 

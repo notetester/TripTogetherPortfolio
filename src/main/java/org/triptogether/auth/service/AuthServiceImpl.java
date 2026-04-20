@@ -15,6 +15,8 @@ import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.triptogether.auth.mapper.AuthMapper;
+import org.triptogether.admin.mapper.AdminMapper;
+import org.triptogether.config.IpBlockMapper;
 import org.triptogether.auth.vo.*;
 
 import java.net.URLEncoder;
@@ -32,6 +34,8 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
     private final AuthMapper authMapper;
+    private final AdminMapper adminMapper;
+    private final IpBlockMapper ipBlockMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RestTemplate restTemplate;
     private final JavaMailSender mailSender;
@@ -114,32 +118,22 @@ public class AuthServiceImpl implements AuthService {
         boolean isEmail = isValidEmailFormat(identifier);
         String loginMethod = isEmail ? "EMAIL" : "ID";
 
-        // 1. 사용자 조회
         UsersVO user = isEmail
                 ? authMapper.findByEmail(identifier)
                 : authMapper.findByUserId(identifier);
 
-        // 2. 사용자 없음
         if (user == null) {
             recordLoginResult(null, loginMethod, identifier,
                     false, "USER_NOT_FOUND", context);
             return null;
         }
 
-        // 3. 계정 상태
         if ("DELETED".equals(user.getAccountStatus())) {
             recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                     false, "ACCOUNT_DELETED", context);
             return null;
         }
 
-        if ("DORMANT".equals(user.getAccountStatus())) {
-            recordLoginResult(user.getUserIdx(), loginMethod, identifier,
-                    false, "ACCOUNT_DORMANT", context);
-            return null;
-        }
-
-        // 4. 이메일 정책
         if (isEmail) {
             if (!user.isEmailVerified()) {
                 recordLoginResult(user.getUserIdx(), loginMethod, identifier,
@@ -154,25 +148,93 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        // 5. 비밀번호 로그인 가능 여부
         if (!user.isPasswordEnabled()) {
             recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                     false, "PASSWORD_LOGIN_DISABLED", context);
             return null;
         }
 
-        // 6. 비밀번호 검증
         if (!bCryptPasswordEncoder.matches(password, user.getUserPassword())) {
             recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                     false, "WRONG_PASSWORD", context);
             return null;
         }
 
-        // 7. 성공
+        if ("BLOCKED".equals(user.getAccountStatus())) {
+            if (user.getBlockedUntil() != null && user.getBlockedUntil().isBefore(LocalDateTime.now())) {
+                releaseExpiredMemberBlocks(user.getUserIdx());
+                authMapper.clearBlockState(user.getUserIdx());
+                user = authMapper.findByIdx(user.getUserIdx());
+            } else {
+                recordLoginResult(user.getUserIdx(), loginMethod, identifier,
+                        false, "ACCOUNT_BLOCKED", context);
+                return user;
+            }
+        }
+
+        if ("DORMANT".equals(user.getAccountStatus())) {
+            recordLoginResult(user.getUserIdx(), loginMethod, identifier,
+                    false, "ACCOUNT_DORMANT", context);
+            return user;
+        }
+
+        authMapper.updateLastLoginAt(user.getUserIdx());
         recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                 true, null, context);
 
-        return user;
+        return authMapper.findByIdx(user.getUserIdx());
+    }
+
+    private void releaseExpiredMemberBlocks(Long userIdx) {
+        java.util.List<String> blockedIps = adminMapper.findActiveBlockedIpsByUser(userIdx);
+        adminMapper.deactivateCurrentBlocklistByUser(userIdx, null);
+        adminMapper.deactivateActiveBlocksByUser(userIdx, null);
+        if (blockedIps != null) {
+            blockedIps.stream()
+                    .filter(ip -> ip != null && !ip.isBlank())
+                    .map(this::normalizeIp)
+                    .distinct()
+                    .forEach(this::refreshIpRuleFromHistory);
+        }
+    }
+
+    private void refreshIpRuleFromHistory(String ipAddress) {
+        if (ipAddress == null || ipAddress.isBlank()) return;
+        String normalizedIp = normalizeIp(ipAddress);
+        var latest = ipBlockMapper.findLatestActiveHistoryRuleByIp(normalizedIp);
+        if (latest == null) {
+            ipBlockMapper.deactivateBlockedIpByTargetKey(buildIpRuleTargetKey(normalizedIp), null);
+            return;
+        }
+        ipBlockMapper.upsertBlockedIpWithHistory(
+                normalizedIp,
+                buildIpRuleTargetKey(normalizedIp),
+                latest.getReason(),
+                latest.getUserIdx(),
+                latest.getBlockType(),
+                latest.getBlockedByUserIdx(),
+                latest.getExpiresAt(),
+                latest.getBlockRequestId(),
+                latest.getSourceHistoryBlockIdx(),
+                latest.getSourceBlocklistIdx()
+        );
+    }
+
+    private String buildIpRuleTargetKey(String blockedIp) {
+        return "IP:" + blockedIp;
+    }
+
+    private String normalizeIp(String ip) {
+        if (ip == null) return null;
+        String trimmed = ip.trim();
+        if (trimmed.isBlank()) return null;
+        if ("0:0:0:0:0:0:0:1".equals(trimmed) || "::1".equals(trimmed)) {
+            return "127.0.0.1";
+        }
+        if (trimmed.startsWith("::ffff:")) {
+            return trimmed.substring(7);
+        }
+        return trimmed;
     }
 
     // ════════════════════════════════════════════
@@ -180,12 +242,12 @@ public class AuthServiceImpl implements AuthService {
     // ════════════════════════════════════════════
     @Override
     public void register(UsersVO user) {
-        // 비밀번호 해싱
         if (user.getUserPassword() != null && !user.getUserPassword().isBlank()) {
             user.setUserPassword(bCryptPasswordEncoder.encode(user.getUserPassword()));
             user.setPasswordEnabled(true);
         }
         authMapper.insertUser(user);
+        authMapper.refreshVerifiedMemberFlag(user.getUserIdx());
     }
 
     // ════════════════════════════════════════════
@@ -559,6 +621,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             authMapper.markTokenUsed(ev.getVerifyIdx());
             authMapper.updateEmail(ev.getUserIdx(), ev.getEmail(), true);
+            authMapper.refreshVerifiedMemberFlag(ev.getUserIdx());
             UsersVO updated = authMapper.findByIdx(ev.getUserIdx());
             if (updated != null && !hasUsableLocalLogin(updated) && updated.isPasswordEnabled()) {
                 authMapper.clearPasswordAndDisable(ev.getUserIdx());
@@ -757,6 +820,7 @@ public class AuthServiceImpl implements AuthService {
                     enableEmailLogin ? "ENABLE" : "DISABLE", context);
         }
 
+        authMapper.refreshVerifiedMemberFlag(userIdx);
         UsersVO after = authMapper.findByIdx(userIdx);
         if (!hasUsableLocalLogin(after) && after.isPasswordEnabled()) {
             authMapper.clearPasswordAndDisable(userIdx);
@@ -1032,8 +1096,9 @@ public class AuthServiceImpl implements AuthService {
                 authMapper.insertLoginHistory(history.userIdx(user.getUserIdx()).success(false).failReason("ACCOUNT_DORMANT").build());
                 return null;
             }
+            authMapper.updateLastLoginAt(user.getUserIdx());
             authMapper.insertLoginHistory(history.userIdx(user.getUserIdx()).success(true).build());
-            return user;
+            return authMapper.findByIdx(user.getUserIdx());
         } else {
             // 신규 → 추가 정보 입력 필요
             return SocialTempVO.builder()
@@ -1067,10 +1132,11 @@ public class AuthServiceImpl implements AuthService {
                 return null;
             }
 
+            authMapper.updateLastLoginAt(user.getUserIdx());
             recordLoginResult(user.getUserIdx(), info.getProvider(), info.getProviderUserId(),
                     true, null, context);
 
-            return user;
+            return authMapper.findByIdx(user.getUserIdx());
         }
 
         // 신규 유저
@@ -1146,6 +1212,7 @@ public class AuthServiceImpl implements AuthService {
                 .accountStatus("ACTIVE")
                 .build();
         authMapper.insertUser(newUser);
+        authMapper.refreshVerifiedMemberFlag(newUser.getUserIdx());
 
         // 소셜 연동
         authMapper.insertSocial(UserSocialVO.builder()
@@ -1153,6 +1220,7 @@ public class AuthServiceImpl implements AuthService {
                 .provider(temp.getProvider())
                 .providerUserId(temp.getProviderUserId())
                 .build());
+        authMapper.refreshVerifiedMemberFlag(newUser.getUserIdx());
 
         // 히스토리
         authMapper.insertLoginHistory(UserLoginHistoryVO.builder()
@@ -1188,6 +1256,7 @@ public class AuthServiceImpl implements AuthService {
                 .provider(provider)
                 .providerUserId(providerUserId)
                 .build());
+        authMapper.refreshVerifiedMemberFlag(userIdx);
     }
 
     @Override
@@ -1205,6 +1274,30 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalStateException("연동 해제 후 사용할 수 있는 로그인 수단이 남아 있지 않아 처리할 수 없습니다. 먼저 아이디 로그인, 이메일 로그인 또는 다른 소셜 연동을 추가해 주세요.");
         }
         authMapper.deleteSocial(userIdx, provider);
+        authMapper.refreshVerifiedMemberFlag(userIdx);
+    }
+
+    @Override
+    public UsersVO releaseDormantUser(Long userIdx, LoginRequestContext context) {
+        UsersVO user = authMapper.findByIdx(userIdx);
+        if (user == null) {
+            throw new IllegalStateException("사용자 정보를 찾을 수 없습니다.");
+        }
+        authMapper.releaseDormantUser(userIdx);
+        recordSecurityEvent(userIdx, userIdx, "DORMANT_RELEASE", "COMPLETE",
+                user.getUserId(), user.getUserEmail(), true, null, null, context);
+        return authMapper.findByIdx(userIdx);
+    }
+
+    @Override
+    public void processDormantAccounts() {
+        java.time.LocalDateTime cutoff = java.time.LocalDateTime.now().minusYears(1);
+        List<UsersVO> targets = authMapper.findDormantCandidates(cutoff);
+        for (UsersVO target : targets) {
+            authMapper.markUserDormant(target.getUserIdx());
+            recordSecurityEvent(target.getUserIdx(), null, "DORMANT_AUTO", "COMPLETE",
+                    target.getUserId(), target.getUserEmail(), true, null, null, null);
+        }
     }
 
     @Override

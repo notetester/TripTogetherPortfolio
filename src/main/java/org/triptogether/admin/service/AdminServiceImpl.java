@@ -3,13 +3,16 @@ package org.triptogether.admin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.triptogether.admin.mapper.AdminMapper;
+import org.triptogether.config.IpBlockMapper;
 import org.triptogether.admin.vo.*;
 import org.triptogether.auth.vo.UserLoginHistoryVO;
 import org.triptogether.report.vo.ReportSearchDto;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 관리자 서비스 구현체.
@@ -22,6 +25,7 @@ import java.util.Map;
 public class AdminServiceImpl implements AdminService {
 
     private final AdminMapper adminMapper;
+    private final IpBlockMapper ipBlockMapper;
 
     // ===== 대시보드 통계 =====
 
@@ -62,7 +66,114 @@ public class AdminServiceImpl implements AdminService {
         if (!allowed.contains(status)) {
             throw new IllegalArgumentException("유효하지 않은 상태값: " + status);
         }
-        adminMapper.updateMemberStatus(userIdx, status);
+        switch (status) {
+            case "ACTIVE" -> {
+                List<String> blockedIps = adminMapper.findActiveBlockedIpsByUser(userIdx);
+                adminMapper.deactivateCurrentBlocklistByUser(userIdx, null);
+                adminMapper.deactivateActiveBlocksByUser(userIdx, null);
+                adminMapper.clearMemberBlockState(userIdx);
+                adminMapper.releaseMemberDormant(userIdx);
+                adminMapper.updateMemberStatus(userIdx, "ACTIVE");
+                if (blockedIps != null) {
+                    blockedIps.stream()
+                            .filter(ip -> ip != null && !ip.isBlank())
+                            .map(this::normalizeIp)
+                            .distinct()
+                            .forEach(this::refreshIpRuleFromHistory);
+                }
+            }
+            case "DORMANT" -> adminMapper.markMemberDormant(userIdx);
+            case "DELETED" -> adminMapper.updateMemberStatus(userIdx, "DELETED");
+            case "BLOCKED" -> blockMember(userIdx, "USER_ONLY", null, "관리자 상태 변경 차단", null, null);
+        }
+    }
+
+    @Override
+    public void blockMember(Long userIdx, String blockType, String blockedIp, String reason, LocalDateTime expiresAt, Long actorUserIdx) {
+        List<String> allowed = List.of("USER_ONLY", "IP_ONLY", "USER_IP");
+        if (!allowed.contains(blockType)) {
+            throw new IllegalArgumentException("유효하지 않은 차단 유형입니다.");
+        }
+
+        String normalizedIp = normalizeIp(blockedIp);
+        if (("IP_ONLY".equals(blockType) || "USER_IP".equals(blockType)) && (normalizedIp == null || normalizedIp.isBlank())) {
+            throw new IllegalArgumentException("IP 차단 유형은 차단 IP가 필요합니다.");
+        }
+
+        String blockRequestId = UUID.randomUUID().toString();
+        String historyTargetKey = buildHistoryTargetKey(userIdx, blockType, normalizedIp);
+        String ipMatchType = normalizedIp != null && !normalizedIp.isBlank() ? "SINGLE_IP" : null;
+
+        if ("USER_ONLY".equals(blockType) || "USER_IP".equals(blockType)) {
+            adminMapper.markMemberBlocked(userIdx, expiresAt, reason);
+        }
+
+        adminMapper.insertUserBlockHistory(blockRequestId, historyTargetKey, userIdx, blockType, normalizedIp, reason, actorUserIdx, expiresAt, ipMatchType);
+        Long historyBlockIdx = adminMapper.findBlockHistoryIdxByRequestId(blockRequestId);
+
+        Long sourceBlocklistIdx = null;
+        if ("USER_ONLY".equals(blockType) || "USER_IP".equals(blockType)) {
+            adminMapper.upsertUserBlocklist(historyBlockIdx, blockRequestId, historyTargetKey, userIdx, blockType, normalizedIp, reason, actorUserIdx, expiresAt);
+            sourceBlocklistIdx = adminMapper.findUserBlocklistIdxByTargetKey(historyTargetKey);
+        }
+
+        if (("IP_ONLY".equals(blockType) || "USER_IP".equals(blockType)) && normalizedIp != null && !normalizedIp.isBlank()) {
+            String ipRuleTargetKey = buildIpRuleTargetKey(normalizedIp);
+            ipBlockMapper.upsertBlockedIpWithHistory(normalizedIp, ipRuleTargetKey, reason, userIdx, blockType, actorUserIdx, expiresAt, blockRequestId, historyBlockIdx, sourceBlocklistIdx);
+        }
+    }
+
+    private void refreshIpRuleFromHistory(String ipAddress) {
+        if (ipAddress == null || ipAddress.isBlank()) return;
+        String normalizedIp = normalizeIp(ipAddress);
+        var latest = ipBlockMapper.findLatestActiveHistoryRuleByIp(normalizedIp);
+        if (latest == null) {
+            ipBlockMapper.deactivateBlockedIpByTargetKey(buildIpRuleTargetKey(normalizedIp), null);
+            return;
+        }
+        ipBlockMapper.upsertBlockedIpWithHistory(
+                normalizedIp,
+                buildIpRuleTargetKey(normalizedIp),
+                latest.getReason(),
+                latest.getUserIdx(),
+                latest.getBlockType(),
+                latest.getBlockedByUserIdx(),
+                latest.getExpiresAt(),
+                latest.getBlockRequestId(),
+                latest.getSourceHistoryBlockIdx(),
+                latest.getSourceBlocklistIdx()
+        );
+    }
+
+    private String buildHistoryTargetKey(Long userIdx, String blockType, String blockedIp) {
+        return switch (blockType) {
+            case "USER_ONLY" -> "USER:" + userIdx;
+            case "IP_ONLY" -> "IP:" + blockedIp;
+            case "USER_IP" -> "USER_IP:" + userIdx + ":" + blockedIp;
+            default -> throw new IllegalArgumentException("유효하지 않은 차단 유형입니다.");
+        };
+    }
+
+    private String buildIpRuleTargetKey(String blockedIp) {
+        return "IP:" + blockedIp;
+    }
+
+    private String normalizeIp(String ip) {
+        if (ip == null) return null;
+        String trimmed = ip.trim();
+        if (trimmed.isBlank()) return null;
+        if ("0:0:0:0:0:0:0:1".equals(trimmed) || "::1".equals(trimmed)) {
+            return "127.0.0.1";
+        }
+        if (trimmed.startsWith("::ffff:")) {
+            return trimmed.substring(7);
+        }
+        return trimmed;
+    }
+
+    @Override
+    public void updateMemberMeta(AdminMemberVO member) {
+        adminMapper.updateMemberMeta(member);
     }
 
     @Override
@@ -72,6 +183,11 @@ public class AdminServiceImpl implements AdminService {
             throw new IllegalArgumentException("유효하지 않은 권한값: " + role);
         }
         adminMapper.updateMemberRole(userIdx, role);
+    }
+
+    @Override
+    public boolean hasEffectivePermission(Long userIdx, String permissionCode) {
+        return adminMapper.hasEffectivePermission(userIdx, permissionCode);
     }
 
     @Override

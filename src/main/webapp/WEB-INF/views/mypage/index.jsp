@@ -67,6 +67,23 @@
 
     <div class="mp-inner" style="padding-top: 48px;">
 
+
+        <div class="mp-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title"><span class="mp-card-icon">🏷️</span> 등급 · 자산 · 레벨</div>
+            </div>
+            <div class="mp-info-grid">
+                <div class="mp-info-item"><div class="mp-info-label">회원 등급</div><div class="mp-info-value">${user.memberGrade}</div></div>
+                <div class="mp-info-item"><div class="mp-info-label">인증 회원</div><div class="mp-info-value"><c:choose><c:when test="${user.verifiedMember}"><span style="color:#15803d;">● 인증 회원</span></c:when><c:otherwise><span style="color:#64748b;">○ 비인증 회원</span></c:otherwise></c:choose></div></div>
+                <div class="mp-info-item"><div class="mp-info-label">캐쉬</div><div class="mp-info-value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0"/></div></div>
+                <div class="mp-info-item"><div class="mp-info-label">마일리지</div><div class="mp-info-value"><fmt:formatNumber value="${user.mileageBalance}" pattern="#,##0"/></div></div>
+                <div class="mp-info-item"><div class="mp-info-label">포인트</div><div class="mp-info-value"><fmt:formatNumber value="${user.pointBalance}" pattern="#,##0"/></div></div>
+                <div class="mp-info-item"><div class="mp-info-label">레벨 / 경험치</div><div class="mp-info-value">Lv.${user.levelNo} / <fmt:formatNumber value="${user.expPoints}" pattern="#,##0"/> EXP</div></div>
+                <div class="mp-info-item"><div class="mp-info-label">게시글 수</div><div class="mp-info-value">${user.totalPostCount}</div></div>
+                <div class="mp-info-item"><div class="mp-info-label">댓글 수</div><div class="mp-info-value">${user.totalCommentCount}</div></div>
+            </div>
+        </div>
+
         <%-- ══════════════════════════════════════════
              내 정보
         ══════════════════════════════════════════ --%>
