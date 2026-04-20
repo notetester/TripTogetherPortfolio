@@ -84,7 +84,8 @@ public class ShopController {
                                 item("NICK_COLOR_SKY", "shop.item.nick.sky", "shop.item.nick.sky.desc", "shop.type.nicknameColor", "TRIP", "preview-nick-sky", 150),
                                 item("NICK_COLOR_SUNSET", "shop.item.nick.sunset", "shop.item.nick.sunset.desc", "shop.type.nicknameColor", "TRIP", "preview-nick-sunset", 150),
                                 item("NICK_COLOR_MINT", "shop.item.nick.mint", "shop.item.nick.mint.desc", "shop.type.nicknameColor", "TRIP", "preview-nick-mint", 150),
-                                item("NICK_COLOR_ROSE", "shop.item.nick.rose", "shop.item.nick.rose.desc", "shop.type.nicknameColor", "TRIP", "preview-nick-rose", 150)
+                                item("NICK_COLOR_ROSE", "shop.item.nick.rose", "shop.item.nick.rose.desc", "shop.type.nicknameColor", "TRIP", "preview-nick-rose", 150),
+                                item("NICK_GLOW_RAINBOW", "shop.item.glow.rainbow", "shop.item.glow.rainbow.desc", "shop.type.nicknameColor", "TRIP", "preview-glow-rainbow", 1800)
                         )
                 ),
                 new ShopSectionDto(
@@ -94,8 +95,7 @@ public class ShopController {
                         "shop-accent-amber",
                         List.of(
                                 item("NICK_GLOW_GOLD", "shop.item.glow.gold", "shop.item.glow.gold.desc", "shop.type.nicknameEffect", "TRIP", "preview-glow-gold", 700),
-                                item("NICK_BORDER_NEON", "shop.item.border.neon", "shop.item.border.neon.desc", "shop.type.nicknameEffect", "TRIP", "preview-border-neon", 900),
-                                item("NICK_GLOW_RAINBOW", "shop.item.glow.rainbow", "shop.item.glow.rainbow.desc", "shop.type.nicknameEffect", "TRIP", "preview-glow-rainbow", 1800)
+                                item("NICK_BORDER_NEON", "shop.item.border.neon", "shop.item.border.neon.desc", "shop.type.nicknameEffect", "TRIP", "preview-border-neon", 900)
                         )
                 ),
                 new ShopSectionDto(

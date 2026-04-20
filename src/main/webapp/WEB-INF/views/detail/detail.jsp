@@ -727,7 +727,7 @@ html { scrollbar-gutter: stable; }
       <c:choose>
         <c:when test="${not empty reviewList}">
           <c:forEach var="rv" items="${reviewList}">
-            <div class="review-card" id="rv-${rv.reviewIdx}">
+            <div class="review-card ${rv.bubbleClass}" id="rv-${rv.reviewIdx}">
               <div class="review-card-top">
                 <div class="review-author-info">
                   <c:if test="${isAdminMode}">
@@ -740,7 +740,10 @@ html { scrollbar-gutter: stable; }
                   </div>
                   <div>
                     <div class="review-nickname">
-                      ${fn:escapeXml(rv.nickname)}
+                      <span class="tt-nickname ${rv.nicknameColorClass} ${rv.nicknameEffectClass}">${fn:escapeXml(rv.nickname)}</span>
+                      <c:if test="${not empty rv.profileBadgeLabel}">
+                        <span class="tt-profile-badge ${rv.profileBadgeClass}">${rv.profileBadgeLabel}</span>
+                      </c:if>
                       <c:if test="${not empty sessionScope.loginUser and rv.userIdx ne loginUserIdx and not isAdminMode}">
                         <span class="review-user-report-link rpt-user-link"
                               data-user-idx="${rv.userIdx}"

@@ -28,4 +28,11 @@ public class CommunityCommentDto {
     private String accountStatus;
 
     private int reportCount;
+
+    // 포인트 상점 장착 아이템에서 가져온 작성자 꾸미기 정보
+    private String nicknameColorClass;
+    private String nicknameEffectClass;
+    private String profileBadgeClass;
+    private String profileBadgeLabel;
+    private String bubbleClass;
 }

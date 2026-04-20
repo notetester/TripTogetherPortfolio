@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/variables.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/layout.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/header.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/item-effects.css">
     <c:if test="${not empty pageCSS}">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/${pageCSS}">
     </c:if>

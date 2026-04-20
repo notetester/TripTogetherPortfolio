@@ -37,11 +37,17 @@
         <div class="detail-author-info">
           <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
             <c:if test="${not empty sessionScope.loginUser and not isOwner and not isAdminMode}">
-              <span class="detail-author-name rpt-user-link" data-user-idx="${post.userIdx}" data-source-type="post" data-source-id="${post.postId}">${post.nickname}</span>
+              <span class="detail-author-name tt-nickname ${post.nicknameColorClass} ${post.nicknameEffectClass} rpt-user-link" data-user-idx="${post.userIdx}" data-source-type="post" data-source-id="${post.postId}">${post.nickname}</span>
+              <c:if test="${not empty post.profileBadgeLabel}">
+                <span class="tt-profile-badge ${post.profileBadgeClass}">${post.profileBadgeLabel}</span>
+              </c:if>
               <span class="comment-author-link rpt-user-link" data-user-idx="${post.userIdx}" data-source-type="post" data-source-id="${post.postId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
             </c:if>
             <c:if test="${empty sessionScope.loginUser or isOwner or isAdminMode}">
-              <span class="detail-author-name">${post.nickname}</span>
+              <span class="detail-author-name tt-nickname ${post.nicknameColorClass} ${post.nicknameEffectClass}">${post.nickname}</span>
+              <c:if test="${not empty post.profileBadgeLabel}">
+                <span class="tt-profile-badge ${post.profileBadgeClass}">${post.profileBadgeLabel}</span>
+              </c:if>
             </c:if>
             <c:if test="${isAdminMode and not isOwner}">
               <c:choose>
@@ -262,9 +268,12 @@
                           <%-- comment-body-wrap: 신고차단이면 report-blurred-wrap --%>
                           <div class="comment-body-wrap ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}">
                             <%-- comment-body: 신고차단이면 report-blurred --%>
-                            <div class="comment-body ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                            <div class="comment-body ${comment.bubbleClass} ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
                               <div class="comment-top">
-                                <span class="comment-author">${comment.nickname}</span>
+                                <span class="comment-author tt-nickname ${comment.nicknameColorClass} ${comment.nicknameEffectClass}">${comment.nickname}</span>
+                                <c:if test="${not empty comment.profileBadgeLabel}">
+                                  <span class="tt-profile-badge ${comment.profileBadgeClass}">${comment.profileBadgeLabel}</span>
+                                </c:if>
                                 <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
                                   <c:choose>
                                     <c:when test="${comment.accountStatus eq 'BLOCKED'}">
@@ -378,9 +387,12 @@
                                       </c:choose>
                                     </div>
                                     <div class="comment-body-wrap ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                                      <div class="comment-body ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                                      <div class="comment-body ${reply.bubbleClass} ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
                                         <div class="comment-top">
-                                          <span class="comment-author">${reply.nickname}</span>
+                                          <span class="comment-author tt-nickname ${reply.nicknameColorClass} ${reply.nicknameEffectClass}">${reply.nickname}</span>
+                                          <c:if test="${not empty reply.profileBadgeLabel}">
+                                            <span class="tt-profile-badge ${reply.profileBadgeClass}">${reply.profileBadgeLabel}</span>
+                                          </c:if>
                                           <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
                                             <c:choose>
                                               <c:when test="${reply.accountStatus eq 'BLOCKED'}">
@@ -583,7 +595,10 @@
                       <c:otherwise>?</c:otherwise>
                     </c:choose>
                   </div>
-                  <span class="post-author-name">${r.nickname}</span>
+                  <span class="post-author-name tt-nickname ${r.nicknameColorClass} ${r.nicknameEffectClass}">${r.nickname}</span>
+                  <c:if test="${not empty r.profileBadgeLabel}">
+                    <span class="tt-profile-badge ${r.profileBadgeClass}">${r.profileBadgeLabel}</span>
+                  </c:if>
                   <span class="post-date"><fmt:formatDate value="${r.createdAt}" pattern="yyyy-MM-dd"/></span>
                 </div>
                 <div class="post-card-title">${r.title}</div>
@@ -677,7 +692,10 @@
                         <c:otherwise>?</c:otherwise>
                       </c:choose>
                     </div>
-                    <span class="post-author-name">${l.nickname}</span>
+                    <span class="post-author-name tt-nickname ${l.nicknameColorClass} ${l.nicknameEffectClass}">${l.nickname}</span>
+                    <c:if test="${not empty l.profileBadgeLabel}">
+                      <span class="tt-profile-badge ${l.profileBadgeClass}">${l.profileBadgeLabel}</span>
+                    </c:if>
                     <span class="post-date"><fmt:formatDate value="${l.createdAt}" pattern="yyyy-MM-dd"/></span>
                   </div>
                   <div class="post-card-title">${l.title}</div>

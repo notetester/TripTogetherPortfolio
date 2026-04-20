@@ -31,9 +31,12 @@
                     </c:choose>
                   </div>
                   <div class="comment-body-wrap ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                    <div class="comment-body ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                    <div class="comment-body ${comment.bubbleClass} ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
                       <div class="comment-top">
-                        <span class="comment-author">${comment.nickname}</span>
+                        <span class="comment-author tt-nickname ${comment.nicknameColorClass} ${comment.nicknameEffectClass}">${comment.nickname}</span>
+                        <c:if test="${not empty comment.profileBadgeLabel}">
+                          <span class="tt-profile-badge ${comment.profileBadgeClass}">${comment.profileBadgeLabel}</span>
+                        </c:if>
                         <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
                           <c:choose>
                             <c:when test="${comment.accountStatus eq 'BLOCKED'}">
@@ -140,9 +143,12 @@
                               </c:choose>
                             </div>
                             <div class="comment-body-wrap ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                              <div class="comment-body ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                              <div class="comment-body ${reply.bubbleClass} ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
                                 <div class="comment-top">
-                                  <span class="comment-author">${reply.nickname}</span>
+                                  <span class="comment-author tt-nickname ${reply.nicknameColorClass} ${reply.nicknameEffectClass}">${reply.nickname}</span>
+                                  <c:if test="${not empty reply.profileBadgeLabel}">
+                                    <span class="tt-profile-badge ${reply.profileBadgeClass}">${reply.profileBadgeLabel}</span>
+                                  </c:if>
                                   <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
                                     <c:choose>
                                       <c:when test="${reply.accountStatus eq 'BLOCKED'}">

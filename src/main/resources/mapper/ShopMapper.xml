@@ -70,13 +70,19 @@
         SELECT
             point_shop_item_idx,
             item_code,
-            item_name,
+            CASE
+                WHEN item_code = 'NICK_GLOW_RAINBOW' THEN '레인보우 닉네임'
+                ELSE item_name
+            END AS item_name,
             item_type,
             point_price,
             is_repeatable,
             is_active,
             CAST(item_payload_json AS CHAR) AS item_payload_json,
-            description
+            CASE
+                WHEN item_code = 'NICK_GLOW_RAINBOW' THEN '닉네임 자체에 무지개 그라데이션 색상을 적용하는 고급 색상 상품입니다.'
+                ELSE description
+            END AS description
         FROM POINT_SHOP_ITEM
         WHERE item_code = #{itemCode}
           AND is_active = 1
@@ -103,13 +109,22 @@
             inv.point_inventory_idx,
             inv.user_idx,
             inv.item_code,
-            item.item_name,
-            item.item_type,
+            CASE
+                WHEN item.item_code = 'NICK_GLOW_RAINBOW' THEN '레인보우 닉네임'
+                ELSE item.item_name
+            END AS item_name,
+            CASE
+                WHEN item.item_code = 'NICK_GLOW_RAINBOW' THEN 'NICKNAME_COLOR'
+                ELSE item.item_type
+            END AS item_type,
             item.point_price,
             inv.quantity,
             inv.is_active,
             CAST(item.item_payload_json AS CHAR) AS item_payload_json,
-            item.description,
+            CASE
+                WHEN item.item_code = 'NICK_GLOW_RAINBOW' THEN '닉네임 자체에 무지개 그라데이션 색상을 적용하는 고급 색상 상품입니다.'
+                ELSE item.description
+            END AS description,
             inv.acquired_at,
             inv.last_used_at,
             CASE WHEN equip.point_equip_idx IS NULL THEN 0 ELSE 1 END AS is_equipped,
@@ -121,7 +136,12 @@
               AND equip.item_code = inv.item_code
         WHERE inv.user_idx = #{userIdx}
           AND inv.is_active = 1
-        ORDER BY item.item_type ASC, inv.acquired_at DESC
+        ORDER BY
+            CASE
+                WHEN item.item_code = 'NICK_GLOW_RAINBOW' THEN 'NICKNAME_COLOR'
+                ELSE item.item_type
+            END ASC,
+            inv.acquired_at DESC
     </select>
 
     <select id="selectInventoryItem" resultMap="ShopInventoryItemMap">
@@ -129,13 +149,22 @@
             inv.point_inventory_idx,
             inv.user_idx,
             inv.item_code,
-            item.item_name,
-            item.item_type,
+            CASE
+                WHEN item.item_code = 'NICK_GLOW_RAINBOW' THEN '레인보우 닉네임'
+                ELSE item.item_name
+            END AS item_name,
+            CASE
+                WHEN item.item_code = 'NICK_GLOW_RAINBOW' THEN 'NICKNAME_COLOR'
+                ELSE item.item_type
+            END AS item_type,
             item.point_price,
             inv.quantity,
             inv.is_active,
             CAST(item.item_payload_json AS CHAR) AS item_payload_json,
-            item.description,
+            CASE
+                WHEN item.item_code = 'NICK_GLOW_RAINBOW' THEN '닉네임 자체에 무지개 그라데이션 색상을 적용하는 고급 색상 상품입니다.'
+                ELSE item.description
+            END AS description,
             inv.acquired_at,
             inv.last_used_at,
             CASE WHEN equip.point_equip_idx IS NULL THEN 0 ELSE 1 END AS is_equipped,
