@@ -69,7 +69,7 @@
                     </div>
                     <div class="adm-card-body">
                         <div style="margin-bottom:8px;">
-                            <span style="font-size:11px;background:#1e3a5f;color:#7dd3fc;padding:2px 8px;border-radius:4px;margin-right:6px;">
+                            <span class="adm-post-type-badge">
                                 <c:choose>
                                     <c:when test="${post.postType == 'review'}">여행이야기</c:when>
                                     <c:when test="${post.postType == 'photo'}">사진</c:when>
@@ -80,8 +80,8 @@
                             </span>
                             <span style="font-size:11px;color:#64748b;">${post.region}</span>
                         </div>
-                        <h3 style="font-size:18px;font-weight:600;margin:0 0 12px;color:#f1f5f9;">${post.title}</h3>
-                        <div style="font-size:13px;color:#94a3b8;line-height:1.7;white-space:pre-wrap;">${post.content}</div>
+                        <h3 class="adm-detail-title">${post.title}</h3>
+                        <div class="adm-detail-body">${post.content}</div>
                         <div style="margin-top:16px;padding-top:12px;border-top:1px solid #1e2736;
                                     display:flex;gap:20px;font-size:12px;color:#64748b;">
                             <span>👁 ${post.viewCount}</span>

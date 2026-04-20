@@ -25,7 +25,7 @@
                         <img src="${spot.thumbUrl}" alt="${fn:escapeXml(spot.name)}" style="width:100%;height:220px;object-fit:cover;border-radius:14px;border:1px solid #1e293b;">
                     </c:when>
                     <c:otherwise>
-                        <div style="width:100%;height:220px;border-radius:14px;background:#1e293b;color:#64748b;display:flex;align-items:center;justify-content:center;">등록된 대표 이미지가 없습니다.</div>
+                        <div class="adm-image-placeholder" style="width:100%;height:220px;border-radius:14px;display:flex;align-items:center;justify-content:center;">등록된 대표 이미지가 없습니다.</div>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -33,7 +33,7 @@
                 <div style="display:flex;justify-content:space-between;gap:16px;">
                     <div>
                         <div style="font-size:12px;color:#64748b;">여행지명</div>
-                        <div style="font-size:22px;font-weight:700;color:#e2e8f0;">${fn:escapeXml(spot.name)}</div>
+                        <div class="adm-field-value" style="font-size:22px;font-weight:700;">${fn:escapeXml(spot.name)}</div>
                     </div>
                     <span class="status-badge ${spot.displayStatus}">
                         <c:choose>
@@ -45,43 +45,43 @@
                 <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
                     <div class="adm-card" style="padding:14px;">
                         <div style="font-size:12px;color:#64748b;">작성자</div>
-                        <div style="font-size:14px;color:#e2e8f0;margin-top:4px;">${fn:escapeXml(spot.nickname)}</div>
+                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;">${fn:escapeXml(spot.nickname)}</div>
                         <div style="font-size:11px;color:#64748b;margin-top:2px;">${fn:escapeXml(spot.userId)}</div>
                     </div>
                     <div class="adm-card" style="padding:14px;">
                         <div style="font-size:12px;color:#64748b;">지역</div>
-                        <div style="font-size:14px;color:#e2e8f0;margin-top:4px;">${fn:escapeXml(spot.region)}</div>
+                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;">${fn:escapeXml(spot.region)}</div>
                     </div>
                     <div class="adm-card" style="padding:14px;">
                         <div style="font-size:12px;color:#64748b;">spot_id</div>
-                        <div style="font-size:13px;color:#94a3b8;margin-top:4px;">${fn:escapeXml(spot.spotId)}</div>
+                        <div class="adm-field-value-sub" style="font-size:13px;margin-top:4px;">${fn:escapeXml(spot.spotId)}</div>
                     </div>
                     <div class="adm-card" style="padding:14px;">
                         <div style="font-size:12px;color:#64748b;">평점 / 리뷰</div>
-                        <div style="font-size:14px;color:#e2e8f0;margin-top:4px;"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/> / ${spot.reviewCount}건</div>
+                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/> / ${spot.reviewCount}건</div>
                     </div>
                     <div class="adm-card" style="padding:14px;">
                         <div style="font-size:12px;color:#64748b;">좋아요 / 태그</div>
-                        <div style="font-size:14px;color:#e2e8f0;margin-top:4px;">${spot.likeCount} / ${spot.tagCount}</div>
+                        <div class="adm-field-value" style="font-size:14px;margin-top:4px;">${spot.likeCount} / ${spot.tagCount}</div>
                     </div>
                 </div>
                 <div class="adm-card" style="padding:14px;">
                     <div style="font-size:12px;color:#64748b;">주소</div>
-                    <div style="font-size:14px;color:#e2e8f0;margin-top:4px;">${fn:escapeXml(spot.address)}</div>
+                    <div class="adm-field-value" style="font-size:14px;margin-top:4px;">${fn:escapeXml(spot.address)}</div>
                 </div>
                 <div class="adm-card" style="padding:14px;">
                     <div style="font-size:12px;color:#64748b;">좌표</div>
-                    <div style="font-size:13px;color:#94a3b8;margin-top:4px;">lat: ${spot.latitude}, lng: ${spot.longitude}</div>
+                    <div class="adm-field-value-sub" style="font-size:13px;margin-top:4px;">lat: ${spot.latitude}, lng: ${spot.longitude}</div>
                 </div>
                 <div class="adm-card" style="padding:14px;">
                     <div style="font-size:12px;color:#64748b;">설명</div>
-                    <div style="font-size:14px;color:#e2e8f0;margin-top:4px;line-height:1.7;">${fn:escapeXml(spot.description)}</div>
+                    <div class="adm-field-value" style="font-size:14px;margin-top:4px;line-height:1.7;">${fn:escapeXml(spot.description)}</div>
                 </div>
                 <div class="adm-card" style="padding:14px;">
                     <div style="font-size:12px;color:#64748b;margin-bottom:8px;">태그</div>
                     <div style="display:flex;gap:8px;flex-wrap:wrap;">
                         <c:forEach items="${tags}" var="tag">
-                            <span class="adm-nav-badge" style="background:#1e293b;color:#93c5fd;">${fn:escapeXml(tag)}</span>
+                            <span class="adm-nav-badge adm-tag-badge">${fn:escapeXml(tag)}</span>
                         </c:forEach>
                         <c:if test="${empty tags}">
                             <span style="font-size:12px;color:#64748b;">등록된 태그가 없습니다.</span>

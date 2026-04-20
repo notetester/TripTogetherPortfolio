@@ -48,10 +48,10 @@
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${review.reviewIdx}"></td>
                         <td style="color:#64748b;font-size:12px;">#${review.reviewIdx}</td>
-                        <td><a href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}" style="color:#e2e8f0;text-decoration:none;font-size:13px;font-weight:600;">${fn:escapeXml(review.spotName)}</a></td>
+                        <td><a href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}" class="adm-link-title" style="font-weight:600;">${fn:escapeXml(review.spotName)}</a></td>
                         <td><div style="font-size:13px;color:#7dd3fc;font-weight:600;">${fn:escapeXml(review.nickname)}</div><div style="font-size:11px;color:#64748b;">${fn:escapeXml(review.userId)}</div></td>
                         <td style="font-size:12px;color:#fbbf24;">${review.rating}/5</td>
-                        <td style="font-size:13px;color:#e2e8f0;line-height:1.6;"><c:choose><c:when test="${fn:length(review.content) > 60}">${fn:substring(review.content, 0, 60)}…</c:when><c:otherwise>${fn:escapeXml(review.content)}</c:otherwise></c:choose></td>
+                        <td class="adm-review-content"><c:choose><c:when test="${fn:length(review.content) > 60}">${fn:substring(review.content, 0, 60)}…</c:when><c:otherwise>${fn:escapeXml(review.content)}</c:otherwise></c:choose></td>
                         <td><span class="status-badge ${review.displayStatus}"><c:choose><c:when test="${review.displayStatus == 'ACTIVE'}">정상</c:when><c:otherwise>차단</c:otherwise></c:choose></span></td>
                         <td style="font-size:11px;color:#64748b;"><fmt:formatDate value="${review.createdAt}" pattern="yyyy.MM.dd"/></td>
                         <td><c:if test="${review.displayStatus != 'BLOCKED'}"><button class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;color:#f87171;border-color:#f87171;" data-id="${review.reviewIdx}" onclick="actionReview(this.getAttribute('data-id'), 'block')">차단</button></c:if></td>

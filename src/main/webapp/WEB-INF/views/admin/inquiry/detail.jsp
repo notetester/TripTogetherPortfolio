@@ -51,8 +51,8 @@
                             <span style="font-size:11px;color:#94a3b8;">🔒 비공개</span>
                         </c:if>
                     </div>
-                    <h3 style="font-size:18px;font-weight:600;margin:0 0 12px;color:#f1f5f9;">${inquiry.title}</h3>
-                    <div style="font-size:13px;color:#94a3b8;line-height:1.7;white-space:pre-wrap;">${inquiry.content}</div>
+                    <h3 class="adm-detail-title">${inquiry.title}</h3>
+                    <div class="adm-detail-body">${inquiry.content}</div>
                     <div style="margin-top:16px;padding-top:12px;border-top:1px solid #1e2736;
                                 display:flex;gap:20px;font-size:12px;color:#64748b;">
                         <span>👁 ${inquiry.viewCount}</span>
@@ -77,9 +77,7 @@
                     <%-- 기존 답변 표시 --%>
                     <c:if test="${not empty inquiry.answerId}">
                         <div id="answerView">
-                            <div style="font-size:13px;color:#cbd5e1;line-height:1.7;white-space:pre-wrap;
-                                        background:#0f172a;padding:14px;border-radius:6px;margin-bottom:12px;"
-                                 id="answerText">${inquiry.answerContent}</div>
+                            <div class="adm-inquiry-answer" id="answerText">${inquiry.answerContent}</div>
                             <div style="display:flex;gap:8px;">
                                 <button class="adm-btn adm-btn-ghost" style="font-size:12px;"
                                         onclick="showEditForm()">수정</button>

@@ -47,7 +47,7 @@
                     <div style="display:flex;flex-direction:column;gap:14px;">
                         <div style="display:flex;gap:12px;">
                             <div style="min-width:90px;font-size:12px;color:#64748b;">신고 대상</div>
-                            <div style="font-size:13px;color:#e2e8f0;">
+                            <div class="adm-detail-value">
                                 <c:choose>
                                     <c:when test="${report.targetType eq 'post'}">게시글</c:when>
                                     <c:when test="${report.targetType eq 'comment'}">댓글</c:when>
@@ -60,7 +60,7 @@
 
                         <div style="display:flex;gap:12px;">
                             <div style="min-width:90px;font-size:12px;color:#64748b;">신고 사유</div>
-                            <div style="font-size:13px;color:#e2e8f0;">
+                            <div class="adm-detail-value">
                                 <c:choose>
                                     <c:when test="${report.reason eq 'spam'}">스팸/광고</c:when>
                                     <c:when test="${report.reason eq 'abuse'}">욕설/비방</c:when>
@@ -78,8 +78,7 @@
                         <c:if test="${not empty report.description}">
                             <div style="display:flex;gap:12px;">
                                 <div style="min-width:90px;font-size:12px;color:#64748b;">상세 설명</div>
-                                <div style="font-size:13px;color:#cbd5e1;line-height:1.7;white-space:pre-wrap;
-                                            background:#0f172a;padding:12px;border-radius:6px;flex:1;">${report.description}</div>
+                                <div class="adm-report-desc">${report.description}</div>
                             </div>
                         </c:if>
 
