@@ -343,6 +343,12 @@
                 style="background:#ef4444;">🗑️ 삭제 요청</button>
       </c:if>
 
+      <%-- 유저 전용: DELETE_REQUESTED일 때 삭제 요청 취소 --%>
+      <c:if test="${isOwner and inquiry.status eq 'DELETE_REQUESTED'}">
+        <button class="inq-btn-submit" id="deleteCancelBtn"
+                style="background:#f59e0b;">✖ 삭제 요청 취소</button>
+      </c:if>
+
       <%-- 유저 전용: 비공개 상태일 때 공개 요청 (CANCELLED/USER_COMPLETED 제외) --%>
       <c:if test="${isOwner and inquiry.isPrivate == 1
                    and inquiry.status ne 'CANCELLED'
@@ -704,6 +710,22 @@ function goBackToList() {
         var data = await postJson('/inquiry/' + inquiryId + '/delete-request', {});
         if (data.success) { location.reload(); }
         else { alert(data.message || '삭제 요청에 실패했습니다.'); this.disabled = false; }
+      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+    });
+  }
+
+  /* =============================================
+     유저: 삭제 요청 취소
+     ============================================= */
+  var deleteCancelBtn = document.getElementById('deleteCancelBtn');
+  if (deleteCancelBtn) {
+    deleteCancelBtn.addEventListener('click', async function () {
+      if (!confirm('삭제 요청을 취소하시겠습니까?')) return;
+      this.disabled = true;
+      try {
+        var data = await postJson('/inquiry/' + inquiryId + '/delete-cancel', {});
+        if (data.success) { location.reload(); }
+        else { alert(data.message || '취소에 실패했습니다.'); this.disabled = false; }
       } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
     });
   }

@@ -540,6 +540,40 @@ public class InquiryController {
     }
 
     /* =============================================
+       POST /inquiry/{inquiryId}/delete-cancel - 유저 삭제 요청 취소
+       ============================================= */
+    /**
+     * 유저가 본인의 삭제 요청을 취소한다.
+     * - 본인만 가능 (403), DELETE_REQUESTED 상태일 때만 가능
+     * - 상태를 COMPLETED 로 복원
+     */
+    @PostMapping("/{inquiryId}/delete-cancel")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteCancel(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Long loginUserIdx = getLoginUserIdx(session);
+        InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+        if (inquiry == null) {
+            result.put("success", false);
+            return ResponseEntity.status(404).body(result);
+        }
+        if (!loginUserIdx.equals(inquiry.getUserIdx())) {
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
+        }
+        if (!"DELETE_REQUESTED".equals(inquiry.getStatus())) {
+            result.put("success", false);
+            result.put("message", "삭제 요청 상태에서만 취소할 수 있습니다.");
+            return ResponseEntity.status(400).body(result);
+        }
+        inquiryService.updateStatusWithTime(inquiryId, "COMPLETED");
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
        POST /inquiry/{inquiryId}/visibility-request - 유저 비공개/공개 요청
        ============================================= */
     /**

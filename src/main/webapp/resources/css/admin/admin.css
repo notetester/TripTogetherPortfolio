@@ -698,3 +698,104 @@ body.sa-light .adm-nav::-webkit-scrollbar-thumb { background:#cbd5e1; }
 body.sa-light .adm-table-wrap       { scrollbar-color:#cbd5e1 transparent; }
 body.sa-light .adm-table-wrap::-webkit-scrollbar-thumb { background:#cbd5e1; }
 body.sa-light .adm-modal-body::-webkit-scrollbar-thumb { background:#cbd5e1; }
+
+/* 테이블 링크/리뷰 본문 (다크 기본 + 라이트 대비 개선) */
+.adm-link-title {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 13px;
+}
+body.sa-light .adm-link-title { color: #0f172a; }
+
+.adm-review-content {
+    font-size: 13px;
+    color: #e2e8f0;
+    line-height: 1.6;
+}
+body.sa-light .adm-review-content { color: #0f172a; }
+
+/* 상세 페이지 공통 (제목/본문 — 문의/커뮤니티 공용) */
+.adm-detail-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    color: #f1f5f9;
+}
+body.sa-light .adm-detail-title { color: #0f172a; }
+
+.adm-detail-body {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+body.sa-light .adm-detail-body { color: #334155; }
+
+/* 게시글 타입 배지 (여행이야기/사진/여행팁/질문) */
+.adm-post-type-badge {
+    font-size: 11px;
+    background: #1e3a5f;
+    color: #7dd3fc;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 6px;
+}
+body.sa-light .adm-post-type-badge { background: #dbeafe; color: #1e40af; }
+
+/* 상세 페이지 필드 값 (여행지 기본정보 등 라벨-값 패턴) */
+.adm-field-value { color: #e2e8f0; }
+body.sa-light .adm-field-value { color: #0f172a; }
+
+.adm-field-value-sub { color: #94a3b8; }
+body.sa-light .adm-field-value-sub { color: #475569; }
+
+/* 태그 배지 (adm-nav-badge 위에 색상 오버라이드) */
+.adm-tag-badge { background: #1e293b; color: #93c5fd; }
+body.sa-light .adm-tag-badge { background: #dbeafe; color: #1e40af; }
+
+/* 이미지 없음 플레이스홀더 */
+.adm-image-placeholder { background: #1e293b; color: #64748b; }
+body.sa-light .adm-image-placeholder { background: #f1f5f9; color: #64748b; }
+
+.adm-inquiry-answer {
+    font-size: 13px;
+    color: #cbd5e1;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    background: #0f172a;
+    padding: 14px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+body.sa-light .adm-inquiry-answer {
+    color: #0f172a;
+    background: #f1f5f9;
+}
+
+.adm-modal-nickname {
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 600;
+}
+body.sa-light .adm-modal-nickname { color: #0f172a; }
+
+.adm-detail-value {
+    font-size: 13px;
+    color: #e2e8f0;
+}
+body.sa-light .adm-detail-value { color: #0f172a; }
+
+.adm-report-desc {
+    font-size: 13px;
+    color: #cbd5e1;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    background: #0f172a;
+    padding: 12px;
+    border-radius: 6px;
+    flex: 1;
+}
+body.sa-light .adm-report-desc {
+    color: #0f172a;
+    background: #f1f5f9;
+}

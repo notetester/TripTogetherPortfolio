@@ -27,13 +27,14 @@
                             </c:choose>
                         </span>
                         <%-- post: 해당 게시글로 이동 / comment: sourceId(게시글 ID)로 원글 이동 --%>
-                        <c:if test="${report.targetType eq 'post'}">
+                        <%-- 원글이 삭제된 경우(targetStatus=DELETED) 링크 숨김 --%>
+                        <c:if test="${report.targetType eq 'post' and report.targetStatus ne 'DELETED'}">
                             <a href="${pageContext.request.contextPath}/community/${report.targetId}"
                                target="_blank"
                                class="adm-btn adm-btn-ghost"
                                style="font-size:12px;text-decoration:none;">원글 보기</a>
                         </c:if>
-                        <c:if test="${report.targetType eq 'comment'}">
+                        <c:if test="${report.targetType eq 'comment' and report.targetStatus ne 'DELETED'}">
                             <a href="${pageContext.request.contextPath}/community/${report.sourceId}"
                                target="_blank"
                                class="adm-btn adm-btn-ghost"
@@ -47,7 +48,7 @@
                     <div style="display:flex;flex-direction:column;gap:14px;">
                         <div style="display:flex;gap:12px;">
                             <div style="min-width:90px;font-size:12px;color:#64748b;">신고 대상</div>
-                            <div style="font-size:13px;color:#e2e8f0;">
+                            <div class="adm-detail-value">
                                 <c:choose>
                                     <c:when test="${report.targetType eq 'post'}">게시글</c:when>
                                     <c:when test="${report.targetType eq 'comment'}">댓글</c:when>
@@ -55,12 +56,15 @@
                                     <c:otherwise>${report.targetType}</c:otherwise>
                                 </c:choose>
                                 <span style="color:#64748b;margin-left:4px;">#${report.targetId}</span>
+                                <c:if test="${report.targetStatus eq 'DELETED'}">
+                                    <span style="margin-left:8px;font-size:11px;background:#450a0a;color:#fca5a5;padding:2px 8px;border-radius:4px;">🗑 삭제됨</span>
+                                </c:if>
                             </div>
                         </div>
 
                         <div style="display:flex;gap:12px;">
                             <div style="min-width:90px;font-size:12px;color:#64748b;">신고 사유</div>
-                            <div style="font-size:13px;color:#e2e8f0;">
+                            <div class="adm-detail-value">
                                 <c:choose>
                                     <c:when test="${report.reason eq 'spam'}">스팸/광고</c:when>
                                     <c:when test="${report.reason eq 'abuse'}">욕설/비방</c:when>
@@ -78,8 +82,7 @@
                         <c:if test="${not empty report.description}">
                             <div style="display:flex;gap:12px;">
                                 <div style="min-width:90px;font-size:12px;color:#64748b;">상세 설명</div>
-                                <div style="font-size:13px;color:#cbd5e1;line-height:1.7;white-space:pre-wrap;
-                                            background:#0f172a;padding:12px;border-radius:6px;flex:1;">${report.description}</div>
+                                <div class="adm-report-desc">${report.description}</div>
                             </div>
                         </c:if>
 
@@ -149,16 +152,21 @@
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:11px;color:#94a3b8;border-color:#94a3b8;"
                                             onclick="resolve('REJECTED')">반려 (콘텐츠 유지)</button>
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;color:#fb923c;border-color:#fb923c;"
-                                            onclick="resolve('DELETE_CONTENT')">콘텐츠 삭제</button>
+                                    <%-- 이미 삭제된 콘텐츠면 삭제 계열 버튼 숨김 --%>
+                                    <c:if test="${report.targetStatus ne 'DELETED'}">
+                                        <button class="adm-btn adm-btn-ghost"
+                                                style="font-size:11px;color:#fb923c;border-color:#fb923c;"
+                                                onclick="resolve('DELETE_CONTENT')">콘텐츠 삭제</button>
+                                    </c:if>
                                     <c:if test="${report.targetUserRole ne 'SYSTEM'}">
                                         <button class="adm-btn adm-btn-ghost"
                                                 style="font-size:11px;color:#f87171;border-color:#f87171;"
                                                 onclick="resolve('BLOCK_AUTHOR')">작성자 차단</button>
-                                        <button class="adm-btn adm-btn-ghost"
-                                                style="font-size:11px;color:#dc2626;border-color:#dc2626;"
-                                                onclick="resolve('DELETE_AND_BLOCK')">삭제 + 작성자 차단</button>
+                                        <c:if test="${report.targetStatus ne 'DELETED'}">
+                                            <button class="adm-btn adm-btn-ghost"
+                                                    style="font-size:11px;color:#dc2626;border-color:#dc2626;"
+                                                    onclick="resolve('DELETE_AND_BLOCK')">삭제 + 작성자 차단</button>
+                                        </c:if>
                                     </c:if>
                                 </c:if>
 
