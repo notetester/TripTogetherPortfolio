@@ -14,6 +14,8 @@ import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.shop.service.ShopService;
 import org.triptogether.reward.service.RewardService;
+import org.triptogether.myPage.service.WalletService;
+import org.triptogether.myPage.vo.WalletMemberGradePolicyDto;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
@@ -31,6 +33,7 @@ public class ProfileController {
     private final MyPageService myPageService;
     private final ShopService shopService;
     private final RewardService rewardService;
+    private final WalletService walletService;
 
     // ── 수정 전 비밀번호 확인 페이지 ──────────────
     @GetMapping("/edit-confirm")
@@ -314,6 +317,12 @@ public class ProfileController {
         long nextLevelExp = rewardService.getRequiredExpForLevel(freshUser.getLevelNo() + 1);
         model.addAttribute("currentLevelExp", currentLevelExp);
         model.addAttribute("nextLevelExp", nextLevelExp);
+
+        // ── 등급 바 렌더링용 데이터 ──
+        // 당월 결제 총액 (이번 달에 쌓은 금액 → 다음 달 등급 산정 기준)
+        model.addAttribute("currentMonthPayment", walletService.getCurrentMonthPaymentTotal(freshUser.getUserIdx()));
+        // 활성 등급 정책 목록 (등급 바의 "다음 등급 기준값" 산출에 사용)
+        model.addAttribute("gradePolicies", walletService.getActiveMemberGradePolicies());
 
         // ── 레벨업 알림 팝업용: 가장 최근 levelup 알림이 있으면 전달 후 삭제 ──
         List<FeedNotificationDto> allNotifications = myPageService.getNotifications(freshUser.getUserIdx());

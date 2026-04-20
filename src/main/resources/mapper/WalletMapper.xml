@@ -158,4 +158,61 @@
         ORDER BY sort_order ASC, priority ASC, member_grade_idx ASC
     </select>
 
+    <!--
+        직전 달(현재 월 기준) 유저의 COMPLETED 결제 총액을 합산합니다.
+        예: 현재가 2026-04이면 2026-03-01 ~ 2026-03-31 결제만 합산
+        등급 재산정(recalculateMemberGrade) 시 실제 등급 판정에 사용됩니다.
+    -->
+    <select id="selectLastMonthPaymentTotal" resultType="long">
+        SELECT COALESCE(SUM(final_amount), 0)
+        FROM USER_PAYMENT_HISTORY
+        WHERE user_idx = #{userIdx}
+          AND payment_status = 'COMPLETED'
+          AND paid_at >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+          AND paid_at &lt; DATE_FORMAT(CURDATE(), '%Y-%m-01')
+    </select>
+
+    <!--
+        당월(현재 월) 유저의 COMPLETED 결제 총액을 합산합니다.
+        예: 현재가 2026-04이면 2026-04-01 ~ 현재까지 결제 합산
+        마이페이지 등급 바에서 "이번 달 결제 → 다음 달 등급 예측"에 사용됩니다.
+    -->
+    <select id="selectCurrentMonthPaymentTotal" resultType="long">
+        SELECT COALESCE(SUM(final_amount), 0)
+        FROM USER_PAYMENT_HISTORY
+        WHERE user_idx = #{userIdx}
+          AND payment_status = 'COMPLETED'
+          AND paid_at >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+    </select>
+
+    <!--
+        유저의 회원 등급(member_grade) 컬럼을 갱신합니다.
+    -->
+    <update id="updateMemberGrade">
+        UPDATE USERS
+        SET member_grade = #{memberGrade}
+        WHERE user_idx = #{userIdx}
+    </update>
+
+    <!--
+        등급 변경 이력을 USER_GRADE_HISTORY 테이블에 저장합니다.
+        uq_ugh_user_month 유니크 제약이 있으므로 같은 달에 중복 산정되면
+        기존 이력을 새 등급으로 덮어씁니다 (ON DUPLICATE KEY UPDATE).
+    -->
+    <insert id="insertGradeHistory">
+        INSERT INTO USER_GRADE_HISTORY (
+            user_idx, base_year_month, prev_grade, new_grade,
+            monthly_paid_amount, applied_discount_rate, calculated_at, created_at
+        ) VALUES (
+            #{userIdx}, #{baseYearMonth}, #{prevGrade}, #{newGrade},
+            #{monthlyPaidAmount}, #{appliedDiscountRate}, NOW(), NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+            prev_grade = #{prevGrade},
+            new_grade = #{newGrade},
+            monthly_paid_amount = #{monthlyPaidAmount},
+            applied_discount_rate = #{appliedDiscountRate},
+            calculated_at = NOW()
+    </insert>
+
 </mapper>

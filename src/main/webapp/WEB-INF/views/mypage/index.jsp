@@ -22,6 +22,72 @@
 <%@ include file="../common/header.jsp" %>
 <body>
 
+<%-- ── 레벨 바 · 등급 바 공통 추가 스타일 ── --%>
+<style>
+    /* ── 공통: 뱃지 + 바 가로 한 줄 레이아웃 ── */
+    .mp-grade-row {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+    /* 뱃지 크기 통일: LEVEL과 BRONZE 등 모든 뱃지가 동일한 너비를 차지하도록 고정 */
+    .mp-grade-row .mp-grade-badge {
+        flex-shrink: 0;
+        min-width: 120px;        /* 가장 긴 뱃지(PLATINUM)에 맞춘 고정 너비 */
+        text-align: center;      /* 텍스트 가운데 정렬 */
+        box-sizing: border-box;
+    }
+    /* 바 영역이 남은 공간을 모두 차지 → 뱃지 너비가 같으면 바 길이도 자동으로 같아짐 */
+    .mp-grade-row .mp-level-wrap {
+        flex: 1;
+        min-width: 180px;
+    }
+
+    /* ── LEVEL 뱃지 (BRONZE 뱃지와 동일한 알약 스타일, 보라색 테마) ── */
+    .mp-badge-level {
+        background: #ede9fe;
+        color: #5b21b6;
+        border: 1.5px solid #c4b5fd;
+    }
+
+    /* ── 등급 바 섹션 ── */
+    .mp-grade-bar-section {
+        padding: 16px 24px 20px;
+    }
+
+    /* ── 등급 바 채움 색상 (금색 그라데이션) ── */
+    .mp-grade-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+        border-radius: 4px;
+        transition: width .4s ease;
+    }
+
+    /* ── 승급 예정 안내 (할당량 100% 달성 시) ── */
+    .mp-grade-promotion {
+        margin-top: 8px;
+        padding: 8px 14px;
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 8px;
+        text-align: center;
+        animation: mp-grade-pulse 2s ease-in-out infinite;
+    }
+    @keyframes mp-grade-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.75; }
+    }
+
+    /* ── 다음 등급 힌트 (바 미달성 시) ── */
+    .mp-grade-next-hint {
+        margin-top: 6px;
+        font-size: 11px;
+        color: var(--gray-400, #94a3b8);
+    }
+</style>
+
 <div class="mp-wrap">
 
     <%-- ══════════════════════════════════════════
@@ -101,25 +167,14 @@
                     <span class="mp-card-icon">🏅</span> 내 등급 &amp; 재화
                 </div>
             </div>
-            <%-- 등급 + 레벨/경험치 --%>
-            <div class="mp-grade-section">
-                <div class="mp-grade-badge-wrap">
-                    <%-- DB에서 가져온 회원 등급을 동적으로 표시 --%>
-                    <span class="mp-grade-badge mp-grade-${user.memberGrade}">
-                        <c:choose>
-                            <c:when test="${user.memberGrade eq 'BRONZE'}">🥉 BRONZE</c:when>
-                            <c:when test="${user.memberGrade eq 'SILVER'}">🥈 SILVER</c:when>
-                            <c:when test="${user.memberGrade eq 'GOLD'}">🥇 GOLD</c:when>
-                            <c:when test="${user.memberGrade eq 'DIAMOND'}">💎 DIAMOND</c:when>
-                            <c:when test="${user.memberGrade eq 'PLATINUM'}">👑 PLATINUM</c:when>
-                            <c:otherwise>${user.memberGrade}</c:otherwise>
-                        </c:choose>
-                    </span>
-                    <c:if test="${user.verifiedMember}">
-                        <span class="mp-grade-verified">✓ 인증 회원</span>
-                    </c:if>
-                </div>
-                <div class="mp-level-wrap">
+            <%-- 레벨/경험치 바 (LEVEL 뱃지 + 바 가로 배치) --%>
+            <div class="mp-grade-bar-section">
+                <%-- LEVEL 뱃지 + 바를 가로 한 줄로 (등급 바와 동일한 구조) --%>
+                <div class="mp-grade-row">
+                    <%-- 왼쪽: LEVEL 뱃지 (BRONZE 뱃지와 동일한 알약 스타일) --%>
+                    <span class="mp-grade-badge mp-badge-level">⚡ LEVEL</span>
+                    <%-- 오른쪽: 레벨 경험치 바 --%>
+                    <div class="mp-level-wrap">
                     <%--
                         경험치 바 계산 로직:
                         - currentLevelExp : 현재 레벨에 진입하기 위해 필요했던 누적 EXP (시작점)
@@ -146,6 +201,121 @@
                         <div class="mp-xp-fill" style="width: ${expPercent}%;"></div>
                     </div>
                 </div>
+                <%-- /mp-grade-row --%>
+                </div>
+            </div>
+
+            <%-- ── 등급 진행 바 ── --%>
+            <%--
+                등급 바 계산 로직:
+                - gradePolicies       : 활성 등급 정책 목록 (sort_order ASC: BRONZE→PLATINUM)
+                - currentMonthPayment : 당월 결제 총액 (이번 달 결제 → 다음 달 등급 산정 기준)
+                - 다음 등급의 min_monthly_payment → 바의 끝점
+                - 최고 등급이면 바 100%로 채움
+            --%>
+            <c:set var="currentGradeMin" value="0" />
+            <c:set var="nextGradeMin" value="0" />
+            <c:set var="nextGradeName" value="" />
+            <c:set var="nextGradeFound" value="false" />
+            <c:set var="isMaxGrade" value="true" />
+            <%-- 당월 결제액 기준으로 예상되는 등급 계산 --%>
+            <c:set var="expectedGrade" value="BRONZE" />
+
+            <%-- 등급 정책 순회: 현재 등급의 기준값 + 다음 등급 정보 + 예상 등급 --%>
+            <c:forEach var="gp" items="${gradePolicies}">
+                <c:if test="${gp.memberGrade eq user.memberGrade}">
+                    <c:set var="currentGradeMin" value="${gp.minMonthlyPayment}" />
+                </c:if>
+                <%-- 당월 결제액이 충족하는 가장 높은 등급 = 예상 등급 --%>
+                <c:if test="${currentMonthPayment >= gp.minMonthlyPayment}">
+                    <c:set var="expectedGrade" value="${gp.memberGrade}" />
+                </c:if>
+            </c:forEach>
+
+            <%-- 다음 등급 찾기: 현재 등급보다 기준이 높은 첫 번째 등급 --%>
+            <c:forEach var="gp" items="${gradePolicies}">
+                <c:if test="${!nextGradeFound && gp.minMonthlyPayment > currentGradeMin}">
+                    <c:set var="nextGradeMin" value="${gp.minMonthlyPayment}" />
+                    <c:set var="nextGradeName" value="${gp.memberGrade}" />
+                    <c:set var="nextGradeFound" value="true" />
+                    <c:set var="isMaxGrade" value="false" />
+                </c:if>
+            </c:forEach>
+
+            <%-- 등급 바 퍼센트 계산 --%>
+            <c:choose>
+                <c:when test="${isMaxGrade}">
+                    <c:set var="gradePercent" value="100" />
+                </c:when>
+                <c:otherwise>
+                    <c:set var="gradeRange" value="${nextGradeMin - currentGradeMin}" />
+                    <c:set var="gradeProgress" value="${currentMonthPayment - currentGradeMin}" />
+                    <c:set var="gradePercent" value="${gradeRange > 0 ? (gradeProgress * 100 / gradeRange) : 0}" />
+                    <c:if test="${gradePercent > 100}"><c:set var="gradePercent" value="100" /></c:if>
+                    <c:if test="${gradePercent < 0}"><c:set var="gradePercent" value="0" /></c:if>
+                </c:otherwise>
+            </c:choose>
+
+            <div class="mp-grade-bar-section">
+                <%-- 등급 뱃지 + 바를 가로로 나란히 배치 (레벨 바와 동일한 구조) --%>
+                <div class="mp-grade-row">
+                    <%-- 왼쪽: 등급 뱃지 --%>
+                    <span class="mp-grade-badge mp-grade-${user.memberGrade}">
+                        <c:choose>
+                            <c:when test="${user.memberGrade eq 'BRONZE'}">🥉 BRONZE</c:when>
+                            <c:when test="${user.memberGrade eq 'SILVER'}">🥈 SILVER</c:when>
+                            <c:when test="${user.memberGrade eq 'GOLD'}">🥇 GOLD</c:when>
+                            <c:when test="${user.memberGrade eq 'DIAMOND'}">💎 DIAMOND</c:when>
+                            <c:when test="${user.memberGrade eq 'PLATINUM'}">👑 PLATINUM</c:when>
+                            <c:otherwise>${user.memberGrade}</c:otherwise>
+                        </c:choose>
+                    </span>
+                    <%-- 오른쪽: 바 영역 (레벨 바와 동일한 mp-level-wrap 구조) --%>
+                    <div class="mp-level-wrap">
+                        <div class="mp-level-header">
+                            <span class="mp-level-label">등급</span>
+                            <span class="mp-level-xp">
+                                <c:choose>
+                                    <c:when test="${isMaxGrade}">
+                                        최고 등급 달성!
+                                    </c:when>
+                                    <c:otherwise>
+                                        <fmt:formatNumber value="${currentMonthPayment}" pattern="#,##0" />
+                                        /
+                                        <fmt:formatNumber value="${nextGradeMin}" pattern="#,##0" />원
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
+                        </div>
+                        <div class="mp-xp-bar">
+                            <div class="mp-grade-fill" style="width: ${gradePercent}%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <%-- 바 아래 승급 예정 / 다음 등급 안내 --%>
+                <c:choose>
+                    <c:when test="${isMaxGrade}">
+                        <%-- 최고 등급이면 별도 안내 없음 --%>
+                    </c:when>
+                    <c:when test="${expectedGrade ne user.memberGrade}">
+                        <div class="mp-grade-promotion">
+                            ${user.memberGrade} → ${expectedGrade} 승급 예정!
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="mp-grade-next-hint">
+                            다음 등급:
+                            <c:choose>
+                                <c:when test="${nextGradeName eq 'SILVER'}">🥈 SILVER</c:when>
+                                <c:when test="${nextGradeName eq 'GOLD'}">🥇 GOLD</c:when>
+                                <c:when test="${nextGradeName eq 'DIAMOND'}">💎 DIAMOND</c:when>
+                                <c:when test="${nextGradeName eq 'PLATINUM'}">👑 PLATINUM</c:when>
+                                <c:otherwise>${nextGradeName}</c:otherwise>
+                            </c:choose>
+                            (이번 달 결제 <fmt:formatNumber value="${nextGradeMin}" pattern="#,##0" />원 이상)
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
             <%-- 재화 --%>
             <div class="mp-currency-grid">
