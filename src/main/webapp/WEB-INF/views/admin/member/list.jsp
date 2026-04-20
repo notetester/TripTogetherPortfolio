@@ -237,6 +237,7 @@
                             <div style="display:flex;gap:4px;align-items:center;">
                                 <button class="adm-row-btn detail"
                                         onclick="openDetail(${m.userIdx})">상세</button>
+                                <c:if test="${m.userRole != 'SYSTEM'}">
                                 <div class="action-menu-wrap">
                                     <button class="adm-row-btn detail"
                                             onclick="toggleMenu(this)">⋯</button>
@@ -288,6 +289,7 @@
                                         </c:if>
                                     </div>
                                 </div>
+                                </c:if>
                             </div>
                         </td>
                     </tr>

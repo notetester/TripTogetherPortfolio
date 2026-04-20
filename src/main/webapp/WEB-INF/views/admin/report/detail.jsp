@@ -152,12 +152,14 @@
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:11px;color:#fb923c;border-color:#fb923c;"
                                             onclick="resolve('DELETE_CONTENT')">콘텐츠 삭제</button>
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;color:#f87171;border-color:#f87171;"
-                                            onclick="resolve('BLOCK_AUTHOR')">작성자 차단</button>
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;color:#dc2626;border-color:#dc2626;"
-                                            onclick="resolve('DELETE_AND_BLOCK')">삭제 + 작성자 차단</button>
+                                    <c:if test="${report.targetUserRole ne 'SYSTEM'}">
+                                        <button class="adm-btn adm-btn-ghost"
+                                                style="font-size:11px;color:#f87171;border-color:#f87171;"
+                                                onclick="resolve('BLOCK_AUTHOR')">작성자 차단</button>
+                                        <button class="adm-btn adm-btn-ghost"
+                                                style="font-size:11px;color:#dc2626;border-color:#dc2626;"
+                                                onclick="resolve('DELETE_AND_BLOCK')">삭제 + 작성자 차단</button>
+                                    </c:if>
                                 </c:if>
 
                                 <%-- user 대상 버튼 --%>
@@ -165,9 +167,11 @@
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:11px;color:#94a3b8;border-color:#94a3b8;"
                                             onclick="resolve('REJECTED')">반려 (계정 유지)</button>
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;color:#f87171;border-color:#f87171;"
-                                            onclick="resolve('BLOCK_USER')">유저 차단</button>
+                                    <c:if test="${report.targetUserRole ne 'SYSTEM'}">
+                                        <button class="adm-btn adm-btn-ghost"
+                                                style="font-size:11px;color:#f87171;border-color:#f87171;"
+                                                onclick="resolve('BLOCK_USER')">유저 차단</button>
+                                    </c:if>
                                 </c:if>
 
                                 <%-- 처리된 신고: 검토중 복원 버튼 --%>

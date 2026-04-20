@@ -140,6 +140,7 @@
                             data-userid="${r.userId}"
                             data-nickname="${r.nickname}"
                             data-status="${r.accountStatus}"
+                            data-userrole="${r.userRole}"
                             onclick="openAuthorModal(this)">
                             <div style="font-weight:600;font-size:13px;color:#7dd3fc;">${r.nickname}</div>
                             <div style="font-size:11px;color:#64748b;">${r.userId}</div>
@@ -253,12 +254,13 @@ function openAuthorModal(el) {
     var userId   = el.getAttribute('data-userid');
     var nickname = el.getAttribute('data-nickname');
     var status   = el.getAttribute('data-status');
+    var userRole = el.getAttribute('data-userrole');
 
     var statusBadge = status === 'BLOCKED'
         ? '<span class="status-badge BLOCKED" style="font-size:12px;">차단</span>'
         : '<span class="status-badge ACTIVE"  style="font-size:12px;">활성</span>';
 
-    var blockBtn = status !== 'BLOCKED'
+    var blockBtn = (status !== 'BLOCKED' && userRole !== 'SYSTEM')
         ? '<button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;width:100%;margin-top:4px;" data-idx="' + userIdx + '" onclick="blockUserFromModal(this)">계정 차단</button>'
         : '';
 
