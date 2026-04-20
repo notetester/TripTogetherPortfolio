@@ -321,15 +321,27 @@
 
         var cards   = track.children;
         var total   = cards.length;
-        var visible = 4;
         var gap     = 24;
+        var visible = computeVisible();
         var current = 0;
         var autoTimer;
+        var resizeTimer;
+
+        function computeVisible() {
+            var w = window.innerWidth;
+            if (w >= 1200) return 4;
+            if (w >= 900)  return 3;
+            if (w >= 600)  return 2;
+            return 1;
+        }
+
+        function effectiveVisible() { return Math.min(visible, total); }
 
         function setCardWidths() {
             var vpWidth = track.parentElement.offsetWidth;
             if (!vpWidth) return;
-            var w = (vpWidth - gap * (visible - 1)) / visible;
+            var v = effectiveVisible();
+            var w = (vpWidth - gap * (v - 1)) / v;
             Array.from(cards).forEach(function (wrap) {
                 wrap.style.width = w + 'px';
                 var inner = wrap.querySelector('.cc, .dc, .tc');
@@ -340,13 +352,16 @@
 
         function cardStep() { return cards[0].getBoundingClientRect().width + gap; }
 
+        function maxIndex() { return Math.max(0, total - effectiveVisible()); }
+
         function goTo(idx) {
-            current = Math.max(0, Math.min(idx, total - visible));
+            current = Math.max(0, Math.min(idx, maxIndex()));
             track.style.transform = 'translateX(-' + (current * cardStep()) + 'px)';
         }
 
         function next() {
-            if (current >= total - visible) {
+            if (total <= effectiveVisible()) return;
+            if (current >= maxIndex()) {
                 track.style.transition = 'none'; current = 0;
                 track.style.transform = 'translateX(0)';
                 track.getBoundingClientRect(); track.style.transition = '';
@@ -354,21 +369,37 @@
         }
 
         function prev() {
+            if (total <= effectiveVisible()) return;
             if (current <= 0) {
-                track.style.transition = 'none'; current = total - visible;
+                track.style.transition = 'none'; current = maxIndex();
                 track.style.transform = 'translateX(-' + (current * cardStep()) + 'px)';
                 track.getBoundingClientRect(); track.style.transition = '';
             } else { goTo(current - 1); }
         }
 
-        function startAuto() { autoTimer = setInterval(next, 2500); }
+        function startAuto() {
+            if (total > effectiveVisible()) autoTimer = setInterval(next, 2500);
+        }
         function stopAuto()  { clearInterval(autoTimer); }
+
+        function handleResize() {
+            stopAuto();
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function () {
+                requestAnimationFrame(function () {
+                    visible = computeVisible();
+                    setCardWidths();
+                    goTo(current);
+                    startAuto();
+                });
+            }, 150);
+        }
 
         if (nextBtn) nextBtn.addEventListener('click', function () { stopAuto(); next(); startAuto(); });
         if (prevBtn) prevBtn.addEventListener('click', function () { stopAuto(); prev(); startAuto(); });
-        window.addEventListener('resize', function () { stopAuto(); setCardWidths(); goTo(current); startAuto(); });
+        window.addEventListener('resize', handleResize);
 
-        setCardWidths();
+        requestAnimationFrame(setCardWidths);
         startAuto();
     }
 
