@@ -30,14 +30,14 @@ public class HomeController {
      * - popularSpots     : 인기 여행지 스팟 목록
      * - trendingPlans    : 트렌딩 여행 플랜 목록 (이미지는 랜덤 배정)
      * - fallbackImageUrl : 이미지가 없을 때 쓸 대체 이미지 URL
-     * - popularPosts     : 커뮤니티 인기 게시글 8개
+     * - popularPosts     : 커뮤니티 인기 게시글 4개
      */
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("popularSpots", homeService.getPopularSpots());
         model.addAttribute("trendingPlans", homeService.getTrendingPlans());
         model.addAttribute("fallbackImageUrl", homeService.getFallbackImageUrl());
-        model.addAttribute("popularPosts", communityService.getPopularList(8));
+        model.addAttribute("popularPosts", communityService.getPopularList(4));
         return "home/home";
     }
 }
