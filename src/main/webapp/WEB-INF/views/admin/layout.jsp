@@ -68,6 +68,11 @@
                 <span class="adm-nav-badge soon">회의 후</span>
             </span>
 
+            <div class="adm-nav-section" style="margin-top:8px;">시스템</div>
+            <a class="adm-nav-item ${activeMenu=='superAdmin'?'active':''}" href="${pageContext.request.contextPath}/superAdmin">
+                <span class="adm-nav-icon">🔑</span> 관리자 관리
+            </a>
+
             <div style="margin-top:16px; padding: 0 10px;">
                 <a class="adm-nav-item" href="${pageContext.request.contextPath}/" target="_blank" style="background:#1e2330; color:#64748b;">
                     <span class="adm-nav-icon">↗️</span> 사이트 보기

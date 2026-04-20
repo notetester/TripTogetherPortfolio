@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.superAdmin.mapper.SuperAdminMapper">
+
+    <!-- ══════════════════════════════════════════
+         ResultMap
+    ══════════════════════════════════════════ -->
+
+    <resultMap id="memberRM" type="org.triptogether.superAdmin.vo.SuperAdminMemberVO">
+        <id  property="userIdx"              column="user_idx"/>
+        <result property="userId"            column="user_id"/>
+        <result property="userEmail"         column="user_email"/>
+        <result property="nickname"          column="nickname"/>
+        <result property="accountStatus"     column="account_status"/>
+        <result property="userRole"          column="user_role"/>
+        <result property="createdAt"         column="created_at"/>
+        <result property="lastLoginAt"       column="last_login_at"/>
+        <result property="adminOrganization" column="admin_organization"/>
+        <result property="adminDivision"     column="admin_division"/>
+        <result property="adminDepartment"   column="admin_department"/>
+        <result property="adminUnit"         column="admin_unit"/>
+        <result property="adminTeam"         column="admin_team"/>
+        <result property="adminLocation"     column="admin_location"/>
+        <result property="adminTrack"        column="admin_track"/>
+        <result property="adminFamily"       column="admin_family"/>
+        <result property="adminFunction"     column="admin_function"/>
+        <result property="adminDiscipline"   column="admin_discipline"/>
+        <result property="adminRole"         column="admin_role"/>
+        <result property="adminPosition"     column="admin_position"/>
+        <result property="adminPositionCode" column="admin_position_code"/>
+        <result property="adminTitle"        column="admin_title"/>
+        <result property="adminRank"         column="admin_rank"/>
+        <result property="adminSeniority"    column="admin_seniority"/>
+        <result property="adminTier"         column="admin_tier"/>
+        <result property="adminLevel"        column="admin_level"/>
+        <result property="adminBand"         column="admin_band"/>
+        <result property="adminGrade"        column="admin_grade"/>
+        <result property="adminStep"         column="admin_step"/>
+        <result property="adminResponsibility" column="admin_responsibility"/>
+        <result property="adminPermission"   column="admin_permission"/>
+        <result property="adminPermissionCode" column="admin_permission_code"/>
+        <result property="adminManager"      column="admin_manager"/>
+        <result property="adminManagerNickname" column="manager_nickname"/>
+    </resultMap>
+
+    <resultMap id="permissionRM" type="org.triptogether.superAdmin.vo.SuperAdminPermissionVO">
+        <id  property="adminPermissionIdx" column="admin_permission_idx"/>
+        <result property="userIdx"         column="user_idx"/>
+        <result property="permissionCode"  column="permission_code"/>
+        <result property="active"          column="is_active"/>
+        <result property="createdAt"       column="created_at"/>
+        <result property="displayName"     column="display_name"/>
+        <result property="description"     column="description"/>
+    </resultMap>
+
+    <!-- ══════════════════════════════════════════
+         관리자 목록
+    ══════════════════════════════════════════ -->
+
+    <select id="findAdmins" resultMap="memberRM">
+        SELECT u.user_idx, u.user_id, u.user_email, u.nickname,
+               u.account_status, u.user_role, u.created_at, u.last_login_at,
+               u.admin_organization, u.admin_department, u.admin_team,
+               u.admin_title, u.admin_permission_code,
+               m.nickname AS manager_nickname
+        FROM USERS u
+        LEFT JOIN USERS m ON u.admin_manager = m.user_idx
+        WHERE u.user_role = 'ADMIN'
+        <if test="keyword != null and keyword != ''">
+            <choose>
+                <when test="searchType == 'userId'">  AND u.user_id   LIKE CONCAT('%', #{keyword}, '%')</when>
+                <when test="searchType == 'nickname'">AND u.nickname  LIKE CONCAT('%', #{keyword}, '%')</when>
+                <when test="searchType == 'email'">   AND u.user_email LIKE CONCAT('%', #{keyword}, '%')</when>
+                <otherwise>
+                    AND (u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                      OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                      OR u.user_email LIKE CONCAT('%', #{keyword}, '%'))
+                </otherwise>
+            </choose>
+        </if>
+        ORDER BY u.created_at DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="countAdmins" resultType="int">
+        SELECT COUNT(*) FROM USERS u
+        WHERE u.user_role = 'ADMIN'
+        <if test="keyword != null and keyword != ''">
+            <choose>
+                <when test="searchType == 'userId'">  AND u.user_id   LIKE CONCAT('%', #{keyword}, '%')</when>
+                <when test="searchType == 'nickname'">AND u.nickname  LIKE CONCAT('%', #{keyword}, '%')</when>
+                <when test="searchType == 'email'">   AND u.user_email LIKE CONCAT('%', #{keyword}, '%')</when>
+                <otherwise>
+                    AND (u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                      OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                      OR u.user_email LIKE CONCAT('%', #{keyword}, '%'))
+                </otherwise>
+            </choose>
+        </if>
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         관리자 상세
+    ══════════════════════════════════════════ -->
+
+    <select id="findAdminDetail" resultMap="memberRM">
+        SELECT u.*, m.nickname AS manager_nickname
+        FROM USERS u
+        LEFT JOIN USERS m ON u.admin_manager = m.user_idx
+        WHERE u.user_idx = #{userIdx}
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         일반 유저 검색 (관리자 등록용)
+    ══════════════════════════════════════════ -->
+
+    <select id="searchUsers" resultMap="memberRM">
+        SELECT user_idx, user_id, user_email, nickname, account_status, user_role, created_at
+        FROM USERS
+        WHERE user_role = 'USER'
+        <if test="keyword != null and keyword != ''">
+            <choose>
+                <when test="searchType == 'userId'">  AND user_id    LIKE CONCAT('%', #{keyword}, '%')</when>
+                <when test="searchType == 'nickname'">AND nickname   LIKE CONCAT('%', #{keyword}, '%')</when>
+                <when test="searchType == 'email'">   AND user_email LIKE CONCAT('%', #{keyword}, '%')</when>
+                <otherwise>
+                    AND (user_id LIKE CONCAT('%', #{keyword}, '%')
+                      OR nickname LIKE CONCAT('%', #{keyword}, '%')
+                      OR user_email LIKE CONCAT('%', #{keyword}, '%'))
+                </otherwise>
+            </choose>
+        </if>
+        ORDER BY created_at DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         관리자 등록 / 해제
+    ══════════════════════════════════════════ -->
+
+    <update id="grantAdmin">
+        UPDATE USERS SET user_role = 'ADMIN' WHERE user_idx = #{userIdx}
+    </update>
+
+    <update id="revokeAdmin">
+        UPDATE USERS SET user_role = 'USER' WHERE user_idx = #{userIdx}
+    </update>
+
+    <!-- ══════════════════════════════════════════
+         권한 정책 목록
+    ══════════════════════════════════════════ -->
+
+    <select id="findAllPermissionPolicies" resultMap="permissionRM">
+        SELECT permission_code, display_name, description
+        FROM ADMIN_PERMISSION_POLICY
+        WHERE is_active = 1
+        ORDER BY priority DESC
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         보유 권한 목록
+    ══════════════════════════════════════════ -->
+
+    <select id="findPermissionsByUser" resultMap="permissionRM">
+        SELECT ap.admin_permission_idx, ap.user_idx, ap.permission_code,
+               ap.is_active, ap.created_at,
+               app.display_name, app.description
+        FROM ADMIN_PERMISSION ap
+        JOIN ADMIN_PERMISSION_POLICY app ON ap.permission_code = app.permission_code
+        WHERE ap.user_idx = #{userIdx} AND ap.is_active = 1
+        ORDER BY app.priority DESC
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         권한 부여 / 회수
+    ══════════════════════════════════════════ -->
+
+    <select id="countPermission" resultType="int">
+        SELECT COUNT(*) FROM ADMIN_PERMISSION
+        WHERE user_idx = #{userIdx} AND permission_code = #{permissionCode}
+    </select>
+
+    <insert id="grantPermission">
+        INSERT INTO ADMIN_PERMISSION (user_idx, permission_code, is_active, granted_by_user_idx, created_by_user_idx, updated_by_user_idx, priority)
+        VALUES (#{userIdx}, #{permissionCode}, 1, #{grantedBy}, #{grantedBy}, #{grantedBy}, 1)
+        ON DUPLICATE KEY UPDATE is_active = 1, updated_by_user_idx = #{grantedBy}, updated_at = NOW()
+    </insert>
+
+    <update id="revokePermission">
+        UPDATE ADMIN_PERMISSION
+        SET is_active = 0
+        WHERE user_idx = #{userIdx} AND permission_code = #{permissionCode}
+    </update>
+
+    <update id="revokeAllPermissions">
+        UPDATE ADMIN_PERMISSION SET is_active = 0 WHERE user_idx = #{userIdx}
+    </update>
+
+    <!-- ══════════════════════════════════════════
+         계층 구조용 전체 관리자 조회
+    ══════════════════════════════════════════ -->
+
+    <select id="findAdminsForOrgChart" resultMap="memberRM">
+        SELECT u.user_idx, u.nickname, u.admin_title, u.admin_department,
+               u.admin_position_code, u.admin_permission_code, u.admin_manager,
+               m.nickname AS manager_nickname
+        FROM USERS u
+        LEFT JOIN USERS m ON u.admin_manager = m.user_idx
+        WHERE u.user_role = 'ADMIN'
+        ORDER BY u.admin_manager ASC, u.user_idx ASC
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         직책 정책 목록
+    ══════════════════════════════════════════ -->
+
+    <select id="findAllPositionPolicies" resultType="org.triptogether.superAdmin.vo.SuperAdminPositionPolicyVO">
+        SELECT admin_position_code, display_name
+        FROM ADMIN_POSITION_POLICY
+        WHERE is_active = 1
+        ORDER BY sort_order ASC
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         실효 권한 코드 목록
+    ══════════════════════════════════════════ -->
+
+    <select id="findAllPermissionCodePolicies" resultType="org.triptogether.superAdmin.vo.SuperAdminPermissionCodePolicyVO">
+        SELECT admin_permission_code, display_name, description
+        FROM ADMIN_PERMISSION_CODE_POLICY
+        WHERE is_active = 1
+        ORDER BY priority DESC
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         전체 관리자 목록 (상급자 선택용)
+    ══════════════════════════════════════════ -->
+
+    <select id="findAllAdmins" resultMap="memberRM">
+        SELECT user_idx, nickname, admin_title, admin_department
+        FROM USERS
+        WHERE user_role = 'ADMIN'
+        ORDER BY nickname ASC
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         급여/역량 현황 일람표
+    ══════════════════════════════════════════ -->
+
+    <select id="findAllForSalaryTable" resultMap="memberRM">
+        SELECT u.user_idx, u.nickname, u.admin_department, u.admin_team,
+               u.admin_position_code, u.admin_title, u.admin_rank,
+               u.admin_seniority, u.admin_tier, u.admin_level,
+               u.admin_band, u.admin_grade, u.admin_step,
+               u.admin_permission_code,
+               m.nickname AS manager_nickname
+        FROM USERS u
+        LEFT JOIN USERS m ON u.admin_manager = m.user_idx
+        WHERE u.user_role = 'ADMIN'
+        ORDER BY u.admin_department ASC, u.nickname ASC
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         통계: 분포 집계
+    ══════════════════════════════════════════ -->
+
+    <select id="getStatsByPosition" resultType="org.triptogether.superAdmin.vo.SuperAdminStatsVO">
+        SELECT COALESCE(admin_position_code, '미지정') AS label, COUNT(*) AS count
+        FROM USERS
+        WHERE user_role = 'ADMIN'
+        GROUP BY admin_position_code
+        ORDER BY count DESC
+    </select>
+
+    <select id="getStatsByPermissionCode" resultType="org.triptogether.superAdmin.vo.SuperAdminStatsVO">
+        SELECT COALESCE(admin_permission_code, '미지정') AS label, COUNT(*) AS count
+        FROM USERS
+        WHERE user_role = 'ADMIN'
+        GROUP BY admin_permission_code
+        ORDER BY count DESC
+    </select>
+
+    <select id="getStatsByTier" resultType="org.triptogether.superAdmin.vo.SuperAdminStatsVO">
+        SELECT COALESCE(admin_tier, '미지정') AS label, COUNT(*) AS count
+        FROM USERS
+        WHERE user_role = 'ADMIN'
+        GROUP BY admin_tier
+        ORDER BY count DESC
+    </select>
+
+    <select id="getStatsByDepartment" resultType="org.triptogether.superAdmin.vo.SuperAdminStatsVO">
+        SELECT COALESCE(admin_department, '미지정') AS label, COUNT(*) AS count
+        FROM USERS
+        WHERE user_role = 'ADMIN'
+        GROUP BY admin_department
+        ORDER BY count DESC
+    </select>
+
+    <select id="countAllAdmins" resultType="int">
+        SELECT COUNT(*) FROM USERS WHERE user_role = 'ADMIN'
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         조직/직무 정보 수정
+    ══════════════════════════════════════════ -->
+
+    <update id="updateAdminInfo">
+        UPDATE USERS SET
+            admin_organization  = #{adminOrganization},
+            admin_division      = #{adminDivision},
+            admin_department    = #{adminDepartment},
+            admin_unit          = #{adminUnit},
+            admin_team          = #{adminTeam},
+            admin_location      = #{adminLocation},
+            admin_track         = #{adminTrack},
+            admin_family        = #{adminFamily},
+            admin_function      = #{adminFunction},
+            admin_discipline    = #{adminDiscipline},
+            admin_role          = #{adminRole},
+            admin_position      = #{adminPosition},
+            admin_position_code = #{adminPositionCode},
+            admin_title         = #{adminTitle},
+            admin_rank          = #{adminRank},
+            admin_seniority     = #{adminSeniority},
+            admin_tier          = #{adminTier},
+            admin_level         = #{adminLevel},
+            admin_band          = #{adminBand},
+            admin_grade         = #{adminGrade},
+            admin_step          = #{adminStep},
+            admin_responsibility = #{adminResponsibility},
+            admin_permission    = #{adminPermission},
+            admin_permission_code = #{adminPermissionCode},
+            admin_manager       = #{adminManager}
+        WHERE user_idx = #{userIdx}
+    </update>
+
+</mapper>

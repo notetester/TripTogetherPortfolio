@@ -192,10 +192,6 @@ public interface CommunityMapper {
     // 여러 댓글 한번에 소프트 딜리트
     void bulkDeleteComments(@Param("commentIds") List<Long> commentIds);
 
-    // ===== 오늘 인기 게시글 =====
-    // 오늘 작성된 게시글 중 좋아요 순 상위 목록 조회
-    List<CommunityPostDto> selectTodayPopularList();
-
     // ===== 인기 게시글 (전체 기간) =====
     // 좋아요 순 상위 목록 조회 (limit 지정)
     List<CommunityPostDto> selectPopularList(@Param("limit") int limit);
