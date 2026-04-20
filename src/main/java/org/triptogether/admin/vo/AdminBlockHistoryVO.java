@@ -3,6 +3,8 @@ package org.triptogether.admin.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Data
 public class AdminBlockHistoryVO {
@@ -30,5 +32,23 @@ public class AdminBlockHistoryVO {
     private String rangeStartIp;
     private String rangeEndIp;
     private Long ipBlockBatchIdx;
+    private String batchCode;
+    private String batchName;
     private LocalDateTime listSyncedAt;
+
+    public Date getBlockedAtDate() {
+        return blockedAt == null ? null : Date.from(blockedAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getReleasedAtDate() {
+        return releasedAt == null ? null : Date.from(releasedAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getExpiresAtDate() {
+        return expiresAt == null ? null : Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getListSyncedAtDate() {
+        return listSyncedAt == null ? null : Date.from(listSyncedAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
 }
