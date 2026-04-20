@@ -3,6 +3,8 @@ package org.triptogether.admin.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Data
 public class AdminIpBlockBatchVO {
@@ -21,4 +23,18 @@ public class AdminIpBlockBatchVO {
     private LocalDateTime updatedAt;
     private long totalRuleCount;
     private long activeRuleCount;
+    private long effectiveRuleCount;
+    private long expiredRuleCount;
+
+    public String getActiveLabel() {
+        return active ? "ACTIVE" : "INACTIVE";
+    }
+
+    public Date getCreatedAtDate() {
+        return createdAt == null ? null : Date.from(createdAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getUpdatedAtDate() {
+        return updatedAt == null ? null : Date.from(updatedAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
 }
