@@ -6,7 +6,6 @@
 <body>
 <div class="chat-wrap">
 
-    <!-- 사이드바 -->
     <aside class="chat-side">
         <div class="side-header">
             <div class="ai-avatar">✈️</div>
@@ -33,14 +32,12 @@
         <button class="reset-btn" onclick="resetChat()">🗑️ 대화 초기화</button>
     </aside>
 
-    <!-- 메인 채팅 영역 -->
     <main class="chat-main">
         <div class="chat-header">
             <h2>✈️ AI 여행 어시스턴트</h2>
             <span class="chat-sub">여행에 관한 무엇이든 물어보세요</span>
         </div>
 
-        <!-- 메시지 목록 -->
         <div class="chat-body" id="chatBody">
             <div class="msg-row ai">
                 <div class="msg-avatar">✈️</div>
@@ -53,16 +50,15 @@
             </div>
         </div>
 
-        <!-- 입력 영역 -->
         <div class="chat-input-wrap">
             <div class="chat-input-inner">
                 <textarea
-                    id="chatInput"
-                    class="chat-input"
-                    placeholder="여행에 관해 궁금한 것을 입력하세요... (Enter로 전송, Shift+Enter로 줄바꿈)"
-                    rows="1"
-                    onkeydown="handleKey(event)"
-                    oninput="autoResize(this)"
+                        id="chatInput"
+                        class="chat-input"
+                        placeholder="여행에 관해 궁금한 것을 입력하세요... (Enter로 전송, Shift+Enter로 줄바꿈)"
+                        rows="1"
+                        onkeydown="handleKey(event)"
+                        oninput="autoResize(this)"
                 ></textarea>
                 <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                     <span id="sendIcon">➤</span>
@@ -81,6 +77,7 @@
 
     async function sendMessage() {
         if (isLoading) return;
+
         const input = document.getElementById('chatInput');
         const message = input.value.trim();
         if (!message) return;
@@ -89,6 +86,7 @@
         autoResize(input);
         appendMessage('user', message);
         setLoading(true);
+        const loadingId = appendLoadingBubble();
 
         try {
             const res = await fetch(CTX + '/assistant/chat', {
@@ -96,9 +94,36 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({message})
             });
-            const data = await res.json();
+
+            const rawText = await res.text();
+            console.log('[assistant] status=', res.status);
+            console.log('[assistant] raw response=', rawText);
+
+            let data;
+            try {
+                data = JSON.parse(rawText);
+            } catch (parseError) {
+                removeLoadingBubble(loadingId);
+                appendMessage('ai', '❌ 서버 응답을 해석하지 못했습니다.\nHTML 오류 페이지가 반환되었을 가능성이 있습니다.');
+                return;
+            }
+
+            removeLoadingBubble(loadingId);
+
+            if (!res.ok) {
+                appendMessage('ai', data.answer || ('❌ 서버 오류가 발생했습니다. status=' + res.status));
+                return;
+            }
+
+            if (!data.success) {
+                appendMessage('ai', data.answer || '❌ 요청 처리 중 오류가 발생했습니다.');
+                return;
+            }
+
             appendMessage('ai', data.answer || '응답을 받지 못했습니다.');
         } catch (e) {
+            console.error('[assistant] fetch error=', e);
+            removeLoadingBubble(loadingId);
             appendMessage('ai', '❌ 네트워크 오류가 발생했습니다.');
         } finally {
             setLoading(false);
@@ -112,7 +137,14 @@
 
     async function resetChat() {
         if (!confirm('대화 내용을 모두 초기화할까요?')) return;
-        await fetch(CTX + '/assistant/reset', {method: 'POST'});
+
+        try {
+            const res = await fetch(CTX + '/assistant/reset', {method: 'POST'});
+            console.log('[assistant] reset status=', res.status);
+        } catch (e) {
+            console.error('[assistant] reset error=', e);
+        }
+
         const body = document.getElementById('chatBody');
         body.innerHTML =
             '<div class="msg-row ai">' +
@@ -131,23 +163,52 @@
                 '<div class="msg-avatar">✈️</div>' +
                 '<div class="msg-bubble">' + formatText(text) + '</div>';
         } else {
-            row.innerHTML =
-                '<div class="msg-bubble">' + escapeHtml(text) + '</div>';
+            row.innerHTML = '<div class="msg-bubble">' + escapeHtml(text) + '</div>';
         }
 
         body.appendChild(row);
         body.scrollTop = body.scrollHeight;
+        return row;
+    }
+
+    function appendLoadingBubble() {
+        return appendMessage('ai', '답변을 작성하는 중입니다...');
+    }
+
+    function removeLoadingBubble(node) {
+        if (node && node.parentNode) {
+            node.parentNode.removeChild(node);
+        }
+    }
+
+    function setLoading(flag) {
+        isLoading = flag;
+
+        const btn = document.getElementById('sendBtn');
+        const icon = document.getElementById('sendIcon');
+        const input = document.getElementById('chatInput');
+
+        btn.disabled = flag;
+        input.disabled = flag;
+        icon.textContent = flag ? '...' : '➤';
+
+        if (!flag) input.focus();
     }
 
     function formatText(text) {
         return text
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\n/g, '<br>');
     }
 
     function escapeHtml(text) {
-        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
     }
 
     function handleKey(e) {

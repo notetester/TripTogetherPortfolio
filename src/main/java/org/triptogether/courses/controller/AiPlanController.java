@@ -1,4 +1,4 @@
-package org.triptogether.ai.controller;
+package org.triptogether.courses.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.triptogether.ai.dto.AiPlanRequestDTO;
-import org.triptogether.ai.dto.AiPlanResponseDTO;
-import org.triptogether.ai.service.AiPlanService;
+import org.triptogether.courses.service.AiPlanService;
 import org.triptogether.auth.vo.UsersVO;
 
 @Controller
