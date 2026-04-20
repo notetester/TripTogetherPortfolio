@@ -32,6 +32,9 @@
     <resultMap id="ipBlockRM" type="org.triptogether.admin.vo.AdminIpBlockVO">
         <id property="ipBlocklistIdx" column="ip_blocklist_idx"/>
         <result property="ipAddress" column="ip_address"/>
+        <result property="blockRequestId" column="block_request_id"/>
+        <result property="sourceHistoryBlockIdx" column="source_history_block_idx"/>
+        <result property="sourceBlocklistIdx" column="source_blocklist_idx"/>
         <result property="blockTargetKey" column="block_target_key"/>
         <result property="matchType" column="match_type"/>
         <result property="cidrNotation" column="cidr_notation"/>
@@ -60,6 +63,8 @@
         <result property="ipBlockBatchIdx" column="ip_block_batch_idx"/>
         <result property="batchCode" column="batch_code"/>
         <result property="batchName" column="batch_name"/>
+        <result property="batchActive" column="batch_active"/>
+        <result property="effectiveStatus" column="effective_status"/>
     </resultMap>
 
     <resultMap id="blockHistoryRM" type="org.triptogether.admin.vo.AdminBlockHistoryVO">
@@ -87,6 +92,8 @@
         <result property="rangeStartIp" column="range_start_ip"/>
         <result property="rangeEndIp" column="range_end_ip"/>
         <result property="ipBlockBatchIdx" column="ip_block_batch_idx"/>
+        <result property="batchCode" column="batch_code"/>
+        <result property="batchName" column="batch_name"/>
         <result property="listSyncedAt" column="list_synced_at"/>
     </resultMap>
 
@@ -106,6 +113,8 @@
         <result property="updatedAt" column="updated_at"/>
         <result property="totalRuleCount" column="total_rule_count"/>
         <result property="activeRuleCount" column="active_rule_count"/>
+        <result property="effectiveRuleCount" column="effective_rule_count"/>
+        <result property="expiredRuleCount" column="expired_rule_count"/>
     </resultMap>
 
     <sql id="keywordWhere">
@@ -187,6 +196,9 @@
         <if test="blockType != null and blockType != '' and blockType != 'ALL'">
             AND x.block_type = #{blockType}
         </if>
+        <if test="batchId != null">
+            AND h.ip_block_batch_idx = #{batchId}
+        </if>
         <if test="keyword != null and keyword != ''">
             AND (
                 u.user_id LIKE CONCAT('%', #{keyword}, '%')
@@ -205,6 +217,9 @@
         SELECT
             ip.ip_blocklist_idx,
             ip.ip_address,
+            ip.block_request_id,
+            ip.source_history_block_idx,
+            ip.source_blocklist_idx,
             ip.block_target_key,
             ip.match_type,
             ip.cidr_notation,
@@ -232,7 +247,14 @@
             ip.priority,
             ip.ip_block_batch_idx,
             b.batch_code,
-            b.batch_name
+            b.batch_name,
+            COALESCE(b.is_active, 1) AS batch_active,
+            CASE
+                WHEN ip.is_active = 0 THEN 'RULE_INACTIVE'
+                WHEN ip.expires_at IS NOT NULL AND ip.expires_at &lt;= NOW() THEN 'EXPIRED'
+                WHEN ip.ip_block_batch_idx IS NOT NULL AND COALESCE(b.is_active, 0) = 0 THEN 'BATCH_INACTIVE'
+                ELSE 'APPLIED'
+            END AS effective_status
         FROM IP_BLOCKLIST ip
         LEFT JOIN USERS bu ON bu.user_idx = ip.blocked_by_user_idx
         LEFT JOIN USERS ru ON ru.user_idx = ip.released_by_user_idx
@@ -252,6 +274,35 @@
         </if>
         <if test="blockType != null and blockType != '' and blockType != 'ALL'">
             AND ip.block_type = #{blockType}
+        </if>
+        <if test="category != null and category != '' and category != 'ALL'">
+            AND ip.block_category = #{category}
+        </if>
+        <if test="batchId != null">
+            AND ip.ip_block_batch_idx = #{batchId}
+        </if>
+        <if test="effectiveStatus != null and effectiveStatus != '' and effectiveStatus != 'ALL'">
+            <choose>
+                <when test="effectiveStatus == 'APPLIED'">
+                    AND ip.is_active = 1
+                    AND (ip.expires_at IS NULL OR ip.expires_at &gt; NOW())
+                    AND (ip.ip_block_batch_idx IS NULL OR COALESCE(b.is_active, 0) = 1)
+                </when>
+                <when test="effectiveStatus == 'RULE_INACTIVE'">
+                    AND ip.is_active = 0
+                </when>
+                <when test="effectiveStatus == 'BATCH_INACTIVE'">
+                    AND ip.is_active = 1
+                    AND (ip.expires_at IS NULL OR ip.expires_at &gt; NOW())
+                    AND ip.ip_block_batch_idx IS NOT NULL
+                    AND COALESCE(b.is_active, 0) = 0
+                </when>
+                <when test="effectiveStatus == 'EXPIRED'">
+                    AND ip.is_active = 1
+                    AND ip.expires_at IS NOT NULL
+                    AND ip.expires_at &lt;= NOW()
+                </when>
+            </choose>
         </if>
         <if test="keyword != null and keyword != ''">
             AND (
@@ -297,11 +348,14 @@
             h.range_start_ip,
             h.range_end_ip,
             h.ip_block_batch_idx,
+            b.batch_code,
+            b.batch_name,
             h.list_synced_at
         FROM USER_BLOCK_HISTORY h
         LEFT JOIN USERS u ON u.user_idx = h.user_idx
         LEFT JOIN USERS bu ON bu.user_idx = h.blocked_by_user_idx
         LEFT JOIN USERS ru ON ru.user_idx = h.released_by_user_idx
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = h.ip_block_batch_idx
         WHERE 1=1
         <if test="scope != null and scope != '' and scope != 'ALL'">
             AND h.block_scope = #{scope}
@@ -311,6 +365,9 @@
         </if>
         <if test="blockType != null and blockType != '' and blockType != 'ALL'">
             AND h.block_type = #{blockType}
+        </if>
+        <if test="batchId != null">
+            AND h.ip_block_batch_idx = #{batchId}
         </if>
         <if test="keyword != null and keyword != ''">
             AND (
@@ -322,6 +379,8 @@
                 OR h.cidr_notation LIKE CONCAT('%', #{keyword}, '%')
                 OR h.range_start_ip LIKE CONCAT('%', #{keyword}, '%')
                 OR h.range_end_ip LIKE CONCAT('%', #{keyword}, '%')
+                OR b.batch_name LIKE CONCAT('%', #{keyword}, '%')
+                OR b.batch_code LIKE CONCAT('%', #{keyword}, '%')
             )
         </if>
         ORDER BY h.blocked_at DESC, h.block_idx DESC
@@ -344,7 +403,19 @@
             b.created_at,
             b.updated_at,
             (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx) AS total_rule_count,
-            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.is_active = 1) AS active_rule_count
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.is_active = 1) AS active_rule_count,
+            (SELECT COUNT(*)
+             FROM IP_BLOCKLIST ip
+             WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx
+               AND b.is_active = 1
+               AND ip.is_active = 1
+               AND (ip.expires_at IS NULL OR ip.expires_at &gt; NOW())) AS effective_rule_count,
+            (SELECT COUNT(*)
+             FROM IP_BLOCKLIST ip
+             WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx
+               AND ip.is_active = 1
+               AND ip.expires_at IS NOT NULL
+               AND ip.expires_at &lt;= NOW()) AS expired_rule_count
         FROM IP_BLOCK_BATCH b
         LEFT JOIN USERS cu ON cu.user_idx = b.created_by_user_idx
         LEFT JOIN USERS uu ON uu.user_idx = b.updated_by_user_idx
@@ -383,6 +454,9 @@
         SELECT
             ip.ip_blocklist_idx,
             ip.ip_address,
+            ip.block_request_id,
+            ip.source_history_block_idx,
+            ip.source_blocklist_idx,
             ip.block_target_key,
             ip.match_type,
             ip.cidr_notation,

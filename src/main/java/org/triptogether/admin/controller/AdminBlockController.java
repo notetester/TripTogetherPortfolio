@@ -126,7 +126,9 @@ public class AdminBlockController {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.toggleIpBlockBatch(ipBlockBatchIdx, active, loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
-            result.put("message", active ? "배치가 활성화되었습니다." : "배치가 비활성화되었습니다.");
+            result.put("message", active
+                    ? "배치가 활성화되었습니다. 연결된 활성 규칙이 다시 차단 판정에 반영됩니다."
+                    : "배치가 비활성화되었습니다. 연결된 활성 규칙은 차단 판정에서 제외됩니다.");
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());

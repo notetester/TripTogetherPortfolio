@@ -513,6 +513,24 @@
 .mp-badge-public   { background: #dcfce7; color: #15803d; }
 .mp-badge-private  { background: #f3f4f6; color: #6b7280; }
 .mp-badge-ai       { background: #ede9fe; color: #6d28d9; }
+.mp-badge-flight   { background: #dbeafe; color: #1d4ed8; }
+
+/* ── 항공권 예매 정보 ── */
+.mp-flight-booking-item {
+    align-items: flex-start;
+}
+
+.mp-flight-booking-no {
+    margin-left: 8px;
+    color: var(--gray-400);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mp-flight-booking-meta {
+    margin-top: 5px;
+    gap: 8px 12px;
+}
 
 /* ── 리뷰 별점 ── */
 .mp-review-stars {
@@ -821,7 +839,7 @@
 
 /* ── 반응형 ── */
 @media (max-width: 560px) {
-    .mp-info-grid { grid-template-columns: 1fr; }
+.mp-info-grid { grid-template-columns: 1fr; }
     .mp-info-item:nth-child(odd) { border-right: none; }
     .mp-info-item:nth-last-child(-n+2) { border-bottom: 1px solid var(--gray-100); }
     .mp-info-item:last-child { border-bottom: none; }
@@ -832,4 +850,349 @@
     .mp-stats-item:nth-child(2) { border-right: none; }
     .mp-stats-item:nth-child(1),
     .mp-stats-item:nth-child(2) { border-bottom: 1px solid var(--gray-100); }
+}
+
+.mp-item-alert {
+  margin: 0 0 16px;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-weight: 700;
+}
+
+.mp-item-alert--success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.mp-item-alert--error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.mp-item-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mp-item-section-list {
+  display: grid;
+  gap: 20px;
+}
+
+.mp-item-section {
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 18px;
+  background: #f8fafc;
+}
+
+.mp-item-section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.mp-item-section-head > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb, #0891b2);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.mp-item-section-head h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+}
+
+.mp-item-section-head p {
+  margin: 4px 0 0;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.mp-item-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.mp-item-card.is-equipped {
+  border-color: #38bdf8;
+  box-shadow: 0 10px 24px rgba(14, 165, 233, 0.16);
+}
+
+.mp-item-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 104px;
+  padding: 18px;
+  background: #f8fafc;
+}
+
+.mp-item-preview span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  max-width: 100%;
+  border-radius: 999px;
+  padding: 9px 15px;
+  font-size: 13px;
+  font-weight: 900;
+  word-break: break-word;
+}
+
+.mp-item-preview.preview-nick-sky span { color: #0284c7; background: #e0f2fe; }
+.mp-item-preview.preview-nick-sunset span { color: #ea580c; background: #ffedd5; }
+.mp-item-preview.preview-nick-mint span { color: #059669; background: #d1fae5; }
+.mp-item-preview.preview-nick-rose span { color: #e11d48; background: #ffe4e6; }
+
+.mp-item-preview.preview-glow-gold span {
+  color: #92400e;
+  background: #fffbeb;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.75);
+}
+
+.mp-item-preview.preview-border-neon span {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18);
+}
+
+.mp-item-preview.preview-glow-rainbow span {
+  color: #fff;
+  background: linear-gradient(135deg, #ef4444, #f59e0b, #10b981, #3b82f6, #8b5cf6);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.45);
+}
+
+.mp-item-preview.preview-badge-green span,
+.mp-item-preview.preview-badge-orange span,
+.mp-item-preview.preview-badge-navy span,
+.mp-item-preview.preview-badge-purple span {
+  color: #fff;
+  border-radius: 14px;
+  min-width: 62px;
+}
+
+.mp-item-preview.preview-badge-green span { background: linear-gradient(135deg, #16a34a, #86efac); }
+.mp-item-preview.preview-badge-orange span { background: linear-gradient(135deg, #ea580c, #fdba74); }
+.mp-item-preview.preview-badge-navy span { background: linear-gradient(135deg, #0f172a, #38bdf8); }
+.mp-item-preview.preview-badge-purple span { background: linear-gradient(135deg, #7c3aed, #f0abfc); }
+
+.mp-item-preview.preview-bubble-pastel span,
+.mp-item-preview.preview-bubble-map span,
+.mp-item-preview.preview-bubble-sky span {
+  border-radius: 18px 18px 18px 4px;
+}
+
+.mp-item-preview.preview-bubble-pastel span {
+  color: #9d174d;
+  background: #fce7f3;
+}
+
+.mp-item-preview.preview-bubble-map span {
+  color: #166534;
+  background: #dcfce7;
+  border: 1px dashed #22c55e;
+}
+
+.mp-item-preview.preview-bubble-sky span {
+  color: #075985;
+  background: linear-gradient(135deg, #e0f2fe, #fff);
+  box-shadow: inset 0 0 0 1px #bae6fd;
+}
+
+.mp-item-body {
+  flex: 1;
+  padding: 14px;
+}
+
+.mp-item-type {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mp-item-body strong {
+  display: block;
+  margin-top: 10px;
+  color: #0f172a;
+  font-size: 16px;
+}
+
+.mp-item-body p {
+  margin: 8px 0 0;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.mp-item-date {
+  margin-top: 10px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mp-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.mp-item-actions form {
+  margin: 0;
+}
+
+.mp-item-btn,
+.mp-item-shop-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 9px 13px;
+  background: linear-gradient(135deg, #2563eb, #0891b2);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mp-item-btn--ghost {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.mp-equipped-badge {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mp-item-shop-btn {
+  margin-top: 14px;
+}
+
+@media (max-width: 900px) {
+  .mp-item-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .mp-item-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── 마이페이지 전체 정렬 보정 ──
+   기존 카드별 padding/height가 서로 달라 섹션이 들쭉날쭉해 보이는 부분을 보정한다. */
+.mp-inner {
+  max-width: 1080px;
+}
+
+.mp-card {
+  margin-bottom: 24px;
+}
+
+.mp-card-head {
+  min-height: 64px;
+  box-sizing: border-box;
+}
+
+.mp-info-item {
+  min-height: 72px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mp-info-value {
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.mp-notif-list {
+  padding: 16px 24px 20px;
+}
+
+.mp-currency-item,
+.mp-stats-item {
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.mp-currency-item {
+  min-height: 132px;
+}
+
+.mp-stats-item {
+  min-height: 118px;
+}
+
+.mp-item-alert {
+  margin: 16px 24px 0;
+}
+
+.mp-item-section-list {
+  padding: 20px 24px 24px;
+}
+
+.mp-item-card {
+  min-height: 100%;
+}
+
+.mp-item-actions {
+  margin-top: auto;
+}
+
+@media (max-width: 640px) {
+  .mp-inner {
+    padding: 0 16px;
+  }
+
+  .mp-card-head {
+    padding: 16px 18px;
+  }
+
+  .mp-item-section-list {
+    padding: 16px;
+  }
+
+  .mp-currency-grid,
+  .mp-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mp-currency-item,
+  .mp-stats-item {
+    border-right: none;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .mp-currency-item:last-child,
+  .mp-stats-item:last-child {
+    border-bottom: none;
+  }
 }

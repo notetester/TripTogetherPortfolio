@@ -103,7 +103,10 @@
                                     <div class="comm-today-card-body ${isBlurred ? 'report-blurred' : ''}">
                                         <div class="comm-today-card-title">${post.title}</div>
                                         <div class="comm-today-card-footer">
-                                            <span class="comm-today-card-author">${post.nickname}</span>
+                                            <span class="comm-today-card-author tt-nickname ${post.nicknameColorClass} ${post.nicknameEffectClass}">${post.nickname}</span>
+                                            <c:if test="${not empty post.profileBadgeLabel}">
+                                                <span class="tt-profile-badge ${post.profileBadgeClass}">${post.profileBadgeLabel}</span>
+                                            </c:if>
                                             <span class="comm-today-card-stats">
                                                 &#10084; ${post.likeCount} &nbsp; &#128172; ${post.commentCount}
                                             </span>
@@ -372,7 +375,10 @@
                                                 <c:otherwise>ME</c:otherwise>
                                             </c:choose>
                                         </div>
-                                        <span class="post-author-name">${post.nickname}</span>
+                                        <span class="post-author-name tt-nickname ${post.nicknameColorClass} ${post.nicknameEffectClass}">${post.nickname}</span>
+                                        <c:if test="${not empty post.profileBadgeLabel}">
+                                            <span class="tt-profile-badge ${post.profileBadgeClass}">${post.profileBadgeLabel}</span>
+                                        </c:if>
                                         <span class="post-date">
               <fmt:formatDate value="${post.createdAt}" pattern="yyyy-MM-dd"/>
             </span>

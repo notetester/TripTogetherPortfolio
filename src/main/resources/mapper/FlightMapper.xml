@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.flight.mapper.FlightMapper">
+
+    <insert id="insertFlightPurchase" useGeneratedKeys="true" keyProperty="flightPurchaseIdx" keyColumn="flight_purchase_idx">
+        INSERT INTO FLIGHT_PURCHASE_SIMULATION (
+            purchase_no, user_idx, spot_idx, offer_id, provider_type,
+            airline_name, flight_no, origin_airport_code, destination_airport_code,
+            departure_time, arrival_time, total_price, used_cash, used_mileage,
+            status, created_at
+        ) VALUES (
+            #{purchaseNo}, #{userIdx}, #{spotIdx}, #{offerId}, #{providerType},
+            #{airlineName}, #{flightNo}, #{originAirportCode}, #{destinationAirportCode},
+            #{departureTime}, #{arrivalTime}, #{totalPrice}, #{usedCash}, #{usedMileage},
+            #{status}, NOW()
+        )
+    </insert>
+
+</mapper>

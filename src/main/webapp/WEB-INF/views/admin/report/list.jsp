@@ -130,6 +130,9 @@
                                     <c:when test="${r.targetType eq 'user'}">유저</c:when>
                                     <c:otherwise>${r.targetType}</c:otherwise>
                                 </c:choose>
+                                <c:if test="${r.targetStatus eq 'DELETED'}">
+                                    <span style="font-size:10px;color:#f87171;margin-left:4px;">(삭제됨)</span>
+                                </c:if>
                             </div>
                             <div class="mem-uid">#${r.targetId}</div>
                         </td>
@@ -267,7 +270,7 @@ function openAuthorModal(el) {
         '<div style="display:flex;flex-direction:column;gap:10px;">'
       + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
       + '    <span style="color:#64748b;font-size:12px;">닉네임</span>'
-      + '    <span style="color:#e2e8f0;font-size:13px;font-weight:600;">' + escHtml(nickname) + '</span>'
+      + '    <span class="adm-modal-nickname">' + escHtml(nickname) + '</span>'
       + '  </div>'
       + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
       + '    <span style="color:#64748b;font-size:12px;">아이디</span>'

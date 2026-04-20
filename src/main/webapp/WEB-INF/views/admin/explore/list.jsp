@@ -124,7 +124,7 @@
                             </c:choose>
                         </td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}" style="color:#e2e8f0;text-decoration:none;font-size:13px;font-weight:600;">${fn:escapeXml(spot.name)}</a>
+                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}" class="adm-link-title" style="font-weight:600;">${fn:escapeXml(spot.name)}</a>
                             <div style="font-size:11px;color:#64748b;margin-top:4px;">${fn:escapeXml(spot.address)}</div>
                         </td>
                         <td>

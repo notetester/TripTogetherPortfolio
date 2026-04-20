@@ -663,8 +663,8 @@ async function openDetail(userIdx) {
 
     document.getElementById('modalBody').innerHTML = ''
         + '<div class="adm-tabs">'
-        + '<button class="adm-tab active" onclick="switchTab('info', this)">기본 정보</button>'
-        + '<button class="adm-tab" onclick="switchTab('hist', this)">로그인 이력 (' + h.length + ')</button>'
+        + '<button class="adm-tab active" onclick="switchTab(\'info\', this)">기본 정보</button>'
+        + '<button class="adm-tab" onclick="switchTab(\'hist\', this)">로그인 이력 (' + h.length + ')</button>'
         + '</div>'
         + '<div id="tab-info"></div>'
         + '<div id="tab-hist" style="display:none;"></div>';

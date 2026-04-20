@@ -6,6 +6,7 @@ import org.triptogether.myPage.mapper.MyPageMapper;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPageFlightBookingDto;
 import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
 import org.triptogether.myPage.vo.MyPageReviewDto;
@@ -76,6 +77,18 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public int getMyPlanCount(Long userIdx) {
         return myPageMapper.selectMyPlanCount(userIdx);
+    }
+
+    // ===== 항공권 예매 =====
+
+    @Override
+    public List<MyPageFlightBookingDto> getMyFlightBookingList(Long userIdx) {
+        return myPageMapper.selectMyFlightBookingList(userIdx);
+    }
+
+    @Override
+    public int getMyFlightBookingCount(Long userIdx) {
+        return myPageMapper.selectMyFlightBookingCount(userIdx);
     }
 
     // ===== 알림 =====

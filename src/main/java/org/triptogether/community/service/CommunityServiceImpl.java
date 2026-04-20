@@ -10,6 +10,8 @@ import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.community.vo.*;
 import org.triptogether.config.IpBlockMapper;
 import org.triptogether.explore.service.SpotTextTranslationService;
+import org.triptogether.moderation.service.ModerationPolicyService;
+import org.triptogether.moderation.vo.ContentModerationPolicyVO;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.reward.service.RewardService;
@@ -28,6 +30,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final IpBlockMapper ipBlockMapper;
     private final SpotTextTranslationService spotTextTranslationService;
     private final RewardService rewardService;
+    private final ModerationPolicyService moderationPolicyService;
 
     // ===== 목록 =====
 
@@ -155,9 +158,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional
     public Long writePost(CommunityWriteDto writeDto, Long userIdx) {
 
-        // 도배 방지: 5분 내 3개 이상이면 거부
-        if (communityMapper.countRecentPostsByUser(userIdx, 5) >= 3) {
-            throw new IllegalStateException("5분 내 게시글을 3개 이상 작성할 수 없습니다.");
+        ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
+        if (communityMapper.countRecentPostsByUser(userIdx, policy.getPostWindowMinutes()) >= policy.getPostMaxCount()) {
+            throw new IllegalStateException(
+                    policy.getPostWindowMinutes() + "분 내 게시글을 " + policy.getPostMaxCount() + "개 이상 작성할 수 없습니다.");
         }
 
         // 1. COMMUNITY_POST INSERT
@@ -364,9 +368,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     @Transactional
     public Long addComment(Long postId, Long userIdx, String content) {
-        // 도배 방지: 1분 내 5개 이상이면 거부
-        if (communityMapper.countRecentCommentsByUser(userIdx, 1) >= 5) {
-            throw new IllegalStateException("1분 내 댓글을 5개 이상 작성할 수 없습니다.");
+        ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
+        if (communityMapper.countRecentCommentsByUser(userIdx, policy.getCommentWindowMinutes()) >= policy.getCommentMaxCount()) {
+            throw new IllegalStateException(
+                    policy.getCommentWindowMinutes() + "분 내 댓글을 " + policy.getCommentMaxCount() + "개 이상 작성할 수 없습니다.");
         }
         CommunityCommentDto dto = new CommunityCommentDto();
         dto.setPostId(postId);
@@ -414,9 +419,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     @Transactional
     public Long addReply(Long postId, Long userIdx, String content, Long parentCommentId) {
-        // 도배 방지: 댓글+대댓글 합산 1분 내 5개 이상이면 거부
-        if (communityMapper.countRecentCommentsByUser(userIdx, 1) >= 5) {
-            throw new IllegalStateException("1분 내 댓글을 5개 이상 작성할 수 없습니다.");
+        ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
+        if (communityMapper.countRecentCommentsByUser(userIdx, policy.getCommentWindowMinutes()) >= policy.getCommentMaxCount()) {
+            throw new IllegalStateException(
+                    policy.getCommentWindowMinutes() + "분 내 댓글을 " + policy.getCommentMaxCount() + "개 이상 작성할 수 없습니다.");
         }
         CommunityCommentDto dto = new CommunityCommentDto();
         dto.setPostId(postId);

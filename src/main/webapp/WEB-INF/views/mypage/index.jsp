@@ -22,6 +22,72 @@
 <%@ include file="../common/header.jsp" %>
 <body>
 
+<%-- ── 레벨 바 · 등급 바 공통 추가 스타일 ── --%>
+<style>
+    /* ── 공통: 뱃지 + 바 가로 한 줄 레이아웃 ── */
+    .mp-grade-row {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+    /* 뱃지 크기 통일: LEVEL과 BRONZE 등 모든 뱃지가 동일한 너비를 차지하도록 고정 */
+    .mp-grade-row .mp-grade-badge {
+        flex-shrink: 0;
+        min-width: 120px;        /* 가장 긴 뱃지(PLATINUM)에 맞춘 고정 너비 */
+        text-align: center;      /* 텍스트 가운데 정렬 */
+        box-sizing: border-box;
+    }
+    /* 바 영역이 남은 공간을 모두 차지 → 뱃지 너비가 같으면 바 길이도 자동으로 같아짐 */
+    .mp-grade-row .mp-level-wrap {
+        flex: 1;
+        min-width: 180px;
+    }
+
+    /* ── LEVEL 뱃지 (BRONZE 뱃지와 동일한 알약 스타일, 보라색 테마) ── */
+    .mp-badge-level {
+        background: #ede9fe;
+        color: #5b21b6;
+        border: 1.5px solid #c4b5fd;
+    }
+
+    /* ── 등급 바 섹션 ── */
+    .mp-grade-bar-section {
+        padding: 16px 24px 20px;
+    }
+
+    /* ── 등급 바 채움 색상 (금색 그라데이션) ── */
+    .mp-grade-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+        border-radius: 4px;
+        transition: width .4s ease;
+    }
+
+    /* ── 승급 예정 안내 (할당량 100% 달성 시) ── */
+    .mp-grade-promotion {
+        margin-top: 8px;
+        padding: 8px 14px;
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 8px;
+        text-align: center;
+        animation: mp-grade-pulse 2s ease-in-out infinite;
+    }
+    @keyframes mp-grade-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.75; }
+    }
+
+    /* ── 다음 등급 힌트 (바 미달성 시) ── */
+    .mp-grade-next-hint {
+        margin-top: 6px;
+        font-size: 11px;
+        color: var(--gray-400, #94a3b8);
+    }
+</style>
+
 <div class="mp-wrap">
 
     <%-- ══════════════════════════════════════════
@@ -101,38 +167,172 @@
                     <span class="mp-card-icon">🏅</span> 내 등급 &amp; 재화
                 </div>
             </div>
-            <%-- 등급 + 레벨/경험치 --%>
-            <div class="mp-grade-section">
-                <div class="mp-grade-badge-wrap">
-                    <span class="mp-grade-badge mp-grade-BRONZE">🥉 BRONZE</span>
-                    <span class="mp-grade-verified">✓ 인증 회원</span>
-                </div>
-                <div class="mp-level-wrap">
+            <%-- 레벨/경험치 바 (LEVEL 뱃지 + 바 가로 배치) --%>
+            <div class="mp-grade-bar-section">
+                <%-- LEVEL 뱃지 + 바를 가로 한 줄로 (등급 바와 동일한 구조) --%>
+                <div class="mp-grade-row">
+                    <%-- 왼쪽: LEVEL 뱃지 (BRONZE 뱃지와 동일한 알약 스타일) --%>
+                    <span class="mp-grade-badge mp-badge-level">⚡ LEVEL</span>
+                    <%-- 오른쪽: 레벨 경험치 바 --%>
+                    <div class="mp-level-wrap">
+                    <%--
+                        경험치 바 계산 로직:
+                        - currentLevelExp : 현재 레벨에 진입하기 위해 필요했던 누적 EXP (시작점)
+                        - nextLevelExp    : 다음 레벨에 진입하기 위해 필요한 누적 EXP (끝점)
+                        - user.expPoints  : 유저의 현재 누적 EXP
+                        - 바 퍼센트 = (현재EXP - 현재레벨시작EXP) / (다음레벨EXP - 현재레벨시작EXP) × 100
+                    --%>
+                    <c:set var="expInLevel" value="${user.expPoints - currentLevelExp}" />
+                    <c:set var="expNeeded" value="${nextLevelExp - currentLevelExp}" />
+                    <c:set var="expPercent" value="${expNeeded > 0 ? (expInLevel * 100 / expNeeded) : 100}" />
+                    <%-- 퍼센트가 100을 넘지 않도록 보정 --%>
+                    <c:if test="${expPercent > 100}"><c:set var="expPercent" value="100" /></c:if>
+                    <c:if test="${expPercent < 0}"><c:set var="expPercent" value="0" /></c:if>
+
                     <div class="mp-level-header">
-                        <span class="mp-level-label">Lv. 1</span>
-                        <span class="mp-level-xp">0 / 500 XP</span>
+                        <span class="mp-level-label">Lv. ${user.levelNo}</span>
+                        <span class="mp-level-xp">
+                            <fmt:formatNumber value="${user.expPoints}" pattern="#,##0" />
+                            /
+                            <fmt:formatNumber value="${nextLevelExp}" pattern="#,##0" /> XP
+                        </span>
                     </div>
                     <div class="mp-xp-bar">
-                        <div class="mp-xp-fill" style="width: 0%;"></div>
+                        <div class="mp-xp-fill" style="width: ${expPercent}%;"></div>
                     </div>
                 </div>
+                <%-- /mp-grade-row --%>
+                </div>
+            </div>
+
+            <%-- ── 등급 진행 바 ── --%>
+            <%--
+                등급 바 계산 로직:
+                - gradePolicies       : 활성 등급 정책 목록 (sort_order ASC: BRONZE→PLATINUM)
+                - currentMonthPayment : 당월 결제 총액 (이번 달 결제 → 다음 달 등급 산정 기준)
+                - 다음 등급의 min_monthly_payment → 바의 끝점
+                - 최고 등급이면 바 100%로 채움
+            --%>
+            <c:set var="currentGradeMin" value="0" />
+            <c:set var="nextGradeMin" value="0" />
+            <c:set var="nextGradeName" value="" />
+            <c:set var="nextGradeFound" value="false" />
+            <c:set var="isMaxGrade" value="true" />
+            <%-- 당월 결제액 기준으로 예상되는 등급 계산 --%>
+            <c:set var="expectedGrade" value="BRONZE" />
+
+            <%-- 등급 정책 순회: 현재 등급의 기준값 + 다음 등급 정보 + 예상 등급 --%>
+            <c:forEach var="gp" items="${gradePolicies}">
+                <c:if test="${gp.memberGrade eq user.memberGrade}">
+                    <c:set var="currentGradeMin" value="${gp.minMonthlyPayment}" />
+                </c:if>
+                <%-- 당월 결제액이 충족하는 가장 높은 등급 = 예상 등급 --%>
+                <c:if test="${currentMonthPayment >= gp.minMonthlyPayment}">
+                    <c:set var="expectedGrade" value="${gp.memberGrade}" />
+                </c:if>
+            </c:forEach>
+
+            <%-- 다음 등급 찾기: 현재 등급보다 기준이 높은 첫 번째 등급 --%>
+            <c:forEach var="gp" items="${gradePolicies}">
+                <c:if test="${!nextGradeFound && gp.minMonthlyPayment > currentGradeMin}">
+                    <c:set var="nextGradeMin" value="${gp.minMonthlyPayment}" />
+                    <c:set var="nextGradeName" value="${gp.memberGrade}" />
+                    <c:set var="nextGradeFound" value="true" />
+                    <c:set var="isMaxGrade" value="false" />
+                </c:if>
+            </c:forEach>
+
+            <%-- 등급 바 퍼센트 계산 --%>
+            <c:choose>
+                <c:when test="${isMaxGrade}">
+                    <c:set var="gradePercent" value="100" />
+                </c:when>
+                <c:otherwise>
+                    <c:set var="gradeRange" value="${nextGradeMin - currentGradeMin}" />
+                    <c:set var="gradeProgress" value="${currentMonthPayment - currentGradeMin}" />
+                    <c:set var="gradePercent" value="${gradeRange > 0 ? (gradeProgress * 100 / gradeRange) : 0}" />
+                    <c:if test="${gradePercent > 100}"><c:set var="gradePercent" value="100" /></c:if>
+                    <c:if test="${gradePercent < 0}"><c:set var="gradePercent" value="0" /></c:if>
+                </c:otherwise>
+            </c:choose>
+
+            <div class="mp-grade-bar-section">
+                <%-- 등급 뱃지 + 바를 가로로 나란히 배치 (레벨 바와 동일한 구조) --%>
+                <div class="mp-grade-row">
+                    <%-- 왼쪽: 등급 뱃지 --%>
+                    <span class="mp-grade-badge mp-grade-${user.memberGrade}">
+                        <c:choose>
+                            <c:when test="${user.memberGrade eq 'BRONZE'}">🥉 BRONZE</c:when>
+                            <c:when test="${user.memberGrade eq 'SILVER'}">🥈 SILVER</c:when>
+                            <c:when test="${user.memberGrade eq 'GOLD'}">🥇 GOLD</c:when>
+                            <c:when test="${user.memberGrade eq 'DIAMOND'}">💎 DIAMOND</c:when>
+                            <c:when test="${user.memberGrade eq 'PLATINUM'}">👑 PLATINUM</c:when>
+                            <c:otherwise>${user.memberGrade}</c:otherwise>
+                        </c:choose>
+                    </span>
+                    <%-- 오른쪽: 바 영역 (레벨 바와 동일한 mp-level-wrap 구조) --%>
+                    <div class="mp-level-wrap">
+                        <div class="mp-level-header">
+                            <span class="mp-level-label">등급</span>
+                            <span class="mp-level-xp">
+                                <c:choose>
+                                    <c:when test="${isMaxGrade}">
+                                        최고 등급 달성!
+                                    </c:when>
+                                    <c:otherwise>
+                                        <fmt:formatNumber value="${currentMonthPayment}" pattern="#,##0" />
+                                        /
+                                        <fmt:formatNumber value="${nextGradeMin}" pattern="#,##0" />원
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
+                        </div>
+                        <div class="mp-xp-bar">
+                            <div class="mp-grade-fill" style="width: ${gradePercent}%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <%-- 바 아래 승급 예정 / 다음 등급 안내 --%>
+                <c:choose>
+                    <c:when test="${isMaxGrade}">
+                        <%-- 최고 등급이면 별도 안내 없음 --%>
+                    </c:when>
+                    <c:when test="${expectedGrade ne user.memberGrade}">
+                        <div class="mp-grade-promotion">
+                            ${user.memberGrade} → ${expectedGrade} 승급 예정!
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="mp-grade-next-hint">
+                            다음 등급:
+                            <c:choose>
+                                <c:when test="${nextGradeName eq 'SILVER'}">🥈 SILVER</c:when>
+                                <c:when test="${nextGradeName eq 'GOLD'}">🥇 GOLD</c:when>
+                                <c:when test="${nextGradeName eq 'DIAMOND'}">💎 DIAMOND</c:when>
+                                <c:when test="${nextGradeName eq 'PLATINUM'}">👑 PLATINUM</c:when>
+                                <c:otherwise>${nextGradeName}</c:otherwise>
+                            </c:choose>
+                            (이번 달 결제 <fmt:formatNumber value="${nextGradeMin}" pattern="#,##0" />원 이상)
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
             <%-- 재화 --%>
             <div class="mp-currency-grid">
                 <div class="mp-currency-item">
                     <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-point.svg" alt="포인트" width="40" height="40"></div>
                     <div class="mp-currency-label">포인트</div>
-                    <div class="mp-currency-value">0</div>
+                    <div class="mp-currency-value"><fmt:formatNumber value="${user.pointBalance}" pattern="#,##0" /></div>
                 </div>
                 <div class="mp-currency-item">
                     <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-mileage.svg" alt="마일리지" width="40" height="40"></div>
                     <div class="mp-currency-label">마일리지</div>
-                    <div class="mp-currency-value">0</div>
+                    <div class="mp-currency-value"><fmt:formatNumber value="${user.mileageBalance}" pattern="#,##0" /></div>
                 </div>
                 <div class="mp-currency-item">
                     <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-cash.svg" alt="캐시" width="40" height="40"></div>
                     <div class="mp-currency-label">캐시</div>
-                    <div class="mp-currency-value">0</div>
+                    <div class="mp-currency-value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0" /></div>
                 </div>
             </div>
             <%-- 활동 통계
@@ -145,12 +345,12 @@
             <div class="mp-stats-grid">
                 <div class="mp-stats-item">
                     <span class="mp-stats-source mp-stats-src-community">커뮤니티</span>
-                    <div class="mp-stats-value">0</div>
+                    <div class="mp-stats-value">${user.totalPostCount}</div>
                     <div class="mp-stats-label">작성 글</div>
                 </div>
                 <div class="mp-stats-item">
                     <span class="mp-stats-source mp-stats-src-community">커뮤니티</span>
-                    <div class="mp-stats-value">0</div>
+                    <div class="mp-stats-value">${user.totalCommentCount}</div>
                     <div class="mp-stats-label">작성 댓글</div>
                 </div>
                 <div class="mp-stats-item">
@@ -399,6 +599,62 @@
 
 
         <%-- ══════════════════════════════════════════
+             예매 정보
+             - 항공권 구매 시뮬레이션으로 생성된 FLIGHT_PURCHASE_SIMULATION 이력
+        ══════════════════════════════════════════ --%>
+        <div class="mp-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title">
+                    <span class="mp-card-icon">✈️</span>
+                    예매 정보
+                    <span class="mp-card-count">${flightBookingCount}</span>
+                </div>
+            </div>
+            <div class="mp-card-body">
+                <c:choose>
+                    <c:when test="${empty flightBookingList}">
+                        <div class="mp-empty">
+                            <div class="mp-empty-icon">✈️</div>
+                            항공권 예매 정보가 없습니다
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="booking" items="${flightBookingList}">
+                            <a href="${pageContext.request.contextPath}/detail/${booking.spotIdx}"
+                               class="mp-list-item mp-flight-booking-item">
+                                <div class="mp-list-content">
+                                    <div class="mp-list-title">
+                                        ${booking.spotName}
+                                        <span class="mp-flight-booking-no">${booking.purchaseNo}</span>
+                                    </div>
+                                    <div class="mp-list-meta mp-flight-booking-meta">
+                                        <span>${booking.airlineName} · ${booking.flightNo}</span>
+                                        <span>${booking.originAirportCode} → ${booking.destinationAirportCode}</span>
+                                        <span>
+                                            <fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/>
+                                            출발
+                                        </span>
+                                        <span>
+                                            총액 <fmt:formatNumber value="${booking.totalPrice}" pattern="#,##0"/> C
+                                        </span>
+                                        <span>
+                                            캐시 <fmt:formatNumber value="${booking.usedCash}" pattern="#,##0"/> C
+                                            · 마일리지 <fmt:formatNumber value="${booking.usedMileage}" pattern="#,##0"/> M
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="mp-list-badges">
+                                    <span class="mp-badge mp-badge-flight">${booking.status}</span>
+                                </div>
+                            </a>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+
+
+        <%-- ══════════════════════════════════════════
              내가 작성한 커뮤니티 글
         ══════════════════════════════════════════ --%>
         <div class="mp-card">
@@ -576,6 +832,125 @@
             </div>
         </div>
 
+        <div class="mp-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title">
+                    <span class="mp-card-icon">ITEM</span> 내 꾸미기 아이템
+                </div>
+            </div>
+
+            <c:if test="${not empty itemMessage}">
+                <div class="mp-item-alert mp-item-alert--success">${itemMessage}</div>
+            </c:if>
+            <c:if test="${not empty itemError}">
+                <div class="mp-item-alert mp-item-alert--error">${itemError}</div>
+            </c:if>
+
+            <c:choose>
+                <c:when test="${empty inventoryItems}">
+                    <div class="mp-empty">
+                        <div class="mp-empty-icon">SHOP</div>
+                        <div>아직 보유한 꾸미기 아이템이 없습니다.</div>
+                        <button class="mp-item-shop-btn"
+                                type="button"
+                                onclick="location.href='${pageContext.request.contextPath}/shop'">
+                            상품 보러가기
+                        </button>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="hasNicknameColor" value="false"/>
+                    <c:set var="hasNicknameEffect" value="false"/>
+                    <c:set var="hasProfileBadge" value="false"/>
+                    <c:set var="hasBubbleStyle" value="false"/>
+
+                    <c:forEach var="item" items="${inventoryItems}">
+                        <c:if test="${item.itemType eq 'NICKNAME_COLOR'}"><c:set var="hasNicknameColor" value="true"/></c:if>
+                        <c:if test="${item.itemType eq 'NICKNAME_EFFECT'}"><c:set var="hasNicknameEffect" value="true"/></c:if>
+                        <c:if test="${item.itemType eq 'PROFILE_BADGE'}"><c:set var="hasProfileBadge" value="true"/></c:if>
+                        <c:if test="${item.itemType eq 'BUBBLE_STYLE'}"><c:set var="hasBubbleStyle" value="true"/></c:if>
+                    </c:forEach>
+
+                    <div class="mp-item-section-list">
+                        <c:if test="${hasNicknameColor}">
+                            <section class="mp-item-section">
+                                <div class="mp-item-section-head">
+                                    <span>NC</span>
+                                    <div>
+                                        <h3>닉네임 색상</h3>
+                                        <p>게시글, 댓글, 리뷰 작성자명에 적용할 기본 색상 상품입니다.</p>
+                                    </div>
+                                </div>
+                                <div class="mp-item-grid">
+                                    <c:forEach var="item" items="${inventoryItems}">
+                                        <c:if test="${item.itemType eq 'NICKNAME_COLOR'}">
+                                            <%@ include file="item-card-fragment.jspf" %>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </section>
+                        </c:if>
+
+                        <c:if test="${hasNicknameEffect}">
+                            <section class="mp-item-section">
+                                <div class="mp-item-section-head">
+                                    <span>NE</span>
+                                    <div>
+                                        <h3>닉네임 테두리/글로우</h3>
+                                        <p>닉네임을 더 눈에 띄게 만드는 효과형 상품입니다.</p>
+                                    </div>
+                                </div>
+                                <div class="mp-item-grid">
+                                    <c:forEach var="item" items="${inventoryItems}">
+                                        <c:if test="${item.itemType eq 'NICKNAME_EFFECT'}">
+                                            <%@ include file="item-card-fragment.jspf" %>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </section>
+                        </c:if>
+
+                        <c:if test="${hasProfileBadge}">
+                            <section class="mp-item-section">
+                                <div class="mp-item-section-head">
+                                    <span>PB</span>
+                                    <div>
+                                        <h3>프로필 뱃지</h3>
+                                        <p>나의 여행 취향과 활동 스타일을 보여주는 뱃지 상품입니다.</p>
+                                    </div>
+                                </div>
+                                <div class="mp-item-grid">
+                                    <c:forEach var="item" items="${inventoryItems}">
+                                        <c:if test="${item.itemType eq 'PROFILE_BADGE'}">
+                                            <%@ include file="item-card-fragment.jspf" %>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </section>
+                        </c:if>
+
+                        <c:if test="${hasBubbleStyle}">
+                            <section class="mp-item-section">
+                                <div class="mp-item-section-head">
+                                    <span>CB</span>
+                                    <div>
+                                        <h3>댓글/리뷰 말풍선</h3>
+                                        <p>댓글과 리뷰 카드의 분위기를 바꾸는 말풍선 스타일 상품입니다.</p>
+                                    </div>
+                                </div>
+                                <div class="mp-item-grid">
+                                    <c:forEach var="item" items="${inventoryItems}">
+                                        <c:if test="${item.itemType eq 'BUBBLE_STYLE'}">
+                                            <%@ include file="item-card-fragment.jspf" %>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </section>
+                        </c:if>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
     </div>
     <%-- /mp-inner --%>
 </div>
@@ -624,6 +999,91 @@
     }
 
 </script>
+
+<%-- ══════════════════════════════════════════
+     레벨업 축하 팝업
+     Controller에서 levelUpLevel 값이 전달되면 자동으로 표시됩니다.
+══════════════════════════════════════════ --%>
+<c:if test="${not empty levelUpLevel}">
+<div id="levelup-overlay" class="levelup-overlay">
+    <div class="levelup-popup">
+        <div class="levelup-icon">🎉</div>
+        <div class="levelup-title">LEVEL UP!</div>
+        <div class="levelup-level">Lv.${levelUpLevel}</div>
+        <div class="levelup-msg">레벨업 달성! 축하합니다!</div>
+        <button class="levelup-close-btn" onclick="closeLevelUpPopup()">확인</button>
+    </div>
+</div>
+<style>
+    /* ── 레벨업 팝업 오버레이 ── */
+    .levelup-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 9999;
+        animation: levelup-fade-in 0.3s ease;
+    }
+    /* ── 팝업 카드 ── */
+    .levelup-popup {
+        background: #fff; border-radius: 20px; padding: 40px 48px;
+        text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: levelup-scale-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    /* ── 아이콘 ── */
+    .levelup-icon {
+        font-size: 56px; margin-bottom: 8px;
+        animation: levelup-bounce 0.6s ease 0.3s both;
+    }
+    /* ── LEVEL UP! 타이틀 ── */
+    .levelup-title {
+        font-size: 14px; font-weight: 700; letter-spacing: 4px;
+        color: #6366f1; margin-bottom: 4px;
+    }
+    /* ── 레벨 숫자 ── */
+    .levelup-level {
+        font-size: 40px; font-weight: 800;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; margin-bottom: 8px;
+    }
+    /* ── 축하 메시지 ── */
+    .levelup-msg {
+        font-size: 15px; color: #64748b; margin-bottom: 24px;
+    }
+    /* ── 확인 버튼 ── */
+    .levelup-close-btn {
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        color: #fff; border: none; border-radius: 12px;
+        padding: 12px 48px; font-size: 15px; font-weight: 600;
+        cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .levelup-close-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+    }
+    /* ── 애니메이션 ── */
+    @keyframes levelup-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes levelup-scale-in { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes levelup-bounce {
+        0% { transform: scale(0); }
+        60% { transform: scale(1.3); }
+        100% { transform: scale(1); }
+    }
+</style>
+<script>
+    /**
+     * 레벨업 팝업 닫기.
+     * 오버레이를 fade-out 시키고 DOM에서 제거합니다.
+     */
+    function closeLevelUpPopup() {
+        var overlay = document.getElementById('levelup-overlay');
+        if (overlay) {
+            overlay.style.animation = 'levelup-fade-in 0.2s ease reverse';
+            setTimeout(function() { overlay.remove(); }, 200);
+        }
+    }
+</script>
+</c:if>
 
 <%@ include file="../common/footer.jsp" %>
 </body>

@@ -32,9 +32,12 @@
                   </div>
                   <c:set var="cmtBlurred" value="${(comment.reportCount >= 3 or comment.aiFlagged) and !isAdminMode}"/>
                   <div class="comment-body-wrap ${cmtBlurred ? 'report-blurred-wrap' : ''}">
-                    <div class="comment-body ${cmtBlurred ? 'report-blurred' : ''}">
+                    <div class="comment-body ${comment.bubbleClass} ${cmtBlurred ? 'report-blurred' : ''}">
                       <div class="comment-top">
-                        <span class="comment-author">${comment.nickname}</span>
+                        <span class="comment-author tt-nickname ${comment.nicknameColorClass} ${comment.nicknameEffectClass}">${comment.nickname}</span>
+                        <c:if test="${not empty comment.profileBadgeLabel}">
+                          <span class="tt-profile-badge ${comment.profileBadgeClass}">${comment.profileBadgeLabel}</span>
+                        </c:if>
                         <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
                           <c:choose>
                             <c:when test="${comment.accountStatus eq 'BLOCKED'}">
@@ -153,9 +156,12 @@
                             </div>
                             <c:set var="rplBlurred" value="${(reply.reportCount >= 3 or reply.aiFlagged) and !isAdminMode}"/>
                             <div class="comment-body-wrap ${rplBlurred ? 'report-blurred-wrap' : ''}">
-                              <div class="comment-body ${rplBlurred ? 'report-blurred' : ''}">
+                              <div class="comment-body ${reply.bubbleClass} ${rplBlurred ? 'report-blurred' : ''}">
                                 <div class="comment-top">
-                                  <span class="comment-author">${reply.nickname}</span>
+                                  <span class="comment-author tt-nickname ${reply.nicknameColorClass} ${reply.nicknameEffectClass}">${reply.nickname}</span>
+                                  <c:if test="${not empty reply.profileBadgeLabel}">
+                                    <span class="tt-profile-badge ${reply.profileBadgeClass}">${reply.profileBadgeLabel}</span>
+                                  </c:if>
                                   <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
                                     <c:choose>
                                       <c:when test="${reply.accountStatus eq 'BLOCKED'}">

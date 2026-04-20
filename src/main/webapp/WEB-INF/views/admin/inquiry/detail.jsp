@@ -27,6 +27,7 @@
                                 <c:when test="${inquiry.status eq 'COMPLETED'}">답변완료</c:when>
                                 <c:when test="${inquiry.status eq 'USER_COMPLETED'}">해결됨</c:when>
                                 <c:when test="${inquiry.status eq 'CANCELLED'}">취소됨</c:when>
+                                <c:when test="${inquiry.status eq 'DELETE_REQUESTED'}">삭제요청</c:when>
                                 <c:otherwise>${inquiry.status}</c:otherwise>
                             </c:choose>
                         </span>
@@ -38,7 +39,7 @@
                 </div>
                 <div class="adm-card-body">
                     <div style="margin-bottom:10px;">
-                        <span style="font-size:11px;background:#1e3a5f;color:#7dd3fc;padding:2px 8px;border-radius:4px;margin-right:6px;">
+                        <span class="adm-post-type-badge">
                             <c:choose>
                                 <c:when test="${inquiry.category eq 'service'}">서비스</c:when>
                                 <c:when test="${inquiry.category eq 'payment'}">결제</c:when>
@@ -51,8 +52,8 @@
                             <span style="font-size:11px;color:#94a3b8;">🔒 비공개</span>
                         </c:if>
                     </div>
-                    <h3 style="font-size:18px;font-weight:600;margin:0 0 12px;color:#f1f5f9;">${inquiry.title}</h3>
-                    <div style="font-size:13px;color:#94a3b8;line-height:1.7;white-space:pre-wrap;">${inquiry.content}</div>
+                    <h3 class="adm-detail-title">${inquiry.title}</h3>
+                    <div class="adm-detail-body">${inquiry.content}</div>
                     <div style="margin-top:16px;padding-top:12px;border-top:1px solid #1e2736;
                                 display:flex;gap:20px;font-size:12px;color:#64748b;">
                         <span>👁 ${inquiry.viewCount}</span>
@@ -77,9 +78,7 @@
                     <%-- 기존 답변 표시 --%>
                     <c:if test="${not empty inquiry.answerId}">
                         <div id="answerView">
-                            <div style="font-size:13px;color:#cbd5e1;line-height:1.7;white-space:pre-wrap;
-                                        background:#0f172a;padding:14px;border-radius:6px;margin-bottom:12px;"
-                                 id="answerText">${inquiry.answerContent}</div>
+                            <div class="adm-inquiry-answer" id="answerText">${inquiry.answerContent}</div>
                             <div style="display:flex;gap:8px;">
                                 <button class="adm-btn adm-btn-ghost" style="font-size:12px;"
                                         onclick="showEditForm()">수정</button>
@@ -164,12 +163,29 @@
                             </div>
                         </div>
 
-                        <%-- 삭제 --%>
-                        <div style="border-top:1px solid #1e2736;padding-top:12px;">
-                            <button class="adm-btn adm-btn-ghost"
-                                    style="font-size:12px;color:#f87171;border-color:#f87171;width:100%;"
-                                    onclick="deleteInquiry()">문의 삭제</button>
-                        </div>
+                        <%-- 삭제 요청 처리: DELETE_REQUESTED 상태일 때만 --%>
+                        <c:if test="${inquiry.status eq 'DELETE_REQUESTED'}">
+                            <div style="border-top:1px solid #1e2736;padding-top:12px;">
+                                <div style="font-size:11px;color:#fbbf24;margin-bottom:8px;">⚠ 유저가 삭제 요청 중</div>
+                                <div style="display:flex;flex-direction:column;gap:6px;">
+                                    <button class="adm-btn adm-btn-ghost"
+                                            style="font-size:12px;color:#ef4444;border-color:#ef4444;"
+                                            onclick="approveDeleteRequest()">🗑️ 삭제 수락</button>
+                                    <button class="adm-btn adm-btn-ghost"
+                                            style="font-size:12px;color:#94a3b8;border-color:#94a3b8;"
+                                            onclick="rejectDeleteRequest()">✖ 삭제 요청 반려</button>
+                                </div>
+                            </div>
+                        </c:if>
+
+                        <%-- 삭제: DELETE_REQUESTED가 아닐 때만 (중복 방지) --%>
+                        <c:if test="${inquiry.status ne 'DELETE_REQUESTED'}">
+                            <div style="border-top:1px solid #1e2736;padding-top:12px;">
+                                <button class="adm-btn adm-btn-ghost"
+                                        style="font-size:12px;color:#f87171;border-color:#f87171;width:100%;"
+                                        onclick="deleteInquiry()">문의 삭제</button>
+                            </div>
+                        </c:if>
 
                     </div>
                 </div>
@@ -255,6 +271,34 @@ function deleteInquiry() {
     }).then(function(r) { return r.json(); })
       .then(function(d) {
         if (d.success) { location.href = ctx + '/admin/inquiries'; }
+        else { alert(d.message || '처리 실패'); }
+    });
+}
+
+function approveDeleteRequest() {
+    if (!confirm('삭제 요청을 수락하고 문의를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) return;
+    fetch(ctx + '/admin/inquiries/' + inquiryId + '/delete', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    }).then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.success) { location.href = ctx + '/admin/inquiries'; }
+        else { alert(d.message || '처리 실패'); }
+    });
+}
+
+function rejectDeleteRequest() {
+    if (!confirm('삭제 요청을 반려하시겠습니까? 상태가 [답변완료]로 복원됩니다.')) return;
+    fetch(ctx + '/admin/inquiries/' + inquiryId + '/status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: 'status=COMPLETED'
+    }).then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.success) { location.reload(); }
         else { alert(d.message || '처리 실패'); }
     });
 }

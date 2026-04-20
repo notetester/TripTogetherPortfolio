@@ -12,6 +12,11 @@ import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.shop.service.ShopService;
+import org.triptogether.reward.service.RewardService;
+import org.triptogether.myPage.service.WalletService;
+import org.triptogether.myPage.vo.WalletMemberGradePolicyDto;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +31,9 @@ public class ProfileController {
 
     private final AuthServiceImpl authService;
     private final MyPageService myPageService;
+    private final ShopService shopService;
+    private final RewardService rewardService;
+    private final WalletService walletService;
 
     // ── 수정 전 비밀번호 확인 페이지 ──────────────
     @GetMapping("/edit-confirm")
@@ -298,9 +306,77 @@ public class ProfileController {
         model.addAttribute("reviewCount",    myPageService.getMyReviewCount(freshUser.getUserIdx()));
         model.addAttribute("planList",       myPageService.getMyPlanList(freshUser.getUserIdx()));
         model.addAttribute("planCount",      myPageService.getMyPlanCount(freshUser.getUserIdx()));
+        model.addAttribute("flightBookingList", myPageService.getMyFlightBookingList(freshUser.getUserIdx()));
+        model.addAttribute("flightBookingCount", myPageService.getMyFlightBookingCount(freshUser.getUserIdx()));
         model.addAttribute("notifications", myPageService.getNotifications(freshUser.getUserIdx()));
         model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(freshUser.getUserIdx()));
+        model.addAttribute("inventoryItems", shopService.getInventoryItems(freshUser.getUserIdx()));
+
+        // ── 경험치 바 렌더링용 데이터 ──
+        // 현재 레벨에 필요한 누적 경험치 (이 레벨의 시작점)
+        long currentLevelExp = rewardService.getRequiredExpForLevel(freshUser.getLevelNo());
+        // 다음 레벨에 필요한 누적 경험치 (이 레벨의 끝점 = 다음 레벨 진입 조건)
+        long nextLevelExp = rewardService.getRequiredExpForLevel(freshUser.getLevelNo() + 1);
+        model.addAttribute("currentLevelExp", currentLevelExp);
+        model.addAttribute("nextLevelExp", nextLevelExp);
+
+        // ── 등급 바 렌더링용 데이터 ──
+        // 당월 결제 총액 (이번 달에 쌓은 금액 → 다음 달 등급 산정 기준)
+        model.addAttribute("currentMonthPayment", walletService.getCurrentMonthPaymentTotal(freshUser.getUserIdx()));
+        // 활성 등급 정책 목록 (등급 바의 "다음 등급 기준값" 산출에 사용)
+        model.addAttribute("gradePolicies", walletService.getActiveMemberGradePolicies());
+
+        // ── 레벨업 알림 팝업용: 가장 최근 levelup 알림이 있으면 전달 후 삭제 ──
+        List<FeedNotificationDto> allNotifications = myPageService.getNotifications(freshUser.getUserIdx());
+        FeedNotificationDto levelUpNoti = null;
+        for (FeedNotificationDto noti : allNotifications) {
+            if ("levelup".equals(noti.getSourceType())) {
+                levelUpNoti = noti;
+                break;
+            }
+        }
+        if (levelUpNoti != null) {
+            // 팝업에 표시할 새 레벨 번호를 model에 전달
+            model.addAttribute("levelUpLevel", levelUpNoti.getSourceId());
+            // 표시했으니 알림 삭제 (한 번만 팝업)
+            myPageService.deleteNotification(levelUpNoti.getNotificationId());
+        }
+
         return "mypage/index";
+    }
+
+    @PostMapping("/items/equip")
+    public String equipPointItem(@RequestParam String itemCode,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+
+        try {
+            shopService.equipItem(user.getUserIdx(), itemCode);
+            redirectAttributes.addFlashAttribute("itemMessage", "아이템을 장착했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("itemError", e.getMessage());
+        }
+
+        return "redirect:/mypage";
+    }
+
+    @PostMapping("/items/unequip")
+    public String unequipPointItem(@RequestParam String equipSlot,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+
+        try {
+            shopService.unequipItem(user.getUserIdx(), equipSlot);
+            redirectAttributes.addFlashAttribute("itemMessage", "아이템 장착을 해제했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("itemError", e.getMessage());
+        }
+
+        return "redirect:/mypage";
     }
 
     /* =============================================
