@@ -109,7 +109,7 @@ public class AdminController {
                 return result;
             }
             LocalDateTime parsed = (expiresAt != null && !expiresAt.isBlank()) ? LocalDateTime.parse(expiresAt) : null;
-            adminService.blockMember(userIdx, blockType, blockedIp, reason, parsed, loginUser != null ? loginUser.getUserIdx() : null);
+            adminService.blockMember(userIdx, blockType, blockedIp != null ? blockedIp.trim() : null, reason != null ? reason.trim() : null, parsed, loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
             result.put("message", "차단이 적용되었습니다.");
         } catch (Exception e) {

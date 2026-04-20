@@ -381,16 +381,102 @@
 
     <insert id="insertUserBlockHistory">
         INSERT INTO USER_BLOCK_HISTORY (
+            block_request_id,
+            block_target_key,
             user_idx, block_type, blocked_ip, is_active, reason,
-            blocked_by_user_idx, blocked_at, expires_at, created_at, updated_at
+            blocked_by_user_idx, blocked_at, expires_at,
+            ip_match_type,
+            ip_block_registered_at,
+            created_by_user_idx, created_at,
+            updated_by_user_idx, updated_at
         ) VALUES (
+            #{blockRequestId},
+            #{blockTargetKey},
             #{userIdx}, #{blockType}, #{blockedIp}, TRUE, #{reason},
-            #{blockedByUserIdx}, NOW(), #{expiresAt}, NOW(), NOW()
+            #{blockedByUserIdx}, NOW(), #{expiresAt},
+            #{ipMatchType},
+            CASE WHEN #{blockedIp} IS NOT NULL AND #{blockedIp} != '' THEN NOW() ELSE NULL END,
+            #{blockedByUserIdx}, NOW(),
+            #{blockedByUserIdx}, NOW()
         )
     </insert>
 
+    <select id="findBlockHistoryIdxByRequestId" resultType="long">
+        SELECT block_idx
+        FROM USER_BLOCK_HISTORY
+        WHERE block_request_id = #{blockRequestId}
+        LIMIT 1
+    </select>
+
+    <insert id="upsertUserBlocklist">
+        INSERT INTO USER_BLOCKLIST (
+            source_history_block_idx,
+            block_request_id,
+            block_target_key,
+            user_idx,
+            block_type,
+            blocked_ip,
+            is_active,
+            snapshot_status,
+            reason,
+            blocked_by_user_idx,
+            blocked_at,
+            expires_at,
+            last_history_at,
+            synced_at,
+            created_by_user_idx,
+            created_at,
+            updated_by_user_idx,
+            updated_at
+        ) VALUES (
+            #{sourceHistoryBlockIdx},
+            #{blockRequestId},
+            #{blockTargetKey},
+            #{userIdx},
+            #{blockType},
+            #{blockedIp},
+            TRUE,
+            'ACTIVE',
+            #{reason},
+            #{blockedByUserIdx},
+            NOW(),
+            #{expiresAt},
+            NOW(),
+            NOW(),
+            #{blockedByUserIdx},
+            NOW(),
+            #{blockedByUserIdx},
+            NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+            source_history_block_idx = VALUES(source_history_block_idx),
+            block_request_id = VALUES(block_request_id),
+            user_idx = VALUES(user_idx),
+            block_type = VALUES(block_type),
+            blocked_ip = VALUES(blocked_ip),
+            is_active = TRUE,
+            snapshot_status = 'ACTIVE',
+            reason = VALUES(reason),
+            blocked_by_user_idx = VALUES(blocked_by_user_idx),
+            blocked_at = NOW(),
+            expires_at = VALUES(expires_at),
+            released_by_user_idx = NULL,
+            released_at = NULL,
+            last_history_at = NOW(),
+            synced_at = NOW(),
+            updated_by_user_idx = VALUES(blocked_by_user_idx),
+            updated_at = NOW()
+    </insert>
+
+    <select id="findUserBlocklistIdxByTargetKey" resultType="long">
+        SELECT block_idx
+        FROM USER_BLOCKLIST
+        WHERE block_target_key = #{blockTargetKey}
+        LIMIT 1
+    </select>
+
     <select id="findActiveBlockedIpsByUser" resultType="string">
-        SELECT blocked_ip
+        SELECT DISTINCT blocked_ip
         FROM USER_BLOCK_HISTORY
         WHERE user_idx = #{userIdx}
           AND is_active = TRUE
@@ -398,11 +484,30 @@
           AND blocked_ip IS NOT NULL
     </select>
 
+    <update id="deactivateCurrentBlocklistByUser">
+        UPDATE USER_BLOCKLIST
+        SET is_active = FALSE,
+            snapshot_status = CASE
+                WHEN expires_at IS NOT NULL AND expires_at &lt;= NOW() THEN 'EXPIRED'
+                ELSE 'RELEASED'
+            END,
+            released_by_user_idx = #{releasedByUserIdx},
+            released_at = NOW(),
+            synced_at = NOW(),
+            updated_by_user_idx = #{releasedByUserIdx},
+            updated_at = NOW()
+        WHERE user_idx = #{userIdx}
+          AND is_active = TRUE
+    </update>
+
     <update id="deactivateActiveBlocksByUser">
         UPDATE USER_BLOCK_HISTORY
         SET is_active = FALSE,
             released_by_user_idx = #{releasedByUserIdx},
             released_at = NOW(),
+            ip_block_released_at = CASE WHEN blocked_ip IS NOT NULL THEN NOW() ELSE ip_block_released_at END,
+            list_synced_at = NOW(),
+            updated_by_user_idx = #{releasedByUserIdx},
             updated_at = NOW()
         WHERE user_idx = #{userIdx}
           AND is_active = TRUE

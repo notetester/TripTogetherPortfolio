@@ -26,13 +26,29 @@ public interface AdminMapper {
                            @Param("blockedReason") String blockedReason);
     void clearMemberBlockState(@Param("userIdx") Long userIdx);
     void updateMemberMeta(AdminMemberVO member);
-    void insertUserBlockHistory(@Param("userIdx") Long userIdx,
+    void insertUserBlockHistory(@Param("blockRequestId") String blockRequestId,
+                                @Param("blockTargetKey") String blockTargetKey,
+                                @Param("userIdx") Long userIdx,
                                 @Param("blockType") String blockType,
                                 @Param("blockedIp") String blockedIp,
                                 @Param("reason") String reason,
                                 @Param("blockedByUserIdx") Long blockedByUserIdx,
-                                @Param("expiresAt") java.time.LocalDateTime expiresAt);
+                                @Param("expiresAt") java.time.LocalDateTime expiresAt,
+                                @Param("ipMatchType") String ipMatchType);
+    Long findBlockHistoryIdxByRequestId(@Param("blockRequestId") String blockRequestId);
+    void upsertUserBlocklist(@Param("sourceHistoryBlockIdx") Long sourceHistoryBlockIdx,
+                             @Param("blockRequestId") String blockRequestId,
+                             @Param("blockTargetKey") String blockTargetKey,
+                             @Param("userIdx") Long userIdx,
+                             @Param("blockType") String blockType,
+                             @Param("blockedIp") String blockedIp,
+                             @Param("reason") String reason,
+                             @Param("blockedByUserIdx") Long blockedByUserIdx,
+                             @Param("expiresAt") java.time.LocalDateTime expiresAt);
+    Long findUserBlocklistIdxByTargetKey(@Param("blockTargetKey") String blockTargetKey);
     java.util.List<String> findActiveBlockedIpsByUser(@Param("userIdx") Long userIdx);
+    void deactivateCurrentBlocklistByUser(@Param("userIdx") Long userIdx,
+                                          @Param("releasedByUserIdx") Long releasedByUserIdx);
     void deactivateActiveBlocksByUser(@Param("userIdx") Long userIdx,
                                       @Param("releasedByUserIdx") Long releasedByUserIdx);
     void updateMemberRole(@Param("userIdx") Long userIdx, @Param("role") String role);

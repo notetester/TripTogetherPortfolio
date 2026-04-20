@@ -573,7 +573,6 @@ public class AuthController {
         return result;
     }
 
-    // ════════════════════════════════════════════
     private void loadAdminPermissions(HttpSession session, UsersVO user) {
         if (!"ADMIN".equals(user.getUserRole())) {
             session.removeAttribute("adminPermissions");
@@ -586,6 +585,7 @@ public class AuthController {
         session.setAttribute("adminPermissions", permSet);
     }
 
+    // ════════════════════════════════════════════
     // 내부 유틸
     // ════════════════════════════════════════════
 
