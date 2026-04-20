@@ -39,7 +39,7 @@
                 </div>
                 <div class="adm-card-body">
                     <div style="margin-bottom:10px;">
-                        <span style="font-size:11px;background:#1e3a5f;color:#7dd3fc;padding:2px 8px;border-radius:4px;margin-right:6px;">
+                        <span class="adm-post-type-badge">
                             <c:choose>
                                 <c:when test="${inquiry.category eq 'service'}">서비스</c:when>
                                 <c:when test="${inquiry.category eq 'payment'}">결제</c:when>
