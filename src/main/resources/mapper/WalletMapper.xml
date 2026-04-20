@@ -130,6 +130,7 @@
         SELECT *
         FROM USER_PAYMENT_HISTORY
         WHERE user_idx = #{userIdx}
+          AND payment_type = 'CHARGE'
         ORDER BY created_at DESC
         LIMIT 12
     </select>

@@ -306,6 +306,8 @@ public class ProfileController {
         model.addAttribute("reviewCount",    myPageService.getMyReviewCount(freshUser.getUserIdx()));
         model.addAttribute("planList",       myPageService.getMyPlanList(freshUser.getUserIdx()));
         model.addAttribute("planCount",      myPageService.getMyPlanCount(freshUser.getUserIdx()));
+        model.addAttribute("flightBookingList", myPageService.getMyFlightBookingList(freshUser.getUserIdx()));
+        model.addAttribute("flightBookingCount", myPageService.getMyFlightBookingCount(freshUser.getUserIdx()));
         model.addAttribute("notifications", myPageService.getNotifications(freshUser.getUserIdx()));
         model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(freshUser.getUserIdx()));
         model.addAttribute("inventoryItems", shopService.getInventoryItems(freshUser.getUserIdx()));

@@ -80,6 +80,64 @@ html { scrollbar-gutter: stable; }
   font-size:14px; color:var(--gray-500); flex-direction:column; gap:8px;
 }
 .map-placeholder .map-icon { font-size:36px; }
+.flight-map-wrap { position:relative; }
+.flight-price-chip {
+  position:absolute; left:18px; bottom:18px; z-index:5;
+  border:0; border-radius:999px; padding:11px 16px;
+  background:#111827; color:#fff; font-family:inherit; cursor:pointer;
+  box-shadow:0 12px 28px rgba(17,24,39,.26);
+  display:flex; align-items:center; gap:10px; transition:transform .16s, box-shadow .16s;
+}
+.flight-price-chip:hover { transform:translateY(-2px); box-shadow:0 16px 32px rgba(17,24,39,.32); }
+.flight-price-chip .flight-chip-icon { font-size:18px; }
+.flight-price-chip .flight-chip-label { display:block; font-size:11px; opacity:.78; line-height:1.1; }
+.flight-price-chip .flight-chip-price { display:block; font-size:15px; font-weight:800; line-height:1.2; }
+.flight-modal {
+  display:none; position:fixed; inset:0; z-index:10000;
+  background:rgba(15,23,42,.58); align-items:center; justify-content:center;
+  padding:20px; box-sizing:border-box;
+}
+.flight-modal.show { display:flex; }
+.flight-modal-card {
+  width:min(640px, 100%); max-height:90vh; overflow:auto;
+  background:#fff; border-radius:18px; box-shadow:0 24px 60px rgba(15,23,42,.28);
+}
+.flight-modal-head {
+  display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  padding:24px 26px; border-bottom:1px solid var(--gray-100);
+}
+.flight-modal-title { font-size:20px; font-weight:800; color:var(--gray-900); margin:0 0 6px; }
+.flight-modal-sub { font-size:13px; color:var(--gray-500); line-height:1.5; }
+.flight-modal-close { border:0; background:none; font-size:24px; color:var(--gray-400); cursor:pointer; line-height:1; }
+.flight-modal-body { padding:24px 26px 28px; }
+.flight-offer-list { display:grid; gap:12px; margin-bottom:22px; }
+.flight-offer-card {
+  border:1.5px solid var(--gray-200); border-radius:14px; padding:16px;
+  cursor:pointer; transition:border-color .16s, box-shadow .16s, background .16s;
+}
+.flight-offer-card.active {
+  border-color:var(--blue); background:var(--blue-light); box-shadow:0 8px 20px rgba(37,99,235,.12);
+}
+.flight-offer-top { display:flex; justify-content:space-between; gap:16px; margin-bottom:10px; }
+.flight-airline { font-weight:800; color:var(--gray-900); }
+.flight-no { font-size:12px; color:var(--gray-500); margin-top:2px; }
+.flight-price { font-weight:900; color:var(--blue); white-space:nowrap; }
+.flight-route { display:flex; align-items:center; gap:10px; color:var(--gray-700); font-size:14px; }
+.flight-route strong { color:var(--gray-900); }
+.flight-pay-box { border:1px solid var(--gray-100); background:var(--gray-50); border-radius:14px; padding:18px; }
+.flight-pay-row { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; font-size:14px; }
+.flight-pay-row strong { color:var(--gray-900); }
+.flight-pay-input {
+  width:160px; max-width:50%; padding:9px 10px; border:1.5px solid var(--gray-200);
+  border-radius:9px; text-align:right; font-family:inherit; font-weight:700;
+}
+.flight-pay-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:16px; flex-wrap:wrap; }
+.flight-pay-btn {
+  border:0; border-radius:10px; padding:10px 18px; font-family:inherit; font-weight:700; cursor:pointer;
+}
+.flight-pay-btn.secondary { background:#fff; color:var(--gray-700); border:1px solid var(--gray-200); }
+.flight-pay-btn.primary { background:var(--blue); color:#fff; }
+.flight-pay-msg { margin-top:12px; font-size:13px; color:var(--gray-600); min-height:18px; }
 
 /* 리뷰 요약 헤더 */
 .review-summary-wrap {
@@ -628,13 +686,83 @@ html { scrollbar-gutter: stable; }
       <h2>&#128506; <spring:message code="detail.location.title"/></h2>
 
       <!-- 지도 컨테이너 -->
-      <div id="googleMap" style="
-          width:100%; height:420px;
-          border-radius:10px; overflow:hidden;
-          border:1px solid var(--gray-200);
-          background:var(--gray-100);">
+      <div class="flight-map-wrap">
+        <div id="googleMap" style="
+            width:100%; height:420px;
+            border-radius:10px; overflow:hidden;
+            border:1px solid var(--gray-200);
+            background:var(--gray-100);">
+        </div>
+
+        <c:if test="${flightAvailable and not empty lowestFlightOffer}">
+          <button type="button"
+                  class="flight-price-chip"
+                  id="openFlightModalBtn"
+                  data-spot-idx="${spot.spotIdx}">
+            <span class="flight-chip-icon">✈</span>
+            <span>
+              <span class="flight-chip-label">서울 출발 최저가</span>
+              <span class="flight-chip-price">
+                <fmt:formatNumber value="${lowestFlightOffer.totalPrice}" pattern="#,##0"/> C
+              </span>
+            </span>
+          </button>
+        </c:if>
       </div>
 
+    </div>
+  </c:if>
+
+  <c:if test="${flightAvailable and not empty lowestFlightOffer}">
+    <div class="flight-modal" id="flightModal" aria-hidden="true">
+      <div class="flight-modal-card" role="dialog" aria-modal="true" aria-labelledby="flightModalTitle">
+        <div class="flight-modal-head">
+          <div>
+            <h3 class="flight-modal-title" id="flightModalTitle">서울 출발 항공권</h3>
+            <div class="flight-modal-sub">
+              Mock 항공권 견적입니다. 실제 외부 결제는 진행되지 않고 보유 캐시/마일리지 잔액만 차감됩니다.
+            </div>
+          </div>
+          <button type="button" class="flight-modal-close" id="closeFlightModalBtn" aria-label="닫기">×</button>
+        </div>
+        <div class="flight-modal-body">
+          <div class="flight-offer-list" id="flightOfferList">
+            <div class="flight-pay-msg">항공권 정보를 불러오는 중입니다.</div>
+          </div>
+
+          <div class="flight-pay-box">
+            <div class="flight-pay-row">
+              <span>결제 금액</span>
+              <strong id="flightTotalPrice">-</strong>
+            </div>
+            <div class="flight-pay-row">
+              <span>보유 캐시</span>
+              <strong id="flightCashBalance">
+                <fmt:formatNumber value="${loginUser.cashBalance}" pattern="#,##0"/> C
+              </strong>
+            </div>
+            <div class="flight-pay-row">
+              <span>보유 마일리지</span>
+              <strong id="flightMileageBalance">
+                <fmt:formatNumber value="${loginUser.mileageBalance}" pattern="#,##0"/> M
+              </strong>
+            </div>
+            <div class="flight-pay-row">
+              <span>사용 마일리지 <small id="flightMileageLimitText"></small></span>
+              <input type="number" id="flightMileageInput" class="flight-pay-input" min="0" step="1000" value="0">
+            </div>
+            <div class="flight-pay-row">
+              <span>사용 캐시</span>
+              <input type="number" id="flightCashInput" class="flight-pay-input" min="0" step="1000" value="0" readonly>
+            </div>
+            <div class="flight-pay-actions">
+              <button type="button" class="flight-pay-btn secondary" id="flightUseMaxMileageBtn">마일리지 최대 사용</button>
+              <button type="button" class="flight-pay-btn primary" id="flightPurchaseBtn">구매하기</button>
+            </div>
+            <div class="flight-pay-msg" id="flightPayMessage"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </c:if>
 
@@ -1420,6 +1548,225 @@ html { scrollbar-gutter: stable; }
 })();
 </script>
 
+<c:if test="${flightAvailable and not empty lowestFlightOffer}">
+<script>
+(function () {
+  var flightModal = document.getElementById('flightModal');
+  var openBtn = document.getElementById('openFlightModalBtn');
+  var closeBtn = document.getElementById('closeFlightModalBtn');
+  var offerList = document.getElementById('flightOfferList');
+  var totalPriceEl = document.getElementById('flightTotalPrice');
+  var cashBalanceEl = document.getElementById('flightCashBalance');
+  var mileageBalanceEl = document.getElementById('flightMileageBalance');
+  var mileageLimitText = document.getElementById('flightMileageLimitText');
+  var mileageInput = document.getElementById('flightMileageInput');
+  var cashInput = document.getElementById('flightCashInput');
+  var useMaxMileageBtn = document.getElementById('flightUseMaxMileageBtn');
+  var purchaseBtn = document.getElementById('flightPurchaseBtn');
+  var messageEl = document.getElementById('flightPayMessage');
+
+  var ctx = '${pageContext.request.contextPath}';
+  var spotIdx = '${spot.spotIdx}';
+  var isLoggedIn = ${isLoggedIn ? 'true' : 'false'};
+  var cashBalance = Number('${empty loginUser ? 0 : loginUser.cashBalance}');
+  var mileageBalance = Number('${empty loginUser ? 0 : loginUser.mileageBalance}');
+  var offers = [];
+  var selectedOffer = null;
+
+  function formatMoney(value, suffix) {
+    return Number(value || 0).toLocaleString('ko-KR') + ' ' + suffix;
+  }
+
+  function formatDateTime(value) {
+    if (!value) return '-';
+    if (Array.isArray(value)) {
+      var month = String(value[1]).padStart(2, '0');
+      var day = String(value[2]).padStart(2, '0');
+      var hour = String(value[3]).padStart(2, '0');
+      var minute = String(value[4]).padStart(2, '0');
+      return value[0] + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+    }
+    return String(value).replace('T', ' ').substring(0, 16);
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function openFlightModal() {
+    if (!isLoggedIn) {
+      location.href = ctx + '/auth/login?redirect=' + encodeURIComponent('/detail/' + spotIdx);
+      return;
+    }
+    if (!flightModal) return;
+    flightModal.classList.add('show');
+    flightModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    loadOffers();
+  }
+
+  function closeFlightModal() {
+    if (!flightModal) return;
+    flightModal.classList.remove('show');
+    flightModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  function loadOffers() {
+    if (offers.length > 0) return;
+    offerList.innerHTML = '<div class="flight-pay-msg">항공권 정보를 불러오는 중입니다.</div>';
+
+    fetch(ctx + '/flight/offers?spotIdx=' + encodeURIComponent(spotIdx))
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (!data.success || !data.available || !data.offers || data.offers.length === 0) {
+          offerList.innerHTML = '<div class="flight-pay-msg">표시할 항공권 정보가 없습니다.</div>';
+          return;
+        }
+        offers = data.offers;
+        renderOffers();
+        selectOffer(offers[0].offerId);
+      })
+      .catch(function () {
+        offerList.innerHTML = '<div class="flight-pay-msg">항공권 정보를 불러오지 못했습니다.</div>';
+      });
+  }
+
+  function renderOffers() {
+    offerList.innerHTML = offers.map(function (offer) {
+      return [
+        '<div class="flight-offer-card" data-offer-id="' + escapeHtml(offer.offerId) + '">',
+        '  <div class="flight-offer-top">',
+        '    <div>',
+        '      <div class="flight-airline">' + escapeHtml(offer.airlineName) + '</div>',
+        '      <div class="flight-no">' + escapeHtml(offer.flightNo) + ' · ' + escapeHtml(offer.seatClass) + '</div>',
+        '    </div>',
+        '    <div class="flight-price">' + formatMoney(offer.totalPrice, 'C') + '</div>',
+        '  </div>',
+        '  <div class="flight-route">',
+        '    <strong>' + escapeHtml(offer.originAirportCode) + '</strong>',
+        '    <span>→</span>',
+        '    <strong>' + escapeHtml(offer.destinationAirportCode) + '</strong>',
+        '    <span>' + escapeHtml(offer.durationText) + '</span>',
+        '  </div>',
+        '  <div class="flight-no">' + formatDateTime(offer.departureTime) + ' 출발 · ' + formatDateTime(offer.arrivalTime) + ' 도착</div>',
+        '</div>'
+      ].join('');
+    }).join('');
+
+    offerList.querySelectorAll('.flight-offer-card').forEach(function (card) {
+      card.addEventListener('click', function () {
+        selectOffer(card.dataset.offerId);
+      });
+    });
+  }
+
+  function selectOffer(offerId) {
+    selectedOffer = offers.find(function (offer) { return offer.offerId === offerId; });
+    if (!selectedOffer) return;
+
+    offerList.querySelectorAll('.flight-offer-card').forEach(function (card) {
+      card.classList.toggle('active', card.dataset.offerId === offerId);
+    });
+
+    totalPriceEl.textContent = formatMoney(selectedOffer.totalPrice, 'C');
+    mileageLimitText.textContent = '(최대 ' + formatMoney(selectedOffer.maxMileageUse, 'M') + ')';
+    mileageInput.max = Math.min(selectedOffer.maxMileageUse, mileageBalance);
+    mileageInput.value = 0;
+    updateCashAmount();
+    messageEl.textContent = '';
+  }
+
+  function updateCashAmount() {
+    if (!selectedOffer) return;
+    var mileage = Math.max(0, Number(mileageInput.value || 0));
+    var maxMileage = Math.min(selectedOffer.maxMileageUse, mileageBalance);
+    if (mileage > maxMileage) {
+      mileage = maxMileage;
+      mileageInput.value = mileage;
+    }
+    cashInput.value = selectedOffer.totalPrice - mileage;
+  }
+
+  function purchaseFlight() {
+    if (!isLoggedIn) {
+      messageEl.textContent = '로그인 후 항공권을 구매할 수 있습니다.';
+      return;
+    }
+    if (!selectedOffer) {
+      messageEl.textContent = '구매할 항공권을 선택해주세요.';
+      return;
+    }
+
+    var mileageAmount = Number(mileageInput.value || 0);
+    var cashAmount = Number(cashInput.value || 0);
+    if (cashAmount > cashBalance) {
+      messageEl.textContent = '캐시 잔액이 부족합니다.';
+      return;
+    }
+
+    purchaseBtn.disabled = true;
+    messageEl.textContent = '구매 처리 중입니다.';
+
+    fetch(ctx + '/flight/purchase', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        spotIdx: Number(spotIdx),
+        offerId: selectedOffer.offerId,
+        cashAmount: cashAmount,
+        mileageAmount: mileageAmount
+      })
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (!data.success) {
+          messageEl.textContent = data.message || '항공권 구매에 실패했습니다.';
+          return;
+        }
+        cashBalance = Number(data.cashBalance || 0);
+        mileageBalance = Number(data.mileageBalance || 0);
+        cashBalanceEl.textContent = formatMoney(cashBalance, 'C');
+        mileageBalanceEl.textContent = formatMoney(mileageBalance, 'M');
+        messageEl.textContent = '구매 완료 · 예매번호 ' + data.purchaseNo;
+        updateCashAmount();
+      })
+      .catch(function () {
+        messageEl.textContent = '항공권 구매 중 오류가 발생했습니다.';
+      })
+      .finally(function () {
+        purchaseBtn.disabled = false;
+      });
+  }
+
+  openBtn && openBtn.addEventListener('click', openFlightModal);
+  closeBtn && closeBtn.addEventListener('click', closeFlightModal);
+  flightModal && flightModal.addEventListener('click', function (e) {
+    if (e.target === flightModal) closeFlightModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && flightModal && flightModal.classList.contains('show')) {
+      closeFlightModal();
+    }
+  });
+  mileageInput && mileageInput.addEventListener('input', updateCashAmount);
+  useMaxMileageBtn && useMaxMileageBtn.addEventListener('click', function () {
+    if (!selectedOffer) return;
+    mileageInput.value = Math.min(selectedOffer.maxMileageUse, mileageBalance);
+    updateCashAmount();
+  });
+  purchaseBtn && purchaseBtn.addEventListener('click', purchaseFlight);
+
+  window.openFlightTicketModal = openFlightModal;
+})();
+</script>
+</c:if>
+
 <%-- Google Maps: 위도/경도가 있는 경우만 로드 --%>
 <c:if test="${not empty spot.latitude and not empty spot.longitude and spot.latitude != 0 and spot.longitude != 0}">
 <script>
@@ -1600,8 +1947,15 @@ function initMap() {
     map: googleMap
   });
 
-  /* 여행지 마커 클릭: 연결선 토글 */
+  /* 여행지 마커 클릭: 항공권이 있으면 모달을 열고, 없으면 연결선을 토글 */
   destinationMarker.addListener('click', function () {
+    if (typeof window.openFlightTicketModal === 'function') {
+      window.openFlightTicketModal();
+      destinationMarker.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(function() { destinationMarker.setAnimation(null); }, 1200);
+      return;
+    }
+
     if (lineVisible) {
       routeLine.setOptions({ strokeOpacity: 0 });
       lineVisible = false;

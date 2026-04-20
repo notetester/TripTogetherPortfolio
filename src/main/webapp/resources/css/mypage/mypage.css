@@ -513,6 +513,24 @@
 .mp-badge-public   { background: #dcfce7; color: #15803d; }
 .mp-badge-private  { background: #f3f4f6; color: #6b7280; }
 .mp-badge-ai       { background: #ede9fe; color: #6d28d9; }
+.mp-badge-flight   { background: #dbeafe; color: #1d4ed8; }
+
+/* ── 항공권 예매 정보 ── */
+.mp-flight-booking-item {
+    align-items: flex-start;
+}
+
+.mp-flight-booking-no {
+    margin-left: 8px;
+    color: var(--gray-400);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mp-flight-booking-meta {
+    margin-top: 5px;
+    gap: 8px 12px;
+}
 
 /* ── 리뷰 별점 ── */
 .mp-review-stars {
@@ -1084,5 +1102,97 @@
 @media (max-width: 640px) {
   .mp-item-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── 마이페이지 전체 정렬 보정 ──
+   기존 카드별 padding/height가 서로 달라 섹션이 들쭉날쭉해 보이는 부분을 보정한다. */
+.mp-inner {
+  max-width: 1080px;
+}
+
+.mp-card {
+  margin-bottom: 24px;
+}
+
+.mp-card-head {
+  min-height: 64px;
+  box-sizing: border-box;
+}
+
+.mp-info-item {
+  min-height: 72px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mp-info-value {
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.mp-notif-list {
+  padding: 16px 24px 20px;
+}
+
+.mp-currency-item,
+.mp-stats-item {
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.mp-currency-item {
+  min-height: 132px;
+}
+
+.mp-stats-item {
+  min-height: 118px;
+}
+
+.mp-item-alert {
+  margin: 16px 24px 0;
+}
+
+.mp-item-section-list {
+  padding: 20px 24px 24px;
+}
+
+.mp-item-card {
+  min-height: 100%;
+}
+
+.mp-item-actions {
+  margin-top: auto;
+}
+
+@media (max-width: 640px) {
+  .mp-inner {
+    padding: 0 16px;
+  }
+
+  .mp-card-head {
+    padding: 16px 18px;
+  }
+
+  .mp-item-section-list {
+    padding: 16px;
+  }
+
+  .mp-currency-grid,
+  .mp-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mp-currency-item,
+  .mp-stats-item {
+    border-right: none;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .mp-currency-item:last-child,
+  .mp-stats-item:last-child {
+    border-bottom: none;
   }
 }

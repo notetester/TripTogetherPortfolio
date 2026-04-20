@@ -599,6 +599,62 @@
 
 
         <%-- ══════════════════════════════════════════
+             예매 정보
+             - 항공권 구매 시뮬레이션으로 생성된 FLIGHT_PURCHASE_SIMULATION 이력
+        ══════════════════════════════════════════ --%>
+        <div class="mp-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title">
+                    <span class="mp-card-icon">✈️</span>
+                    예매 정보
+                    <span class="mp-card-count">${flightBookingCount}</span>
+                </div>
+            </div>
+            <div class="mp-card-body">
+                <c:choose>
+                    <c:when test="${empty flightBookingList}">
+                        <div class="mp-empty">
+                            <div class="mp-empty-icon">✈️</div>
+                            항공권 예매 정보가 없습니다
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="booking" items="${flightBookingList}">
+                            <a href="${pageContext.request.contextPath}/detail/${booking.spotIdx}"
+                               class="mp-list-item mp-flight-booking-item">
+                                <div class="mp-list-content">
+                                    <div class="mp-list-title">
+                                        ${booking.spotName}
+                                        <span class="mp-flight-booking-no">${booking.purchaseNo}</span>
+                                    </div>
+                                    <div class="mp-list-meta mp-flight-booking-meta">
+                                        <span>${booking.airlineName} · ${booking.flightNo}</span>
+                                        <span>${booking.originAirportCode} → ${booking.destinationAirportCode}</span>
+                                        <span>
+                                            <fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/>
+                                            출발
+                                        </span>
+                                        <span>
+                                            총액 <fmt:formatNumber value="${booking.totalPrice}" pattern="#,##0"/> C
+                                        </span>
+                                        <span>
+                                            캐시 <fmt:formatNumber value="${booking.usedCash}" pattern="#,##0"/> C
+                                            · 마일리지 <fmt:formatNumber value="${booking.usedMileage}" pattern="#,##0"/> M
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="mp-list-badges">
+                                    <span class="mp-badge mp-badge-flight">${booking.status}</span>
+                                </div>
+                            </a>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+
+
+        <%-- ══════════════════════════════════════════
              내가 작성한 커뮤니티 글
         ══════════════════════════════════════════ --%>
         <div class="mp-card">

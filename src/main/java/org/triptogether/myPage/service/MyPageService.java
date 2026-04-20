@@ -3,6 +3,7 @@ package org.triptogether.myPage.service;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPageFlightBookingDto;
 import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
 import org.triptogether.myPage.vo.MyPageReviewDto;
@@ -35,6 +36,11 @@ public interface MyPageService {
 
     List<MyPagePlanDto> getMyPlanList(Long userIdx);
     int getMyPlanCount(Long userIdx);
+
+    // ===== 항공권 예매 =====
+
+    List<MyPageFlightBookingDto> getMyFlightBookingList(Long userIdx);
+    int getMyFlightBookingCount(Long userIdx);
 
     // ===== 알림 =====
 
