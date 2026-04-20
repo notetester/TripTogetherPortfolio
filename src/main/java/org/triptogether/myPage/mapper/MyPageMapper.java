@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPageFlightBookingDto;
 import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
 import org.triptogether.myPage.vo.MyPageReviewDto;
@@ -38,6 +39,11 @@ public interface MyPageMapper {
 
     List<MyPagePlanDto> selectMyPlanList(@Param("userIdx") Long userIdx);
     int selectMyPlanCount(@Param("userIdx") Long userIdx);
+
+    // ===== 항공권 예매 =====
+
+    List<MyPageFlightBookingDto> selectMyFlightBookingList(@Param("userIdx") Long userIdx);
+    int selectMyFlightBookingCount(@Param("userIdx") Long userIdx);
 
     // ===== 알림 =====
 
