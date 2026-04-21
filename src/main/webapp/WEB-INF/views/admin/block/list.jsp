@@ -2314,7 +2314,31 @@ function openBatchToggleModal(button) {
     document.getElementById('batchToggleModal').classList.add('open');
 }
 
-function openHistoryCurrent(button) {
+async function fetchHistoryCurrentSetting(button) {
+    const historyId = button.dataset.historyId;
+    if (!historyId) return null;
+
+    const url = CTX + '/admin/blocks/histories/' + encodeURIComponent(historyId)
+        + '/current-setting?currentType=' + encodeURIComponent(button.dataset.currentType || '');
+    const res = await fetch(url, {
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+        throw new Error(data.message || '현재 설정 조회에 실패했습니다.');
+    }
+    return data;
+}
+
+function buildHistoryCurrentButton(sourceButton, data) {
+    return {
+        dataset: Object.assign({}, data || {}, {
+            templateId: sourceButton.dataset.templateId || ''
+        })
+    };
+}
+
+async function openHistoryCurrent(button) {
     const currentType = button.dataset.currentType;
     const targetKey = button.dataset.targetKey || '';
     const ruleAction = button.dataset.ruleAction || '';
@@ -2351,10 +2375,30 @@ function openHistoryCurrent(button) {
         return;
     }
 
+    try {
+        const response = await fetchHistoryCurrentSetting(button);
+        if (response && response.found && response.data) {
+            const resolvedButton = buildHistoryCurrentButton(button, response.data);
+            if (response.currentType === 'BATCH') {
+                openBatchEditor(resolvedButton);
+                return;
+            }
+            if (response.currentType === 'USER_BLOCK') {
+                openUserBlockEditor(resolvedButton);
+                return;
+            }
+            openIpRuleEditor(resolvedButton);
+            return;
+        }
+    } catch (error) {
+        adm_toast(error.message || '현재 설정 조회에 실패했습니다.', 'error');
+        return;
+    }
+
     if (button.dataset.templateId) {
         openBlockDetail(button.dataset.templateId, '차단 상세');
     }
-    adm_toast('현재 목록에서 연결된 설정 대상을 찾지 못했습니다. 통합 검색 조건을 넓혀 다시 확인해주세요.', 'error');
+    adm_toast('이력 기준 현재 설정을 찾지 못했습니다. 대상이 삭제되었거나 더 이상 연결되지 않았을 수 있습니다.', 'error');
 }
 
 async function submitBatchToggle() {

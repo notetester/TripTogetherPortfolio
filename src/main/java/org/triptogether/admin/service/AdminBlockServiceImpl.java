@@ -15,6 +15,7 @@ import org.triptogether.admin.vo.AdminUserBlockVO;
 import org.triptogether.config.IpBlockMapper;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AdminBlockServiceImpl implements AdminBlockService {
+
+    private static final DateTimeFormatter DISPLAY_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
 
     private final AdminBlockMapper adminBlockMapper;
     private final AdminMapper adminMapper;
@@ -555,6 +558,62 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         }
     }
 
+    @Override
+    public Map<String, Object> findCurrentSettingByHistory(Long historyBlockIdx, String currentType) {
+        if (historyBlockIdx == null) {
+            throw new IllegalArgumentException("차단 이력 식별자가 필요합니다.");
+        }
+
+        AdminBlockHistoryVO history = adminBlockMapper.findBlockHistoryById(historyBlockIdx);
+        if (history == null) {
+            throw new IllegalArgumentException("차단 이력을 찾을 수 없습니다.");
+        }
+
+        String resolvedType = safeUpper(currentType, resolveCurrentType(history));
+        Map<String, Object> result = new HashMap<>();
+        result.put("found", false);
+        result.put("currentType", resolvedType);
+
+        if ("BATCH".equals(resolvedType)) {
+            if (history.getIpBlockBatchIdx() == null) {
+                return result;
+            }
+            AdminIpBlockBatchVO batch = adminBlockMapper.findIpBlockBatchById(history.getIpBlockBatchIdx());
+            if (batch == null) {
+                return result;
+            }
+            result.put("found", true);
+            result.put("data", toBatchEditorData(batch));
+            return result;
+        }
+
+        if ("USER_BLOCK".equals(resolvedType)) {
+            AdminUserBlockVO block = adminBlockMapper.findUserBlockByTargetKey(history.getBlockTargetKey());
+            if (block == null && history.getUserIdx() != null) {
+                block = adminBlockMapper.findLatestActiveUserBlockByUserIdx(history.getUserIdx());
+            }
+            if (block == null) {
+                return result;
+            }
+            result.put("found", true);
+            result.put("data", toUserBlockEditorData(block));
+            return result;
+        }
+
+        AdminIpBlockVO rule = adminBlockMapper.findCurrentIpRuleByTarget(
+                history.getBlockTargetKey(),
+                history.getRuleAction(),
+                history.getIpBlockBatchIdx()
+        );
+        if (rule == null) {
+            return result;
+        }
+        result.put("found", true);
+        result.put("currentType", "IP_RULE");
+        result.put("data", toIpRuleEditorData(rule));
+        return result;
+    }
+
     private void refreshUserActionIpRuleFromHistory(String ipAddress) {
         if (ipAddress == null || ipAddress.isBlank()) return;
         String normalizedIp = normalizeIp(ipAddress);
@@ -773,6 +832,102 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         AdminUserBlockVO copy = new AdminUserBlockVO();
         BeanUtils.copyProperties(source, copy);
         return copy;
+    }
+
+    private String resolveCurrentType(AdminBlockHistoryVO history) {
+        if (history == null) return "IP_RULE";
+        if ("USER_ACTION".equalsIgnoreCase(history.getBlockScope())) return "USER_BLOCK";
+        if (history.getBatchOperationIdx() != null && history.getIpBlockBatchIdx() != null) return "BATCH";
+        return "IP_RULE";
+    }
+
+    private Map<String, Object> toUserBlockEditorData(AdminUserBlockVO block) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("blockIdx", toStringValue(block.getBlockIdx()));
+        data.put("userIdx", toStringValue(block.getUserIdx()));
+        data.put("displayName", emptyFallback(firstNonBlank(block.getNickname(), block.getUserId()), "-"));
+        data.put("userId", emptyFallback(block.getUserId(), ""));
+        data.put("userEmail", emptyFallback(block.getUserEmail(), ""));
+        data.put("blockType", emptyFallback(block.getBlockType(), "-"));
+        data.put("blockedIp", emptyFallback(block.getBlockedIp(), ""));
+        data.put("targetKey", emptyFallback(block.getBlockTargetKey(), ""));
+        data.put("active", Boolean.toString(block.isActive()));
+        data.put("snapshotStatus", emptyFallback(block.getSnapshotStatus(), "-"));
+        data.put("reason", emptyFallback(block.getReason(), ""));
+        data.put("expiresAt", block.getExpiresAtInputValue());
+        data.put("blockedAt", formatDisplayDateTime(block.getBlockedAt(), "-"));
+        data.put("lastHistoryAt", formatDisplayDateTime(block.getLastHistoryAt(), "-"));
+        data.put("syncAt", formatDisplayDateTime(block.getSyncedAt(), "-"));
+        return data;
+    }
+
+    private Map<String, Object> toIpRuleEditorData(AdminIpBlockVO rule) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", toStringValue(rule.getIpBlocklistIdx()));
+        data.put("targetDisplay", emptyFallback(firstNonBlank(rule.getTargetDisplayValue(), rule.getBlockTargetKey()), "-"));
+        data.put("targetKey", emptyFallback(rule.getBlockTargetKey(), ""));
+        data.put("ruleAction", emptyFallback(rule.getRuleAction(), "BLOCK"));
+        data.put("controlMode", emptyFallback(rule.getControlMode(), "MANUAL"));
+        data.put("blockCategory", emptyFallback(rule.getBlockCategory(), "MANUAL"));
+        data.put("priority", Integer.toString(rule.getPriority()));
+        data.put("reason", emptyFallback(rule.getReason(), ""));
+        data.put("detailMessage", emptyFallback(rule.getDetailMessage(), ""));
+        data.put("expiresAt", rule.getExpiresAtInputValue());
+        data.put("effectiveStatusLabel", emptyFallback(rule.getEffectiveStatusLabel(), "-"));
+        data.put("finalStateLabel", emptyFallback(rule.getFinalStateLabel(), "-"));
+        data.put("ruleStateLabel", emptyFallback(rule.getRuleStateLabel(), "-"));
+        data.put("batchStatusLabel", emptyFallback(rule.getBatchStatusLabel(), "-"));
+        data.put("batchName", emptyFallback(rule.getBatchName(), "개별 규칙"));
+        data.put("batchCode", emptyFallback(rule.getBatchCode(), ""));
+        data.put("batchId", toStringValue(rule.getIpBlockBatchIdx()));
+        data.put("blockedAt", formatDisplayDateTime(rule.getBlockedAt(), "-"));
+        data.put("expiresDisplay", formatDisplayDateTime(rule.getExpiresAt(), "없음"));
+        data.put("active", Boolean.toString(rule.isActive()));
+        return data;
+    }
+
+    private Map<String, Object> toBatchEditorData(AdminIpBlockBatchVO batch) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("batchId", toStringValue(batch.getIpBlockBatchIdx()));
+        data.put("batchCode", emptyFallback(batch.getBatchCode(), ""));
+        data.put("batchName", emptyFallback(batch.getBatchName(), ""));
+        data.put("sourceType", emptyFallback(batch.getSourceType(), "MANUAL"));
+        data.put("sourceName", emptyFallback(batch.getSourceName(), ""));
+        data.put("batchRuleAction", emptyFallback(batch.getBatchRuleAction(), "BLOCK"));
+        data.put("defaultPriority", Integer.toString(batch.getDefaultRulePriority() != null ? batch.getDefaultRulePriority() : 1));
+        data.put("defaultDisableStrategy", emptyFallback(batch.getDefaultDisableStrategy(), "BATCH_ONLY"));
+        data.put("defaultEnableStrategy", emptyFallback(batch.getDefaultEnableStrategy(), "BATCH_ONLY"));
+        data.put("description", emptyFallback(batch.getDescription(), ""));
+        data.put("statusLabel", emptyFallback(batch.getActiveLabel(), "-"));
+        data.put("createdAt", formatDisplayDateTime(batch.getCreatedAt(), "-"));
+        data.put("updatedAt", formatDisplayDateTime(batch.getUpdatedAt(), "-"));
+        data.put("totalRules", Long.toString(batch.getTotalRuleCount()));
+        data.put("activeRules", Long.toString(batch.getActiveRuleCount()));
+        data.put("effectiveRules", Long.toString(batch.getEffectiveRuleCount()));
+        data.put("expiredRules", Long.toString(batch.getExpiredRuleCount()));
+        return data;
+    }
+
+    private String formatDisplayDateTime(LocalDateTime value, String fallback) {
+        return value == null ? fallback : value.format(DISPLAY_DATE_TIME_FORMATTER);
+    }
+
+    private String toStringValue(Object value) {
+        return value == null ? "" : String.valueOf(value);
+    }
+
+    private String firstNonBlank(String... values) {
+        if (values == null) return null;
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    private String emptyFallback(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
     }
 
     private String normalizeIp(String ip) {

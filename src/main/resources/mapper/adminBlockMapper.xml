@@ -487,6 +487,59 @@
         LIMIT #{limit}
     </select>
 
+
+    <select id="findBlockHistoryById" resultMap="blockHistoryRM">
+        SELECT
+            h.block_idx,
+            h.rule_action,
+            h.control_mode,
+            h.operation_source,
+            h.user_idx,
+            u.user_id,
+            u.nickname,
+            h.block_type,
+            h.blocked_ip,
+            h.is_active AS active,
+            h.reason,
+            h.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            h.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            h.blocked_at,
+            h.released_at,
+            h.expires_at,
+            h.block_request_id,
+            h.block_target_key,
+            h.history_kind,
+            h.block_scope,
+            h.ip_match_type,
+            h.cidr_notation,
+            h.range_start_ip,
+            h.range_end_ip,
+            h.ip_block_batch_idx,
+            h.batch_operation_idx,
+            b.batch_code,
+            b.batch_name,
+            h.list_synced_at,
+            h.before_rule_is_active,
+            h.after_rule_is_active,
+            h.before_batch_is_active,
+            h.after_batch_is_active,
+            h.before_effective_active,
+            h.after_effective_active,
+            h.before_effective_status,
+            h.after_effective_status,
+            h.effective_result,
+            h.control_reason
+        FROM USER_BLOCK_HISTORY h
+        LEFT JOIN USERS u ON u.user_idx = h.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = h.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = h.released_by_user_idx
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = h.ip_block_batch_idx
+        WHERE h.block_idx = #{blockIdx}
+        LIMIT 1
+    </select>
+
     <select id="findIpBlockBatches" resultMap="batchRM">
         SELECT
             b.ip_block_batch_idx,
@@ -659,6 +712,34 @@
         LEFT JOIN USERS lcu ON lcu.user_idx = ip.last_control_by_user_idx
         LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = ip.ip_block_batch_idx
         WHERE ip.ip_blocklist_idx = #{ipBlocklistIdx}
+    </select>
+
+
+    <select id="findCurrentIpRuleByTarget" resultMap="ipBlockRM">
+        SELECT
+            <include refid="ipRuleSelectColumns"/>
+        FROM IP_BLOCKLIST ip
+        LEFT JOIN USERS bu ON bu.user_idx = ip.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = ip.released_by_user_idx
+        LEFT JOIN USERS mu ON mu.user_idx = ip.manual_override_by_user_idx
+        LEFT JOIN USERS lcu ON lcu.user_idx = ip.last_control_by_user_idx
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = ip.ip_block_batch_idx
+        WHERE ip.block_target_key = #{blockTargetKey}
+        ORDER BY CASE
+                     WHEN #{ipBlockBatchIdx} IS NULL AND ip.ip_block_batch_idx IS NULL THEN 0
+                     WHEN #{ipBlockBatchIdx} IS NOT NULL AND ip.ip_block_batch_idx = #{ipBlockBatchIdx} THEN 0
+                     ELSE 1
+                 END ASC,
+                 CASE
+                     WHEN #{ruleAction} IS NOT NULL AND #{ruleAction} != '' AND ip.rule_action = #{ruleAction} THEN 0
+                     ELSE 1
+                 END ASC,
+                 ip.is_effective_active DESC,
+                 ip.is_active DESC,
+                 ip.priority DESC,
+                 ip.updated_at DESC,
+                 ip.ip_blocklist_idx DESC
+        LIMIT 1
     </select>
 
     <select id="findUserBlockById" resultMap="userBlockRM">
@@ -933,12 +1014,40 @@
           AND is_active = 1
     </update>
 
-    <select id="findUserBlockByTargetKey" resultType="org.triptogether.admin.vo.AdminUserBlockVO">
-        SELECT x.block_idx, x.user_idx, x.block_type, x.blocked_ip, x.is_active AS active,
-               x.reason, x.blocked_at, x.released_at, x.expires_at, x.block_request_id,
-               x.block_target_key, x.snapshot_status
+    <select id="findUserBlockByTargetKey" resultMap="userBlockRM">
+        SELECT
+            x.block_idx,
+            x.source_history_block_idx,
+            x.user_idx,
+            u.user_id,
+            u.nickname,
+            u.user_email,
+            x.block_type,
+            x.blocked_ip,
+            x.is_active AS active,
+            x.reason,
+            x.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            x.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            x.blocked_at,
+            x.released_at,
+            x.expires_at,
+            x.block_request_id,
+            x.block_target_key,
+            x.snapshot_status,
+            x.last_history_at,
+            x.synced_at,
+            x.updated_by_user_idx,
+            h.block_scope,
+            h.ip_match_type
         FROM USER_BLOCKLIST x
+        LEFT JOIN USERS u ON u.user_idx = x.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
         WHERE x.block_target_key = #{blockTargetKey}
+        ORDER BY x.last_history_at DESC, x.blocked_at DESC, x.block_idx DESC
         LIMIT 1
     </select>
 

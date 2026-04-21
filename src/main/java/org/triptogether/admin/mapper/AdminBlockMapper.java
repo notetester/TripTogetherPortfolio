@@ -29,8 +29,12 @@ public interface AdminBlockMapper {
     AdminIpBlockBatchVO findIpBlockBatchById(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
     List<AdminIpBlockVO> findIpRulesByBatchId(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
     AdminIpBlockVO findIpBlockById(@Param("ipBlocklistIdx") Long ipBlocklistIdx);
+    AdminIpBlockVO findCurrentIpRuleByTarget(@Param("blockTargetKey") String blockTargetKey,
+                                             @Param("ruleAction") String ruleAction,
+                                             @Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
     AdminUserBlockVO findUserBlockById(@Param("blockIdx") Long blockIdx);
     AdminUserBlockVO findLatestActiveUserBlockByUserIdx(@Param("userIdx") Long userIdx);
+    AdminBlockHistoryVO findBlockHistoryById(@Param("blockIdx") Long blockIdx);
 
     void insertGlobalBlockHistory(AdminBlockHistoryVO history);
 
