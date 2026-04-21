@@ -25,7 +25,28 @@
     <div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>시각</th><th>회원</th><th>도메인</th><th>분류</th><th>활동코드</th><th>URI</th><th>메서드</th><th>상태</th><th>IP</th><th>흐름</th></tr></thead><tbody>
       <c:forEach items="${list}" var="item"><tr>
         <td><fmt:formatDate value="${item.createdAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></td>
-        <td><div class="mem-name"><c:out value="${empty item.nickname ? '비회원' : item.nickname}"/></div><div class="mem-uid"><c:out value="${empty item.userId ? '-' : '@'.concat(item.userId)}"/></div></td>
+        <td>
+          <c:choose>
+            <c:when test="${not empty item.userIdx}">
+              <button type="button"
+                      class="adm-inline-link js-open-member-context"
+                      data-user-idx="${item.userIdx}"
+                      data-default-tab="activity"
+                      style="font-weight:700;color:#93c5fd;"><c:out value="${item.nickname}"/></button>
+              <div class="mem-uid">
+                <button type="button"
+                        class="adm-inline-link js-open-member-context"
+                        data-user-idx="${item.userIdx}"
+                        data-default-tab="activity"
+                        style="color:#94a3b8;">@${item.userId}</button>
+              </div>
+            </c:when>
+            <c:otherwise>
+              <div class="mem-name">비회원</div>
+              <div class="mem-uid">-</div>
+            </c:otherwise>
+          </c:choose>
+        </td>
         <td><c:out value="${empty item.activityDomain ? '-' : item.activityDomain}"/></td>
         <td>${item.activityType}</td>
         <td>
@@ -42,7 +63,18 @@
         <td style="max-width:300px;word-break:break-all;"><c:out value="${item.requestUri}"/></td>
         <td>${item.httpMethod}</td>
         <td><c:out value="${item.responseStatus}"/> / <c:out value="${item.success ? 'SUCCESS' : 'FAIL'}"/></td>
-        <td><c:out value="${empty item.ipAddress ? '-' : item.ipAddress}"/></td>
+        <td>
+          <c:choose>
+            <c:when test="${not empty item.ipAddress}">
+              <button type="button"
+                      class="adm-inline-link js-open-ip-context"
+                      data-ip-address="${item.ipAddress}"
+                      data-default-tab="activity"
+                      style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
+            </c:when>
+            <c:otherwise>-</c:otherwise>
+          </c:choose>
+        </td>
         <td style="font-size:12px;color:#64748b;">
           <div><c:out value="${item.requestId}"/></div>
           <c:if test="${not empty item.flowTraceId}">
@@ -55,5 +87,6 @@
     <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info">${paging.currentPage} / ${paging.totalPage} 페이지</span></div></c:if>
   </div>
 </div>
+<%@ include file="../common/context-modal.jspf" %>
 <script>function goPage(page){const params=new URLSearchParams(window.location.search);params.set('page',page);location.href='${pageContext.request.contextPath}/admin/activity-logs?'+params.toString();}</script>
 <%@ include file="../layout-close.jsp" %>

@@ -79,8 +79,18 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.userIdx}">
-                                    <div class="mem-name">${item.nickname}</div>
-                                    <div class="mem-uid">@${item.userId}</div>
+                                    <button type="button"
+                                            class="adm-inline-link js-open-member-context"
+                                            data-user-idx="${item.userIdx}"
+                                            data-default-tab="security"
+                                            style="font-weight:700;color:#93c5fd;">${item.nickname}</button>
+                                    <div class="mem-uid">
+                                        <button type="button"
+                                                class="adm-inline-link js-open-member-context"
+                                                data-user-idx="${item.userIdx}"
+                                                data-default-tab="security"
+                                                style="color:#94a3b8;">@${item.userId}</button>
+                                    </div>
                                 </c:when>
                                 <c:otherwise><span style="color:#64748b;">미식별</span></c:otherwise>
                             </c:choose>
@@ -88,8 +98,18 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.actorUserIdx}">
-                                    <div class="mem-name">${item.actorNickname}</div>
-                                    <div class="mem-uid">@${item.actorUserId}</div>
+                                    <button type="button"
+                                            class="adm-inline-link js-open-member-context"
+                                            data-user-idx="${item.actorUserIdx}"
+                                            data-default-tab="security"
+                                            style="font-weight:700;color:#93c5fd;">${item.actorNickname}</button>
+                                    <div class="mem-uid">
+                                        <button type="button"
+                                                class="adm-inline-link js-open-member-context"
+                                                data-user-idx="${item.actorUserIdx}"
+                                                data-default-tab="security"
+                                                style="color:#94a3b8;">@${item.actorUserId}</button>
+                                    </div>
                                 </c:when>
                                 <c:otherwise><span style="color:#64748b;">비로그인/시스템</span></c:otherwise>
                             </c:choose>
@@ -105,7 +125,18 @@
                             </c:choose>
                         </td>
                         <td><c:out value="${empty item.failReason ? '-' : item.failReason}"/></td>
-                        <td><c:out value="${empty item.ipAddress ? '-' : item.ipAddress}"/></td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.ipAddress}">
+                                    <button type="button"
+                                            class="adm-inline-link js-open-ip-context"
+                                            data-ip-address="${item.ipAddress}"
+                                            data-default-tab="security"
+                                            style="color:#93c5fd;">${item.ipAddress}</button>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
@@ -127,6 +158,8 @@
         </c:if>
     </div>
 </div>
+
+<%@ include file="../common/context-modal.jspf" %>
 
 <script>
 function goPage(page) {

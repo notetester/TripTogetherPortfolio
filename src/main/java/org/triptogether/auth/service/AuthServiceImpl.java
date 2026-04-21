@@ -1339,7 +1339,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void processDormantAccounts() {
-        java.time.LocalDateTime cutoff = java.time.LocalDateTime.now().minusYears(1);
+        processDormantAccounts(365);
+    }
+
+    @Override
+    public void processDormantAccounts(int inactiveDays) {
+        int normalizedDays = Math.max(inactiveDays, 1);
+        java.time.LocalDateTime cutoff = java.time.LocalDateTime.now().minusDays(normalizedDays);
         List<UsersVO> targets = authMapper.findDormantCandidates(cutoff);
         for (UsersVO target : targets) {
             authMapper.markUserDormant(target.getUserIdx());

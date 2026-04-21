@@ -42,7 +42,28 @@
     <div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>발급시각</th><th>회원</th><th>목적</th><th>대상 이메일</th><th>사용</th><th>사용시각</th><th>만료시각</th><th>요청ID</th></tr></thead><tbody>
       <c:forEach items="${list}" var="item"><tr>
         <td><fmt:formatDate value="${item.createdAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></td>
-        <td><div class="mem-name"><c:out value="${empty item.nickname ? '미식별 요청' : item.nickname}"/></div><div class="mem-uid"><c:out value="${empty item.userId ? '-' : '@'.concat(item.userId)}"/></div></td>
+        <td>
+          <c:choose>
+            <c:when test="${not empty item.userIdx}">
+              <button type="button"
+                      class="adm-inline-link js-open-member-context"
+                      data-user-idx="${item.userIdx}"
+                      data-default-tab="emailTokens"
+                      style="font-weight:700;color:#93c5fd;"><c:out value="${item.nickname}"/></button>
+              <div class="mem-uid">
+                <button type="button"
+                        class="adm-inline-link js-open-member-context"
+                        data-user-idx="${item.userIdx}"
+                        data-default-tab="emailTokens"
+                        style="color:#94a3b8;">@${item.userId}</button>
+              </div>
+            </c:when>
+            <c:otherwise>
+              <div class="mem-name">미식별 요청</div>
+              <div class="mem-uid">-</div>
+            </c:otherwise>
+          </c:choose>
+        </td>
         <td>${item.purpose}</td><td><c:out value="${item.email}"/></td><td>${item.used ? 'USED' : 'UNUSED'}</td>
         <td><c:choose><c:when test="${not empty item.usedAtDate}"><fmt:formatDate value="${item.usedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
         <td><c:choose><c:when test="${not empty item.expiredAtDate}"><fmt:formatDate value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
@@ -53,5 +74,6 @@
     <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info">${paging.currentPage} / ${paging.totalPage} 페이지</span></div></c:if>
   </div>
 </div>
+<%@ include file="../common/context-modal.jspf" %>
 <script>function goPage(page){const params=new URLSearchParams(window.location.search);params.set('page',page);location.href='${pageContext.request.contextPath}/admin/email-tokens?'+params.toString();}</script>
 <%@ include file="../layout-close.jsp" %>

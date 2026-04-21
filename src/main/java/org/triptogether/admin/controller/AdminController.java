@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.admin.service.AdminExploreService;
+import org.triptogether.admin.service.AdminPolicyService;
 import org.triptogether.admin.service.AdminService;
 import org.triptogether.admin.vo.*;
 import org.triptogether.community.service.CommunityService;
@@ -40,6 +41,7 @@ import java.util.Map;
 public class AdminController {
 
     private final AdminService adminService;
+    private final AdminPolicyService adminPolicyService;
     private final ReportService reportService;
     private final CommunityService communityService;
     private final ExploreService exploreService;
@@ -102,16 +104,48 @@ public class AdminController {
     @GetMapping("/members/{userIdx}")
     @ResponseBody
     public Map<String, Object> memberDetail(@PathVariable Long userIdx) {
+        Map<String, Object> context = adminService.getMemberContext(userIdx);
         Map<String, Object> result = new HashMap<>();
-        AdminMemberVO member = adminService.getMemberDetail(userIdx);
-        if (member == null) {
+        if (context == null) {
             result.put("success", false);
             result.put("message", "회원을 찾을 수 없습니다.");
             return result;
         }
         result.put("success", true);
-        result.put("member", member);
-        result.put("history", adminService.getLoginHistory(userIdx));
+        result.putAll(context);
+        return result;
+    }
+
+    @PostMapping("/members/{userIdx}/profile")
+    @ResponseBody
+    public Map<String, Object> updateMemberProfile(@PathVariable Long userIdx,
+                                                   @RequestParam String nickname,
+                                                   @RequestParam(required = false) String nationality,
+                                                   @RequestParam(required = false) String preferredLang) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            adminService.updateMemberProfile(userIdx, nickname, nationality, preferredLang);
+            result.put("success", true);
+            result.put("message", "회원 기본 정보를 저장했습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/ips/context")
+    @ResponseBody
+    public Map<String, Object> ipContext(@RequestParam String ipAddress) {
+        Map<String, Object> context = adminService.getIpContext(ipAddress);
+        Map<String, Object> result = new HashMap<>();
+        if (context == null) {
+            result.put("success", false);
+            result.put("message", "IP 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        result.put("success", true);
+        result.putAll(context);
         return result;
     }
 
@@ -547,6 +581,53 @@ public class AdminController {
         model.addAllAttributes(adminService.getActivityLogList(search));
         model.addAttribute("activeMenu", "activityLogs");
         return "admin/activity-log/list";
+    }
+
+    @GetMapping("/policies")
+    public String policyList(Model model) {
+        model.addAllAttributes(adminPolicyService.getPolicyDashboard());
+        model.addAttribute("activeMenu", "policies");
+        return "admin/policy/list";
+    }
+
+    @PostMapping("/policies/{policyCode}")
+    @ResponseBody
+    public Map<String, Object> updatePolicy(@PathVariable String policyCode,
+                                            @RequestParam String configJson,
+                                            @RequestParam String scheduleType,
+                                            @RequestParam(required = false) Integer scheduleIntervalHours,
+                                            @RequestParam(required = false) Integer scheduleDayOfMonth,
+                                            @RequestParam(required = false) String scheduleTime,
+                                            @RequestParam(defaultValue = "false") boolean active,
+                                            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+            adminPolicyService.updatePolicy(policyCode, configJson, scheduleType, scheduleIntervalHours, scheduleDayOfMonth,
+                    scheduleTime, active, loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", "운영 정책을 저장했습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/policies/{policyCode}/run")
+    @ResponseBody
+    public Map<String, Object> runPolicy(@PathVariable String policyCode, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+            adminPolicyService.runPolicyNow(policyCode, loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", "정책을 즉시 실행했습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
     }
 
 }

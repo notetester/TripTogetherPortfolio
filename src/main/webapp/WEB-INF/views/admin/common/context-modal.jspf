@@ -1,0 +1,527 @@
+<div class="adm-modal-overlay" id="adminMemberContextModal">
+    <div class="adm-modal" style="max-width:960px;">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="adminMemberContextTitle">회원 상세</div>
+            <button class="adm-modal-close" type="button" onclick="closeAdminContextModal('adminMemberContextModal')">✕</button>
+        </div>
+        <div class="adm-modal-body" id="adminMemberContextBody">
+            <div style="text-align:center;padding:40px;color:#64748b;">불러오는 중...</div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeAdminContextModal('adminMemberContextModal')">닫기</button>
+        </div>
+    </div>
+</div>
+
+<div class="adm-modal-overlay" id="adminIpContextModal">
+    <div class="adm-modal" style="max-width:920px;">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="adminIpContextTitle">IP 상세</div>
+            <button class="adm-modal-close" type="button" onclick="closeAdminContextModal('adminIpContextModal')">✕</button>
+        </div>
+        <div class="adm-modal-body" id="adminIpContextBody">
+            <div style="text-align:center;padding:40px;color:#64748b;">불러오는 중...</div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeAdminContextModal('adminIpContextModal')">닫기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const ADMIN_CONTEXT_BASE = '${pageContext.request.contextPath}';
+
+function escapeAdminContextHtml(value) {
+    if (value == null) return '';
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatAdminContextDate(value) {
+    if (!value) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return escapeAdminContextHtml(value);
+    return date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+}
+
+function formatAdminContextShortDate(value) {
+    if (!value) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return escapeAdminContextHtml(value);
+    return date.toLocaleString('ko-KR', {
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+}
+
+function closeAdminContextModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove('open');
+}
+
+function adminContextFetch(url) {
+    return fetch(url, { headers: { 'Accept': 'application/json' } }).then(async function(response) {
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            throw new Error('상세 응답을 해석하지 못했습니다.');
+        }
+        if (!response.ok || !data.success) {
+            throw new Error((data && data.message) || '상세 정보를 불러오지 못했습니다.');
+        }
+        return data;
+    });
+}
+
+function renderContextTimeline(items, renderItem, emptyMessage) {
+    if (!Array.isArray(items) || !items.length) {
+        return '<div style="text-align:center;padding:28px;color:#64748b;">' + emptyMessage + '</div>';
+    }
+    return '<div style="display:flex;flex-direction:column;gap:10px;">' + items.map(renderItem).join('') + '</div>';
+}
+
+function renderMemberInfoCard(member) {
+    return ''
+        + '<div class="detail-grid">'
+        + '<div class="detail-item"><div class="detail-label">회원 번호</div><div class="detail-value">#' + escapeAdminContextHtml(member.userIdx) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">아이디</div><div class="detail-value">' + (member.userId ? '@' + escapeAdminContextHtml(member.userId) : '소셜 전용') + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">닉네임</div><div class="detail-value">' + escapeAdminContextHtml(member.nickname || '-') + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">이메일</div><div class="detail-value">' + escapeAdminContextHtml(member.userEmail || '-') + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">상태</div><div class="detail-value"><span class="status-badge ' + escapeAdminContextHtml(member.accountStatus || 'ACTIVE') + '">' + escapeAdminContextHtml(member.accountStatus || '-') + '</span></div></div>'
+        + '<div class="detail-item"><div class="detail-label">권한</div><div class="detail-value"><span class="role-badge ' + escapeAdminContextHtml(member.userRole || 'USER') + '">' + escapeAdminContextHtml(member.userRole || '-') + '</span></div></div>'
+        + '<div class="detail-item"><div class="detail-label">국적</div><div class="detail-value">' + escapeAdminContextHtml(member.nationality || '-') + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">선호 언어</div><div class="detail-value">' + escapeAdminContextHtml(member.preferredLang || '-') + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">가입일</div><div class="detail-value">' + formatAdminContextDate(member.createdAt) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">최근 로그인</div><div class="detail-value">' + formatAdminContextDate(member.lastLoginAt) + '</div></div>'
+        + '</div>';
+}
+
+function renderLoginAuditItem(item) {
+    return ''
+        + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+        + '<div><strong>' + escapeAdminContextHtml(item.eventType || 'LOGIN') + '</strong> / ' + escapeAdminContextHtml(item.authProvider || item.authType || '-') + '</div>'
+        + '<div style="font-size:12px;color:#94a3b8;">' + formatAdminContextShortDate(item.loginAt) + '</div>'
+        + '</div>'
+        + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">입력값: ' + escapeAdminContextHtml(item.loginIdentifier || '-') + '</div>'
+        + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">IP: ' + escapeAdminContextHtml(item.ipAddress || '-') + ' / 결과: ' + escapeAdminContextHtml(item.success ? 'SUCCESS' : 'FAIL') + '</div>'
+        + (item.failReason ? '<div style="margin-top:4px;font-size:12px;color:#fca5a5;">' + escapeAdminContextHtml(item.failReason) + '</div>' : '')
+        + '</div>';
+}
+
+function renderSecurityAuditItem(item) {
+    return ''
+        + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+        + '<div><strong>' + escapeAdminContextHtml(item.eventType || '-') + '</strong> / ' + escapeAdminContextHtml(item.eventStage || '-') + '</div>'
+        + '<div style="font-size:12px;color:#94a3b8;">' + formatAdminContextShortDate(item.occurredAt) + '</div>'
+        + '</div>'
+        + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">입력값: ' + escapeAdminContextHtml(item.inputIdentifier || '-') + '</div>'
+        + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">대상 이메일: ' + escapeAdminContextHtml(item.targetEmail || '-') + ' / 결과: ' + escapeAdminContextHtml(item.success ? 'SUCCESS' : 'FAIL') + '</div>'
+        + (item.failReason ? '<div style="margin-top:4px;font-size:12px;color:#fca5a5;">' + escapeAdminContextHtml(item.failReason) + '</div>' : '')
+        + '</div>';
+}
+
+function renderEmailRequestItem(item) {
+    return ''
+        + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+        + '<div><strong>' + escapeAdminContextHtml(item.purpose || '-') + '</strong> / ' + escapeAdminContextHtml(item.status || '-') + '</div>'
+        + '<div style="font-size:12px;color:#94a3b8;">' + formatAdminContextShortDate(item.requestedAt) + '</div>'
+        + '</div>'
+        + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">요청 이메일: ' + escapeAdminContextHtml(item.pendingEmail || '-') + '</div>'
+        + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">IP: ' + escapeAdminContextHtml(item.ipAddress || '-') + ' / 요청 ID: ' + escapeAdminContextHtml(item.requestId || '-') + '</div>'
+        + '</div>';
+}
+
+function renderEmailTokenItem(item) {
+    return ''
+        + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+        + '<div><strong>' + escapeAdminContextHtml(item.purpose || '-') + '</strong> / ' + escapeAdminContextHtml(item.used ? 'USED' : 'UNUSED') + '</div>'
+        + '<div style="font-size:12px;color:#94a3b8;">' + formatAdminContextShortDate(item.createdAt) + '</div>'
+        + '</div>'
+        + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">대상 이메일: ' + escapeAdminContextHtml(item.email || '-') + '</div>'
+        + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">만료: ' + formatAdminContextDate(item.expiredAt) + '</div>'
+        + '</div>';
+}
+
+function renderActivityItem(item) {
+    return ''
+        + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+        + '<div><strong>' + escapeAdminContextHtml(item.activityCode || '-') + '</strong> / ' + escapeAdminContextHtml(item.activityDomain || item.activityType || '-') + '</div>'
+        + '<div style="font-size:12px;color:#94a3b8;">' + formatAdminContextShortDate(item.createdAt) + '</div>'
+        + '</div>'
+        + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">URI: ' + escapeAdminContextHtml(item.requestUri || '-') + '</div>'
+        + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">IP: ' + escapeAdminContextHtml(item.ipAddress || '-') + ' / 상태: ' + escapeAdminContextHtml(item.responseStatus || '-') + '</div>'
+        + '</div>';
+}
+
+function renderUserBlockItem(item) {
+    return ''
+        + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+        + '<div><strong>' + escapeAdminContextHtml(item.blockType || '-') + '</strong> / ' + escapeAdminContextHtml(item.active ? 'ACTIVE' : 'INACTIVE') + '</div>'
+        + '<div style="font-size:12px;color:#94a3b8;">' + formatAdminContextShortDate(item.blockedAt) + '</div>'
+        + '</div>'
+        + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">사유: ' + escapeAdminContextHtml(item.reason || '-') + '</div>'
+        + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">IP: ' + escapeAdminContextHtml(item.blockedIp || '-') + '</div>'
+        + '</div>';
+}
+
+function renderBlockHistoryItem(item) {
+    return ''
+        + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+        + '<div><strong>' + escapeAdminContextHtml(item.historyKind || '-') + '</strong> / ' + escapeAdminContextHtml(item.blockType || item.ruleAction || '-') + '</div>'
+        + '<div style="font-size:12px;color:#94a3b8;">' + formatAdminContextShortDate(item.blockedAt || item.createdAt) + '</div>'
+        + '</div>'
+        + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">사유: ' + escapeAdminContextHtml(item.reason || item.controlReason || '-') + '</div>'
+        + '</div>';
+}
+
+function renderIpRuleItem(item) {
+    return ''
+        + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+        + '<div><strong>' + escapeAdminContextHtml(item.ruleAction || '-') + '</strong> / ' + escapeAdminContextHtml(item.matchType || '-') + '</div>'
+        + '<div style="font-size:12px;color:#94a3b8;">' + escapeAdminContextHtml(item.effectiveStatus || '-') + '</div>'
+        + '</div>'
+        + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">사유: ' + escapeAdminContextHtml(item.reason || '-') + '</div>'
+        + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">배치: ' + escapeAdminContextHtml(item.batchName || '-') + ' / 우선순위: ' + escapeAdminContextHtml(item.priority || '-') + '</div>'
+        + '</div>';
+}
+
+function switchAdminContextTab(modalId, tabId, button) {
+    const modal = document.getElementById(modalId);
+    modal.querySelectorAll('.adm-tab').forEach(function(tab) { tab.classList.remove('active'); });
+    modal.querySelectorAll('.admin-context-tab-pane').forEach(function(pane) { pane.style.display = 'none'; });
+    button.classList.add('active');
+    const pane = modal.querySelector('[data-context-pane="' + tabId + '"]');
+    if (pane) pane.style.display = '';
+}
+
+function buildMemberActions(member) {
+    return ''
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">'
+        + '<div style="padding:16px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="font-weight:700;margin-bottom:10px;">회원 기본 정보 수정</div>'
+        + '<div class="adm-filter-label">닉네임</div><input class="adm-input js-member-profile-nickname" type="text" value="' + escapeAdminContextHtml(member.nickname || '') + '">'
+        + '<div class="adm-filter-label" style="margin-top:10px;">국적</div><input class="adm-input js-member-profile-nationality" type="text" value="' + escapeAdminContextHtml(member.nationality || '') + '">'
+        + '<div class="adm-filter-label" style="margin-top:10px;">선호 언어</div><input class="adm-input js-member-profile-language" type="text" value="' + escapeAdminContextHtml(member.preferredLang || '') + '">'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveAdminMemberProfile(' + escapeAdminContextHtml(member.userIdx) + ', this)">기본 정보 저장</button>'
+        + '</div>'
+        + '<div style="padding:16px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="font-weight:700;margin-bottom:10px;">상태 / 권한 변경</div>'
+        + '<div class="adm-filter-label">계정 상태</div>'
+        + '<div style="display:flex;gap:8px;"><select class="adm-select js-member-status" style="width:100%;"><option value="ACTIVE">ACTIVE</option><option value="DORMANT">DORMANT</option><option value="BLOCKED">BLOCKED</option><option value="DELETED">DELETED</option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="saveAdminMemberStatus(' + escapeAdminContextHtml(member.userIdx) + ', this)">적용</button></div>'
+        + '<div class="adm-filter-label" style="margin-top:10px;">권한</div>'
+        + '<select class="adm-select js-member-role" style="width:100%;"><option value="USER">USER</option><option value="BUSINESS">BUSINESS</option><option value="PARTNER">PARTNER</option><option value="BOT">BOT</option><option value="ADMIN">ADMIN</option></select>'
+        + '<div class="adm-filter-label" style="margin-top:10px;">권한 변경 사유</div>'
+        + '<input class="adm-input js-member-role-reason" type="text" maxlength="500" placeholder="변경 사유를 입력해주세요.">'
+        + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="saveAdminMemberRole(' + escapeAdminContextHtml(member.userIdx) + ', this)">권한 변경</button>'
+        + '</div>'
+        + '<div style="padding:16px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="font-weight:700;margin-bottom:10px;">즉시 차단</div>'
+        + '<div class="adm-filter-label">차단 유형</div>'
+        + '<select class="adm-select js-member-block-type" style="width:100%;"><option value="USER_ONLY">아이디 차단</option><option value="IP_ONLY">IP 차단</option><option value="USER_IP">아이디 + IP 차단</option></select>'
+        + '<div class="adm-filter-label" style="margin-top:10px;">차단 IP</div>'
+        + '<input class="adm-input js-member-block-ip" type="text" placeholder="예: 203.0.113.10">'
+        + '<div class="adm-filter-label" style="margin-top:10px;">차단 만료</div>'
+        + '<input class="adm-input js-member-block-expires" type="datetime-local">'
+        + '<div class="adm-filter-label" style="margin-top:10px;">사유</div>'
+        + '<textarea class="adm-input js-member-block-reason" style="min-height:88px;resize:vertical;"></textarea>'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveAdminMemberBlock(' + escapeAdminContextHtml(member.userIdx) + ', this)">차단 적용</button>'
+        + '</div>'
+        + '</div>';
+}
+
+function buildIpActions(ipAddress) {
+    return ''
+        + '<div style="padding:16px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="font-weight:700;margin-bottom:10px;">IP 즉시 조치</div>'
+        + '<div class="adm-filter-label">대상 IP</div><div style="font-size:13px;color:#cbd5e1;">' + escapeAdminContextHtml(ipAddress) + '</div>'
+        + '<div class="adm-filter-label" style="margin-top:10px;">정책 동작</div>'
+        + '<select class="adm-select js-ip-rule-action" style="width:100%;"><option value="BLOCK">차단</option><option value="ALLOW">허용</option></select>'
+        + '<div class="adm-filter-label" style="margin-top:10px;">분류</div>'
+        + '<select class="adm-select js-ip-rule-category" style="width:100%;"><option value="MANUAL">MANUAL</option><option value="SECURITY">SECURITY</option><option value="ABUSE">ABUSE</option><option value="SPAM">SPAM</option></select>'
+        + '<div class="adm-filter-label" style="margin-top:10px;">우선순위</div>'
+        + '<input class="adm-input js-ip-rule-priority" type="number" min="1" max="9999" value="100">'
+        + '<div class="adm-filter-label" style="margin-top:10px;">만료 시각</div>'
+        + '<input class="adm-input js-ip-rule-expires" type="datetime-local">'
+        + '<div class="adm-filter-label" style="margin-top:10px;">사유</div>'
+        + '<input class="adm-input js-ip-rule-reason" type="text" maxlength="255" placeholder="즉시 조치 사유">'
+        + '<div class="adm-filter-label" style="margin-top:10px;">상세 메모</div>'
+        + '<textarea class="adm-input js-ip-rule-detail" style="min-height:88px;resize:vertical;" placeholder="세부 메모"></textarea>'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveAdminIpRule(\'' + escapeAdminContextHtml(ipAddress) + '\', this)">정책 생성</button>'
+        + '</div>';
+}
+
+function renderMemberContext(context, defaultTab) {
+    const member = context.member || {};
+    const tabs = [
+        { key: 'info', label: '기본 정보', content: renderMemberInfoCard(member) },
+        { key: 'logins', label: '로그인', content: renderContextTimeline(context.loginAudits || context.history || [], renderLoginAuditItem, '로그인/로그아웃 이력이 없습니다.') },
+        { key: 'security', label: '보안 이력', content: renderContextTimeline(context.securityAudits || [], renderSecurityAuditItem, '보안 이력이 없습니다.') },
+        { key: 'emailRequests', label: '이메일 요청', content: renderContextTimeline(context.emailRequests || [], renderEmailRequestItem, '이메일 요청 이력이 없습니다.') },
+        { key: 'emailTokens', label: '이메일 토큰', content: renderContextTimeline(context.emailTokens || [], renderEmailTokenItem, '이메일 토큰 이력이 없습니다.') },
+        { key: 'activity', label: '활동 로그', content: renderContextTimeline(context.activityLogs || [], renderActivityItem, '활동 로그가 없습니다.') },
+        { key: 'blocks', label: '차단', content: renderContextTimeline(context.recentBlocks || [], renderUserBlockItem, '차단 이력이 없습니다.') },
+        { key: 'actions', label: '즉시 조치', content: buildMemberActions(member) }
+    ];
+    const activeKey = tabs.some(function(tab) { return tab.key === defaultTab; }) ? defaultTab : 'info';
+    return ''
+        + '<div class="adm-tabs">' + tabs.map(function(tab) {
+            return '<button type="button" class="adm-tab ' + (tab.key === activeKey ? 'active' : '') + '" onclick="switchAdminContextTab(\'adminMemberContextModal\', \'' + tab.key + '\', this)">' + tab.label + '</button>';
+        }).join('') + '</div>'
+        + tabs.map(function(tab) {
+            return '<div class="admin-context-tab-pane" data-context-pane="' + tab.key + '" style="display:' + (tab.key === activeKey ? 'block' : 'none') + ';margin-top:16px;">' + tab.content + '</div>';
+        }).join('');
+}
+
+function renderIpContext(context, defaultTab) {
+    const ipAddress = context.ipAddress || '-';
+    const tabs = [
+        { key: 'logins', label: '로그인', content: renderContextTimeline(context.loginAudits || [], renderLoginAuditItem, '이 IP의 인증 이력이 없습니다.') },
+        { key: 'security', label: '보안 이력', content: renderContextTimeline(context.securityAudits || [], renderSecurityAuditItem, '이 IP의 보안 이력이 없습니다.') },
+        { key: 'emailRequests', label: '이메일 요청', content: renderContextTimeline(context.emailRequests || [], renderEmailRequestItem, '이 IP의 이메일 요청 이력이 없습니다.') },
+        { key: 'emailTokens', label: '이메일 토큰', content: renderContextTimeline(context.emailTokens || [], renderEmailTokenItem, '이 IP의 이메일 토큰 이력이 없습니다.') },
+        { key: 'activity', label: '활동 로그', content: renderContextTimeline(context.activityLogs || [], renderActivityItem, '이 IP의 활동 로그가 없습니다.') },
+        { key: 'blocks', label: '차단/정책', content: renderContextTimeline(context.blockHistories || [], renderBlockHistoryItem, '관련 차단 이력이 없습니다.') + '<div style="margin-top:12px;"></div>' + renderContextTimeline(context.ipRules || [], renderIpRuleItem, '현재 연결된 IP 정책이 없습니다.') },
+        { key: 'actions', label: '즉시 조치', content: buildIpActions(ipAddress) }
+    ];
+    const activeKey = tabs.some(function(tab) { return tab.key === defaultTab; }) ? defaultTab : 'logins';
+    return ''
+        + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);margin-bottom:16px;">'
+        + '<div style="font-size:12px;color:#94a3b8;">대상 IP</div>'
+        + '<div style="font-size:20px;font-weight:700;margin-top:4px;">' + escapeAdminContextHtml(ipAddress) + '</div>'
+        + '</div>'
+        + '<div class="adm-tabs">' + tabs.map(function(tab) {
+            return '<button type="button" class="adm-tab ' + (tab.key === activeKey ? 'active' : '') + '" onclick="switchAdminContextTab(\'adminIpContextModal\', \'' + tab.key + '\', this)">' + tab.label + '</button>';
+        }).join('') + '</div>'
+        + tabs.map(function(tab) {
+            return '<div class="admin-context-tab-pane" data-context-pane="' + tab.key + '" style="display:' + (tab.key === activeKey ? 'block' : 'none') + ';margin-top:16px;">' + tab.content + '</div>';
+        }).join('');
+}
+
+async function openAdminMemberContext(userIdx, defaultTab) {
+    if (!userIdx) return;
+    const modal = document.getElementById('adminMemberContextModal');
+    const body = document.getElementById('adminMemberContextBody');
+    modal.classList.add('open');
+    body.innerHTML = '<div style="text-align:center;padding:40px;color:#64748b;">불러오는 중...</div>';
+    try {
+        const data = await adminContextFetch(ADMIN_CONTEXT_BASE + '/admin/members/' + encodeURIComponent(userIdx));
+        document.getElementById('adminMemberContextTitle').textContent = (data.member && data.member.nickname ? data.member.nickname : '회원') + ' 상세 정보';
+        body.innerHTML = renderMemberContext(data, defaultTab || 'info');
+        const statusSelect = body.querySelector('.js-member-status');
+        const roleSelect = body.querySelector('.js-member-role');
+        if (statusSelect && data.member) statusSelect.value = data.member.accountStatus || 'ACTIVE';
+        if (roleSelect && data.member) roleSelect.value = data.member.userRole || 'USER';
+    } catch (error) {
+        body.innerHTML = '<div style="text-align:center;padding:40px;color:#f87171;">' + escapeAdminContextHtml(error.message || '회원 상세 정보를 불러오지 못했습니다.') + '</div>';
+    }
+}
+
+async function openAdminIpContext(ipAddress, defaultTab) {
+    if (!ipAddress) return;
+    const modal = document.getElementById('adminIpContextModal');
+    const body = document.getElementById('adminIpContextBody');
+    modal.classList.add('open');
+    body.innerHTML = '<div style="text-align:center;padding:40px;color:#64748b;">불러오는 중...</div>';
+    try {
+        const data = await adminContextFetch(ADMIN_CONTEXT_BASE + '/admin/ips/context?ipAddress=' + encodeURIComponent(ipAddress));
+        document.getElementById('adminIpContextTitle').textContent = (data.ipAddress || ipAddress) + ' 상세 정보';
+        body.innerHTML = renderIpContext(data, defaultTab || 'logins');
+    } catch (error) {
+        body.innerHTML = '<div style="text-align:center;padding:40px;color:#f87171;">' + escapeAdminContextHtml(error.message || 'IP 상세 정보를 불러오지 못했습니다.') + '</div>';
+    }
+}
+
+async function saveAdminMemberProfile(userIdx, button) {
+    const card = button.closest('.admin-context-tab-pane');
+    const nickname = card.querySelector('.js-member-profile-nickname').value.trim();
+    const nationality = card.querySelector('.js-member-profile-nationality').value.trim();
+    const preferredLang = card.querySelector('.js-member-profile-language').value.trim();
+    button.disabled = true;
+    try {
+        const response = await fetch(ADMIN_CONTEXT_BASE + '/admin/members/' + userIdx + '/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ nickname, nationality, preferredLang })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            adm_toast(data.message || '회원 기본 정보를 저장했습니다.');
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            adm_toast(data.message || '회원 기본 정보 저장에 실패했습니다.', 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        adm_toast('회원 기본 정보 저장 중 오류가 발생했습니다.', 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+async function saveAdminMemberStatus(userIdx, button) {
+    const card = button.closest('.admin-context-tab-pane');
+    const status = card.querySelector('.js-member-status').value;
+    if (!confirm('이 회원의 상태를 ' + status + '로 변경할까요?')) return;
+    button.disabled = true;
+    try {
+        const response = await fetch(ADMIN_CONTEXT_BASE + '/admin/members/' + userIdx + '/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ status })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            adm_toast(data.message || '회원 상태를 변경했습니다.');
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            adm_toast(data.message || '회원 상태 변경에 실패했습니다.', 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        adm_toast('회원 상태 변경 중 오류가 발생했습니다.', 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+async function saveAdminMemberRole(userIdx, button) {
+    const card = button.closest('.admin-context-tab-pane');
+    const role = card.querySelector('.js-member-role').value;
+    const reason = card.querySelector('.js-member-role-reason').value.trim();
+    if (!reason) {
+        adm_toast('권한 변경 사유를 입력해주세요.', 'error');
+        return;
+    }
+    button.disabled = true;
+    try {
+        const response = await fetch(ADMIN_CONTEXT_BASE + '/admin/members/' + userIdx + '/role', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ role, reason })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            adm_toast(data.message || '권한을 변경했습니다.');
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            adm_toast(data.message || '권한 변경에 실패했습니다.', 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        adm_toast('권한 변경 중 오류가 발생했습니다.', 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+async function saveAdminMemberBlock(userIdx, button) {
+    const card = button.closest('.admin-context-tab-pane');
+    const blockType = card.querySelector('.js-member-block-type').value;
+    const blockedIp = card.querySelector('.js-member-block-ip').value.trim();
+    const expiresAt = card.querySelector('.js-member-block-expires').value;
+    const reason = card.querySelector('.js-member-block-reason').value.trim();
+    if ((blockType === 'IP_ONLY' || blockType === 'USER_IP') && !blockedIp) {
+        adm_toast('IP 차단 유형은 차단 IP를 입력해야 합니다.', 'error');
+        return;
+    }
+    button.disabled = true;
+    try {
+        const response = await fetch(ADMIN_CONTEXT_BASE + '/admin/members/' + userIdx + '/block', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ blockType, blockedIp, expiresAt, reason })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            adm_toast(data.message || '차단을 적용했습니다.');
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            adm_toast(data.message || '차단 적용에 실패했습니다.', 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        adm_toast('차단 적용 중 오류가 발생했습니다.', 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+async function saveAdminIpRule(ipAddress, button) {
+    const card = button.closest('.admin-context-tab-pane');
+    const ruleAction = card.querySelector('.js-ip-rule-action').value;
+    const blockCategory = card.querySelector('.js-ip-rule-category').value;
+    const priority = card.querySelector('.js-ip-rule-priority').value;
+    const expiresAt = card.querySelector('.js-ip-rule-expires').value;
+    const reason = card.querySelector('.js-ip-rule-reason').value.trim();
+    const detailMessage = card.querySelector('.js-ip-rule-detail').value.trim();
+    if (!reason) {
+        adm_toast('정책 사유를 입력해주세요.', 'error');
+        return;
+    }
+    button.disabled = true;
+    try {
+        const response = await fetch(ADMIN_CONTEXT_BASE + '/admin/blocks/ip-rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({
+                matchType: 'SINGLE_IP',
+                ipAddress: ipAddress,
+                ruleAction: ruleAction,
+                controlMode: 'MANUAL',
+                blockCategory: blockCategory,
+                priority: priority || '100',
+                reason: reason,
+                detailMessage: detailMessage,
+                expiresAt: expiresAt
+            })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            adm_toast(data.message || 'IP 정책을 생성했습니다.');
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            adm_toast(data.message || 'IP 정책 생성에 실패했습니다.', 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        adm_toast('IP 정책 생성 중 오류가 발생했습니다.', 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+document.addEventListener('click', function(event) {
+    const memberTrigger = event.target.closest('.js-open-member-context');
+    if (memberTrigger) {
+        openAdminMemberContext(memberTrigger.dataset.userIdx, memberTrigger.dataset.defaultTab || 'info');
+        return;
+    }
+    const ipTrigger = event.target.closest('.js-open-ip-context');
+    if (ipTrigger) {
+        openAdminIpContext(ipTrigger.dataset.ipAddress, ipTrigger.dataset.defaultTab || 'logins');
+    }
+});
+</script>

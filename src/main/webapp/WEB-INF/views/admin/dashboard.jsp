@@ -106,6 +106,7 @@
         </div>
         <div class="adm-card-body" style="display:flex;gap:12px;flex-wrap:wrap;">
             <a href="${pageContext.request.contextPath}/admin/members" class="adm-btn adm-btn-primary">👥 회원 관리</a>
+            <a href="${pageContext.request.contextPath}/admin/policies" class="adm-btn adm-btn-ghost">⚙️ 정책 관리</a>
             <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGIN&amp;success=FAIL" class="adm-btn adm-btn-ghost">🔐 로그인 실패 보기</a>
             <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGOUT" class="adm-btn adm-btn-ghost">↩️ 로그아웃 이력 보기</a>
             <a href="${pageContext.request.contextPath}/admin/inquiries?status=PENDING" class="adm-btn adm-btn-ghost">📩 대기 문의 보기</a>

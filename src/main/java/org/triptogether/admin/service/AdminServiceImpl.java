@@ -63,6 +63,58 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public Map<String, Object> getMemberContext(Long userIdx) {
+        AdminMemberVO member = adminMapper.findMemberDetail(userIdx);
+        if (member == null) {
+            return null;
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("member", member);
+        result.put("history", adminMapper.findLoginHistory(userIdx, 50));
+        result.put("loginAudits", adminMapper.findLoginAuditsByUser(userIdx, 50));
+        result.put("securityAudits", adminMapper.findSecurityAuditsByUser(userIdx, 40));
+        result.put("emailRequests", adminMapper.findEmailVerificationRequestsByUser(userIdx, 30));
+        result.put("emailTokens", adminMapper.findEmailVerificationsByUser(userIdx, 30));
+        result.put("activityLogs", adminMapper.findActivityLogsByUser(userIdx, 40));
+        result.put("recentBlocks", adminMapper.findRecentUserBlocksByUser(userIdx, 20));
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getIpContext(String ipAddress) {
+        String normalizedIp = normalizeIp(ipAddress);
+        if (normalizedIp == null) {
+            return null;
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("ipAddress", normalizedIp);
+        result.put("loginAudits", adminMapper.findLoginAuditsByIp(normalizedIp, 50));
+        result.put("securityAudits", adminMapper.findSecurityAuditsByIp(normalizedIp, 40));
+        result.put("emailRequests", adminMapper.findEmailVerificationRequestsByIp(normalizedIp, 30));
+        result.put("emailTokens", adminMapper.findEmailVerificationsByIp(normalizedIp, 30));
+        result.put("activityLogs", adminMapper.findActivityLogsByIp(normalizedIp, 40));
+        result.put("blockHistories", adminMapper.findBlockHistoriesByIp(normalizedIp, 30));
+        result.put("ipRules", adminMapper.findExactIpRules(normalizedIp, 20));
+        return result;
+    }
+
+    @Override
+    public void updateMemberProfile(Long userIdx, String nickname, String nationality, String preferredLang) {
+        AdminMemberVO member = adminMapper.findMemberDetail(userIdx);
+        if (member == null) {
+            throw new IllegalArgumentException("회원을 찾을 수 없습니다.");
+        }
+
+        String normalizedNickname = normalizeNickname(nickname);
+        String normalizedNationality = normalizeOptionalText(nationality, 40);
+        String normalizedPreferredLang = normalizeOptionalText(preferredLang, 10);
+
+        adminMapper.updateMemberProfile(userIdx, normalizedNickname, normalizedNationality, normalizedPreferredLang);
+    }
+
+    @Override
     public void changeMemberStatus(Long userIdx, String status) {
         List<String> allowed = List.of("ACTIVE", "DORMANT", "DELETED", "BLOCKED");
         if (!allowed.contains(status)) {
@@ -173,6 +225,28 @@ public class AdminServiceImpl implements AdminService {
             return trimmed.substring(7);
         }
         return trimmed;
+    }
+
+    private String normalizeNickname(String nickname) {
+        if (nickname == null) {
+            throw new IllegalArgumentException("닉네임을 입력해주세요.");
+        }
+        String trimmed = nickname.trim();
+        if (trimmed.length() < 2 || trimmed.length() > 20) {
+            throw new IllegalArgumentException("닉네임은 2~20자 사이로 입력해주세요.");
+        }
+        return trimmed;
+    }
+
+    private String normalizeOptionalText(String value, int maxLength) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        return trimmed.length() > maxLength ? trimmed.substring(0, maxLength) : trimmed;
     }
 
     @Override

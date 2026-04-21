@@ -230,4 +230,24 @@ public class RewardServiceImpl implements RewardService {
         // 공식 또는 오버라이드 값으로 필요 경험치 계산
         return getRequiredTotalExp(levelNo, levelPolicy, overrideMap);
     }
+
+    @Override
+    public int synchronizeUserLevels(boolean onlyActiveMembers) {
+        List<UsersVO> users = rewardMapper.selectUsersForLevelSync(onlyActiveMembers);
+        int changedCount = 0;
+        if (users == null || users.isEmpty()) {
+            return 0;
+        }
+        for (UsersVO user : users) {
+            if (user == null || user.getUserIdx() == null) {
+                continue;
+            }
+            int resolvedLevel = resolveLevel(user.getExpPoints());
+            if (resolvedLevel != user.getLevelNo()) {
+                rewardMapper.updateUserLevelOnly(user.getUserIdx(), resolvedLevel);
+                changedCount++;
+            }
+        }
+        return changedCount;
+    }
 }

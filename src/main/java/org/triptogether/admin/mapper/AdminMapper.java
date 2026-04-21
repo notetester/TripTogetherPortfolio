@@ -18,6 +18,10 @@ public interface AdminMapper {
     List<AdminMemberVO> findMembers(AdminSearchVO search);
     int countMembers(AdminSearchVO search);
     AdminMemberVO findMemberDetail(Long userIdx);
+    void updateMemberProfile(@Param("userIdx") Long userIdx,
+                             @Param("nickname") String nickname,
+                             @Param("nationality") String nationality,
+                             @Param("preferredLang") String preferredLang);
     void updateMemberStatus(@Param("userIdx") Long userIdx, @Param("status") String status);
     void markMemberDormant(@Param("userIdx") Long userIdx);
     void releaseMemberDormant(@Param("userIdx") Long userIdx);
@@ -73,6 +77,32 @@ public interface AdminMapper {
     // ===== 회원 로그인 이력 =====
     List<UserLoginHistoryVO> findLoginHistory(@Param("userIdx") Long userIdx,
                                               @Param("limit") int limit);
+    List<AdminLoginAuditVO> findLoginAuditsByUser(@Param("userIdx") Long userIdx,
+                                                  @Param("limit") int limit);
+    List<AdminSecurityAuditVO> findSecurityAuditsByUser(@Param("userIdx") Long userIdx,
+                                                        @Param("limit") int limit);
+    List<AdminEmailVerificationRequestVO> findEmailVerificationRequestsByUser(@Param("userIdx") Long userIdx,
+                                                                              @Param("limit") int limit);
+    List<AdminEmailVerificationVO> findEmailVerificationsByUser(@Param("userIdx") Long userIdx,
+                                                                @Param("limit") int limit);
+    List<AdminActivityLogVO> findActivityLogsByUser(@Param("userIdx") Long userIdx,
+                                                    @Param("limit") int limit);
+    List<AdminUserBlockVO> findRecentUserBlocksByUser(@Param("userIdx") Long userIdx,
+                                                      @Param("limit") int limit);
+    List<AdminLoginAuditVO> findLoginAuditsByIp(@Param("ipAddress") String ipAddress,
+                                                @Param("limit") int limit);
+    List<AdminSecurityAuditVO> findSecurityAuditsByIp(@Param("ipAddress") String ipAddress,
+                                                      @Param("limit") int limit);
+    List<AdminEmailVerificationRequestVO> findEmailVerificationRequestsByIp(@Param("ipAddress") String ipAddress,
+                                                                            @Param("limit") int limit);
+    List<AdminEmailVerificationVO> findEmailVerificationsByIp(@Param("ipAddress") String ipAddress,
+                                                              @Param("limit") int limit);
+    List<AdminActivityLogVO> findActivityLogsByIp(@Param("ipAddress") String ipAddress,
+                                                  @Param("limit") int limit);
+    List<AdminBlockHistoryVO> findBlockHistoriesByIp(@Param("ipAddress") String ipAddress,
+                                                     @Param("limit") int limit);
+    List<AdminIpBlockVO> findExactIpRules(@Param("ipAddress") String ipAddress,
+                                          @Param("limit") int limit);
 
     // ===== 문의 관리 =====
     List<AdminInquiryVO> findInquiries(AdminInquirySearchVO search);
@@ -115,4 +145,19 @@ public interface AdminMapper {
     // ===== 일반 활동 로그 =====
     List<AdminActivityLogVO> findActivityLogs(AdminActivityLogSearchVO search);
     int countActivityLogs(AdminActivityLogSearchVO search);
+
+    // ===== 운영 정책 =====
+    List<AdminSystemPolicyVO> findSystemPolicies();
+    AdminSystemPolicyVO findSystemPolicy(@Param("policyCode") String policyCode);
+    List<AdminSystemPolicyHistoryVO> findSystemPolicyHistories(@Param("policyCode") String policyCode,
+                                                               @Param("limit") int limit);
+    List<AdminSystemPolicyVO> findDueSystemPolicies();
+    int insertSystemPolicy(AdminSystemPolicyVO policy);
+    int updateSystemPolicy(AdminSystemPolicyVO policy);
+    int updateSystemPolicyExecution(@Param("policyCode") String policyCode,
+                                    @Param("lastExecutedAt") java.time.LocalDateTime lastExecutedAt,
+                                    @Param("nextExecuteAt") java.time.LocalDateTime nextExecuteAt,
+                                    @Param("status") String status,
+                                    @Param("message") String message);
+    void insertSystemPolicyHistory(AdminSystemPolicyHistoryVO history);
 }

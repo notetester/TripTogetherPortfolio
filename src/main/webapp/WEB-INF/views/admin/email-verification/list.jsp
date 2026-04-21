@@ -68,8 +68,26 @@
                     <tr>
                         <td><fmt:formatDate value="${item.requestedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></td>
                         <td>
-                            <div class="mem-name"><c:out value="${empty item.nickname ? '미식별 요청' : item.nickname}"/></div>
-                            <div class="mem-uid"><c:out value="${empty item.userId ? '-' : '@'.concat(item.userId)}"/></div>
+                            <c:choose>
+                                <c:when test="${not empty item.userIdx}">
+                                    <button type="button"
+                                            class="adm-inline-link js-open-member-context"
+                                            data-user-idx="${item.userIdx}"
+                                            data-default-tab="emailRequests"
+                                            style="font-weight:700;color:#93c5fd;"><c:out value="${item.nickname}"/></button>
+                                    <div class="mem-uid">
+                                        <button type="button"
+                                                class="adm-inline-link js-open-member-context"
+                                                data-user-idx="${item.userIdx}"
+                                                data-default-tab="emailRequests"
+                                                style="color:#94a3b8;">@${item.userId}</button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="mem-name">미식별 요청</div>
+                                    <div class="mem-uid">-</div>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                         <td>${item.purpose}</td>
                         <td><c:out value="${item.pendingEmail}"/></td>
@@ -77,7 +95,18 @@
                         <td><c:choose><c:when test="${not empty item.verifiedAtDate}"><fmt:formatDate value="${item.verifiedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
                         <td><c:choose><c:when test="${not empty item.appliedAtDate}"><fmt:formatDate value="${item.appliedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
                         <td><c:choose><c:when test="${not empty item.expiredAtDate}"><fmt:formatDate value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
-                        <td><c:out value="${empty item.ipAddress ? '-' : item.ipAddress}"/></td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.ipAddress}">
+                                    <button type="button"
+                                            class="adm-inline-link js-open-ip-context"
+                                            data-ip-address="${item.ipAddress}"
+                                            data-default-tab="emailRequests"
+                                            style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
                         <td style="font-size:12px;color:#64748b;"><c:out value="${item.requestId}"/></td>
                     </tr>
                 </c:forEach>
@@ -100,6 +129,7 @@
         </c:if>
     </div>
 </div>
+<%@ include file="../common/context-modal.jspf" %>
 <script>
 function goPage(page) {
   const params = new URLSearchParams(window.location.search);

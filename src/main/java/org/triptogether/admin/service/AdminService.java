@@ -16,6 +16,9 @@ public interface AdminService {
     Map<String, Object> getMemberList(AdminSearchVO search);
     AdminMemberVO getMemberDetail(Long userIdx);
     List<UserLoginHistoryVO> getLoginHistory(Long userIdx);
+    Map<String, Object> getMemberContext(Long userIdx);
+    Map<String, Object> getIpContext(String ipAddress);
+    void updateMemberProfile(Long userIdx, String nickname, String nationality, String preferredLang);
     void changeMemberStatus(Long userIdx, String status);
     void blockMember(Long userIdx, String blockType, String blockedIp, String reason, java.time.LocalDateTime expiresAt, Long actorUserIdx);
     void updateMemberMeta(AdminMemberVO member);

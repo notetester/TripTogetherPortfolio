@@ -16936,6 +16936,113 @@ DROP TABLE IF EXISTS `V_IP_BLOCK_RULE_ADMIN_STATUS`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `V_IP_BLOCK_RULE_ADMIN_STATUS` AS select `l`.`ip_blocklist_idx` AS `ip_blocklist_idx`,`l`.`ip_block_batch_idx` AS `ip_block_batch_idx`,`l`.`block_request_id` AS `block_request_id`,`l`.`block_target_key` AS `block_target_key`,`l`.`rule_action` AS `rule_action`,`l`.`control_mode` AS `control_mode`,`l`.`match_type` AS `match_type`,`l`.`ip_address` AS `ip_address`,`l`.`cidr_notation` AS `cidr_notation`,`l`.`range_start_ip` AS `range_start_ip`,`l`.`range_end_ip` AS `range_end_ip`,`l`.`country_code` AS `country_code`,`l`.`asn` AS `asn`,(case when (`l`.`match_type` = 'SINGLE_IP') then `l`.`ip_address` when (`l`.`match_type` = 'CIDR') then `l`.`cidr_notation` when (`l`.`match_type` = 'RANGE') then concat(`l`.`range_start_ip`,' ~ ',`l`.`range_end_ip`) when (`l`.`match_type` = 'COUNTRY') then `l`.`country_code` when (`l`.`match_type` = 'ASN') then `l`.`asn` else `l`.`block_target_key` end) AS `target_display_value`,`l`.`source_scope` AS `source_scope`,`l`.`block_category` AS `block_category`,`l`.`priority` AS `priority`,`l`.`is_active` AS `rule_is_active`,(case when (`l`.`ip_block_batch_idx` is null) then 1 else coalesce(`b`.`is_active`,0) end) AS `batch_is_active`,`l`.`is_effective_active` AS `is_effective_active`,`l`.`effective_status` AS `effective_status`,`l`.`effective_status_reason` AS `effective_status_reason`,`l`.`effective_synced_at` AS `effective_synced_at`,`l`.`effective_synced_by_source` AS `effective_synced_by_source`,`l`.`blocked_at` AS `blocked_at`,`l`.`expires_at` AS `expires_at`,`l`.`released_at` AS `released_at`,`l`.`reason` AS `reason`,`l`.`detail_message` AS `detail_message`,`b`.`batch_code` AS `batch_code`,`b`.`batch_name` AS `batch_name`,`b`.`source_type` AS `batch_source_type`,`b`.`source_name` AS `batch_source_name` from (`IP_BLOCKLIST` `l` left join `IP_BLOCK_BATCH` `b` on((`b`.`ip_block_batch_idx` = `l`.`ip_block_batch_idx`)))
 ;
 
+-- =========================================================
+-- 운영 정책 관리 확장
+-- 기존 테이블 변경 없이 정책/이력 테이블을 추가한다.
+-- =========================================================
+CREATE TABLE IF NOT EXISTS `SYSTEM_POLICY` (
+  `policy_code` varchar(100) NOT NULL COMMENT '정책 코드 (예: DORMANT_ACCOUNT_POLICY)',
+  `policy_name` varchar(100) NOT NULL COMMENT '관리 화면 표시용 정책명',
+  `policy_group` varchar(50) NOT NULL DEFAULT 'GENERAL' COMMENT '정책 그룹 (AUTH / REWARD / SECURITY / OPERATIONS)',
+  `config_json` text NOT NULL COMMENT '정책 본문 설정 JSON',
+  `schedule_type` varchar(30) NOT NULL DEFAULT 'MANUAL' COMMENT '실행 방식 (MANUAL / DAILY_TIME / INTERVAL_HOURS / MONTHLY_DAY_TIME)',
+  `schedule_interval_hours` int DEFAULT NULL COMMENT 'INTERVAL_HOURS 일 때 주기 시간',
+  `schedule_day_of_month` int DEFAULT NULL COMMENT 'MONTHLY_DAY_TIME 일 때 실행 일자',
+  `schedule_time` varchar(5) DEFAULT NULL COMMENT '실행 시각 HH:mm',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT '정책 활성 여부',
+  `last_executed_at` datetime DEFAULT NULL COMMENT '최근 실행 시각',
+  `next_execute_at` datetime DEFAULT NULL COMMENT '다음 예정 시각',
+  `last_execution_status` varchar(30) DEFAULT NULL COMMENT '최근 실행 상태 (SUCCESS / FAIL / SKIPPED)',
+  `last_execution_message` varchar(500) DEFAULT NULL COMMENT '최근 실행 메시지',
+  `created_by_user_idx` bigint DEFAULT NULL COMMENT '생성 관리자',
+  `updated_by_user_idx` bigint DEFAULT NULL COMMENT '최근 수정 관리자',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시각',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 시각',
+  PRIMARY KEY (`policy_code`),
+  KEY `idx_system_policy_group_active` (`policy_group`,`is_active`),
+  KEY `idx_system_policy_next_execute_at` (`next_execute_at`),
+  KEY `fk_system_policy_created_by` (`created_by_user_idx`),
+  KEY `fk_system_policy_updated_by` (`updated_by_user_idx`),
+  CONSTRAINT `fk_system_policy_created_by` FOREIGN KEY (`created_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_system_policy_updated_by` FOREIGN KEY (`updated_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='운영 정책 현재 설정';
+
+CREATE TABLE IF NOT EXISTS `SYSTEM_POLICY_HISTORY` (
+  `system_policy_history_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '정책 변경 이력 PK',
+  `policy_code` varchar(100) NOT NULL COMMENT '정책 코드',
+  `change_type` varchar(30) NOT NULL COMMENT '변경 유형 (CREATE / UPDATE / EXECUTE / MANUAL_RUN)',
+  `before_config_json` text DEFAULT NULL COMMENT '변경 전 설정 JSON',
+  `after_config_json` text DEFAULT NULL COMMENT '변경 후 설정 JSON',
+  `before_schedule_type` varchar(30) DEFAULT NULL COMMENT '변경 전 실행 방식',
+  `after_schedule_type` varchar(30) DEFAULT NULL COMMENT '변경 후 실행 방식',
+  `before_schedule_interval_hours` int DEFAULT NULL COMMENT '변경 전 간격 실행 시간',
+  `after_schedule_interval_hours` int DEFAULT NULL COMMENT '변경 후 간격 실행 시간',
+  `before_schedule_day_of_month` int DEFAULT NULL COMMENT '변경 전 월간 실행 일자',
+  `after_schedule_day_of_month` int DEFAULT NULL COMMENT '변경 후 월간 실행 일자',
+  `before_schedule_time` varchar(5) DEFAULT NULL COMMENT '변경 전 실행 시각',
+  `after_schedule_time` varchar(5) DEFAULT NULL COMMENT '변경 후 실행 시각',
+  `before_active` tinyint(1) DEFAULT NULL COMMENT '변경 전 활성 여부',
+  `after_active` tinyint(1) DEFAULT NULL COMMENT '변경 후 활성 여부',
+  `execution_status` varchar(30) DEFAULT NULL COMMENT '실행 결과 상태',
+  `execution_message` varchar(500) DEFAULT NULL COMMENT '실행 결과 메시지',
+  `changed_by_user_idx` bigint DEFAULT NULL COMMENT '변경 관리자',
+  `changed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '변경 시각',
+  PRIMARY KEY (`system_policy_history_idx`),
+  KEY `idx_system_policy_history_code_changed_at` (`policy_code`,`changed_at`),
+  KEY `fk_system_policy_history_changed_by` (`changed_by_user_idx`),
+  CONSTRAINT `fk_system_policy_history_code` FOREIGN KEY (`policy_code`) REFERENCES `SYSTEM_POLICY` (`policy_code`) ON DELETE CASCADE,
+  CONSTRAINT `fk_system_policy_history_changed_by` FOREIGN KEY (`changed_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='운영 정책 변경 및 실행 이력';
+
+INSERT INTO `SYSTEM_POLICY` (
+  `policy_code`,
+  `policy_name`,
+  `policy_group`,
+  `config_json`,
+  `schedule_type`,
+  `schedule_interval_hours`,
+  `schedule_day_of_month`,
+  `schedule_time`,
+  `is_active`,
+  `last_executed_at`,
+  `next_execute_at`,
+  `last_execution_status`,
+  `last_execution_message`
+) VALUES
+  (
+    'DORMANT_ACCOUNT_POLICY',
+    '휴면 계정 전환 정책',
+    'AUTH',
+    '{"inactiveDays":365,"graceMessage":"마지막 접속일 기준으로 휴면 대상을 산정합니다."}',
+    'DAILY_TIME',
+    NULL,
+    NULL,
+    '03:15',
+    1,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+  ),
+  (
+    'MEMBER_LEVEL_SETTLEMENT_POLICY',
+    '회원 레벨 정산 정책',
+    'REWARD',
+    '{"onlyActiveMembers":true,"description":"회원 경험치 기준 레벨을 정산합니다."}',
+    'MONTHLY_DAY_TIME',
+    NULL,
+    1,
+    '12:00',
+    1,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+  )
+ON DUPLICATE KEY UPDATE
+  `policy_name` = VALUES(`policy_name`),
+  `policy_group` = VALUES(`policy_group`);
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

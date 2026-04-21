@@ -157,11 +157,19 @@
                                     ${m.nickname.substring(0,1)}
                                 </div>
                                 <div>
-                                    <div class="mem-name">${m.nickname}</div>
+                                    <div class="mem-name">
+                                        <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'info')" style="font-weight:700;color:#93c5fd;">
+                                            ${m.nickname}
+                                        </button>
+                                    </div>
                                     <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${m.memberGrade} · Lv.${m.levelNo}</div>
                                     <div class="mem-uid">
                                         <c:choose>
-                                            <c:when test="${not empty m.userId}">@${m.userId}</c:when>
+                                            <c:when test="${not empty m.userId}">
+                                                <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'info')" style="color:#94a3b8;">
+                                                    @${m.userId}
+                                                </button>
+                                            </c:when>
                                             <c:otherwise><span style="color:#475569;">소셜 전용</span></c:otherwise>
                                         </c:choose>
                                     </div>
@@ -187,23 +195,27 @@
 
                         <%-- 상태 --%>
                         <td>
-                            <span class="status-badge ${m.accountStatus}">${m.accountStatus}</span>
+                            <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'actions')" style="padding:0;">
+                                <span class="status-badge ${m.accountStatus}">${m.accountStatus}</span>
+                            </button>
                         </td>
 
                         <%-- 권한 --%>
                         <td>
-                            <span class="role-badge ${m.userRole}">
-                                <c:choose>
-                                    <c:when test="${m.userRole eq 'USER'}">일반</c:when>
-                                    <c:when test="${m.userRole eq 'BUSINESS'}">비즈니스</c:when>
-                                    <c:when test="${m.userRole eq 'PARTNER'}">파트너</c:when>
-                                    <c:when test="${m.userRole eq 'BOT'}">봇</c:when>
-                                    <c:when test="${m.userRole eq 'ADMIN'}">관리자</c:when>
-                                    <c:when test="${m.userRole eq 'SUPERADMIN'}">최고관리자</c:when>
-                                    <c:when test="${m.userRole eq 'SYSTEM'}">시스템</c:when>
-                                    <c:otherwise>${m.userRole}</c:otherwise>
-                                </c:choose>
-                            </span>
+                            <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'actions')" style="padding:0;">
+                                <span class="role-badge ${m.userRole}">
+                                    <c:choose>
+                                        <c:when test="${m.userRole eq 'USER'}">일반</c:when>
+                                        <c:when test="${m.userRole eq 'BUSINESS'}">비즈니스</c:when>
+                                        <c:when test="${m.userRole eq 'PARTNER'}">파트너</c:when>
+                                        <c:when test="${m.userRole eq 'BOT'}">봇</c:when>
+                                        <c:when test="${m.userRole eq 'ADMIN'}">관리자</c:when>
+                                        <c:when test="${m.userRole eq 'SUPERADMIN'}">최고관리자</c:when>
+                                        <c:when test="${m.userRole eq 'SYSTEM'}">시스템</c:when>
+                                        <c:otherwise>${m.userRole}</c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </button>
                             <c:if test="${not empty m.adminPositionCode}">
                                 <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${m.adminPositionCode}</div>
                             </c:if>
@@ -701,8 +713,113 @@ async function changeRole(userIdx, role, reason, el) {
     }
 }
 
+function buildContextRows(items, renderer, emptyMessage) {
+    if (!Array.isArray(items) || !items.length) {
+        return '<div style="text-align:center;padding:32px;color:#475569;">' + emptyMessage + '</div>';
+    }
+    return '<div style="display:flex;flex-direction:column;gap:10px;">' + items.map(renderer).join('') + '</div>';
+}
+
+function buildSecurityRows(items) {
+    return buildContextRows(items, function(item) {
+        return ''
+            + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div><strong>' + escapeHtml(item.eventType || '-') + '</strong> / ' + escapeHtml(item.eventStage || '-') + '</div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.occurredAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">입력값: ' + escapeHtml(item.inputIdentifier || '-') + '</div>'
+            + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">대상 이메일: ' + escapeHtml(item.targetEmail || '-') + '</div>'
+            + '</div>';
+    }, '보안 이력이 없습니다.');
+}
+
+function buildEmailRequestRows(items) {
+    return buildContextRows(items, function(item) {
+        return ''
+            + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.status || '-') + '</div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.requestedAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">요청 이메일: ' + escapeHtml(item.pendingEmail || '-') + '</div>'
+            + '</div>';
+    }, '이메일 요청 이력이 없습니다.');
+}
+
+function buildEmailTokenRows(items) {
+    return buildContextRows(items, function(item) {
+        return ''
+            + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.used ? 'USED' : 'UNUSED') + '</div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">대상 이메일: ' + escapeHtml(item.email || '-') + '</div>'
+            + '</div>';
+    }, '이메일 토큰 이력이 없습니다.');
+}
+
+function buildActivityRows(items) {
+    return buildContextRows(items, function(item) {
+        return ''
+            + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div><strong>' + escapeHtml(item.activityCode || '-') + '</strong> / ' + escapeHtml(item.activityDomain || item.activityType || '-') + '</div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">URI: ' + escapeHtml(item.requestUri || '-') + '</div>'
+            + '</div>';
+    }, '활동 로그가 없습니다.');
+}
+
+function buildBlockRows(items) {
+    return buildContextRows(items, function(item) {
+        return ''
+            + '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div><strong>' + escapeHtml(item.blockType || '-') + '</strong> / ' + escapeHtml(item.active ? 'ACTIVE' : 'INACTIVE') + '</div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.blockedAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">사유: ' + escapeHtml(item.reason || '-') + '</div>'
+            + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">IP: ' + escapeHtml(item.blockedIp || '-') + '</div>'
+            + '</div>';
+    }, '차단 이력이 없습니다.');
+}
+
+function buildActionTab(m) {
+    return ''
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">'
+        + '<div style="padding:16px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="font-weight:700;margin-bottom:10px;">회원 기본 정보 수정</div>'
+        + '<div class="detail-label">닉네임</div><input id="memberProfileNickname" class="adm-input" type="text" value="' + escapeHtml(m.nickname || '') + '">'
+        + '<div class="detail-label" style="margin-top:10px;">국적</div><input id="memberProfileNationality" class="adm-input" type="text" value="' + escapeHtml(m.nationality || '') + '">'
+        + '<div class="detail-label" style="margin-top:10px;">선호 언어</div><input id="memberProfileLang" class="adm-input" type="text" value="' + escapeHtml(m.preferredLang || '') + '">'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberProfile(' + escapeHtml(m.userIdx) + ', this)">기본 정보 저장</button>'
+        + '</div>'
+        + '<div style="padding:16px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="font-weight:700;margin-bottom:10px;">상태 / 권한 변경</div>'
+        + '<div class="detail-label">계정 상태</div>'
+        + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE">ACTIVE</option><option value="DORMANT">DORMANT</option><option value="BLOCKED">BLOCKED</option><option value="DELETED">DELETED</option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">적용</button></div>'
+        + '<div class="detail-label" style="margin-top:10px;">권한</div>'
+        + '<select id="memberRoleSelect" class="adm-select" style="width:100%;"><option value="USER">USER</option><option value="BUSINESS">BUSINESS</option><option value="PARTNER">PARTNER</option><option value="BOT">BOT</option><option value="ADMIN">ADMIN</option></select>'
+        + '<div class="detail-label" style="margin-top:10px;">권한 변경 사유</div>'
+        + '<input id="memberRoleReason" class="adm-input" type="text" maxlength="500" placeholder="권한 변경 사유">'
+        + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">권한 변경</button>'
+        + '</div>'
+        + '<div style="padding:16px;border-radius:8px;background:#111827;border:1px solid rgba(148,163,184,.14);">'
+        + '<div style="font-weight:700;margin-bottom:10px;">즉시 차단</div>'
+        + '<div class="detail-label">차단 유형</div><select id="detailBlockType" class="adm-select" style="width:100%;"><option value="USER_ONLY">아이디 차단</option><option value="IP_ONLY">IP 차단</option><option value="USER_IP">아이디 + IP 차단</option></select>'
+        + '<div class="detail-label" style="margin-top:10px;">차단 IP</div><input id="detailBlockedIp" class="adm-input" type="text" placeholder="예: 203.0.113.10">'
+        + '<div class="detail-label" style="margin-top:10px;">차단 만료</div><input id="detailBlockedUntil" class="adm-input" type="datetime-local">'
+        + '<div class="detail-label" style="margin-top:10px;">차단 사유</div><textarea id="detailBlockedReason" class="adm-input" style="min-height:88px;resize:vertical;"></textarea>'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="submitDetailBlock(' + escapeHtml(m.userIdx) + ', this)">차단 적용</button>'
+        + '</div>'
+        + '</div>';
+}
+
 /* ── 회원 상세 모달 ── */
-async function openDetail(userIdx) {
+async function openDetail(userIdx, defaultTab) {
     document.getElementById('detailModal').classList.add('open');
     document.getElementById('modalBody').innerHTML =
         '<div style="text-align:center;padding:40px;color:#475569;">불러오는 중... ⏳</div>';
@@ -718,19 +835,48 @@ async function openDetail(userIdx) {
 
     const m = data.member || {};
     const h = Array.isArray(data.history) ? data.history : [];
+    const securityAudits = Array.isArray(data.securityAudits) ? data.securityAudits : [];
+    const emailRequests = Array.isArray(data.emailRequests) ? data.emailRequests : [];
+    const emailTokens = Array.isArray(data.emailTokens) ? data.emailTokens : [];
+    const activityLogs = Array.isArray(data.activityLogs) ? data.activityLogs : [];
+    const recentBlocks = Array.isArray(data.recentBlocks) ? data.recentBlocks : [];
+    const activeTab = ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'actions'].includes(defaultTab) ? defaultTab : 'info';
 
     document.getElementById('modalTitle').textContent = (m.nickname || '회원') + ' 님 상세 정보';
 
     document.getElementById('modalBody').innerHTML = ''
         + '<div class="adm-tabs">'
-        + '<button class="adm-tab active" onclick="switchTab(\'info\', this)">기본 정보</button>'
-        + '<button class="adm-tab" onclick="switchTab(\'hist\', this)">로그인 이력 (' + h.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'info' ? 'active' : '') + '" onclick="switchTab(\'info\', this)">기본 정보</button>'
+        + '<button class="adm-tab ' + (activeTab === 'hist' ? 'active' : '') + '" onclick="switchTab(\'hist\', this)">로그인 이력 (' + h.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'security' ? 'active' : '') + '" onclick="switchTab(\'security\', this)">보안 이력 (' + securityAudits.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'emails' ? 'active' : '') + '" onclick="switchTab(\'emails\', this)">이메일 이력</button>'
+        + '<button class="adm-tab ' + (activeTab === 'activity' ? 'active' : '') + '" onclick="switchTab(\'activity\', this)">활동 로그 (' + activityLogs.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'blocks' ? 'active' : '') + '" onclick="switchTab(\'blocks\', this)">차단 이력 (' + recentBlocks.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'actions' ? 'active' : '') + '" onclick="switchTab(\'actions\', this)">즉시 조치</button>'
         + '</div>'
-        + '<div id="tab-info"></div>'
-        + '<div id="tab-hist" style="display:none;"></div>';
+        + '<div id="tab-info" style="display:' + (activeTab === 'info' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-hist" style="display:' + (activeTab === 'hist' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-security" style="display:' + (activeTab === 'security' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-emails" style="display:' + (activeTab === 'emails' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-activity" style="display:' + (activeTab === 'activity' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-blocks" style="display:' + (activeTab === 'blocks' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-actions" style="display:' + (activeTab === 'actions' ? '' : 'none') + ';"></div>';
 
     document.getElementById('tab-info').innerHTML = buildInfoTab(m);
     document.getElementById('tab-hist').innerHTML = buildHistTab(h);
+    document.getElementById('tab-security').innerHTML = buildSecurityRows(securityAudits);
+    document.getElementById('tab-emails').innerHTML = ''
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">'
+        + '<div><div style="font-weight:700;margin-bottom:10px;">이메일 요청</div>' + buildEmailRequestRows(emailRequests) + '</div>'
+        + '<div><div style="font-weight:700;margin-bottom:10px;">이메일 토큰</div>' + buildEmailTokenRows(emailTokens) + '</div>'
+        + '</div>';
+    document.getElementById('tab-activity').innerHTML = buildActivityRows(activityLogs);
+    document.getElementById('tab-blocks').innerHTML = buildBlockRows(recentBlocks);
+    document.getElementById('tab-actions').innerHTML = buildActionTab(m);
+    const statusSelect = document.getElementById('memberStatusSelect');
+    const roleSelect = document.getElementById('memberRoleSelect');
+    if (statusSelect) statusSelect.value = m.accountStatus || 'ACTIVE';
+    if (roleSelect) roleSelect.value = m.userRole || 'USER';
 }
 
 function buildInfoTab(m) {
@@ -812,8 +958,85 @@ function buildHistTab(history) {
 function switchTab(tab, btn) {
     document.querySelectorAll('#detailModal .adm-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('tab-info').style.display = tab === 'info' ? '' : 'none';
-    document.getElementById('tab-hist').style.display = tab === 'hist' ? '' : 'none';
+    ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'actions'].forEach(function(name) {
+        const el = document.getElementById('tab-' + name);
+        if (el) el.style.display = tab === name ? '' : 'none';
+    });
+}
+
+async function saveMemberProfile(userIdx, button) {
+    const nickname = document.getElementById('memberProfileNickname').value.trim();
+    const nationality = document.getElementById('memberProfileNationality').value.trim();
+    const preferredLang = document.getElementById('memberProfileLang').value.trim();
+
+    button.disabled = true;
+    try {
+        const res = await fetch(ctx + '/admin/members/' + userIdx + '/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ nickname, nationality, preferredLang })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            adm_toast(data.message || '회원 기본 정보를 저장했습니다.');
+            setTimeout(() => location.reload(), 700);
+        } else {
+            adm_toast(data.message || '회원 기본 정보 저장에 실패했습니다.', 'error');
+        }
+    } catch (e) {
+        console.error(e);
+        adm_toast('회원 기본 정보 저장 중 오류가 발생했습니다.', 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+function applyStatusFromDetail(userIdx, button) {
+    const status = document.getElementById('memberStatusSelect').value;
+    changeStatus(userIdx, status, button);
+}
+
+function applyRoleFromDetail(userIdx, button) {
+    const role = document.getElementById('memberRoleSelect').value;
+    const reason = document.getElementById('memberRoleReason').value.trim();
+    if (!reason) {
+        adm_toast('권한 변경 사유를 입력해주세요.', 'error');
+        return;
+    }
+    changeRole(userIdx, role, reason, button);
+}
+
+async function submitDetailBlock(userIdx, button) {
+    const blockType = document.getElementById('detailBlockType').value;
+    const blockedIp = document.getElementById('detailBlockedIp').value.trim();
+    const expiresAt = document.getElementById('detailBlockedUntil').value;
+    const reason = document.getElementById('detailBlockedReason').value.trim();
+
+    if ((blockType === 'IP_ONLY' || blockType === 'USER_IP') && !blockedIp) {
+        adm_toast('IP 차단 유형은 차단 IP를 입력해야 합니다.', 'error');
+        return;
+    }
+
+    button.disabled = true;
+    try {
+        const res = await fetch(ctx + '/admin/members/' + userIdx + '/block', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ blockType, blockedIp, expiresAt, reason })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            adm_toast(data.message || '차단을 적용했습니다.');
+            setTimeout(() => location.reload(), 700);
+        } else {
+            adm_toast(data.message || '차단 적용에 실패했습니다.', 'error');
+        }
+    } catch (e) {
+        console.error(e);
+        adm_toast('차단 적용 중 오류가 발생했습니다.', 'error');
+    } finally {
+        button.disabled = false;
+    }
 }
 
 function closeDetail() {

@@ -218,6 +218,51 @@
         <result property="createdAt" column="created_at"/>
     </resultMap>
 
+    <resultMap id="systemPolicyRM" type="org.triptogether.admin.vo.AdminSystemPolicyVO">
+        <id property="policyCode" column="policy_code"/>
+        <result property="policyName" column="policy_name"/>
+        <result property="policyGroup" column="policy_group"/>
+        <result property="configJson" column="config_json"/>
+        <result property="scheduleType" column="schedule_type"/>
+        <result property="scheduleIntervalHours" column="schedule_interval_hours"/>
+        <result property="scheduleDayOfMonth" column="schedule_day_of_month"/>
+        <result property="scheduleTime" column="schedule_time"/>
+        <result property="active" column="is_active"/>
+        <result property="lastExecutedAt" column="last_executed_at"/>
+        <result property="nextExecuteAt" column="next_execute_at"/>
+        <result property="lastExecutionStatus" column="last_execution_status"/>
+        <result property="lastExecutionMessage" column="last_execution_message"/>
+        <result property="createdByUserIdx" column="created_by_user_idx"/>
+        <result property="updatedByUserIdx" column="updated_by_user_idx"/>
+        <result property="createdByNickname" column="created_by_nickname"/>
+        <result property="updatedByNickname" column="updated_by_nickname"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="systemPolicyHistoryRM" type="org.triptogether.admin.vo.AdminSystemPolicyHistoryVO">
+        <id property="systemPolicyHistoryIdx" column="system_policy_history_idx"/>
+        <result property="policyCode" column="policy_code"/>
+        <result property="changeType" column="change_type"/>
+        <result property="beforeConfigJson" column="before_config_json"/>
+        <result property="afterConfigJson" column="after_config_json"/>
+        <result property="beforeScheduleType" column="before_schedule_type"/>
+        <result property="afterScheduleType" column="after_schedule_type"/>
+        <result property="beforeScheduleIntervalHours" column="before_schedule_interval_hours"/>
+        <result property="afterScheduleIntervalHours" column="after_schedule_interval_hours"/>
+        <result property="beforeScheduleDayOfMonth" column="before_schedule_day_of_month"/>
+        <result property="afterScheduleDayOfMonth" column="after_schedule_day_of_month"/>
+        <result property="beforeScheduleTime" column="before_schedule_time"/>
+        <result property="afterScheduleTime" column="after_schedule_time"/>
+        <result property="beforeActive" column="before_active"/>
+        <result property="afterActive" column="after_active"/>
+        <result property="executionStatus" column="execution_status"/>
+        <result property="executionMessage" column="execution_message"/>
+        <result property="changedByUserIdx" column="changed_by_user_idx"/>
+        <result property="changedByNickname" column="changed_by_nickname"/>
+        <result property="changedAt" column="changed_at"/>
+    </resultMap>
+
     <resultMap id="reportRM" type="org.triptogether.admin.vo.AdminReportVO">
         <id     property="reportId"          column="report_id"/>
         <result property="userIdx"           column="user_idx"/>
@@ -375,6 +420,14 @@
         ) h ON u.user_idx = h.user_idx
         WHERE u.user_idx = #{userIdx}
     </select>
+
+    <update id="updateMemberProfile">
+        UPDATE USERS
+        SET nickname = #{nickname},
+            nationality = #{nationality},
+            preferred_lang = #{preferredLang}
+        WHERE user_idx = #{userIdx}
+    </update>
 
     <update id="updateMemberStatus">
         UPDATE USERS
@@ -690,8 +743,328 @@
         SELECT *
         FROM USER_LOGIN_HISTORY
         WHERE user_idx = #{userIdx}
-          AND event_type = 'LOGIN'
         ORDER BY login_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findLoginAuditsByUser" resultMap="auditRM">
+        SELECT
+            l.login_idx, l.user_idx,
+            u.user_id, u.nickname,
+            l.event_type, l.auth_type, l.auth_provider, l.auth_flow,
+            l.login_method, l.login_identifier, l.session_id, l.request_uri,
+            l.logout_callback_uri, l.request_id, l.flow_trace_id,
+            l.is_success, l.fail_reason, l.ip_address, l.user_agent, l.login_at
+        FROM USER_LOGIN_HISTORY l
+        LEFT JOIN USERS u ON u.user_idx = l.user_idx
+        WHERE l.user_idx = #{userIdx}
+        ORDER BY l.login_at DESC, l.login_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findSecurityAuditsByUser" resultMap="securityAuditRM">
+        SELECT
+            s.security_idx, s.user_idx, s.actor_user_idx,
+            u.user_id, u.nickname,
+            au.user_id AS actor_user_id,
+            au.nickname AS actor_nickname,
+            s.event_type, s.event_stage,
+            s.input_identifier, s.target_email,
+            s.is_success, s.fail_reason, s.detail_message,
+            s.ip_address, s.user_agent, s.occurred_at
+        FROM USER_SECURITY_HISTORY s
+        LEFT JOIN USERS u ON u.user_idx = s.user_idx
+        LEFT JOIN USERS au ON au.user_idx = s.actor_user_idx
+        WHERE s.user_idx = #{userIdx}
+        ORDER BY s.occurred_at DESC, s.security_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findEmailVerificationRequestsByUser" resultMap="emailVerificationRequestRM">
+        SELECT
+            r.email_verification_request_idx, r.request_id, r.user_idx,
+            u.user_id, u.nickname,
+            r.purpose, r.pending_email, r.status,
+            r.requested_at, r.verified_at, r.applied_at, r.expired_at, r.cancelled_at,
+            r.ip_address, r.user_agent, r.updated_at, r.created_at
+        FROM EMAIL_VERIFICATION_REQUEST r
+        LEFT JOIN USERS u ON u.user_idx = r.user_idx
+        WHERE r.user_idx = #{userIdx}
+        ORDER BY r.requested_at DESC, r.email_verification_request_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findEmailVerificationsByUser" resultMap="emailVerificationRM">
+        SELECT
+            v.verify_idx, v.email_verification_request_idx, v.request_id, v.user_idx,
+            u.user_id, u.nickname,
+            v.email, v.token, v.purpose, v.used,
+            v.used_at, v.expired_at, v.cancelled_at, v.updated_at, v.created_at
+        FROM EMAIL_VERIFICATION v
+        LEFT JOIN USERS u ON u.user_idx = v.user_idx
+        WHERE v.user_idx = #{userIdx}
+        ORDER BY v.created_at DESC, v.verify_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findActivityLogsByUser" resultMap="activityLogRM">
+        SELECT
+            a.activity_idx, a.request_id, a.flow_trace_id, a.user_idx,
+            u.user_id, u.nickname,
+            a.session_id, a.request_uri, a.http_method,
+            a.activity_domain, a.activity_type, a.activity_code,
+            a.activity_provider, a.auth_event_type,
+            a.target_type, a.target_id,
+            a.handler_name, a.query_string, a.referer,
+            a.ip_address, a.user_agent, a.response_status, a.response_time_ms,
+            a.is_success, a.detail_summary, a.created_at
+        FROM USER_ACTIVITY_LOG a
+        LEFT JOIN USERS u ON u.user_idx = a.user_idx
+        WHERE a.user_idx = #{userIdx}
+        ORDER BY a.created_at DESC, a.activity_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findRecentUserBlocksByUser" resultType="org.triptogether.admin.vo.AdminUserBlockVO">
+        SELECT
+            ub.block_idx,
+            ub.source_history_block_idx,
+            ub.user_idx,
+            u.user_id,
+            u.nickname,
+            u.user_email,
+            ub.block_type,
+            ub.blocked_ip,
+            ub.is_active AS active,
+            ub.reason,
+            ub.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            ub.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            ub.blocked_at,
+            ub.released_at,
+            ub.expires_at,
+            ub.block_request_id,
+            ub.block_target_key,
+            ub.snapshot_status,
+            ub.last_history_at,
+            ub.synced_at,
+            ub.updated_by_user_idx,
+            h.block_scope,
+            h.ip_match_type
+        FROM USER_BLOCKLIST ub
+        LEFT JOIN USERS u ON u.user_idx = ub.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = ub.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = ub.released_by_user_idx
+        LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = ub.source_history_block_idx
+        WHERE ub.user_idx = #{userIdx}
+        ORDER BY ub.synced_at DESC, ub.block_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findLoginAuditsByIp" resultMap="auditRM">
+        SELECT
+            l.login_idx, l.user_idx,
+            u.user_id, u.nickname,
+            l.event_type, l.auth_type, l.auth_provider, l.auth_flow,
+            l.login_method, l.login_identifier, l.session_id, l.request_uri,
+            l.logout_callback_uri, l.request_id, l.flow_trace_id,
+            l.is_success, l.fail_reason, l.ip_address, l.user_agent, l.login_at
+        FROM USER_LOGIN_HISTORY l
+        LEFT JOIN USERS u ON u.user_idx = l.user_idx
+        WHERE l.ip_address = #{ipAddress}
+        ORDER BY l.login_at DESC, l.login_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findSecurityAuditsByIp" resultMap="securityAuditRM">
+        SELECT
+            s.security_idx, s.user_idx, s.actor_user_idx,
+            u.user_id, u.nickname,
+            au.user_id AS actor_user_id,
+            au.nickname AS actor_nickname,
+            s.event_type, s.event_stage,
+            s.input_identifier, s.target_email,
+            s.is_success, s.fail_reason, s.detail_message,
+            s.ip_address, s.user_agent, s.occurred_at
+        FROM USER_SECURITY_HISTORY s
+        LEFT JOIN USERS u ON u.user_idx = s.user_idx
+        LEFT JOIN USERS au ON au.user_idx = s.actor_user_idx
+        WHERE s.ip_address = #{ipAddress}
+        ORDER BY s.occurred_at DESC, s.security_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findEmailVerificationRequestsByIp" resultMap="emailVerificationRequestRM">
+        SELECT
+            r.email_verification_request_idx, r.request_id, r.user_idx,
+            u.user_id, u.nickname,
+            r.purpose, r.pending_email, r.status,
+            r.requested_at, r.verified_at, r.applied_at, r.expired_at, r.cancelled_at,
+            r.ip_address, r.user_agent, r.updated_at, r.created_at
+        FROM EMAIL_VERIFICATION_REQUEST r
+        LEFT JOIN USERS u ON u.user_idx = r.user_idx
+        WHERE r.ip_address = #{ipAddress}
+        ORDER BY r.requested_at DESC, r.email_verification_request_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findEmailVerificationsByIp" resultMap="emailVerificationRM">
+        SELECT
+            v.verify_idx, v.email_verification_request_idx, v.request_id, v.user_idx,
+            u.user_id, u.nickname,
+            v.email, v.token, v.purpose, v.used,
+            v.used_at, v.expired_at, v.cancelled_at, v.updated_at, v.created_at
+        FROM EMAIL_VERIFICATION v
+        LEFT JOIN EMAIL_VERIFICATION_REQUEST r ON r.request_id = v.request_id
+        LEFT JOIN USERS u ON u.user_idx = v.user_idx
+        WHERE r.ip_address = #{ipAddress}
+        ORDER BY v.created_at DESC, v.verify_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findActivityLogsByIp" resultMap="activityLogRM">
+        SELECT
+            a.activity_idx, a.request_id, a.flow_trace_id, a.user_idx,
+            u.user_id, u.nickname,
+            a.session_id, a.request_uri, a.http_method,
+            a.activity_domain, a.activity_type, a.activity_code,
+            a.activity_provider, a.auth_event_type,
+            a.target_type, a.target_id,
+            a.handler_name, a.query_string, a.referer,
+            a.ip_address, a.user_agent, a.response_status, a.response_time_ms,
+            a.is_success, a.detail_summary, a.created_at
+        FROM USER_ACTIVITY_LOG a
+        LEFT JOIN USERS u ON u.user_idx = a.user_idx
+        WHERE a.ip_address = #{ipAddress}
+        ORDER BY a.created_at DESC, a.activity_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findBlockHistoriesByIp" resultType="org.triptogether.admin.vo.AdminBlockHistoryVO">
+        SELECT
+            h.block_idx,
+            h.rule_action,
+            h.control_mode,
+            h.operation_source,
+            h.user_idx,
+            u.user_id,
+            u.nickname,
+            h.block_type,
+            h.blocked_ip,
+            h.is_active AS active,
+            h.reason,
+            h.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            h.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            h.blocked_at,
+            h.released_at,
+            h.expires_at,
+            h.block_request_id,
+            h.block_target_key,
+            h.user_blocklist_idx,
+            h.ip_blocklist_idx,
+            h.history_kind,
+            h.block_scope,
+            h.ip_match_type,
+            h.cidr_notation,
+            h.range_start_ip,
+            h.range_end_ip,
+            h.ip_block_batch_idx,
+            h.batch_operation_idx,
+            b.batch_code,
+            b.batch_name,
+            h.list_synced_at,
+            h.before_rule_is_active,
+            h.after_rule_is_active,
+            h.before_batch_is_active,
+            h.after_batch_is_active,
+            h.before_effective_active,
+            h.after_effective_active,
+            h.before_effective_status,
+            h.after_effective_status,
+            h.effective_result,
+            h.control_reason
+        FROM USER_BLOCK_HISTORY h
+        LEFT JOIN USERS u ON u.user_idx = h.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = h.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = h.released_by_user_idx
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = h.ip_block_batch_idx
+        WHERE h.blocked_ip = #{ipAddress}
+        ORDER BY h.blocked_at DESC, h.block_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findExactIpRules" resultType="org.triptogether.admin.vo.AdminIpBlockVO">
+        SELECT
+            l.ip_blocklist_idx,
+            l.ip_address,
+            l.block_request_id,
+            l.rule_action,
+            l.control_mode,
+            l.rule_origin_type,
+            l.source_history_block_idx,
+            l.source_blocklist_idx,
+            l.block_target_key,
+            l.block_target_key AS target_display_value,
+            l.batch_bound_at,
+            l.batch_bound_by_user_idx,
+            l.batch_detached_at,
+            l.batch_detached_by_user_idx,
+            l.match_type,
+            l.cidr_notation,
+            l.range_start_ip,
+            l.range_end_ip,
+            l.country_code,
+            l.asn,
+            l.source_scope,
+            l.block_category,
+            l.user_idx,
+            l.block_type,
+            l.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            l.reason,
+            l.is_active AS active,
+            l.is_effective_active AS effective_active,
+            l.effective_status_reason,
+            l.effective_synced_at,
+            l.effective_synced_by_source,
+            l.blocked_at,
+            l.expires_at,
+            l.released_at,
+            l.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            l.manual_override_by_user_idx,
+            mu.nickname AS manual_override_by_nickname,
+            l.manual_override_at,
+            l.manual_override_reason,
+            l.last_control_action,
+            l.last_control_by_user_idx,
+            lu.nickname AS last_control_by_nickname,
+            l.last_control_at,
+            l.last_control_reason,
+            l.risk_score,
+            l.is_auto_block AS auto_block,
+            l.auto_block_source,
+            l.detail_message,
+            l.priority,
+            l.ip_block_batch_idx,
+            b.batch_code,
+            b.batch_name,
+            b.is_active AS batch_active,
+            b.source_type AS batch_source_type,
+            b.source_name AS batch_source_name,
+            l.effective_status
+        FROM IP_BLOCKLIST l
+        LEFT JOIN USERS bu ON bu.user_idx = l.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = l.released_by_user_idx
+        LEFT JOIN USERS mu ON mu.user_idx = l.manual_override_by_user_idx
+        LEFT JOIN USERS lu ON lu.user_idx = l.last_control_by_user_idx
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = l.ip_block_batch_idx
+        WHERE l.match_type = 'SINGLE_IP'
+          AND l.ip_address = #{ipAddress}
+        ORDER BY l.blocked_at DESC, l.ip_blocklist_idx DESC
         LIMIT #{limit}
     </select>
 
@@ -1271,5 +1644,199 @@
         LEFT JOIN USERS u ON r.user_idx = u.user_idx
         WHERE r.report_id = #{reportId}
     </select>
+
+    <select id="findSystemPolicies" resultMap="systemPolicyRM">
+        SELECT
+            p.policy_code,
+            p.policy_name,
+            p.policy_group,
+            p.config_json,
+            p.schedule_type,
+            p.schedule_interval_hours,
+            p.schedule_day_of_month,
+            p.schedule_time,
+            p.is_active,
+            p.last_executed_at,
+            p.next_execute_at,
+            p.last_execution_status,
+            p.last_execution_message,
+            p.created_by_user_idx,
+            p.updated_by_user_idx,
+            cu.nickname AS created_by_nickname,
+            uu.nickname AS updated_by_nickname,
+            p.created_at,
+            p.updated_at
+        FROM SYSTEM_POLICY p
+        LEFT JOIN USERS cu ON cu.user_idx = p.created_by_user_idx
+        LEFT JOIN USERS uu ON uu.user_idx = p.updated_by_user_idx
+        ORDER BY p.policy_group ASC, p.policy_name ASC
+    </select>
+
+    <select id="findSystemPolicy" resultMap="systemPolicyRM">
+        SELECT
+            p.policy_code,
+            p.policy_name,
+            p.policy_group,
+            p.config_json,
+            p.schedule_type,
+            p.schedule_interval_hours,
+            p.schedule_day_of_month,
+            p.schedule_time,
+            p.is_active,
+            p.last_executed_at,
+            p.next_execute_at,
+            p.last_execution_status,
+            p.last_execution_message,
+            p.created_by_user_idx,
+            p.updated_by_user_idx,
+            cu.nickname AS created_by_nickname,
+            uu.nickname AS updated_by_nickname,
+            p.created_at,
+            p.updated_at
+        FROM SYSTEM_POLICY p
+        LEFT JOIN USERS cu ON cu.user_idx = p.created_by_user_idx
+        LEFT JOIN USERS uu ON uu.user_idx = p.updated_by_user_idx
+        WHERE p.policy_code = #{policyCode}
+    </select>
+
+    <select id="findSystemPolicyHistories" resultMap="systemPolicyHistoryRM">
+        SELECT
+            h.system_policy_history_idx,
+            h.policy_code,
+            h.change_type,
+            h.before_config_json,
+            h.after_config_json,
+            h.before_schedule_type,
+            h.after_schedule_type,
+            h.before_schedule_interval_hours,
+            h.after_schedule_interval_hours,
+            h.before_schedule_day_of_month,
+            h.after_schedule_day_of_month,
+            h.before_schedule_time,
+            h.after_schedule_time,
+            h.before_active,
+            h.after_active,
+            h.execution_status,
+            h.execution_message,
+            h.changed_by_user_idx,
+            u.nickname AS changed_by_nickname,
+            h.changed_at
+        FROM SYSTEM_POLICY_HISTORY h
+        LEFT JOIN USERS u ON u.user_idx = h.changed_by_user_idx
+        WHERE h.policy_code = #{policyCode}
+        ORDER BY h.changed_at DESC, h.system_policy_history_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findDueSystemPolicies" resultMap="systemPolicyRM">
+        SELECT
+            p.policy_code,
+            p.policy_name,
+            p.policy_group,
+            p.config_json,
+            p.schedule_type,
+            p.schedule_interval_hours,
+            p.schedule_day_of_month,
+            p.schedule_time,
+            p.is_active,
+            p.last_executed_at,
+            p.next_execute_at,
+            p.last_execution_status,
+            p.last_execution_message,
+            p.created_by_user_idx,
+            p.updated_by_user_idx,
+            cu.nickname AS created_by_nickname,
+            uu.nickname AS updated_by_nickname,
+            p.created_at,
+            p.updated_at
+        FROM SYSTEM_POLICY p
+        LEFT JOIN USERS cu ON cu.user_idx = p.created_by_user_idx
+        LEFT JOIN USERS uu ON uu.user_idx = p.updated_by_user_idx
+        WHERE p.is_active = 1
+          AND p.schedule_type <> 'MANUAL'
+          AND p.next_execute_at IS NOT NULL
+          AND p.next_execute_at <= NOW()
+        ORDER BY p.next_execute_at ASC, p.policy_code ASC
+    </select>
+
+    <insert id="insertSystemPolicy">
+        INSERT INTO SYSTEM_POLICY (
+            policy_code, policy_name, policy_group, config_json,
+            schedule_type, schedule_interval_hours, schedule_day_of_month, schedule_time,
+            is_active, last_executed_at, next_execute_at, last_execution_status, last_execution_message,
+            created_by_user_idx, updated_by_user_idx, created_at, updated_at
+        ) VALUES (
+            #{policyCode}, #{policyName}, #{policyGroup}, #{configJson},
+            #{scheduleType}, #{scheduleIntervalHours}, #{scheduleDayOfMonth}, #{scheduleTime},
+            #{active}, #{lastExecutedAt}, #{nextExecuteAt}, #{lastExecutionStatus}, #{lastExecutionMessage},
+            #{createdByUserIdx}, #{updatedByUserIdx}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateSystemPolicy">
+        UPDATE SYSTEM_POLICY
+        SET config_json = #{configJson},
+            schedule_type = #{scheduleType},
+            schedule_interval_hours = #{scheduleIntervalHours},
+            schedule_day_of_month = #{scheduleDayOfMonth},
+            schedule_time = #{scheduleTime},
+            is_active = #{active},
+            next_execute_at = #{nextExecuteAt},
+            updated_by_user_idx = #{updatedByUserIdx},
+            updated_at = NOW()
+        WHERE policy_code = #{policyCode}
+    </update>
+
+    <update id="updateSystemPolicyExecution">
+        UPDATE SYSTEM_POLICY
+        SET last_executed_at = #{lastExecutedAt},
+            next_execute_at = #{nextExecuteAt},
+            last_execution_status = #{status},
+            last_execution_message = #{message},
+            updated_at = NOW()
+        WHERE policy_code = #{policyCode}
+    </update>
+
+    <insert id="insertSystemPolicyHistory">
+        INSERT INTO SYSTEM_POLICY_HISTORY (
+            policy_code,
+            change_type,
+            before_config_json,
+            after_config_json,
+            before_schedule_type,
+            after_schedule_type,
+            before_schedule_interval_hours,
+            after_schedule_interval_hours,
+            before_schedule_day_of_month,
+            after_schedule_day_of_month,
+            before_schedule_time,
+            after_schedule_time,
+            before_active,
+            after_active,
+            execution_status,
+            execution_message,
+            changed_by_user_idx,
+            changed_at
+        ) VALUES (
+            #{policyCode},
+            #{changeType},
+            #{beforeConfigJson},
+            #{afterConfigJson},
+            #{beforeScheduleType},
+            #{afterScheduleType},
+            #{beforeScheduleIntervalHours},
+            #{afterScheduleIntervalHours},
+            #{beforeScheduleDayOfMonth},
+            #{afterScheduleDayOfMonth},
+            #{beforeScheduleTime},
+            #{afterScheduleTime},
+            #{beforeActive},
+            #{afterActive},
+            #{executionStatus},
+            #{executionMessage},
+            #{changedByUserIdx},
+            NOW()
+        )
+    </insert>
 
 </mapper>

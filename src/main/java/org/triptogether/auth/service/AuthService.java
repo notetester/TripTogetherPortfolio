@@ -72,6 +72,7 @@ public interface AuthService {
 
     /** 1년 이상 미접속 회원을 휴면 전환 */
     void processDormantAccounts();
+    void processDormantAccounts(int inactiveDays);
 
     // ─── 소셜 OAuth URL 생성 ────────────────────
     String getKakaoAuthUrl();

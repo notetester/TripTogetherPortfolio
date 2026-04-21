@@ -24,4 +24,12 @@ public interface RewardService {
      * @return 해당 레벨에 필요한 누적 경험치 (Lv.1이면 0)
      */
     long getRequiredExpForLevel(int levelNo);
+
+    /**
+     * 현재 경험치 기준으로 회원 레벨을 일괄 재정산합니다.
+     *
+     * @param onlyActiveMembers ACTIVE 계정만 대상으로 제한할지 여부
+     * @return 실제로 레벨이 변경된 회원 수
+     */
+    int synchronizeUserLevels(boolean onlyActiveMembers);
 }
