@@ -33,15 +33,32 @@
     <h1 class="auth-title"><spring:message code="auth.social.title"/></h1>
     <p class="auth-sub"><spring:message code="auth.social.subtitle"/></p>
 
-    <c:if test="${not empty socialTemp.email}">
+    <c:if test="${socialEmailNotice.emailAvailable}">
       <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--gray-600);margin-bottom:16px;">
-        <spring:message code="auth.social.linkedEmail"/> <strong>${socialTemp.email}</strong>
+        <spring:message code="auth.social.linkedEmail"/> <strong>${socialEmailNotice.socialEmail}</strong>
       </div>
     </c:if>
 
-    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;font-size:13px;color:#1d4ed8;line-height:1.6;margin-bottom:16px;">
-      <spring:message code="auth.social.emailNotice"/>
-    </div>
+    <c:choose>
+      <c:when test="${socialEmailNotice.noticeType == 'RECOMMEND_LINK'}">
+        <div style="background:#fff7ed;border:1px solid #fdba74;border-radius:10px;padding:12px 14px;font-size:13px;color:#9a3412;line-height:1.7;margin-bottom:16px;">
+          <div style="font-weight:700;margin-bottom:4px;"><spring:message code="auth.social.emailConflictTitle"/></div>
+          <div><spring:message code="auth.social.emailConflictBody"/></div>
+        </div>
+      </c:when>
+      <c:when test="${socialEmailNotice.noticeType == 'REFERENCE'}">
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:13px;color:#1d4ed8;line-height:1.7;margin-bottom:16px;">
+          <div style="font-weight:700;margin-bottom:4px;"><spring:message code="auth.social.emailReferenceTitle"/></div>
+          <div><spring:message code="auth.social.emailReferenceBody"/></div>
+        </div>
+      </c:when>
+      <c:otherwise>
+        <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:12px 14px;font-size:13px;color:#334155;line-height:1.7;margin-bottom:16px;">
+          <div style="font-weight:700;margin-bottom:4px;"><spring:message code="auth.social.emailMissingTitle"/></div>
+          <div><spring:message code="auth.social.emailMissingBody"/></div>
+        </div>
+      </c:otherwise>
+    </c:choose>
 
     <div id="socialCompleteError" class="auth-error-banner"></div>
 

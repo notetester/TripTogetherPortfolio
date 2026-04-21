@@ -1288,6 +1288,29 @@ public class AuthServiceImpl implements AuthService {
         return newUser;
     }
 
+    @Override
+    public SocialEmailNoticeVO getSocialEmailNotice(SocialTempVO temp) {
+        String socialEmail = temp != null && hasText(temp.getEmail()) ? temp.getEmail().trim() : null;
+        if (!hasText(socialEmail)) {
+            return SocialEmailNoticeVO.builder()
+                    .noticeType("NO_EMAIL")
+                    .socialEmail(null)
+                    .emailAvailable(false)
+                    .verifiedEmailOwnerExists(false)
+                    .build();
+        }
+
+        UsersVO existingUser = authMapper.findByEmail(socialEmail);
+        boolean verifiedEmailOwnerExists = existingUser != null && existingUser.isEmailVerified();
+
+        return SocialEmailNoticeVO.builder()
+                .noticeType(verifiedEmailOwnerExists ? "RECOMMEND_LINK" : "REFERENCE")
+                .socialEmail(socialEmail)
+                .emailAvailable(true)
+                .verifiedEmailOwnerExists(verifiedEmailOwnerExists)
+                .build();
+    }
+
     // ════════════════════════════════════════════
     // 기존 계정에 소셜 연동 / 해제
     // ════════════════════════════════════════════

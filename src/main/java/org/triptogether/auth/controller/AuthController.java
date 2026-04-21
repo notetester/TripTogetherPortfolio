@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.service.AuthService;
 import org.triptogether.auth.vo.LoginRequestContext;
+import org.triptogether.auth.vo.SocialEmailNoticeVO;
 import org.triptogether.auth.vo.SocialTempVO;
 import org.triptogether.auth.vo.UserRole;
 import org.triptogether.auth.vo.UsersVO;
@@ -576,7 +577,9 @@ public class AuthController {
         if (temp == null) {
             return "redirect:/auth/login";
         }
+        SocialEmailNoticeVO socialEmailNotice = authService.getSocialEmailNotice(temp);
         model.addAttribute("socialTemp", temp);
+        model.addAttribute("socialEmailNotice", socialEmailNotice);
         return "auth/social-complete";
     }
 

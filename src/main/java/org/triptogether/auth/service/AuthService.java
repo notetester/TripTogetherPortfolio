@@ -2,6 +2,7 @@ package org.triptogether.auth.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.triptogether.auth.vo.LoginRequestContext;
+import org.triptogether.auth.vo.SocialEmailNoticeVO;
 import org.triptogether.auth.vo.SocialTempVO;
 import org.triptogether.auth.vo.UserSocialVO;
 import org.triptogether.auth.vo.UsersVO;
@@ -108,6 +109,7 @@ public interface AuthService {
     UsersVO completeSocialRegister(SocialTempVO temp, String nickname,
                                    String nationality, String preferredLang,
                                    HttpServletRequest request);
+    SocialEmailNoticeVO getSocialEmailNotice(SocialTempVO temp);
 
     // ─── 기존 계정에 소셜 연동 / 해제 ──────────────────
     void linkSocial(Long userIdx, String provider, String providerUserId);
