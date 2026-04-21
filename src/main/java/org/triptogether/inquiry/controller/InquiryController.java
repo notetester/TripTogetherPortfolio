@@ -145,7 +145,6 @@ public class InquiryController {
             @RequestParam String category,
             @RequestParam(defaultValue = "0") int isPrivate,
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
-            @RequestParam(defaultValue = "false") boolean forceSubmit,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -159,11 +158,6 @@ public class InquiryController {
         try {
             Long loginUserIdx = getLoginUserIdx(session);
 
-            if (!forceSubmit && perspectiveService.isToxic(title + " " + content)) {
-                result.put("toxicityDetected", true);
-                return ResponseEntity.ok(result);
-            }
-
             InquiryPostDto inquiry = new InquiryPostDto();
             inquiry.setUserIdx(loginUserIdx);
             inquiry.setTitle(title);
@@ -172,6 +166,9 @@ public class InquiryController {
             inquiry.setIsPrivate(isPrivate);
 
             Long inquiryId = inquiryService.writeInquiry(inquiry, images);
+
+            perspectiveService.checkAndFlagInquiryAsync(inquiryId, title + " " + content);
+
             result.put("success",   true);
             result.put("inquiryId", inquiryId);
 
@@ -321,6 +318,8 @@ public class InquiryController {
         inquiry.setCategory(category);
         inquiry.setIsPrivate(isPrivate);
         inquiryService.updateInquiry(inquiry);
+
+        perspectiveService.checkAndFlagInquiryAsync(inquiryId, title + " " + content);
 
         // 새로 추가된 파일 저장
         if (images != null) {
@@ -711,6 +710,32 @@ public class InquiryController {
             result.put("success", true);
         } catch (Exception e) {
             log.error("공개여부 수락 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/clear-blur - 관리자 BLUR 해제
+       ai_flagged=0 처리 (신고 3회 누적이 아니므로 report_count는 없음)
+       ============================================= */
+    @PostMapping("/{inquiryId}/clear-blur")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> clearBlur(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdmin(session)) {
+            result.put("success", false);
+            result.put("message", "운영진만 해제할 수 있어요.");
+            return ResponseEntity.status(403).body(result);
+        }
+        try {
+            inquiryService.clearInquiryBlur(inquiryId);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("BLUR 해제 오류", e);
             result.put("success", false);
             return ResponseEntity.status(500).body(result);
         }

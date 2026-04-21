@@ -469,6 +469,25 @@
 }
 .post-card-wrap .post-admin-delete-btn:hover { background: #ef4444; }
 
+.comment-body-wrap .post-admin-clear-blur-btn,
+.post-card-wrap .post-admin-clear-blur-btn {
+  position: absolute;
+  top: 4px;
+  right: 36px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  transition: background .15s;
+}
+.comment-body-wrap .post-admin-clear-blur-btn:hover,
+.post-card-wrap .post-admin-clear-blur-btn:hover { background: #2563eb; }
+
 
 .blocked-badge {
   display: inline-block;

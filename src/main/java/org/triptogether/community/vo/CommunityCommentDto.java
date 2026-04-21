@@ -29,6 +29,9 @@ public class CommunityCommentDto {
 
     private int reportCount;
 
+    // AI 욕설 감지 플래그 (0=일반, 1=AI 감지됨 → BLUR 오버레이 표시)
+    private boolean aiFlagged;
+
     // 포인트 상점 장착 아이템에서 가져온 작성자 꾸미기 정보
     private String nicknameColorClass;
     private String nicknameEffectClass;

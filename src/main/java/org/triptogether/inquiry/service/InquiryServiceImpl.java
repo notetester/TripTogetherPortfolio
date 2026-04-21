@@ -225,6 +225,22 @@ public class InquiryServiceImpl implements InquiryService {
         inquiryMapper.deleteAttachment(attachmentId);
     }
 
+    // ===== AI 독성 감지 BLUR =====
+
+    // AI 독성 감지 플래그 설정
+    @Override
+    @Transactional
+    public void flagInquiryAsToxic(Long inquiryId) {
+        inquiryMapper.setInquiryAiFlagged(inquiryId);
+    }
+
+    // 관리자 BLUR 해제
+    @Override
+    @Transactional
+    public void clearInquiryBlur(Long inquiryId) {
+        inquiryMapper.clearInquiryBlur(inquiryId);
+    }
+
     // ===== private 유틸 =====
 
     // 이미지 파일 Cloudinary에 업로드하고 URL 반환함

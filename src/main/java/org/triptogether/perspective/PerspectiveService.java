@@ -3,8 +3,11 @@ package org.triptogether.perspective;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.triptogether.community.service.CommunityService;
+import org.triptogether.inquiry.service.InquiryService;
 import org.triptogether.moderation.service.ModerationPolicyService;
 
 import java.util.List;
@@ -30,6 +33,8 @@ public class PerspectiveService {
     private String apiKey;
 
     private final RestTemplate restTemplate;
+    private final CommunityService communityService;
+    private final InquiryService inquiryService;
     private final ModerationPolicyService moderationPolicyService;
 
     /** Google Perspective API 엔드포인트 (뒤에 apiKey를 붙여 사용). */
@@ -69,6 +74,52 @@ public class PerspectiveService {
         } catch (Exception e) {
             log.warn("Perspective API 호출 실패 (필터링 건너뜀): {}", e.getMessage());
             return false;
+        }
+    }
+
+    /**
+     * 게시글 본문을 비동기로 독성 검사함. 독성 감지 시 ai_flagged=1 세팅.
+     * 글 등록 응답을 막지 않도록 @Async 로 돌림 (Perspective API 1~5초 지연 회피).
+     */
+    @Async
+    public void checkAndFlagPostAsync(Long postId, String text) {
+        try {
+            if (isToxic(text)) {
+                communityService.flagPostAsToxic(postId);
+                log.info("AI 독성 감지 → 게시글 ai_flagged=1 처리 (postId={})", postId);
+            }
+        } catch (Exception e) {
+            log.warn("비동기 게시글 독성 검사 실패 (postId={}): {}", postId, e.getMessage());
+        }
+    }
+
+    /**
+     * 댓글 본문을 비동기로 독성 검사함. 독성 감지 시 ai_flagged=1 세팅.
+     */
+    @Async
+    public void checkAndFlagCommentAsync(Long commentId, String text) {
+        try {
+            if (isToxic(text)) {
+                communityService.flagCommentAsToxic(commentId);
+                log.info("AI 독성 감지 → 댓글 ai_flagged=1 처리 (commentId={})", commentId);
+            }
+        } catch (Exception e) {
+            log.warn("비동기 댓글 독성 검사 실패 (commentId={}): {}", commentId, e.getMessage());
+        }
+    }
+
+    /**
+     * 문의 본문을 비동기로 독성 검사함. 독성 감지 시 ai_flagged=1 세팅.
+     */
+    @Async
+    public void checkAndFlagInquiryAsync(Long inquiryId, String text) {
+        try {
+            if (isToxic(text)) {
+                inquiryService.flagInquiryAsToxic(inquiryId);
+                log.info("AI 독성 감지 → 문의 ai_flagged=1 처리 (inquiryId={})", inquiryId);
+            }
+        } catch (Exception e) {
+            log.warn("비동기 문의 독성 검사 실패 (inquiryId={}): {}", inquiryId, e.getMessage());
         }
     }
 }

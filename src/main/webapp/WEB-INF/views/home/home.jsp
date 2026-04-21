@@ -65,12 +65,10 @@
                     <div style="padding:40px;text-align:center;color:var(--gray-400);">등록된 여행지가 없습니다</div>
                 </c:when>
                 <c:otherwise>
-                    <div class="comm-g-outer">
-                        <button class="comm-g-btn comm-g-prev">&#8249;</button>
-                        <div class="comm-g-vp">
-                            <div class="comm-g-track">
-                                <c:forEach var="spot" items="${popularSpots}">
-                                    <div class="cc-wrap" data-spot-id="${spot.spotIdx}">
+                    <div class="home-grid">
+                        <c:forEach var="spot" items="${popularSpots}" varStatus="st">
+                            <c:if test="${st.index < 4}">
+                                <div class="cc-wrap" data-spot-id="${spot.spotIdx}">
                                         <div class="dc">
                                             <div class="dc-iw">
                                                 <c:choose>
@@ -113,11 +111,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                </c:forEach>
-                            </div>
+                                </c:if>
+                            </c:forEach>
                         </div>
-                        <button class="comm-g-btn comm-g-next">&#8250;</button>
-                    </div>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -137,12 +133,10 @@
                     <div style="padding:40px;text-align:center;color:var(--gray-400);">등록된 여행 코스가 없습니다</div>
                 </c:when>
                 <c:otherwise>
-                    <div class="comm-g-outer">
-                        <button class="comm-g-btn comm-g-prev">&#8249;</button>
-                        <div class="comm-g-vp">
-                            <div class="comm-g-track">
-                                <c:forEach var="plan" items="${trendingPlans}">
-                                    <div class="cc-wrap" data-plan-id="${plan.planId}">
+                    <div class="home-grid">
+                        <c:forEach var="plan" items="${trendingPlans}" varStatus="st">
+                            <c:if test="${st.index < 4}">
+                                <div class="cc-wrap" data-plan-id="${plan.planId}">
                                         <div class="tc">
                                             <div class="tc-iw">
                                                 <c:choose>
@@ -178,11 +172,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                </c:forEach>
-                            </div>
+                                </c:if>
+                            </c:forEach>
                         </div>
-                        <button class="comm-g-btn comm-g-next">&#8250;</button>
-                    </div>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -202,14 +194,12 @@
                     <div style="padding:40px;text-align:center;color:var(--gray-400);">아직 게시글이 없습니다</div>
                 </c:when>
                 <c:otherwise>
-                    <div class="comm-g-outer">
-                        <button class="comm-g-btn comm-g-prev">&#8249;</button>
-                        <div class="comm-g-vp">
-                            <div class="comm-g-track">
-                                <c:forEach var="post" items="${popularPosts}">
-                                    <c:set var="isBlocked" value="${post.postStatus == 'BLOCKED' or post.accountStatus == 'BLOCKED'}"/>
-                                    <c:if test="${not isBlocked or isAdminMode}">
-                                        <c:set var="isReportBlur" value="${post.reportCount >= 3 and post.postStatus == 'BLOCKED' and not isAdminMode}"/>
+                    <div class="home-grid">
+                        <c:forEach var="post" items="${popularPosts}">
+                            <c:set var="isBlocked" value="${post.postStatus == 'BLOCKED' or post.accountStatus == 'BLOCKED'}"/>
+                                    <c:set var="isReportOrAi" value="${post.reportCount >= 3 or post.aiFlagged}"/>
+                                    <c:if test="${not isBlocked or isReportOrAi or isAdminMode}">
+                                        <c:set var="isReportBlur" value="${isReportOrAi and not isAdminMode}"/>
                                         <c:set var="wrapClass" value="cc-wrap"/>
                                         <c:if test="${isReportBlur}"><c:set var="wrapClass" value="${wrapClass} report-blurred-wrap"/></c:if>
                                         <div class="${wrapClass}" data-id="${post.postId}">
@@ -256,10 +246,18 @@
                                                 </div>
                                             </div>
                                             <c:if test="${isReportBlur}">
-                                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)">&#9888;&#65039; 신고된 콘텐츠입니다. 클릭하여 확인</div>
+                                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)">
+                                                    <c:choose>
+                                                        <c:when test="${post.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                                                        <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                                    </c:choose>
+                                                </div>
                                             </c:if>
                                             <c:if test="${isAdminMode}">
                                                 <c:choose>
+                                                    <c:when test="${post.aiFlagged}">
+                                                        <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                                    </c:when>
                                                     <c:when test="${post.postStatus == 'BLOCKED' and post.reportCount >= 3}">
                                                         <span class="blocked-badge"><spring:message code="home.blocked.report"/></span>
                                                     </c:when>
@@ -273,10 +271,7 @@
                                             </c:if>
                                         </div>
                                     </c:if>
-                                </c:forEach>
-                            </div>
-                        </div>
-                        <button class="comm-g-btn comm-g-next">&#8250;</button>
+                        </c:forEach>
                     </div>
                 </c:otherwise>
             </c:choose>
@@ -313,100 +308,9 @@
         overlay.remove();
     }
 
-    function initCarousel(section) {
-        var track   = section.querySelector('.comm-g-track');
-        var prevBtn = section.querySelector('.comm-g-prev');
-        var nextBtn = section.querySelector('.comm-g-next');
-        if (!track || !track.children.length) return;
-
-        var cards   = track.children;
-        var total   = cards.length;
-        var gap     = 24;
-        var visible = computeVisible();
-        var current = 0;
-        var autoTimer;
-        var resizeTimer;
-
-        function computeVisible() {
-            var w = window.innerWidth;
-            if (w >= 1200) return 4;
-            if (w >= 900)  return 3;
-            if (w >= 600)  return 2;
-            return 1;
-        }
-
-        function effectiveVisible() { return Math.min(visible, total); }
-
-        function setCardWidths() {
-            var vpWidth = track.parentElement.offsetWidth;
-            if (!vpWidth) return;
-            var v = effectiveVisible();
-            var w = (vpWidth - gap * (v - 1)) / v;
-            Array.from(cards).forEach(function (wrap) {
-                wrap.style.width = w + 'px';
-                var inner = wrap.querySelector('.cc, .dc, .tc');
-                if (inner) inner.style.width = w + 'px';
-            });
-            track.style.gap = gap + 'px';
-        }
-
-        function cardStep() { return cards[0].getBoundingClientRect().width + gap; }
-
-        function maxIndex() { return Math.max(0, total - effectiveVisible()); }
-
-        function goTo(idx) {
-            current = Math.max(0, Math.min(idx, maxIndex()));
-            track.style.transform = 'translateX(-' + (current * cardStep()) + 'px)';
-        }
-
-        function next() {
-            if (total <= effectiveVisible()) return;
-            if (current >= maxIndex()) {
-                track.style.transition = 'none'; current = 0;
-                track.style.transform = 'translateX(0)';
-                track.getBoundingClientRect(); track.style.transition = '';
-            } else { goTo(current + 1); }
-        }
-
-        function prev() {
-            if (total <= effectiveVisible()) return;
-            if (current <= 0) {
-                track.style.transition = 'none'; current = maxIndex();
-                track.style.transform = 'translateX(-' + (current * cardStep()) + 'px)';
-                track.getBoundingClientRect(); track.style.transition = '';
-            } else { goTo(current - 1); }
-        }
-
-        function startAuto() {
-            if (total > effectiveVisible()) autoTimer = setInterval(next, 2500);
-        }
-        function stopAuto()  { clearInterval(autoTimer); }
-
-        function handleResize() {
-            stopAuto();
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function () {
-                requestAnimationFrame(function () {
-                    visible = computeVisible();
-                    setCardWidths();
-                    goTo(current);
-                    startAuto();
-                });
-            }, 150);
-        }
-
-        if (nextBtn) nextBtn.addEventListener('click', function () { stopAuto(); next(); startAuto(); });
-        if (prevBtn) prevBtn.addEventListener('click', function () { stopAuto(); prev(); startAuto(); });
-        window.addEventListener('resize', handleResize);
-
-        requestAnimationFrame(setCardWidths);
-        startAuto();
-    }
-
-    /* ===== 인기 여행지 캐러셀 ===== */
+    /* ===== 인기 여행지 카드 클릭 ===== */
     var spotsSection = document.getElementById('spotsSection');
-    if (spotsSection && spotsSection.querySelector('.comm-g-track')) {
-        initCarousel(spotsSection);
+    if (spotsSection) {
         spotsSection.querySelectorAll('.cc-wrap[data-spot-id]').forEach(function (wrap) {
             wrap.style.cursor = 'pointer';
             wrap.addEventListener('click', function () {
@@ -415,10 +319,9 @@
         });
     }
 
-    /* ===== 트렌딩 코스 캐러셀 ===== */
+    /* ===== 트렌딩 코스 카드 클릭 ===== */
     var plansSection = document.getElementById('plansSection');
-    if (plansSection && plansSection.querySelector('.comm-g-track')) {
-        initCarousel(plansSection);
+    if (plansSection) {
         plansSection.querySelectorAll('.cc-wrap[data-plan-id]').forEach(function (wrap) {
             wrap.style.cursor = 'pointer';
             wrap.addEventListener('click', function () {
@@ -427,10 +330,9 @@
         });
     }
 
-    /* ===== 인기 여행 이야기 캐러셀 ===== */
+    /* ===== 인기 여행 이야기 카드 클릭 ===== */
     var communitySection = document.getElementById('communitySection');
-    if (communitySection && communitySection.querySelector('.comm-g-track')) {
-        initCarousel(communitySection);
+    if (communitySection) {
         communitySection.querySelectorAll('.cc-wrap[data-id]').forEach(function (wrap) {
             wrap.style.cursor = 'pointer';
             wrap.addEventListener('click', function () {

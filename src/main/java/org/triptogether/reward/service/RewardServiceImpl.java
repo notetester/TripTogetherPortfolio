@@ -1,6 +1,5 @@
 package org.triptogether.reward.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class RewardServiceImpl implements RewardService {
 
     private static final int MAX_LEVEL_SCAN = 10_000;

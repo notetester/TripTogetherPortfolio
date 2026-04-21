@@ -85,7 +85,15 @@
             <button class="action-btn edit-btn"
                     onclick="location.href='${pageContext.request.contextPath}/community/edit/${post.postId}'">수정</button>
             <button class="action-btn delete-btn" onclick="deletePost(${post.postId})">삭제</button>
+            <c:if test="${isAdminMode and (post.aiFlagged or post.reportCount >= 3)}">
+              <button class="action-btn" onclick="adminClearPostBlur(event, ${post.postId})">
+                <spring:message code="community.admin.clearBlur"/>
+              </button>
+            </c:if>
           </div>
+        </c:if>
+        <c:if test="${isAdminMode and post.aiFlagged}">
+          <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
         </c:if>
       </div>
 
@@ -249,11 +257,11 @@
                 <c:if test="${empty comment.parentCommentId}">
                   <c:choose>
                     <%-- 관리자 직접 차단 (report_count < 3): blind --%>
-                    <c:when test="${(comment.accountStatus eq 'BLOCKED' or (comment.commentStatus eq 'BLOCKED' and comment.reportCount < 3)) and !isAdminMode}">
+                    <c:when test="${(comment.accountStatus eq 'BLOCKED' or comment.commentStatus eq 'BLOCKED') and !isAdminMode}">
                     </c:when>
                     <c:otherwise>
                       <%-- ACTIVE 또는 신고차단(report>=3) 또는 관리자모드 --%>
-                      <c:if test="${comment.commentStatus eq 'ACTIVE' or (comment.commentStatus eq 'BLOCKED' and comment.reportCount >= 3) or isAdminMode}">
+                      <c:if test="${comment.commentStatus eq 'ACTIVE' or isAdminMode}">
                         <div class="comment-item" id="comment_${comment.commentId}">
                           <c:if test="${isAdminMode}">
                             <input type="checkbox" class="comm-admin-comment-chk" data-id="${comment.commentId}"
@@ -265,10 +273,11 @@
                               <c:otherwise>?</c:otherwise>
                             </c:choose>
                           </div>
-                          <%-- comment-body-wrap: 신고차단이면 report-blurred-wrap --%>
-                          <div class="comment-body-wrap ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                            <%-- comment-body: 신고차단이면 report-blurred --%>
-                            <div class="comment-body ${comment.bubbleClass} ${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                          <%-- comment-body-wrap: 신고 3회 이상 또는 AI 감지 시 report-blurred-wrap --%>
+                          <c:set var="cmtBlurred" value="${(comment.reportCount >= 3 or comment.aiFlagged) and !isAdminMode}"/>
+                          <div class="comment-body-wrap ${cmtBlurred ? 'report-blurred-wrap' : ''}">
+                            <%-- comment-body: 신고 3회 이상 또는 AI 감지 시 report-blurred --%>
+                            <div class="comment-body ${comment.bubbleClass} ${cmtBlurred ? 'report-blurred' : ''}">
                               <div class="comment-top">
                                 <span class="comment-author tt-nickname ${comment.nicknameColorClass} ${comment.nicknameEffectClass}">${comment.nickname}</span>
                                 <c:if test="${not empty comment.profileBadgeLabel}">
@@ -310,10 +319,13 @@
                                 </c:if>
                               </div>
                               <div class="comment-text">${comment.content}</div>
-                              <%-- 관리자모드: 차단 뱃지 --%>
-                              <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED')}">
+                              <%-- 관리자모드: 차단/AI 뱃지 --%>
+                              <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= 3 or comment.aiFlagged)}">
                                 <c:choose>
-                                  <c:when test="${comment.commentStatus eq 'BLOCKED' and comment.reportCount >= 3}">
+                                  <c:when test="${comment.aiFlagged}">
+                                    <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                  </c:when>
+                                  <c:when test="${comment.commentStatus eq 'ACTIVE' and comment.reportCount >= 3}">
                                     <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
                                   </c:when>
                                   <c:when test="${comment.commentStatus eq 'BLOCKED'}">
@@ -353,14 +365,22 @@
                                 </div>
                               </c:if>
                             </div><%-- /comment-body --%>
-                            <%-- 신고차단 overlay: comment-body 밖, comment-body-wrap 안 --%>
-                            <c:if test="${comment.reportCount >= 3 and comment.commentStatus eq 'BLOCKED' and !isAdminMode}">
+                            <%-- 신고 3회 이상/AI 감지 overlay: comment-body 밖, comment-body-wrap 안 --%>
+                            <c:if test="${cmtBlurred}">
                               <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
-                                ⚠️ 신고된 콘텐츠입니다. 클릭하여 확인
+                                <c:choose>
+                                  <c:when test="${comment.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                                  <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                </c:choose>
                               </div>
                             </c:if>
-                            <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED')}">
+                            <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= 3 or comment.aiFlagged)}">
                               <button class="post-admin-delete-btn" onclick="adminDeleteComment(event, ${comment.commentId})">✕</button>
+                            </c:if>
+                            <c:if test="${isAdminMode and (comment.aiFlagged or comment.reportCount >= 3)}">
+                              <button class="post-admin-clear-blur-btn" onclick="adminClearCommentBlur(event, ${comment.commentId})">
+                                <spring:message code="community.admin.clearBlur"/>
+                              </button>
                             </c:if>
                           </div><%-- /comment-body-wrap --%>
                         </div>
@@ -370,10 +390,10 @@
                           <c:if test="${reply.parentCommentId eq comment.commentId}">
                             <c:choose>
                               <%-- 관리자 직접 차단: blind --%>
-                              <c:when test="${(reply.accountStatus eq 'BLOCKED' or (reply.commentStatus eq 'BLOCKED' and reply.reportCount < 3)) and !isAdminMode}">
+                              <c:when test="${(reply.accountStatus eq 'BLOCKED' or reply.commentStatus eq 'BLOCKED') and !isAdminMode}">
                               </c:when>
                               <c:otherwise>
-                                <c:if test="${reply.commentStatus eq 'ACTIVE' or (reply.commentStatus eq 'BLOCKED' and reply.reportCount >= 3) or isAdminMode}">
+                                <c:if test="${reply.commentStatus eq 'ACTIVE' or isAdminMode}">
                                   <div class="comment-item reply-item">
                                     <c:if test="${isAdminMode}">
                                       <input type="checkbox" class="comm-admin-comment-chk" data-id="${reply.commentId}"
@@ -386,8 +406,9 @@
                                         <c:otherwise>?</c:otherwise>
                                       </c:choose>
                                     </div>
-                                    <div class="comment-body-wrap ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}">
-                                      <div class="comment-body ${reply.bubbleClass} ${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                                    <c:set var="rplBlurred" value="${(reply.reportCount >= 3 or reply.aiFlagged) and !isAdminMode}"/>
+                                    <div class="comment-body-wrap ${rplBlurred ? 'report-blurred-wrap' : ''}">
+                                      <div class="comment-body ${reply.bubbleClass} ${rplBlurred ? 'report-blurred' : ''}">
                                         <div class="comment-top">
                                           <span class="comment-author tt-nickname ${reply.nicknameColorClass} ${reply.nicknameEffectClass}">${reply.nickname}</span>
                                           <c:if test="${not empty reply.profileBadgeLabel}">
@@ -423,10 +444,13 @@
                                         </c:if>
                                       </div>
                                       <div class="comment-text">${reply.content}</div>
-                                      <%-- 관리자모드: 차단 뱃지 --%>
-                                      <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED')}">
+                                      <%-- 관리자모드: 차단/AI 뱃지 --%>
+                                      <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= 3 or reply.aiFlagged)}">
                                         <c:choose>
-                                          <c:when test="${reply.commentStatus eq 'BLOCKED' and reply.reportCount >= 3}">
+                                          <c:when test="${reply.aiFlagged}">
+                                            <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                          </c:when>
+                                          <c:when test="${reply.commentStatus eq 'ACTIVE' and reply.reportCount >= 3}">
                                             <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
                                           </c:when>
                                           <c:when test="${reply.commentStatus eq 'BLOCKED'}">
@@ -454,14 +478,22 @@
                                         </c:choose>
                                       </div>
                                     </div><%-- /comment-body --%>
-                                    <%-- 신고차단 overlay: comment-body 밖, comment-body-wrap 안 --%>
-                                    <c:if test="${reply.reportCount >= 3 and reply.commentStatus eq 'BLOCKED' and !isAdminMode}">
+                                    <%-- 신고 3회 이상/AI 감지 overlay: comment-body 밖, comment-body-wrap 안 --%>
+                                    <c:if test="${rplBlurred}">
                                       <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
-                                        ⚠️ 신고된 콘텐츠입니다. 클릭하여 확인
+                                        <c:choose>
+                                          <c:when test="${reply.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                                          <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                        </c:choose>
                                       </div>
                                     </c:if>
-                                    <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED')}">
+                                    <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= 3 or reply.aiFlagged)}">
                                       <button class="post-admin-delete-btn" onclick="adminDeleteComment(event, ${reply.commentId})">✕</button>
+                                    </c:if>
+                                    <c:if test="${isAdminMode and (reply.aiFlagged or reply.reportCount >= 3)}">
+                                      <button class="post-admin-clear-blur-btn" onclick="adminClearCommentBlur(event, ${reply.commentId})">
+                                        <spring:message code="community.admin.clearBlur"/>
+                                      </button>
                                     </c:if>
                                   </div><%-- /comment-body-wrap --%>
                                 </div>
@@ -556,12 +588,13 @@
       </c:if>
       <div class="detail-post-list">
         <c:forEach var="r" items="${relatedList}">
-          <div class="post-card-wrap" data-id="${r.postId}" data-href="${pageContext.request.contextPath}/community/${r.postId}">
+          <c:set var="isBlurred" value="${(r.reportCount >= 3 or r.aiFlagged) and !isAdminMode}"/>
+          <div class="post-card-wrap ${isBlurred ? 'report-blurred-wrap' : ''}" data-id="${r.postId}" data-href="${pageContext.request.contextPath}/community/${r.postId}">
             <c:if test="${isAdminMode}">
               <input type="checkbox" class="comm-admin-related-chk comm-admin-post-chk" data-id="${r.postId}" onclick="event.stopPropagation()">
               <button class="post-admin-delete-btn" onclick="adminDeletePost(event, ${r.postId})">✕</button>
             </c:if>
-            <div class="post-card">
+            <div class="post-card ${isBlurred ? 'report-blurred' : ''}">
               <div class="post-card-img-wrap">
                 <c:choose>
                   <c:when test="${not empty r.thumbUrl}">
@@ -610,6 +643,14 @@
                 </div>
               </div>
             </div>
+            <c:if test="${isBlurred}">
+              <div class="report-blurred-overlay">
+                <c:choose>
+                  <c:when test="${r.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                  <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                </c:choose>
+              </div>
+            </c:if>
           </div>
         </c:forEach>
       </div>
@@ -653,12 +694,13 @@
       <c:otherwise>
         <div class="detail-post-list">
           <c:forEach var="l" items="${latestList}">
-            <div class="post-card-wrap" data-id="${l.postId}" data-href="${pageContext.request.contextPath}/community/${l.postId}">
+            <c:set var="isBlurred" value="${(l.reportCount >= 3 or l.aiFlagged) and !isAdminMode}"/>
+            <div class="post-card-wrap ${isBlurred ? 'report-blurred-wrap' : ''}" data-id="${l.postId}" data-href="${pageContext.request.contextPath}/community/${l.postId}">
               <c:if test="${isAdminMode}">
                 <input type="checkbox" class="comm-admin-latest-chk comm-admin-post-chk" data-id="${l.postId}" onclick="event.stopPropagation()">
                 <button class="post-admin-delete-btn" onclick="adminDeletePost(event, ${l.postId})">✕</button>
               </c:if>
-              <div class="post-card">
+              <div class="post-card ${isBlurred ? 'report-blurred' : ''}">
                 <div class="post-card-img-wrap">
                   <c:choose>
                     <c:when test="${not empty l.thumbUrl}">
@@ -707,6 +749,14 @@
                   </div>
                 </div>
               </div>
+              <c:if test="${isBlurred}">
+                <div class="report-blurred-overlay">
+                  <c:choose>
+                    <c:when test="${l.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                    <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                  </c:choose>
+                </div>
+              </c:if>
             </div>
           </c:forEach>
         </div>
@@ -762,7 +812,16 @@ var COMMENT_OPEN_LABEL = '<spring:message code="community.detail.comments.open" 
 /* ===== 하단 카드 클릭 이동 ===== */
 document.addEventListener('click', function(e) {
   var card = e.target.closest('.post-card-wrap[data-href]');
-  if (card) location.href = card.getAttribute('data-href');
+  if (!card) return;
+  if (card.classList.contains('report-blurred-wrap')) {
+    card.classList.remove('report-blurred-wrap');
+    var inner = card.querySelector('.report-blurred');
+    if (inner) inner.classList.remove('report-blurred');
+    var ov = card.querySelector('.report-blurred-overlay');
+    if (ov) ov.remove();
+    return;
+  }
+  location.href = card.getAttribute('data-href');
 });
 
 /* ===== 댓글 툴바 ===== */
@@ -877,11 +936,10 @@ function toggleLike(postId) {
   });
 }
 
-function submitComment(postId, forceSubmit) {
+function submitComment(postId) {
   var text = document.getElementById('commentText').value.trim();
   if (!text) return;
   var body = 'content=' + encodeURIComponent(text);
-  if (forceSubmit) body += '&forceSubmit=true';
   fetch(CTX + '/community/' + postId + '/comment', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
@@ -889,12 +947,6 @@ function submitComment(postId, forceSubmit) {
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
-    if (data.toxicityDetected) {
-      if (confirm(data.message || '부적절한 표현이 감지되었습니다. 그래도 등록하시겠습니까?')) {
-        submitComment(postId, true);
-      }
-      return;
-    }
     if (data.success) location.reload();
     else alert(data.message || '댓글 작성에 실패했습니다.');
   });
@@ -928,11 +980,10 @@ function toggleReplyInput(commentId) {
   if (!wrap.classList.contains('hidden')) document.getElementById('replyText_' + commentId).focus();
 }
 
-function submitReply(postId, commentId, forceSubmit) {
+function submitReply(postId, commentId) {
   var text = document.getElementById('replyText_' + commentId).value.trim();
   if (!text) return;
   var body = 'content=' + encodeURIComponent(text);
-  if (forceSubmit) body += '&forceSubmit=true';
   fetch(CTX + '/community/' + postId + '/comment/' + commentId + '/reply', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
@@ -940,12 +991,6 @@ function submitReply(postId, commentId, forceSubmit) {
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
-    if (data.toxicityDetected) {
-      if (confirm(data.message || '부적절한 표현이 감지되었습니다. 그래도 등록하시겠습니까?')) {
-        submitReply(postId, commentId, true);
-      }
-      return;
-    }
     if (data.success) location.reload();
     else alert(data.message || '답글 작성에 실패했습니다.');
   });
@@ -1161,6 +1206,32 @@ function adminDeleteComment(event, commentId) {
     headers: { 'X-Requested-With': 'XMLHttpRequest' }
   })
   .then(function(res) { if (res.ok) location.reload(); });
+}
+
+function adminClearPostBlur(event, postId) {
+  event.stopPropagation();
+  if (!confirm('<spring:message code="community.admin.clearBlur.confirm" javaScriptEscape="true"/>')) return;
+  fetch(CTX + '/community/' + postId + '/clear-blur', {
+    method: 'POST',
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+  .then(function(res) {
+    if (res.ok) location.reload();
+    else alert('<spring:message code="community.admin.clearBlur.fail" javaScriptEscape="true"/>');
+  });
+}
+
+function adminClearCommentBlur(event, commentId) {
+  event.stopPropagation();
+  if (!confirm('<spring:message code="community.admin.clearBlur.confirm" javaScriptEscape="true"/>')) return;
+  fetch(CTX + '/community/comment/' + commentId + '/clear-blur', {
+    method: 'POST',
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+  .then(function(res) {
+    if (res.ok) location.reload();
+    else alert('<spring:message code="community.admin.clearBlur.fail" javaScriptEscape="true"/>');
+  });
 }
 
 function openUserReportModal(targetUserIdx, sourceType, sourceId) {

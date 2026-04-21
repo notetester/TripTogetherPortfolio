@@ -210,25 +210,19 @@
 .tc-auth  { font-size: 13px; color: var(--gray-500); }
 .tc-likes { display: flex; align-items: center; gap: 4px; font-size: 14px; color: var(--gray-500); }
 
+/* ===== 홈 카드 그리드 (4/3/2/1 반응형) ===== */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+@media (max-width: 1199px) { .home-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 899px)  { .home-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 599px)  { .home-grid { grid-template-columns: 1fr; } }
+
+.home-grid .cc-wrap { min-width: 0; }
+
 /* ===== 커뮤니티 카드 ===== */
-.comm-g-outer {
-  position: relative; display: flex; align-items: center; gap: 8px;
-}
-.comm-g-vp { overflow: hidden; flex: 1; }
-.comm-g-track {
-  display: flex; gap: 24px;
-  transition: transform 0.4s ease;
-}
-.comm-g-btn {
-  flex-shrink: 0; width: 36px; height: 36px;
-  background: #fff; border: 1px solid var(--gray-200); border-radius: 50%;
-  font-size: 22px; line-height: 1; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow-sm); transition: background .15s, border-color .15s;
-  color: var(--gray-600);
-}
-.comm-g-btn:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
-.comm-g-track .cc-wrap { flex-shrink: 0; min-width: 0; }
 .cc {
   width: 100%;
   background: #fff;
@@ -356,7 +350,6 @@
 @media (max-width: 768px) {
   .hero { height: 420px; }
   .hero-c h1 { font-size: 2rem; }
-  /* cc width는 JS로 제어 */
   .footer-inner { flex-direction: column; text-align: center; }
 }
 
