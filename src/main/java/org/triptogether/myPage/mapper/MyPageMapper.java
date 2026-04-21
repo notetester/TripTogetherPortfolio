@@ -2,6 +2,7 @@ package org.triptogether.myPage.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.triptogether.admin.vo.BusinessAccountApplicationVO;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
@@ -44,6 +45,12 @@ public interface MyPageMapper {
 
     List<MyPageFlightBookingDto> selectMyFlightBookingList(@Param("userIdx") Long userIdx);
     int selectMyFlightBookingCount(@Param("userIdx") Long userIdx);
+
+    // ===== 기업 회원 신청 =====
+
+    BusinessAccountApplicationVO selectLatestBusinessApplication(@Param("userIdx") Long userIdx);
+    int countPendingBusinessApplication(@Param("userIdx") Long userIdx);
+    void insertBusinessApplication(BusinessAccountApplicationVO application);
 
     // ===== 알림 =====
 

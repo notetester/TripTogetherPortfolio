@@ -41,6 +41,9 @@
             <a class="adm-nav-item ${activeMenu=='members'?'active':''}" href="${pageContext.request.contextPath}/admin/members">
                 <span class="adm-nav-icon">👥</span> 회원 관리
             </a>
+            <a class="adm-nav-item ${activeMenu=='businessApplications'?'active':''}" href="${pageContext.request.contextPath}/admin/business-applications">
+                <span class="adm-nav-icon">🏢</span> 기업 신청
+            </a>
             </c:if>
             <c:if test="${hasAuditAdmin}">
             <a class="adm-nav-item ${activeMenu=='logins'?'active':''}" href="${pageContext.request.contextPath}/admin/logins">

@@ -61,6 +61,15 @@ public interface AdminMapper {
     boolean hasEffectivePermission(@Param("userIdx") Long userIdx,
                                    @Param("permissionCode") String permissionCode);
 
+    // ===== 기업 회원 신청 =====
+    List<BusinessAccountApplicationVO> findBusinessApplications(@Param("status") String status);
+    BusinessAccountApplicationVO findBusinessApplicationForUpdate(@Param("applicationIdx") Long applicationIdx);
+    void approveBusinessApplication(@Param("applicationIdx") Long applicationIdx,
+                                    @Param("reviewedByUserIdx") Long reviewedByUserIdx);
+    void rejectBusinessApplication(@Param("applicationIdx") Long applicationIdx,
+                                   @Param("rejectReason") String rejectReason,
+                                   @Param("reviewedByUserIdx") Long reviewedByUserIdx);
+
     // ===== 회원 로그인 이력 =====
     List<UserLoginHistoryVO> findLoginHistory(@Param("userIdx") Long userIdx,
                                               @Param("limit") int limit);

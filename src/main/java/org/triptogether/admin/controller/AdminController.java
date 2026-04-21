@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.admin.service.AdminService;
 import org.triptogether.admin.vo.*;
 import org.triptogether.community.service.CommunityService;
@@ -51,6 +52,46 @@ public class AdminController {
         model.addAllAttributes(adminService.getMemberList(search));
         model.addAttribute("activeMenu", "members");
         return "admin/member/list";
+    }
+
+    @GetMapping("/business-applications")
+    public String businessApplicationList(@RequestParam(defaultValue = "PENDING") String status,
+                                          Model model) {
+        model.addAttribute("applicationList", adminService.getBusinessApplications(status));
+        model.addAttribute("status", status == null || status.isBlank() ? "PENDING" : status);
+        model.addAttribute("activeMenu", "businessApplications");
+        return "admin/member/business-applications";
+    }
+
+    @PostMapping("/business-applications/{applicationIdx}/approve")
+    public String approveBusinessApplication(@PathVariable Long applicationIdx,
+                                             HttpSession session,
+                                             RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            adminService.approveBusinessApplication(applicationIdx, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("businessApplicationMessage", "기업 회원 신청을 승인했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("businessApplicationError", e.getMessage());
+        }
+        return "redirect:/admin/business-applications";
+    }
+
+    @PostMapping("/business-applications/{applicationIdx}/reject")
+    public String rejectBusinessApplication(@PathVariable Long applicationIdx,
+                                            @RequestParam String rejectReason,
+                                            HttpSession session,
+                                            RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            adminService.rejectBusinessApplication(applicationIdx, rejectReason, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("businessApplicationMessage", "기업 회원 신청을 반려했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("businessApplicationError", e.getMessage());
+        }
+        return "redirect:/admin/business-applications";
     }
 
     @GetMapping("/members/{userIdx}")

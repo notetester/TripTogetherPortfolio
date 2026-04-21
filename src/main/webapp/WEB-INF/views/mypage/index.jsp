@@ -898,6 +898,99 @@
             </div>
         </div>
 
+        <c:if test="${user.userRole eq 'USER'}">
+            <%-- ══════════════════════════════════════════
+                 기업 회원 신청
+                 - 운영자/봇/시스템 계정은 공급자 신청 대상이 아니므로 USER에게만 노출한다.
+            ══════════════════════════════════════════ --%>
+            <div class="mp-card">
+                <div class="mp-card-head">
+                    <div class="mp-card-title">
+                        <span class="mp-card-icon">🏢</span>
+                        기업 회원 신청
+                    </div>
+                </div>
+
+                <c:if test="${not empty businessApplicationMessage}">
+                    <div class="mp-item-alert mp-item-alert--success">${businessApplicationMessage}</div>
+                </c:if>
+                <c:if test="${not empty businessApplicationError}">
+                    <div class="mp-item-alert mp-item-alert--error">${businessApplicationError}</div>
+                </c:if>
+
+                <div class="mp-business-box">
+                    <div class="mp-business-status">
+                        <div>
+                            <span class="mp-business-kicker">현재 계정 유형</span>
+                            <strong>일반 회원</strong>
+                        </div>
+                        <c:if test="${not empty businessApplication}">
+                            <span class="mp-business-badge ${businessApplication.applicationStatus}">
+                                <c:choose>
+                                    <c:when test="${businessApplication.applicationStatus eq 'PENDING'}">검토 대기</c:when>
+                                    <c:when test="${businessApplication.applicationStatus eq 'APPROVED'}">승인 완료</c:when>
+                                    <c:when test="${businessApplication.applicationStatus eq 'REJECTED'}">반려</c:when>
+                                    <c:otherwise>${businessApplication.applicationStatus}</c:otherwise>
+                                </c:choose>
+                            </span>
+                        </c:if>
+                    </div>
+
+                    <c:choose>
+                        <c:when test="${not empty businessApplication and businessApplication.applicationStatus eq 'PENDING'}">
+                            <p class="mp-business-note">
+                                ${fn:escapeXml(businessApplication.companyName)} 신청이 관리자 검토를 기다리고 있습니다.
+                                신청일: <fmt:formatDate value="${businessApplication.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/>
+                            </p>
+                        </c:when>
+                        <c:otherwise>
+                            <c:if test="${not empty businessApplication and businessApplication.applicationStatus eq 'REJECTED'}">
+                                <div class="mp-business-reject">
+                                    이전 신청이 반려되었습니다.
+                                    <c:if test="${not empty businessApplication.rejectReason}">
+                                        사유: ${fn:escapeXml(businessApplication.rejectReason)}
+                                    </c:if>
+                                </div>
+                            </c:if>
+
+                            <form class="mp-business-form" method="post" action="${pageContext.request.contextPath}/mypage/business-application">
+                                <div>
+                                    <label>신청 유형</label>
+                                    <select name="requestedRole" required>
+                                        <option value="BUSINESS">비즈니스 회원</option>
+                                        <option value="PARTNER">파트너 회원</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>기업명</label>
+                                    <input type="text" name="companyName" maxlength="100" required placeholder="예: 트립투게더 투어">
+                                </div>
+                                <div>
+                                    <label>사업자등록번호</label>
+                                    <input type="text" name="businessNumber" maxlength="50" placeholder="선택 입력">
+                                </div>
+                                <div>
+                                    <label>담당자명</label>
+                                    <input type="text" name="managerName" maxlength="50" required placeholder="담당자 이름">
+                                </div>
+                                <div>
+                                    <label>담당자 연락처</label>
+                                    <input type="text" name="managerPhone" maxlength="30" required placeholder="010-0000-0000">
+                                </div>
+                                <div class="mp-business-form-full">
+                                    <label>신청 사유 / 기업 소개</label>
+                                    <textarea name="description" maxlength="1000" rows="4" placeholder="운영하려는 패키지 상품 방향이나 제휴 희망 내용을 적어주세요."></textarea>
+                                </div>
+                                <div class="mp-business-form-full">
+                                    <button type="submit" class="mp-business-submit">기업 회원 신청하기</button>
+                                </div>
+                            </form>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+        </c:if>
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">

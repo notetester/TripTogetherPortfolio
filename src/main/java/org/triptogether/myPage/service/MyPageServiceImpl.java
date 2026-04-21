@@ -2,6 +2,9 @@ package org.triptogether.myPage.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.triptogether.admin.vo.BusinessAccountApplicationVO;
+import org.triptogether.auth.vo.UserRole;
 import org.triptogether.myPage.mapper.MyPageMapper;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
@@ -89,6 +92,69 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public int getMyFlightBookingCount(Long userIdx) {
         return myPageMapper.selectMyFlightBookingCount(userIdx);
+    }
+
+    // ===== 기업 회원 신청 =====
+
+    @Override
+    public BusinessAccountApplicationVO getLatestBusinessApplication(Long userIdx) {
+        return myPageMapper.selectLatestBusinessApplication(userIdx);
+    }
+
+    @Override
+    @Transactional
+    public void submitBusinessApplication(BusinessAccountApplicationVO application, String currentUserRole) {
+        if (application == null || application.getUserIdx() == null) {
+            throw new IllegalArgumentException("신청자 정보를 찾을 수 없습니다.");
+        }
+
+        UserRole currentRole = UserRole.from(currentUserRole);
+        if (currentRole != UserRole.USER) {
+            throw new IllegalStateException("일반 회원만 기업 회원 신청을 할 수 있습니다.");
+        }
+
+        UserRole requestedRole = UserRole.parse(application.getRequestedRole())
+                .filter(role -> role == UserRole.BUSINESS || role == UserRole.PARTNER)
+                .orElseThrow(() -> new IllegalArgumentException("신청 유형은 비즈니스 또는 파트너만 선택할 수 있습니다."));
+
+        if (myPageMapper.countPendingBusinessApplication(application.getUserIdx()) > 0) {
+            throw new IllegalStateException("이미 검토 대기 중인 기업 회원 신청이 있습니다.");
+        }
+
+        String companyName = normalizeRequired(application.getCompanyName(), "기업명을 입력해주세요.");
+        String managerName = normalizeRequired(application.getManagerName(), "담당자명을 입력해주세요.");
+        String managerPhone = normalizeRequired(application.getManagerPhone(), "담당자 연락처를 입력해주세요.");
+
+        application.setRequestedRole(requestedRole.code());
+        application.setCompanyName(limit(companyName, 100));
+        application.setBusinessNumber(limit(normalizeOptional(application.getBusinessNumber()), 50));
+        application.setManagerName(limit(managerName, 50));
+        application.setManagerPhone(limit(managerPhone, 30));
+        application.setDescription(limit(normalizeOptional(application.getDescription()), 1000));
+        myPageMapper.insertBusinessApplication(application);
+    }
+
+    private String normalizeRequired(String value, String message) {
+        String normalized = normalizeOptional(value);
+        if (normalized == null) {
+            throw new IllegalArgumentException(message);
+        }
+        return normalized;
+    }
+
+    private String normalizeOptional(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private String limit(String value, int maxLength) {
+        if (value == null || value.length() <= maxLength) {
+            return value;
+        }
+        return value.substring(0, maxLength);
     }
 
     // ===== 알림 =====

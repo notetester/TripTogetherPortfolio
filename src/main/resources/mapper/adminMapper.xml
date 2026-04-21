@@ -58,6 +58,28 @@
         <result property="loginAt" column="login_at"/>
     </resultMap>
 
+    <resultMap id="businessApplicationRM" type="org.triptogether.admin.vo.BusinessAccountApplicationVO">
+        <id     property="applicationIdx"     column="application_idx"/>
+        <result property="userIdx"            column="user_idx"/>
+        <result property="requestedRole"      column="requested_role"/>
+        <result property="companyName"        column="company_name"/>
+        <result property="businessNumber"     column="business_number"/>
+        <result property="managerName"        column="manager_name"/>
+        <result property="managerPhone"       column="manager_phone"/>
+        <result property="description"        column="description"/>
+        <result property="applicationStatus"  column="application_status"/>
+        <result property="rejectReason"       column="reject_reason"/>
+        <result property="reviewedByUserIdx"  column="reviewed_by_user_idx"/>
+        <result property="reviewedAt"         column="reviewed_at"/>
+        <result property="createdAt"          column="created_at"/>
+        <result property="updatedAt"          column="updated_at"/>
+        <result property="userId"             column="user_id"/>
+        <result property="nickname"           column="nickname"/>
+        <result property="userEmail"          column="user_email"/>
+        <result property="currentUserRole"    column="current_user_role"/>
+        <result property="reviewerNickname"   column="reviewer_nickname"/>
+    </resultMap>
+
     <resultMap id="inquiryRM" type="org.triptogether.admin.vo.AdminInquiryVO">
         <id property="inquiryId" column="inquiry_id"/>
         <result property="userIdx" column="user_idx"/>
@@ -556,6 +578,86 @@
             #{changedByUserIdx}
         )
     </insert>
+
+    <select id="findBusinessApplications" resultMap="businessApplicationRM">
+        SELECT
+            baa.application_idx,
+            baa.user_idx,
+            baa.requested_role,
+            baa.company_name,
+            baa.business_number,
+            baa.manager_name,
+            baa.manager_phone,
+            baa.description,
+            baa.application_status,
+            baa.reject_reason,
+            baa.reviewed_by_user_idx,
+            baa.reviewed_at,
+            baa.created_at,
+            baa.updated_at,
+            u.user_id,
+            u.nickname,
+            u.user_email,
+            u.user_role AS current_user_role,
+            reviewer.nickname AS reviewer_nickname
+        FROM BUSINESS_ACCOUNT_APPLICATION baa
+        JOIN USERS u ON baa.user_idx = u.user_idx
+        LEFT JOIN USERS reviewer ON baa.reviewed_by_user_idx = reviewer.user_idx
+        <where>
+            <if test="status != null and status != 'ALL'">
+                baa.application_status = #{status}
+            </if>
+        </where>
+        ORDER BY
+            CASE baa.application_status
+                WHEN 'PENDING' THEN 0
+                WHEN 'REJECTED' THEN 1
+                WHEN 'APPROVED' THEN 2
+                ELSE 3
+            END,
+            baa.created_at DESC
+    </select>
+
+    <select id="findBusinessApplicationForUpdate" resultMap="businessApplicationRM">
+        SELECT
+            application_idx,
+            user_idx,
+            requested_role,
+            company_name,
+            business_number,
+            manager_name,
+            manager_phone,
+            description,
+            application_status,
+            reject_reason,
+            reviewed_by_user_idx,
+            reviewed_at,
+            created_at,
+            updated_at
+        FROM BUSINESS_ACCOUNT_APPLICATION
+        WHERE application_idx = #{applicationIdx}
+        FOR UPDATE
+    </select>
+
+    <update id="approveBusinessApplication">
+        UPDATE BUSINESS_ACCOUNT_APPLICATION
+        SET application_status = 'APPROVED',
+            reject_reason = NULL,
+            reviewed_by_user_idx = #{reviewedByUserIdx},
+            reviewed_at = NOW()
+        WHERE application_idx = #{applicationIdx}
+          AND application_status = 'PENDING'
+    </update>
+
+    <update id="rejectBusinessApplication">
+        UPDATE BUSINESS_ACCOUNT_APPLICATION
+        SET application_status = 'REJECTED',
+            reject_reason = #{rejectReason},
+            reviewed_by_user_idx = #{reviewedByUserIdx},
+            reviewed_at = NOW()
+        WHERE application_idx = #{applicationIdx}
+          AND application_status = 'PENDING'
+    </update>
 
     <select id="findLoginHistory" resultMap="historyRM">
         SELECT *

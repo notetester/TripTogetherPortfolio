@@ -239,6 +239,74 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.findCommentAuthorIdx(commentId);
     }
 
+    // ===== 기업 회원 신청 =====
+
+    @Override
+    public List<BusinessAccountApplicationVO> getBusinessApplications(String status) {
+        String normalizedStatus = normalizeApplicationStatus(status);
+        return adminMapper.findBusinessApplications(normalizedStatus);
+    }
+
+    @Override
+    @Transactional
+    public void approveBusinessApplication(Long applicationIdx, Long reviewerUserIdx) {
+        if (reviewerUserIdx == null) {
+            throw new IllegalArgumentException("검토 관리자 정보를 찾을 수 없습니다.");
+        }
+
+        BusinessAccountApplicationVO application = adminMapper.findBusinessApplicationForUpdate(applicationIdx);
+        if (application == null) {
+            throw new IllegalArgumentException("기업 회원 신청을 찾을 수 없습니다.");
+        }
+        if (!"PENDING".equals(application.getApplicationStatus())) {
+            throw new IllegalStateException("검토 대기 상태의 신청만 승인할 수 있습니다.");
+        }
+
+        UserRole requestedRole = UserRole.parse(application.getRequestedRole())
+                .filter(role -> role == UserRole.BUSINESS || role == UserRole.PARTNER)
+                .orElseThrow(() -> new IllegalArgumentException("신청 권한값이 올바르지 않습니다."));
+
+        String reason = "기업 회원 신청 승인: " + application.getCompanyName();
+        changeMemberRole(application.getUserIdx(), requestedRole.code(), reason, reviewerUserIdx);
+        adminMapper.approveBusinessApplication(applicationIdx, reviewerUserIdx);
+    }
+
+    @Override
+    @Transactional
+    public void rejectBusinessApplication(Long applicationIdx, String rejectReason, Long reviewerUserIdx) {
+        if (reviewerUserIdx == null) {
+            throw new IllegalArgumentException("검토 관리자 정보를 찾을 수 없습니다.");
+        }
+
+        BusinessAccountApplicationVO application = adminMapper.findBusinessApplicationForUpdate(applicationIdx);
+        if (application == null) {
+            throw new IllegalArgumentException("기업 회원 신청을 찾을 수 없습니다.");
+        }
+        if (!"PENDING".equals(application.getApplicationStatus())) {
+            throw new IllegalStateException("검토 대기 상태의 신청만 반려할 수 있습니다.");
+        }
+
+        String normalizedReason = normalizeRequiredRejectReason(rejectReason);
+        adminMapper.rejectBusinessApplication(applicationIdx, normalizedReason, reviewerUserIdx);
+    }
+
+    private String normalizeApplicationStatus(String status) {
+        if (status == null || status.isBlank() || "ALL".equalsIgnoreCase(status)) {
+            return "ALL";
+        }
+        String normalized = status.trim().toUpperCase();
+        List<String> allowed = List.of("PENDING", "APPROVED", "REJECTED");
+        return allowed.contains(normalized) ? normalized : "ALL";
+    }
+
+    private String normalizeRequiredRejectReason(String reason) {
+        String normalized = normalizeRoleChangeReason(reason);
+        if (normalized == null) {
+            throw new IllegalArgumentException("반려 사유를 입력해주세요.");
+        }
+        return normalized;
+    }
+
     // ===== 문의 관리 =====
 
     @Override
