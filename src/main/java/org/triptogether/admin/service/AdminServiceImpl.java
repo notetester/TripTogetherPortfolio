@@ -119,6 +119,7 @@ public class AdminServiceImpl implements AdminService {
 
         if (("IP_ONLY".equals(blockType) || "USER_IP".equals(blockType)) && normalizedIp != null && !normalizedIp.isBlank()) {
             String ipRuleTargetKey = buildIpRuleTargetKey(normalizedIp);
+            ipBlockMapper.deactivateUserActionBlockedIpByTargetKey(ipRuleTargetKey, actorUserIdx);
             ipBlockMapper.upsertBlockedIpWithHistory(normalizedIp, ipRuleTargetKey, reason, userIdx, blockType, actorUserIdx, expiresAt, blockRequestId, historyBlockIdx, sourceBlocklistIdx);
         }
     }
@@ -128,9 +129,10 @@ public class AdminServiceImpl implements AdminService {
         String normalizedIp = normalizeIp(ipAddress);
         var latest = ipBlockMapper.findLatestActiveHistoryRuleByIp(normalizedIp);
         if (latest == null) {
-            ipBlockMapper.deactivateBlockedIpByTargetKey(buildIpRuleTargetKey(normalizedIp), null);
+            ipBlockMapper.deactivateUserActionBlockedIpByTargetKey(buildIpRuleTargetKey(normalizedIp), null);
             return;
         }
+        ipBlockMapper.deactivateUserActionBlockedIpByTargetKey(buildIpRuleTargetKey(normalizedIp), null);
         ipBlockMapper.upsertBlockedIpWithHistory(
                 normalizedIp,
                 buildIpRuleTargetKey(normalizedIp),

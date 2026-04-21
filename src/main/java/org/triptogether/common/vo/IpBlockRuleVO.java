@@ -20,6 +20,8 @@ public class IpBlockRuleVO {
     private String ipAddress;
     private String blockRequestId;
     private String blockTargetKey;
+    private String ruleAction;
+    private String controlMode;
     private String matchType;
     private String cidrNotation;
     private String rangeStartIp;
@@ -39,6 +41,8 @@ public class IpBlockRuleVO {
     private String detailMessage;
     private int priority;
     private boolean active;
+    private boolean effectiveActive;
+    private String effectiveStatus;
 
     private LocalDateTime blockedAt;
     private LocalDateTime expiresAt;
