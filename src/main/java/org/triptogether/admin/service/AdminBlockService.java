@@ -16,7 +16,10 @@ public interface AdminBlockService {
                             String countryCode, String asn, String ruleAction, String controlMode,
                             String blockCategory, Integer priority, Long ipBlockBatchIdx,
                             String reason, String detailMessage, LocalDateTime expiresAt, Long actorUserIdx);
+    void updateIpRule(Long ipBlocklistIdx, String ruleAction, String controlMode, String blockCategory,
+                      Integer priority, String reason, String detailMessage, LocalDateTime expiresAt, Long actorUserIdx);
     void toggleIpRule(Long ipBlocklistIdx, boolean active, Long actorUserIdx);
     void returnIpRuleToBatchControl(Long ipBlocklistIdx, Long actorUserIdx);
+    void updateUserBlock(Long blockIdx, boolean active, String reason, LocalDateTime expiresAt, Long actorUserIdx);
     void releaseUserBlock(String blockTargetKey, Long actorUserIdx);
 }

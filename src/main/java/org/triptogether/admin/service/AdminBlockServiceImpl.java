@@ -15,9 +15,11 @@ import org.triptogether.admin.vo.AdminUserBlockVO;
 import org.triptogether.config.IpBlockMapper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -323,6 +325,53 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     }
 
     @Override
+    public void updateIpRule(Long ipBlocklistIdx, String ruleAction, String controlMode, String blockCategory,
+                             Integer priority, String reason, String detailMessage, LocalDateTime expiresAt, Long actorUserIdx) {
+        AdminIpBlockVO rule = requireRule(ipBlocklistIdx);
+        AdminIpBlockVO before = snapshot(rule);
+        AdminIpBlockBatchVO batch = rule.getIpBlockBatchIdx() != null ? requireBatch(rule.getIpBlockBatchIdx()) : null;
+        LocalDateTime now = LocalDateTime.now();
+
+        if (expiresAt != null && !expiresAt.isAfter(now)) {
+            throw new IllegalArgumentException("만료 시각은 현재 시각 이후로 설정해주세요.");
+        }
+
+        rule.setBlockRequestId(UUID.randomUUID().toString());
+        rule.setRuleAction(safeUpper(ruleAction, before.getRuleAction() != null ? before.getRuleAction() : "BLOCK"));
+        rule.setControlMode(resolveEditableControlMode(controlMode, batch, before.getControlMode()));
+        rule.setBlockCategory(safeUpper(blockCategory, before.getBlockCategory() != null ? before.getBlockCategory() : "MANUAL"));
+        rule.setPriority(priority != null && priority > 0 ? priority : before.getPriority());
+        rule.setReason(trimToNull(reason));
+        rule.setDetailMessage(trimToNull(detailMessage));
+        rule.setExpiresAt(expiresAt);
+        rule.setLastControlAction("RULE_UPDATED");
+        rule.setLastControlByUserIdx(actorUserIdx);
+        rule.setLastControlAt(now);
+
+        if ("MANUAL_OVERRIDE".equalsIgnoreCase(rule.getControlMode())) {
+            rule.setManualOverrideByUserIdx(actorUserIdx);
+            rule.setManualOverrideAt(now);
+            rule.setManualOverrideReason("관리자가 정책 규칙을 수동 예외로 조정함");
+            rule.setLastControlReason(rule.getManualOverrideReason());
+        } else {
+            rule.setManualOverrideByUserIdx(null);
+            rule.setManualOverrideByNickname(null);
+            rule.setManualOverrideAt(null);
+            rule.setManualOverrideReason(null);
+            rule.setLastControlReason("관리자가 정책 규칙 상세 설정을 수정함");
+        }
+
+        boolean beforeBatchActive = before.getIpBlockBatchIdx() == null || Boolean.TRUE.equals(before.getBatchActive());
+        boolean afterBatchActive = batch == null || batch.isActive();
+        rule.setBatchActive(afterBatchActive);
+
+        applyEffectiveState(rule, evaluateRule(rule, afterBatchActive), "ADMIN", now);
+        adminBlockMapper.updateIpBlockRule(rule);
+        recordRuleHistory(before, rule, beforeBatchActive, afterBatchActive, "RULE_UPDATED", "ADMIN", null,
+                buildIpRuleUpdateReason(before, rule), actorUserIdx);
+    }
+
+    @Override
     public void toggleIpRule(Long ipBlocklistIdx, boolean active, Long actorUserIdx) {
         AdminIpBlockVO rule = requireRule(ipBlocklistIdx);
         AdminIpBlockVO before = snapshot(rule);
@@ -390,6 +439,84 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     }
 
     @Override
+    public void updateUserBlock(Long blockIdx, boolean active, String reason, LocalDateTime expiresAt, Long actorUserIdx) {
+        AdminUserBlockVO current = requireUserBlock(blockIdx);
+        AdminUserBlockVO before = snapshot(current);
+        LocalDateTime now = LocalDateTime.now();
+
+        if (active && expiresAt != null && !expiresAt.isAfter(now)) {
+            throw new IllegalArgumentException("차단 만료 시각은 현재 시각 이후로 설정해주세요.");
+        }
+
+        String normalizedReason = trimToNull(reason);
+        String controlReason = buildUserBlockControlReason(before, active, normalizedReason, expiresAt);
+        String requestId = UUID.randomUUID().toString();
+
+        adminBlockMapper.archiveUserBlockHistoriesByTargetKey(current.getBlockTargetKey(), actorUserIdx);
+
+        AdminBlockHistoryVO history = new AdminBlockHistoryVO();
+        history.setBlockRequestId(requestId);
+        history.setBlockTargetKey(current.getBlockTargetKey());
+        history.setRuleAction("BLOCK");
+        history.setControlMode("MANUAL");
+        history.setOperationSource("ADMIN");
+        history.setHistoryKind(active ? "USER_BLOCK_EDIT" : "RELEASE");
+        history.setBlockScope("USER_ACTION");
+        history.setUserIdx(current.getUserIdx());
+        history.setBlockType(current.getBlockType());
+        history.setBlockedIp(current.getBlockedIp());
+        history.setIpMatchType(current.getBlockedIp() != null && !current.getBlockedIp().isBlank() ? "SINGLE_IP" : null);
+        history.setActive(active);
+        history.setBeforeRuleIsActive(before.isActive());
+        history.setAfterRuleIsActive(active);
+        history.setBeforeEffectiveActive(before.isActive());
+        history.setAfterEffectiveActive(active);
+        history.setBeforeEffectiveStatus(resolveUserBlockEffectiveStatus(before));
+        history.setAfterEffectiveStatus(resolveUserBlockEffectiveStatus(active, before.getSnapshotStatus()));
+        history.setReason(normalizedReason);
+        history.setBlockedByUserIdx(actorUserIdx);
+        history.setBlockedAt(now);
+        history.setReleasedByUserIdx(active ? null : actorUserIdx);
+        history.setReleasedAt(active ? null : now);
+        history.setExpiresAt(expiresAt);
+        history.setListSyncedAt(now);
+        history.setEffectiveResult(active ? "APPLIED" : "SKIPPED_RULE_INACTIVE");
+        history.setControlReason(controlReason);
+        adminBlockMapper.insertGlobalBlockHistory(history);
+
+        Long historyIdx = adminBlockMapper.findBlockHistoryIdxByRequestId(requestId);
+        current.setSourceHistoryBlockIdx(historyIdx);
+        current.setBlockRequestId(requestId);
+        current.setReason(normalizedReason);
+        current.setActive(active);
+        current.setExpiresAt(expiresAt);
+        current.setLastHistoryAt(now);
+        current.setSyncedAt(now);
+        current.setUpdatedByUserIdx(actorUserIdx);
+
+        if (active) {
+            current.setSnapshotStatus("ACTIVE");
+            current.setReleasedAt(null);
+            current.setReleasedByUserIdx(null);
+            if (!before.isActive()) {
+                current.setBlockedAt(now);
+                current.setBlockedByUserIdx(actorUserIdx);
+            }
+        } else {
+            current.setSnapshotStatus(resolveInactiveSnapshotStatus(before, now));
+            current.setReleasedAt(now);
+            current.setReleasedByUserIdx(actorUserIdx);
+        }
+
+        adminBlockMapper.updateUserBlockSnapshot(current);
+
+        if (current.getBlockedIp() != null && !current.getBlockedIp().isBlank()) {
+            refreshUserActionIpRuleFromHistory(current.getBlockedIp());
+        }
+        syncMemberBlockState(current.getUserIdx());
+    }
+
+    @Override
     public void releaseUserBlock(String blockTargetKey, Long actorUserIdx) {
         AdminUserBlockVO current = adminBlockMapper.findUserBlockByTargetKey(blockTargetKey);
         if (current == null) throw new IllegalArgumentException("현재 차단 상태를 찾을 수 없습니다.");
@@ -401,11 +528,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
             refreshUserActionIpRuleFromHistory(current.getBlockedIp());
         }
         if (current.getUserIdx() != null && ("USER_ONLY".equals(current.getBlockType()) || "USER_IP".equals(current.getBlockType()))) {
-            long remain = adminBlockMapper.countOtherActiveUserBlocks(current.getUserIdx(), blockTargetKey);
-            if (remain == 0) {
-                adminMapper.clearMemberBlockState(current.getUserIdx());
-                adminMapper.updateMemberStatus(current.getUserIdx(), "ACTIVE");
-            }
+            syncMemberBlockState(current.getUserIdx());
         }
     }
 
@@ -430,6 +553,17 @@ public class AdminBlockServiceImpl implements AdminBlockService {
                 latest.getSourceHistoryBlockIdx(),
                 latest.getSourceBlocklistIdx()
         );
+    }
+
+    private void syncMemberBlockState(Long userIdx) {
+        if (userIdx == null) return;
+        AdminUserBlockVO latest = adminBlockMapper.findLatestActiveUserBlockByUserIdx(userIdx);
+        if (latest == null) {
+            adminMapper.clearMemberBlockState(userIdx);
+            adminMapper.updateMemberStatus(userIdx, "ACTIVE");
+            return;
+        }
+        adminMapper.markMemberBlocked(userIdx, latest.getExpiresAt(), latest.getReason());
     }
 
     private void recordRuleHistory(AdminIpBlockVO before,
@@ -479,6 +613,81 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         adminBlockMapper.insertGlobalBlockHistory(history);
     }
 
+    private String buildIpRuleUpdateReason(AdminIpBlockVO before, AdminIpBlockVO after) {
+        List<String> changes = new ArrayList<>();
+        if (!Objects.equals(before.getRuleAction(), after.getRuleAction())) {
+            changes.add("동작 " + before.getRuleActionLabel() + "→" + after.getRuleActionLabel());
+        }
+        if (!Objects.equals(before.getControlMode(), after.getControlMode())) {
+            changes.add("제어 " + before.getControlModeLabel() + "→" + after.getControlModeLabel());
+        }
+        if (!Objects.equals(before.getBlockCategory(), after.getBlockCategory())) {
+            changes.add("분류 변경");
+        }
+        if (!Objects.equals(before.getPriority(), after.getPriority())) {
+            changes.add("우선순위 " + before.getPriority() + "→" + after.getPriority());
+        }
+        if (!Objects.equals(trimToNull(before.getReason()), trimToNull(after.getReason()))) {
+            changes.add("사유 수정");
+        }
+        if (!Objects.equals(trimToNull(before.getDetailMessage()), trimToNull(after.getDetailMessage()))) {
+            changes.add("상세 메모 수정");
+        }
+        if (!Objects.equals(before.getExpiresAt(), after.getExpiresAt())) {
+            changes.add("만료 시각 변경");
+        }
+        return changes.isEmpty() ? "관리자가 정책 규칙 상세 설정을 수정함" : String.join(" / ", changes);
+    }
+
+    private String buildUserBlockControlReason(AdminUserBlockVO before, boolean active, String reason, LocalDateTime expiresAt) {
+        List<String> changes = new ArrayList<>();
+        if (before.isActive() != active) {
+            changes.add(active ? "차단 재적용" : "차단 해제");
+        }
+        if (!Objects.equals(trimToNull(before.getReason()), trimToNull(reason))) {
+            changes.add("사유 수정");
+        }
+        if (!Objects.equals(before.getExpiresAt(), expiresAt)) {
+            changes.add("만료 시각 변경");
+        }
+        return changes.isEmpty() ? "관리자가 회원 차단 설정을 수정함" : String.join(" / ", changes);
+    }
+
+    private String resolveEditableControlMode(String rawControlMode, AdminIpBlockBatchVO batch, String currentControlMode) {
+        if (batch == null) {
+            return "MANUAL";
+        }
+        String fallback = "MANUAL_OVERRIDE".equalsIgnoreCase(currentControlMode) ? "MANUAL_OVERRIDE" : "BATCH";
+        String normalized = safeUpper(rawControlMode, fallback);
+        if ("MANUAL".equals(normalized)) {
+            return "BATCH";
+        }
+        if (!List.of("BATCH", "MANUAL_OVERRIDE").contains(normalized)) {
+            throw new IllegalArgumentException("지원하지 않는 규칙 제어 방식입니다.");
+        }
+        return normalized;
+    }
+
+    private String resolveUserBlockEffectiveStatus(AdminUserBlockVO block) {
+        return resolveUserBlockEffectiveStatus(block.isActive(), block.getSnapshotStatus());
+    }
+
+    private String resolveUserBlockEffectiveStatus(boolean active, String snapshotStatus) {
+        if (active) return "EFFECTIVE";
+        if ("EXPIRED".equalsIgnoreCase(snapshotStatus)) return "EXPIRED";
+        return "RULE_INACTIVE";
+    }
+
+    private String resolveInactiveSnapshotStatus(AdminUserBlockVO before, LocalDateTime now) {
+        if ("EXPIRED".equalsIgnoreCase(before.getSnapshotStatus())) {
+            return "EXPIRED";
+        }
+        if (before.getExpiresAt() != null && !before.getExpiresAt().isAfter(now)) {
+            return "EXPIRED";
+        }
+        return "RELEASED";
+    }
+
     private EffectiveState evaluateRule(AdminIpBlockVO rule, boolean batchActive) {
         if (!rule.isActive()) {
             return new EffectiveState(false, "RULE_INACTIVE", "관리자가 개별 규칙을 비활성화했습니다.");
@@ -525,8 +734,20 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         return batch;
     }
 
+    private AdminUserBlockVO requireUserBlock(Long blockIdx) {
+        AdminUserBlockVO block = adminBlockMapper.findUserBlockById(blockIdx);
+        if (block == null) throw new IllegalArgumentException("회원 차단 상태를 찾을 수 없습니다.");
+        return block;
+    }
+
     private AdminIpBlockVO snapshot(AdminIpBlockVO source) {
         AdminIpBlockVO copy = new AdminIpBlockVO();
+        BeanUtils.copyProperties(source, copy);
+        return copy;
+    }
+
+    private AdminUserBlockVO snapshot(AdminUserBlockVO source) {
+        AdminUserBlockVO copy = new AdminUserBlockVO();
         BeanUtils.copyProperties(source, copy);
         return copy;
     }

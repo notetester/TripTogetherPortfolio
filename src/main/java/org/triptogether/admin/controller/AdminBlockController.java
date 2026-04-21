@@ -62,6 +62,32 @@ public class AdminBlockController {
         return result;
     }
 
+    @PostMapping("/ip-rules/{ipBlocklistIdx}/update")
+    @ResponseBody
+    public Map<String, Object> updateIpRule(@PathVariable Long ipBlocklistIdx,
+                                            @RequestParam(defaultValue = "BLOCK") String ruleAction,
+                                            @RequestParam(required = false) String controlMode,
+                                            @RequestParam(defaultValue = "MANUAL") String blockCategory,
+                                            @RequestParam(defaultValue = "1") Integer priority,
+                                            @RequestParam(required = false) String reason,
+                                            @RequestParam(required = false) String detailMessage,
+                                            @RequestParam(required = false) String expiresAt,
+                                            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            LocalDateTime parsed = (expiresAt != null && !expiresAt.isBlank()) ? LocalDateTime.parse(expiresAt) : null;
+            adminBlockService.updateIpRule(ipBlocklistIdx, ruleAction, controlMode, blockCategory, priority,
+                    reason, detailMessage, parsed, loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", "IP 정책 규칙 설정이 저장되었습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
     @PostMapping("/ip-rules/{ipBlocklistIdx}/toggle")
     @ResponseBody
     public Map<String, Object> toggleIpRule(@PathVariable Long ipBlocklistIdx,
@@ -90,6 +116,28 @@ public class AdminBlockController {
             adminBlockService.returnIpRuleToBatchControl(ipBlocklistIdx, loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
             result.put("message", "규칙을 배치 제어 상태로 되돌렸습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/user-blocks/{blockIdx}/update")
+    @ResponseBody
+    public Map<String, Object> updateUserBlock(@PathVariable Long blockIdx,
+                                               @RequestParam boolean active,
+                                               @RequestParam(required = false) String reason,
+                                               @RequestParam(required = false) String expiresAt,
+                                               HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            LocalDateTime parsed = (expiresAt != null && !expiresAt.isBlank()) ? LocalDateTime.parse(expiresAt) : null;
+            adminBlockService.updateUserBlock(blockIdx, active, reason, parsed,
+                    loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", active ? "회원 차단 설정이 저장되었습니다." : "회원 차단이 해제되었습니다.");
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());

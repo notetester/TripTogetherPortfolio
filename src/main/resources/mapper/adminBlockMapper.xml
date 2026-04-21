@@ -5,6 +5,7 @@
 
     <resultMap id="userBlockRM" type="org.triptogether.admin.vo.AdminUserBlockVO">
         <id property="blockIdx" column="block_idx"/>
+        <result property="sourceHistoryBlockIdx" column="source_history_block_idx"/>
         <result property="userIdx" column="user_idx"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>
@@ -25,6 +26,7 @@
         <result property="snapshotStatus" column="snapshot_status"/>
         <result property="lastHistoryAt" column="last_history_at"/>
         <result property="syncedAt" column="synced_at"/>
+        <result property="updatedByUserIdx" column="updated_by_user_idx"/>
         <result property="blockScope" column="block_scope"/>
         <result property="ipMatchType" column="ip_match_type"/>
     </resultMap>
@@ -198,6 +200,7 @@
     <select id="findUserBlocks" resultMap="userBlockRM">
         SELECT
             x.block_idx,
+            x.source_history_block_idx,
             x.user_idx,
             u.user_id,
             u.nickname,
@@ -218,6 +221,7 @@
             x.snapshot_status,
             x.last_history_at,
             x.synced_at,
+            x.updated_by_user_idx,
             h.block_scope,
             h.ip_match_type
         FROM USER_BLOCKLIST x
@@ -636,6 +640,80 @@
         WHERE ip.ip_blocklist_idx = #{ipBlocklistIdx}
     </select>
 
+    <select id="findUserBlockById" resultMap="userBlockRM">
+        SELECT
+            x.block_idx,
+            x.source_history_block_idx,
+            x.user_idx,
+            u.user_id,
+            u.nickname,
+            u.user_email,
+            x.block_type,
+            x.blocked_ip,
+            x.is_active AS active,
+            x.reason,
+            x.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            x.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            x.blocked_at,
+            x.released_at,
+            x.expires_at,
+            x.block_request_id,
+            x.block_target_key,
+            x.snapshot_status,
+            x.last_history_at,
+            x.synced_at,
+            x.updated_by_user_idx,
+            h.block_scope,
+            h.ip_match_type
+        FROM USER_BLOCKLIST x
+        LEFT JOIN USERS u ON u.user_idx = x.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
+        WHERE x.block_idx = #{blockIdx}
+        LIMIT 1
+    </select>
+
+    <select id="findLatestActiveUserBlockByUserIdx" resultMap="userBlockRM">
+        SELECT
+            x.block_idx,
+            x.source_history_block_idx,
+            x.user_idx,
+            u.user_id,
+            u.nickname,
+            u.user_email,
+            x.block_type,
+            x.blocked_ip,
+            x.is_active AS active,
+            x.reason,
+            x.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            x.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            x.blocked_at,
+            x.released_at,
+            x.expires_at,
+            x.block_request_id,
+            x.block_target_key,
+            x.snapshot_status,
+            x.last_history_at,
+            x.synced_at,
+            x.updated_by_user_idx,
+            h.block_scope,
+            h.ip_match_type
+        FROM USER_BLOCKLIST x
+        LEFT JOIN USERS u ON u.user_idx = x.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
+        WHERE x.user_idx = #{userIdx}
+          AND x.is_active = 1
+        ORDER BY x.blocked_at DESC, x.block_idx DESC
+        LIMIT 1
+    </select>
+
     <insert id="insertGlobalBlockHistory" parameterType="org.triptogether.admin.vo.AdminBlockHistoryVO">
         INSERT INTO USER_BLOCK_HISTORY (
             block_request_id, block_target_key, rule_action, control_mode, operation_source,
@@ -820,6 +898,20 @@
           AND is_active = 1
     </update>
 
+    <update id="archiveUserBlockHistoriesByTargetKey">
+        UPDATE USER_BLOCK_HISTORY
+        SET is_active = 0,
+            released_at = CASE WHEN released_at IS NULL THEN NOW() ELSE released_at END,
+            released_by_user_idx = CASE WHEN released_by_user_idx IS NULL THEN #{releasedByUserIdx} ELSE released_by_user_idx END,
+            ip_block_released_at = CASE WHEN blocked_ip IS NOT NULL THEN NOW() ELSE ip_block_released_at END,
+            list_synced_at = NOW(),
+            updated_by_user_idx = #{releasedByUserIdx},
+            updated_at = NOW()
+        WHERE block_target_key = #{blockTargetKey}
+          AND block_scope = 'USER_ACTION'
+          AND is_active = 1
+    </update>
+
     <select id="findUserBlockByTargetKey" resultType="org.triptogether.admin.vo.AdminUserBlockVO">
         SELECT x.block_idx, x.user_idx, x.block_type, x.blocked_ip, x.is_active AS active,
                x.reason, x.blocked_at, x.released_at, x.expires_at, x.block_request_id,
@@ -828,6 +920,25 @@
         WHERE x.block_target_key = #{blockTargetKey}
         LIMIT 1
     </select>
+
+    <update id="updateUserBlockSnapshot" parameterType="org.triptogether.admin.vo.AdminUserBlockVO">
+        UPDATE USER_BLOCKLIST
+        SET source_history_block_idx = #{sourceHistoryBlockIdx},
+            block_request_id = #{blockRequestId},
+            reason = #{reason},
+            is_active = #{active},
+            snapshot_status = #{snapshotStatus},
+            blocked_by_user_idx = #{blockedByUserIdx},
+            blocked_at = #{blockedAt},
+            released_by_user_idx = #{releasedByUserIdx},
+            released_at = #{releasedAt},
+            expires_at = #{expiresAt},
+            last_history_at = #{lastHistoryAt},
+            synced_at = #{syncedAt},
+            updated_by_user_idx = #{updatedByUserIdx},
+            updated_at = NOW()
+        WHERE block_idx = #{blockIdx}
+    </update>
 
     <update id="updateUserBlocklistActiveByTargetKey">
         UPDATE USER_BLOCKLIST

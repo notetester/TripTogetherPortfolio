@@ -140,15 +140,59 @@
                     </thead>
                     <tbody>
                     <c:forEach var="b" items="${userBlocks}">
+                        <fmt:formatDate var="userBlockBlockedAtText" value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                        <c:set var="userBlockLastHistoryText" value="-"/>
+                        <c:if test="${b.lastHistoryAtDate != null}">
+                            <fmt:formatDate var="userBlockLastHistoryText" value="${b.lastHistoryAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                        </c:if>
+                        <c:set var="userBlockSyncText" value="-"/>
+                        <c:if test="${b.syncedAtDate != null}">
+                            <fmt:formatDate var="userBlockSyncText" value="${b.syncedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                        </c:if>
                         <tr>
                             <td>
-                                <div style="font-weight:700;color:#e2e8f0;">${empty b.nickname ? '-' : b.nickname}</div>
-                                <div style="font-size:12px;color:#94a3b8;">${empty b.userId ? '-' : b.userId}</div>
+                                <c:choose>
+                                    <c:when test="${b.userIdx != null}">
+                                        <a href="${pageContext.request.contextPath}/admin/members?detailUserIdx=${b.userIdx}"
+                                           style="font-weight:700;color:#93c5fd;text-decoration:none;">
+                                            ${empty b.nickname ? '-' : b.nickname}
+                                        </a>
+                                        <div style="font-size:12px;color:#94a3b8;">
+                                            <a href="${pageContext.request.contextPath}/admin/members?detailUserIdx=${b.userIdx}"
+                                               style="color:#94a3b8;text-decoration:none;">
+                                                ${empty b.userId ? '-' : b.userId}
+                                            </a>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div style="font-weight:700;color:#e2e8f0;">${empty b.nickname ? '-' : b.nickname}</div>
+                                        <div style="font-size:12px;color:#94a3b8;">${empty b.userId ? '-' : b.userId}</div>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                             <td>${b.blockType}</td>
                             <td>
-                                <div>${empty b.blockedIp ? '-' : b.blockedIp}</div>
-                                <div style="font-size:11px;color:#64748b;">${b.blockTargetKey}</div>
+                                <button type="button"
+                                        class="adm-link-btn js-open-user-block-editor"
+                                        data-block-idx="${b.blockIdx}"
+                                        data-template-id="detail-user-${b.blockIdx}"
+                                        data-user-idx="${empty b.userIdx ? '' : b.userIdx}"
+                                        data-display-name="${fn:escapeXml(empty b.nickname ? b.userId : b.nickname)}"
+                                        data-user-id="${fn:escapeXml(empty b.userId ? '' : b.userId)}"
+                                        data-user-email="${fn:escapeXml(empty b.userEmail ? '' : b.userEmail)}"
+                                        data-block-type="${b.blockType}"
+                                        data-blocked-ip="${fn:escapeXml(empty b.blockedIp ? '' : b.blockedIp)}"
+                                        data-target-key="${fn:escapeXml(b.blockTargetKey)}"
+                                        data-active="${b.active ? 'true' : 'false'}"
+                                        data-snapshot-status="${fn:escapeXml(b.snapshotStatus)}"
+                                        data-reason="${fn:escapeXml(empty b.reason ? '' : b.reason)}"
+                                        data-expires-at="${b.expiresAtInputValue}"
+                                        data-blocked-at="${userBlockBlockedAtText}"
+                                        data-last-history-at="${userBlockLastHistoryText}"
+                                        data-sync-at="${userBlockSyncText}">
+                                    <span>${empty b.blockedIp ? '-' : b.blockedIp}</span>
+                                    <span style="display:block;font-size:11px;color:#64748b;">${b.blockTargetKey}</span>
+                                </button>
                             </td>
                             <td><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span></td>
                             <td style="max-width:260px;white-space:normal;">${empty b.reason ? '-' : b.reason}</td>
@@ -162,7 +206,25 @@
                                 </div>
                             </td>
                             <td>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-user-${b.blockIdx}">상세</button>
+                                <button type="button"
+                                        class="adm-row-btn detail js-open-user-block-editor"
+                                        data-block-idx="${b.blockIdx}"
+                                        data-template-id="detail-user-${b.blockIdx}"
+                                        data-user-idx="${empty b.userIdx ? '' : b.userIdx}"
+                                        data-display-name="${fn:escapeXml(empty b.nickname ? b.userId : b.nickname)}"
+                                        data-user-id="${fn:escapeXml(empty b.userId ? '' : b.userId)}"
+                                        data-user-email="${fn:escapeXml(empty b.userEmail ? '' : b.userEmail)}"
+                                        data-block-type="${b.blockType}"
+                                        data-blocked-ip="${fn:escapeXml(empty b.blockedIp ? '' : b.blockedIp)}"
+                                        data-target-key="${fn:escapeXml(b.blockTargetKey)}"
+                                        data-active="${b.active ? 'true' : 'false'}"
+                                        data-snapshot-status="${fn:escapeXml(b.snapshotStatus)}"
+                                        data-reason="${fn:escapeXml(empty b.reason ? '' : b.reason)}"
+                                        data-expires-at="${b.expiresAtInputValue}"
+                                        data-blocked-at="${userBlockBlockedAtText}"
+                                        data-last-history-at="${userBlockLastHistoryText}"
+                                        data-sync-at="${userBlockSyncText}">설정</button>
+                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-user-${b.blockIdx}">이력</button>
                                 <c:if test="${hasUserBlockAdmin and b.active}">
                                     <button type="button" class="adm-row-btn danger js-release-user-block" data-target-key="${fn:escapeXml(b.blockTargetKey)}">해제</button>
                                 </c:if>
@@ -245,11 +307,40 @@
                     </thead>
                     <tbody>
                     <c:forEach var="r" items="${ipBlocks}">
+                        <fmt:formatDate var="ipRuleBlockedAtText" value="${r.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                        <c:set var="ipRuleExpiresText" value=""/>
+                        <c:if test="${r.expiresAtDate != null}">
+                            <fmt:formatDate var="ipRuleExpiresText" value="${r.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                        </c:if>
                         <tr>
                             <td>
-                                <div style="font-weight:700;color:#e2e8f0;">${empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue}</div>
-                                <div style="font-size:12px;color:#94a3b8;">${r.blockTargetKey}</div>
-                                <div style="font-size:11px;color:#64748b;">${r.matchType}</div>
+                                <button type="button"
+                                        class="adm-link-btn js-open-ip-rule-editor"
+                                        data-id="${r.ipBlocklistIdx}"
+                                        data-template-id="detail-ip-${r.ipBlocklistIdx}"
+                                        data-target-display="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}"
+                                        data-target-key="${fn:escapeXml(r.blockTargetKey)}"
+                                        data-rule-action="${r.ruleAction}"
+                                        data-control-mode="${r.controlMode}"
+                                        data-block-category="${r.blockCategory}"
+                                        data-priority="${r.priority}"
+                                        data-reason="${fn:escapeXml(empty r.reason ? '' : r.reason)}"
+                                        data-detail-message="${fn:escapeXml(empty r.detailMessage ? '' : r.detailMessage)}"
+                                        data-expires-at="${r.expiresAtInputValue}"
+                                        data-effective-status-label="${fn:escapeXml(r.effectiveStatusLabel)}"
+                                        data-final-state-label="${fn:escapeXml(r.finalStateLabel)}"
+                                        data-rule-state-label="${fn:escapeXml(r.ruleStateLabel)}"
+                                        data-batch-status-label="${fn:escapeXml(r.batchStatusLabel)}"
+                                        data-batch-name="${fn:escapeXml(empty r.batchName ? '개별 규칙' : r.batchName)}"
+                                        data-batch-code="${fn:escapeXml(empty r.batchCode ? '' : r.batchCode)}"
+                                        data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
+                                        data-blocked-at="${ipRuleBlockedAtText}"
+                                        data-expires-display="${fn:escapeXml(empty ipRuleExpiresText ? '없음' : ipRuleExpiresText)}"
+                                        data-active="${r.active ? 'true' : 'false'}">
+                                    <span style="font-weight:700;color:#e2e8f0;">${empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue}</span>
+                                    <span style="display:block;font-size:12px;color:#94a3b8;">${r.blockTargetKey}</span>
+                                    <span style="display:block;font-size:11px;color:#64748b;">${r.matchType}</span>
+                                </button>
                             </td>
                             <td>
                                 <div><span class="status-badge ${r.ruleAction == 'ALLOW' ? 'ACTIVE' : 'DORMANT'}">${r.ruleActionLabel}</span></div>
@@ -275,7 +366,30 @@
                                 <div style="font-size:11px;color:#64748b;">${empty r.effectiveStatusReason ? '-' : r.effectiveStatusReason}</div>
                             </td>
                             <td>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-ip-${r.ipBlocklistIdx}">상세</button>
+                                <button type="button"
+                                        class="adm-row-btn detail js-open-ip-rule-editor"
+                                        data-id="${r.ipBlocklistIdx}"
+                                        data-template-id="detail-ip-${r.ipBlocklistIdx}"
+                                        data-target-display="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}"
+                                        data-target-key="${fn:escapeXml(r.blockTargetKey)}"
+                                        data-rule-action="${r.ruleAction}"
+                                        data-control-mode="${r.controlMode}"
+                                        data-block-category="${r.blockCategory}"
+                                        data-priority="${r.priority}"
+                                        data-reason="${fn:escapeXml(empty r.reason ? '' : r.reason)}"
+                                        data-detail-message="${fn:escapeXml(empty r.detailMessage ? '' : r.detailMessage)}"
+                                        data-expires-at="${r.expiresAtInputValue}"
+                                        data-effective-status-label="${fn:escapeXml(r.effectiveStatusLabel)}"
+                                        data-final-state-label="${fn:escapeXml(r.finalStateLabel)}"
+                                        data-rule-state-label="${fn:escapeXml(r.ruleStateLabel)}"
+                                        data-batch-status-label="${fn:escapeXml(r.batchStatusLabel)}"
+                                        data-batch-name="${fn:escapeXml(empty r.batchName ? '개별 규칙' : r.batchName)}"
+                                        data-batch-code="${fn:escapeXml(empty r.batchCode ? '' : r.batchCode)}"
+                                        data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
+                                        data-blocked-at="${ipRuleBlockedAtText}"
+                                        data-expires-display="${fn:escapeXml(empty ipRuleExpiresText ? '없음' : ipRuleExpiresText)}"
+                                        data-active="${r.active ? 'true' : 'false'}">설정</button>
+                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-ip-${r.ipBlocklistIdx}">이력</button>
                                 <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
                                     <button type="button" class="adm-row-btn ${r.active ? 'danger' : 'detail'} js-toggle-ip-rule" data-id="${r.ipBlocklistIdx}" data-active="${r.active ? 'false' : 'true'}">${r.active ? '개별 OFF' : '개별 ON'}</button>
                                     <c:if test="${r.ipBlockBatchIdx != null and r.controlMode == 'MANUAL_OVERRIDE'}">
@@ -531,10 +645,133 @@
 <div class="adm-modal-overlay" id="blockDetailModal">
     <div class="adm-modal" style="max-width:860px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title">차단 상세</div>
+            <div class="adm-modal-title" id="blockDetailTitle">차단 상세</div>
             <button class="adm-modal-close" onclick="closeModal('blockDetailModal')">✕</button>
         </div>
         <div class="adm-modal-body" id="blockDetailBody"></div>
+    </div>
+</div>
+
+<div class="adm-modal-overlay" id="userBlockEditModal">
+    <div class="adm-modal" style="max-width:720px;">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="userBlockEditTitle">회원 차단 설정</div>
+            <button class="adm-modal-close" onclick="closeModal('userBlockEditModal')">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <input type="hidden" id="userBlockEditId">
+            <input type="hidden" id="userBlockEditTemplateId">
+            <div class="detail-grid">
+                <div class="detail-item"><div class="detail-label">회원</div><div class="detail-value" id="userBlockEditMember">-</div></div>
+                <div class="detail-item"><div class="detail-label">대상 키</div><div class="detail-value" id="userBlockEditTarget">-</div></div>
+                <div class="detail-item"><div class="detail-label">차단 유형</div><div class="detail-value" id="userBlockEditType">-</div></div>
+                <div class="detail-item"><div class="detail-label">현재 상태</div><div class="detail-value" id="userBlockEditStatus">-</div></div>
+                <div class="detail-item"><div class="detail-label">차단 시각</div><div class="detail-value" id="userBlockEditBlockedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label">최근 반영</div><div class="detail-value" id="userBlockEditSyncAt">-</div></div>
+            </div>
+            <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;margin-top:18px;">
+                <div class="sa-form-group">
+                    <label class="sa-form-label">현재 상태</label>
+                    <select id="userBlockEditActive" class="adm-select">
+                        <option value="true">차단 유지</option>
+                        <option value="false">차단 해제</option>
+                    </select>
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">만료 시각</label>
+                    <input id="userBlockEditExpiresAt" class="adm-input" type="datetime-local">
+                    <div class="adm-quick-row">
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="userBlockEditExpiresAt" data-days="1">+1일</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="userBlockEditExpiresAt" data-days="7">+7일</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="userBlockEditExpiresAt" data-days="30">+30일</button>
+                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="userBlockEditExpiresAt">무기한</button>
+                    </div>
+                </div>
+                <div class="sa-form-group" style="grid-column:1 / span 2;">
+                    <label class="sa-form-label">차단 사유</label>
+                    <textarea id="userBlockEditReason" class="adm-input" style="min-height:120px;"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('userBlockEditModal')">닫기</button>
+            <button class="adm-btn adm-btn-ghost" type="button" id="userBlockEditHistoryBtn">관련 이력</button>
+            <button class="adm-btn adm-btn-primary" type="button" onclick="submitUserBlockEdit()">저장</button>
+        </div>
+    </div>
+</div>
+
+<div class="adm-modal-overlay" id="ipRuleEditModal">
+    <div class="adm-modal" style="max-width:760px;">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="ipRuleEditTitle">IP 정책 상세 설정</div>
+            <button class="adm-modal-close" onclick="closeModal('ipRuleEditModal')">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <input type="hidden" id="ipRuleEditId">
+            <input type="hidden" id="ipRuleEditTemplateId">
+            <input type="hidden" id="ipRuleEditHasBatch">
+            <div class="detail-grid">
+                <div class="detail-item"><div class="detail-label">대상</div><div class="detail-value" id="ipRuleEditTarget">-</div></div>
+                <div class="detail-item"><div class="detail-label">배치</div><div class="detail-value" id="ipRuleEditBatch">-</div></div>
+                <div class="detail-item"><div class="detail-label">개별 상태</div><div class="detail-value" id="ipRuleEditRuleState">-</div></div>
+                <div class="detail-item"><div class="detail-label">최종 적용</div><div class="detail-value" id="ipRuleEditFinalState">-</div></div>
+                <div class="detail-item"><div class="detail-label">생성 시각</div><div class="detail-value" id="ipRuleEditBlockedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label">현재 만료</div><div class="detail-value" id="ipRuleEditExpiresDisplay">-</div></div>
+            </div>
+            <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;margin-top:18px;">
+                <div class="sa-form-group">
+                    <label class="sa-form-label">규칙 동작</label>
+                    <select id="ipRuleEditAction" class="adm-select">
+                        <option value="BLOCK">차단</option>
+                        <option value="ALLOW">허용</option>
+                    </select>
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">제어 방식</label>
+                    <select id="ipRuleEditControlMode" class="adm-select"></select>
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">분류</label>
+                    <select id="ipRuleEditCategory" class="adm-select">
+                        <option value="MANUAL">MANUAL</option>
+                        <option value="SPAM">SPAM</option>
+                        <option value="ABUSE">ABUSE</option>
+                        <option value="BRUTE_FORCE">BRUTE_FORCE</option>
+                        <option value="GEO">GEO</option>
+                        <option value="VPN">VPN</option>
+                        <option value="SECURITY">SECURITY</option>
+                    </select>
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">우선순위</label>
+                    <input id="ipRuleEditPriority" class="adm-input" type="number" min="1">
+                </div>
+                <div class="sa-form-group" style="grid-column:1 / span 2;">
+                    <label class="sa-form-label">만료 시각</label>
+                    <input id="ipRuleEditExpiresAt" class="adm-input" type="datetime-local">
+                    <div class="adm-quick-row">
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="1">+1일</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="7">+7일</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="30">+30일</button>
+                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="ipRuleEditExpiresAt">무기한</button>
+                    </div>
+                </div>
+                <div class="sa-form-group" style="grid-column:1 / span 2;">
+                    <label class="sa-form-label">정책 사유</label>
+                    <textarea id="ipRuleEditReason" class="adm-input" style="min-height:100px;"></textarea>
+                </div>
+                <div class="sa-form-group" style="grid-column:1 / span 2;">
+                    <label class="sa-form-label">상세 메모</label>
+                    <textarea id="ipRuleEditDetailMessage" class="adm-input" style="min-height:100px;"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('ipRuleEditModal')">닫기</button>
+            <button class="adm-btn adm-btn-ghost" type="button" id="ipRuleEditHistoryBtn">관련 이력</button>
+            <button class="adm-btn adm-btn-primary" type="button" onclick="submitIpRuleEdit()">저장</button>
+        </div>
     </div>
 </div>
 
@@ -623,6 +860,12 @@
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
                     <label class="sa-form-label">만료 시각</label>
                     <input id="ipExpiresAt" class="adm-input" type="datetime-local">
+                    <div class="adm-quick-row">
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="1">+1일</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="7">+7일</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="30">+30일</button>
+                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="ipExpiresAt">무기한</button>
+                    </div>
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
                     <label class="sa-form-label">정책 사유</label>
@@ -696,8 +939,56 @@
     </div>
 </div>
 
+<style>
+    .adm-link-btn {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        text-align: left;
+        color: inherit;
+        cursor: pointer;
+    }
+
+    .adm-link-btn:hover span:first-child {
+        color: #93c5fd !important;
+    }
+
+    .adm-quick-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+    }
+
+    .adm-chip-btn {
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        background: #182030;
+        color: #cbd5e1;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .adm-chip-btn:hover {
+        border-color: rgba(96, 165, 250, 0.5);
+        color: #eff6ff;
+    }
+</style>
+
 <script>
 const CTX = '${pageContext.request.contextPath}';
+
+function escapeHtml(value) {
+    if (value == null) return '';
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 
 function openIpRuleModal() {
     document.getElementById('ipRuleModal').classList.add('open');
@@ -733,11 +1024,112 @@ function handleIpBatchChange() {
     }
 }
 
-function openBlockDetail(templateId) {
+function openBlockDetail(templateId, title) {
     const template = document.getElementById(templateId);
     if (!template) return;
+    document.getElementById('blockDetailTitle').textContent = title || '차단 상세';
     document.getElementById('blockDetailBody').innerHTML = template.innerHTML;
     document.getElementById('blockDetailModal').classList.add('open');
+}
+
+function applyExpiryPreset(targetId, days) {
+    const input = document.getElementById(targetId);
+    if (!input) return;
+    const base = new Date();
+    base.setMinutes(base.getMinutes() - base.getTimezoneOffset());
+    const result = new Date(base.getTime() + (Number(days) * 24 * 60 * 60 * 1000));
+    input.value = result.toISOString().slice(0, 16);
+}
+
+function clearExpiryPreset(targetId) {
+    const input = document.getElementById(targetId);
+    if (input) {
+        input.value = '';
+    }
+}
+
+function fillIpRuleEditControlModes(hasBatch, currentMode) {
+    const select = document.getElementById('ipRuleEditControlMode');
+    if (!select) return;
+
+    if (hasBatch) {
+        select.innerHTML = ''
+            + '<option value="BATCH">배치 제어</option>'
+            + '<option value="MANUAL_OVERRIDE">수동 예외</option>';
+        select.value = currentMode === 'MANUAL_OVERRIDE' ? 'MANUAL_OVERRIDE' : 'BATCH';
+    } else {
+        select.innerHTML = '<option value="MANUAL">수동</option>';
+        select.value = 'MANUAL';
+    }
+}
+
+function openUserBlockEditor(button) {
+    const userIdx = button.dataset.userIdx || '';
+    const displayName = button.dataset.displayName || '-';
+    const userId = button.dataset.userId || '';
+    const userEmail = button.dataset.userEmail || '';
+    const memberUrl = userIdx ? (CTX + '/admin/members?detailUserIdx=' + userIdx) : '';
+
+    document.getElementById('userBlockEditId').value = button.dataset.blockIdx;
+    document.getElementById('userBlockEditTemplateId').value = button.dataset.templateId || '';
+    document.getElementById('userBlockEditTitle').textContent = displayName + ' 차단 설정';
+
+    let memberHtml = escapeHtml(displayName);
+    if (memberUrl) {
+        memberHtml = '<a href="' + memberUrl + '" style="color:#93c5fd;text-decoration:none;">' + escapeHtml(displayName) + '</a>';
+    }
+    if (userId) {
+        memberHtml += '<div style="font-size:12px;color:#94a3b8;margin-top:4px;">' + escapeHtml(userId) + '</div>';
+    }
+    if (userEmail) {
+        memberHtml += '<div style="font-size:12px;color:#64748b;margin-top:4px;">' + escapeHtml(userEmail) + '</div>';
+    }
+
+    document.getElementById('userBlockEditMember').innerHTML = memberHtml;
+    document.getElementById('userBlockEditTarget').textContent = button.dataset.targetKey || '-';
+    document.getElementById('userBlockEditType').textContent = button.dataset.blockType || '-';
+    document.getElementById('userBlockEditStatus').textContent = (button.dataset.active === 'true' ? '차단 유지' : '차단 해제') + ' / ' + (button.dataset.snapshotStatus || '-');
+    document.getElementById('userBlockEditBlockedAt').textContent = button.dataset.blockedAt || '-';
+    document.getElementById('userBlockEditSyncAt').textContent = button.dataset.syncAt || '-';
+    document.getElementById('userBlockEditActive').value = button.dataset.active === 'true' ? 'true' : 'false';
+    document.getElementById('userBlockEditExpiresAt').value = button.dataset.expiresAt || '';
+    document.getElementById('userBlockEditReason').value = button.dataset.reason || '';
+    document.getElementById('userBlockEditHistoryBtn').onclick = function () {
+        closeModal('userBlockEditModal');
+        openBlockDetail(button.dataset.templateId, '회원 차단 이력');
+    };
+    document.getElementById('userBlockEditModal').classList.add('open');
+}
+
+function openIpRuleEditor(button) {
+    const batchId = button.dataset.batchId || '';
+    const hasBatch = batchId !== '';
+    const batchLabel = hasBatch
+        ? (button.dataset.batchName || '-') + (button.dataset.batchCode ? ' (' + button.dataset.batchCode + ')' : '')
+        : '개별 규칙';
+
+    document.getElementById('ipRuleEditId').value = button.dataset.id;
+    document.getElementById('ipRuleEditTemplateId').value = button.dataset.templateId || '';
+    document.getElementById('ipRuleEditHasBatch').value = hasBatch ? 'true' : 'false';
+    document.getElementById('ipRuleEditTitle').textContent = (button.dataset.targetDisplay || button.dataset.targetKey || 'IP 규칙') + ' 상세 설정';
+    document.getElementById('ipRuleEditTarget').textContent = (button.dataset.targetDisplay || '-') + ' / ' + (button.dataset.targetKey || '-');
+    document.getElementById('ipRuleEditBatch').textContent = batchLabel + ' / ' + (button.dataset.batchStatusLabel || '개별 규칙');
+    document.getElementById('ipRuleEditRuleState').textContent = button.dataset.ruleStateLabel || '-';
+    document.getElementById('ipRuleEditFinalState').textContent = (button.dataset.finalStateLabel || '-') + ' / ' + (button.dataset.effectiveStatusLabel || '-');
+    document.getElementById('ipRuleEditBlockedAt').textContent = button.dataset.blockedAt || '-';
+    document.getElementById('ipRuleEditExpiresDisplay').textContent = button.dataset.expiresDisplay || '없음';
+    document.getElementById('ipRuleEditAction').value = button.dataset.ruleAction || 'BLOCK';
+    document.getElementById('ipRuleEditCategory').value = button.dataset.blockCategory || 'MANUAL';
+    document.getElementById('ipRuleEditPriority').value = button.dataset.priority || '1';
+    document.getElementById('ipRuleEditExpiresAt').value = button.dataset.expiresAt || '';
+    document.getElementById('ipRuleEditReason').value = button.dataset.reason || '';
+    document.getElementById('ipRuleEditDetailMessage').value = button.dataset.detailMessage || '';
+    fillIpRuleEditControlModes(hasBatch, button.dataset.controlMode || 'MANUAL');
+    document.getElementById('ipRuleEditHistoryBtn').onclick = function () {
+        closeModal('ipRuleEditModal');
+        openBlockDetail(button.dataset.templateId, 'IP 정책 이력');
+    };
+    document.getElementById('ipRuleEditModal').classList.add('open');
 }
 
 async function submitIpRule() {
@@ -759,6 +1151,31 @@ async function submitIpRule() {
         expiresAt: document.getElementById('ipExpiresAt').value
     });
     const res = await fetch(CTX + '/admin/blocks/ip-rules', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest'},
+        body: params.toString()
+    });
+    const data = await res.json();
+    if (data.success) {
+        adm_toast(data.message || '저장되었습니다.');
+        location.reload();
+    } else {
+        adm_toast(data.message || '저장 실패', 'error');
+    }
+}
+
+async function submitIpRuleEdit() {
+    const id = document.getElementById('ipRuleEditId').value;
+    const params = new URLSearchParams({
+        ruleAction: document.getElementById('ipRuleEditAction').value,
+        controlMode: document.getElementById('ipRuleEditControlMode').value,
+        blockCategory: document.getElementById('ipRuleEditCategory').value,
+        priority: document.getElementById('ipRuleEditPriority').value,
+        reason: document.getElementById('ipRuleEditReason').value.trim(),
+        detailMessage: document.getElementById('ipRuleEditDetailMessage').value.trim(),
+        expiresAt: document.getElementById('ipRuleEditExpiresAt').value
+    });
+    const res = await fetch(CTX + '/admin/blocks/ip-rules/' + id + '/update', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest'},
         body: params.toString()
@@ -818,6 +1235,28 @@ async function releaseUserBlock(targetKey) {
         location.reload();
     } else {
         adm_toast(data.message || '해제 실패', 'error');
+    }
+}
+
+async function submitUserBlockEdit() {
+    const id = document.getElementById('userBlockEditId').value;
+    const active = document.getElementById('userBlockEditActive').value;
+    const params = new URLSearchParams({
+        active: active,
+        reason: document.getElementById('userBlockEditReason').value.trim(),
+        expiresAt: document.getElementById('userBlockEditExpiresAt').value
+    });
+    const res = await fetch(CTX + '/admin/blocks/user-blocks/' + id + '/update', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest'},
+        body: params.toString()
+    });
+    const data = await res.json();
+    if (data.success) {
+        adm_toast(data.message || '저장되었습니다.');
+        location.reload();
+    } else {
+        adm_toast(data.message || '저장 실패', 'error');
     }
 }
 
@@ -903,9 +1342,33 @@ async function submitBatchToggle() {
 }
 
 document.addEventListener('click', function (e) {
+    const expiryPresetBtn = e.target.closest('.js-expiry-preset');
+    if (expiryPresetBtn) {
+        applyExpiryPreset(expiryPresetBtn.dataset.target, expiryPresetBtn.dataset.days);
+        return;
+    }
+
+    const expiryClearBtn = e.target.closest('.js-expiry-clear');
+    if (expiryClearBtn) {
+        clearExpiryPreset(expiryClearBtn.dataset.target);
+        return;
+    }
+
     const detailBtn = e.target.closest('.js-detail-open');
     if (detailBtn) {
-        openBlockDetail(detailBtn.dataset.templateId);
+        openBlockDetail(detailBtn.dataset.templateId, '차단 상세');
+        return;
+    }
+
+    const userBlockEditorBtn = e.target.closest('.js-open-user-block-editor');
+    if (userBlockEditorBtn) {
+        openUserBlockEditor(userBlockEditorBtn);
+        return;
+    }
+
+    const ipRuleEditorBtn = e.target.closest('.js-open-ip-rule-editor');
+    if (ipRuleEditorBtn) {
+        openIpRuleEditor(ipRuleEditorBtn);
         return;
     }
 
@@ -931,6 +1394,14 @@ document.addEventListener('click', function (e) {
     if (batchToggleBtn) {
         openBatchToggleModal(batchToggleBtn);
     }
+});
+
+document.querySelectorAll('.adm-modal-overlay').forEach(function (overlay) {
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) {
+            overlay.classList.remove('open');
+        }
+    });
 });
 </script>
 <%@ include file="../layout-close.jsp" %>
