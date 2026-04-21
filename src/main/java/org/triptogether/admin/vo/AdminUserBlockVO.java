@@ -3,12 +3,16 @@ package org.triptogether.admin.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.ZoneId;
 import java.util.Date;
 
 @Data
 public class AdminUserBlockVO {
+    private static final DateTimeFormatter INPUT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
     private Long blockIdx;
+    private Long sourceHistoryBlockIdx;
     private Long userIdx;
     private String userId;
     private String nickname;
@@ -29,6 +33,7 @@ public class AdminUserBlockVO {
     private String snapshotStatus;
     private LocalDateTime lastHistoryAt;
     private LocalDateTime syncedAt;
+    private Long updatedByUserIdx;
     private String blockScope;
     private String ipMatchType;
 
@@ -50,5 +55,9 @@ public class AdminUserBlockVO {
 
     public Date getSyncedAtDate() {
         return syncedAt == null ? null : Date.from(syncedAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public String getExpiresAtInputValue() {
+        return expiresAt == null ? "" : expiresAt.format(INPUT_DATE_TIME_FORMATTER);
     }
 }

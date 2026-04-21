@@ -146,17 +146,20 @@
     font-weight: 500;
 }
 
-/* 대상 유형 태그 */
+/* 대상 유형 태그 — pill 형태 (처리 상태 뱃지와 동일 톤) */
 .rpt-type-tag {
     display: inline-block;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    background: var(--blue-light);
-    color: var(--blue);
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
     white-space: nowrap;
 }
+
+.rpt-type-tag.type-post      { background: #dbeafe; color: #1e40af; }
+.rpt-type-tag.type-comment   { background: #e0e7ff; color: #3730a3; }
+.rpt-type-tag.type-review    { background: #dcfce7; color: #15803d; }
+.rpt-type-tag.type-user      { background: #f1f5f9; color: #475569; }
 
 /* 사유 */
 .rpt-reason-cell { max-width: 280px; }

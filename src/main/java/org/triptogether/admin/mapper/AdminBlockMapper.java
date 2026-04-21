@@ -4,7 +4,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.triptogether.admin.vo.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -18,71 +17,47 @@ public interface AdminBlockMapper {
     List<AdminIpBlockVO> findIpBlocks(AdminBlockSearchVO search);
     List<AdminBlockHistoryVO> findBlockHistories(AdminBlockSearchVO search);
     List<AdminIpBlockBatchVO> findIpBlockBatches(AdminBlockSearchVO search);
+    List<AdminIpBlockBatchOperationVO> findRecentBatchOperations(AdminBlockSearchVO search);
 
-    void insertIpBlockBatch(@Param("batchCode") String batchCode,
-                            @Param("batchName") String batchName,
-                            @Param("sourceType") String sourceType,
-                            @Param("sourceName") String sourceName,
-                            @Param("description") String description,
-                            @Param("createdByUserIdx") Long createdByUserIdx);
+    void insertIpBlockBatch(AdminIpBlockBatchVO batch);
+    void updateIpBlockBatch(AdminIpBlockBatchVO batch);
 
     void updateIpBlockBatchActive(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx,
                                   @Param("active") boolean active,
                                   @Param("updatedByUserIdx") Long updatedByUserIdx);
 
+    AdminIpBlockBatchVO findIpBlockBatchById(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
+    List<AdminIpBlockVO> findIpRulesByBatchId(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
     AdminIpBlockVO findIpBlockById(@Param("ipBlocklistIdx") Long ipBlocklistIdx);
+    AdminIpBlockVO findCurrentIpRuleByTarget(@Param("blockTargetKey") String blockTargetKey,
+                                             @Param("ruleAction") String ruleAction,
+                                             @Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
+    AdminUserBlockVO findUserBlockById(@Param("blockIdx") Long blockIdx);
+    AdminUserBlockVO findLatestActiveUserBlockByUserIdx(@Param("userIdx") Long userIdx);
+    AdminBlockHistoryVO findBlockHistoryById(@Param("blockIdx") Long blockIdx);
 
-    void insertGlobalBlockHistory(@Param("blockRequestId") String blockRequestId,
-                                  @Param("blockTargetKey") String blockTargetKey,
-                                  @Param("historyKind") String historyKind,
-                                  @Param("blockScope") String blockScope,
-                                  @Param("userIdx") Long userIdx,
-                                  @Param("blockType") String blockType,
-                                  @Param("blockedIp") String blockedIp,
-                                  @Param("ipMatchType") String ipMatchType,
-                                  @Param("cidrNotation") String cidrNotation,
-                                  @Param("rangeStartIp") String rangeStartIp,
-                                  @Param("rangeEndIp") String rangeEndIp,
-                                  @Param("ipBlockBatchIdx") Long ipBlockBatchIdx,
-                                  @Param("reason") String reason,
-                                  @Param("blockedByUserIdx") Long blockedByUserIdx,
-                                  @Param("expiresAt") LocalDateTime expiresAt);
+    void insertGlobalBlockHistory(AdminBlockHistoryVO history);
 
     Long findBlockHistoryIdxByRequestId(@Param("blockRequestId") String blockRequestId);
 
-    void upsertIpBlockRule(@Param("ipAddress") String ipAddress,
-                           @Param("blockTargetKey") String blockTargetKey,
-                           @Param("blockRequestId") String blockRequestId,
-                           @Param("sourceHistoryBlockIdx") Long sourceHistoryBlockIdx,
-                           @Param("matchType") String matchType,
-                           @Param("cidrNotation") String cidrNotation,
-                           @Param("rangeStartIp") String rangeStartIp,
-                           @Param("rangeEndIp") String rangeEndIp,
-                           @Param("countryCode") String countryCode,
-                           @Param("asn") String asn,
-                           @Param("sourceScope") String sourceScope,
-                           @Param("blockCategory") String blockCategory,
-                           @Param("userIdx") Long userIdx,
-                           @Param("blockType") String blockType,
-                           @Param("blockedByUserIdx") Long blockedByUserIdx,
-                           @Param("reason") String reason,
-                           @Param("expiresAt") LocalDateTime expiresAt,
-                           @Param("priority") Integer priority,
-                           @Param("ipBlockBatchIdx") Long ipBlockBatchIdx,
-                           @Param("detailMessage") String detailMessage,
-                           @Param("isAutoBlock") boolean isAutoBlock,
-                           @Param("autoBlockSource") String autoBlockSource,
-                           @Param("riskScore") Integer riskScore);
+    void insertIpBlockRule(AdminIpBlockVO rule);
+    void updateIpBlockRule(AdminIpBlockVO rule);
 
-    void updateIpBlockRuleActive(@Param("ipBlocklistIdx") Long ipBlocklistIdx,
-                                 @Param("active") boolean active,
-                                 @Param("releasedByUserIdx") Long releasedByUserIdx);
+    void insertIpBlockBatchOperation(AdminIpBlockBatchOperationVO operation);
+    void updateIpBlockBatchOperationAffectedCount(@Param("ipBlockBatchOperationIdx") Long ipBlockBatchOperationIdx,
+                                                  @Param("affectedRuleCount") int affectedRuleCount);
+    AdminIpBlockBatchOperationVO findLatestBatchDisableOperation(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
+    List<AdminIpBlockBatchOperationRuleVO> findOperationRules(@Param("ipBlockBatchOperationIdx") Long ipBlockBatchOperationIdx);
+    void insertIpBlockBatchOperationRule(AdminIpBlockBatchOperationRuleVO operationRule);
 
     void deactivateBlockHistoriesByTargetKey(@Param("blockTargetKey") String blockTargetKey,
                                              @Param("releasedByUserIdx") Long releasedByUserIdx,
                                              @Param("historyKind") String historyKind);
+    void archiveUserBlockHistoriesByTargetKey(@Param("blockTargetKey") String blockTargetKey,
+                                              @Param("releasedByUserIdx") Long releasedByUserIdx);
 
     AdminUserBlockVO findUserBlockByTargetKey(@Param("blockTargetKey") String blockTargetKey);
+    void updateUserBlockSnapshot(AdminUserBlockVO block);
 
     void updateUserBlocklistActiveByTargetKey(@Param("blockTargetKey") String blockTargetKey,
                                               @Param("active") boolean active,

@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<%@ include file="../common/header.jsp" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -94,8 +97,13 @@
     }
 
     .btn-area {
+      display: flex;
+      justify-content: center;
       margin-top: 30px;
-      text-align: right;
+    }
+
+    .btn-area.full {
+      grid-column: 1 / 3;
     }
 
     .submit-btn {
@@ -118,13 +126,68 @@
       color: #888;
       font-size: 12px;
     }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(17, 24, 39, 0.45);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .loading-card {
+      width: 320px;
+      background: #fff;
+      border-radius: 20px;
+      padding: 32px 28px;
+      text-align: center;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      border: 4px solid #e5e7eb;
+      border-top: 4px solid #111827;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    .loading-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .loading-text {
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
 <div class="container">
   <h1>AI 여행 일정 생성</h1>
   <div class="sub-text">
-    여행 조건을 입력하면 AI가 여행 일정 초안을 생성합니다.
+    여행 조건을 입력하면 AI가 여행 일정 초안을 생성합니다. <br>
+    AI 여행 일정은 기본적으로 비공개 일정으로 생성됩니다. 일정 생성 후 '수정하기'에서 공개 여부를 바꿀 수 있습니다.
   </div>
 
   <c:if test="${not empty errorMessage}">
@@ -133,7 +196,7 @@
     </div>
   </c:if>
 
-  <form method="post" action="${pageContext.request.contextPath}/courses/ai/generate">
+  <form id="aiPlanForm" method="post" action="${pageContext.request.contextPath}/courses/ai/generate">
     <div class="form-grid">
 
       <div class="form-group">
@@ -207,11 +270,38 @@
         </div>
       </div>
 
-      <div class="btn-area">
+      <div class="btn-area full">
         <button type="submit" class="submit-btn">AI 일정 생성</button>
       </div>
+
     </div>
   </form>
 </div>
+
+<div id="loadingOverlay" class="loading-overlay" style="display:none;">
+  <div class="loading-card">
+    <div class="loading-spinner"></div>
+    <div class="loading-title">AI 일정 생성 중</div>
+    <div class="loading-text">
+      여행 조건을 바탕으로 일정을 만들고 있어요.<br>
+      잠시만 기다려주세요.
+    </div>
+  </div>
+</div>
+
+<script>
+  const aiPlanForm = document.getElementById('aiPlanForm');
+
+  aiPlanForm.addEventListener('submit', function () {
+    const overlay = document.getElementById('loadingOverlay');
+    const submitBtn = document.querySelector('.submit-btn');
+
+    overlay.style.display = 'flex';
+    submitBtn.disabled = true;
+    submitBtn.textContent = '생성 중...';
+  });
+</script>
+
+<%@ include file="../common/footer.jsp" %>
 </body>
 </html>

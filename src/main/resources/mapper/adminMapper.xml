@@ -218,6 +218,11 @@
         <result property="targetReportCount" column="target_report_count"/>
         <result property="createdAt"         column="created_at"/>
         <result property="resolvedAt"        column="resolved_at"/>
+        <result property="targetTitle"       column="target_title"/>
+        <result property="targetContent"     column="target_content"/>
+        <result property="targetPostId"      column="target_post_id"/>
+        <result property="targetSpotIdx"     column="target_spot_idx"/>
+        <result property="targetSpotName"    column="target_spot_name"/>
     </resultMap>
 
     <!-- ══════════════════════════════════════════
@@ -1108,6 +1113,8 @@
                 WHEN 'post'    THEN (SELECT post_status    FROM COMMUNITY_POST    WHERE post_id    = r.target_id)
                 WHEN 'comment' THEN (SELECT comment_status FROM COMMUNITY_COMMENT WHERE comment_id = r.target_id)
                 WHEN 'user'    THEN (SELECT account_status FROM USERS             WHERE user_idx   = r.target_id)
+                WHEN 'review'  THEN (SELECT CASE WHEN review_block = 1 THEN 'DELETED' ELSE 'ACTIVE' END
+                                     FROM SPOT_REVIEW WHERE review_idx = r.target_id)
             END AS target_status
         <include refid="reportSearchBase"/>
         ORDER BY r.created_at DESC
@@ -1149,12 +1156,31 @@
                 WHEN 'user'    THEN (SELECT tu.user_role FROM USERS tu WHERE tu.user_idx = r.target_id)
                 WHEN 'post'    THEN (SELECT tu.user_role FROM COMMUNITY_POST p    JOIN USERS tu ON p.user_idx = tu.user_idx WHERE p.post_id = r.target_id)
                 WHEN 'comment' THEN (SELECT tu.user_role FROM COMMUNITY_COMMENT c JOIN USERS tu ON c.user_idx = tu.user_idx WHERE c.comment_id = r.target_id)
+                WHEN 'review'  THEN (SELECT tu.user_role FROM SPOT_REVIEW sr      JOIN USERS tu ON sr.user_idx = tu.user_idx WHERE sr.review_idx = r.target_id)
             END AS target_user_role,
             CASE r.target_type
                 WHEN 'post'    THEN (SELECT post_status    FROM COMMUNITY_POST    WHERE post_id    = r.target_id)
                 WHEN 'comment' THEN (SELECT comment_status FROM COMMUNITY_COMMENT WHERE comment_id = r.target_id)
                 WHEN 'user'    THEN (SELECT account_status FROM USERS             WHERE user_idx   = r.target_id)
-            END AS target_status
+                WHEN 'review'  THEN (SELECT CASE WHEN review_block = 1 THEN 'DELETED' ELSE 'ACTIVE' END
+                                     FROM SPOT_REVIEW WHERE review_idx = r.target_id)
+            END AS target_status,
+            CASE r.target_type
+                WHEN 'post' THEN (SELECT title FROM COMMUNITY_POST WHERE post_id = r.target_id)
+            END AS target_title,
+            CASE r.target_type
+                WHEN 'comment' THEN (SELECT content FROM COMMUNITY_COMMENT WHERE comment_id = r.target_id)
+                WHEN 'review'  THEN (SELECT content FROM SPOT_REVIEW      WHERE review_idx = r.target_id)
+            END AS target_content,
+            CASE r.target_type
+                WHEN 'comment' THEN (SELECT post_id FROM COMMUNITY_COMMENT WHERE comment_id = r.target_id)
+            END AS target_post_id,
+            CASE r.target_type
+                WHEN 'review' THEN (SELECT spot_idx FROM SPOT_REVIEW WHERE review_idx = r.target_id)
+            END AS target_spot_idx,
+            CASE r.target_type
+                WHEN 'review' THEN (SELECT st.name FROM SPOT_REVIEW sr JOIN SPOT_TRAVEL st ON sr.spot_idx = st.spot_idx WHERE sr.review_idx = r.target_id)
+            END AS target_spot_name
         FROM REPORT r
         LEFT JOIN USERS u ON r.user_idx = u.user_idx
         WHERE r.report_id = #{reportId}

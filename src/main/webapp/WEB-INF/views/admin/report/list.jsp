@@ -47,8 +47,9 @@
                         <div class="adm-filter-label">대상 유형</div>
                         <select class="adm-select" name="targetType">
                             <option value=""        ${empty search.targetType      ? 'selected':''}>전체</option>
-                            <option value="post"    ${search.targetType=='post'    ? 'selected':''}>게시글</option>
-                            <option value="comment" ${search.targetType=='comment' ? 'selected':''}>댓글</option>
+                            <option value="post"    ${search.targetType=='post'    ? 'selected':''}>커뮤니티 게시글</option>
+                            <option value="comment" ${search.targetType=='comment' ? 'selected':''}>커뮤니티 댓글</option>
+                            <option value="review"  ${search.targetType=='review'  ? 'selected':''}>여행지 리뷰</option>
                             <option value="user"    ${search.targetType=='user'    ? 'selected':''}>유저</option>
                         </select>
                     </div>
@@ -125,13 +126,27 @@
                         <td>
                             <div class="mem-name">
                                 <c:choose>
-                                    <c:when test="${r.targetType eq 'post'}">게시글</c:when>
-                                    <c:when test="${r.targetType eq 'comment'}">댓글</c:when>
-                                    <c:when test="${r.targetType eq 'user'}">유저</c:when>
+                                    <c:when test="${r.targetType eq 'post'}">
+                                        커뮤니티 게시글<span class="adm-module-badge adm-module-community">커뮤니티</span>
+                                    </c:when>
+                                    <c:when test="${r.targetType eq 'comment'}">
+                                        커뮤니티 댓글<span class="adm-module-badge adm-module-community">커뮤니티</span>
+                                    </c:when>
+                                    <c:when test="${r.targetType eq 'review'}">
+                                        여행지 리뷰<span class="adm-module-badge adm-module-explore">여행지</span>
+                                    </c:when>
+                                    <c:when test="${r.targetType eq 'user'}">
+                                        유저<span class="adm-module-badge adm-module-user">회원</span>
+                                    </c:when>
                                     <c:otherwise>${r.targetType}</c:otherwise>
                                 </c:choose>
                                 <c:if test="${r.targetStatus eq 'DELETED'}">
-                                    <span style="font-size:10px;color:#f87171;margin-left:4px;">(삭제됨)</span>
+                                    <span style="font-size:10px;color:#f87171;margin-left:4px;">
+                                        <c:choose>
+                                            <c:when test="${r.targetType eq 'review'}">(차단됨)</c:when>
+                                            <c:otherwise>(삭제됨)</c:otherwise>
+                                        </c:choose>
+                                    </span>
                                 </c:if>
                             </div>
                             <div class="mem-uid">#${r.targetId}</div>
