@@ -186,7 +186,8 @@
 <div class="container">
   <h1>AI 여행 일정 생성</h1>
   <div class="sub-text">
-    여행 조건을 입력하면 AI가 여행 일정 초안을 생성합니다.
+    여행 조건을 입력하면 AI가 여행 일정 초안을 생성합니다. <br>
+    AI 여행 일정은 기본적으로 비공개 일정으로 생성됩니다. 일정 생성 후 '수정하기'에서 공개 여부를 바꿀 수 있습니다.
   </div>
 
   <c:if test="${not empty errorMessage}">

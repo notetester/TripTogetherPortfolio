@@ -564,7 +564,13 @@
                                     <div class="quick-menu">
                                         <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">상세보기</a>
                                         <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}">수정하기</a>
-                                        <button type="button">삭제하기</button>
+                                        <form method="post"
+                                              action="${pageContext.request.contextPath}/courses/delete"
+                                              onsubmit="return confirm('정말 삭제하시겠습니까?');"
+                                              style="margin: 0;">
+                                            <input type="hidden" name="planId" value="${plan.plan_id}">
+                                            <button type="submit">삭제하기</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
