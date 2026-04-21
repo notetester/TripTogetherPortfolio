@@ -44,15 +44,23 @@
       <div class="rpt-detail-head">
         <div class="rpt-detail-meta">
           <%-- 대상 유형 태그 --%>
-          <span class="rpt-type-tag">
-            <c:choose>
-              <c:when test="${report.targetType eq 'post'}">게시글</c:when>
-              <c:when test="${report.targetType eq 'comment'}">댓글</c:when>
-              <c:when test="${report.targetType eq 'user'}">유저</c:when>
-              <c:otherwise>${report.targetType}</c:otherwise>
-            </c:choose>
-            #${report.targetId}
-          </span>
+          <c:choose>
+            <c:when test="${report.targetType eq 'post'}">
+              <span class="rpt-type-tag type-post">커뮤니티 게시글 #${report.targetId}</span>
+            </c:when>
+            <c:when test="${report.targetType eq 'comment'}">
+              <span class="rpt-type-tag type-comment">커뮤니티 댓글 #${report.targetId}</span>
+            </c:when>
+            <c:when test="${report.targetType eq 'review'}">
+              <span class="rpt-type-tag type-review">여행지 리뷰 #${report.targetId}</span>
+            </c:when>
+            <c:when test="${report.targetType eq 'user'}">
+              <span class="rpt-type-tag type-user">유저 #${report.targetId}</span>
+            </c:when>
+            <c:otherwise>
+              <span class="rpt-type-tag">${report.targetType} #${report.targetId}</span>
+            </c:otherwise>
+          </c:choose>
 
           <%-- 처리 상태 뱃지 --%>
           <span class="rpt-status-badge ${report.status}">
@@ -70,6 +78,7 @@
           <c:choose>
             <c:when test="${report.targetType eq 'post'}">게시글 신고</c:when>
             <c:when test="${report.targetType eq 'comment'}">댓글 신고</c:when>
+            <c:when test="${report.targetType eq 'review'}">여행지 리뷰 신고</c:when>
             <c:when test="${report.targetType eq 'user'}">유저 신고</c:when>
             <c:otherwise>신고</c:otherwise>
           </c:choose>
@@ -164,6 +173,28 @@
                 </c:choose>
               </c:when>
 
+              <%-- 여행지 리뷰 신고 --%>
+              <c:when test="${report.targetType eq 'review'}">
+                <c:choose>
+                  <c:when test="${targetDeleted}">
+                    <span style="color:var(--gray-400)">(삭제/차단된 리뷰)</span>
+                  </c:when>
+                  <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/detail/${targetSpotId}"
+                       style="color:#3b82f6;text-decoration:underline;">
+                      스팟 #${targetSpotId}
+                    </a>
+                    <span style="color:var(--gray-500);font-size:13px;">의 리뷰</span>
+                    <c:if test="${not empty targetNickname}">
+                      <span style="color:var(--gray-500);font-size:13px;"> — 작성자: ${targetNickname}</span>
+                    </c:if>
+                    <c:if test="${not empty targetContent}">
+                      <div style="margin-top:4px;font-size:13px;color:var(--gray-600);background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${targetContent}"</div>
+                    </c:if>
+                  </c:otherwise>
+                </c:choose>
+              </c:when>
+
               <%-- 유저 신고 --%>
               <c:when test="${report.targetType eq 'user'}">
                 <c:choose>
@@ -202,6 +233,23 @@
                             </a>
                             <span>의 댓글</span>
                             <div style="margin-top:4px;background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${sourceContent}"</div>
+                          </c:otherwise>
+                        </c:choose>
+                      </c:when>
+                      <c:when test="${report.sourceType eq 'review'}">
+                        <c:choose>
+                          <c:when test="${sourceDeleted}">
+                            <span style="color:var(--gray-400)">(삭제/차단된 리뷰)</span>
+                          </c:when>
+                          <c:otherwise>
+                            <a href="${pageContext.request.contextPath}/detail/${sourceSpotId}"
+                               style="color:#3b82f6;text-decoration:underline;">
+                              스팟 #${sourceSpotId}
+                            </a>
+                            <span>의 리뷰</span>
+                            <c:if test="${not empty sourceContent}">
+                              <div style="margin-top:4px;background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${sourceContent}"</div>
+                            </c:if>
                           </c:otherwise>
                         </c:choose>
                       </c:when>
@@ -315,6 +363,18 @@
               <div class="rpt-admin-action-bar">
                 <button class="rpt-btn-danger" id="btnDeleteAndBlock">🗑️🚫 댓글 삭제 + 작성자 차단 후 처리완료</button>
                 <button class="rpt-btn-danger" id="btnDeleteContent">🗑️ 댓글 삭제 후 처리완료</button>
+                <button class="rpt-btn-danger" id="btnBlockAuthor">🚫 작성자 차단 후 처리완료</button>
+              </div>
+              <div class="rpt-admin-action-bar">
+                <button class="rpt-btn-cancel" id="btnDismiss">✖ 유지 (반려)</button>
+              </div>
+            </c:if>
+
+            <%-- 여행지 리뷰 신고 --%>
+            <c:if test="${report.targetType eq 'review'}">
+              <div class="rpt-admin-action-bar">
+                <button class="rpt-btn-danger" id="btnDeleteAndBlock">🗑️🚫 리뷰 차단 + 작성자 차단 후 처리완료</button>
+                <button class="rpt-btn-danger" id="btnDeleteContent">🗑️ 리뷰 차단 후 처리완료</button>
                 <button class="rpt-btn-danger" id="btnBlockAuthor">🚫 작성자 차단 후 처리완료</button>
               </div>
               <div class="rpt-admin-action-bar">
@@ -440,8 +500,10 @@ function goBackToList() {
 <c:if test="${isAdmin and isAdminMode}">
 <script>
 (function () {
-  var ctx      = '${pageContext.request.contextPath}';
-  var reportId = ${report.reportId};
+  var ctx        = '${pageContext.request.contextPath}';
+  var reportId   = ${report.reportId};
+  var targetType = '${report.targetType}';
+  var isReview   = (targetType === 'review');
 
   function resolveReport(action, confirmMsg) {
     if (!confirm(confirmMsg)) return;
@@ -461,7 +523,10 @@ function goBackToList() {
   var btnDeleteContent = document.getElementById('btnDeleteContent');
   if (btnDeleteContent) {
     btnDeleteContent.addEventListener('click', function () {
-      resolveReport('DELETE_CONTENT', '게시물을 삭제하고 신고를 처리완료 하시겠습니까?');
+      var msg = isReview
+        ? '리뷰를 차단하고 신고를 처리완료 하시겠습니까?'
+        : '게시물을 삭제하고 신고를 처리완료 하시겠습니까?';
+      resolveReport('DELETE_CONTENT', msg);
     });
   }
 
@@ -475,7 +540,10 @@ function goBackToList() {
   var btnDeleteAndBlock = document.getElementById('btnDeleteAndBlock');
   if (btnDeleteAndBlock) {
     btnDeleteAndBlock.addEventListener('click', function () {
-      resolveReport('DELETE_AND_BLOCK', '게시물을 삭제하고 작성자 계정을 차단한 후 처리완료 하시겠습니까?');
+      var msg = isReview
+        ? '리뷰를 차단하고 작성자 계정을 차단한 후 처리완료 하시겠습니까?'
+        : '게시물을 삭제하고 작성자 계정을 차단한 후 처리완료 하시겠습니까?';
+      resolveReport('DELETE_AND_BLOCK', msg);
     });
   }
 

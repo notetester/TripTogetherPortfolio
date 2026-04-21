@@ -7,9 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.triptogether.admin.service.AdminExploreService;
 import org.triptogether.admin.service.AdminService;
 import org.triptogether.admin.vo.*;
 import org.triptogether.community.service.CommunityService;
+import org.triptogether.explore.service.ExploreService;
+import org.triptogether.explore.vo.ReviewVO;
 import org.triptogether.report.service.ReportService;
 import org.triptogether.report.vo.ReportSearchDto;
 
@@ -38,6 +41,8 @@ public class AdminController {
     private final AdminService adminService;
     private final ReportService reportService;
     private final CommunityService communityService;
+    private final ExploreService exploreService;
+    private final AdminExploreService adminExploreService;
 
     @GetMapping({"", "/"})
     public String dashboard(Model model) {
@@ -356,18 +361,23 @@ public class AdminController {
                     break;
 
                 case "DELETE_CONTENT":
-                    // 게시물 또는 댓글 삭제 후 신고 처리완료
+                    // 게시물/댓글/리뷰 차단 후 신고 처리완료
+                    String deleteActionLabel;
                     if ("post".equals(targetType)) {
                         communityService.deletePost(targetId);
+                        deleteActionLabel = "게시글 삭제";
                     } else if ("comment".equals(targetType)) {
                         communityService.deleteComment(targetId);
+                        deleteActionLabel = "댓글 삭제";
+                    } else if ("review".equals(targetType)) {
+                        adminExploreService.blockReview(targetId);
+                        deleteActionLabel = "리뷰 차단";
                     } else {
                         result.put("success", false);
                         result.put("message", "해당 대상 유형에는 콘텐츠 삭제를 사용할 수 없습니다.");
                         return ResponseEntity.status(400).body(result);
                     }
-                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx,
-                            "post".equals(targetType) ? "게시글 삭제" : "댓글 삭제");
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx, deleteActionLabel);
                     break;
 
                 case "BLOCK_AUTHOR":
@@ -377,6 +387,9 @@ public class AdminController {
                         authorIdx = adminService.getPostAuthorIdx(targetId);
                     } else if ("comment".equals(targetType)) {
                         authorIdx = adminService.getCommentAuthorIdx(targetId);
+                    } else if ("review".equals(targetType)) {
+                        ReviewVO review = exploreService.getReview(targetId);
+                        authorIdx = (review != null) ? review.getUserIdx() : null;
                     } else {
                         result.put("success", false);
                         result.put("message", "해당 대상 유형에는 작성자 차단을 사용할 수 없습니다.");
@@ -403,14 +416,22 @@ public class AdminController {
                     break;
 
                 case "DELETE_AND_BLOCK":
-                    // 게시물/댓글 삭제 + 작성자 차단 후 신고 처리완료
+                    // 게시물/댓글/리뷰 차단 + 작성자 차단 후 신고 처리완료
                     Long authorIdxForBlock = null;
+                    String deleteBlockLabel;
                     if ("post".equals(targetType)) {
                         authorIdxForBlock = adminService.getPostAuthorIdx(targetId);
                         communityService.deletePost(targetId);
+                        deleteBlockLabel = "게시글 삭제 + 작성자 차단";
                     } else if ("comment".equals(targetType)) {
                         authorIdxForBlock = adminService.getCommentAuthorIdx(targetId);
                         communityService.deleteComment(targetId);
+                        deleteBlockLabel = "댓글 삭제 + 작성자 차단";
+                    } else if ("review".equals(targetType)) {
+                        ReviewVO review = exploreService.getReview(targetId);
+                        authorIdxForBlock = (review != null) ? review.getUserIdx() : null;
+                        adminExploreService.blockReview(targetId);
+                        deleteBlockLabel = "리뷰 차단 + 작성자 차단";
                     } else {
                         result.put("success", false);
                         result.put("message", "해당 대상 유형에는 이 처리를 사용할 수 없습니다.");
@@ -419,8 +440,7 @@ public class AdminController {
                     if (authorIdxForBlock != null) {
                         adminService.changeMemberStatus(authorIdxForBlock, "BLOCKED");
                     }
-                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx,
-                            "post".equals(targetType) ? "게시글 삭제 + 작성자 차단" : "댓글 삭제 + 작성자 차단");
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx, deleteBlockLabel);
                     break;
 
                 case "REVERT_TO_PENDING":

@@ -47,6 +47,8 @@
                class="rpt-tab ${search.targetType eq 'post' ? 'active' : ''}">게시글</a>
             <a href="${pageContext.request.contextPath}/report/list?targetType=comment"
                class="rpt-tab ${search.targetType eq 'comment' ? 'active' : ''}">댓글</a>
+            <a href="${pageContext.request.contextPath}/report/list?targetType=review"
+               class="rpt-tab ${search.targetType eq 'review' ? 'active' : ''}">여행지 리뷰</a>
             <a href="${pageContext.request.contextPath}/report/list?targetType=user"
                class="rpt-tab ${search.targetType eq 'user' ? 'active' : ''}">유저</a>
         </div>
@@ -109,15 +111,23 @@
 
                                 <%-- 대상 유형 --%>
                                 <td>
-                                    <span class="rpt-type-tag">
-                                        <c:choose>
-                                            <c:when test="${r.targetType eq 'post'}">게시글</c:when>
-                                            <c:when test="${r.targetType eq 'comment'}">댓글</c:when>
-                                            <c:when test="${r.targetType eq 'user'}">유저</c:when>
-                                            <c:when test="${r.targetType eq 'review'}">리뷰</c:when>
-                                            <c:otherwise>${r.targetType}</c:otherwise>
-                                        </c:choose>
-                                    </span>
+                                    <c:choose>
+                                        <c:when test="${r.targetType eq 'post'}">
+                                            <span class="rpt-type-tag type-post">커뮤니티 게시글</span>
+                                        </c:when>
+                                        <c:when test="${r.targetType eq 'comment'}">
+                                            <span class="rpt-type-tag type-comment">커뮤니티 댓글</span>
+                                        </c:when>
+                                        <c:when test="${r.targetType eq 'review'}">
+                                            <span class="rpt-type-tag type-review">여행지 리뷰</span>
+                                        </c:when>
+                                        <c:when test="${r.targetType eq 'user'}">
+                                            <span class="rpt-type-tag type-user">유저</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="rpt-type-tag">${r.targetType}</span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </td>
 
                                 <%-- 사유 --%>
@@ -132,7 +142,7 @@
                                                 </c:choose>
                                             </span>
                                         </c:when>
-                                        <%-- 게시글/댓글 신고: reason 코드값을 한글로 --%>
+                                        <%-- 게시글/댓글/리뷰 신고: reason 코드값을 한글로 --%>
                                         <c:otherwise>
                                             <span class="rpt-reason-text">
                                                 <c:choose>
