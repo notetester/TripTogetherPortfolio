@@ -524,12 +524,11 @@
                                        id="destination"
                                        name="destination"
                                        class="form-input"
-                                       list="cityOptionList"
                                        value="${travelPlan.destination}"
                                        autocomplete="off"
                                        required>
                                 <div class="field-msg">
-                                    대표 목적지는 자유롭게 입력할 수 있어요. SPOT_TRAVEL과 일치하면 spot_id가 연결될 수 있고, 아니면 장소명만 저장돼요.
+                                    대표 목적지는 자유롭게 입력할 수 있어요.
                                 </div>
                             </div>
 
@@ -704,12 +703,6 @@
     </div>
 </main>
 
-<datalist id="cityOptionList">
-    <c:forEach var="city" items="${spotTravelList}">
-        <option value="${city.name}"></option>
-    </c:forEach>
-</datalist>
-
 <script>
     const formEl = document.getElementById("travelPlanForm");
     const titleEl = document.getElementById("title");
@@ -730,21 +723,6 @@
     const summaryCountEl = document.getElementById("summaryCount");
     const summaryPublicEl = document.getElementById("summaryPublic");
 
-    const cityMasterList = [
-        <c:forEach var="city" items="${spotTravelList}" varStatus="s">
-        {
-            name: "${fn:escapeXml(city.name)}",
-            spotId: "${fn:escapeXml(city.spot_id)}"
-        }<c:if test="${!s.last}">,</c:if>
-        </c:forEach>
-    ];
-
-    function findCityByName(name) {
-        const normalized = (name || "").trim();
-        return cityMasterList.find(function (city) {
-            return city.name === normalized;
-        }) || null;
-    }
 
     function refreshSpotIndexes() {
         const items = spotListEl.querySelectorAll(".spot-item");
