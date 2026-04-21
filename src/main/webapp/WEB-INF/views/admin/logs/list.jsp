@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="activeMenu" value="logins"/>
-<c:set var="pageTitle" value="로그인 감사"/>
+<c:set var="pageTitle" value="인증 감사"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -14,6 +14,14 @@
                         <div class="adm-filter-label">검색</div>
                         <span class="adm-search-ico">🔍</span>
                         <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="아이디, 닉네임, 입력값, IP 검색">
+                    </div>
+                    <div>
+                        <div class="adm-filter-label">이벤트</div>
+                        <select class="adm-select" name="eventType">
+                            <option value="ALL" ${search.eventType=='ALL'?'selected':''}>전체</option>
+                            <option value="LOGIN" ${search.eventType=='LOGIN'?'selected':''}>LOGIN</option>
+                            <option value="LOGOUT" ${search.eventType=='LOGOUT'?'selected':''}>LOGOUT</option>
+                        </select>
                     </div>
                     <div>
                         <div class="adm-filter-label">성공 여부</div>
@@ -32,9 +40,20 @@
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">로그인 경로</div>
+                        <div class="adm-filter-label">제공자</div>
+                        <select class="adm-select" name="authProvider">
+                            <option value="ALL" ${search.authProvider=='ALL'?'selected':''}>전체</option>
+                            <option value="LOCAL" ${search.authProvider=='LOCAL'?'selected':''}>LOCAL</option>
+                            <option value="KAKAO" ${search.authProvider=='KAKAO'?'selected':''}>KAKAO</option>
+                            <option value="NAVER" ${search.authProvider=='NAVER'?'selected':''}>NAVER</option>
+                            <option value="GOOGLE" ${search.authProvider=='GOOGLE'?'selected':''}>GOOGLE</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="adm-filter-label">세부 경로</div>
                         <select class="adm-select" name="loginMethod">
                             <option value="ALL" ${search.loginMethod=='ALL'?'selected':''}>전체</option>
+                            <option value="LOCAL" ${search.loginMethod=='LOCAL'?'selected':''}>LOCAL</option>
                             <option value="ID" ${search.loginMethod=='ID'?'selected':''}>ID</option>
                             <option value="EMAIL" ${search.loginMethod=='EMAIL'?'selected':''}>EMAIL</option>
                             <option value="KAKAO" ${search.loginMethod=='KAKAO'?'selected':''}>KAKAO</option>
@@ -50,7 +69,7 @@
 
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">로그인 시도 이력</div>
+            <div class="adm-card-title">인증 이벤트 이력</div>
             <div style="font-size:12px;color:#64748b;">총 ${total}건</div>
         </div>
         <div class="adm-table-wrap">
@@ -59,8 +78,10 @@
                 <tr>
                     <th>시각</th>
                     <th>회원</th>
+                    <th>이벤트</th>
                     <th>인증</th>
-                    <th>경로</th>
+                    <th>제공자</th>
+                    <th>흐름</th>
                     <th>입력값</th>
                     <th>결과</th>
                     <th>사유</th>
@@ -80,9 +101,29 @@
                                 <c:otherwise><span style="color:#64748b;">미식별</span></c:otherwise>
                             </c:choose>
                         </td>
+                        <td>
+                            <span class="status-badge ${item.eventType == 'LOGOUT' ? 'PENDING' : 'ACTIVE'}">
+                                <c:out value="${item.eventType}"/>
+                            </span>
+                        </td>
                         <td>${item.authType}</td>
-                        <td>${item.loginMethod}</td>
-                        <td>${item.loginIdentifier}</td>
+                        <td><c:out value="${item.authProvider}"/></td>
+                        <td>
+                            <div><c:out value="${empty item.authFlow ? item.loginMethod : item.authFlow}"/></div>
+                            <c:if test="${not empty item.requestUri}">
+                                <div style="margin-top:4px;font-size:11px;color:#64748b;max-width:220px;word-break:break-all;">
+                                    <c:out value="${item.requestUri}"/>
+                                </div>
+                            </c:if>
+                        </td>
+                        <td>
+                            <div><c:out value="${empty item.loginIdentifier ? '-' : item.loginIdentifier}"/></div>
+                            <c:if test="${not empty item.flowTraceId}">
+                                <div style="margin-top:4px;font-size:11px;color:#64748b;">
+                                    trace: <c:out value="${item.flowTraceId}"/>
+                                </div>
+                            </c:if>
+                        </td>
                         <td>
                             <c:choose>
                                 <c:when test="${item.success}"><span class="status-badge ACTIVE">SUCCESS</span></c:when>
@@ -94,7 +135,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="8" style="text-align:center;padding:40px;color:#475569;">조회 결과가 없습니다.</td></tr>
+                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;">조회 결과가 없습니다.</td></tr>
                 </c:if>
                 </tbody>
             </table>

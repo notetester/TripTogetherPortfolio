@@ -9,4 +9,9 @@ import lombok.*;
 public class LoginRequestContext {
     private String ipAddress;
     private String userAgent;
+    private String requestId;
+    private String flowTraceId;
+    private String sessionId;
+    private String requestUri;
+    private String logoutCallbackUri;
 }

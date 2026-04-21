@@ -48,9 +48,17 @@
     <resultMap id="historyRM" type="org.triptogether.auth.vo.UserLoginHistoryVO">
         <id property="loginIdx" column="login_idx"/>
         <result property="userIdx" column="user_idx"/>
+        <result property="eventType" column="event_type"/>
         <result property="authType" column="auth_type"/>
+        <result property="authProvider" column="auth_provider"/>
+        <result property="authFlow" column="auth_flow"/>
         <result property="loginMethod" column="login_method"/>
         <result property="loginIdentifier" column="login_identifier"/>
+        <result property="sessionId" column="session_id"/>
+        <result property="requestUri" column="request_uri"/>
+        <result property="logoutCallbackUri" column="logout_callback_uri"/>
+        <result property="requestId" column="request_id"/>
+        <result property="flowTraceId" column="flow_trace_id"/>
         <result property="success" column="is_success"/>
         <result property="failReason" column="fail_reason"/>
         <result property="ipAddress" column="ip_address"/>
@@ -105,9 +113,17 @@
         <result property="userIdx" column="user_idx"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>
+        <result property="eventType" column="event_type"/>
         <result property="authType" column="auth_type"/>
+        <result property="authProvider" column="auth_provider"/>
+        <result property="authFlow" column="auth_flow"/>
         <result property="loginMethod" column="login_method"/>
         <result property="loginIdentifier" column="login_identifier"/>
+        <result property="sessionId" column="session_id"/>
+        <result property="requestUri" column="request_uri"/>
+        <result property="logoutCallbackUri" column="logout_callback_uri"/>
+        <result property="requestId" column="request_id"/>
+        <result property="flowTraceId" column="flow_trace_id"/>
         <result property="success" column="is_success"/>
         <result property="failReason" column="fail_reason"/>
         <result property="ipAddress" column="ip_address"/>
@@ -176,14 +192,18 @@
     <resultMap id="activityLogRM" type="org.triptogether.admin.vo.AdminActivityLogVO">
         <id property="activityIdx" column="activity_idx"/>
         <result property="requestId" column="request_id"/>
+        <result property="flowTraceId" column="flow_trace_id"/>
         <result property="userIdx" column="user_idx"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>
         <result property="sessionId" column="session_id"/>
         <result property="requestUri" column="request_uri"/>
         <result property="httpMethod" column="http_method"/>
+        <result property="activityDomain" column="activity_domain"/>
         <result property="activityType" column="activity_type"/>
         <result property="activityCode" column="activity_code"/>
+        <result property="activityProvider" column="activity_provider"/>
+        <result property="authEventType" column="auth_event_type"/>
         <result property="targetType" column="target_type"/>
         <result property="targetId" column="target_id"/>
         <result property="handlerName" column="handler_name"/>
@@ -245,7 +265,8 @@
                    SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS login_success_count,
                    SUM(CASE WHEN is_success = 0 THEN 1 ELSE 0 END) AS login_fail_count
             FROM USER_LOGIN_HISTORY
-            WHERE auth_type IN ('PASSWORD', 'SOCIAL')
+            WHERE event_type = 'LOGIN'
+              AND auth_type IN ('PASSWORD', 'SOCIAL')
             GROUP BY user_idx
         ) h ON u.user_idx = h.user_idx
         <where>
@@ -348,7 +369,8 @@
                    SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS login_success_count,
                    SUM(CASE WHEN is_success = 0 THEN 1 ELSE 0 END) AS login_fail_count
             FROM USER_LOGIN_HISTORY
-            WHERE auth_type IN ('PASSWORD', 'SOCIAL')
+            WHERE event_type = 'LOGIN'
+              AND auth_type IN ('PASSWORD', 'SOCIAL')
             GROUP BY user_idx
         ) h ON u.user_idx = h.user_idx
         WHERE u.user_idx = #{userIdx}
@@ -668,6 +690,7 @@
         SELECT *
         FROM USER_LOGIN_HISTORY
         WHERE user_idx = #{userIdx}
+          AND event_type = 'LOGIN'
         ORDER BY login_at DESC
         LIMIT #{limit}
     </select>
@@ -683,8 +706,47 @@
             SUM(CASE WHEN account_status = 'DORMANT' THEN 1 ELSE 0 END) AS dormantMembers,
             SUM(CASE WHEN account_status = 'DELETED' THEN 1 ELSE 0 END) AS deletedMembers,
             SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) AS todayNewMembers,
-            (SELECT COUNT(*) FROM USER_LOGIN_HISTORY WHERE auth_type IN ('PASSWORD', 'SOCIAL') AND is_success = TRUE AND DATE(login_at) = CURDATE()) AS todayLogins,
-            (SELECT COUNT(*) FROM USER_LOGIN_HISTORY WHERE auth_type IN ('PASSWORD', 'SOCIAL') AND is_success = FALSE AND DATE(login_at) = CURDATE()) AS todayFailedLogins,
+            (SELECT COUNT(*)
+             FROM USER_LOGIN_HISTORY
+             WHERE event_type = 'LOGIN'
+               AND auth_type IN ('PASSWORD', 'SOCIAL')
+               AND is_success = TRUE
+               AND DATE(login_at) = CURDATE()) AS todayLogins,
+            (SELECT COUNT(*)
+             FROM USER_LOGIN_HISTORY
+             WHERE event_type = 'LOGIN'
+               AND auth_type IN ('PASSWORD', 'SOCIAL')
+               AND is_success = FALSE
+               AND DATE(login_at) = CURDATE()) AS todayFailedLogins,
+            (SELECT COUNT(*)
+             FROM USER_LOGIN_HISTORY
+             WHERE event_type = 'LOGOUT'
+               AND is_success = TRUE
+               AND DATE(login_at) = CURDATE()) AS todayLogouts,
+            (SELECT COUNT(*)
+             FROM USER_LOGIN_HISTORY
+             WHERE event_type = 'LOGOUT'
+               AND auth_provider = 'LOCAL'
+               AND is_success = TRUE
+               AND DATE(login_at) = CURDATE()) AS todayLocalLogouts,
+            (SELECT COUNT(*)
+             FROM USER_LOGIN_HISTORY
+             WHERE event_type = 'LOGOUT'
+               AND auth_provider = 'KAKAO'
+               AND is_success = TRUE
+               AND DATE(login_at) = CURDATE()) AS todayKakaoLogouts,
+            (SELECT COUNT(*)
+             FROM USER_LOGIN_HISTORY
+             WHERE event_type = 'LOGOUT'
+               AND auth_provider = 'NAVER'
+               AND is_success = TRUE
+               AND DATE(login_at) = CURDATE()) AS todayNaverLogouts,
+            (SELECT COUNT(*)
+             FROM USER_LOGIN_HISTORY
+             WHERE event_type = 'LOGOUT'
+               AND auth_provider = 'GOOGLE'
+               AND is_success = TRUE
+               AND DATE(login_at) = CURDATE()) AS todayGoogleLogouts,
             (SELECT COUNT(DISTINCT user_idx) FROM USER_SOCIAL WHERE provider = 'KAKAO') AS kakaoLinked,
             (SELECT COUNT(DISTINCT user_idx) FROM USER_SOCIAL WHERE provider = 'NAVER') AS naverLinked,
             (SELECT COUNT(DISTINCT user_idx) FROM USER_SOCIAL WHERE provider = 'GOOGLE') AS googleLinked,
@@ -821,8 +883,14 @@
             <if test="success != null and success == 'FAIL'">
                 AND h.is_success = FALSE
             </if>
+            <if test="eventType != null and eventType != 'ALL'">
+                AND h.event_type = #{eventType}
+            </if>
             <if test="authType != null and authType != 'ALL'">
                 AND h.auth_type = #{authType}
+            </if>
+            <if test="authProvider != null and authProvider != 'ALL'">
+                AND h.auth_provider = #{authProvider}
             </if>
             <if test="loginMethod != null and loginMethod != 'ALL'">
                 AND h.login_method = #{loginMethod}
@@ -833,6 +901,8 @@
                     OR IFNULL(u.user_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(h.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(h.request_uri, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(h.flow_trace_id, '') LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
         </where>
@@ -841,7 +911,10 @@
     <select id="findLoginAudits" resultMap="auditRM">
         SELECT
             h.login_idx, h.user_idx, u.user_id, u.nickname,
-            h.auth_type, h.login_method, h.login_identifier,
+            h.event_type, h.auth_type, h.auth_provider, h.auth_flow,
+            h.login_method, h.login_identifier,
+            h.session_id, h.request_uri, h.logout_callback_uri,
+            h.request_id, h.flow_trace_id,
             h.is_success, h.fail_reason, h.ip_address, h.user_agent, h.login_at
         <include refid="loginAuditSearchBase"/>
         ORDER BY h.login_at DESC
@@ -1025,8 +1098,17 @@
             <if test="success != null and success == 'FAIL'">
                 AND a.is_success = FALSE
             </if>
+            <if test="activityDomain != null and activityDomain != 'ALL'">
+                AND a.activity_domain = #{activityDomain}
+            </if>
             <if test="activityType != null and activityType != 'ALL'">
                 AND a.activity_type = #{activityType}
+            </if>
+            <if test="activityProvider != null and activityProvider != 'ALL'">
+                AND a.activity_provider = #{activityProvider}
+            </if>
+            <if test="authEventType != null and authEventType != 'ALL'">
+                AND a.auth_event_type = #{authEventType}
             </if>
             <if test="httpMethod != null and httpMethod != 'ALL'">
                 AND a.http_method = #{httpMethod}
@@ -1036,7 +1118,9 @@
                     IFNULL(u.user_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(a.request_uri, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(a.flow_trace_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(a.activity_code, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(a.activity_provider, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(a.target_type, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(a.target_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(a.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
@@ -1047,10 +1131,12 @@
 
     <select id="findActivityLogs" resultMap="activityLogRM">
         SELECT
-            a.activity_idx, a.request_id, a.user_idx,
+            a.activity_idx, a.request_id, a.flow_trace_id, a.user_idx,
             u.user_id, u.nickname,
             a.session_id, a.request_uri, a.http_method,
-            a.activity_type, a.activity_code, a.target_type, a.target_id,
+            a.activity_domain, a.activity_type, a.activity_code,
+            a.activity_provider, a.auth_event_type,
+            a.target_type, a.target_id,
             a.handler_name, a.query_string, a.referer,
             a.ip_address, a.user_agent, a.response_status, a.response_time_ms,
             a.is_success, a.detail_summary, a.created_at

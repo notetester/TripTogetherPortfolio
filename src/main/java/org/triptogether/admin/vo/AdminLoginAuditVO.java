@@ -21,9 +21,17 @@ public class AdminLoginAuditVO {
     private Long userIdx;
     private String userId;
     private String nickname;
+    private String eventType;
     private String authType;
+    private String authProvider;
+    private String authFlow;
     private String loginMethod;
     private String loginIdentifier;
+    private String sessionId;
+    private String requestUri;
+    private String logoutCallbackUri;
+    private String requestId;
+    private String flowTraceId;
     private boolean success;
     private String failReason;
     private String ipAddress;

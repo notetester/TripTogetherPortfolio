@@ -16,6 +16,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.triptogether.auth.mapper.AuthMapper;
 import org.triptogether.admin.mapper.AdminMapper;
+import org.triptogether.config.ActivityLogInterceptor;
 import org.triptogether.config.IpBlockMapper;
 import org.triptogether.auth.vo.*;
 
@@ -67,49 +68,7 @@ public class AuthServiceImpl implements AuthService {
     // ════════════════════════════════════════════
     @Override
     public UsersVO login(String identifier, String password, HttpServletRequest request) {
-        // ID 또는 이메일 모두 허용
-        UsersVO user = authMapper.findByUserId(identifier);
-        if (user == null) user = authMapper.findByEmail(identifier);
-
-        String loginMethod = (identifier != null && identifier.contains("@")) ? "EMAIL" : "ID";
-        UserLoginHistoryVO.UserLoginHistoryVOBuilder historyBuilder = UserLoginHistoryVO.builder()
-                .authType("PASSWORD")
-                .loginMethod(loginMethod)
-                .loginIdentifier(identifier)
-                .ipAddress(getClientIp(request))
-                .userAgent(request.getHeader("User-Agent"));
-
-        // 사용자 없음
-        if (user == null) {
-            authMapper.insertLoginHistory(historyBuilder.success(false).failReason("USER_NOT_FOUND").build());
-            return null;
-        }
-
-        // 계정 상태 검사
-        if ("DELETED".equals(user.getAccountStatus())) {
-            authMapper.insertLoginHistory(historyBuilder.userIdx(user.getUserIdx()).success(false).failReason("ACCOUNT_DELETED").build());
-            return null;
-        }
-        if ("DORMANT".equals(user.getAccountStatus())) {
-            authMapper.insertLoginHistory(historyBuilder.userIdx(user.getUserIdx()).success(false).failReason("ACCOUNT_DORMANT").build());
-            return null;
-        }
-
-        // 비밀번호 로그인 가능 여부
-        if (!user.isPasswordEnabled()) {
-            authMapper.insertLoginHistory(historyBuilder.userIdx(user.getUserIdx()).success(false).failReason("PASSWORD_LOGIN_DISABLED").build());
-            return null;
-        }
-
-        // 비밀번호 검증
-        if (!bCryptPasswordEncoder.matches(password, user.getUserPassword())) {
-            authMapper.insertLoginHistory(historyBuilder.userIdx(user.getUserIdx()).success(false).failReason("WRONG_PASSWORD").build());
-            return null;
-        }
-
-        // 로그인 성공
-        authMapper.insertLoginHistory(historyBuilder.userIdx(user.getUserIdx()).success(true).build());
-        return user;
+        return login(identifier, password, buildContext(request));
     }
 
     @Override
@@ -913,9 +872,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void revokeNaverAccessToken(String accessToken) {
+    public boolean revokeNaverAccessToken(String accessToken) {
         if (accessToken == null || accessToken.isBlank()) {
-            return;
+            return true;
         }
         try {
             String url = "https://nid.naver.com/oauth2.0/token"
@@ -924,15 +883,17 @@ public class AuthServiceImpl implements AuthService {
                     + "&client_secret=" + naverClientSecret
                     + "&access_token=" + encode(accessToken);
             restTemplate.getForObject(url, String.class);
+            return true;
         } catch (Exception e) {
             log.warn("[Naver] access token revoke 실패", e);
+            return false;
         }
     }
 
     @Override
-    public void revokeGoogleAccessToken(String accessToken) {
+    public boolean revokeGoogleAccessToken(String accessToken) {
         if (accessToken == null || accessToken.isBlank()) {
-            return;
+            return true;
         }
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -946,9 +907,36 @@ public class AuthServiceImpl implements AuthService {
                     new HttpEntity<>(params, headers),
                     String.class
             );
+            return true;
         } catch (Exception e) {
             log.warn("[Google] access token revoke 실패", e);
+            return false;
         }
+    }
+
+    @Override
+    public void recordLogoutHistory(UsersVO user, String provider, boolean success, String failReason, LoginRequestContext context) {
+        String authProvider = normalizeAuthProvider(provider);
+        String identifier = resolveLogoutIdentifier(user, authProvider);
+
+        recordHistory(LoginHistoryCommand.builder()
+                .userIdx(user != null ? user.getUserIdx() : null)
+                .eventType("LOGOUT")
+                .authType("LOCAL".equals(authProvider) ? "PASSWORD" : "SOCIAL")
+                .authProvider(authProvider)
+                .authFlow("LOCAL".equals(authProvider) ? "LOGOUT_LOCAL" : "LOGOUT_SOCIAL")
+                .loginMethod("LOCAL".equals(authProvider) ? "LOCAL" : authProvider)
+                .loginIdentifier(identifier)
+                .success(success)
+                .failReason(failReason)
+                .sessionId(context != null ? context.getSessionId() : null)
+                .requestUri(context != null ? context.getRequestUri() : null)
+                .logoutCallbackUri(context != null ? context.getLogoutCallbackUri() : null)
+                .requestId(context != null ? context.getRequestId() : null)
+                .flowTraceId(context != null ? context.getFlowTraceId() : null)
+                .ipAddress(context != null ? context.getIpAddress() : null)
+                .userAgent(context != null ? context.getUserAgent() : null)
+                .build());
     }
 
     // ════════════════════════════════════════════
@@ -1126,38 +1114,15 @@ public class AuthServiceImpl implements AuthService {
     private Object processSocialLogin(String provider, String providerUserId,
                                       String email, String nickname,
                                       HttpServletRequest request) {
-        UserLoginHistoryVO.UserLoginHistoryVOBuilder history = UserLoginHistoryVO.builder()
-                .authType("SOCIAL")
-                .loginMethod(provider)
-                .loginIdentifier(providerUserId)
-                .ipAddress(getClientIp(request))
-                .userAgent(request.getHeader("User-Agent"));
-
-        UserSocialVO social = authMapper.findSocialByProviderAndId(provider, providerUserId);
-
-        if (social != null) {
-            // 기존 연동 계정 → 로그인 처리
-            UsersVO user = authMapper.findByIdx(social.getUserIdx());
-            if (user == null || "DELETED".equals(user.getAccountStatus())) {
-                authMapper.insertLoginHistory(history.success(false).failReason("ACCOUNT_DELETED").build());
-                return null;
-            }
-            if ("DORMANT".equals(user.getAccountStatus())) {
-                authMapper.insertLoginHistory(history.userIdx(user.getUserIdx()).success(false).failReason("ACCOUNT_DORMANT").build());
-                return null;
-            }
-            authMapper.updateLastLoginAt(user.getUserIdx());
-            authMapper.insertLoginHistory(history.userIdx(user.getUserIdx()).success(true).build());
-            return authMapper.findByIdx(user.getUserIdx());
-        } else {
-            // 신규 → 추가 정보 입력 필요
-            return SocialTempVO.builder()
-                    .provider(provider)
-                    .providerUserId(providerUserId)
-                    .email(email)
-                    .nickname(nickname)
-                    .build();
-        }
+        return processSocialLogin(
+                SocialUserInfo.builder()
+                        .provider(provider)
+                        .providerUserId(providerUserId)
+                        .email(email)
+                        .nickname(nickname)
+                        .build(),
+                buildContext(request)
+        );
     }
 
     private Object processSocialLogin(SocialUserInfo info, LoginRequestContext context) {
@@ -1275,14 +1240,22 @@ public class AuthServiceImpl implements AuthService {
         authMapper.refreshVerifiedMemberFlag(newUser.getUserIdx());
 
         // 히스토리
-        authMapper.insertLoginHistory(UserLoginHistoryVO.builder()
+        LoginRequestContext context = buildContext(request);
+        recordHistory(LoginHistoryCommand.builder()
                 .userIdx(newUser.getUserIdx())
+                .eventType("LOGIN")
                 .authType("SOCIAL")
+                .authProvider(normalizeAuthProvider(temp.getProvider()))
+                .authFlow("SOCIAL_REGISTER")
                 .loginMethod(temp.getProvider())
                 .loginIdentifier(temp.getProviderUserId())
                 .success(true)
-                .ipAddress(getClientIp(request))
-                .userAgent(request.getHeader("User-Agent"))
+                .sessionId(context.getSessionId())
+                .requestUri(context.getRequestUri())
+                .requestId(context.getRequestId())
+                .flowTraceId(context.getFlowTraceId())
+                .ipAddress(context.getIpAddress())
+                .userAgent(context.getUserAgent())
                 .build());
 
         return newUser;
@@ -1596,21 +1569,42 @@ public class AuthServiceImpl implements AuthService {
     private void recordHistory(Long userIdx, String authType, String method,
                                String identifier, boolean success,
                                String failReason, HttpServletRequest request) {
-        authMapper.insertLoginHistory(UserLoginHistoryVO.builder()
-                .userIdx(userIdx).authType(authType).loginMethod(method)
-                .loginIdentifier(identifier).success(success).failReason(failReason)
-                .ipAddress(getClientIp(request)).userAgent(request.getHeader("User-Agent"))
+        LoginRequestContext context = buildContext(request);
+        recordHistory(LoginHistoryCommand.builder()
+                .userIdx(userIdx)
+                .eventType("LOGIN")
+                .authType(authType)
+                .authProvider(resolveAuthProviderByMethod(method))
+                .authFlow(resolveLoginFlow(method))
+                .loginMethod(method)
+                .loginIdentifier(identifier)
+                .success(success)
+                .failReason(failReason)
+                .sessionId(context.getSessionId())
+                .requestUri(context.getRequestUri())
+                .requestId(context.getRequestId())
+                .flowTraceId(context.getFlowTraceId())
+                .ipAddress(context.getIpAddress())
+                .userAgent(context.getUserAgent())
                 .build());
     }
 
     private void recordHistory(LoginHistoryCommand command) {
         authMapper.insertLoginHistory(UserLoginHistoryVO.builder()
                 .userIdx(command.getUserIdx())
+                .eventType(command.getEventType())
                 .authType(command.getAuthType())
+                .authProvider(command.getAuthProvider())
+                .authFlow(command.getAuthFlow())
                 .loginMethod(command.getLoginMethod())
                 .loginIdentifier(command.getLoginIdentifier())
                 .success(command.isSuccess())
                 .failReason(command.getFailReason())
+                .sessionId(command.getSessionId())
+                .requestUri(command.getRequestUri())
+                .logoutCallbackUri(command.getLogoutCallbackUri())
+                .requestId(command.getRequestId())
+                .flowTraceId(command.getFlowTraceId())
                 .ipAddress(command.getIpAddress())
                 .userAgent(command.getUserAgent())
                 .build());
@@ -1624,13 +1618,24 @@ public class AuthServiceImpl implements AuthService {
             String failReason,
             LoginRequestContext context
     ) {
+        if (context == null) {
+            context = LoginRequestContext.builder().build();
+        }
+        String authProvider = resolveAuthProviderByMethod(loginMethod);
         recordHistory(LoginHistoryCommand.builder()
                 .userIdx(userIdx)
-                .authType("PASSWORD")
+                .eventType("LOGIN")
+                .authType("LOCAL".equals(authProvider) ? "PASSWORD" : "SOCIAL")
+                .authProvider(authProvider)
+                .authFlow(resolveLoginFlow(loginMethod))
                 .loginMethod(loginMethod)
                 .loginIdentifier(identifier)
                 .success(success)
                 .failReason(failReason)
+                .sessionId(context.getSessionId())
+                .requestUri(context.getRequestUri())
+                .requestId(context.getRequestId())
+                .flowTraceId(context.getFlowTraceId())
                 .ipAddress(context.getIpAddress())
                 .userAgent(context.getUserAgent())
                 .build());
@@ -1728,10 +1733,72 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private LoginRequestContext buildContext(HttpServletRequest request) {
+        String requestId = request == null ? null : (String) request.getAttribute(ActivityLogInterceptor.ATTR_REQUEST_ID);
+        String flowTraceId = request == null ? null : (String) request.getAttribute(ActivityLogInterceptor.ATTR_FLOW_TRACE_ID_OVERRIDE);
+        String sessionId = null;
+        String userAgent = null;
+        if (request != null) {
+            var session = request.getSession(false);
+            sessionId = session != null ? session.getId() : request.getRequestedSessionId();
+            userAgent = request.getHeader("User-Agent");
+        }
         return LoginRequestContext.builder()
                 .ipAddress(getClientIp(request))
-                .userAgent(request.getHeader("User-Agent"))
+                .userAgent(userAgent)
+                .requestId(requestId)
+                .flowTraceId(hasText(flowTraceId) ? flowTraceId : requestId)
+                .sessionId(sessionId)
+                .requestUri(request != null ? request.getRequestURI() : null)
                 .build();
+    }
+
+    private String resolveLoginFlow(String loginMethod) {
+        if ("ID".equalsIgnoreCase(loginMethod)) {
+            return "PASSWORD_ID";
+        }
+        if ("EMAIL".equalsIgnoreCase(loginMethod)) {
+            return "PASSWORD_EMAIL";
+        }
+        return "SOCIAL_LOGIN";
+    }
+
+    private String resolveAuthProviderByMethod(String loginMethod) {
+        if ("KAKAO".equalsIgnoreCase(loginMethod) || "NAVER".equalsIgnoreCase(loginMethod) || "GOOGLE".equalsIgnoreCase(loginMethod)) {
+            return loginMethod.toUpperCase();
+        }
+        return "LOCAL";
+    }
+
+    private String normalizeAuthProvider(String provider) {
+        if (!hasText(provider)) {
+            return "LOCAL";
+        }
+        String normalized = provider.trim().toUpperCase();
+        if ("KAKAO".equals(normalized) || "NAVER".equals(normalized) || "GOOGLE".equals(normalized)) {
+            return normalized;
+        }
+        return "LOCAL";
+    }
+
+    private String resolveLogoutIdentifier(UsersVO user, String authProvider) {
+        if (user == null) {
+            return null;
+        }
+        if ("LOCAL".equals(authProvider)) {
+            if (hasText(user.getUserId())) {
+                return user.getUserId();
+            }
+            return user.getUserEmail();
+        }
+
+        UserSocialVO social = authMapper.findSocialByUserIdxAndProvider(user.getUserIdx(), authProvider);
+        if (social != null && hasText(social.getProviderUserId())) {
+            return social.getProviderUserId();
+        }
+        if (hasText(user.getUserId())) {
+            return user.getUserId();
+        }
+        return user.getUserEmail();
     }
 
     private String encode(String value) {
@@ -1739,6 +1806,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private String getClientIp(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.isBlank()) ip = request.getHeader("X-Real-IP");
         if (ip == null || ip.isBlank()) ip = request.getRemoteAddr();

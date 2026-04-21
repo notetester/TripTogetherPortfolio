@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.triptogether.auth.vo.SocialEmailNoticeVO;
 import org.triptogether.auth.vo.SocialTempVO;
 import org.triptogether.auth.vo.UserRole;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.config.ActivityLogInterceptor;
 import org.triptogether.superAdmin.mapper.SuperAdminMapper;
 import org.triptogether.superAdmin.vo.SuperAdminPermissionVO;
 
@@ -46,9 +48,22 @@ public class AuthController {
     private static final String CURRENT_SOCIAL_PROVIDER_SESSION_KEY = "currentSocialProvider";
     private static final String CURRENT_SOCIAL_ACCESS_TOKEN_SESSION_KEY = "currentSocialAccessToken";
     private static final String SOCIAL_ACCESS_TOKEN_REQUEST_KEY = "socialAccessToken";
+    private static final String LOGOUT_FLOW_TRACE_SESSION_KEY = "logoutFlowTraceId";
+    private static final String LOGOUT_PROVIDER_SESSION_KEY = "logoutProvider";
+    private static final String LOGOUT_CALLBACK_URI_SESSION_KEY = "logoutCallbackUri";
+    private static final String LOGOUT_FAIL_REASON_SESSION_KEY = "logoutFailReason";
 
     private final AuthService authService;
     private final SuperAdminMapper superAdminMapper;
+
+    @Value("${oauth.kakao.logout-redirect-uri}")
+    private String kakaoLogoutRedirectUri;
+
+    @Value("${oauth.naver.logout-redirect-uri}")
+    private String naverLogoutRedirectUri;
+
+    @Value("${oauth.google.logout-redirect-uri}")
+    private String googleLogoutRedirectUri;
 
     // ════════════════════════════════════════════
     // 로그인 페이지
@@ -89,10 +104,7 @@ public class AuthController {
 
         Map<String, Object> result = new HashMap<>();
 
-        LoginRequestContext context = LoginRequestContext.builder()
-                .ipAddress(getClientIp(request))
-                .userAgent(request.getHeader("User-Agent"))
-                .build();
+        LoginRequestContext context = buildRequestContext(request, session, request.getRequestURI(), null, null);
 
         UsersVO user = authService.login(identifier, password, context);
         if (user == null) {
@@ -156,62 +168,126 @@ public class AuthController {
     // ════════════════════════════════════════════
 
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpServletRequest request, HttpSession session) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
         String currentSocialProvider = (String) session.getAttribute(CURRENT_SOCIAL_PROVIDER_SESSION_KEY);
         if ("KAKAO".equals(currentSocialProvider)) {
+            String flowTraceId = prepareLogoutFlow(session, "KAKAO", kakaoLogoutRedirectUri);
+            applyLogoutActivityContext(request, session, loginUser, "KAKAO", flowTraceId, "LOGOUT_KAKAO_ENTRY");
             return "redirect:/auth/kakao/logout";
         }
         if ("NAVER".equals(currentSocialProvider)) {
+            String flowTraceId = prepareLogoutFlow(session, "NAVER", naverLogoutRedirectUri);
+            applyLogoutActivityContext(request, session, loginUser, "NAVER", flowTraceId, "LOGOUT_NAVER_ENTRY");
             return "redirect:/auth/naver/logout";
         }
         if ("GOOGLE".equals(currentSocialProvider)) {
+            String flowTraceId = prepareLogoutFlow(session, "GOOGLE", googleLogoutRedirectUri);
+            applyLogoutActivityContext(request, session, loginUser, "GOOGLE", flowTraceId, "LOGOUT_GOOGLE_ENTRY");
             return "redirect:/auth/google/logout";
         }
 
+        String flowTraceId = UUID.randomUUID().toString();
+        applyLogoutActivityContext(request, session, loginUser, "LOCAL", flowTraceId, "LOGOUT_LOCAL");
+        authService.recordLogoutHistory(
+                loginUser,
+                "LOCAL",
+                true,
+                null,
+                buildRequestContext(request, session, request.getRequestURI(), null, flowTraceId)
+        );
         session.invalidate();
         return "redirect:/";
     }
 
     @GetMapping("/kakao/logout")
-    public String kakaoLogout(HttpSession session) {
+    public String kakaoLogout(HttpServletRequest request, HttpSession session) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        String flowTraceId = prepareLogoutFlow(session, "KAKAO", kakaoLogoutRedirectUri);
+        applyLogoutActivityContext(request, session, loginUser, "KAKAO", flowTraceId, "LOGOUT_KAKAO_REQUEST");
         String state = UUID.randomUUID().toString();
         session.setAttribute("kakaoLogoutState", state);
         return "redirect:" + authService.getKakaoLogoutUrl(state);
     }
 
     @GetMapping("/kakao/logout/callback")
-    public String kakaoLogoutCallback(@RequestParam(required = false) String state, HttpSession session) {
+    public String kakaoLogoutCallback(@RequestParam(required = false) String state,
+                                      HttpServletRequest request,
+                                      HttpSession session) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        String flowTraceId = getLogoutFlowTraceId(session);
+        applyLogoutActivityContext(request, session, loginUser, "KAKAO", flowTraceId, "LOGOUT_KAKAO_CALLBACK");
         String savedState = (String) session.getAttribute("kakaoLogoutState");
+        String failReason = null;
 
         if (savedState != null && state != null && !savedState.equals(state)) {
             log.warn("[Kakao Logout] state mismatch. saved={}, received={}", savedState, state);
+            failReason = "STATE_MISMATCH";
         }
 
         session.removeAttribute("kakaoLogoutState");
+        authService.recordLogoutHistory(
+                loginUser,
+                "KAKAO",
+                failReason == null,
+                failReason,
+                buildRequestContext(request, session, request.getRequestURI(), kakaoLogoutRedirectUri, flowTraceId)
+        );
+        clearLogoutFlowSession(session);
         session.invalidate();
         return "redirect:/";
     }
 
     @GetMapping("/naver/logout")
-    public String naverLogout(HttpSession session) {
-        revokeSocialAccessToken("NAVER", session);
-        return "redirect:/auth/naver/logout/callback";
+    public String naverLogout(HttpServletRequest request, HttpSession session) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        String flowTraceId = prepareLogoutFlow(session, "NAVER", naverLogoutRedirectUri);
+        applyLogoutActivityContext(request, session, loginUser, "NAVER", flowTraceId, "LOGOUT_NAVER_REQUEST");
+        setLogoutFailReason(session, revokeSocialAccessToken("NAVER", session));
+        return "redirect:" + naverLogoutRedirectUri;
     }
 
     @GetMapping("/naver/logout/callback")
-    public String naverLogoutCallback(HttpSession session) {
+    public String naverLogoutCallback(HttpServletRequest request, HttpSession session) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        String flowTraceId = getLogoutFlowTraceId(session);
+        applyLogoutActivityContext(request, session, loginUser, "NAVER", flowTraceId, "LOGOUT_NAVER_CALLBACK");
+        String failReason = (String) session.getAttribute(LOGOUT_FAIL_REASON_SESSION_KEY);
+        authService.recordLogoutHistory(
+                loginUser,
+                "NAVER",
+                failReason == null,
+                failReason,
+                buildRequestContext(request, session, request.getRequestURI(), naverLogoutRedirectUri, flowTraceId)
+        );
+        clearLogoutFlowSession(session);
         session.invalidate();
         return "redirect:/";
     }
 
     @GetMapping("/google/logout")
-    public String googleLogout(HttpSession session) {
-        revokeSocialAccessToken("GOOGLE", session);
-        return "redirect:/auth/google/logout/callback";
+    public String googleLogout(HttpServletRequest request, HttpSession session) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        String flowTraceId = prepareLogoutFlow(session, "GOOGLE", googleLogoutRedirectUri);
+        applyLogoutActivityContext(request, session, loginUser, "GOOGLE", flowTraceId, "LOGOUT_GOOGLE_REQUEST");
+        setLogoutFailReason(session, revokeSocialAccessToken("GOOGLE", session));
+        return "redirect:" + googleLogoutRedirectUri;
     }
 
     @GetMapping("/google/logout/callback")
-    public String googleLogoutCallback(HttpSession session) {
+    public String googleLogoutCallback(HttpServletRequest request, HttpSession session) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        String flowTraceId = getLogoutFlowTraceId(session);
+        applyLogoutActivityContext(request, session, loginUser, "GOOGLE", flowTraceId, "LOGOUT_GOOGLE_CALLBACK");
+        String failReason = (String) session.getAttribute(LOGOUT_FAIL_REASON_SESSION_KEY);
+        authService.recordLogoutHistory(
+                loginUser,
+                "GOOGLE",
+                failReason == null,
+                failReason,
+                buildRequestContext(request, session, request.getRequestURI(), googleLogoutRedirectUri, flowTraceId)
+        );
+        clearLogoutFlowSession(session);
         session.invalidate();
         return "redirect:/";
     }
@@ -705,16 +781,17 @@ public class AuthController {
         }
     }
 
-    private void revokeSocialAccessToken(String provider, HttpSession session) {
+    private String revokeSocialAccessToken(String provider, HttpSession session) {
         String accessToken = (String) session.getAttribute(CURRENT_SOCIAL_ACCESS_TOKEN_SESSION_KEY);
         if (!hasText(accessToken)) {
-            return;
+            return null;
         }
         if ("NAVER".equals(provider)) {
-            authService.revokeNaverAccessToken(accessToken);
+            return authService.revokeNaverAccessToken(accessToken) ? null : "TOKEN_REVOKE_FAILED";
         } else if ("GOOGLE".equals(provider)) {
-            authService.revokeGoogleAccessToken(accessToken);
+            return authService.revokeGoogleAccessToken(accessToken) ? null : "TOKEN_REVOKE_FAILED";
         }
+        return null;
     }
 
     private void clearSocialSession(HttpSession session) {
@@ -786,6 +863,79 @@ public class AuthController {
             value = "/" + value;
         }
         return value;
+    }
+
+    private String prepareLogoutFlow(HttpSession session, String provider, String callbackUri) {
+        String flowTraceId = (String) session.getAttribute(LOGOUT_FLOW_TRACE_SESSION_KEY);
+        if (!hasText(flowTraceId)) {
+            flowTraceId = UUID.randomUUID().toString();
+        }
+        session.setAttribute(LOGOUT_FLOW_TRACE_SESSION_KEY, flowTraceId);
+        session.setAttribute(LOGOUT_PROVIDER_SESSION_KEY, provider);
+        session.setAttribute(LOGOUT_CALLBACK_URI_SESSION_KEY, callbackUri);
+        session.removeAttribute(LOGOUT_FAIL_REASON_SESSION_KEY);
+        return flowTraceId;
+    }
+
+    private String getLogoutFlowTraceId(HttpSession session) {
+        String flowTraceId = (String) session.getAttribute(LOGOUT_FLOW_TRACE_SESSION_KEY);
+        return hasText(flowTraceId) ? flowTraceId : UUID.randomUUID().toString();
+    }
+
+    private void clearLogoutFlowSession(HttpSession session) {
+        session.removeAttribute(LOGOUT_FLOW_TRACE_SESSION_KEY);
+        session.removeAttribute(LOGOUT_PROVIDER_SESSION_KEY);
+        session.removeAttribute(LOGOUT_CALLBACK_URI_SESSION_KEY);
+        session.removeAttribute(LOGOUT_FAIL_REASON_SESSION_KEY);
+    }
+
+    private void setLogoutFailReason(HttpSession session, String failReason) {
+        if (hasText(failReason)) {
+            session.setAttribute(LOGOUT_FAIL_REASON_SESSION_KEY, failReason);
+        } else {
+            session.removeAttribute(LOGOUT_FAIL_REASON_SESSION_KEY);
+        }
+    }
+
+    private LoginRequestContext buildRequestContext(HttpServletRequest request,
+                                                    HttpSession session,
+                                                    String requestUri,
+                                                    String logoutCallbackUri,
+                                                    String flowTraceId) {
+        String requestId = (String) request.getAttribute(ActivityLogInterceptor.ATTR_REQUEST_ID);
+        String effectiveFlowTraceId = hasText(flowTraceId)
+                ? flowTraceId
+                : (String) request.getAttribute(ActivityLogInterceptor.ATTR_FLOW_TRACE_ID_OVERRIDE);
+        String sessionId = session != null ? session.getId() : request.getRequestedSessionId();
+
+        return LoginRequestContext.builder()
+                .ipAddress(getClientIp(request))
+                .userAgent(request.getHeader("User-Agent"))
+                .requestId(requestId)
+                .flowTraceId(hasText(effectiveFlowTraceId) ? effectiveFlowTraceId : requestId)
+                .sessionId(sessionId)
+                .requestUri(requestUri)
+                .logoutCallbackUri(logoutCallbackUri)
+                .build();
+    }
+
+    private void applyLogoutActivityContext(HttpServletRequest request,
+                                            HttpSession session,
+                                            UsersVO loginUser,
+                                            String provider,
+                                            String flowTraceId,
+                                            String activityCode) {
+        if (loginUser != null) {
+            request.setAttribute(ActivityLogInterceptor.ATTR_FORCE_USER_IDX, loginUser.getUserIdx());
+        }
+        if (session != null) {
+            request.setAttribute(ActivityLogInterceptor.ATTR_FORCE_SESSION_ID, session.getId());
+        }
+        request.setAttribute(ActivityLogInterceptor.ATTR_FLOW_TRACE_ID_OVERRIDE, flowTraceId);
+        request.setAttribute(ActivityLogInterceptor.ATTR_ACTIVITY_DOMAIN_OVERRIDE, "AUTH");
+        request.setAttribute(ActivityLogInterceptor.ATTR_ACTIVITY_PROVIDER_OVERRIDE, provider);
+        request.setAttribute(ActivityLogInterceptor.ATTR_AUTH_EVENT_TYPE_OVERRIDE, "LOGOUT");
+        request.setAttribute(ActivityLogInterceptor.ATTR_ACTIVITY_CODE_OVERRIDE, activityCode);
     }
 
     private boolean hasText(String value) {

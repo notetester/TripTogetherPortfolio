@@ -28,7 +28,7 @@
         <div class="stat-card red">
             <div class="stat-label">오늘 로그인 실패</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.todayFailedLogins}" pattern="#,###"/></div>
-            <div class="stat-sub">오늘 성공 ${stats.todayLogins}건</div>
+            <div class="stat-sub">오늘 성공 ${stats.todayLogins}건 · 로그아웃 ${stats.todayLogouts}건</div>
             <div class="stat-icon">🚨</div>
         </div>
         <div class="stat-card purple">
@@ -66,6 +66,11 @@
                     <div class="stat-value"><fmt:formatNumber value="${stats.completedInquiries}" pattern="#,###"/></div>
                     <div class="stat-sub">응답 처리 완료</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-label">오늘 로그아웃</div>
+                    <div class="stat-value"><fmt:formatNumber value="${stats.todayLogouts}" pattern="#,###"/></div>
+                    <div class="stat-sub">로컬 ${stats.todayLocalLogouts} · 카카오 ${stats.todayKakaoLogouts} · 네이버 ${stats.todayNaverLogouts} · 구글 ${stats.todayGoogleLogouts}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -101,7 +106,8 @@
         </div>
         <div class="adm-card-body" style="display:flex;gap:12px;flex-wrap:wrap;">
             <a href="${pageContext.request.contextPath}/admin/members" class="adm-btn adm-btn-primary">👥 회원 관리</a>
-            <a href="${pageContext.request.contextPath}/admin/logins?success=FAIL" class="adm-btn adm-btn-ghost">🔐 로그인 실패 보기</a>
+            <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGIN&amp;success=FAIL" class="adm-btn adm-btn-ghost">🔐 로그인 실패 보기</a>
+            <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGOUT" class="adm-btn adm-btn-ghost">↩️ 로그아웃 이력 보기</a>
             <a href="${pageContext.request.contextPath}/admin/inquiries?status=PENDING" class="adm-btn adm-btn-ghost">📩 대기 문의 보기</a>
         </div>
     </div>

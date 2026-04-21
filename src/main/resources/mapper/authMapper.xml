@@ -52,9 +52,17 @@
     <resultMap id="historyRM" type="org.triptogether.auth.vo.UserLoginHistoryVO">
         <id  property="loginIdx"        column="login_idx"/>
         <result property="userIdx"          column="user_idx"/>
+        <result property="eventType"        column="event_type"/>
         <result property="authType"         column="auth_type"/>
+        <result property="authProvider"     column="auth_provider"/>
+        <result property="authFlow"         column="auth_flow"/>
         <result property="loginMethod"      column="login_method"/>
         <result property="loginIdentifier"  column="login_identifier"/>
+        <result property="sessionId"        column="session_id"/>
+        <result property="requestUri"       column="request_uri"/>
+        <result property="logoutCallbackUri" column="logout_callback_uri"/>
+        <result property="requestId"        column="request_id"/>
+        <result property="flowTraceId"      column="flow_trace_id"/>
         <result property="success"          column="is_success"/>
         <result property="failReason"       column="fail_reason"/>
         <result property="ipAddress"        column="ip_address"/>
@@ -300,10 +308,14 @@
 
     <insert id="insertLoginHistory">
         INSERT INTO USER_LOGIN_HISTORY (
-            user_idx, auth_type, login_method, login_identifier,
+            user_idx, event_type, auth_type, auth_provider, auth_flow,
+            login_method, login_identifier, session_id, request_uri,
+            logout_callback_uri, request_id, flow_trace_id,
             is_success, fail_reason, ip_address, user_agent
         ) VALUES (
-            #{userIdx}, #{authType}, #{loginMethod}, #{loginIdentifier},
+            #{userIdx}, #{eventType}, #{authType}, #{authProvider}, #{authFlow},
+            #{loginMethod}, #{loginIdentifier}, #{sessionId}, #{requestUri},
+            #{logoutCallbackUri}, #{requestId}, #{flowTraceId},
             #{success}, #{failReason}, #{ipAddress}, #{userAgent}
         )
     </insert>

@@ -81,8 +81,9 @@ public interface AuthService {
     String getNaverAuthUrl(String state, boolean linkMode);
     String getGoogleAuthUrl(String state);
     String getGoogleAuthUrl(String state, boolean linkMode);
-    void revokeNaverAccessToken(String accessToken);
-    void revokeGoogleAccessToken(String accessToken);
+    boolean revokeNaverAccessToken(String accessToken);
+    boolean revokeGoogleAccessToken(String accessToken);
+    void recordLogoutHistory(UsersVO user, String provider, boolean success, String failReason, LoginRequestContext context);
 
     // ─── 소셜 콜백 처리 ─────────────────────────
     /**
