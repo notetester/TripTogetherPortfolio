@@ -189,6 +189,34 @@ public class AdminBlockController {
         return result;
     }
 
+    @PostMapping("/batches/{ipBlockBatchIdx}/update")
+    @ResponseBody
+    public Map<String, Object> updateBatch(@PathVariable Long ipBlockBatchIdx,
+                                           @RequestParam String batchCode,
+                                           @RequestParam String batchName,
+                                           @RequestParam String sourceType,
+                                           @RequestParam(required = false) String sourceName,
+                                           @RequestParam(defaultValue = "BLOCK") String batchRuleAction,
+                                           @RequestParam(defaultValue = "1") Integer defaultRulePriority,
+                                           @RequestParam(defaultValue = "BATCH_ONLY") String defaultDisableStrategy,
+                                           @RequestParam(defaultValue = "BATCH_ONLY") String defaultEnableStrategy,
+                                           @RequestParam(required = false) String description,
+                                           HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            adminBlockService.updateIpBlockBatch(ipBlockBatchIdx, batchCode, batchName, sourceType, sourceName,
+                    batchRuleAction, defaultRulePriority, defaultDisableStrategy, defaultEnableStrategy, description,
+                    loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", "IP 정책 배치 설정이 저장되었습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
     @PostMapping("/batches/{ipBlockBatchIdx}/toggle")
     @ResponseBody
     public Map<String, Object> toggleBatch(@PathVariable Long ipBlockBatchIdx,

@@ -529,7 +529,7 @@
                                        autocomplete="off"
                                        required>
                                 <div class="field-msg">
-                                    대표 목적지는 자유 입력 가능하지만, 방문 여행지를 저장하려면 SPOT_TRAVEL에 등록된 도시명과 일치하는 값이 안전해요.
+                                    대표 목적지는 자유롭게 입력할 수 있어요. SPOT_TRAVEL과 일치하면 spot_id가 연결될 수 있고, 아니면 장소명만 저장돼요.
                                 </div>
                             </div>
 
@@ -952,73 +952,62 @@
     });
 
     if (formEl) {
-        formEl.addEventListener("submit", function (e) {
-            refreshSpotIndexes();
+    formEl.addEventListener("submit", function (e) {
+        refreshSpotIndexes();
 
-            const items = spotListEl.querySelectorAll(".spot-item");
-            if (items.length === 0) {
-                alert("최소 1개의 방문 여행지를 입력해 주세요.");
+        const items = spotListEl.querySelectorAll(".spot-item");
+        if (items.length === 0) {
+            alert("최소 1개의 방문 여행지를 입력해 주세요.");
+            e.preventDefault();
+            return;
+        }
+
+
+        const duplicateCheck = new Set();
+
+        for (const item of items) {
+            const placeInput = item.querySelector('[data-field="place_name"]');
+            const visitDateInput = item.querySelector('[data-field="visit_date"]');
+            const visitOrderInput = item.querySelector('[data-field="visit_order"]');
+
+            const placeName = placeInput.value.trim();
+            const visitDate = visitDateInput.value;
+            const visitOrder = visitOrderInput.value.trim();
+
+            if (!placeName) {
+                alert("장소명을 입력해 주세요.");
+                placeInput.focus();
                 e.preventDefault();
                 return;
             }
 
-            const matchedCity = findCityByName(destinationEl.value);
-
-            if (!matchedCity) {
-                alert("방문 여행지를 저장하려면 대표 목적지는 SPOT_TRAVEL에 등록된 도시명과 일치해야 해요.");
-                destinationEl.focus();
+            if (!visitDate) {
+                alert("방문일을 입력해 주세요.");
+                visitDateInput.focus();
                 e.preventDefault();
                 return;
             }
 
-            const duplicateCheck = new Set();
-
-            for (const item of items) {
-                const spotIdInput = item.querySelector('[data-field="spot_id"]');
-                const placeInput = item.querySelector('[data-field="place_name"]');
-                const visitDateInput = item.querySelector('[data-field="visit_date"]');
-                const visitOrderInput = item.querySelector('[data-field="visit_order"]');
-
-                const placeName = placeInput.value.trim();
-                const visitDate = visitDateInput.value;
-                const visitOrder = visitOrderInput.value.trim();
-
-                if (!placeName) {
-                    alert("장소명을 입력해 주세요.");
-                    placeInput.focus();
-                    e.preventDefault();
-                    return;
-                }
-
-                if (!visitDate) {
-                    alert("방문일을 입력해 주세요.");
-                    visitDateInput.focus();
-                    e.preventDefault();
-                    return;
-                }
-
-                if (!visitOrder || Number(visitOrder) < 1) {
-                    alert("방문 순서는 1 이상의 숫자로 입력해 주세요.");
-                    visitOrderInput.focus();
-                    e.preventDefault();
-                    return;
-                }
-
-                const duplicateKey = visitDate + "__" + visitOrder;
-                if (duplicateCheck.has(duplicateKey)) {
-                    alert("같은 날짜에는 동일한 방문 순서를 사용할 수 없어요.");
-                    visitOrderInput.focus();
-                    e.preventDefault();
-                    return;
-                }
-                duplicateCheck.add(duplicateKey);
-
-                if (spotIdInput) {
-                    spotIdInput.value = matchedCity.spotId;
-                }
+            if (!visitOrder || Number(visitOrder) < 1) {
+                alert("방문 순서는 1 이상의 숫자로 입력해 주세요.");
+                visitOrderInput.focus();
+                e.preventDefault();
+                return;
             }
-        });
-    }
+
+            const duplicateKey = visitDate + "__" + visitOrder;
+            if (duplicateCheck.has(duplicateKey)) {
+                alert("같은 날짜에는 동일한 방문 순서를 사용할 수 없어요.");
+                visitOrderInput.focus();
+                e.preventDefault();
+                return;
+            }
+            duplicateCheck.add(duplicateKey);
+
+        }
+    });
+}
+
 
     refreshSpotIndexes();
     updateSpotFilter();
