@@ -28,6 +28,22 @@ public class AdminBlockController {
         return "admin/block/list";
     }
 
+
+    @GetMapping("/histories/{historyBlockIdx}/current-setting")
+    @ResponseBody
+    public Map<String, Object> findCurrentSettingByHistory(@PathVariable Long historyBlockIdx,
+                                                           @RequestParam(required = false) String currentType) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminBlockService.findCurrentSettingByHistory(historyBlockIdx, currentType));
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
     @PostMapping("/ip-rules")
     @ResponseBody
     public Map<String, Object> createIpRule(@RequestParam String matchType,

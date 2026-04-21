@@ -26,4 +26,5 @@ public interface AdminBlockService {
     void returnIpRuleToBatchControl(Long ipBlocklistIdx, Long actorUserIdx);
     void updateUserBlock(Long blockIdx, boolean active, String reason, LocalDateTime expiresAt, Long actorUserIdx);
     void releaseUserBlock(String blockTargetKey, Long actorUserIdx);
+    Map<String, Object> findCurrentSettingByHistory(Long historyBlockIdx, String currentType);
 }
