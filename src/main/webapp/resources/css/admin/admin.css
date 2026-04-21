@@ -202,6 +202,23 @@ body {
 }
 .adm-card-body { padding: 20px; }
 
+/* 카드 내부 로컬 툴바 (블록 관리 섹션 공용) */
+.adm-local-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    flex-wrap: wrap;
+}
+.adm-local-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.adm-local-toolbar-group .adm-input { flex: 1 1 240px; min-width: 200px; }
+
 /* ══════════════════════════════════════════
    통계 카드
 ══════════════════════════════════════════ */

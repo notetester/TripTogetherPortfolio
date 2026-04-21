@@ -143,7 +143,7 @@
             <div class="adm-card-sub">최근 항목을 빠르게 훑고 바로 모달에서 조정할 수 있습니다.</div>
         </div>
         <div class="adm-card-body">
-            <div class="adm-kpi-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;">
+            <div class="adm-kpi-grid" style="display:grid;grid-template-columns:1fr;row-gap:28px;">
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
                         <div class="adm-card-title" style="font-size:15px;">최근 회원 차단</div>
