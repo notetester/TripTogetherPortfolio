@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<%@ include file="../common/header.jsp" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -94,8 +97,13 @@
     }
 
     .btn-area {
+      display: flex;
+      justify-content: center;
       margin-top: 30px;
-      text-align: right;
+    }
+
+    .btn-area.full {
+      grid-column: 1 / 3;
     }
 
     .submit-btn {
@@ -207,11 +215,14 @@
         </div>
       </div>
 
-      <div class="btn-area">
+      <div class="btn-area full">
         <button type="submit" class="submit-btn">AI 일정 생성</button>
       </div>
+
     </div>
   </form>
 </div>
+
+<%@ include file="../common/footer.jsp" %>
 </body>
 </html>
