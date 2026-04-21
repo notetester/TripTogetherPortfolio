@@ -1251,11 +1251,13 @@ public class AuthServiceImpl implements AuthService {
     public UsersVO completeSocialRegister(SocialTempVO temp, String nickname,
                                           String nationality, String preferredLang,
                                           HttpServletRequest request) {
-        // 회원 생성 (비밀번호 없음)
+        // 소셜 가입은 소셜 로그인 수단만 생성한다.
+        // 이메일은 사용자 본인이 별도로 등록/인증해야만 공식 로그인 수단이 된다.
         UsersVO newUser = UsersVO.builder()
-                .userEmail(temp.getEmail())
+                .userEmail(null)
                 .passwordEnabled(false)
-                .emailVerified(temp.getEmail() != null) // 소셜 이메일은 일단 인증된 것으로
+                .emailVerified(false)
+                .emailLoginEnabled(false)
                 .nickname(nickname)
                 .nationality(nationality)
                 .preferredLang(preferredLang)

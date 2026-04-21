@@ -39,6 +39,10 @@
       </div>
     </c:if>
 
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;font-size:13px;color:#1d4ed8;line-height:1.6;margin-bottom:16px;">
+      <spring:message code="auth.social.emailNotice"/>
+    </div>
+
     <div id="socialCompleteError" class="auth-error-banner"></div>
 
     <div class="form-group">
