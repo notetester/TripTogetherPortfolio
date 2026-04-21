@@ -244,6 +244,15 @@
         <result property="destinationAirportCode" column="destination_airport_code"/>
         <result property="departureTime"        column="departure_time"/>
         <result property="arrivalTime"          column="arrival_time"/>
+        <result property="tripType"             column="trip_type"/>
+        <result property="returnAirlineName"    column="return_airline_name"/>
+        <result property="returnFlightNo"       column="return_flight_no"/>
+        <result property="returnOriginAirportCode" column="return_origin_airport_code"/>
+        <result property="returnDestinationAirportCode" column="return_destination_airport_code"/>
+        <result property="returnDepartureTime"  column="return_departure_time"/>
+        <result property="returnArrivalTime"    column="return_arrival_time"/>
+        <result property="outboundPrice"        column="outbound_price"/>
+        <result property="returnPrice"          column="return_price"/>
         <result property="totalPrice"           column="total_price"/>
         <result property="usedCash"             column="used_cash"/>
         <result property="usedMileage"          column="used_mileage"/>
@@ -326,6 +335,15 @@
             fps.destination_airport_code,
             fps.departure_time,
             fps.arrival_time,
+            fps.trip_type,
+            fps.return_airline_name,
+            fps.return_flight_no,
+            fps.return_origin_airport_code,
+            fps.return_destination_airport_code,
+            fps.return_departure_time,
+            fps.return_arrival_time,
+            fps.outbound_price,
+            fps.return_price,
             fps.total_price,
             fps.used_cash,
             fps.used_mileage,

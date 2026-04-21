@@ -110,6 +110,13 @@ html { scrollbar-gutter: stable; }
 .flight-modal-sub { font-size:13px; color:var(--gray-500); line-height:1.5; }
 .flight-modal-close { border:0; background:none; font-size:24px; color:var(--gray-400); cursor:pointer; line-height:1; }
 .flight-modal-body { padding:24px 26px 28px; }
+.flight-date-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+.flight-date-field { display:flex; flex-direction:column; gap:7px; }
+.flight-date-field label { font-size:12px; font-weight:800; color:var(--gray-600); }
+.flight-date-field input {
+  width:100%; box-sizing:border-box; border:1.5px solid var(--gray-200);
+  border-radius:10px; padding:10px 12px; font-family:inherit; font-weight:700; color:var(--gray-800);
+}
 .flight-offer-list { display:grid; gap:12px; margin-bottom:22px; }
 .flight-offer-card {
   border:1.5px solid var(--gray-200); border-radius:14px; padding:16px;
@@ -138,6 +145,9 @@ html { scrollbar-gutter: stable; }
 .flight-pay-btn.secondary { background:#fff; color:var(--gray-700); border:1px solid var(--gray-200); }
 .flight-pay-btn.primary { background:var(--blue); color:#fff; }
 .flight-pay-msg { margin-top:12px; font-size:13px; color:var(--gray-600); min-height:18px; }
+@media (max-width:640px) {
+  .flight-date-grid { grid-template-columns:1fr; }
+}
 
 /* 리뷰 요약 헤더 */
 .review-summary-wrap {
@@ -703,7 +713,7 @@ html { scrollbar-gutter: stable; }
             <span>
               <span class="flight-chip-label">서울 출발 최저가</span>
               <span class="flight-chip-price">
-                <fmt:formatNumber value="${lowestFlightOffer.totalPrice}" pattern="#,##0"/> C
+                  <fmt:formatNumber value="${lowestFlightOffer.finalPrice}" pattern="#,##0"/> C
               </span>
             </span>
           </button>
@@ -726,13 +736,32 @@ html { scrollbar-gutter: stable; }
           <button type="button" class="flight-modal-close" id="closeFlightModalBtn" aria-label="닫기">×</button>
         </div>
         <div class="flight-modal-body">
+          <div class="flight-date-grid">
+            <div class="flight-date-field">
+              <label for="flightDepartureDate">출발일</label>
+              <input type="date" id="flightDepartureDate">
+            </div>
+            <div class="flight-date-field">
+              <label for="flightReturnDate">귀국일</label>
+              <input type="date" id="flightReturnDate">
+            </div>
+          </div>
+
           <div class="flight-offer-list" id="flightOfferList">
             <div class="flight-pay-msg">항공권 정보를 불러오는 중입니다.</div>
           </div>
 
           <div class="flight-pay-box">
             <div class="flight-pay-row">
-              <span>결제 금액</span>
+              <span>할인 전 금액</span>
+              <strong id="flightOriginalPrice">-</strong>
+            </div>
+            <div class="flight-pay-row">
+              <span>등급 할인</span>
+              <strong id="flightGradeDiscount">-</strong>
+            </div>
+            <div class="flight-pay-row">
+              <span>최종 결제 금액</span>
               <strong id="flightTotalPrice">-</strong>
             </div>
             <div class="flight-pay-row">
@@ -1555,12 +1584,16 @@ html { scrollbar-gutter: stable; }
   var openBtn = document.getElementById('openFlightModalBtn');
   var closeBtn = document.getElementById('closeFlightModalBtn');
   var offerList = document.getElementById('flightOfferList');
+  var originalPriceEl = document.getElementById('flightOriginalPrice');
+  var gradeDiscountEl = document.getElementById('flightGradeDiscount');
   var totalPriceEl = document.getElementById('flightTotalPrice');
   var cashBalanceEl = document.getElementById('flightCashBalance');
   var mileageBalanceEl = document.getElementById('flightMileageBalance');
   var mileageLimitText = document.getElementById('flightMileageLimitText');
   var mileageInput = document.getElementById('flightMileageInput');
   var cashInput = document.getElementById('flightCashInput');
+  var departureDateInput = document.getElementById('flightDepartureDate');
+  var returnDateInput = document.getElementById('flightReturnDate');
   var useMaxMileageBtn = document.getElementById('flightUseMaxMileageBtn');
   var purchaseBtn = document.getElementById('flightPurchaseBtn');
   var messageEl = document.getElementById('flightPayMessage');
@@ -1573,8 +1606,62 @@ html { scrollbar-gutter: stable; }
   var offers = [];
   var selectedOffer = null;
 
+  function toDateValue(date) {
+    var year = date.getFullYear();
+    var month = String(date.getMonth() + 1).padStart(2, '0');
+    var day = String(date.getDate()).padStart(2, '0');
+    return year + '-' + month + '-' + day;
+  }
+
+  function initializeDateInputs() {
+    if (!departureDateInput || !returnDateInput) return;
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    var defaultDeparture = new Date();
+    defaultDeparture.setDate(defaultDeparture.getDate() + 14);
+    var defaultReturn = new Date();
+    defaultReturn.setDate(defaultReturn.getDate() + 19);
+    departureDateInput.min = toDateValue(tomorrow);
+    departureDateInput.value = toDateValue(defaultDeparture);
+    returnDateInput.min = toDateValue(new Date(defaultDeparture.getTime() + 24 * 60 * 60 * 1000));
+    returnDateInput.value = toDateValue(defaultReturn);
+  }
+
+  function getSelectedDates() {
+    return {
+      departureDate: departureDateInput ? departureDateInput.value : '',
+      returnDate: returnDateInput ? returnDateInput.value : ''
+    };
+  }
+
+  function validateSelectedDates() {
+    var dates = getSelectedDates();
+    if (!dates.departureDate || !dates.returnDate) {
+      messageEl.textContent = '출발일과 귀국일을 선택해주세요.';
+      return false;
+    }
+    if (dates.returnDate <= dates.departureDate) {
+      messageEl.textContent = '귀국일은 출발일 이후 날짜로 선택해주세요.';
+      return false;
+    }
+    return true;
+  }
+
   function formatMoney(value, suffix) {
     return Number(value || 0).toLocaleString('ko-KR') + ' ' + suffix;
+  }
+
+  function getFinalPrice(offer) {
+    return Number(offer.finalPrice || offer.totalPrice || 0);
+  }
+
+  function getDiscountText(offer) {
+    var discountRate = Number(offer.discountRate || 0);
+    var discountAmount = Number(offer.discountAmount || 0);
+    if (discountRate <= 0 || discountAmount <= 0) {
+      return '할인 없음';
+    }
+    return escapeHtml(offer.memberGrade || 'BRONZE') + ' ' + discountRate.toFixed(2) + '% · -' + formatMoney(discountAmount, 'C');
   }
 
   function formatDateTime(value) {
@@ -1618,10 +1705,14 @@ html { scrollbar-gutter: stable; }
   }
 
   function loadOffers() {
+    if (!validateSelectedDates()) return;
     if (offers.length > 0) return;
+    var dates = getSelectedDates();
     offerList.innerHTML = '<div class="flight-pay-msg">항공권 정보를 불러오는 중입니다.</div>';
 
-    fetch(ctx + '/flight/offers?spotIdx=' + encodeURIComponent(spotIdx))
+    fetch(ctx + '/flight/offers?spotIdx=' + encodeURIComponent(spotIdx)
+      + '&departureDate=' + encodeURIComponent(dates.departureDate)
+      + '&returnDate=' + encodeURIComponent(dates.returnDate))
       .then(function (res) { return res.json(); })
       .then(function (data) {
         if (!data.success || !data.available || !data.offers || data.offers.length === 0) {
@@ -1646,7 +1737,7 @@ html { scrollbar-gutter: stable; }
         '      <div class="flight-airline">' + escapeHtml(offer.airlineName) + '</div>',
         '      <div class="flight-no">' + escapeHtml(offer.flightNo) + ' · ' + escapeHtml(offer.seatClass) + '</div>',
         '    </div>',
-        '    <div class="flight-price">' + formatMoney(offer.totalPrice, 'C') + '</div>',
+        '    <div class="flight-price">' + formatMoney(getFinalPrice(offer), 'C') + '</div>',
         '  </div>',
         '  <div class="flight-route">',
         '    <strong>' + escapeHtml(offer.originAirportCode) + '</strong>',
@@ -1654,7 +1745,8 @@ html { scrollbar-gutter: stable; }
         '    <strong>' + escapeHtml(offer.destinationAirportCode) + '</strong>',
         '    <span>' + escapeHtml(offer.durationText) + '</span>',
         '  </div>',
-        '  <div class="flight-no">' + formatDateTime(offer.departureTime) + ' 출발 · ' + formatDateTime(offer.arrivalTime) + ' 도착</div>',
+        '  <div class="flight-no">가는 편 ' + formatDateTime(offer.departureTime) + ' 출발 · ' + formatDateTime(offer.arrivalTime) + ' 도착</div>',
+        '  <div class="flight-no">오는 편 ' + escapeHtml(offer.returnOriginAirportCode) + ' → ' + escapeHtml(offer.returnDestinationAirportCode) + ' · ' + formatDateTime(offer.returnDepartureTime) + ' 출발 · ' + formatDateTime(offer.returnArrivalTime) + ' 도착</div>',
         '</div>'
       ].join('');
     }).join('');
@@ -1674,7 +1766,9 @@ html { scrollbar-gutter: stable; }
       card.classList.toggle('active', card.dataset.offerId === offerId);
     });
 
-    totalPriceEl.textContent = formatMoney(selectedOffer.totalPrice, 'C');
+    originalPriceEl.textContent = formatMoney(selectedOffer.totalPrice, 'C');
+    gradeDiscountEl.textContent = getDiscountText(selectedOffer);
+    totalPriceEl.textContent = formatMoney(getFinalPrice(selectedOffer), 'C');
     mileageLimitText.textContent = '(최대 ' + formatMoney(selectedOffer.maxMileageUse, 'M') + ')';
     mileageInput.max = Math.min(selectedOffer.maxMileageUse, mileageBalance);
     mileageInput.value = 0;
@@ -1690,7 +1784,7 @@ html { scrollbar-gutter: stable; }
       mileage = maxMileage;
       mileageInput.value = mileage;
     }
-    cashInput.value = selectedOffer.totalPrice - mileage;
+    cashInput.value = getFinalPrice(selectedOffer) - mileage;
   }
 
   function purchaseFlight() {
@@ -1702,9 +1796,11 @@ html { scrollbar-gutter: stable; }
       messageEl.textContent = '구매할 항공권을 선택해주세요.';
       return;
     }
+    if (!validateSelectedDates()) return;
 
     var mileageAmount = Number(mileageInput.value || 0);
     var cashAmount = Number(cashInput.value || 0);
+    var dates = getSelectedDates();
     if (cashAmount > cashBalance) {
       messageEl.textContent = '캐시 잔액이 부족합니다.';
       return;
@@ -1719,6 +1815,8 @@ html { scrollbar-gutter: stable; }
       body: JSON.stringify({
         spotIdx: Number(spotIdx),
         offerId: selectedOffer.offerId,
+        departureDate: dates.departureDate,
+        returnDate: dates.returnDate,
         cashAmount: cashAmount,
         mileageAmount: mileageAmount
       })
@@ -1760,8 +1858,26 @@ html { scrollbar-gutter: stable; }
     mileageInput.value = Math.min(selectedOffer.maxMileageUse, mileageBalance);
     updateCashAmount();
   });
+  departureDateInput && departureDateInput.addEventListener('change', function () {
+    if (!departureDateInput.value || !returnDateInput) return;
+    var nextReturnDate = new Date(departureDateInput.value);
+    nextReturnDate.setDate(nextReturnDate.getDate() + 1);
+    returnDateInput.min = toDateValue(nextReturnDate);
+    if (returnDateInput.value <= departureDateInput.value) {
+      returnDateInput.value = toDateValue(nextReturnDate);
+    }
+    offers = [];
+    selectedOffer = null;
+    loadOffers();
+  });
+  returnDateInput && returnDateInput.addEventListener('change', function () {
+    offers = [];
+    selectedOffer = null;
+    loadOffers();
+  });
   purchaseBtn && purchaseBtn.addEventListener('click', purchaseFlight);
 
+  initializeDateInputs();
   window.openFlightTicketModal = openFlightModal;
 })();
 </script>

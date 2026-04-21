@@ -634,6 +634,12 @@
                                             <fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/>
                                             출발
                                         </span>
+                                        <span>${booking.returnAirlineName} · ${booking.returnFlightNo}</span>
+                                        <span>${booking.returnOriginAirportCode} → ${booking.returnDestinationAirportCode}</span>
+                                        <span>
+                                            <fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/>
+                                            귀국
+                                        </span>
                                         <span>
                                             총액 <fmt:formatNumber value="${booking.totalPrice}" pattern="#,##0"/> C
                                         </span>

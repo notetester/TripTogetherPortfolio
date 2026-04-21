@@ -22,7 +22,16 @@ public class MyPageFlightBookingDto {
     private String destinationAirportCode;
     private Date departureTime;
     private Date arrivalTime;
+    private String tripType;
+    private String returnAirlineName;
+    private String returnFlightNo;
+    private String returnOriginAirportCode;
+    private String returnDestinationAirportCode;
+    private Date returnDepartureTime;
+    private Date returnArrivalTime;
 
+    private long outboundPrice;
+    private long returnPrice;
     private long totalPrice;
     private long usedCash;
     private long usedMileage;
