@@ -2318,8 +2318,7 @@ async function fetchHistoryCurrentSetting(button) {
     const historyId = button.dataset.historyId;
     if (!historyId) return null;
 
-    const url = CTX + '/admin/blocks/histories/' + encodeURIComponent(historyId)
-        + '/current-setting?currentType=' + encodeURIComponent(button.dataset.currentType || '');
+    const url = CTX + '/admin/blocks/histories/' + encodeURIComponent(historyId) + '/current-setting';
     const res = await fetch(url, {
         headers: {'X-Requested-With': 'XMLHttpRequest'}
     });
@@ -2339,42 +2338,6 @@ function buildHistoryCurrentButton(sourceButton, data) {
 }
 
 async function openHistoryCurrent(button) {
-    const currentType = button.dataset.currentType;
-    const targetKey = button.dataset.targetKey || '';
-    const ruleAction = button.dataset.ruleAction || '';
-    const batchId = button.dataset.batchId || '';
-
-    if (currentType === 'BATCH' && batchId) {
-        const batchButton = findFirstButton('.js-open-batch-editor', function (candidate) {
-            return candidate.dataset.batchId === batchId && candidate.dataset.sourceType;
-        });
-        if (batchButton) {
-            openBatchEditor(batchButton);
-            return;
-        }
-    }
-
-    if (currentType === 'USER_BLOCK') {
-        const userButton = findFirstButton('.js-open-user-block-editor', function (candidate) {
-            return candidate.dataset.targetKey === targetKey;
-        });
-        if (userButton) {
-            openUserBlockEditor(userButton);
-            return;
-        }
-    }
-
-    const ruleButton = findFirstButton('.js-open-ip-rule-editor', function (candidate) {
-        const sameTarget = candidate.dataset.targetKey === targetKey;
-        const sameAction = !ruleAction || candidate.dataset.ruleAction === ruleAction;
-        const sameBatch = batchId ? candidate.dataset.batchId === batchId : true;
-        return sameTarget && sameAction && sameBatch;
-    });
-    if (ruleButton) {
-        openIpRuleEditor(ruleButton);
-        return;
-    }
-
     try {
         const response = await fetchHistoryCurrentSetting(button);
         if (response && response.found && response.data) {

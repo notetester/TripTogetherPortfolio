@@ -912,6 +912,45 @@ public class AuthServiceImpl implements AuthService {
                 + "&state=" + encode(state);
     }
 
+    @Override
+    public void revokeNaverAccessToken(String accessToken) {
+        if (accessToken == null || accessToken.isBlank()) {
+            return;
+        }
+        try {
+            String url = "https://nid.naver.com/oauth2.0/token"
+                    + "?grant_type=delete"
+                    + "&client_id=" + naverClientId
+                    + "&client_secret=" + naverClientSecret
+                    + "&access_token=" + encode(accessToken);
+            restTemplate.getForObject(url, String.class);
+        } catch (Exception e) {
+            log.warn("[Naver] access token revoke 실패", e);
+        }
+    }
+
+    @Override
+    public void revokeGoogleAccessToken(String accessToken) {
+        if (accessToken == null || accessToken.isBlank()) {
+            return;
+        }
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("token", accessToken);
+
+            restTemplate.postForEntity(
+                    "https://oauth2.googleapis.com/revoke",
+                    new HttpEntity<>(params, headers),
+                    String.class
+            );
+        } catch (Exception e) {
+            log.warn("[Google] access token revoke 실패", e);
+        }
+    }
+
     // ════════════════════════════════════════════
     // 소셜 콜백 처리
     // ════════════════════════════════════════════
@@ -926,6 +965,7 @@ public class AuthServiceImpl implements AuthService {
             //    - 이 code 자체로는 사용자 정보를 바로 조회할 수 없고,
             //      반드시 access token으로 교환해야 한다.
             String token = getKakaoAccessToken(code);
+            request.setAttribute("socialAccessToken", token);
 
             // 2) 발급받은 access token으로 카카오 사용자 정보를 조회한다.
             //    - 여기서 받아오는 info는 카카오가 내려주는 JSON 전체 객체다.
@@ -996,6 +1036,7 @@ public class AuthServiceImpl implements AuthService {
             //    - 네이버는 보안 검증용으로 state도 함께 사용한다.
             //    - 사용자가 네이버 로그인 후 돌아오면 code와 state를 함께 받는다.
             String token = getNaverAccessToken(code, state);
+            request.setAttribute("socialAccessToken", token);
 
             // 2) access token으로 네이버 사용자 정보를 조회한다.
             //    - 네이버 응답은 보통 최상위에 response라는 객체가 있고,
@@ -1043,6 +1084,7 @@ public class AuthServiceImpl implements AuthService {
             //    - 구글도 OAuth2 방식이므로
             //      code -> token -> user info 조회 순서로 진행된다.
             String token = getGoogleAccessToken(code);
+            request.setAttribute("socialAccessToken", token);
 
             // 2) access token으로 구글 사용자 정보 조회
             //    - 구글은 보통 sub, email, name 등의 값을 포함한 JSON을 준다.

@@ -28,6 +28,8 @@ public class AdminBlockHistoryVO {
     private LocalDateTime expiresAt;
     private String blockRequestId;
     private String blockTargetKey;
+    private Long userBlocklistIdx;
+    private Long ipBlocklistIdx;
     private String historyKind;
     private String blockScope;
     private String ipMatchType;

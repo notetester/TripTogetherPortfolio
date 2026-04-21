@@ -483,6 +483,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         AdminBlockHistoryVO history = new AdminBlockHistoryVO();
         history.setBlockRequestId(requestId);
         history.setBlockTargetKey(current.getBlockTargetKey());
+        history.setUserBlocklistIdx(current.getBlockIdx());
         history.setRuleAction("BLOCK");
         history.setControlMode("MANUAL");
         history.setOperationSource("ADMIN");
@@ -559,7 +560,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     }
 
     @Override
-    public Map<String, Object> findCurrentSettingByHistory(Long historyBlockIdx, String currentType) {
+    public Map<String, Object> findCurrentSettingByHistory(Long historyBlockIdx) {
         if (historyBlockIdx == null) {
             throw new IllegalArgumentException("차단 이력 식별자가 필요합니다.");
         }
@@ -569,7 +570,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
             throw new IllegalArgumentException("차단 이력을 찾을 수 없습니다.");
         }
 
-        String resolvedType = safeUpper(currentType, resolveCurrentType(history));
+        String resolvedType = resolveCurrentType(history);
         Map<String, Object> result = new HashMap<>();
         result.put("found", false);
         result.put("currentType", resolvedType);
@@ -588,9 +589,15 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         }
 
         if ("USER_BLOCK".equals(resolvedType)) {
-            AdminUserBlockVO block = adminBlockMapper.findUserBlockByTargetKey(history.getBlockTargetKey());
-            if (block == null && history.getUserIdx() != null) {
-                block = adminBlockMapper.findLatestActiveUserBlockByUserIdx(history.getUserIdx());
+            AdminUserBlockVO block = history.getUserBlocklistIdx() != null
+                    ? adminBlockMapper.findUserBlockById(history.getUserBlocklistIdx())
+                    : null;
+            if (block == null) {
+                block = adminBlockMapper.findCurrentUserBlockByHistoryLink(
+                        historyBlockIdx,
+                        history.getBlockRequestId(),
+                        history.getBlockTargetKey()
+                );
             }
             if (block == null) {
                 return result;
@@ -600,11 +607,19 @@ public class AdminBlockServiceImpl implements AdminBlockService {
             return result;
         }
 
-        AdminIpBlockVO rule = adminBlockMapper.findCurrentIpRuleByTarget(
-                history.getBlockTargetKey(),
-                history.getRuleAction(),
-                history.getIpBlockBatchIdx()
-        );
+        AdminIpBlockVO rule = history.getIpBlocklistIdx() != null
+                ? adminBlockMapper.findIpBlockById(history.getIpBlocklistIdx())
+                : null;
+        if (rule == null) {
+            rule = adminBlockMapper.findCurrentIpRuleByHistoryLink(
+                    historyBlockIdx,
+                    history.getBlockRequestId(),
+                    history.getBlockTargetKey(),
+                    history.getRuleAction(),
+                    history.getIpBlockBatchIdx(),
+                    history.getBlockScope()
+            );
+        }
         if (rule == null) {
             return result;
         }
@@ -660,6 +675,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         AdminBlockHistoryVO history = new AdminBlockHistoryVO();
         history.setBlockRequestId(after.getBlockRequestId());
         history.setBlockTargetKey(after.getBlockTargetKey());
+        history.setIpBlocklistIdx(after.getIpBlocklistIdx());
         history.setRuleAction(after.getRuleAction());
         history.setControlMode(after.getControlMode());
         history.setOperationSource(operationSource);

@@ -31,11 +31,10 @@ public class AdminBlockController {
 
     @GetMapping("/histories/{historyBlockIdx}/current-setting")
     @ResponseBody
-    public Map<String, Object> findCurrentSettingByHistory(@PathVariable Long historyBlockIdx,
-                                                           @RequestParam(required = false) String currentType) {
+    public Map<String, Object> findCurrentSettingByHistory(@PathVariable Long historyBlockIdx) {
         Map<String, Object> result = new HashMap<>();
         try {
-            result.putAll(adminBlockService.findCurrentSettingByHistory(historyBlockIdx, currentType));
+            result.putAll(adminBlockService.findCurrentSettingByHistory(historyBlockIdx));
             result.put("success", true);
         } catch (Exception e) {
             result.put("success", false);
