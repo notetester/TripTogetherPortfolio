@@ -41,6 +41,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/auth")
 public class AuthController {
 
+    private static final String CURRENT_SOCIAL_PROVIDER_SESSION_KEY = "currentSocialProvider";
+    private static final String CURRENT_SOCIAL_ACCESS_TOKEN_SESSION_KEY = "currentSocialAccessToken";
+    private static final String SOCIAL_ACCESS_TOKEN_REQUEST_KEY = "socialAccessToken";
+
     private final AuthService authService;
     private final SuperAdminMapper superAdminMapper;
 
@@ -63,15 +67,9 @@ public class AuthController {
             return "redirect:/";
         }
 
-        // 네이버 / 구글 state 는 CSRF 방지를 위해 세션에 저장한다.
-        String state = UUID.randomUUID().toString();
-        session.setAttribute("oauthState", state);
-
         model.addAttribute("redirect", safeRedirect(redirect));
         model.addAttribute("errorMsg", errorMsg);
-        model.addAttribute("kakaoAuthUrl", authService.getKakaoAuthUrl(false));
-        model.addAttribute("naverAuthUrl", authService.getNaverAuthUrl(state, false));
-        model.addAttribute("googleAuthUrl", authService.getGoogleAuthUrl(state, false));
+        prepareSocialAuthUrls(session, model);
         return "auth/login";
     }
 
@@ -122,7 +120,7 @@ public class AuthController {
         }
 
         session.setAttribute("loginUser", user);
-        session.removeAttribute("currentSocialProvider");
+        clearSocialSession(session);
         loadAdminPermissions(session, user);
         result.put("success", true);
         result.put("redirect", resolveLoginRedirect(request, safeRedirect(redirect)));
@@ -157,9 +155,15 @@ public class AuthController {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        String currentSocialProvider = (String) session.getAttribute("currentSocialProvider");
+        String currentSocialProvider = (String) session.getAttribute(CURRENT_SOCIAL_PROVIDER_SESSION_KEY);
         if ("KAKAO".equals(currentSocialProvider)) {
             return "redirect:/auth/kakao/logout";
+        }
+        if ("NAVER".equals(currentSocialProvider)) {
+            return "redirect:/auth/naver/logout";
+        }
+        if ("GOOGLE".equals(currentSocialProvider)) {
+            return "redirect:/auth/google/logout";
         }
 
         session.invalidate();
@@ -186,15 +190,40 @@ public class AuthController {
         return "redirect:/";
     }
 
+    @GetMapping("/naver/logout")
+    public String naverLogout(HttpSession session) {
+        revokeSocialAccessToken("NAVER", session);
+        return "redirect:/auth/naver/logout/callback";
+    }
+
+    @GetMapping("/naver/logout/callback")
+    public String naverLogoutCallback(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
+
+    @GetMapping("/google/logout")
+    public String googleLogout(HttpSession session) {
+        revokeSocialAccessToken("GOOGLE", session);
+        return "redirect:/auth/google/logout/callback";
+    }
+
+    @GetMapping("/google/logout/callback")
+    public String googleLogoutCallback(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
+
     // ════════════════════════════════════════════
     // 회원가입
     // ════════════════════════════════════════════
 
     @GetMapping("/register")
-    public String registerPage(HttpSession session) {
+    public String registerPage(HttpSession session, Model model) {
         if (session.getAttribute("loginUser") != null) {
             return "redirect:/";
         }
+        prepareSocialAuthUrls(session, model);
         return "auth/register";
     }
 
@@ -232,7 +261,7 @@ public class AuthController {
 
         authService.register(newUser);
         session.setAttribute("loginUser", newUser);
-        session.removeAttribute("currentSocialProvider");
+        clearSocialSession(session);
 
         result.put("success", true);
         result.put("redirect", request.getContextPath() + "/");
@@ -404,8 +433,6 @@ public class AuthController {
 
     @GetMapping("/kakao")
     public String kakaoLogin(HttpSession session) {
-        String state = UUID.randomUUID().toString();
-        session.setAttribute("oauthState", state);
         return "redirect:" + authService.getKakaoAuthUrl(false);
     }
 
@@ -414,7 +441,7 @@ public class AuthController {
                                 HttpServletRequest request,
                                 HttpSession session,
                                 RedirectAttributes ra) {
-        return handleSocialCallback("KAKAO", authService.handleKakaoCallback(code, request), session, ra);
+        return handleSocialCallback("KAKAO", authService.handleKakaoCallback(code, request), request, session, ra);
     }
 
     // ════════════════════════════════════════════
@@ -423,8 +450,7 @@ public class AuthController {
 
     @GetMapping("/naver")
     public String naverLogin(HttpSession session) {
-        String state = UUID.randomUUID().toString();
-        session.setAttribute("oauthState", state);
+        String state = issueOauthState(session, "NAVER", false);
         return "redirect:" + authService.getNaverAuthUrl(state, false);
     }
 
@@ -434,12 +460,11 @@ public class AuthController {
                                 HttpServletRequest request,
                                 HttpSession session,
                                 RedirectAttributes ra) {
-        String savedState = (String) session.getAttribute("oauthState");
-        if (savedState == null || !savedState.equals(state)) {
+        if (!consumeOauthState(session, "NAVER", false, state)) {
             ra.addFlashAttribute("errorMsg", "잘못된 접근입니다.");
             return "redirect:/auth/login";
         }
-        return handleSocialCallback("NAVER", authService.handleNaverCallback(code, state, request), session, ra);
+        return handleSocialCallback("NAVER", authService.handleNaverCallback(code, state, request), request, session, ra);
     }
 
     // ════════════════════════════════════════════
@@ -448,8 +473,7 @@ public class AuthController {
 
     @GetMapping("/google")
     public String googleLogin(HttpSession session) {
-        String state = UUID.randomUUID().toString();
-        session.setAttribute("oauthState", state);
+        String state = issueOauthState(session, "GOOGLE", false);
         return "redirect:" + authService.getGoogleAuthUrl(state, false);
     }
 
@@ -459,7 +483,11 @@ public class AuthController {
                                  HttpServletRequest request,
                                  HttpSession session,
                                  RedirectAttributes ra) {
-        return handleSocialCallback("GOOGLE", authService.handleGoogleCallback(code, request), session, ra);
+        if (!consumeOauthState(session, "GOOGLE", false, state)) {
+            ra.addFlashAttribute("errorMsg", "잘못된 접근입니다.");
+            return "redirect:/auth/login";
+        }
+        return handleSocialCallback("GOOGLE", authService.handleGoogleCallback(code, request), request, session, ra);
     }
 
     // ════════════════════════════════════════════
@@ -475,16 +503,14 @@ public class AuthController {
     @GetMapping("/link/naver")
     public String linkNaver(HttpSession session) {
         requireLogin(session);
-        String state = UUID.randomUUID().toString();
-        session.setAttribute("oauthState", state);
+        String state = issueOauthState(session, "NAVER", true);
         return "redirect:" + authService.getNaverAuthUrl(state, true);
     }
 
     @GetMapping("/link/google")
     public String linkGoogle(HttpSession session) {
         requireLogin(session);
-        String state = UUID.randomUUID().toString();
-        session.setAttribute("oauthState", state);
+        String state = issueOauthState(session, "GOOGLE", true);
         return "redirect:" + authService.getGoogleAuthUrl(state, true);
     }
 
@@ -500,13 +526,22 @@ public class AuthController {
                                     @RequestParam String state,
                                     HttpSession session,
                                     RedirectAttributes ra) {
+        if (!consumeOauthState(session, "NAVER", true, state)) {
+            ra.addFlashAttribute("errorMsg", "잘못된 접근입니다.");
+            return "redirect:/mypage/edit";
+        }
         return handleLinkCallback("NAVER", () -> authService.extractNaverInfo(code, state), session, ra);
     }
 
     @GetMapping("/link/google/callback")
     public String linkGoogleCallback(@RequestParam String code,
+                                     @RequestParam(required = false) String state,
                                      HttpSession session,
                                      RedirectAttributes ra) {
+        if (!consumeOauthState(session, "GOOGLE", true, state)) {
+            ra.addFlashAttribute("errorMsg", "잘못된 접근입니다.");
+            return "redirect:/mypage/edit";
+        }
         return handleLinkCallback("GOOGLE", () -> authService.extractGoogleInfo(code), session, ra);
     }
 
@@ -566,7 +601,7 @@ public class AuthController {
         UsersVO user = authService.completeSocialRegister(temp, nickname, nationality, preferredLang, request);
         session.removeAttribute("socialTemp");
         session.setAttribute("loginUser", user);
-        session.setAttribute("currentSocialProvider", temp.getProvider());
+        session.setAttribute(CURRENT_SOCIAL_PROVIDER_SESSION_KEY, temp.getProvider());
 
         result.put("success", true);
         result.put("redirect", request.getContextPath() + "/");
@@ -591,15 +626,17 @@ public class AuthController {
 
     private String handleSocialCallback(String provider,
                                         Object socialResult,
+                                        HttpServletRequest request,
                                         HttpSession session,
                                         RedirectAttributes ra) {
         if (socialResult == null) {
             ra.addFlashAttribute("errorMsg", "소셜 로그인 처리 중 오류가 발생했습니다.");
             return "redirect:/auth/login";
         }
+        syncSocialAccessToken(session, request);
         if (socialResult instanceof UsersVO user) {
             session.setAttribute("loginUser", user);
-            session.setAttribute("currentSocialProvider", provider);
+            session.setAttribute(CURRENT_SOCIAL_PROVIDER_SESSION_KEY, provider);
             loadAdminPermissions(session, user);
             return "redirect:/";
         }
@@ -609,6 +646,76 @@ public class AuthController {
         }
         ra.addFlashAttribute("errorMsg", "알 수 없는 오류가 발생했습니다.");
         return "redirect:/auth/login";
+    }
+
+    private void prepareSocialAuthUrls(HttpSession session, Model model) {
+        String naverState = issueOauthState(session, "NAVER", false);
+        String googleState = issueOauthState(session, "GOOGLE", false);
+
+        model.addAttribute("kakaoAuthUrl", authService.getKakaoAuthUrl(false));
+        model.addAttribute("naverAuthUrl", authService.getNaverAuthUrl(naverState, false));
+        model.addAttribute("googleAuthUrl", authService.getGoogleAuthUrl(googleState, false));
+    }
+
+    private String issueOauthState(HttpSession session, String provider, boolean linkMode) {
+        String key = buildOauthStateKey(provider, linkMode);
+        @SuppressWarnings("unchecked")
+        Set<String> states = (Set<String>) session.getAttribute(key);
+        Set<String> mutableStates = states != null ? new HashSet<>(states) : new HashSet<>();
+        String state = UUID.randomUUID().toString();
+        mutableStates.add(state);
+        session.setAttribute(key, mutableStates);
+        return state;
+    }
+
+    private boolean consumeOauthState(HttpSession session, String provider, boolean linkMode, String state) {
+        if (!hasText(state)) {
+            return false;
+        }
+        String key = buildOauthStateKey(provider, linkMode);
+        @SuppressWarnings("unchecked")
+        Set<String> states = (Set<String>) session.getAttribute(key);
+        if (states == null || states.isEmpty()) {
+            return false;
+        }
+        Set<String> mutableStates = new HashSet<>(states);
+        boolean matched = mutableStates.remove(state);
+        if (mutableStates.isEmpty()) {
+            session.removeAttribute(key);
+        } else {
+            session.setAttribute(key, mutableStates);
+        }
+        return matched;
+    }
+
+    private String buildOauthStateKey(String provider, boolean linkMode) {
+        return provider + (linkMode ? "_LINK" : "_LOGIN") + "_OAUTH_STATE";
+    }
+
+    private void syncSocialAccessToken(HttpSession session, HttpServletRequest request) {
+        String accessToken = (String) request.getAttribute(SOCIAL_ACCESS_TOKEN_REQUEST_KEY);
+        if (hasText(accessToken)) {
+            session.setAttribute(CURRENT_SOCIAL_ACCESS_TOKEN_SESSION_KEY, accessToken);
+        } else {
+            session.removeAttribute(CURRENT_SOCIAL_ACCESS_TOKEN_SESSION_KEY);
+        }
+    }
+
+    private void revokeSocialAccessToken(String provider, HttpSession session) {
+        String accessToken = (String) session.getAttribute(CURRENT_SOCIAL_ACCESS_TOKEN_SESSION_KEY);
+        if (!hasText(accessToken)) {
+            return;
+        }
+        if ("NAVER".equals(provider)) {
+            authService.revokeNaverAccessToken(accessToken);
+        } else if ("GOOGLE".equals(provider)) {
+            authService.revokeGoogleAccessToken(accessToken);
+        }
+    }
+
+    private void clearSocialSession(HttpSession session) {
+        session.removeAttribute(CURRENT_SOCIAL_PROVIDER_SESSION_KEY);
+        session.removeAttribute(CURRENT_SOCIAL_ACCESS_TOKEN_SESSION_KEY);
     }
 
     private String handleLinkCallback(String provider,

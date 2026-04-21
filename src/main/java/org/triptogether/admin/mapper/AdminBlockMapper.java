@@ -29,9 +29,12 @@ public interface AdminBlockMapper {
     AdminIpBlockBatchVO findIpBlockBatchById(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
     List<AdminIpBlockVO> findIpRulesByBatchId(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
     AdminIpBlockVO findIpBlockById(@Param("ipBlocklistIdx") Long ipBlocklistIdx);
-    AdminIpBlockVO findCurrentIpRuleByTarget(@Param("blockTargetKey") String blockTargetKey,
-                                             @Param("ruleAction") String ruleAction,
-                                             @Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
+    AdminIpBlockVO findCurrentIpRuleByHistoryLink(@Param("historyBlockIdx") Long historyBlockIdx,
+                                                  @Param("blockRequestId") String blockRequestId,
+                                                  @Param("blockTargetKey") String blockTargetKey,
+                                                  @Param("ruleAction") String ruleAction,
+                                                  @Param("ipBlockBatchIdx") Long ipBlockBatchIdx,
+                                                  @Param("blockScope") String blockScope);
     AdminUserBlockVO findUserBlockById(@Param("blockIdx") Long blockIdx);
     AdminUserBlockVO findLatestActiveUserBlockByUserIdx(@Param("userIdx") Long userIdx);
     AdminBlockHistoryVO findBlockHistoryById(@Param("blockIdx") Long blockIdx);
@@ -57,6 +60,9 @@ public interface AdminBlockMapper {
                                               @Param("releasedByUserIdx") Long releasedByUserIdx);
 
     AdminUserBlockVO findUserBlockByTargetKey(@Param("blockTargetKey") String blockTargetKey);
+    AdminUserBlockVO findCurrentUserBlockByHistoryLink(@Param("historyBlockIdx") Long historyBlockIdx,
+                                                       @Param("blockRequestId") String blockRequestId,
+                                                       @Param("blockTargetKey") String blockTargetKey);
     void updateUserBlockSnapshot(AdminUserBlockVO block);
 
     void updateUserBlocklistActiveByTargetKey(@Param("blockTargetKey") String blockTargetKey,

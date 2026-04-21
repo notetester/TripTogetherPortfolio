@@ -229,6 +229,17 @@
     font-family: Arial, Helvetica, sans-serif;
     text-transform: lowercase;
 }
+.naver-mark-box {
+    font-size: 15px;
+    font-weight: 900;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1;
+}
+.google-mark-box svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
 .social-link-icon.NAVER  { background: #03c75a; color: #fff; }
 .social-link-icon.GOOGLE { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
 

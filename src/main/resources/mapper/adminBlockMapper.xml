@@ -113,6 +113,8 @@
         <result property="expiresAt" column="expires_at"/>
         <result property="blockRequestId" column="block_request_id"/>
         <result property="blockTargetKey" column="block_target_key"/>
+        <result property="userBlocklistIdx" column="user_blocklist_idx"/>
+        <result property="ipBlocklistIdx" column="ip_blocklist_idx"/>
         <result property="historyKind" column="history_kind"/>
         <result property="blockScope" column="block_scope"/>
         <result property="ipMatchType" column="ip_match_type"/>
@@ -417,6 +419,8 @@
             h.expires_at,
             h.block_request_id,
             h.block_target_key,
+            h.user_blocklist_idx,
+            h.ip_blocklist_idx,
             h.history_kind,
             h.block_scope,
             h.ip_match_type,
@@ -510,6 +514,8 @@
             h.expires_at,
             h.block_request_id,
             h.block_target_key,
+            h.user_blocklist_idx,
+            h.ip_blocklist_idx,
             h.history_kind,
             h.block_scope,
             h.ip_match_type,
@@ -715,7 +721,7 @@
     </select>
 
 
-    <select id="findCurrentIpRuleByTarget" resultMap="ipBlockRM">
+    <select id="findCurrentIpRuleByHistoryLink" resultMap="ipBlockRM">
         SELECT
             <include refid="ipRuleSelectColumns"/>
         FROM IP_BLOCKLIST ip
@@ -724,14 +730,32 @@
         LEFT JOIN USERS mu ON mu.user_idx = ip.manual_override_by_user_idx
         LEFT JOIN USERS lcu ON lcu.user_idx = ip.last_control_by_user_idx
         LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = ip.ip_block_batch_idx
-        WHERE ip.block_target_key = #{blockTargetKey}
+        WHERE (
+                #{blockRequestId} IS NOT NULL
+                AND #{blockRequestId} != ''
+                AND ip.block_request_id = #{blockRequestId}
+            )
+           OR (
+                #{historyBlockIdx} IS NOT NULL
+                AND ip.source_history_block_idx = #{historyBlockIdx}
+            )
+           OR (
+                ip.block_target_key = #{blockTargetKey}
+                AND (#{ruleAction} IS NULL OR #{ruleAction} = '' OR ip.rule_action = #{ruleAction})
+                AND (
+                    (#{ipBlockBatchIdx} IS NULL AND ip.ip_block_batch_idx IS NULL)
+                    OR (#{ipBlockBatchIdx} IS NOT NULL AND ip.ip_block_batch_idx = #{ipBlockBatchIdx})
+                )
+                AND (#{blockScope} IS NULL OR #{blockScope} = '' OR ip.source_scope = #{blockScope})
+            )
         ORDER BY CASE
-                     WHEN #{ipBlockBatchIdx} IS NULL AND ip.ip_block_batch_idx IS NULL THEN 0
-                     WHEN #{ipBlockBatchIdx} IS NOT NULL AND ip.ip_block_batch_idx = #{ipBlockBatchIdx} THEN 0
+                     WHEN #{blockRequestId} IS NOT NULL
+                          AND #{blockRequestId} != ''
+                          AND ip.block_request_id = #{blockRequestId} THEN 0
                      ELSE 1
                  END ASC,
                  CASE
-                     WHEN #{ruleAction} IS NOT NULL AND #{ruleAction} != '' AND ip.rule_action = #{ruleAction} THEN 0
+                 WHEN #{historyBlockIdx} IS NOT NULL AND ip.source_history_block_idx = #{historyBlockIdx} THEN 0
                      ELSE 1
                  END ASC,
                  ip.is_effective_active DESC,
@@ -819,6 +843,7 @@
     <insert id="insertGlobalBlockHistory" parameterType="org.triptogether.admin.vo.AdminBlockHistoryVO">
         INSERT INTO USER_BLOCK_HISTORY (
             block_request_id, block_target_key, rule_action, control_mode, operation_source,
+            user_blocklist_idx, ip_blocklist_idx,
             history_kind, block_scope, user_idx, block_type, blocked_ip, ip_match_type,
             cidr_notation, range_start_ip, range_end_ip, ip_block_batch_idx, batch_operation_idx,
             is_active, before_rule_is_active, after_rule_is_active, before_batch_is_active, after_batch_is_active,
@@ -828,6 +853,7 @@
             effective_result, control_reason
         ) VALUES (
             #{blockRequestId}, #{blockTargetKey}, #{ruleAction}, #{controlMode}, #{operationSource},
+            #{userBlocklistIdx}, #{ipBlocklistIdx},
             #{historyKind}, #{blockScope}, #{userIdx}, #{blockType}, #{blockedIp}, #{ipMatchType},
             #{cidrNotation}, #{rangeStartIp}, #{rangeEndIp}, #{ipBlockBatchIdx}, #{batchOperationIdx},
             #{active}, #{beforeRuleIsActive}, #{afterRuleIsActive}, #{beforeBatchIsActive}, #{afterBatchIsActive},
@@ -1048,6 +1074,64 @@
         LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
         WHERE x.block_target_key = #{blockTargetKey}
         ORDER BY x.last_history_at DESC, x.blocked_at DESC, x.block_idx DESC
+        LIMIT 1
+    </select>
+
+    <select id="findCurrentUserBlockByHistoryLink" resultMap="userBlockRM">
+        SELECT
+            x.block_idx,
+            x.source_history_block_idx,
+            x.user_idx,
+            u.user_id,
+            u.nickname,
+            u.user_email,
+            x.block_type,
+            x.blocked_ip,
+            x.is_active AS active,
+            x.reason,
+            x.blocked_by_user_idx,
+            bu.nickname AS blocked_by_nickname,
+            x.released_by_user_idx,
+            ru.nickname AS released_by_nickname,
+            x.blocked_at,
+            x.released_at,
+            x.expires_at,
+            x.block_request_id,
+            x.block_target_key,
+            x.snapshot_status,
+            x.last_history_at,
+            x.synced_at,
+            x.updated_by_user_idx,
+            h.block_scope,
+            h.ip_match_type
+        FROM USER_BLOCKLIST x
+        LEFT JOIN USERS u ON u.user_idx = x.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
+        WHERE (
+                #{historyBlockIdx} IS NOT NULL
+                AND x.source_history_block_idx = #{historyBlockIdx}
+            )
+           OR (
+                #{blockRequestId} IS NOT NULL
+                AND #{blockRequestId} != ''
+                AND x.block_request_id = #{blockRequestId}
+            )
+           OR x.block_target_key = #{blockTargetKey}
+        ORDER BY CASE
+                     WHEN #{historyBlockIdx} IS NOT NULL AND x.source_history_block_idx = #{historyBlockIdx} THEN 0
+                     ELSE 1
+                 END ASC,
+                 CASE
+                     WHEN #{blockRequestId} IS NOT NULL
+                          AND #{blockRequestId} != ''
+                          AND x.block_request_id = #{blockRequestId} THEN 0
+                     ELSE 1
+                 END ASC,
+                 x.last_history_at DESC,
+                 x.blocked_at DESC,
+                 x.block_idx DESC
         LIMIT 1
     </select>
 
