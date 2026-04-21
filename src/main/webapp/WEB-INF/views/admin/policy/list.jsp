@@ -2,36 +2,43 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="policies"/>
-<c:set var="pageTitle" value="정책 관리"/>
+<spring:message code="admin.policy.pageTitle" var="adminPolicyPageTitle"/>
+<c:set var="pageTitle" value="${adminPolicyPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-head">
-            <div class="adm-card-title">운영 정책 센터</div>
+            <div class="adm-card-title"><spring:message code="admin.policy.centerTitle"/></div>
         </div>
         <div class="adm-card-body">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+            <div class="policy-overview-grid">
                 <c:forEach items="${policies}" var="policy">
-                    <div style="background:#111827;border:1px solid rgba(148,163,184,.18);border-radius:8px;padding:16px;">
-                        <div style="font-size:12px;color:#94a3b8;">${policy.policyGroup}</div>
-                        <div style="font-size:18px;font-weight:700;margin-top:4px;">${policy.policyName}</div>
-                        <div style="font-size:12px;color:#94a3b8;margin-top:8px;">
-                            상태:
-                            <span class="status-badge ${policy.active ? 'ACTIVE' : 'DORMANT'}">${policy.active ? '활성' : '비활성'}</span>
+                    <div class="policy-overview-card">
+                        <div class="policy-overview-eyebrow">${policy.policyGroup}</div>
+                        <div class="policy-overview-title">${policy.policyName}</div>
+                        <div class="policy-overview-meta">
+                            <spring:message code="admin.common.status"/>:
+                            <span class="status-badge ${policy.active ? 'ACTIVE' : 'DORMANT'}">
+                                <c:choose>
+                                    <c:when test="${policy.active}"><spring:message code="admin.common.active"/></c:when>
+                                    <c:otherwise><spring:message code="admin.common.inactive"/></c:otherwise>
+                                </c:choose>
+                            </span>
                         </div>
-                        <div style="font-size:12px;color:#94a3b8;margin-top:8px;">
-                            다음 실행:
+                        <div class="policy-overview-meta">
+                            <spring:message code="admin.policy.nextExecute"/>:
                             <c:choose>
                                 <c:when test="${not empty policy.nextExecuteAtDate}">
                                     <fmt:formatDate value="${policy.nextExecuteAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                                 </c:when>
-                                <c:otherwise>수동/미정</c:otherwise>
+                                <c:otherwise><spring:message code="admin.policy.unscheduled"/></c:otherwise>
                             </c:choose>
                         </div>
-                        <div style="font-size:12px;color:#94a3b8;margin-top:4px;">
-                            마지막 실행:
+                        <div class="policy-overview-meta">
+                            <spring:message code="admin.policy.lastExecute"/>:
                             <c:choose>
                                 <c:when test="${not empty policy.lastExecutedAtDate}">
                                     <fmt:formatDate value="${policy.lastExecutedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
@@ -39,7 +46,7 @@
                                         / ${policy.lastExecutionStatus}
                                     </c:if>
                                 </c:when>
-                                <c:otherwise>기록 없음</c:otherwise>
+                                <c:otherwise><spring:message code="admin.policy.noExecution"/></c:otherwise>
                             </c:choose>
                         </div>
                     </div>
@@ -48,75 +55,87 @@
         </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:20px;align-items:start;">
-        <div style="display:flex;flex-direction:column;gap:20px;">
+    <div class="policy-layout">
+        <div class="policy-main-column">
             <c:forEach items="${policies}" var="policy">
                 <div class="adm-card policy-card"
                      data-policy-code="${policy.policyCode}"
                      data-config-json="${fn:escapeXml(policy.configJson)}"
                      data-schedule-type="${policy.scheduleType}"
                      data-schedule-interval="${policy.scheduleIntervalHours}"
-                     data-schedule-day="${policy.scheduleDayOfMonth}"
+                    data-schedule-day="${policy.scheduleDayOfMonth}"
                      data-schedule-time="${policy.scheduleTime}">
                     <div class="adm-card-head">
                         <div>
                             <div class="adm-card-title">${policy.policyName}</div>
-                            <div style="margin-top:6px;font-size:12px;color:#94a3b8;">${policy.policyCode}</div>
+                            <div class="adm-card-subtitle">${policy.policyCode}</div>
                         </div>
-                        <div style="display:flex;gap:8px;align-items:center;">
-                            <span class="status-badge ${policy.active ? 'ACTIVE' : 'DORMANT'}">${policy.active ? '활성' : '비활성'}</span>
-                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('${policy.policyCode}', this)">지금 실행</button>
+                        <div class="policy-card-head-actions">
+                            <span class="status-badge ${policy.active ? 'ACTIVE' : 'DORMANT'}">
+                                <c:choose>
+                                    <c:when test="${policy.active}"><spring:message code="admin.common.active"/></c:when>
+                                    <c:otherwise><spring:message code="admin.common.inactive"/></c:otherwise>
+                                </c:choose>
+                            </span>
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('${policy.policyCode}', this)"><spring:message code="admin.policy.runNow"/></button>
                         </div>
                     </div>
                     <div class="adm-card-body">
-                        <div class="policy-form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+                        <div class="policy-form-grid">
                             <div class="policy-config-dormant" style="display:none;">
-                                <div class="adm-filter-label">휴면 기준(일)</div>
+                                <div class="adm-filter-label"><spring:message code="admin.policy.inactiveDays"/></div>
                                 <input class="adm-input js-policy-inactive-days" type="number" min="30" step="1">
                             </div>
                             <div class="policy-config-level" style="display:none;">
-                                <div class="adm-filter-label">정산 대상</div>
-                                <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;">
+                                <div class="adm-filter-label"><spring:message code="admin.policy.levelScope"/></div>
+                                <label class="policy-inline-check">
                                     <input class="js-policy-only-active" type="checkbox">
-                                    활성 회원만 정산
+                                    <spring:message code="admin.policy.onlyActiveMembers"/>
                                 </label>
                             </div>
                             <div>
-                                <div class="adm-filter-label">실행 방식</div>
+                                <div class="adm-filter-label"><spring:message code="admin.policy.scheduleType"/></div>
                                 <select class="adm-select js-policy-schedule-type" style="width:100%;">
-                                    <option value="DAILY_TIME">매일 지정 시각</option>
-                                    <option value="INTERVAL_HOURS">n시간 간격</option>
-                                    <option value="MONTHLY_DAY_TIME">매월 지정일/시각</option>
-                                    <option value="MANUAL">수동</option>
+                                    <option value="DAILY_TIME"><spring:message code="admin.policy.schedule.daily"/></option>
+                                    <option value="INTERVAL_HOURS"><spring:message code="admin.policy.schedule.interval"/></option>
+                                    <option value="MONTHLY_DAY_TIME"><spring:message code="admin.policy.schedule.monthly"/></option>
+                                    <option value="MANUAL"><spring:message code="admin.policy.schedule.manual"/></option>
                                 </select>
                             </div>
                             <div class="js-policy-interval-wrap">
-                                <div class="adm-filter-label">실행 간격(시간)</div>
+                                <div class="adm-filter-label"><spring:message code="admin.policy.intervalHours"/></div>
                                 <input class="adm-input js-policy-interval" type="number" min="1" step="1">
                             </div>
                             <div class="js-policy-day-wrap">
-                                <div class="adm-filter-label">월간 실행 일자</div>
+                                <div class="adm-filter-label"><spring:message code="admin.policy.dayOfMonth"/></div>
                                 <input class="adm-input js-policy-day" type="number" min="1" max="28" step="1">
                             </div>
                             <div class="js-policy-time-wrap">
-                                <div class="adm-filter-label">실행 시각</div>
+                                <div class="adm-filter-label"><spring:message code="admin.policy.scheduleTime"/></div>
                                 <input class="adm-input js-policy-time" type="time">
                             </div>
                             <div>
-                                <div class="adm-filter-label">정책 활성화</div>
-                                <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;">
+                                <div class="adm-filter-label"><spring:message code="admin.policy.policyEnabled"/></div>
+                                <label class="policy-inline-check">
                                     <input class="js-policy-active" type="checkbox" ${policy.active ? 'checked' : ''}>
-                                    자동 실행에 포함
+                                    <spring:message code="admin.policy.autoExecution"/>
                                 </label>
                             </div>
                         </div>
-                        <div style="margin-top:16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;">
-                            <div style="font-size:12px;color:#94a3b8;">
-                                마지막 메시지:
-                                <span style="color:#cbd5e1;">${empty policy.lastExecutionMessage ? '기록 없음' : policy.lastExecutionMessage}</span>
+                        <div class="policy-card-foot">
+                            <div class="policy-card-foot-note">
+                                <spring:message code="admin.policy.lastMessage"/>:
+                                <span class="policy-card-foot-value">
+                                    <c:choose>
+                                        <c:when test="${empty policy.lastExecutionMessage}">
+                                            <spring:message code="admin.policy.noExecution"/>
+                                        </c:when>
+                                        <c:otherwise>${policy.lastExecutionMessage}</c:otherwise>
+                                    </c:choose>
+                                </span>
                             </div>
                             <div style="display:flex;gap:8px;">
-                                <button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('${policy.policyCode}', this)">정책 저장</button>
+                                <button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('${policy.policyCode}', this)"><spring:message code="admin.policy.save"/></button>
                             </div>
                         </div>
                     </div>
@@ -126,30 +145,35 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">최근 정책 이력</div>
+                <div class="adm-card-title"><spring:message code="admin.policy.historyTitle"/></div>
             </div>
-            <div class="adm-card-body" style="display:flex;flex-direction:column;gap:16px;">
+            <div class="adm-card-body policy-history-column">
                 <c:forEach items="${policies}" var="policy">
-                    <div style="border:1px solid rgba(148,163,184,.18);border-radius:8px;padding:14px;">
-                        <div style="font-weight:700;">${policy.policyName}</div>
-                        <div style="font-size:12px;color:#94a3b8;margin-top:2px;">${policy.policyCode}</div>
-                        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+                    <div class="policy-history-card">
+                        <div class="policy-history-card-title">${policy.policyName}</div>
+                        <div class="adm-card-subtitle">${policy.policyCode}</div>
+                        <div class="policy-history-stack">
                             <c:forEach items="${policyHistories[policy.policyCode]}" var="history">
-                                <div style="padding:10px 12px;border-radius:8px;background:#111827;">
-                                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">
-                                        <div style="font-size:13px;font-weight:600;">${history.changeType}</div>
-                                        <div style="font-size:11px;color:#94a3b8;">
+                                <div class="policy-history-item">
+                                    <div class="policy-history-item-head">
+                                        <div class="policy-history-item-title">${history.changeType}</div>
+                                        <div class="policy-history-item-time">
                                             <fmt:formatDate value="${history.changedAtDate}" pattern="MM.dd HH:mm"/>
                                         </div>
                                     </div>
-                                    <div style="margin-top:6px;font-size:12px;color:#94a3b8;">
-                                        담당:
-                                        <span style="color:#cbd5e1;">${empty history.changedByNickname ? '시스템' : history.changedByNickname}</span>
+                                    <div class="policy-history-item-meta">
+                                        <spring:message code="admin.policy.operator"/>:
+                                        <span class="policy-history-item-value">
+                                            <c:choose>
+                                                <c:when test="${empty history.changedByNickname}"><spring:message code="admin.common.system"/></c:when>
+                                                <c:otherwise>${history.changedByNickname}</c:otherwise>
+                                            </c:choose>
+                                        </span>
                                     </div>
                                     <c:if test="${not empty history.executionStatus or not empty history.executionMessage}">
-                                        <div style="margin-top:6px;font-size:12px;color:#94a3b8;">
-                                            결과:
-                                            <span style="color:#cbd5e1;">${empty history.executionStatus ? '-' : history.executionStatus}</span>
+                                        <div class="policy-history-item-meta">
+                                            <spring:message code="admin.common.result"/>:
+                                            <span class="policy-history-item-value">${empty history.executionStatus ? '-' : history.executionStatus}</span>
                                             <c:if test="${not empty history.executionMessage}">
                                                 / ${history.executionMessage}
                                             </c:if>
@@ -158,7 +182,7 @@
                                 </div>
                             </c:forEach>
                             <c:if test="${empty policyHistories[policy.policyCode]}">
-                                <div style="font-size:12px;color:#64748b;">이력이 없습니다.</div>
+                                <div class="policy-history-empty"><spring:message code="admin.policy.noHistory"/></div>
                             </c:if>
                         </div>
                     </div>
@@ -168,15 +192,40 @@
     </div>
 </div>
 
+<spring:message code="admin.policy.noExecution" var="policyNoExecutionText"/>
+<spring:message code="admin.policy.saving" var="policySavingText"/>
+<spring:message code="admin.policy.saveSuccess" var="policySaveSuccessText"/>
+<spring:message code="admin.policy.saveFailure" var="policySaveFailureText"/>
+<spring:message code="admin.policy.saveError" var="policySaveErrorText"/>
+<spring:message code="admin.policy.runConfirm" var="policyRunConfirmText"/>
+<spring:message code="admin.policy.running" var="policyRunningText"/>
+<spring:message code="admin.policy.runSuccess" var="policyRunSuccessText"/>
+<spring:message code="admin.policy.runFailure" var="policyRunFailureText"/>
+<spring:message code="admin.policy.runError" var="policyRunErrorText"/>
+<spring:message code="admin.policy.jsonParseError" var="policyJsonParseErrorText"/>
+
 <script>
 const POLICY_CTX = '${pageContext.request.contextPath}';
+const POLICY_TEXT = {
+    noExecution: '${fn:escapeXml(policyNoExecutionText)}',
+    saving: '${fn:escapeXml(policySavingText)}',
+    saveSuccess: '${fn:escapeXml(policySaveSuccessText)}',
+    saveFailure: '${fn:escapeXml(policySaveFailureText)}',
+    saveError: '${fn:escapeXml(policySaveErrorText)}',
+    runConfirm: '${fn:escapeXml(policyRunConfirmText)}',
+    running: '${fn:escapeXml(policyRunningText)}',
+    runSuccess: '${fn:escapeXml(policyRunSuccessText)}',
+    runFailure: '${fn:escapeXml(policyRunFailureText)}',
+    runError: '${fn:escapeXml(policyRunErrorText)}',
+    jsonParseError: '${fn:escapeXml(policyJsonParseErrorText)}'
+};
 
 function parsePolicyConfig(text) {
     if (!text) return {};
     try {
         return JSON.parse(text);
     } catch (e) {
-        console.warn('정책 JSON 파싱 실패', e);
+        console.warn(POLICY_TEXT.jsonParseError, e);
         return {};
     }
 }
@@ -244,7 +293,7 @@ async function savePolicy(policyCode, button) {
 
     button.disabled = true;
     const originalText = button.textContent;
-    button.textContent = '저장 중...';
+    button.textContent = POLICY_TEXT.saving;
     try {
         const response = await fetch(POLICY_CTX + '/admin/policies/' + encodeURIComponent(policyCode), {
             method: 'POST',
@@ -253,14 +302,14 @@ async function savePolicy(policyCode, button) {
         });
         const data = await response.json();
         if (response.ok && data.success) {
-            adm_toast(data.message || '정책을 저장했습니다.');
+            adm_toast(POLICY_TEXT.saveSuccess);
             setTimeout(function() { location.reload(); }, 600);
         } else {
-            adm_toast(data.message || '정책 저장에 실패했습니다.', 'error');
+            adm_toast(POLICY_TEXT.saveFailure, 'error');
         }
     } catch (error) {
         console.error(error);
-        adm_toast('정책 저장 중 오류가 발생했습니다.', 'error');
+        adm_toast(POLICY_TEXT.saveError, 'error');
     } finally {
         button.disabled = false;
         button.textContent = originalText;
@@ -268,26 +317,26 @@ async function savePolicy(policyCode, button) {
 }
 
 async function runPolicyNow(policyCode, button) {
-    if (!confirm('이 정책을 지금 즉시 실행할까요?')) {
+    if (!confirm(POLICY_TEXT.runConfirm)) {
         return;
     }
     button.disabled = true;
     const originalText = button.textContent;
-    button.textContent = '실행 중...';
+    button.textContent = POLICY_TEXT.running;
     try {
         const response = await fetch(POLICY_CTX + '/admin/policies/' + encodeURIComponent(policyCode) + '/run', {
             method: 'POST'
         });
         const data = await response.json();
         if (response.ok && data.success) {
-            adm_toast(data.message || '정책을 실행했습니다.');
+            adm_toast(POLICY_TEXT.runSuccess);
             setTimeout(function() { location.reload(); }, 600);
         } else {
-            adm_toast(data.message || '정책 실행에 실패했습니다.', 'error');
+            adm_toast(POLICY_TEXT.runFailure, 'error');
         }
     } catch (error) {
         console.error(error);
-        adm_toast('정책 실행 중 오류가 발생했습니다.', 'error');
+        adm_toast(POLICY_TEXT.runError, 'error');
     } finally {
         button.disabled = false;
         button.textContent = originalText;

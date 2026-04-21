@@ -1,8 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="security"/>
-<c:set var="pageTitle" value="보안 이력"/>
+<spring:message code="admin.security.pageTitle" var="adminSecurityPageTitle"/>
+<c:set var="pageTitle" value="${adminSecurityPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -11,22 +13,22 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/security">
                 <div class="adm-filter-bar">
                     <div class="adm-search-box" style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label">검색</div>
+                        <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
                         <span class="adm-search-ico">🔍</span>
-                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="아이디, 닉네임, 이메일, 입력값, IP 검색">
+                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="<spring:message code='admin.security.searchPlaceholder'/>">
                     </div>
                     <div>
-                        <div class="adm-filter-label">성공 여부</div>
+                        <div class="adm-filter-label"><spring:message code="admin.logs.success"/></div>
                         <select class="adm-select" name="success">
-                            <option value="ALL" ${search.success=='ALL'?'selected':''}>전체</option>
-                            <option value="SUCCESS" ${search.success=='SUCCESS'?'selected':''}>성공</option>
-                            <option value="FAIL" ${search.success=='FAIL'?'selected':''}>실패</option>
+                            <option value="ALL" ${search.success=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="SUCCESS" ${search.success=='SUCCESS'?'selected':''}><spring:message code="admin.common.success"/></option>
+                            <option value="FAIL" ${search.success=='FAIL'?'selected':''}><spring:message code="admin.common.fail"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">이벤트 유형</div>
+                        <div class="adm-filter-label"><spring:message code="admin.security.eventType"/></div>
                         <select class="adm-select" name="eventType">
-                            <option value="ALL" ${search.eventType=='ALL'?'selected':''}>전체</option>
+                            <option value="ALL" ${search.eventType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
                             <option value="FIND_ID" ${search.eventType=='FIND_ID'?'selected':''}>FIND_ID</option>
                             <option value="FIND_PASSWORD" ${search.eventType=='FIND_PASSWORD'?'selected':''}>FIND_PASSWORD</option>
                             <option value="RESET_PASSWORD" ${search.eventType=='RESET_PASSWORD'?'selected':''}>RESET_PASSWORD</option>
@@ -36,16 +38,16 @@
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">단계</div>
+                        <div class="adm-filter-label"><spring:message code="admin.security.stage"/></div>
                         <select class="adm-select" name="eventStage">
-                            <option value="ALL" ${search.eventStage=='ALL'?'selected':''}>전체</option>
+                            <option value="ALL" ${search.eventStage=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
                             <option value="REQUEST" ${search.eventStage=='REQUEST'?'selected':''}>REQUEST</option>
                             <option value="ISSUE" ${search.eventStage=='ISSUE'?'selected':''}>ISSUE</option>
                             <option value="VERIFY" ${search.eventStage=='VERIFY'?'selected':''}>VERIFY</option>
                             <option value="COMPLETE" ${search.eventStage=='COMPLETE'?'selected':''}>COMPLETE</option>
                         </select>
                     </div>
-                    <button class="adm-btn adm-btn-primary" type="submit">조회</button>
+                    <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
                 </div>
             </form>
         </div>
@@ -53,22 +55,22 @@
 
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">계정 복구 / 인증 / 변경 이력</div>
-            <div style="font-size:12px;color:#64748b;">총 ${total}건</div>
+            <div class="adm-card-title"><spring:message code="admin.security.historyTitle"/></div>
+            <div style="font-size:12px;color:#64748b;"><spring:message code="admin.common.totalCount" arguments="${total}"/></div>
         </div>
         <div class="adm-table-wrap">
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th>시각</th>
-                    <th>대상 회원</th>
-                    <th>실행 주체</th>
-                    <th>이벤트</th>
-                    <th>단계</th>
-                    <th>입력값</th>
-                    <th>대상 이메일</th>
-                    <th>결과</th>
-                    <th>사유</th>
+                    <th><spring:message code="admin.common.time"/></th>
+                    <th><spring:message code="admin.security.targetMember"/></th>
+                    <th><spring:message code="admin.security.actor"/></th>
+                    <th><spring:message code="admin.security.eventType"/></th>
+                    <th><spring:message code="admin.security.stage"/></th>
+                    <th><spring:message code="admin.context.inputValue"/></th>
+                    <th><spring:message code="admin.context.targetEmail"/></th>
+                    <th><spring:message code="admin.common.result"/></th>
+                    <th><spring:message code="admin.common.reason"/></th>
                     <th>IP</th>
                 </tr>
                 </thead>
@@ -92,7 +94,7 @@
                                                 style="color:#94a3b8;">@${item.userId}</button>
                                     </div>
                                 </c:when>
-                                <c:otherwise><span style="color:#64748b;">미식별</span></c:otherwise>
+                                <c:otherwise><span style="color:#64748b;"><spring:message code="admin.common.unidentified"/></span></c:otherwise>
                             </c:choose>
                         </td>
                         <td>
@@ -111,7 +113,7 @@
                                                 style="color:#94a3b8;">@${item.actorUserId}</button>
                                     </div>
                                 </c:when>
-                                <c:otherwise><span style="color:#64748b;">비로그인/시스템</span></c:otherwise>
+                                <c:otherwise><span style="color:#64748b;"><spring:message code="admin.security.actorSystem"/></span></c:otherwise>
                             </c:choose>
                         </td>
                         <td>${item.eventType}</td>
@@ -120,8 +122,8 @@
                         <td><c:out value="${empty item.targetEmail ? '-' : item.targetEmail}"/></td>
                         <td>
                             <c:choose>
-                                <c:when test="${item.success}"><span class="status-badge ACTIVE">SUCCESS</span></c:when>
-                                <c:otherwise><span class="status-badge DELETED">FAIL</span></c:otherwise>
+                                <c:when test="${item.success}"><span class="status-badge ACTIVE"><spring:message code="admin.common.success"/></span></c:when>
+                                <c:otherwise><span class="status-badge DELETED"><spring:message code="admin.common.fail"/></span></c:otherwise>
                             </c:choose>
                         </td>
                         <td><c:out value="${empty item.failReason ? '-' : item.failReason}"/></td>
@@ -140,7 +142,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;">조회 결과가 없습니다.</td></tr>
+                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -153,7 +155,7 @@
                     <button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>
                 </c:forEach>
                 <c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if>
-                <span class="adm-page-info">${paging.currentPage} / ${paging.totalPage} 페이지</span>
+                <span class="adm-page-info"><spring:message code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/></span>
             </div>
         </c:if>
     </div>

@@ -32,7 +32,7 @@ public class AdminPolicyServiceImpl implements AdminPolicyService {
     private final AdminMapper adminMapper;
     private final AuthService authService;
     private final RewardService rewardService;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public Map<String, Object> getPolicyDashboard() {

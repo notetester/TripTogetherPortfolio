@@ -1753,9 +1753,9 @@
         LEFT JOIN USERS cu ON cu.user_idx = p.created_by_user_idx
         LEFT JOIN USERS uu ON uu.user_idx = p.updated_by_user_idx
         WHERE p.is_active = 1
-          AND p.schedule_type <> 'MANUAL'
+          AND p.schedule_type != 'MANUAL'
           AND p.next_execute_at IS NOT NULL
-          AND p.next_execute_at <= NOW()
+          AND p.next_execute_at <![CDATA[<=]]> NOW()
         ORDER BY p.next_execute_at ASC, p.policy_code ASC
     </select>
 

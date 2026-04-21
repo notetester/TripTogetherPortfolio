@@ -12,6 +12,14 @@ body {
     color: #e2e8f0;
     min-height: 100vh;
     overflow-x: hidden;
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-rendering: optimizeLegibility;
+}
+
+button, input, select, textarea {
+    font: inherit;
+    letter-spacing: 0;
 }
 
 /* ══════════════════════════════════════════
@@ -177,7 +185,7 @@ body {
 /* 콘텐츠 영역 */
 .adm-content {
     flex: 1;
-    padding: 28px;
+    padding: clamp(18px, 2.5vw, 28px);
     background: #0f1117;
 }
 
@@ -189,6 +197,7 @@ body {
     border: 1px solid #1e2330;
     border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.16);
 }
 .adm-card-head {
     padding: 16px 20px;
@@ -312,6 +321,29 @@ body {
     background: transparent; border-color: #2d3748; color: #94a3b8;
 }
 .adm-btn-ghost:hover { border-color: #475569; color: #e2e8f0; background: #1e2330; }
+
+.adm-inline-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    color: #93c5fd;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color .15s ease, opacity .15s ease;
+}
+.adm-inline-link:hover {
+    color: #bfdbfe;
+}
+.adm-inline-link:focus-visible {
+    outline: 2px solid rgba(96,165,250,.55);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
 
 /* ══════════════════════════════════════════
    테이블
@@ -609,6 +641,256 @@ body {
 }
 .adm-tab.active { background: #1e2330; color: #93c5fd; }
 .adm-tab:hover:not(.active) { color: #94a3b8; background: #1e2330; }
+.adm-tabs-scroll {
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+.adm-tabs-scroll::-webkit-scrollbar {
+    height: 4px;
+}
+.adm-tabs-scroll::-webkit-scrollbar-thumb {
+    background: rgba(100,116,139,.45);
+    border-radius: 999px;
+}
+.adm-tab {
+    flex-shrink: 0;
+}
+
+/* ── 공통 컨텍스트 모달 ── */
+.adm-context-modal {
+    max-width: 960px;
+}
+.adm-context-modal-wide {
+    max-width: 1040px;
+}
+.adm-context-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    padding: 28px;
+    border: 1px dashed rgba(148,163,184,.24);
+    border-radius: 12px;
+    background: rgba(15,23,42,.34);
+    color: #94a3b8;
+    text-align: center;
+}
+.adm-context-empty.is-error {
+    color: #fca5a5;
+    border-color: rgba(248,113,113,.28);
+    background: rgba(69,10,10,.28);
+}
+.adm-context-stack {
+    display: grid;
+    gap: 12px;
+}
+.adm-context-summary {
+    margin-bottom: 16px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(148,163,184,.18);
+    background: linear-gradient(180deg, rgba(17,24,39,.98), rgba(15,23,42,.88));
+}
+.adm-context-summary-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+.adm-context-summary-value {
+    margin-top: 6px;
+    font-size: clamp(20px, 2.4vw, 24px);
+    font-weight: 700;
+    color: #f8fafc;
+    word-break: break-word;
+}
+.adm-context-record,
+.adm-context-panel {
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(148,163,184,.16);
+    background: rgba(17,24,39,.92);
+}
+.adm-context-record-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.adm-context-record-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+    line-height: 1.5;
+    word-break: break-word;
+}
+.adm-context-record-meta {
+    font-size: 12px;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+.adm-context-record-line {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #cbd5e1;
+    line-height: 1.65;
+    word-break: break-word;
+}
+.adm-context-record-danger {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #fca5a5;
+    line-height: 1.6;
+    word-break: break-word;
+}
+.adm-context-slash {
+    color: #64748b;
+}
+.adm-context-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+.adm-context-panel-title {
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #f8fafc;
+}
+.adm-context-inline {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.adm-select-inline,
+.adm-input-inline {
+    width: 100%;
+}
+.adm-context-code {
+    font-size: 13px;
+    color: #e2e8f0;
+    font-weight: 600;
+    word-break: break-all;
+}
+.adm-context-textarea {
+    min-height: 96px;
+    resize: vertical;
+    padding-left: 12px;
+}
+.adm-context-btn {
+    margin-top: 12px;
+}
+.adm-context-spacer {
+    height: 12px;
+}
+
+/* ── 정책 관리 ── */
+.adm-card-subtitle {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #94a3b8;
+}
+.policy-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+.policy-overview-card,
+.policy-history-card {
+    border-radius: 12px;
+    border: 1px solid rgba(148,163,184,.18);
+    background: rgba(17,24,39,.92);
+    padding: 16px;
+}
+.policy-overview-eyebrow {
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+.policy-overview-title,
+.policy-history-card-title {
+    margin-top: 6px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #f8fafc;
+}
+.policy-overview-meta,
+.policy-history-item-meta,
+.policy-card-foot-note {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.6;
+}
+.policy-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr);
+    gap: 20px;
+    align-items: start;
+}
+.policy-main-column,
+.policy-history-column,
+.policy-history-stack {
+    display: grid;
+    gap: 16px;
+}
+.policy-card-head-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+.policy-inline-check {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #cbd5e1;
+}
+.policy-card-foot {
+    margin-top: 18px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.policy-card-foot-value,
+.policy-history-item-value {
+    color: #e2e8f0;
+}
+.policy-history-item {
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(15,23,42,.78);
+}
+.policy-history-item-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+}
+.policy-history-item-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+.policy-history-item-time {
+    font-size: 11px;
+    color: #94a3b8;
+}
+.policy-history-empty {
+    padding: 16px;
+    border-radius: 10px;
+    background: rgba(15,23,42,.55);
+    color: #94a3b8;
+    text-align: center;
+}
 
 /* ── 상태/권한 변경 드롭다운 ── */
 .action-menu-wrap { position: relative; }
@@ -663,6 +945,68 @@ body {
     .adm-sidebar.open { transform: none; }
     .adm-main { margin-left: 0; }
     .detail-grid { grid-template-columns: 1fr; }
+    .policy-layout { grid-template-columns: 1fr; }
+    .adm-topbar {
+        padding: 0 16px;
+    }
+    .adm-card-head,
+    .adm-local-toolbar {
+        align-items: flex-start;
+    }
+    .adm-modal-overlay {
+        padding: 14px;
+    }
+    .adm-modal {
+        max-height: calc(100vh - 28px);
+    }
+    .adm-modal-foot {
+        justify-content: stretch;
+        flex-wrap: wrap;
+    }
+    .adm-modal-foot .adm-btn {
+        flex: 1 1 160px;
+        justify-content: center;
+    }
+    .adm-context-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    .adm-context-inline {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 640px) {
+    .adm-content {
+        padding: 16px;
+    }
+    .adm-filter-bar {
+        gap: 12px;
+    }
+    .adm-filter-bar > * {
+        width: 100%;
+    }
+    .adm-card-title {
+        font-size: 15px;
+        line-height: 1.45;
+    }
+    .mem-id-cell {
+        align-items: flex-start;
+    }
+    .adm-table th,
+    .adm-table td {
+        padding: 10px 12px;
+    }
+    .policy-card-foot {
+        align-items: stretch;
+    }
+    .policy-card-foot > div:last-child {
+        width: 100%;
+    }
+    .policy-card-foot .adm-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* ══════════════════════════════════════════
@@ -730,6 +1074,8 @@ body.sa-light .adm-select:focus     { border-color:#6366f1; }
 /* 버튼 */
 body.sa-light .adm-btn-ghost        { border-color:#e2e8f0; color:#64748b; background:#fff; }
 body.sa-light .adm-btn-ghost:hover  { border-color:#cbd5e1; color:#334155; background:#f8fafc; }
+body.sa-light .adm-inline-link      { color:#2563eb; }
+body.sa-light .adm-inline-link:hover { color:#1d4ed8; }
 
 /* 테이블 */
 body.sa-light .adm-table-wrap       { border-color:#e2e8f0; }
@@ -773,6 +1119,55 @@ body.sa-light .detail-value         { color:#1e293b; }
 body.sa-light .adm-tab              { color:#64748b; }
 body.sa-light .adm-tab.active       { background:#f1f5f9; color:#3b82f6; }
 body.sa-light .adm-tab:hover:not(.active) { color:#334155; background:#f1f5f9; }
+body.sa-light .adm-context-empty {
+    background:#f8fafc;
+    border-color:#e2e8f0;
+    color:#64748b;
+}
+body.sa-light .adm-context-empty.is-error {
+    background:#fef2f2;
+    border-color:#fecaca;
+    color:#b91c1c;
+}
+body.sa-light .adm-context-summary {
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+    border-color:#e2e8f0;
+}
+body.sa-light .adm-context-summary-label { color:#64748b; }
+body.sa-light .adm-context-summary-value,
+body.sa-light .adm-context-panel-title,
+body.sa-light .adm-context-code,
+body.sa-light .policy-overview-title,
+body.sa-light .policy-history-card-title,
+body.sa-light .policy-history-item-title { color:#0f172a; }
+body.sa-light .adm-context-record,
+body.sa-light .adm-context-panel,
+body.sa-light .policy-overview-card,
+body.sa-light .policy-history-card {
+    background:#ffffff;
+    border-color:#e2e8f0;
+}
+body.sa-light .adm-context-record-title,
+body.sa-light .adm-context-record-line,
+body.sa-light .policy-inline-check,
+body.sa-light .policy-card-foot-value,
+body.sa-light .policy-history-item-value {
+    color:#334155;
+}
+body.sa-light .adm-context-record-meta,
+body.sa-light .policy-overview-eyebrow,
+body.sa-light .policy-overview-meta,
+body.sa-light .policy-history-item-meta,
+body.sa-light .policy-history-item-time,
+body.sa-light .policy-card-foot-note,
+body.sa-light .adm-card-subtitle {
+    color:#64748b;
+}
+body.sa-light .policy-history-item,
+body.sa-light .policy-history-empty {
+    background:#f8fafc;
+    color:#64748b;
+}
 
 /* 액션 드롭다운 메뉴 */
 body.sa-light .action-menu          { background:#fff; border-color:#e2e8f0; box-shadow:0 8px 24px rgba(15,23,42,.08); }

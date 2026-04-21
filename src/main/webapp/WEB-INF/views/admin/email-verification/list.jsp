@@ -1,8 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="emailVerifications"/>
-<c:set var="pageTitle" value="이메일 액션 요청"/>
+<spring:message code="admin.emailRequests.pageTitle" var="adminEmailRequestsPageTitle"/>
+<c:set var="pageTitle" value="${adminEmailRequestsPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -11,14 +13,14 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/email-verifications">
                 <div class="adm-filter-bar">
                     <div class="adm-search-box" style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label">검색</div>
+                        <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
                         <span class="adm-search-ico">🔍</span>
-                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="아이디, 닉네임, 대상 이메일, 요청ID, IP 검색">
+                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="<spring:message code='admin.emailRequests.searchPlaceholder'/>">
                     </div>
                     <div>
-                        <div class="adm-filter-label">목적</div>
+                        <div class="adm-filter-label"><spring:message code="admin.emailRequests.purpose"/></div>
                         <select class="adm-select" name="purpose">
-                            <option value="ALL" ${search.purpose=='ALL'?'selected':''}>전체</option>
+                            <option value="ALL" ${search.purpose=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
                             <option value="PROFILE_EMAIL" ${search.purpose=='PROFILE_EMAIL'?'selected':''}>PROFILE_EMAIL</option>
                             <option value="FIND_ID" ${search.purpose=='FIND_ID'?'selected':''}>FIND_ID</option>
                             <option value="RESET_PW" ${search.purpose=='RESET_PW'?'selected':''}>RESET_PW</option>
@@ -26,9 +28,9 @@
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">상태</div>
+                        <div class="adm-filter-label"><spring:message code="admin.common.status"/></div>
                         <select class="adm-select" name="status">
-                            <option value="ALL" ${search.status=='ALL'?'selected':''}>전체</option>
+                            <option value="ALL" ${search.status=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
                             <option value="REQUESTED" ${search.status=='REQUESTED'?'selected':''}>REQUESTED</option>
                             <option value="VERIFIED" ${search.status=='VERIFIED'?'selected':''}>VERIFIED</option>
                             <option value="APPLIED" ${search.status=='APPLIED'?'selected':''}>APPLIED</option>
@@ -36,7 +38,7 @@
                             <option value="CANCELLED" ${search.status=='CANCELLED'?'selected':''}>CANCELLED</option>
                         </select>
                     </div>
-                    <button class="adm-btn adm-btn-primary" type="submit">조회</button>
+                    <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
                 </div>
             </form>
         </div>
@@ -44,23 +46,23 @@
 
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">이메일 액션 요청 이력</div>
-            <div style="font-size:12px;color:#64748b;">총 ${total}건</div>
+            <div class="adm-card-title"><spring:message code="admin.emailRequests.historyTitle"/></div>
+            <div style="font-size:12px;color:#64748b;"><spring:message code="admin.common.totalCount" arguments="${total}"/></div>
         </div>
         <div class="adm-table-wrap">
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th>요청시각</th>
-                    <th>회원</th>
-                    <th>목적</th>
-                    <th>요청 이메일</th>
-                    <th>상태</th>
-                    <th>인증시각</th>
-                    <th>반영시각</th>
-                    <th>만료시각</th>
+                    <th><spring:message code="admin.emailRequests.requestedAt"/></th>
+                    <th><spring:message code="admin.common.member"/></th>
+                    <th><spring:message code="admin.emailRequests.purpose"/></th>
+                    <th><spring:message code="admin.context.requestEmail"/></th>
+                    <th><spring:message code="admin.common.status"/></th>
+                    <th><spring:message code="admin.emailRequests.verifiedAt"/></th>
+                    <th><spring:message code="admin.emailRequests.appliedAt"/></th>
+                    <th><spring:message code="admin.context.expiresAt"/></th>
                     <th>IP</th>
-                    <th>요청 ID</th>
+                    <th><spring:message code="admin.context.requestId"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -84,7 +86,7 @@
                                     </div>
                                 </c:when>
                                 <c:otherwise>
-                                    <div class="mem-name">미식별 요청</div>
+                                    <div class="mem-name"><spring:message code="admin.emailRequests.unknownRequest"/></div>
                                     <div class="mem-uid">-</div>
                                 </c:otherwise>
                             </c:choose>
@@ -111,7 +113,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;">조회 결과가 없습니다.</td></tr>
+                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -124,7 +126,7 @@
                     <button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>
                 </c:forEach>
                 <c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if>
-                <span class="adm-page-info">${paging.currentPage} / ${paging.totalPage} 페이지</span>
+                <span class="adm-page-info"><spring:message code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/></span>
             </div>
         </c:if>
     </div>
