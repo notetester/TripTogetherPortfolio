@@ -475,7 +475,7 @@
                 </table>
             </div>
             <div class="adm-local-pagination" data-section="user-blocks">
-                <div class="adm-local-page-info js-local-page-info" data-section="user-blocks">0건</div>
+                <div class="adm-local-page-info js-local-page-info" data-section="user-blocks">0</div>
                 <div class="adm-local-page-actions">
                     <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="user-blocks"><spring:message code="admin.common.prev"/></button>
                     <span class="js-local-page-state" data-section="user-blocks">1 / 1</span>
@@ -745,35 +745,35 @@
 
     <div class="adm-card js-section-card" data-section="batches" style="margin-bottom:20px;">
         <div class="adm-card-head">
-            <div class="adm-card-title">IP 정책 배치</div>
-            <div class="adm-card-sub">배치 기본 전략과 개별 예외를 함께 관리합니다.</div>
+            <div class="adm-card-title"><spring:message code="admin.blocks.section.batches"/></div>
+            <div class="adm-card-sub"><spring:message code="admin.blocks.batches.sub"/></div>
         </div>
         <div class="adm-card-body" style="padding:0;">
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="batches">
-                        <option value="all">전체 항목</option>
-                        <option value="batch">배치명 / 코드</option>
-                        <option value="source">출처</option>
-                        <option value="description">설명</option>
-                        <option value="policy">기본 정책</option>
-                        <option value="status">상태</option>
-                        <option value="updatedAt">최근 수정</option>
+                        <option value="all"><spring:message code="admin.blocks.filter.allFields"/></option>
+                        <option value="batch"><spring:message code="admin.blocks.filter.batchNameCode"/></option>
+                        <option value="source"><spring:message code="admin.blocks.filter.source"/></option>
+                        <option value="description"><spring:message code="admin.blocks.description"/></option>
+                        <option value="policy"><spring:message code="admin.blocks.filter.basePolicy"/></option>
+                        <option value="status"><spring:message code="admin.common.status"/></option>
+                        <option value="updatedAt"><spring:message code="admin.blocks.filter.recentUpdated"/></option>
                     </select>
-                    <input type="text" class="adm-input js-local-keyword" data-section="batches" placeholder="IP 정책 배치 내 검색">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="batches">초기화</button>
+                    <input type="text" class="adm-input js-local-keyword" data-section="batches" placeholder="<spring:message code='admin.blocks.batches.searchPlaceholder'/>">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="batches"><spring:message code="admin.common.reset"/></button>
                 </div>
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-page-size" data-section="batches">
-                        <option value="10">10개씩</option>
-                        <option value="20" selected>20개씩</option>
-                        <option value="50">50개씩</option>
+                        <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
+                        <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
+                        <option value="50"><spring:message code="admin.common.pageSize" arguments="50"/></option>
                     </select>
                 </div>
             </div>
             <div class="adm-table-wrap">
                 <table class="adm-table">
-                    <thead><tr><th>배치</th><th>기본 정책</th><th>현재 상태</th><th>규칙 통계</th><th>설명</th><th>액션</th></tr></thead>
+                    <thead><tr><th><spring:message code="admin.blocks.batch"/></th><th><spring:message code="admin.blocks.basePolicy"/></th><th><spring:message code="admin.blocks.currentState"/></th><th><spring:message code="admin.blocks.ruleStats"/></th><th><spring:message code="admin.blocks.description"/></th><th><spring:message code="admin.common.action"/></th></tr></thead>
                     <tbody>
                     <c:forEach var="b" items="${batches}">
                         <fmt:formatDate var="batchCreatedAtText" value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
@@ -814,18 +814,18 @@
                             </td>
                             <td>
                                 <div>${b.batchRuleActionLabel}</div>
-                                <div style="font-size:12px;color:#94a3b8;">기본 우선순위 ${b.defaultRulePriority}</div>
+                                <div style="font-size:12px;color:#94a3b8;"><spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</div>
                                 <div style="font-size:11px;color:#64748b;">OFF: ${b.defaultDisableStrategyLabel}</div>
                                 <div style="font-size:11px;color:#64748b;">ON: ${b.defaultEnableStrategyLabel}</div>
                             </td>
                             <td>
                                 <div><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.activeLabel}</span></div>
-                                <div style="font-size:12px;color:#94a3b8;">차단 ${b.blockRuleCount} / 허용 ${b.allowRuleCount}</div>
+                                <div style="font-size:12px;color:#94a3b8;"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</div>
                             </td>
                             <td>
-                                <div>전체 ${b.totalRuleCount} / 개별 ON ${b.activeRuleCount}</div>
-                                <div style="font-size:11px;color:#64748b;">배치 제어 ${b.batchManagedRuleCount} / 수동 예외 ${b.manualOverrideRuleCount}</div>
-                                <div style="font-size:11px;color:#64748b;">최종 적용 ${b.effectiveRuleCount} / 만료 ${b.expiredRuleCount}</div>
+                                <div><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</div>
+                                <div style="font-size:11px;color:#64748b;"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount} / <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</div>
+                                <div style="font-size:11px;color:#64748b;"><spring:message code="admin.blocks.effectiveState"/> ${b.effectiveRuleCount} / <spring:message code="admin.blocks.effective.expired"/> ${b.expiredRuleCount}</div>
                             </td>
                             <td style="max-width:260px;white-space:normal;">${empty b.description ? '-' : b.description}</td>
                             <td>
@@ -847,8 +847,8 @@
                                         data-total-rules="${b.totalRuleCount}"
                                         data-active-rules="${b.activeRuleCount}"
                                         data-effective-rules="${b.effectiveRuleCount}"
-                                        data-expired-rules="${b.expiredRuleCount}">설정</button>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-batch-${b.ipBlockBatchIdx}">상세</button>
+                                        data-expired-rules="${b.expiredRuleCount}"><spring:message code="admin.common.settings"/></button>
+                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-batch-${b.ipBlockBatchIdx}"><spring:message code="admin.common.detail"/></button>
                                 <c:if test="${hasBlockPolicyAdmin}">
                                     <button type="button"
                                             class="adm-row-btn ${b.active ? 'danger' : 'detail'} js-open-batch-toggle"
@@ -859,24 +859,27 @@
                                             data-effective-rules="${b.effectiveRuleCount}"
                                             data-default-disable-strategy="${b.defaultDisableStrategy}"
                                             data-default-enable-strategy="${b.defaultEnableStrategy}">
-                                        ${b.active ? '비활성화' : '재활성화'}
+                                        <c:choose>
+                                            <c:when test="${b.active}"><spring:message code="admin.blocks.batchDeactivate"/></c:when>
+                                            <c:otherwise><spring:message code="admin.blocks.batchReactivate"/></c:otherwise>
+                                        </c:choose>
                                     </button>
                                 </c:if>
                             </td>
                         </tr>
                     </c:forEach>
                     <c:if test="${empty batches}">
-                        <tr><td colspan="6" style="text-align:center;padding:32px;color:#64748b;">데이터가 없습니다.</td></tr>
+                        <tr><td colspan="6" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                     </c:if>
                     </tbody>
                 </table>
             </div>
             <div class="adm-local-pagination" data-section="batches">
-                <div class="adm-local-page-info js-local-page-info" data-section="batches">0건</div>
+                <div class="adm-local-page-info js-local-page-info" data-section="batches">0</div>
                 <div class="adm-local-page-actions">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="batches">이전</button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="batches"><spring:message code="admin.common.prev"/></button>
                     <span class="js-local-page-state" data-section="batches">1 / 1</span>
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="batches">다음</button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="batches"><spring:message code="admin.common.next"/></button>
                 </div>
             </div>
         </div>
@@ -885,22 +888,22 @@
     <c:forEach var="b" items="${batches}">
         <template id="detail-batch-${b.ipBlockBatchIdx}">
             <div class="detail-grid">
-                <div class="detail-item"><div class="detail-label">배치명</div><div class="detail-value">${b.batchName}</div></div>
-                <div class="detail-item"><div class="detail-label">배치 코드</div><div class="detail-value">${b.batchCode}</div></div>
-                <div class="detail-item"><div class="detail-label">상태</div><div class="detail-value">${b.activeLabel}</div></div>
-                <div class="detail-item"><div class="detail-label">출처</div><div class="detail-value">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</div></div>
-                <div class="detail-item"><div class="detail-label">기본 동작</div><div class="detail-value">${b.batchRuleActionLabel} / 우선순위 ${b.defaultRulePriority}</div></div>
-                <div class="detail-item"><div class="detail-label">기본 전략</div><div class="detail-value">OFF: ${b.defaultDisableStrategyLabel} / ON: ${b.defaultEnableStrategyLabel}</div></div>
-                <div class="detail-item"><div class="detail-label">규칙 수</div><div class="detail-value">전체 ${b.totalRuleCount}, 개별 ON ${b.activeRuleCount}</div></div>
-                <div class="detail-item"><div class="detail-label">제어 구성</div><div class="detail-value">배치 제어 ${b.batchManagedRuleCount}, 수동 예외 ${b.manualOverrideRuleCount}</div></div>
-                <div class="detail-item"><div class="detail-label">최종 적용</div><div class="detail-value">${b.effectiveRuleCount}개 적용 / ${b.expiredRuleCount}개 만료</div></div>
-                <div class="detail-item"><div class="detail-label">동작 구성</div><div class="detail-value">차단 ${b.blockRuleCount} / 허용 ${b.allowRuleCount}</div></div>
-                <div class="detail-item"><div class="detail-label">생성</div><div class="detail-value">${empty b.createdByNickname ? '-' : b.createdByNickname} / <fmt:formatDate value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
-                <div class="detail-item"><div class="detail-label">최근 수정</div><div class="detail-value">${empty b.updatedByNickname ? '-' : b.updatedByNickname} / <fmt:formatDate value="${b.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.batchName"/></div><div class="detail-value">${b.batchName}</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.batchCode"/></div><div class="detail-value">${b.batchCode}</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.status"/></div><div class="detail-value">${b.activeLabel}</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.source"/></div><div class="detail-value">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.baseAction"/></div><div class="detail-value">${b.batchRuleActionLabel} / <spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.baseStrategy"/></div><div class="detail-value">OFF: ${b.defaultDisableStrategyLabel} / ON: ${b.defaultEnableStrategyLabel}</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.ruleCount"/></div><div class="detail-value"><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.controlComposition"/></div><div class="detail-value"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount}, <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.effectiveState"/></div><div class="detail-value">${b.effectiveRuleCount}<spring:message code="admin.common.countSuffix"/> <spring:message code="admin.blocks.effective.effective"/> / ${b.expiredRuleCount}<spring:message code="admin.common.countSuffix"/> <spring:message code="admin.blocks.effective.expired"/></div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.actionComposition"/></div><div class="detail-value"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.createdAt"/></div><div class="detail-value">${empty b.createdByNickname ? '-' : b.createdByNickname} / <fmt:formatDate value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.updatedAt"/></div><div class="detail-value">${empty b.updatedByNickname ? '-' : b.updatedByNickname} / <fmt:formatDate value="${b.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
             </div>
-            <div class="detail-item" style="margin-top:14px;"><div class="detail-label">상세 설명</div><div class="detail-value">${empty b.description ? '-' : fn:escapeXml(b.description)}</div></div>
+            <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.detailDescription"/></div><div class="detail-value">${empty b.description ? '-' : fn:escapeXml(b.description)}</div></div>
             <table class="history-table" style="margin-top:14px;">
-                <thead><tr><th>최근 배치 작업</th><th>옵션</th><th>영향</th><th>시각</th></tr></thead>
+                <thead><tr><th><spring:message code="admin.blocks.recentBatchOperation"/></th><th><spring:message code="admin.blocks.option"/></th><th><spring:message code="admin.blocks.impact"/></th><th><spring:message code="admin.common.time"/></th></tr></thead>
                 <tbody>
                 <c:forEach var="op" items="${batchOperations}">
                     <c:if test="${op.ipBlockBatchIdx == b.ipBlockBatchIdx}">
@@ -915,7 +918,7 @@
                 </tbody>
             </table>
             <table class="history-table" style="margin-top:14px;">
-                <thead><tr><th>연결 규칙</th><th>동작</th><th>제어</th><th>상태</th></tr></thead>
+                <thead><tr><th><spring:message code="admin.blocks.connectedRule"/></th><th><spring:message code="admin.common.actionLabel"/></th><th><spring:message code="admin.blocks.controlMode"/></th><th><spring:message code="admin.common.status"/></th></tr></thead>
                 <tbody>
                 <c:forEach var="rule" items="${ipBlocks}">
                     <c:if test="${rule.ipBlockBatchIdx == b.ipBlockBatchIdx}">
@@ -934,36 +937,36 @@
 
     <div class="adm-card js-section-card" data-section="histories">
         <div class="adm-card-head">
-            <div class="adm-card-title">통합 차단 이력</div>
-            <div class="adm-card-sub">규칙 생성, 개별 예외, 배치 동기화까지 함께 추적합니다.</div>
+            <div class="adm-card-title"><spring:message code="admin.blocks.section.histories"/></div>
+            <div class="adm-card-sub"><spring:message code="admin.blocks.histories.sub"/></div>
         </div>
         <div class="adm-card-body" style="padding:0;">
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="histories">
-                        <option value="all">전체 항목</option>
-                        <option value="target">대상</option>
-                        <option value="member">회원</option>
-                        <option value="change">변경 종류</option>
-                        <option value="reason">사유 / 설명</option>
-                        <option value="batch">배치</option>
-                        <option value="blockedAt">차단 날짜</option>
-                        <option value="expiresAt">만료 날짜</option>
+                        <option value="all"><spring:message code="admin.blocks.filter.allFields"/></option>
+                        <option value="target"><spring:message code="admin.common.target"/></option>
+                        <option value="member"><spring:message code="admin.common.member"/></option>
+                        <option value="change"><spring:message code="admin.blocks.changeKind"/></option>
+                        <option value="reason"><spring:message code="admin.blocks.filter.reasonDescription"/></option>
+                        <option value="batch"><spring:message code="admin.context.batch"/></option>
+                        <option value="blockedAt"><spring:message code="admin.blocks.filter.blockedDate"/></option>
+                        <option value="expiresAt"><spring:message code="admin.blocks.filter.expireDate"/></option>
                     </select>
-                    <input type="text" class="adm-input js-local-keyword" data-section="histories" placeholder="통합 차단 이력 내 검색">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="histories">초기화</button>
+                    <input type="text" class="adm-input js-local-keyword" data-section="histories" placeholder="<spring:message code='admin.blocks.histories.searchPlaceholder'/>">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="histories"><spring:message code="admin.common.reset"/></button>
                 </div>
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-page-size" data-section="histories">
-                        <option value="10">10개씩</option>
-                        <option value="20" selected>20개씩</option>
-                        <option value="50">50개씩</option>
+                        <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
+                        <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
+                        <option value="50"><spring:message code="admin.common.pageSize" arguments="50"/></option>
                     </select>
                 </div>
             </div>
             <div class="adm-table-wrap">
                 <table class="adm-table">
-                    <thead><tr><th>시각</th><th>대상</th><th>동작</th><th>변경</th><th>결과</th><th>사유</th><th>액션</th></tr></thead>
+                    <thead><tr><th><spring:message code="admin.common.time"/></th><th><spring:message code="admin.common.target"/></th><th><spring:message code="admin.common.actionLabel"/></th><th><spring:message code="admin.blocks.changeKind"/></th><th><spring:message code="admin.blocks.result"/></th><th><spring:message code="admin.common.reason"/></th><th><spring:message code="admin.common.action"/></th></tr></thead>
                     <tbody>
                     <c:forEach var="h" items="${histories}">
                         <c:set var="historyCurrentType" value="IP_RULE"/>
@@ -1014,23 +1017,23 @@
                                         data-target-key="${fn:escapeXml(h.blockTargetKey)}"
                                         data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
                                         data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
-                                        data-template-id="detail-history-${h.blockIdx}">현재 설정</button>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-history-${h.blockIdx}">상세</button>
+                                        data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.blocks.currentSetting"/></button>
+                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.common.detail"/></button>
                             </td>
                         </tr>
                     </c:forEach>
                     <c:if test="${empty histories}">
-                        <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;">데이터가 없습니다.</td></tr>
+                        <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                     </c:if>
                     </tbody>
                 </table>
             </div>
             <div class="adm-local-pagination" data-section="histories">
-                <div class="adm-local-page-info js-local-page-info" data-section="histories">0건</div>
+                <div class="adm-local-page-info js-local-page-info" data-section="histories">0</div>
                 <div class="adm-local-page-actions">
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="histories">이전</button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="histories"><spring:message code="admin.common.prev"/></button>
                     <span class="js-local-page-state" data-section="histories">1 / 1</span>
-                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="histories">다음</button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="histories"><spring:message code="admin.common.next"/></button>
                 </div>
             </div>
         </div>
@@ -1040,29 +1043,29 @@
 <c:forEach var="h" items="${histories}">
     <template id="detail-history-${h.blockIdx}">
         <div class="detail-grid">
-            <div class="detail-item"><div class="detail-label">대상 키</div><div class="detail-value">${h.blockTargetKey}</div></div>
-            <div class="detail-item"><div class="detail-label">이력 종류</div><div class="detail-value">${h.historyKind}</div></div>
-            <div class="detail-item"><div class="detail-label">규칙 동작</div><div class="detail-value">${empty h.ruleAction ? '-' : h.ruleAction}</div></div>
-            <div class="detail-item"><div class="detail-label">제어 방식</div><div class="detail-value">${empty h.controlMode ? '-' : h.controlMode}</div></div>
-            <div class="detail-item"><div class="detail-label">회원</div><div class="detail-value">${empty h.nickname ? '-' : h.nickname} / ${empty h.userId ? '-' : h.userId}</div></div>
-            <div class="detail-item"><div class="detail-label">차단 유형</div><div class="detail-value">${h.blockType}</div></div>
-            <div class="detail-item"><div class="detail-label">차단 IP</div><div class="detail-value">${empty h.blockedIp ? '-' : h.blockedIp}</div></div>
-            <div class="detail-item"><div class="detail-label">출처 / 매칭</div><div class="detail-value">${h.blockScope} / ${empty h.ipMatchType ? '-' : h.ipMatchType}</div></div>
-            <div class="detail-item"><div class="detail-label">배치</div><div class="detail-value">${empty h.batchName ? '-' : h.batchName} <c:if test="${not empty h.batchCode}">(${h.batchCode})</c:if></div></div>
-            <div class="detail-item"><div class="detail-label">배치 작업</div><div class="detail-value">${empty h.batchOperationIdx ? '-' : h.batchOperationIdx}</div></div>
-            <div class="detail-item"><div class="detail-label">차단 시각</div><div class="detail-value"><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
-            <div class="detail-item"><div class="detail-label">만료 시각</div><div class="detail-value"><c:choose><c:when test="${h.expiresAtDate != null}"><fmt:formatDate value="${h.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>없음</c:otherwise></c:choose></div></div>
-            <div class="detail-item"><div class="detail-label">해제 시각</div><div class="detail-value"><c:choose><c:when test="${h.releasedAtDate != null}"><fmt:formatDate value="${h.releasedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
-            <div class="detail-item"><div class="detail-label">동기화</div><div class="detail-value"><c:choose><c:when test="${h.listSyncedAtDate != null}"><fmt:formatDate value="${h.listSyncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.targetKey"/></div><div class="detail-value">${h.blockTargetKey}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.historyKind"/></div><div class="detail-value">${h.historyKind}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.ruleAction"/></div><div class="detail-value">${empty h.ruleAction ? '-' : h.ruleAction}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.controlMode"/></div><div class="detail-value">${empty h.controlMode ? '-' : h.controlMode}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.member"/></div><div class="detail-value">${empty h.nickname ? '-' : h.nickname} / ${empty h.userId ? '-' : h.userId}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.filter.blockType"/></div><div class="detail-value">${h.blockType}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.blockedIp"/></div><div class="detail-value">${empty h.blockedIp ? '-' : h.blockedIp}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.sourceMatch"/></div><div class="detail-value">${h.blockScope} / ${empty h.ipMatchType ? '-' : h.ipMatchType}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.batch"/></div><div class="detail-value">${empty h.batchName ? '-' : h.batchName} <c:if test="${not empty h.batchCode}">(${h.batchCode})</c:if></div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.batchOperation"/></div><div class="detail-value">${empty h.batchOperationIdx ? '-' : h.batchOperationIdx}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.blockedAt"/></div><div class="detail-value"><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.expiresAt"/></div><div class="detail-value"><c:choose><c:when test="${h.expiresAtDate != null}"><fmt:formatDate value="${h.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>${adminBlocksNoneLabel}</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.releasedAt"/></div><div class="detail-value"><c:choose><c:when test="${h.releasedAtDate != null}"><fmt:formatDate value="${h.releasedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.syncedAt"/></div><div class="detail-value"><c:choose><c:when test="${h.listSyncedAtDate != null}"><fmt:formatDate value="${h.listSyncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
         </div>
-        <div class="detail-item" style="margin-top:14px;"><div class="detail-label">변경 설명</div><div class="detail-value">${empty h.controlReason ? '-' : fn:escapeXml(h.controlReason)}</div></div>
+        <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.changeDescription"/></div><div class="detail-value">${empty h.controlReason ? '-' : fn:escapeXml(h.controlReason)}</div></div>
         <table class="history-table" style="margin-top:14px;">
-            <thead><tr><th>스냅샷</th><th>변경 전</th><th>변경 후</th></tr></thead>
+            <thead><tr><th><spring:message code="admin.blocks.snapshot"/></th><th><spring:message code="admin.context.before"/></th><th><spring:message code="admin.context.after"/></th></tr></thead>
             <tbody>
-            <tr><td>개별 상태</td><td>${empty h.beforeRuleIsActive ? '-' : (h.beforeRuleIsActive ? 'ON' : 'OFF')}</td><td>${empty h.afterRuleIsActive ? '-' : (h.afterRuleIsActive ? 'ON' : 'OFF')}</td></tr>
-            <tr><td>배치 상태</td><td>${empty h.beforeBatchIsActive ? '-' : (h.beforeBatchIsActive ? 'ON' : 'OFF')}</td><td>${empty h.afterBatchIsActive ? '-' : (h.afterBatchIsActive ? 'ON' : 'OFF')}</td></tr>
-            <tr><td>최종 적용</td><td>${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus}</td><td>${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</td></tr>
-            <tr><td>결과 코드</td><td colspan="2">${empty h.effectiveResult ? '-' : h.effectiveResult}</td></tr>
+            <tr><td><spring:message code="admin.blocks.ruleState"/></td><td>${empty h.beforeRuleIsActive ? '-' : (h.beforeRuleIsActive ? 'ON' : 'OFF')}</td><td>${empty h.afterRuleIsActive ? '-' : (h.afterRuleIsActive ? 'ON' : 'OFF')}</td></tr>
+            <tr><td><spring:message code="admin.blocks.batchState"/></td><td>${empty h.beforeBatchIsActive ? '-' : (h.beforeBatchIsActive ? 'ON' : 'OFF')}</td><td>${empty h.afterBatchIsActive ? '-' : (h.afterBatchIsActive ? 'ON' : 'OFF')}</td></tr>
+            <tr><td><spring:message code="admin.blocks.effectiveState"/></td><td>${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus}</td><td>${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</td></tr>
+            <tr><td><spring:message code="admin.blocks.resultCode"/></td><td colspan="2">${empty h.effectiveResult ? '-' : h.effectiveResult}</td></tr>
             </tbody>
         </table>
     </template>
@@ -1153,27 +1156,27 @@
             <input type="hidden" id="ipRuleEditTemplateId">
             <input type="hidden" id="ipRuleEditHasBatch">
             <div class="detail-grid">
-                <div class="detail-item"><div class="detail-label">대상</div><div class="detail-value" id="ipRuleEditTarget">-</div></div>
-                <div class="detail-item"><div class="detail-label">배치</div><div class="detail-value" id="ipRuleEditBatch">-</div></div>
-                <div class="detail-item"><div class="detail-label">개별 상태</div><div class="detail-value" id="ipRuleEditRuleState">-</div></div>
-                <div class="detail-item"><div class="detail-label">최종 적용</div><div class="detail-value" id="ipRuleEditFinalState">-</div></div>
-                <div class="detail-item"><div class="detail-label">생성 시각</div><div class="detail-value" id="ipRuleEditBlockedAt">-</div></div>
-                <div class="detail-item"><div class="detail-label">현재 만료</div><div class="detail-value" id="ipRuleEditExpiresDisplay">-</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.target"/></div><div class="detail-value" id="ipRuleEditTarget">-</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.batch"/></div><div class="detail-value" id="ipRuleEditBatch">-</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.ruleState"/></div><div class="detail-value" id="ipRuleEditRuleState">-</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.effectiveState"/></div><div class="detail-value" id="ipRuleEditFinalState">-</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.createdAt"/></div><div class="detail-value" id="ipRuleEditBlockedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.expiresAt"/></div><div class="detail-value" id="ipRuleEditExpiresDisplay">-</div></div>
             </div>
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;margin-top:18px;">
                 <div class="sa-form-group">
-                    <label class="sa-form-label">규칙 동작</label>
+                    <label class="sa-form-label"><spring:message code="admin.context.ruleAction"/></label>
                     <select id="ipRuleEditAction" class="adm-select">
-                        <option value="BLOCK">차단</option>
-                        <option value="ALLOW">허용</option>
+                        <option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option>
+                        <option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">제어 방식</label>
+                    <label class="sa-form-label"><spring:message code="admin.blocks.controlMode"/></label>
                     <select id="ipRuleEditControlMode" class="adm-select"></select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">분류</label>
+                    <label class="sa-form-label"><spring:message code="admin.context.category"/></label>
                     <select id="ipRuleEditCategory" class="adm-select">
                         <option value="MANUAL">MANUAL</option>
                         <option value="SPAM">SPAM</option>
@@ -1185,25 +1188,25 @@
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">우선순위</label>
+                    <label class="sa-form-label"><spring:message code="admin.context.priority"/></label>
                     <input id="ipRuleEditPriority" class="adm-input" type="number" min="1">
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label">만료 시각</label>
+                    <label class="sa-form-label"><spring:message code="admin.context.expiresAt"/></label>
                     <input id="ipRuleEditExpiresAt" class="adm-input" type="datetime-local">
                     <div class="adm-quick-row">
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="1">+1일</button>
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="7">+7일</button>
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="30">+30일</button>
-                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="ipRuleEditExpiresAt">무기한</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="1"><spring:message code="admin.common.plusDays" arguments="1"/></button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="7"><spring:message code="admin.common.plusDays" arguments="7"/></button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipRuleEditExpiresAt" data-days="30"><spring:message code="admin.common.plusDays" arguments="30"/></button>
+                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="ipRuleEditExpiresAt"><spring:message code="admin.common.indefinite"/></button>
                     </div>
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label">정책 사유</label>
+                    <label class="sa-form-label"><spring:message code="admin.blocks.policyReason"/></label>
                     <textarea id="ipRuleEditReason" class="adm-input" style="min-height:100px;"></textarea>
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label">상세 메모</label>
+                    <label class="sa-form-label"><spring:message code="admin.blocks.description"/></label>
                     <textarea id="ipRuleEditDetailMessage" class="adm-input" style="min-height:100px;"></textarea>
                 </div>
             </div>
@@ -1225,32 +1228,32 @@
         <div class="adm-modal-body">
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;">
                 <div class="sa-form-group">
-                    <label class="sa-form-label">규칙 동작</label>
+                    <label class="sa-form-label"><spring:message code="admin.context.ruleAction"/></label>
                     <select id="ipRuleAction" class="adm-select">
-                        <option value="BLOCK">차단</option>
-                        <option value="ALLOW">허용</option>
+                        <option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option>
+                        <option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">제어 방식</label>
+                    <label class="sa-form-label"><spring:message code="admin.blocks.controlMode"/></label>
                     <select id="ipControlMode" class="adm-select">
-                        <option value="MANUAL">수동</option>
-                        <option value="BATCH">배치 제어</option>
-                        <option value="MANUAL_OVERRIDE">수동 예외</option>
+                        <option value="MANUAL"><spring:message code="admin.blocks.control.manual"/></option>
+                        <option value="BATCH"><spring:message code="admin.blocks.control.batch"/></option>
+                        <option value="MANUAL_OVERRIDE"><spring:message code="admin.blocks.control.override"/></option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">매칭 방식</label>
+                    <label class="sa-form-label"><spring:message code="admin.blocks.matchType"/></label>
                     <select id="ipMatchType" class="adm-select" onchange="handleIpRuleTypeChange()">
-                        <option value="SINGLE_IP">단일 IP</option>
+                        <option value="SINGLE_IP"><spring:message code="admin.blocks.match.singleIp"/></option>
                         <option value="CIDR">CIDR</option>
-                        <option value="RANGE">범위</option>
-                        <option value="COUNTRY">국가</option>
+                        <option value="RANGE"><spring:message code="admin.blocks.match.range"/></option>
+                        <option value="COUNTRY"><spring:message code="admin.blocks.match.country"/></option>
                         <option value="ASN">ASN</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">분류</label>
+                    <label class="sa-form-label"><spring:message code="admin.context.category"/></label>
                     <select id="ipBlockCategory" class="adm-select">
                         <option value="MANUAL">MANUAL</option>
                         <option value="SPAM">SPAM</option>
@@ -1262,58 +1265,58 @@
                     </select>
                 </div>
                 <div class="sa-form-group" id="fieldSingleIp">
-                    <label class="sa-form-label">IP 주소</label>
-                    <input id="ipAddressInput" class="adm-input" type="text" placeholder="예: 203.0.113.10">
+                    <label class="sa-form-label">IP</label>
+                    <input id="ipAddressInput" class="adm-input" type="text" placeholder="203.0.113.10">
                 </div>
                 <div class="sa-form-group" id="fieldCidr" style="display:none;">
                     <label class="sa-form-label">CIDR</label>
-                    <input id="cidrNotationInput" class="adm-input" type="text" placeholder="예: 203.0.113.0/24">
+                    <input id="cidrNotationInput" class="adm-input" type="text" placeholder="203.0.113.0/24">
                 </div>
                 <div class="sa-form-group" id="fieldRangeStart" style="display:none;">
-                    <label class="sa-form-label">범위 시작 IP</label>
-                    <input id="rangeStartInput" class="adm-input" type="text" placeholder="예: 203.0.113.1">
+                    <label class="sa-form-label"><spring:message code="admin.blocks.rangeStartIp"/></label>
+                    <input id="rangeStartInput" class="adm-input" type="text" placeholder="203.0.113.1">
                 </div>
                 <div class="sa-form-group" id="fieldRangeEnd" style="display:none;">
-                    <label class="sa-form-label">범위 끝 IP</label>
-                    <input id="rangeEndInput" class="adm-input" type="text" placeholder="예: 203.0.113.255">
+                    <label class="sa-form-label"><spring:message code="admin.blocks.rangeEndIp"/></label>
+                    <input id="rangeEndInput" class="adm-input" type="text" placeholder="203.0.113.255">
                 </div>
                 <div class="sa-form-group" id="fieldCountry" style="display:none;">
-                    <label class="sa-form-label">국가 코드</label>
-                    <input id="countryCodeInput" class="adm-input" type="text" placeholder="예: CN">
+                    <label class="sa-form-label"><spring:message code="admin.blocks.countryCode"/></label>
+                    <input id="countryCodeInput" class="adm-input" type="text" placeholder="CN">
                 </div>
                 <div class="sa-form-group" id="fieldAsn" style="display:none;">
                     <label class="sa-form-label">ASN</label>
-                    <input id="asnInput" class="adm-input" type="text" placeholder="예: AS12345">
+                    <input id="asnInput" class="adm-input" type="text" placeholder="AS12345">
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">배치</label>
+                    <label class="sa-form-label"><spring:message code="admin.context.batch"/></label>
                     <select id="ipBatchIdx" class="adm-select" onchange="handleIpBatchChange()">
-                        <option value="">(없음)</option>
+                        <option value="">${adminBlocksNoneLabel}</option>
                         <c:forEach var="b" items="${batches}">
                             <option value="${b.ipBlockBatchIdx}">${b.batchName} (${b.batchCode})</option>
                         </c:forEach>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">우선순위</label>
+                    <label class="sa-form-label"><spring:message code="admin.context.priority"/></label>
                     <input id="ipPriority" class="adm-input" type="number" min="1" value="1">
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label">만료 시각</label>
+                    <label class="sa-form-label"><spring:message code="admin.context.expiresAt"/></label>
                     <input id="ipExpiresAt" class="adm-input" type="datetime-local">
                     <div class="adm-quick-row">
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="1">+1일</button>
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="7">+7일</button>
-                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="30">+30일</button>
-                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="ipExpiresAt">무기한</button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="1"><spring:message code="admin.common.plusDays" arguments="1"/></button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="7"><spring:message code="admin.common.plusDays" arguments="7"/></button>
+                        <button type="button" class="adm-chip-btn js-expiry-preset" data-target="ipExpiresAt" data-days="30"><spring:message code="admin.common.plusDays" arguments="30"/></button>
+                        <button type="button" class="adm-chip-btn js-expiry-clear" data-target="ipExpiresAt"><spring:message code="admin.common.indefinite"/></button>
                     </div>
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label">정책 사유</label>
+                    <label class="sa-form-label"><spring:message code="admin.blocks.policyReason"/></label>
                     <textarea id="ipReason" class="adm-input" style="min-height:90px;"></textarea>
                 </div>
                 <div class="sa-form-group" style="grid-column:1 / span 2;">
-                    <label class="sa-form-label">상세 메모</label>
+                    <label class="sa-form-label"><spring:message code="admin.blocks.description"/></label>
                     <textarea id="ipDetailMessage" class="adm-input" style="min-height:90px;"></textarea>
                 </div>
             </div>
@@ -1333,15 +1336,15 @@
         </div>
         <div class="adm-modal-body">
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;">
-                <div class="sa-form-group"><label class="sa-form-label">배치 코드</label><input id="batchCode" class="adm-input" type="text" placeholder="예: VPN_FEED_202604"></div>
-                <div class="sa-form-group"><label class="sa-form-label">배치명</label><input id="batchName" class="adm-input" type="text" placeholder="예: VPN 공개 대역 2026.04"></div>
-                <div class="sa-form-group"><label class="sa-form-label">출처 유형</label><select id="batchSourceType" class="adm-select"><option value="MANUAL">MANUAL</option><option value="VPN_FEED">VPN_FEED</option><option value="SPAM_FEED">SPAM_FEED</option><option value="GEO_POLICY">GEO_POLICY</option><option value="AUTO_DETECTION">AUTO_DETECTION</option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label">출처명</label><input id="batchSourceName" class="adm-input" type="text" placeholder="예: 운영자 수동 등록"></div>
-                <div class="sa-form-group"><label class="sa-form-label">기본 동작</label><select id="batchRuleAction" class="adm-select"><option value="BLOCK">차단</option><option value="ALLOW">허용</option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label">기본 우선순위</label><input id="batchDefaultPriority" class="adm-input" type="number" min="1" value="1"></div>
-                <div class="sa-form-group"><label class="sa-form-label">OFF 기본 전략</label><select id="batchDisableStrategy" class="adm-select"><option value="BATCH_ONLY">배치만 OFF</option><option value="CASCADE_ACTIVE_RULES">규칙도 함께 OFF</option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label">ON 기본 전략</label><select id="batchEnableStrategy" class="adm-select"><option value="BATCH_ONLY">배치만 ON</option><option value="RESTORE_BATCH_CONTROL">배치 복구</option><option value="FORCE_ENABLE_ALL">전부 ON</option></select></div>
-                <div class="sa-form-group" style="grid-column:1 / span 2;"><label class="sa-form-label">설명</label><textarea id="batchDescription" class="adm-input" style="min-height:90px;"></textarea></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchCode"/></label><input id="batchCode" class="adm-input" type="text" placeholder="VPN_FEED_202604"></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchName"/></label><input id="batchName" class="adm-input" type="text" placeholder="VPN Public Ranges 2026.04"></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/></label><select id="batchSourceType" class="adm-select"><option value="MANUAL">MANUAL</option><option value="VPN_FEED">VPN_FEED</option><option value="SPAM_FEED">SPAM_FEED</option><option value="GEO_POLICY">GEO_POLICY</option><option value="AUTO_DETECTION">AUTO_DETECTION</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/> <spring:message code="admin.common.value"/></label><input id="batchSourceName" class="adm-input" type="text" placeholder="Manual registration"></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.baseAction"/></label><select id="batchRuleAction" class="adm-select"><option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option><option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.defaultPriority"/></label><input id="batchDefaultPriority" class="adm-input" type="number" min="1" value="1"></div>
+                <div class="sa-form-group"><label class="sa-form-label">OFF <spring:message code="admin.blocks.baseStrategy"/></label><select id="batchDisableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="CASCADE_ACTIVE_RULES">CASCADE_ACTIVE_RULES</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">ON <spring:message code="admin.blocks.baseStrategy"/></label><select id="batchEnableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="RESTORE_BATCH_CONTROL">RESTORE_BATCH_CONTROL</option><option value="FORCE_ENABLE_ALL">FORCE_ENABLE_ALL</option></select></div>
+                <div class="sa-form-group" style="grid-column:1 / span 2;"><label class="sa-form-label"><spring:message code="admin.blocks.description"/></label><textarea id="batchDescription" class="adm-input" style="min-height:90px;"></textarea></div>
             </div>
         </div>
         <div class="adm-modal-foot">
@@ -1360,21 +1363,21 @@
         <div class="adm-modal-body">
             <input type="hidden" id="batchEditId">
             <div class="detail-grid">
-                <div class="detail-item"><div class="detail-label">현재 상태</div><div class="detail-value" id="batchEditStatus">-</div></div>
-                <div class="detail-item"><div class="detail-label">최근 수정</div><div class="detail-value" id="batchEditUpdatedAt">-</div></div>
-                <div class="detail-item"><div class="detail-label">생성 시각</div><div class="detail-value" id="batchEditCreatedAt">-</div></div>
-                <div class="detail-item"><div class="detail-label">규칙 통계</div><div class="detail-value" id="batchEditStats">-</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.currentState"/></div><div class="detail-value" id="batchEditStatus">-</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.updatedAt"/></div><div class="detail-value" id="batchEditUpdatedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.createdAt"/></div><div class="detail-value" id="batchEditCreatedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.ruleStats"/></div><div class="detail-value" id="batchEditStats">-</div></div>
             </div>
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;margin-top:18px;">
-                <div class="sa-form-group"><label class="sa-form-label">배치 코드</label><input id="batchEditCode" class="adm-input" type="text"></div>
-                <div class="sa-form-group"><label class="sa-form-label">배치명</label><input id="batchEditName" class="adm-input" type="text"></div>
-                <div class="sa-form-group"><label class="sa-form-label">출처 유형</label><select id="batchEditSourceType" class="adm-select"><option value="MANUAL">MANUAL</option><option value="VPN_FEED">VPN_FEED</option><option value="SPAM_FEED">SPAM_FEED</option><option value="GEO_POLICY">GEO_POLICY</option><option value="AUTO_DETECTION">AUTO_DETECTION</option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label">출처명</label><input id="batchEditSourceName" class="adm-input" type="text"></div>
-                <div class="sa-form-group"><label class="sa-form-label">기본 동작</label><select id="batchEditRuleAction" class="adm-select"><option value="BLOCK">차단</option><option value="ALLOW">허용</option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label">기본 우선순위</label><input id="batchEditPriority" class="adm-input" type="number" min="1"></div>
-                <div class="sa-form-group"><label class="sa-form-label">OFF 기본 전략</label><select id="batchEditDisableStrategy" class="adm-select"><option value="BATCH_ONLY">배치만 OFF</option><option value="CASCADE_ACTIVE_RULES">규칙도 함께 OFF</option></select></div>
-                <div class="sa-form-group"><label class="sa-form-label">ON 기본 전략</label><select id="batchEditEnableStrategy" class="adm-select"><option value="BATCH_ONLY">배치만 ON</option><option value="RESTORE_BATCH_CONTROL">배치 복구</option><option value="FORCE_ENABLE_ALL">전부 ON</option></select></div>
-                <div class="sa-form-group" style="grid-column:1 / span 2;"><label class="sa-form-label">설명</label><textarea id="batchEditDescription" class="adm-input" style="min-height:100px;"></textarea></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchCode"/></label><input id="batchEditCode" class="adm-input" type="text"></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchName"/></label><input id="batchEditName" class="adm-input" type="text"></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/></label><select id="batchEditSourceType" class="adm-select"><option value="MANUAL">MANUAL</option><option value="VPN_FEED">VPN_FEED</option><option value="SPAM_FEED">SPAM_FEED</option><option value="GEO_POLICY">GEO_POLICY</option><option value="AUTO_DETECTION">AUTO_DETECTION</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/> <spring:message code="admin.common.value"/></label><input id="batchEditSourceName" class="adm-input" type="text"></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.baseAction"/></label><select id="batchEditRuleAction" class="adm-select"><option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option><option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.defaultPriority"/></label><input id="batchEditPriority" class="adm-input" type="number" min="1"></div>
+                <div class="sa-form-group"><label class="sa-form-label">OFF <spring:message code="admin.blocks.baseStrategy"/></label><select id="batchEditDisableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="CASCADE_ACTIVE_RULES">CASCADE_ACTIVE_RULES</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">ON <spring:message code="admin.blocks.baseStrategy"/></label><select id="batchEditEnableStrategy" class="adm-select"><option value="BATCH_ONLY">BATCH_ONLY</option><option value="RESTORE_BATCH_CONTROL">RESTORE_BATCH_CONTROL</option><option value="FORCE_ENABLE_ALL">FORCE_ENABLE_ALL</option></select></div>
+                <div class="sa-form-group" style="grid-column:1 / span 2;"><label class="sa-form-label"><spring:message code="admin.blocks.description"/></label><textarea id="batchEditDescription" class="adm-input" style="min-height:100px;"></textarea></div>
             </div>
         </div>
         <div class="adm-modal-foot">
@@ -1394,15 +1397,15 @@
             <input type="hidden" id="batchToggleId">
             <input type="hidden" id="batchToggleActive">
             <div class="detail-item" style="margin-bottom:14px;">
-                <div class="detail-label">영향 안내</div>
+                <div class="detail-label"><spring:message code="admin.blocks.impact"/></div>
                 <div class="detail-value" id="batchToggleSummary">-</div>
             </div>
             <div class="sa-form-group">
-                <label class="sa-form-label">적용 옵션</label>
+                <label class="sa-form-label"><spring:message code="admin.blocks.option"/></label>
                 <select id="batchToggleOption" class="adm-select"></select>
             </div>
             <div class="sa-form-group" style="margin-top:14px;">
-                <label class="sa-form-label">운영 메모</label>
+                <label class="sa-form-label"><spring:message code="admin.blocks.description"/></label>
                 <textarea id="batchToggleDescription" class="adm-input" style="min-height:90px;"></textarea>
             </div>
         </div>
@@ -1524,9 +1527,32 @@ const ADMIN_BLOCK_MSG = {
     currentCountFormat: '<spring:message code="admin.common.currentCountFormat" javaScriptEscape="true"/>',
     loading: '<spring:message code="admin.common.loading" javaScriptEscape="true"/>',
     close: '<spring:message code="admin.common.close" javaScriptEscape="true"/>',
+    fetchError: '<spring:message code="admin.context.fetchError" javaScriptEscape="true"/>',
     settings: '<spring:message code="admin.common.settings" javaScriptEscape="true"/>',
     detail: '<spring:message code="admin.common.detail" javaScriptEscape="true"/>',
     history: '<spring:message code="admin.common.history" javaScriptEscape="true"/>',
+    memberTitle: '<spring:message code="admin.context.memberTitle" javaScriptEscape="true"/>',
+    tabInfo: '<spring:message code="admin.context.tab.info" javaScriptEscape="true"/>',
+    tabLogins: '<spring:message code="admin.context.tab.logins" javaScriptEscape="true"/>',
+    saved: '<spring:message code="admin.common.saved" javaScriptEscape="true"/>',
+    saveFailed: '<spring:message code="admin.common.saveFailed" javaScriptEscape="true"/>',
+    created: '<spring:message code="admin.common.created" javaScriptEscape="true"/>',
+    createFailed: '<spring:message code="admin.common.createFailed" javaScriptEscape="true"/>',
+    updated: '<spring:message code="admin.common.updated" javaScriptEscape="true"/>',
+    updateFailed: '<spring:message code="admin.common.updateFailed" javaScriptEscape="true"/>',
+    released: '<spring:message code="admin.common.released" javaScriptEscape="true"/>',
+    releaseFailed: '<spring:message code="admin.common.releaseFailed" javaScriptEscape="true"/>',
+    batchSettingsNotFound: '<spring:message code="admin.blocks.batchSettingsNotFound" javaScriptEscape="true"/>',
+    blockDetailTitle: '<spring:message code="admin.blocks.detailTitle" javaScriptEscape="true"/>',
+    userBlockHistory: '<spring:message code="admin.blocks.userBlockHistory" javaScriptEscape="true"/>',
+    ipRuleHistory: '<spring:message code="admin.blocks.ipRuleHistory" javaScriptEscape="true"/>',
+    confirmRuleOn: '<spring:message code="admin.blocks.confirmRuleOn" javaScriptEscape="true"/>',
+    confirmRuleOff: '<spring:message code="admin.blocks.confirmRuleOff" javaScriptEscape="true"/>',
+    confirmReturnToBatch: '<spring:message code="admin.blocks.confirmReturnToBatch" javaScriptEscape="true"/>',
+    confirmReleaseUserBlock: '<spring:message code="admin.blocks.confirmReleaseUserBlock" javaScriptEscape="true"/>',
+    historyCurrentMissing: '<spring:message code="admin.blocks.historyCurrentMissing" javaScriptEscape="true"/>',
+    batchToggleEnableSummary: '<spring:message code="admin.blocks.batchToggleEnableSummary" javaScriptEscape="true"/>',
+    batchToggleDisableSummary: '<spring:message code="admin.blocks.batchToggleDisableSummary" javaScriptEscape="true"/>',
     keepBlocked: '<spring:message code="admin.blocks.keepBlocked" javaScriptEscape="true"/>',
     releaseBlock: '<spring:message code="admin.blocks.releaseBlock" javaScriptEscape="true"/>',
     effectiveOn: '<spring:message code="admin.blocks.effective.effective" javaScriptEscape="true"/>',
@@ -1534,6 +1560,7 @@ const ADMIN_BLOCK_MSG = {
     batchOff: '<spring:message code="admin.blocks.effective.batchInactive" javaScriptEscape="true"/>',
     expired: '<spring:message code="admin.blocks.effective.expired" javaScriptEscape="true"/>',
     individualRule: '<spring:message code="admin.blocks.individualRule" javaScriptEscape="true"/>',
+    ruleOn: '<spring:message code="admin.blocks.ruleOn" javaScriptEscape="true"/>',
     pagePrefix: '<spring:message code="admin.common.pagePrefix" javaScriptEscape="true"/>'
 };
 const BLOCK_SECTION_CONFIG = {
@@ -1932,7 +1959,7 @@ async function openMemberDetailModal(userIdx) {
 
     document.getElementById('memberDetailModal').classList.add('open');
     document.getElementById('memberDetailBody').innerHTML =
-        '<div style="text-align:center;padding:40px;color:#475569;">불러오는 중... ⏳</div>';
+        '<div style="text-align:center;padding:40px;color:#475569;">' + escapeHtml(ADMIN_BLOCK_MSG.loading) + ' ⏳</div>';
 
     const res = await fetch(CTX + '/admin/members/' + userIdx, {
         headers: {'X-Requested-With': 'XMLHttpRequest'}
@@ -1941,17 +1968,17 @@ async function openMemberDetailModal(userIdx) {
 
     if (!data.success) {
         document.getElementById('memberDetailBody').innerHTML =
-            '<div style="text-align:center;padding:40px;color:#f87171;">' + escapeHtml(data.message || '회원 정보를 불러오지 못했습니다.') + '</div>';
+            '<div style="text-align:center;padding:40px;color:#f87171;">' + escapeHtml(data.message || ADMIN_BLOCK_MSG.fetchError) + '</div>';
         return;
     }
 
     const member = data.member || {};
     const history = Array.isArray(data.history) ? data.history : [];
-    document.getElementById('memberDetailTitle').textContent = (member.nickname || '회원') + ' 상세 정보';
+    document.getElementById('memberDetailTitle').textContent = ADMIN_BLOCK_MSG.memberTitle;
     document.getElementById('memberDetailBody').innerHTML = ''
         + '<div class="adm-tabs">'
-        + '<button class="adm-tab active" onclick="switchMemberTab(\'info\', this)">기본 정보</button>'
-        + '<button class="adm-tab" onclick="switchMemberTab(\'hist\', this)">로그인 이력 (' + history.length + ')</button>'
+        + '<button class="adm-tab active" onclick="switchMemberTab(\'info\', this)">' + escapeHtml(ADMIN_BLOCK_MSG.tabInfo) + '</button>'
+        + '<button class="adm-tab" onclick="switchMemberTab(\'hist\', this)">' + escapeHtml(ADMIN_BLOCK_MSG.tabLogins) + ' (' + history.length + ')</button>'
         + '</div>'
         + '<div id="member-detail-tab-info">' + buildMemberInfoTab(member) + '</div>'
         + '<div id="member-detail-tab-hist" style="display:none;">' + buildMemberHistTab(history) + '</div>';
@@ -1975,19 +2002,19 @@ function openBatchEditor(button) {
         });
 
     if (!resolvedButton) {
-        adm_toast('배치 설정 정보를 찾지 못했습니다.', 'error');
+        adm_toast(ADMIN_BLOCK_MSG.batchSettingsNotFound, 'error');
         return;
     }
 
     document.getElementById('batchEditId').value = resolvedButton.dataset.batchId || '';
-    document.getElementById('batchEditTitle').textContent = (resolvedButton.dataset.batchName || 'IP 정책 배치') + ' 설정';
+    document.getElementById('batchEditTitle').textContent = resolvedButton.dataset.batchName || '<spring:message code="admin.blocks.batches.editTitle" javaScriptEscape="true"/>';
     document.getElementById('batchEditStatus').textContent = resolvedButton.dataset.statusLabel || '-';
     document.getElementById('batchEditUpdatedAt').textContent = resolvedButton.dataset.updatedAt || '-';
     document.getElementById('batchEditCreatedAt').textContent = resolvedButton.dataset.createdAt || '-';
-    document.getElementById('batchEditStats').textContent = '전체 ' + (resolvedButton.dataset.totalRules || '0')
-        + ' / 개별 ON ' + (resolvedButton.dataset.activeRules || '0')
-        + ' / 최종 적용 ' + (resolvedButton.dataset.effectiveRules || '0')
-        + ' / 만료 ' + (resolvedButton.dataset.expiredRules || '0');
+    document.getElementById('batchEditStats').textContent = ADMIN_BLOCK_MSG.totalCountFormat.replace('{0}', resolvedButton.dataset.totalRules || '0')
+        + ' / ' + ADMIN_BLOCK_MSG.ruleOn + ' ' + (resolvedButton.dataset.activeRules || '0')
+        + ' / ' + ADMIN_BLOCK_MSG.effectiveOn + ' ' + (resolvedButton.dataset.effectiveRules || '0')
+        + ' / ' + ADMIN_BLOCK_MSG.expired + ' ' + (resolvedButton.dataset.expiredRules || '0');
     document.getElementById('batchEditCode').value = resolvedButton.dataset.batchCode || '';
     document.getElementById('batchEditName').value = resolvedButton.dataset.batchName || '';
     document.getElementById('batchEditSourceType').value = resolvedButton.dataset.sourceType || 'MANUAL';
@@ -2027,7 +2054,7 @@ function handleIpBatchChange() {
 function openBlockDetail(templateId, title) {
     const template = document.getElementById(templateId);
     if (!template) return;
-    document.getElementById('blockDetailTitle').textContent = title || '차단 상세';
+    document.getElementById('blockDetailTitle').textContent = title || ADMIN_BLOCK_MSG.blockDetailTitle;
     document.getElementById('blockDetailBody').innerHTML = template.innerHTML;
     document.getElementById('blockDetailModal').classList.add('open');
 }
@@ -2054,11 +2081,11 @@ function fillIpRuleEditControlModes(hasBatch, currentMode) {
 
     if (hasBatch) {
         select.innerHTML = ''
-            + '<option value="BATCH">배치 제어</option>'
-            + '<option value="MANUAL_OVERRIDE">수동 예외</option>';
+            + '<option value="BATCH"><spring:message code="admin.blocks.control.batch" javaScriptEscape="true"/></option>'
+            + '<option value="MANUAL_OVERRIDE"><spring:message code="admin.blocks.control.override" javaScriptEscape="true"/></option>';
         select.value = currentMode === 'MANUAL_OVERRIDE' ? 'MANUAL_OVERRIDE' : 'BATCH';
     } else {
-        select.innerHTML = '<option value="MANUAL">수동</option>';
+        select.innerHTML = '<option value="MANUAL"><spring:message code="admin.blocks.control.manual" javaScriptEscape="true"/></option>';
         select.value = 'MANUAL';
     }
 }
@@ -2071,7 +2098,7 @@ function openUserBlockEditor(button) {
 
     document.getElementById('userBlockEditId').value = button.dataset.blockIdx;
     document.getElementById('userBlockEditTemplateId').value = button.dataset.templateId || '';
-    document.getElementById('userBlockEditTitle').textContent = displayName + ' 차단 설정';
+    document.getElementById('userBlockEditTitle').textContent = '<spring:message code="admin.blocks.userBlocks.editTitle" javaScriptEscape="true"/>';
 
     let memberHtml = escapeHtml(displayName);
     if (userIdx) {
@@ -2087,7 +2114,7 @@ function openUserBlockEditor(button) {
     document.getElementById('userBlockEditMember').innerHTML = memberHtml;
     document.getElementById('userBlockEditTarget').textContent = button.dataset.targetKey || '-';
     document.getElementById('userBlockEditType').textContent = button.dataset.blockType || '-';
-    document.getElementById('userBlockEditStatus').textContent = (button.dataset.active === 'true' ? '차단 유지' : '차단 해제') + ' / ' + (button.dataset.snapshotStatus || '-');
+    document.getElementById('userBlockEditStatus').textContent = (button.dataset.active === 'true' ? ADMIN_BLOCK_MSG.keepBlocked : ADMIN_BLOCK_MSG.releaseBlock) + ' / ' + (button.dataset.snapshotStatus || '-');
     document.getElementById('userBlockEditBlockedAt').textContent = button.dataset.blockedAt || '-';
     document.getElementById('userBlockEditSyncAt').textContent = button.dataset.syncAt || '-';
     document.getElementById('userBlockEditActive').value = button.dataset.active === 'true' ? 'true' : 'false';
@@ -2095,7 +2122,7 @@ function openUserBlockEditor(button) {
     document.getElementById('userBlockEditReason').value = button.dataset.reason || '';
     document.getElementById('userBlockEditHistoryBtn').onclick = function () {
         closeModal('userBlockEditModal');
-        openBlockDetail(button.dataset.templateId, '회원 차단 이력');
+        openBlockDetail(button.dataset.templateId, ADMIN_BLOCK_MSG.userBlockHistory);
     };
     document.getElementById('userBlockEditModal').classList.add('open');
 }
@@ -2105,18 +2132,18 @@ function openIpRuleEditor(button) {
     const hasBatch = batchId !== '';
     const batchLabel = hasBatch
         ? (button.dataset.batchName || '-') + (button.dataset.batchCode ? ' (' + button.dataset.batchCode + ')' : '')
-        : '개별 규칙';
+        : ADMIN_BLOCK_MSG.individualRule;
 
     document.getElementById('ipRuleEditId').value = button.dataset.id;
     document.getElementById('ipRuleEditTemplateId').value = button.dataset.templateId || '';
     document.getElementById('ipRuleEditHasBatch').value = hasBatch ? 'true' : 'false';
-    document.getElementById('ipRuleEditTitle').textContent = (button.dataset.targetDisplay || button.dataset.targetKey || 'IP 규칙') + ' 상세 설정';
+    document.getElementById('ipRuleEditTitle').textContent = '<spring:message code="admin.blocks.ipRules.editTitle" javaScriptEscape="true"/>';
     document.getElementById('ipRuleEditTarget').textContent = (button.dataset.targetDisplay || '-') + ' / ' + (button.dataset.targetKey || '-');
-    document.getElementById('ipRuleEditBatch').textContent = batchLabel + ' / ' + (button.dataset.batchStatusLabel || '개별 규칙');
+    document.getElementById('ipRuleEditBatch').textContent = batchLabel + ' / ' + (button.dataset.batchStatusLabel || ADMIN_BLOCK_MSG.individualRule);
     document.getElementById('ipRuleEditRuleState').textContent = button.dataset.ruleStateLabel || '-';
     document.getElementById('ipRuleEditFinalState').textContent = (button.dataset.finalStateLabel || '-') + ' / ' + (button.dataset.effectiveStatusLabel || '-');
     document.getElementById('ipRuleEditBlockedAt').textContent = button.dataset.blockedAt || '-';
-    document.getElementById('ipRuleEditExpiresDisplay').textContent = button.dataset.expiresDisplay || '없음';
+    document.getElementById('ipRuleEditExpiresDisplay').textContent = button.dataset.expiresDisplay || '${fn:escapeXml(adminBlocksNoneLabel)}';
     document.getElementById('ipRuleEditAction').value = button.dataset.ruleAction || 'BLOCK';
     document.getElementById('ipRuleEditCategory').value = button.dataset.blockCategory || 'MANUAL';
     document.getElementById('ipRuleEditPriority').value = button.dataset.priority || '1';
@@ -2126,7 +2153,7 @@ function openIpRuleEditor(button) {
     fillIpRuleEditControlModes(hasBatch, button.dataset.controlMode || 'MANUAL');
     document.getElementById('ipRuleEditHistoryBtn').onclick = function () {
         closeModal('ipRuleEditModal');
-        openBlockDetail(button.dataset.templateId, 'IP 정책 이력');
+        openBlockDetail(button.dataset.templateId, ADMIN_BLOCK_MSG.ipRuleHistory);
     };
     document.getElementById('ipRuleEditModal').classList.add('open');
 }
@@ -2156,10 +2183,10 @@ async function submitIpRule() {
     });
     const data = await res.json();
     if (data.success) {
-        adm_toast(data.message || '저장되었습니다.');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.saved);
         location.reload();
     } else {
-        adm_toast(data.message || '저장 실패', 'error');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.saveFailed, 'error');
     }
 }
 
@@ -2181,15 +2208,15 @@ async function submitIpRuleEdit() {
     });
     const data = await res.json();
     if (data.success) {
-        adm_toast(data.message || '저장되었습니다.');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.saved);
         location.reload();
     } else {
-        adm_toast(data.message || '저장 실패', 'error');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.saveFailed, 'error');
     }
 }
 
 async function toggleIpRule(id, active) {
-    const message = active ? '이 규칙을 개별 ON 하시겠습니까?' : '이 규칙을 개별 OFF 하시겠습니까?';
+    const message = active ? ADMIN_BLOCK_MSG.confirmRuleOn : ADMIN_BLOCK_MSG.confirmRuleOff;
     if (!confirm(message)) return;
     const res = await fetch(CTX + '/admin/blocks/ip-rules/' + id + '/toggle', {
         method: 'POST',
@@ -2198,30 +2225,30 @@ async function toggleIpRule(id, active) {
     });
     const data = await res.json();
     if (data.success) {
-        adm_toast(data.message || '변경되었습니다.');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.updated);
         location.reload();
     } else {
-        adm_toast(data.message || '변경 실패', 'error');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.updateFailed, 'error');
     }
 }
 
 async function returnToBatch(id) {
-    if (!confirm('이 규칙을 배치 제어 상태로 되돌리시겠습니까? 수동 예외 설정은 해제됩니다.')) return;
+    if (!confirm(ADMIN_BLOCK_MSG.confirmReturnToBatch)) return;
     const res = await fetch(CTX + '/admin/blocks/ip-rules/' + id + '/return-to-batch', {
         method: 'POST',
         headers: {'X-Requested-With': 'XMLHttpRequest'}
     });
     const data = await res.json();
     if (data.success) {
-        adm_toast(data.message || '변경되었습니다.');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.updated);
         location.reload();
     } else {
-        adm_toast(data.message || '변경 실패', 'error');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.updateFailed, 'error');
     }
 }
 
 async function releaseUserBlock(targetKey) {
-    if (!confirm('이 회원 차단을 해제하시겠습니까?')) return;
+    if (!confirm(ADMIN_BLOCK_MSG.confirmReleaseUserBlock)) return;
     const params = new URLSearchParams({blockTargetKey: targetKey});
     const res = await fetch(CTX + '/admin/blocks/user-blocks/release', {
         method: 'POST',
@@ -2230,10 +2257,10 @@ async function releaseUserBlock(targetKey) {
     });
     const data = await res.json();
     if (data.success) {
-        adm_toast(data.message || '해제되었습니다.');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.released);
         location.reload();
     } else {
-        adm_toast(data.message || '해제 실패', 'error');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.releaseFailed, 'error');
     }
 }
 
@@ -2252,10 +2279,10 @@ async function submitUserBlockEdit() {
     });
     const data = await res.json();
     if (data.success) {
-        adm_toast(data.message || '저장되었습니다.');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.saved);
         location.reload();
     } else {
-        adm_toast(data.message || '저장 실패', 'error');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.saveFailed, 'error');
     }
 }
 
@@ -2278,10 +2305,10 @@ async function submitBatch() {
     });
     const data = await res.json();
     if (data.success) {
-        adm_toast(data.message || '생성되었습니다.');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.created);
         location.reload();
     } else {
-        adm_toast(data.message || '생성 실패', 'error');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.createFailed, 'error');
     }
 }
 
@@ -2305,10 +2332,10 @@ async function submitBatchEdit() {
     });
     const data = await res.json();
     if (data.success) {
-        adm_toast(data.message || '저장되었습니다.');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.saved);
         location.reload();
     } else {
-        adm_toast(data.message || '저장 실패', 'error');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.saveFailed, 'error');
     }
 }
 
@@ -2322,20 +2349,23 @@ function openBatchToggleModal(button) {
 
     document.getElementById('batchToggleId').value = button.dataset.id;
     document.getElementById('batchToggleActive').value = nextActive ? 'true' : 'false';
-    document.getElementById('batchToggleTitle').textContent = nextActive ? '배치 재활성화' : '배치 비활성화';
+    document.getElementById('batchToggleTitle').textContent = nextActive ? '<spring:message code="admin.blocks.batchReactivate" javaScriptEscape="true"/>' : '<spring:message code="admin.blocks.batchDeactivate" javaScriptEscape="true"/>';
 
     if (nextActive) {
-        document.getElementById('batchToggleSummary').textContent = batchName + ' 배치를 다시 평가 대상에 넣습니다.';
+        document.getElementById('batchToggleSummary').textContent = ADMIN_BLOCK_MSG.batchToggleEnableSummary.replace('{0}', batchName);
         optionSelect.innerHTML =
-            '<option value="BATCH_ONLY">배치만 ON</option>' +
-            '<option value="RESTORE_BATCH_CONTROL">이전 배치 OFF로 꺼진 규칙 복구</option>' +
-            '<option value="FORCE_ENABLE_ALL">배치 내 규칙 전부 ON</option>';
+            '<option value="BATCH_ONLY">BATCH_ONLY</option>' +
+            '<option value="RESTORE_BATCH_CONTROL">RESTORE_BATCH_CONTROL</option>' +
+            '<option value="FORCE_ENABLE_ALL">FORCE_ENABLE_ALL</option>';
         optionSelect.value = button.dataset.defaultEnableStrategy || 'BATCH_ONLY';
     } else {
-        document.getElementById('batchToggleSummary').textContent = batchName + ' 배치를 평가 대상에서 제외합니다. 현재 최종 적용 규칙 ' + effectiveRules + '개, 개별 ON 규칙 ' + activeRules + '개입니다.';
+        document.getElementById('batchToggleSummary').textContent = ADMIN_BLOCK_MSG.batchToggleDisableSummary
+            .replace('{0}', batchName)
+            .replace('{1}', effectiveRules)
+            .replace('{2}', activeRules);
         optionSelect.innerHTML =
-            '<option value="BATCH_ONLY">배치만 OFF</option>' +
-            '<option value="CASCADE_ACTIVE_RULES">배치 제어 규칙도 함께 OFF</option>';
+            '<option value="BATCH_ONLY">BATCH_ONLY</option>' +
+            '<option value="CASCADE_ACTIVE_RULES">CASCADE_ACTIVE_RULES</option>';
         optionSelect.value = button.dataset.defaultDisableStrategy || 'BATCH_ONLY';
     }
 
@@ -2353,7 +2383,7 @@ async function fetchHistoryCurrentSetting(button) {
     });
     const data = await res.json();
     if (!res.ok || !data.success) {
-        throw new Error(data.message || '현재 설정 조회에 실패했습니다.');
+        throw new Error(data.message || ADMIN_BLOCK_MSG.fetchError);
     }
     return data;
 }
@@ -2383,14 +2413,14 @@ async function openHistoryCurrent(button) {
             return;
         }
     } catch (error) {
-        adm_toast(error.message || '현재 설정 조회에 실패했습니다.', 'error');
+        adm_toast(error.message || ADMIN_BLOCK_MSG.fetchError, 'error');
         return;
     }
 
     if (button.dataset.templateId) {
-        openBlockDetail(button.dataset.templateId, '차단 상세');
+        openBlockDetail(button.dataset.templateId, ADMIN_BLOCK_MSG.blockDetailTitle);
     }
-    adm_toast('이력 기준 현재 설정을 찾지 못했습니다. 대상이 삭제되었거나 더 이상 연결되지 않았을 수 있습니다.', 'error');
+    adm_toast(ADMIN_BLOCK_MSG.historyCurrentMissing, 'error');
 }
 
 async function submitBatchToggle() {
@@ -2410,10 +2440,10 @@ async function submitBatchToggle() {
     });
     const data = await res.json();
     if (data.success) {
-        adm_toast(data.message || '변경되었습니다.');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.updated);
         location.reload();
     } else {
-        adm_toast(data.message || '변경 실패', 'error');
+        adm_toast(data.message || ADMIN_BLOCK_MSG.updateFailed, 'error');
     }
 }
 
@@ -2444,7 +2474,7 @@ document.addEventListener('click', function (e) {
 
     const detailBtn = e.target.closest('.js-detail-open');
     if (detailBtn) {
-        openBlockDetail(detailBtn.dataset.templateId, '차단 상세');
+        openBlockDetail(detailBtn.dataset.templateId, ADMIN_BLOCK_MSG.blockDetailTitle);
         return;
     }
 

@@ -1,9 +1,20 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="reports"/>
 <spring:message code="admin.reports.pageTitle" var="adminReportsPageTitle"/>
+<spring:message code="admin.common.nickname" var="adminCommonNickname"/>
+<spring:message code="admin.common.userId" var="adminCommonUserId"/>
+<spring:message code="admin.common.accountStatus" var="adminCommonAccountStatus"/>
+<spring:message code="admin.common.memberInfoView" var="adminCommonMemberInfoView"/>
+<spring:message code="admin.common.blockAccount" var="adminCommonBlockAccount"/>
+<spring:message code="admin.common.activeLabel" var="adminCommonActiveLabel"/>
+<spring:message code="admin.common.blockedLabel" var="adminCommonBlockedLabel"/>
+<spring:message code="admin.reports.authorInfoTitle" var="adminReportsAuthorInfoTitle"/>
+<spring:message code="admin.reports.confirmBlockUser" var="adminReportsConfirmBlockUser"/>
+<spring:message code="admin.reports.blockFailed" var="adminReportsBlockFailed"/>
 <c:set var="pageTitle" value="${adminReportsPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
@@ -252,6 +263,18 @@
 <script>
 var ctx = '${pageContext.request.contextPath}';
 var listParams = 'page=${search.page}&status=${search.status}&targetType=${search.targetType}&reason=${search.reason}&keyword=' + encodeURIComponent('${search.keyword}');
+var REPORT_AUTHOR_MSG = {
+    blocked: '${fn:escapeXml(adminCommonBlockedLabel)}',
+    active: '${fn:escapeXml(adminCommonActiveLabel)}',
+    nickname: '${fn:escapeXml(adminCommonNickname)}',
+    userId: '${fn:escapeXml(adminCommonUserId)}',
+    accountStatus: '${fn:escapeXml(adminCommonAccountStatus)}',
+    memberInfoView: '${fn:escapeXml(adminCommonMemberInfoView)}',
+    blockAccount: '${fn:escapeXml(adminCommonBlockAccount)}',
+    confirmBlock: '${fn:escapeXml(adminReportsConfirmBlockUser)}',
+    blockFailed: '${fn:escapeXml(adminReportsBlockFailed)}',
+    title: '${fn:escapeXml(adminReportsAuthorInfoTitle)}'
+};
 
 // 행 클릭 시 어드민 신고 상세 페이지 이동
 document.querySelectorAll('.rpt-admin-row[data-id]').forEach(function (tr) {
@@ -276,33 +299,34 @@ function openAuthorModal(el) {
     var userRole = el.getAttribute('data-userrole');
 
     var statusBadge = status === 'BLOCKED'
-        ? '<span class="status-badge BLOCKED" style="font-size:12px;">차단</span>'
-        : '<span class="status-badge ACTIVE"  style="font-size:12px;">활성</span>';
+        ? '<span class="status-badge BLOCKED" style="font-size:12px;">' + escHtml(REPORT_AUTHOR_MSG.blocked) + '</span>'
+        : '<span class="status-badge ACTIVE"  style="font-size:12px;">' + escHtml(REPORT_AUTHOR_MSG.active) + '</span>';
 
     var blockBtn = (status !== 'BLOCKED' && userRole !== 'SYSTEM')
-        ? '<button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;width:100%;margin-top:4px;" data-idx="' + userIdx + '" onclick="blockUserFromModal(this)">계정 차단</button>'
+        ? '<button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;width:100%;margin-top:4px;" data-idx="' + userIdx + '" onclick="blockUserFromModal(this)">' + escHtml(REPORT_AUTHOR_MSG.blockAccount) + '</button>'
         : '';
 
     document.getElementById('authorModalBody').innerHTML =
         '<div style="display:flex;flex-direction:column;gap:10px;">'
       + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
-      + '    <span style="color:#64748b;font-size:12px;">닉네임</span>'
+      + '    <span style="color:#64748b;font-size:12px;">' + escHtml(REPORT_AUTHOR_MSG.nickname) + '</span>'
       + '    <span class="adm-modal-nickname">' + escHtml(nickname) + '</span>'
       + '  </div>'
       + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
-      + '    <span style="color:#64748b;font-size:12px;">아이디</span>'
+      + '    <span style="color:#64748b;font-size:12px;">' + escHtml(REPORT_AUTHOR_MSG.userId) + '</span>'
       + '    <span style="color:#94a3b8;font-size:13px;">' + escHtml(userId) + '</span>'
       + '  </div>'
       + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
-      + '    <span style="color:#64748b;font-size:12px;">계정 상태</span>'
+      + '    <span style="color:#64748b;font-size:12px;">' + escHtml(REPORT_AUTHOR_MSG.accountStatus) + '</span>'
       + '    ' + statusBadge
       + '  </div>'
       + '</div>'
       + '<div style="margin-top:16px;display:flex;flex-direction:column;gap:6px;">'
-      + '  <a href="' + ctx + '/admin/members?searchType=userId&keyword=' + encodeURIComponent(userId) + '" class="adm-btn adm-btn-ghost" style="text-align:center;text-decoration:none;">회원 정보 보기</a>'
+      + '  <a href="' + ctx + '/admin/members?searchType=userId&keyword=' + encodeURIComponent(userId) + '" class="adm-btn adm-btn-ghost" style="text-align:center;text-decoration:none;">' + escHtml(REPORT_AUTHOR_MSG.memberInfoView) + '</a>'
       + blockBtn
       + '</div>';
 
+    document.querySelector('#authorModal .adm-modal-title').textContent = REPORT_AUTHOR_MSG.title;
     document.getElementById('authorModal').style.display = 'flex';
 }
 
@@ -312,14 +336,14 @@ function closeAuthorModal() {
 
 function blockUserFromModal(btn) {
     var userIdx = btn.getAttribute('data-idx');
-    if (!confirm('해당 계정을 차단하시겠습니까?')) return;
+    if (!confirm(REPORT_AUTHOR_MSG.confirmBlock)) return;
     fetch(ctx + '/admin/community/users/' + userIdx + '/block', {
         method: 'POST',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     }).then(function(r) { return r.json(); })
       .then(function(d) {
         if (d.success) { location.reload(); }
-        else { alert(d.message || '처리 실패'); }
+        else { alert(d.message || REPORT_AUTHOR_MSG.blockFailed); }
     });
 }
 
@@ -334,7 +358,7 @@ function escHtml(str) {
      onclick="if(event.target===this)closeAuthorModal()">
     <div class="adm-modal" style="width:360px;">
         <div class="adm-modal-head">
-            <span class="adm-modal-title">신고자 정보</span>
+            <span class="adm-modal-title">${adminReportsAuthorInfoTitle}</span>
             <button class="adm-modal-close" onclick="closeAuthorModal()">✕</button>
         </div>
         <div class="adm-modal-body" id="authorModalBody"></div>
