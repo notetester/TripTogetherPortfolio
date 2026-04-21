@@ -10,6 +10,8 @@ import java.util.Date;
 public class AdminIpBlockBatchOperationVO {
     private Long ipBlockBatchOperationIdx;
     private Long ipBlockBatchIdx;
+    private String batchCode;
+    private String batchName;
     private String operationType;
     private String operationOption;
     private int requestedRuleCount;

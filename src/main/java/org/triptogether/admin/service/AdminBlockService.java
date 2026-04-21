@@ -11,6 +11,10 @@ public interface AdminBlockService {
                             String batchRuleAction, Integer defaultRulePriority,
                             String defaultDisableStrategy, String defaultEnableStrategy,
                             String description, Long actorUserIdx);
+    void updateIpBlockBatch(Long ipBlockBatchIdx, String batchCode, String batchName, String sourceType, String sourceName,
+                            String batchRuleAction, Integer defaultRulePriority,
+                            String defaultDisableStrategy, String defaultEnableStrategy,
+                            String description, Long actorUserIdx);
     void toggleIpBlockBatch(Long ipBlockBatchIdx, boolean active, String operationOption, String description, Long actorUserIdx);
     void createGlobalIpRule(String matchType, String ipAddress, String cidrNotation, String rangeStartIp, String rangeEndIp,
                             String countryCode, String asn, String ruleAction, String controlMode,

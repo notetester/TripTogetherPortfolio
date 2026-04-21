@@ -33,6 +33,7 @@
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/blocks">
+                <input type="hidden" name="tab" id="blockActiveTabInput" value="${fn:escapeXml(param.tab)}">
                 <div class="adm-filter-bar">
                     <div style="flex:1;min-width:260px;">
                         <div class="adm-filter-label">통합 검색</div>
@@ -127,12 +128,226 @@
         </div>
     </div>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-tab-row adm-block-tab-row" id="blockTabBar" style="margin-bottom:20px;">
+        <button type="button" class="adm-tab js-block-tab" data-tab="dashboard">대시보드</button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="all">전체</button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="user-blocks">회원 차단</button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="ip-rules">IP 정책 규칙</button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="batches">IP 정책 배치</button>
+        <button type="button" class="adm-tab js-block-tab" data-tab="histories">통합 차단 이력</button>
+    </div>
+
+    <div class="adm-card js-dashboard-panel" style="margin-bottom:20px;display:none;">
+        <div class="adm-card-head">
+            <div class="adm-card-title">운영 대시보드</div>
+            <div class="adm-card-sub">최근 항목을 빠르게 훑고 바로 모달에서 조정할 수 있습니다.</div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-kpi-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;">
+                <div class="adm-card" style="margin:0;">
+                    <div class="adm-card-head">
+                        <div class="adm-card-title" style="font-size:15px;">최근 회원 차단</div>
+                        <div class="adm-card-sub">현재 스냅샷 기준 상위 5건</div>
+                    </div>
+                    <div class="adm-card-body" style="padding:0;">
+                        <div class="adm-table-wrap">
+                            <table class="adm-table">
+                                <thead><tr><th>회원</th><th>대상</th><th>상태</th><th>액션</th></tr></thead>
+                                <tbody>
+                                <c:forEach var="b" items="${userBlocks}" begin="0" end="4">
+                                    <tr>
+                                        <td>${empty b.nickname ? '-' : b.nickname}</td>
+                                        <td>${empty b.blockedIp ? b.blockTargetKey : b.blockedIp}</td>
+                                        <td>${b.snapshotStatus}</td>
+                                        <td>
+                                            <button type="button"
+                                                    class="adm-row-btn detail js-open-user-block-editor"
+                                                    data-block-idx="${b.blockIdx}"
+                                                    data-template-id="detail-user-${b.blockIdx}"
+                                                    data-user-idx="${empty b.userIdx ? '' : b.userIdx}"
+                                                    data-display-name="${fn:escapeXml(empty b.nickname ? b.userId : b.nickname)}"
+                                                    data-user-id="${fn:escapeXml(empty b.userId ? '' : b.userId)}"
+                                                    data-user-email="${fn:escapeXml(empty b.userEmail ? '' : b.userEmail)}"
+                                                    data-block-type="${b.blockType}"
+                                                    data-blocked-ip="${fn:escapeXml(empty b.blockedIp ? '' : b.blockedIp)}"
+                                                    data-target-key="${fn:escapeXml(b.blockTargetKey)}"
+                                                    data-active="${b.active ? 'true' : 'false'}"
+                                                    data-snapshot-status="${fn:escapeXml(b.snapshotStatus)}"
+                                                    data-reason="${fn:escapeXml(empty b.reason ? '' : b.reason)}"
+                                                    data-expires-at="${b.expiresAtInputValue}"
+                                                    data-blocked-at="-"
+                                                    data-last-history-at="-"
+                                                    data-sync-at="-">설정</button>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                <c:if test="${empty userBlocks}">
+                                    <tr><td colspan="4" style="text-align:center;color:#64748b;">데이터가 없습니다.</td></tr>
+                                </c:if>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="adm-card" style="margin:0;">
+                    <div class="adm-card-head">
+                        <div class="adm-card-title" style="font-size:15px;">최근 IP 정책 규칙</div>
+                        <div class="adm-card-sub">허용/차단, 수동 예외를 함께 확인</div>
+                    </div>
+                    <div class="adm-card-body" style="padding:0;">
+                        <div class="adm-table-wrap">
+                            <table class="adm-table">
+                                <thead><tr><th>대상</th><th>동작</th><th>최종 적용</th><th>액션</th></tr></thead>
+                                <tbody>
+                                <c:forEach var="r" items="${ipBlocks}" begin="0" end="4">
+                                    <tr>
+                                        <td>${empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue}</td>
+                                        <td>${r.ruleActionLabel} / ${r.controlModeLabel}</td>
+                                        <td>${r.finalStateLabel}</td>
+                                        <td>
+                                            <button type="button"
+                                                    class="adm-row-btn detail js-open-ip-rule-editor"
+                                                    data-id="${r.ipBlocklistIdx}"
+                                                    data-template-id="detail-ip-${r.ipBlocklistIdx}"
+                                                    data-target-display="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}"
+                                                    data-target-key="${fn:escapeXml(r.blockTargetKey)}"
+                                                    data-rule-action="${r.ruleAction}"
+                                                    data-control-mode="${r.controlMode}"
+                                                    data-block-category="${r.blockCategory}"
+                                                    data-priority="${r.priority}"
+                                                    data-reason="${fn:escapeXml(empty r.reason ? '' : r.reason)}"
+                                                    data-detail-message="${fn:escapeXml(empty r.detailMessage ? '' : r.detailMessage)}"
+                                                    data-expires-at="${r.expiresAtInputValue}"
+                                                    data-effective-status-label="${fn:escapeXml(r.effectiveStatusLabel)}"
+                                                    data-final-state-label="${fn:escapeXml(r.finalStateLabel)}"
+                                                    data-rule-state-label="${fn:escapeXml(r.ruleStateLabel)}"
+                                                    data-batch-status-label="${fn:escapeXml(r.batchStatusLabel)}"
+                                                    data-batch-name="${fn:escapeXml(empty r.batchName ? '개별 규칙' : r.batchName)}"
+                                                    data-batch-code="${fn:escapeXml(empty r.batchCode ? '' : r.batchCode)}"
+                                                    data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
+                                                    data-blocked-at="-"
+                                                    data-expires-display="-"
+                                                    data-active="${r.active ? 'true' : 'false'}">설정</button>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                <c:if test="${empty ipBlocks}">
+                                    <tr><td colspan="4" style="text-align:center;color:#64748b;">데이터가 없습니다.</td></tr>
+                                </c:if>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="adm-card" style="margin:0;">
+                    <div class="adm-card-head">
+                        <div class="adm-card-title" style="font-size:15px;">최근 배치 작업</div>
+                        <div class="adm-card-sub">배치 제어와 복구 흐름</div>
+                    </div>
+                    <div class="adm-card-body" style="padding:0;">
+                        <div class="adm-table-wrap">
+                            <table class="adm-table">
+                                <thead><tr><th>배치</th><th>작업</th><th>영향</th><th>액션</th></tr></thead>
+                                <tbody>
+                                <c:forEach var="op" items="${batchOperations}" begin="0" end="4">
+                                    <tr>
+                                        <td>${empty op.batchName ? '-' : op.batchName}</td>
+                                        <td>${op.operationTypeLabel}</td>
+                                        <td>${op.affectedRuleCount} / ${op.requestedRuleCount}</td>
+                                        <td>
+                                            <c:if test="${op.ipBlockBatchIdx != null}">
+                                                <button type="button"
+                                                        class="adm-row-btn detail js-open-batch-editor"
+                                                        data-batch-id="${op.ipBlockBatchIdx}"
+                                                        data-batch-code="${fn:escapeXml(empty op.batchCode ? '' : op.batchCode)}"
+                                                        data-batch-name="${fn:escapeXml(empty op.batchName ? '' : op.batchName)}">설정</button>
+                                            </c:if>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                <c:if test="${empty batchOperations}">
+                                    <tr><td colspan="4" style="text-align:center;color:#64748b;">데이터가 없습니다.</td></tr>
+                                </c:if>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="adm-card" style="margin:0;">
+                    <div class="adm-card-head">
+                        <div class="adm-card-title" style="font-size:15px;">최근 통합 이력</div>
+                        <div class="adm-card-sub">현재 설정으로 바로 이어집니다.</div>
+                    </div>
+                    <div class="adm-card-body" style="padding:0;">
+                        <div class="adm-table-wrap">
+                            <table class="adm-table">
+                                <thead><tr><th>대상</th><th>변경</th><th>결과</th><th>액션</th></tr></thead>
+                                <tbody>
+                                <c:forEach var="h" items="${histories}" begin="0" end="4">
+                                    <c:set var="historyCurrentType" value="IP_RULE"/>
+                                    <c:if test="${h.blockScope == 'USER_ACTION'}">
+                                        <c:set var="historyCurrentType" value="USER_BLOCK"/>
+                                    </c:if>
+                                    <c:if test="${not empty h.batchOperationIdx and not empty h.ipBlockBatchIdx}">
+                                        <c:set var="historyCurrentType" value="BATCH"/>
+                                    </c:if>
+                                    <tr>
+                                        <td>${h.blockTargetKey}</td>
+                                        <td>${h.historyKind}</td>
+                                        <td>${empty h.effectiveResult ? '-' : h.effectiveResult}</td>
+                                        <td>
+                                            <button type="button"
+                                                    class="adm-row-btn detail js-open-history-current"
+                                                    data-history-id="${h.blockIdx}"
+                                                    data-current-type="${historyCurrentType}"
+                                                    data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                                                    data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                                                    data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                                                    data-template-id="detail-history-${h.blockIdx}">현재 설정</button>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                <c:if test="${empty histories}">
+                                    <tr><td colspan="4" style="text-align:center;color:#64748b;">데이터가 없습니다.</td></tr>
+                                </c:if>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="adm-card js-section-card" data-section="user-blocks" style="margin-bottom:20px;">
         <div class="adm-card-head">
             <div class="adm-card-title">현재 회원 차단 상태</div>
             <div class="adm-card-sub">회원 기준 현재 활성/비활성 스냅샷</div>
         </div>
         <div class="adm-card-body" style="padding:0;">
+            <div class="adm-local-toolbar">
+                <div class="adm-local-toolbar-group">
+                    <select class="adm-select js-local-field" data-section="user-blocks">
+                        <option value="all">전체 항목</option>
+                        <option value="nickname">회원 닉네임</option>
+                        <option value="userId">회원 아이디</option>
+                        <option value="target">차단 대상</option>
+                        <option value="reason">사유</option>
+                        <option value="blockType">차단 유형</option>
+                        <option value="blockedAt">차단 날짜</option>
+                        <option value="expiresAt">만료 날짜</option>
+                    </select>
+                    <input type="text" class="adm-input js-local-keyword" data-section="user-blocks" placeholder="회원 차단 내 검색">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="user-blocks">초기화</button>
+                </div>
+                <div class="adm-local-toolbar-group">
+                    <select class="adm-select js-local-page-size" data-section="user-blocks">
+                        <option value="10">10개씩</option>
+                        <option value="20" selected>20개씩</option>
+                        <option value="50">50개씩</option>
+                    </select>
+                </div>
+            </div>
             <div class="adm-table-wrap">
                 <table class="adm-table">
                     <thead>
@@ -149,19 +364,32 @@
                         <c:if test="${b.syncedAtDate != null}">
                             <fmt:formatDate var="userBlockSyncText" value="${b.syncedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                         </c:if>
-                        <tr>
+                        <tr class="js-local-row"
+                            data-section="user-blocks"
+                            data-search="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)} ${fn:toLowerCase(empty b.userId ? '' : b.userId)} ${fn:toLowerCase(empty b.userEmail ? '' : b.userEmail)} ${fn:toLowerCase(empty b.blockedIp ? '' : b.blockedIp)} ${fn:toLowerCase(empty b.reason ? '' : b.reason)} ${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)} ${fn:toLowerCase(empty b.blockType ? '' : b.blockType)} ${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}"
+                            data-nickname="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)}"
+                            data-user-id="${fn:toLowerCase(empty b.userId ? '' : b.userId)}"
+                            data-target="${fn:toLowerCase(empty b.blockedIp ? '' : b.blockedIp)} ${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)}"
+                            data-reason="${fn:toLowerCase(empty b.reason ? '' : b.reason)}"
+                            data-block-type="${fn:toLowerCase(empty b.blockType ? '' : b.blockType)}"
+                            data-blocked-at="${fn:toLowerCase(userBlockBlockedAtText)}"
+                            data-expires-at="${fn:toLowerCase(empty b.expiresAtInputValue ? '' : b.expiresAtInputValue)}">
                             <td>
                                 <c:choose>
                                     <c:when test="${b.userIdx != null}">
-                                        <a href="${pageContext.request.contextPath}/admin/members?detailUserIdx=${b.userIdx}"
-                                           style="font-weight:700;color:#93c5fd;text-decoration:none;">
+                                        <button type="button"
+                                                class="adm-inline-link js-open-member-detail"
+                                                data-user-idx="${b.userIdx}"
+                                                style="font-weight:700;color:#93c5fd;">
                                             ${empty b.nickname ? '-' : b.nickname}
-                                        </a>
+                                        </button>
                                         <div style="font-size:12px;color:#94a3b8;">
-                                            <a href="${pageContext.request.contextPath}/admin/members?detailUserIdx=${b.userIdx}"
-                                               style="color:#94a3b8;text-decoration:none;">
+                                            <button type="button"
+                                                    class="adm-inline-link js-open-member-detail"
+                                                    data-user-idx="${b.userIdx}"
+                                                    style="color:#94a3b8;font-size:12px;">
                                                 ${empty b.userId ? '-' : b.userId}
-                                            </a>
+                                            </button>
                                         </div>
                                     </c:when>
                                     <c:otherwise>
@@ -237,6 +465,14 @@
                     </tbody>
                 </table>
             </div>
+            <div class="adm-local-pagination" data-section="user-blocks">
+                <div class="adm-local-page-info js-local-page-info" data-section="user-blocks">0건</div>
+                <div class="adm-local-page-actions">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="user-blocks">이전</button>
+                    <span class="js-local-page-state" data-section="user-blocks">1 / 1</span>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="user-blocks">다음</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -284,7 +520,7 @@
         </template>
     </c:forEach>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card js-section-card" data-section="ip-rules" style="margin-bottom:20px;">
         <div class="adm-card-head">
             <div>
                 <div class="adm-card-title">IP 정책 규칙</div>
@@ -300,6 +536,29 @@
             </div>
         </div>
         <div class="adm-card-body" style="padding:0;">
+            <div class="adm-local-toolbar">
+                <div class="adm-local-toolbar-group">
+                    <select class="adm-select js-local-field" data-section="ip-rules">
+                        <option value="all">전체 항목</option>
+                        <option value="target">IP / 대상</option>
+                        <option value="batch">배치</option>
+                        <option value="reason">사유 / 상세 메모</option>
+                        <option value="priority">우선순위</option>
+                        <option value="policy">정책 / 제어 / 분류</option>
+                        <option value="blockedAt">차단 날짜</option>
+                        <option value="expiresAt">만료 날짜</option>
+                    </select>
+                    <input type="text" class="adm-input js-local-keyword" data-section="ip-rules" placeholder="IP 정책 규칙 내 검색">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="ip-rules">초기화</button>
+                </div>
+                <div class="adm-local-toolbar-group">
+                    <select class="adm-select js-local-page-size" data-section="ip-rules">
+                        <option value="10">10개씩</option>
+                        <option value="20" selected>20개씩</option>
+                        <option value="50">50개씩</option>
+                    </select>
+                </div>
+            </div>
             <div class="adm-table-wrap">
                 <table class="adm-table">
                     <thead>
@@ -312,7 +571,16 @@
                         <c:if test="${r.expiresAtDate != null}">
                             <fmt:formatDate var="ipRuleExpiresText" value="${r.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                         </c:if>
-                        <tr>
+                        <tr class="js-local-row"
+                            data-section="ip-rules"
+                            data-search="${fn:toLowerCase(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)} ${fn:toLowerCase(r.blockTargetKey)} ${fn:toLowerCase(empty r.batchName ? '' : r.batchName)} ${fn:toLowerCase(empty r.batchCode ? '' : r.batchCode)} ${fn:toLowerCase(empty r.reason ? '' : r.reason)} ${fn:toLowerCase(empty r.detailMessage ? '' : r.detailMessage)} ${fn:toLowerCase(empty r.blockCategory ? '' : r.blockCategory)} ${fn:toLowerCase(empty r.controlMode ? '' : r.controlMode)} ${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)} ${r.priority}"
+                            data-target="${fn:toLowerCase(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)} ${fn:toLowerCase(r.blockTargetKey)}"
+                            data-batch="${fn:toLowerCase(empty r.batchName ? '' : r.batchName)} ${fn:toLowerCase(empty r.batchCode ? '' : r.batchCode)}"
+                            data-reason="${fn:toLowerCase(empty r.reason ? '' : r.reason)} ${fn:toLowerCase(empty r.detailMessage ? '' : r.detailMessage)}"
+                            data-priority="${r.priority}"
+                            data-policy="${fn:toLowerCase(empty r.blockCategory ? '' : r.blockCategory)} ${fn:toLowerCase(empty r.controlMode ? '' : r.controlMode)} ${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)} ${fn:toLowerCase(empty r.effectiveStatus ? '' : r.effectiveStatus)}"
+                            data-blocked-at="${fn:toLowerCase(ipRuleBlockedAtText)}"
+                            data-expires-at="${fn:toLowerCase(empty ipRuleExpiresText ? '' : ipRuleExpiresText)}">
                             <td>
                                 <button type="button"
                                         class="adm-link-btn js-open-ip-rule-editor"
@@ -405,6 +673,14 @@
                     </tbody>
                 </table>
             </div>
+            <div class="adm-local-pagination" data-section="ip-rules">
+                <div class="adm-local-page-info js-local-page-info" data-section="ip-rules">0건</div>
+                <div class="adm-local-page-actions">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="ip-rules">이전</button>
+                    <span class="js-local-page-state" data-section="ip-rules">1 / 1</span>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="ip-rules">다음</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -458,22 +734,74 @@
         </template>
     </c:forEach>
 
-    <div class="adm-card" style="margin-bottom:20px;">
+    <div class="adm-card js-section-card" data-section="batches" style="margin-bottom:20px;">
         <div class="adm-card-head">
             <div class="adm-card-title">IP 정책 배치</div>
             <div class="adm-card-sub">배치 기본 전략과 개별 예외를 함께 관리합니다.</div>
         </div>
         <div class="adm-card-body" style="padding:0;">
+            <div class="adm-local-toolbar">
+                <div class="adm-local-toolbar-group">
+                    <select class="adm-select js-local-field" data-section="batches">
+                        <option value="all">전체 항목</option>
+                        <option value="batch">배치명 / 코드</option>
+                        <option value="source">출처</option>
+                        <option value="description">설명</option>
+                        <option value="policy">기본 정책</option>
+                        <option value="status">상태</option>
+                        <option value="updatedAt">최근 수정</option>
+                    </select>
+                    <input type="text" class="adm-input js-local-keyword" data-section="batches" placeholder="IP 정책 배치 내 검색">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="batches">초기화</button>
+                </div>
+                <div class="adm-local-toolbar-group">
+                    <select class="adm-select js-local-page-size" data-section="batches">
+                        <option value="10">10개씩</option>
+                        <option value="20" selected>20개씩</option>
+                        <option value="50">50개씩</option>
+                    </select>
+                </div>
+            </div>
             <div class="adm-table-wrap">
                 <table class="adm-table">
                     <thead><tr><th>배치</th><th>기본 정책</th><th>현재 상태</th><th>규칙 통계</th><th>설명</th><th>액션</th></tr></thead>
                     <tbody>
                     <c:forEach var="b" items="${batches}">
-                        <tr>
+                        <fmt:formatDate var="batchCreatedAtText" value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                        <fmt:formatDate var="batchUpdatedAtText" value="${b.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                        <tr class="js-local-row"
+                            data-section="batches"
+                            data-search="${fn:toLowerCase(b.batchName)} ${fn:toLowerCase(b.batchCode)} ${fn:toLowerCase(empty b.sourceType ? '' : b.sourceType)} ${fn:toLowerCase(empty b.sourceName ? '' : b.sourceName)} ${fn:toLowerCase(empty b.description ? '' : b.description)} ${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)} ${fn:toLowerCase(empty b.defaultDisableStrategy ? '' : b.defaultDisableStrategy)} ${fn:toLowerCase(empty b.defaultEnableStrategy ? '' : b.defaultEnableStrategy)} ${fn:toLowerCase(b.activeLabel)} ${fn:toLowerCase(batchUpdatedAtText)}"
+                            data-batch="${fn:toLowerCase(b.batchName)} ${fn:toLowerCase(b.batchCode)}"
+                            data-source="${fn:toLowerCase(empty b.sourceType ? '' : b.sourceType)} ${fn:toLowerCase(empty b.sourceName ? '' : b.sourceName)}"
+                            data-description="${fn:toLowerCase(empty b.description ? '' : b.description)}"
+                            data-policy="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)} ${b.defaultRulePriority} ${fn:toLowerCase(empty b.defaultDisableStrategy ? '' : b.defaultDisableStrategy)} ${fn:toLowerCase(empty b.defaultEnableStrategy ? '' : b.defaultEnableStrategy)}"
+                            data-status="${fn:toLowerCase(b.activeLabel)}"
+                            data-updated-at="${fn:toLowerCase(batchUpdatedAtText)}">
                             <td>
-                                <div style="font-weight:700;color:#e2e8f0;">${b.batchName}</div>
-                                <div style="font-size:12px;color:#94a3b8;">${b.batchCode}</div>
-                                <div style="font-size:11px;color:#64748b;">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</div>
+                                <button type="button"
+                                        class="adm-link-btn js-open-batch-editor"
+                                        data-batch-id="${b.ipBlockBatchIdx}"
+                                        data-batch-code="${fn:escapeXml(b.batchCode)}"
+                                        data-batch-name="${fn:escapeXml(b.batchName)}"
+                                        data-source-type="${fn:escapeXml(b.sourceType)}"
+                                        data-source-name="${fn:escapeXml(empty b.sourceName ? '' : b.sourceName)}"
+                                        data-batch-rule-action="${fn:escapeXml(b.batchRuleAction)}"
+                                        data-default-priority="${b.defaultRulePriority}"
+                                        data-default-disable-strategy="${fn:escapeXml(b.defaultDisableStrategy)}"
+                                        data-default-enable-strategy="${fn:escapeXml(b.defaultEnableStrategy)}"
+                                        data-description="${fn:escapeXml(empty b.description ? '' : b.description)}"
+                                        data-status-label="${fn:escapeXml(b.activeLabel)}"
+                                        data-created-at="${batchCreatedAtText}"
+                                        data-updated-at="${batchUpdatedAtText}"
+                                        data-total-rules="${b.totalRuleCount}"
+                                        data-active-rules="${b.activeRuleCount}"
+                                        data-effective-rules="${b.effectiveRuleCount}"
+                                        data-expired-rules="${b.expiredRuleCount}">
+                                    <span style="font-weight:700;color:#e2e8f0;">${b.batchName}</span>
+                                    <span style="display:block;font-size:12px;color:#94a3b8;">${b.batchCode}</span>
+                                    <span style="display:block;font-size:11px;color:#64748b;">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</span>
+                                </button>
                             </td>
                             <td>
                                 <div>${b.batchRuleActionLabel}</div>
@@ -492,6 +820,25 @@
                             </td>
                             <td style="max-width:260px;white-space:normal;">${empty b.description ? '-' : b.description}</td>
                             <td>
+                                <button type="button"
+                                        class="adm-row-btn detail js-open-batch-editor"
+                                        data-batch-id="${b.ipBlockBatchIdx}"
+                                        data-batch-code="${fn:escapeXml(b.batchCode)}"
+                                        data-batch-name="${fn:escapeXml(b.batchName)}"
+                                        data-source-type="${fn:escapeXml(b.sourceType)}"
+                                        data-source-name="${fn:escapeXml(empty b.sourceName ? '' : b.sourceName)}"
+                                        data-batch-rule-action="${fn:escapeXml(b.batchRuleAction)}"
+                                        data-default-priority="${b.defaultRulePriority}"
+                                        data-default-disable-strategy="${fn:escapeXml(b.defaultDisableStrategy)}"
+                                        data-default-enable-strategy="${fn:escapeXml(b.defaultEnableStrategy)}"
+                                        data-description="${fn:escapeXml(empty b.description ? '' : b.description)}"
+                                        data-status-label="${fn:escapeXml(b.activeLabel)}"
+                                        data-created-at="${batchCreatedAtText}"
+                                        data-updated-at="${batchUpdatedAtText}"
+                                        data-total-rules="${b.totalRuleCount}"
+                                        data-active-rules="${b.activeRuleCount}"
+                                        data-effective-rules="${b.effectiveRuleCount}"
+                                        data-expired-rules="${b.expiredRuleCount}">설정</button>
                                 <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-batch-${b.ipBlockBatchIdx}">상세</button>
                                 <c:if test="${hasBlockPolicyAdmin}">
                                     <button type="button"
@@ -514,6 +861,14 @@
                     </c:if>
                     </tbody>
                 </table>
+            </div>
+            <div class="adm-local-pagination" data-section="batches">
+                <div class="adm-local-page-info js-local-page-info" data-section="batches">0건</div>
+                <div class="adm-local-page-actions">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="batches">이전</button>
+                    <span class="js-local-page-state" data-section="batches">1 / 1</span>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="batches">다음</button>
+                </div>
             </div>
         </div>
     </div>
@@ -568,18 +923,62 @@
         </template>
     </c:forEach>
 
-    <div class="adm-card">
+    <div class="adm-card js-section-card" data-section="histories">
         <div class="adm-card-head">
             <div class="adm-card-title">통합 차단 이력</div>
             <div class="adm-card-sub">규칙 생성, 개별 예외, 배치 동기화까지 함께 추적합니다.</div>
         </div>
         <div class="adm-card-body" style="padding:0;">
+            <div class="adm-local-toolbar">
+                <div class="adm-local-toolbar-group">
+                    <select class="adm-select js-local-field" data-section="histories">
+                        <option value="all">전체 항목</option>
+                        <option value="target">대상</option>
+                        <option value="member">회원</option>
+                        <option value="change">변경 종류</option>
+                        <option value="reason">사유 / 설명</option>
+                        <option value="batch">배치</option>
+                        <option value="blockedAt">차단 날짜</option>
+                        <option value="expiresAt">만료 날짜</option>
+                    </select>
+                    <input type="text" class="adm-input js-local-keyword" data-section="histories" placeholder="통합 차단 이력 내 검색">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="histories">초기화</button>
+                </div>
+                <div class="adm-local-toolbar-group">
+                    <select class="adm-select js-local-page-size" data-section="histories">
+                        <option value="10">10개씩</option>
+                        <option value="20" selected>20개씩</option>
+                        <option value="50">50개씩</option>
+                    </select>
+                </div>
+            </div>
             <div class="adm-table-wrap">
                 <table class="adm-table">
                     <thead><tr><th>시각</th><th>대상</th><th>동작</th><th>변경</th><th>결과</th><th>사유</th><th>액션</th></tr></thead>
                     <tbody>
                     <c:forEach var="h" items="${histories}">
-                        <tr>
+                        <c:set var="historyCurrentType" value="IP_RULE"/>
+                        <c:if test="${h.blockScope == 'USER_ACTION'}">
+                            <c:set var="historyCurrentType" value="USER_BLOCK"/>
+                        </c:if>
+                        <c:if test="${not empty h.batchOperationIdx and not empty h.ipBlockBatchIdx}">
+                            <c:set var="historyCurrentType" value="BATCH"/>
+                        </c:if>
+                        <fmt:formatDate var="historyBlockedAtText" value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                        <c:set var="historyExpiresText" value=""/>
+                        <c:if test="${h.expiresAtDate != null}">
+                            <fmt:formatDate var="historyExpiresText" value="${h.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+                        </c:if>
+                        <tr class="js-local-row"
+                            data-section="histories"
+                            data-search="${fn:toLowerCase(h.blockTargetKey)} ${fn:toLowerCase(empty h.nickname ? '' : h.nickname)} ${fn:toLowerCase(empty h.userId ? '' : h.userId)} ${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)} ${fn:toLowerCase(empty h.controlReason ? '' : h.controlReason)} ${fn:toLowerCase(empty h.reason ? '' : h.reason)} ${fn:toLowerCase(empty h.batchName ? '' : h.batchName)} ${fn:toLowerCase(empty h.batchCode ? '' : h.batchCode)} ${fn:toLowerCase(historyBlockedAtText)} ${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}"
+                            data-target="${fn:toLowerCase(h.blockTargetKey)} ${fn:toLowerCase(empty h.blockedIp ? '' : h.blockedIp)}"
+                            data-member="${fn:toLowerCase(empty h.nickname ? '' : h.nickname)} ${fn:toLowerCase(empty h.userId ? '' : h.userId)}"
+                            data-change="${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)} ${fn:toLowerCase(empty h.controlMode ? '' : h.controlMode)} ${fn:toLowerCase(empty h.operationSource ? '' : h.operationSource)}"
+                            data-reason="${fn:toLowerCase(empty h.controlReason ? '' : h.controlReason)} ${fn:toLowerCase(empty h.reason ? '' : h.reason)}"
+                            data-batch="${fn:toLowerCase(empty h.batchName ? '' : h.batchName)} ${fn:toLowerCase(empty h.batchCode ? '' : h.batchCode)}"
+                            data-blocked-at="${fn:toLowerCase(historyBlockedAtText)}"
+                            data-expires-at="${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}">
                             <td><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></td>
                             <td>
                                 <div style="font-weight:700;color:#e2e8f0;">${h.blockTargetKey}</div>
@@ -598,7 +997,17 @@
                                 <div style="font-size:11px;color:#64748b;">${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus} → ${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</div>
                             </td>
                             <td style="max-width:320px;white-space:normal;">${empty h.controlReason ? (empty h.reason ? '-' : h.reason) : h.controlReason}</td>
-                            <td><button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-history-${h.blockIdx}">상세</button></td>
+                            <td>
+                                <button type="button"
+                                        class="adm-row-btn detail js-open-history-current"
+                                        data-history-id="${h.blockIdx}"
+                                        data-current-type="${historyCurrentType}"
+                                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                                        data-template-id="detail-history-${h.blockIdx}">현재 설정</button>
+                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-history-${h.blockIdx}">상세</button>
+                            </td>
                         </tr>
                     </c:forEach>
                     <c:if test="${empty histories}">
@@ -606,6 +1015,14 @@
                     </c:if>
                     </tbody>
                 </table>
+            </div>
+            <div class="adm-local-pagination" data-section="histories">
+                <div class="adm-local-page-info js-local-page-info" data-section="histories">0건</div>
+                <div class="adm-local-page-actions">
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-prev" data-section="histories">이전</button>
+                    <span class="js-local-page-state" data-section="histories">1 / 1</span>
+                    <button type="button" class="adm-btn adm-btn-ghost js-local-next" data-section="histories">다음</button>
+                </div>
             </div>
         </div>
     </div>
@@ -649,6 +1066,21 @@
             <button class="adm-modal-close" onclick="closeModal('blockDetailModal')">✕</button>
         </div>
         <div class="adm-modal-body" id="blockDetailBody"></div>
+    </div>
+</div>
+
+<div class="adm-modal-overlay" id="memberDetailModal">
+    <div class="adm-modal" style="max-width:860px;">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="memberDetailTitle">회원 상세</div>
+            <button class="adm-modal-close" onclick="closeModal('memberDetailModal')">✕</button>
+        </div>
+        <div class="adm-modal-body" id="memberDetailBody">
+            <div style="text-align:center;padding:40px;color:#64748b;">불러오는 중...</div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('memberDetailModal')">닫기</button>
+        </div>
     </div>
 </div>
 
@@ -910,6 +1342,39 @@
     </div>
 </div>
 
+<div class="adm-modal-overlay" id="batchEditModal">
+    <div class="adm-modal" style="max-width:720px;">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="batchEditTitle">IP 정책 배치 설정</div>
+            <button class="adm-modal-close" onclick="closeModal('batchEditModal')">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <input type="hidden" id="batchEditId">
+            <div class="detail-grid">
+                <div class="detail-item"><div class="detail-label">현재 상태</div><div class="detail-value" id="batchEditStatus">-</div></div>
+                <div class="detail-item"><div class="detail-label">최근 수정</div><div class="detail-value" id="batchEditUpdatedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label">생성 시각</div><div class="detail-value" id="batchEditCreatedAt">-</div></div>
+                <div class="detail-item"><div class="detail-label">규칙 통계</div><div class="detail-value" id="batchEditStats">-</div></div>
+            </div>
+            <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;margin-top:18px;">
+                <div class="sa-form-group"><label class="sa-form-label">배치 코드</label><input id="batchEditCode" class="adm-input" type="text"></div>
+                <div class="sa-form-group"><label class="sa-form-label">배치명</label><input id="batchEditName" class="adm-input" type="text"></div>
+                <div class="sa-form-group"><label class="sa-form-label">출처 유형</label><select id="batchEditSourceType" class="adm-select"><option value="MANUAL">MANUAL</option><option value="VPN_FEED">VPN_FEED</option><option value="SPAM_FEED">SPAM_FEED</option><option value="GEO_POLICY">GEO_POLICY</option><option value="AUTO_DETECTION">AUTO_DETECTION</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">출처명</label><input id="batchEditSourceName" class="adm-input" type="text"></div>
+                <div class="sa-form-group"><label class="sa-form-label">기본 동작</label><select id="batchEditRuleAction" class="adm-select"><option value="BLOCK">차단</option><option value="ALLOW">허용</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">기본 우선순위</label><input id="batchEditPriority" class="adm-input" type="number" min="1"></div>
+                <div class="sa-form-group"><label class="sa-form-label">OFF 기본 전략</label><select id="batchEditDisableStrategy" class="adm-select"><option value="BATCH_ONLY">배치만 OFF</option><option value="CASCADE_ACTIVE_RULES">규칙도 함께 OFF</option></select></div>
+                <div class="sa-form-group"><label class="sa-form-label">ON 기본 전략</label><select id="batchEditEnableStrategy" class="adm-select"><option value="BATCH_ONLY">배치만 ON</option><option value="RESTORE_BATCH_CONTROL">배치 복구</option><option value="FORCE_ENABLE_ALL">전부 ON</option></select></div>
+                <div class="sa-form-group" style="grid-column:1 / span 2;"><label class="sa-form-label">설명</label><textarea id="batchEditDescription" class="adm-input" style="min-height:100px;"></textarea></div>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeModal('batchEditModal')">닫기</button>
+            <button class="adm-btn adm-btn-primary" type="button" onclick="submitBatchEdit()">저장</button>
+        </div>
+    </div>
+</div>
+
 <div class="adm-modal-overlay" id="batchToggleModal">
     <div class="adm-modal" style="max-width:620px;">
         <div class="adm-modal-head">
@@ -940,6 +1405,19 @@
 </div>
 
 <style>
+    .adm-inline-link {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        font: inherit;
+        text-align: left;
+    }
+
+    .adm-inline-link:hover {
+        text-decoration: underline;
+    }
+
     .adm-link-btn {
         width: 100%;
         border: 0;
@@ -952,6 +1430,56 @@
 
     .adm-link-btn:hover span:first-child {
         color: #93c5fd !important;
+    }
+
+    .adm-block-tab-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .adm-local-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+        background: rgba(15, 23, 42, 0.42);
+    }
+
+    .adm-local-toolbar-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .adm-local-toolbar .adm-input {
+        min-width: 240px;
+    }
+
+    .adm-local-pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px 16px;
+        border-top: 1px solid rgba(148, 163, 184, 0.14);
+        background: rgba(15, 23, 42, 0.42);
+        font-size: 13px;
+        color: #cbd5e1;
+    }
+
+    .adm-local-page-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .adm-local-empty td {
+        text-align: center;
+        padding: 28px;
+        color: #64748b;
     }
 
     .adm-quick-row {
@@ -979,6 +1507,57 @@
 
 <script>
 const CTX = '${pageContext.request.contextPath}';
+const BLOCK_SECTION_CONFIG = {
+    'user-blocks': {
+        fields: {
+            all: ['search'],
+            nickname: ['nickname'],
+            userId: ['userId'],
+            target: ['target'],
+            reason: ['reason'],
+            blockType: ['blockType'],
+            blockedAt: ['blockedAt'],
+            expiresAt: ['expiresAt']
+        }
+    },
+    'ip-rules': {
+        fields: {
+            all: ['search'],
+            target: ['target'],
+            batch: ['batch'],
+            reason: ['reason'],
+            priority: ['priority'],
+            policy: ['policy'],
+            blockedAt: ['blockedAt'],
+            expiresAt: ['expiresAt']
+        }
+    },
+    'batches': {
+        fields: {
+            all: ['search'],
+            batch: ['batch'],
+            source: ['source'],
+            description: ['description'],
+            policy: ['policy'],
+            status: ['status'],
+            updatedAt: ['updatedAt']
+        }
+    },
+    'histories': {
+        fields: {
+            all: ['search'],
+            target: ['target'],
+            member: ['member'],
+            change: ['change'],
+            reason: ['reason'],
+            batch: ['batch'],
+            blockedAt: ['blockedAt'],
+            expiresAt: ['expiresAt']
+        }
+    }
+};
+const blockSectionState = {};
+let activeBlockTab = 'dashboard';
 
 function escapeHtml(value) {
     if (value == null) return '';
@@ -990,6 +1569,365 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
+function formatNullable(value) {
+    return value ? escapeHtml(value) : '<span style="color:#475569">—</span>';
+}
+
+function normalizeSearchValue(value) {
+    return String(value || '').trim().toLowerCase();
+}
+
+function getLocalRows(section) {
+    return Array.from(document.querySelectorAll('.js-local-row[data-section="' + section + '"]'));
+}
+
+function getLocalState(section) {
+    if (!blockSectionState[section]) {
+        blockSectionState[section] = {page: 1, pageSize: 20};
+    }
+    return blockSectionState[section];
+}
+
+function updateTabQuery(tab) {
+    const hiddenInput = document.getElementById('blockActiveTabInput');
+    if (hiddenInput) {
+        hiddenInput.value = tab;
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', tab);
+    window.history.replaceState({}, '', url.toString());
+}
+
+function activateBlockTab(tab) {
+    const validTabs = ['dashboard', 'all', 'user-blocks', 'ip-rules', 'batches', 'histories'];
+    activeBlockTab = validTabs.includes(tab) ? tab : 'dashboard';
+    updateTabQuery(activeBlockTab);
+
+    document.querySelectorAll('.js-block-tab').forEach(function (button) {
+        button.classList.toggle('active', button.dataset.tab === activeBlockTab);
+    });
+
+    const dashboardPanel = document.querySelector('.js-dashboard-panel');
+    if (dashboardPanel) {
+        dashboardPanel.style.display = activeBlockTab === 'dashboard' ? '' : 'none';
+    }
+
+    document.querySelectorAll('.js-section-card').forEach(function (card) {
+        const section = card.dataset.section;
+        const visible = activeBlockTab === 'all' || (activeBlockTab !== 'dashboard' && activeBlockTab === section);
+        card.style.display = visible ? '' : 'none';
+    });
+}
+
+function ensureLocalEmptyRow(section, visibleCount) {
+    const rows = getLocalRows(section);
+    const sampleRow = rows[0];
+    if (!sampleRow) return;
+
+    const tbody = sampleRow.parentElement;
+    const colspan = sampleRow.children.length || tbody.parentElement.querySelectorAll('thead th').length || 1;
+    let emptyRow = tbody.querySelector('.adm-local-empty[data-section="' + section + '"]');
+
+    if (visibleCount > 0) {
+        if (emptyRow) emptyRow.remove();
+        return;
+    }
+
+    if (!emptyRow) {
+        emptyRow = document.createElement('tr');
+        emptyRow.className = 'adm-local-empty';
+        emptyRow.dataset.section = section;
+        emptyRow.innerHTML = '<td colspan="' + colspan + '">조건에 맞는 데이터가 없습니다.</td>';
+        tbody.appendChild(emptyRow);
+    }
+}
+
+function filterLocalRows(section) {
+    const config = BLOCK_SECTION_CONFIG[section];
+    if (!config) return [];
+
+    const keywordInput = document.querySelector('.js-local-keyword[data-section="' + section + '"]');
+    const fieldSelect = document.querySelector('.js-local-field[data-section="' + section + '"]');
+    const keyword = normalizeSearchValue(keywordInput ? keywordInput.value : '');
+    const field = fieldSelect ? fieldSelect.value : 'all';
+    const keys = config.fields[field] || config.fields.all;
+
+    return getLocalRows(section).filter(function (row) {
+        if (!keyword) return true;
+        return keys.some(function (key) {
+            return normalizeSearchValue(row.dataset[key] || '').includes(keyword);
+        });
+    });
+}
+
+function renderLocalSection(section) {
+    const state = getLocalState(section);
+    const filteredRows = filterLocalRows(section);
+    const total = filteredRows.length;
+    const pageSize = Math.max(1, Number(state.pageSize || 20));
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    if (state.page > totalPages) {
+        state.page = totalPages;
+    }
+    if (state.page < 1) {
+        state.page = 1;
+    }
+
+    const start = (state.page - 1) * pageSize;
+    const end = start + pageSize;
+
+    getLocalRows(section).forEach(function (row) {
+        row.style.display = 'none';
+    });
+    filteredRows.slice(start, end).forEach(function (row) {
+        row.style.display = '';
+    });
+
+    ensureLocalEmptyRow(section, filteredRows.slice(start, end).length);
+
+    const info = document.querySelector('.js-local-page-info[data-section="' + section + '"]');
+    const pageState = document.querySelector('.js-local-page-state[data-section="' + section + '"]');
+    const prevBtn = document.querySelector('.js-local-prev[data-section="' + section + '"]');
+    const nextBtn = document.querySelector('.js-local-next[data-section="' + section + '"]');
+
+    if (info) {
+        const shown = total === 0 ? 0 : Math.min(total, end) - start;
+        info.textContent = '총 ' + total + '건 / 현재 ' + shown + '건';
+    }
+    if (pageState) {
+        pageState.textContent = state.page + ' / ' + totalPages;
+    }
+    if (prevBtn) prevBtn.disabled = state.page <= 1;
+    if (nextBtn) nextBtn.disabled = state.page >= totalPages;
+}
+
+function initializeLocalSections() {
+    Object.keys(BLOCK_SECTION_CONFIG).forEach(function (section) {
+        const pageSizeSelect = document.querySelector('.js-local-page-size[data-section="' + section + '"]');
+        const fieldSelect = document.querySelector('.js-local-field[data-section="' + section + '"]');
+        const keywordInput = document.querySelector('.js-local-keyword[data-section="' + section + '"]');
+        const resetButton = document.querySelector('.js-local-reset[data-section="' + section + '"]');
+
+        const state = getLocalState(section);
+        if (pageSizeSelect) {
+            state.pageSize = Number(pageSizeSelect.value || 20);
+            pageSizeSelect.addEventListener('change', function () {
+                state.pageSize = Number(pageSizeSelect.value || 20);
+                state.page = 1;
+                renderLocalSection(section);
+            });
+        }
+        if (fieldSelect) {
+            fieldSelect.addEventListener('change', function () {
+                state.page = 1;
+                renderLocalSection(section);
+            });
+        }
+        if (keywordInput) {
+            keywordInput.addEventListener('input', function () {
+                state.page = 1;
+                renderLocalSection(section);
+            });
+        }
+        if (resetButton) {
+            resetButton.addEventListener('click', function () {
+                if (fieldSelect) fieldSelect.value = 'all';
+                if (keywordInput) keywordInput.value = '';
+                state.page = 1;
+                renderLocalSection(section);
+            });
+        }
+        renderLocalSection(section);
+    });
+}
+
+function findFirstButton(selector, predicate) {
+    const buttons = Array.from(document.querySelectorAll(selector));
+    return buttons.find(predicate) || null;
+}
+
+function formatDateTime(value) {
+    if (!value) return '—';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return escapeHtml(value);
+
+    return date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+}
+
+function formatHistoryDateTime(value) {
+    if (!value) return '—';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return escapeHtml(value);
+
+    return date.toLocaleString('ko-KR', {
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+}
+
+function formatBooleanBadge(value) {
+    return value
+        ? '<span style="color:#4ade80">✓ 예</span>'
+        : '<span style="color:#475569">✗ 아니오</span>';
+}
+
+function buildStatusBadge(status) {
+    const safe = escapeHtml(status || '');
+    return '<span class="status-badge ' + safe + '">' + (safe || '—') + '</span>';
+}
+
+function buildRoleBadge(role) {
+    const safe = escapeHtml(role || '');
+    return '<span class="role-badge ' + safe + '">' + (safe || '—') + '</span>';
+}
+
+function buildSocialHtml(linkedProviders) {
+    if (!linkedProviders) {
+        return '<span style="color:#475569;font-size:12px;">연동 없음</span>';
+    }
+
+    const providerMap = {
+        KAKAO: 'k 카카오',
+        NAVER: 'N 네이버',
+        GOOGLE: 'G Google'
+    };
+
+    return linkedProviders
+        .split(',')
+        .map(provider => provider.trim())
+        .filter(provider => provider.length > 0)
+        .map(provider => '<span style="margin-right:8px;font-size:12px;color:#94a3b8;">' + escapeHtml(providerMap[provider] || provider) + '</span>')
+        .join('') || '<span style="color:#475569;font-size:12px;">연동 없음</span>';
+}
+
+function buildMemberInfoTab(member) {
+    const statusBadge = buildStatusBadge(member.accountStatus);
+    const roleBadge = buildRoleBadge(member.userRole);
+    const socialHtml = buildSocialHtml(member.linkedProviders);
+    const lastLoginText = formatDateTime(member.lastLoginAt);
+
+    return ''
+        + '<div class="detail-grid">'
+        + '<div class="detail-item"><div class="detail-label">회원 번호</div><div class="detail-value">#' + escapeHtml(member.userIdx) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">아이디</div><div class="detail-value">' + formatNullable(member.userId) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">닉네임</div><div class="detail-value">' + formatNullable(member.nickname) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">이메일</div><div class="detail-value" style="font-size:12px;">' + formatNullable(member.userEmail) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">계정 상태</div><div class="detail-value">' + statusBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">권한</div><div class="detail-value">' + roleBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">국적</div><div class="detail-value">' + formatNullable(member.nationality) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">선호 언어</div><div class="detail-value">' + formatNullable(member.preferredLang) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">이메일 인증</div><div class="detail-value">' + formatBooleanBadge(member.emailVerified) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">이메일 로그인</div><div class="detail-value">' + formatBooleanBadge(member.emailLoginEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">비밀번호 로그인</div><div class="detail-value">' + formatBooleanBadge(member.passwordEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">가입일</div><div class="detail-value" style="font-size:12px;">' + formatDateTime(member.createdAt) + '</div></div>'
+        + '</div>'
+        + '<div class="detail-item" style="margin-top:12px;">'
+        + '<div class="detail-label">소셜 연동</div>'
+        + '<div class="detail-value" style="margin-top:4px;">' + socialHtml + '</div>'
+        + '</div>'
+        + '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">'
+        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 성공</div>'
+        + '<div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">' + escapeHtml(member.loginSuccessCount ?? 0) + '</div>'
+        + '</div>'
+        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 실패</div>'
+        + '<div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">' + escapeHtml(member.loginFailCount ?? 0) + '</div>'
+        + '</div>'
+        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">최근 로그인</div>'
+        + '<div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">' + escapeHtml(lastLoginText) + '</div>'
+        + '</div>'
+        + '</div>';
+}
+
+function buildMemberHistTab(history) {
+    if (!history.length) {
+        return '<div style="text-align:center;padding:32px;color:#475569;">로그인 이력이 없습니다.</div>';
+    }
+
+    const methodMap = {
+        ID: '아이디',
+        EMAIL: '이메일',
+        KAKAO: '카카오',
+        NAVER: '네이버',
+        GOOGLE: 'Google'
+    };
+
+    let rows = '';
+    history.forEach(function(item) {
+        const ok = !!item.success;
+        rows += ''
+            + '<tr>'
+            + '<td>' + escapeHtml(formatHistoryDateTime(item.loginAt)) + '</td>'
+            + '<td>' + escapeHtml(methodMap[item.loginMethod] || item.loginMethod || '—') + '</td>'
+            + '<td class="' + (ok ? 'h-success' : 'h-fail') + '">' + (ok ? '✅ 성공' : '❌ 실패') + '</td>'
+            + '<td>' + escapeHtml(item.failReason || '—') + '</td>'
+            + '<td style="font-size:11px;color:#475569;">' + escapeHtml(item.ipAddress || '—') + '</td>'
+            + '</tr>';
+    });
+
+    return ''
+        + '<div style="overflow-x:auto;max-height:340px;overflow-y:auto;">'
+        + '<table class="history-table">'
+        + '<thead><tr><th>시각</th><th>방법</th><th>결과</th><th>실패 사유</th><th>IP</th></tr></thead>'
+        + '<tbody>' + rows + '</tbody>'
+        + '</table>'
+        + '</div>';
+}
+
+function switchMemberTab(tab, btn) {
+    document.querySelectorAll('#memberDetailModal .adm-tab').forEach(function(tabButton) {
+        tabButton.classList.remove('active');
+    });
+    btn.classList.add('active');
+    document.getElementById('member-detail-tab-info').style.display = tab === 'info' ? '' : 'none';
+    document.getElementById('member-detail-tab-hist').style.display = tab === 'hist' ? '' : 'none';
+}
+
+async function openMemberDetailModal(userIdx) {
+    if (!userIdx) return;
+
+    document.getElementById('memberDetailModal').classList.add('open');
+    document.getElementById('memberDetailBody').innerHTML =
+        '<div style="text-align:center;padding:40px;color:#475569;">불러오는 중... ⏳</div>';
+
+    const res = await fetch(CTX + '/admin/members/' + userIdx, {
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+        document.getElementById('memberDetailBody').innerHTML =
+            '<div style="text-align:center;padding:40px;color:#f87171;">' + escapeHtml(data.message || '회원 정보를 불러오지 못했습니다.') + '</div>';
+        return;
+    }
+
+    const member = data.member || {};
+    const history = Array.isArray(data.history) ? data.history : [];
+    document.getElementById('memberDetailTitle').textContent = (member.nickname || '회원') + ' 상세 정보';
+    document.getElementById('memberDetailBody').innerHTML = ''
+        + '<div class="adm-tabs">'
+        + '<button class="adm-tab active" onclick="switchMemberTab(\'info\', this)">기본 정보</button>'
+        + '<button class="adm-tab" onclick="switchMemberTab(\'hist\', this)">로그인 이력 (' + history.length + ')</button>'
+        + '</div>'
+        + '<div id="member-detail-tab-info">' + buildMemberInfoTab(member) + '</div>'
+        + '<div id="member-detail-tab-hist" style="display:none;">' + buildMemberHistTab(history) + '</div>';
+}
+
 function openIpRuleModal() {
     document.getElementById('ipRuleModal').classList.add('open');
     handleIpRuleTypeChange();
@@ -998,6 +1936,39 @@ function openIpRuleModal() {
 
 function openBatchModal() {
     document.getElementById('batchModal').classList.add('open');
+}
+
+function openBatchEditor(button) {
+    const resolvedButton = button.dataset.sourceType
+        ? button
+        : findFirstButton('.js-open-batch-editor', function (candidate) {
+            return candidate.dataset.batchId === button.dataset.batchId && candidate.dataset.sourceType;
+        });
+
+    if (!resolvedButton) {
+        adm_toast('배치 설정 정보를 찾지 못했습니다.', 'error');
+        return;
+    }
+
+    document.getElementById('batchEditId').value = resolvedButton.dataset.batchId || '';
+    document.getElementById('batchEditTitle').textContent = (resolvedButton.dataset.batchName || 'IP 정책 배치') + ' 설정';
+    document.getElementById('batchEditStatus').textContent = resolvedButton.dataset.statusLabel || '-';
+    document.getElementById('batchEditUpdatedAt').textContent = resolvedButton.dataset.updatedAt || '-';
+    document.getElementById('batchEditCreatedAt').textContent = resolvedButton.dataset.createdAt || '-';
+    document.getElementById('batchEditStats').textContent = '전체 ' + (resolvedButton.dataset.totalRules || '0')
+        + ' / 개별 ON ' + (resolvedButton.dataset.activeRules || '0')
+        + ' / 최종 적용 ' + (resolvedButton.dataset.effectiveRules || '0')
+        + ' / 만료 ' + (resolvedButton.dataset.expiredRules || '0');
+    document.getElementById('batchEditCode').value = resolvedButton.dataset.batchCode || '';
+    document.getElementById('batchEditName').value = resolvedButton.dataset.batchName || '';
+    document.getElementById('batchEditSourceType').value = resolvedButton.dataset.sourceType || 'MANUAL';
+    document.getElementById('batchEditSourceName').value = resolvedButton.dataset.sourceName || '';
+    document.getElementById('batchEditRuleAction').value = resolvedButton.dataset.batchRuleAction || 'BLOCK';
+    document.getElementById('batchEditPriority').value = resolvedButton.dataset.defaultPriority || '1';
+    document.getElementById('batchEditDisableStrategy').value = resolvedButton.dataset.defaultDisableStrategy || 'BATCH_ONLY';
+    document.getElementById('batchEditEnableStrategy').value = resolvedButton.dataset.defaultEnableStrategy || 'BATCH_ONLY';
+    document.getElementById('batchEditDescription').value = resolvedButton.dataset.description || '';
+    document.getElementById('batchEditModal').classList.add('open');
 }
 
 function closeModal(id) {
@@ -1068,15 +2039,14 @@ function openUserBlockEditor(button) {
     const displayName = button.dataset.displayName || '-';
     const userId = button.dataset.userId || '';
     const userEmail = button.dataset.userEmail || '';
-    const memberUrl = userIdx ? (CTX + '/admin/members?detailUserIdx=' + userIdx) : '';
 
     document.getElementById('userBlockEditId').value = button.dataset.blockIdx;
     document.getElementById('userBlockEditTemplateId').value = button.dataset.templateId || '';
     document.getElementById('userBlockEditTitle').textContent = displayName + ' 차단 설정';
 
     let memberHtml = escapeHtml(displayName);
-    if (memberUrl) {
-        memberHtml = '<a href="' + memberUrl + '" style="color:#93c5fd;text-decoration:none;">' + escapeHtml(displayName) + '</a>';
+    if (userIdx) {
+        memberHtml = '<button type="button" class="adm-inline-link js-open-member-detail" data-user-idx="' + escapeHtml(userIdx) + '" style="color:#93c5fd;">' + escapeHtml(displayName) + '</button>';
     }
     if (userId) {
         memberHtml += '<div style="font-size:12px;color:#94a3b8;margin-top:4px;">' + escapeHtml(userId) + '</div>';
@@ -1286,6 +2256,33 @@ async function submitBatch() {
     }
 }
 
+async function submitBatchEdit() {
+    const id = document.getElementById('batchEditId').value;
+    const params = new URLSearchParams({
+        batchCode: document.getElementById('batchEditCode').value.trim(),
+        batchName: document.getElementById('batchEditName').value.trim(),
+        sourceType: document.getElementById('batchEditSourceType').value,
+        sourceName: document.getElementById('batchEditSourceName').value.trim(),
+        batchRuleAction: document.getElementById('batchEditRuleAction').value,
+        defaultRulePriority: document.getElementById('batchEditPriority').value,
+        defaultDisableStrategy: document.getElementById('batchEditDisableStrategy').value,
+        defaultEnableStrategy: document.getElementById('batchEditEnableStrategy').value,
+        description: document.getElementById('batchEditDescription').value.trim()
+    });
+    const res = await fetch(CTX + '/admin/blocks/batches/' + id + '/update', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest'},
+        body: params.toString()
+    });
+    const data = await res.json();
+    if (data.success) {
+        adm_toast(data.message || '저장되었습니다.');
+        location.reload();
+    } else {
+        adm_toast(data.message || '저장 실패', 'error');
+    }
+}
+
 function openBatchToggleModal(button) {
     const nextActive = button.dataset.active === 'true';
     const batchName = button.dataset.batchName;
@@ -1317,6 +2314,49 @@ function openBatchToggleModal(button) {
     document.getElementById('batchToggleModal').classList.add('open');
 }
 
+function openHistoryCurrent(button) {
+    const currentType = button.dataset.currentType;
+    const targetKey = button.dataset.targetKey || '';
+    const ruleAction = button.dataset.ruleAction || '';
+    const batchId = button.dataset.batchId || '';
+
+    if (currentType === 'BATCH' && batchId) {
+        const batchButton = findFirstButton('.js-open-batch-editor', function (candidate) {
+            return candidate.dataset.batchId === batchId && candidate.dataset.sourceType;
+        });
+        if (batchButton) {
+            openBatchEditor(batchButton);
+            return;
+        }
+    }
+
+    if (currentType === 'USER_BLOCK') {
+        const userButton = findFirstButton('.js-open-user-block-editor', function (candidate) {
+            return candidate.dataset.targetKey === targetKey;
+        });
+        if (userButton) {
+            openUserBlockEditor(userButton);
+            return;
+        }
+    }
+
+    const ruleButton = findFirstButton('.js-open-ip-rule-editor', function (candidate) {
+        const sameTarget = candidate.dataset.targetKey === targetKey;
+        const sameAction = !ruleAction || candidate.dataset.ruleAction === ruleAction;
+        const sameBatch = batchId ? candidate.dataset.batchId === batchId : true;
+        return sameTarget && sameAction && sameBatch;
+    });
+    if (ruleButton) {
+        openIpRuleEditor(ruleButton);
+        return;
+    }
+
+    if (button.dataset.templateId) {
+        openBlockDetail(button.dataset.templateId, '차단 상세');
+    }
+    adm_toast('현재 목록에서 연결된 설정 대상을 찾지 못했습니다. 통합 검색 조건을 넓혀 다시 확인해주세요.', 'error');
+}
+
 async function submitBatchToggle() {
     const id = document.getElementById('batchToggleId').value;
     const active = document.getElementById('batchToggleActive').value;
@@ -1342,6 +2382,18 @@ async function submitBatchToggle() {
 }
 
 document.addEventListener('click', function (e) {
+    const tabButton = e.target.closest('.js-block-tab');
+    if (tabButton) {
+        activateBlockTab(tabButton.dataset.tab);
+        return;
+    }
+
+    const memberDetailBtn = e.target.closest('.js-open-member-detail');
+    if (memberDetailBtn) {
+        openMemberDetailModal(memberDetailBtn.dataset.userIdx);
+        return;
+    }
+
     const expiryPresetBtn = e.target.closest('.js-expiry-preset');
     if (expiryPresetBtn) {
         applyExpiryPreset(expiryPresetBtn.dataset.target, expiryPresetBtn.dataset.days);
@@ -1393,6 +2445,36 @@ document.addEventListener('click', function (e) {
     const batchToggleBtn = e.target.closest('.js-open-batch-toggle');
     if (batchToggleBtn) {
         openBatchToggleModal(batchToggleBtn);
+        return;
+    }
+
+    const batchEditorBtn = e.target.closest('.js-open-batch-editor');
+    if (batchEditorBtn) {
+        openBatchEditor(batchEditorBtn);
+        return;
+    }
+
+    const historyCurrentBtn = e.target.closest('.js-open-history-current');
+    if (historyCurrentBtn) {
+        openHistoryCurrent(historyCurrentBtn);
+        return;
+    }
+
+    const prevBtn = e.target.closest('.js-local-prev');
+    if (prevBtn) {
+        const section = prevBtn.dataset.section;
+        const state = getLocalState(section);
+        state.page -= 1;
+        renderLocalSection(section);
+        return;
+    }
+
+    const nextBtn = e.target.closest('.js-local-next');
+    if (nextBtn) {
+        const section = nextBtn.dataset.section;
+        const state = getLocalState(section);
+        state.page += 1;
+        renderLocalSection(section);
     }
 });
 
@@ -1403,5 +2485,8 @@ document.querySelectorAll('.adm-modal-overlay').forEach(function (overlay) {
         }
     });
 });
+
+initializeLocalSections();
+activateBlockTab(new URLSearchParams(window.location.search).get('tab') || 'dashboard');
 </script>
 <%@ include file="../layout-close.jsp" %>
