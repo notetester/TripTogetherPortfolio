@@ -52,6 +52,9 @@
                         <select class="adm-select" name="role">
                             <option value="ALL"   ${search.role=='ALL'   ? 'selected' : ''}>전체</option>
                             <option value="USER"  ${search.role=='USER'  ? 'selected' : ''}>일반</option>
+                            <option value="BUSINESS" ${search.role=='BUSINESS' ? 'selected' : ''}>비즈니스</option>
+                            <option value="PARTNER"  ${search.role=='PARTNER'  ? 'selected' : ''}>파트너</option>
+                            <option value="BOT"      ${search.role=='BOT'      ? 'selected' : ''}>봇</option>
                             <option value="ADMIN" ${search.role=='ADMIN' ? 'selected' : ''}>관리자</option>
                         </select>
                     </div>
@@ -189,7 +192,18 @@
 
                         <%-- 권한 --%>
                         <td>
-                            <span class="role-badge ${m.userRole}">${m.userRole}</span>
+                            <span class="role-badge ${m.userRole}">
+                                <c:choose>
+                                    <c:when test="${m.userRole eq 'USER'}">일반</c:when>
+                                    <c:when test="${m.userRole eq 'BUSINESS'}">비즈니스</c:when>
+                                    <c:when test="${m.userRole eq 'PARTNER'}">파트너</c:when>
+                                    <c:when test="${m.userRole eq 'BOT'}">봇</c:when>
+                                    <c:when test="${m.userRole eq 'ADMIN'}">관리자</c:when>
+                                    <c:when test="${m.userRole eq 'SUPERADMIN'}">최고관리자</c:when>
+                                    <c:when test="${m.userRole eq 'SYSTEM'}">시스템</c:when>
+                                    <c:otherwise>${m.userRole}</c:otherwise>
+                                </c:choose>
+                            </span>
                             <c:if test="${not empty m.adminPositionCode}">
                                 <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${m.adminPositionCode}</div>
                             </c:if>
@@ -238,7 +252,7 @@
                             <div style="display:flex;gap:4px;align-items:center;">
                                 <button class="adm-row-btn detail"
                                         onclick="openDetail(${m.userIdx})">상세</button>
-                                <c:if test="${m.userRole != 'SYSTEM'}">
+                                <c:if test="${m.userRole != 'SYSTEM' and m.userRole != 'SUPERADMIN'}">
                                 <div class="action-menu-wrap">
                                     <button class="adm-row-btn detail"
                                             onclick="toggleMenu(this)">⋯</button>
@@ -278,18 +292,24 @@
                                                     font-weight:700;text-transform:uppercase;letter-spacing:.06em;">
                                             권한 변경
                                         </div>
-                                        <c:if test="${m.userRole != 'ADMIN'}">
-                                            <button class="action-menu-item"
-                                                    onclick="changeRole(${m.userIdx}, 'ADMIN', this)">
-                                                ⭐ 관리자 권한 부여
+                                        <div class="role-change-box">
+                                            <select class="adm-select role-change-select" data-current-role="${m.userRole}">
+                                                <option value="USER" ${m.userRole == 'USER' ? 'selected' : ''}>일반</option>
+                                                <option value="BUSINESS" ${m.userRole == 'BUSINESS' ? 'selected' : ''}>비즈니스</option>
+                                                <option value="PARTNER" ${m.userRole == 'PARTNER' ? 'selected' : ''}>파트너</option>
+                                                <option value="BOT" ${m.userRole == 'BOT' ? 'selected' : ''}>봇</option>
+                                                <option value="ADMIN" ${m.userRole == 'ADMIN' ? 'selected' : ''}>관리자</option>
+                                            </select>
+                                            <input class="adm-input role-change-reason"
+                                                   type="text"
+                                                   maxlength="500"
+                                                   placeholder="변경 사유">
+                                            <button class="action-menu-item role-change-submit"
+                                                    data-user-idx="${m.userIdx}"
+                                                    onclick="changeRoleFromMenu(this)">
+                                                권한 변경 적용
                                             </button>
-                                        </c:if>
-                                        <c:if test="${m.userRole != 'USER'}">
-                                            <button class="action-menu-item danger"
-                                                    onclick="changeRole(${m.userIdx}, 'USER', this)">
-                                                👤 일반 유저로 변경
-                                            </button>
-                                        </c:if>
+                                        </div>
                                     </div>
                                 </div>
                                 </c:if>
@@ -444,7 +464,20 @@ function buildStatusBadge(status) {
 
 function buildRoleBadge(role) {
     const safe = escapeHtml(role || '');
-    return '<span class="role-badge ' + safe + '">' + (safe || '—') + '</span>';
+    return '<span class="role-badge ' + safe + '">' + roleLabel(safe) + '</span>';
+}
+
+function roleLabel(role) {
+    const labels = {
+        USER: '일반',
+        BUSINESS: '비즈니스',
+        PARTNER: '파트너',
+        BOT: '봇',
+        ADMIN: '관리자',
+        SUPERADMIN: '최고관리자',
+        SYSTEM: '시스템'
+    };
+    return labels[role] || role || '—';
 }
 
 function buildSocialHtml(linkedProviders) {
@@ -612,9 +645,36 @@ async function changeStatus(userIdx, status, el) {
 }
 
 /* ── 권한 변경 ── */
-async function changeRole(userIdx, role, el) {
-    const labels = { ADMIN: '관리자 권한 부여', USER: '일반 유저로 변경' };
-    if (!confirm('"' + (labels[role] || role) + '" 하시겠습니까?')) return;
+function changeRoleFromMenu(button) {
+    const box = button.closest('.role-change-box');
+    if (!box) return;
+
+    const select = box.querySelector('.role-change-select');
+    const reasonInput = box.querySelector('.role-change-reason');
+    const userIdx = button.dataset.userIdx;
+    const role = select ? select.value : '';
+    const currentRole = select ? select.dataset.currentRole : '';
+    const reason = reasonInput ? reasonInput.value.trim() : '';
+
+    if (!role || !userIdx) {
+        adm_toast('권한 변경 정보를 찾지 못했습니다.', 'error');
+        return;
+    }
+    if (role === currentRole) {
+        adm_toast('이미 선택된 권한입니다.', 'error');
+        return;
+    }
+    if (!reason) {
+        adm_toast('권한 변경 사유를 입력해주세요.', 'error');
+        if (reasonInput) reasonInput.focus();
+        return;
+    }
+
+    changeRole(userIdx, role, reason, button);
+}
+
+async function changeRole(userIdx, role, reason, el) {
+    if (!confirm('"' + roleLabel(role) + '" 권한으로 변경하시겠습니까?')) return;
 
     const menu = el.closest('.action-menu');
     if (menu) menu.classList.remove('open');
@@ -622,7 +682,7 @@ async function changeRole(userIdx, role, el) {
     const res = await fetch(ctx + '/admin/members/' + userIdx + '/role', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ role })
+        body: new URLSearchParams({ role, reason })
     });
 
     let data;

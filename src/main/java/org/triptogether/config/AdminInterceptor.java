@@ -19,7 +19,7 @@ import java.util.Set;
  * <p>처리 순서:</p>
  * <ol>
  *     <li>비로그인 사용자는 로그인 화면으로 이동</li>
- *     <li>로그인했지만 ADMIN 권한이 아니면 메인으로 이동</li>
+ *     <li>로그인했지만 관리자 계열 권한이 아니면 메인으로 이동</li>
  * </ol>
  */
 @Slf4j
@@ -48,7 +48,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (!"ADMIN".equals(loginUser.getUserRole())) {
+        if (!loginUser.hasAdminRole()) {
             log.warn("[AdminInterceptor] 관리자 권한 없는 접근 - userIdx={}, path={}",
                     loginUser.getUserIdx(), request.getRequestURI());
             response.sendRedirect(request.getContextPath() + "/");

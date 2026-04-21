@@ -288,7 +288,7 @@ public class DetailController {
 
     private boolean isAdminMode(HttpSession session) {
         UsersVO loginUser = getLoginUser(session);
-        if (loginUser == null || !"ADMIN".equals(loginUser.getUserRole())) {
+        if (loginUser == null || !loginUser.hasAdminRole()) {
             return false;
         }
         String viewMode = (String) session.getAttribute("viewMode");

@@ -526,13 +526,36 @@
           AND permission_code = #{permissionCode}
     </select>
 
+    <select id="findMemberRoleForUpdate" resultType="string">
+        SELECT user_role
+        FROM USERS
+        WHERE user_idx = #{userIdx}
+        FOR UPDATE
+    </select>
+
     <update id="updateMemberRole">
         UPDATE USERS
         SET user_role = #{role},
-            admin_position_code = CASE WHEN #{role} = 'USER' THEN NULL ELSE admin_position_code END,
-            admin_permission_code = CASE WHEN #{role} = 'USER' THEN NULL ELSE admin_permission_code END
+            admin_position_code = CASE WHEN #{role} IN ('ADMIN', 'SUPERADMIN') THEN admin_position_code ELSE NULL END,
+            admin_permission_code = CASE WHEN #{role} IN ('ADMIN', 'SUPERADMIN') THEN admin_permission_code ELSE NULL END
         WHERE user_idx = #{userIdx}
     </update>
+
+    <insert id="insertMemberRoleChangeHistory">
+        INSERT INTO USER_ROLE_CHANGE_HISTORY (
+            user_idx,
+            previous_role,
+            new_role,
+            reason,
+            changed_by_user_idx
+        ) VALUES (
+            #{userIdx},
+            #{previousRole},
+            #{newRole},
+            #{reason},
+            #{changedByUserIdx}
+        )
+    </insert>
 
     <select id="findLoginHistory" resultMap="historyRM">
         SELECT *

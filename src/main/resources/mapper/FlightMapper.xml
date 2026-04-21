@@ -8,6 +8,7 @@
     <insert id="insertFlightPurchase" useGeneratedKeys="true" keyProperty="flightPurchaseIdx" keyColumn="flight_purchase_idx">
         INSERT INTO FLIGHT_PURCHASE_SIMULATION (
             purchase_no, user_idx, spot_idx, offer_id, provider_type,
+            payment_idx,
             airline_name, flight_no, origin_airport_code, destination_airport_code,
             departure_time, arrival_time, trip_type,
             return_airline_name, return_flight_no, return_origin_airport_code, return_destination_airport_code,
@@ -16,6 +17,7 @@
             status, created_at
         ) VALUES (
             #{purchaseNo}, #{userIdx}, #{spotIdx}, #{offerId}, #{providerType},
+            #{paymentIdx},
             #{airlineName}, #{flightNo}, #{originAirportCode}, #{destinationAirportCode},
             #{departureTime}, #{arrivalTime}, #{tripType},
             #{returnAirlineName}, #{returnFlightNo}, #{returnOriginAirportCode}, #{returnDestinationAirportCode},

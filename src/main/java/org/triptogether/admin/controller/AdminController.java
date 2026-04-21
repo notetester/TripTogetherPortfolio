@@ -123,6 +123,7 @@ public class AdminController {
     @ResponseBody
     public Map<String, Object> changeRole(@PathVariable Long userIdx,
                                           @RequestParam String role,
+                                          @RequestParam(required = false) String reason,
                                           HttpSession session) {
         Map<String, Object> result = new HashMap<>();
         try {
@@ -132,7 +133,8 @@ public class AdminController {
                 result.put("message", "자신의 권한은 변경할 수 없습니다.");
                 return result;
             }
-            adminService.changeMemberRole(userIdx, role);
+            Long changedByUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+            adminService.changeMemberRole(userIdx, role, reason, changedByUserIdx);
             result.put("success", true);
             result.put("message", "권한이 변경되었습니다.");
         } catch (Exception e) {

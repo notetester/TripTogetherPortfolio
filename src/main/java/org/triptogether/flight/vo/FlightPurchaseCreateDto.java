@@ -16,6 +16,7 @@ public class FlightPurchaseCreateDto {
     private Long spotIdx;
     private String offerId;
     private String providerType;
+    private Long paymentIdx;
 
     private String airlineName;
     private String flightNo;

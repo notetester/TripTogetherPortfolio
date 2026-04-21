@@ -2,9 +2,11 @@ package org.triptogether.admin.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.admin.mapper.AdminMapper;
 import org.triptogether.config.IpBlockMapper;
 import org.triptogether.admin.vo.*;
+import org.triptogether.auth.vo.UserRole;
 import org.triptogether.auth.vo.UserLoginHistoryVO;
 import org.triptogether.report.vo.ReportSearchDto;
 
@@ -177,12 +179,49 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void changeMemberRole(Long userIdx, String role) {
-        List<String> allowed = List.of("USER", "ADMIN");
-        if (!allowed.contains(role)) {
-            throw new IllegalArgumentException("유효하지 않은 권한값: " + role);
+    @Transactional
+    public void changeMemberRole(Long userIdx, String role, String reason, Long changedByUserIdx) {
+        UserRole targetRole = UserRole.parse(role)
+                .filter(UserRole::isMemberAdminAssignable)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 권한값: " + role));
+
+        if (changedByUserIdx == null) {
+            throw new IllegalArgumentException("권한 변경 관리자 정보를 찾을 수 없습니다.");
         }
-        adminMapper.updateMemberRole(userIdx, role);
+
+        String previousRoleCode = adminMapper.findMemberRoleForUpdate(userIdx);
+        if (previousRoleCode == null) {
+            throw new IllegalArgumentException("회원을 찾을 수 없습니다.");
+        }
+
+        UserRole previousRole = UserRole.from(previousRoleCode);
+        if (previousRole.isProtectedRole()) {
+            throw new IllegalArgumentException("보호 계정의 권한은 일반 관리자 화면에서 변경할 수 없습니다.");
+        }
+
+        if (previousRole == targetRole) {
+            throw new IllegalArgumentException("이미 동일한 권한입니다.");
+        }
+
+        adminMapper.updateMemberRole(userIdx, targetRole.code());
+        adminMapper.insertMemberRoleChangeHistory(
+                userIdx,
+                previousRole.code(),
+                targetRole.code(),
+                normalizeRoleChangeReason(reason),
+                changedByUserIdx
+        );
+    }
+
+    private String normalizeRoleChangeReason(String reason) {
+        if (reason == null) {
+            return null;
+        }
+        String trimmed = reason.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        return trimmed.length() > 500 ? trimmed.substring(0, 500) : trimmed;
     }
 
     @Override

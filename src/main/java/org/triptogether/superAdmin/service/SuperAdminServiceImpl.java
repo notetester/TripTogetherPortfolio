@@ -3,6 +3,7 @@ package org.triptogether.superAdmin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.triptogether.auth.vo.UserRole;
 import org.triptogether.superAdmin.mapper.SuperAdminMapper;
 import org.triptogether.superAdmin.vo.*;
 
@@ -59,7 +60,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     @Transactional
     public void revokeAdmin(Long userIdx) {
         SuperAdminMemberVO member = superAdminMapper.findAdminDetail(userIdx);
-        if (member != null && "SUPERADMIN".equals(member.getUserRole())) {
+        if (member != null && UserRole.from(member.getUserRole()).isSuperAdmin()) {
             if (superAdminMapper.countSuperAdmins() <= 1) {
                 throw new IllegalStateException("최소 1명의 SUPERADMIN이 유지되어야 합니다.");
             }

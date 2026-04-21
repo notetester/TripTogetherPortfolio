@@ -12,6 +12,7 @@ import java.util.Date;
 public class MyPageFlightBookingDto {
 
     private Long flightPurchaseIdx;
+    private Long paymentIdx;
     private String purchaseNo;
     private Long spotIdx;
     private String spotName;
@@ -35,6 +36,12 @@ public class MyPageFlightBookingDto {
     private long totalPrice;
     private long usedCash;
     private long usedMileage;
+    private long originalAmount;
+    private double discountRate;
+    private long discountAmount;
+    private long finalAmount;
+    private String paymentStatus;
+    private Date paidAt;
     private String status;
     private Date createdAt;
 }

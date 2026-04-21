@@ -19,7 +19,7 @@ public interface AdminService {
     void changeMemberStatus(Long userIdx, String status);
     void blockMember(Long userIdx, String blockType, String blockedIp, String reason, java.time.LocalDateTime expiresAt, Long actorUserIdx);
     void updateMemberMeta(AdminMemberVO member);
-    void changeMemberRole(Long userIdx, String role);
+    void changeMemberRole(Long userIdx, String role, String reason, Long changedByUserIdx);
     boolean hasEffectivePermission(Long userIdx, String permissionCode);
     Long getPostAuthorIdx(Long postId);
     Long getCommentAuthorIdx(Long commentId);

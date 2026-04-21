@@ -138,7 +138,7 @@ public class FlightServiceImpl implements FlightService {
             insertWalletHistory(userIdx, "MILEAGE", mileageAmount, mileageAfter, payment.getPaymentIdx(), spot.getName() + " 항공권 마일리지 결제");
         }
 
-        FlightPurchaseCreateDto purchase = buildFlightPurchase(userIdx, spot, offer, cashAmount, mileageAmount);
+        FlightPurchaseCreateDto purchase = buildFlightPurchase(userIdx, spot, offer, payment.getPaymentIdx(), cashAmount, mileageAmount);
         flightMapper.insertFlightPurchase(purchase);
 
         UsersVO updatedUser = walletMapper.selectUserByIdx(userIdx);
@@ -287,6 +287,7 @@ public class FlightServiceImpl implements FlightService {
     private FlightPurchaseCreateDto buildFlightPurchase(Long userIdx,
                                                         ExploreVO spot,
                                                         FlightOfferDto offer,
+                                                        Long paymentIdx,
                                                         long cashAmount,
                                                         long mileageAmount) {
         FlightPurchaseCreateDto purchase = new FlightPurchaseCreateDto();
@@ -295,6 +296,7 @@ public class FlightServiceImpl implements FlightService {
         purchase.setSpotIdx(spot.getSpotIdx());
         purchase.setOfferId(offer.getOfferId());
         purchase.setProviderType("MOCK");
+        purchase.setPaymentIdx(paymentIdx);
         purchase.setTripType(offer.getTripType());
         purchase.setAirlineName(offer.getAirlineName());
         purchase.setFlightNo(offer.getFlightNo());

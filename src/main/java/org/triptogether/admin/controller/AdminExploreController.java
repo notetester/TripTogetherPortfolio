@@ -65,7 +65,7 @@ public class AdminExploreController {
                              RedirectAttributes redirectAttributes) {
 
         UsersVO loginUser = getLoginUser(session);
-        if (loginUser == null || !"ADMIN".equals(loginUser.getUserRole())) {
+        if (loginUser == null || !loginUser.hasAdminRole()) {
             redirectAttributes.addFlashAttribute("adminEditError", "관리자만 여행지를 수정할 수 있습니다.");
             return "redirect:/admin/explore/spots/" + spotIdx;
         }

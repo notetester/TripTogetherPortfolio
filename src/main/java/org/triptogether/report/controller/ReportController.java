@@ -16,6 +16,7 @@ import org.triptogether.report.mapper.ReportMapper;
 import org.triptogether.report.service.ReportService;
 import org.triptogether.report.vo.ReportDto;
 import org.triptogether.report.vo.ReportSearchDto;
+import org.triptogether.auth.vo.UserRole;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -70,14 +71,14 @@ public class ReportController {
     }
 
     /**
-     * 세션에서 로그인한 유저가 관리자(ADMIN)인지 확인한다.
+     * 세션에서 로그인한 유저가 관리자 계열인지 확인한다.
      */
     private boolean isAdmin(HttpSession session) {
         try {
             Object loginUser = session.getAttribute("loginUser");
             Method method = loginUser.getClass().getMethod("getUserRole");
             String role = (String) method.invoke(loginUser);
-            return "ADMIN".equals(role);
+            return UserRole.from(role).isAdminLike();
         } catch (Exception e) {
             return false;
         }

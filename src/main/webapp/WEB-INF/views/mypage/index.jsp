@@ -619,41 +619,101 @@
                         </div>
                     </c:when>
                     <c:otherwise>
+                        <div class="mp-flight-booking-grid">
                         <c:forEach var="booking" items="${flightBookingList}">
-                            <a href="${pageContext.request.contextPath}/detail/${booking.spotIdx}"
-                               class="mp-list-item mp-flight-booking-item">
-                                <div class="mp-list-content">
-                                    <div class="mp-list-title">
-                                        ${booking.spotName}
-                                        <span class="mp-flight-booking-no">${booking.purchaseNo}</span>
+                            <c:set var="bookingStatusLabel" value="예약완료"/>
+                            <c:if test="${booking.status eq 'CANCELLED'}">
+                                <c:set var="bookingStatusLabel" value="취소됨"/>
+                            </c:if>
+
+                            <article class="mp-flight-ticket">
+                                <div class="mp-flight-ticket-head">
+                                    <div>
+                                        <span class="mp-flight-status">${bookingStatusLabel}</span>
+                                        <h4>${booking.spotName} 왕복 항공권</h4>
+                                        <p>예약번호 ${booking.purchaseNo}</p>
                                     </div>
-                                    <div class="mp-list-meta mp-flight-booking-meta">
-                                        <span>${booking.airlineName} · ${booking.flightNo}</span>
-                                        <span>${booking.originAirportCode} → ${booking.destinationAirportCode}</span>
-                                        <span>
-                                            <fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/>
-                                            출발
-                                        </span>
-                                        <span>${booking.returnAirlineName} · ${booking.returnFlightNo}</span>
-                                        <span>${booking.returnOriginAirportCode} → ${booking.returnDestinationAirportCode}</span>
-                                        <span>
-                                            <fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/>
-                                            귀국
-                                        </span>
-                                        <span>
-                                            총액 <fmt:formatNumber value="${booking.totalPrice}" pattern="#,##0"/> C
-                                        </span>
-                                        <span>
-                                            캐시 <fmt:formatNumber value="${booking.usedCash}" pattern="#,##0"/> C
-                                            · 마일리지 <fmt:formatNumber value="${booking.usedMileage}" pattern="#,##0"/> M
-                                        </span>
+                                    <div class="mp-flight-ticket-price">
+                                        <span>최종 결제</span>
+                                        <strong><fmt:formatNumber value="${booking.finalAmount}" pattern="#,##0"/> C</strong>
                                     </div>
                                 </div>
-                                <div class="mp-list-badges">
-                                    <span class="mp-badge mp-badge-flight">${booking.status}</span>
+
+                                <div class="mp-flight-route-box">
+                                    <div class="mp-flight-route-row">
+                                        <span class="mp-flight-route-tag">가는 편</span>
+                                        <strong>${booking.originAirportCode} → ${booking.destinationAirportCode}</strong>
+                                        <span><fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/></span>
+                                    </div>
+                                    <div class="mp-flight-route-row">
+                                        <span class="mp-flight-route-tag return">오는 편</span>
+                                        <strong>${booking.returnOriginAirportCode} → ${booking.returnDestinationAirportCode}</strong>
+                                        <span><fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/></span>
+                                    </div>
                                 </div>
-                            </a>
+
+                                <div class="mp-flight-ticket-foot">
+                                    <span>${booking.airlineName} · ${booking.flightNo} / ${booking.returnFlightNo}</span>
+                                    <button type="button"
+                                            class="mp-flight-detail-link mp-flight-modal-open"
+                                            data-modal-id="flight-booking-${booking.flightPurchaseIdx}">
+                                        상세보기
+                                    </button>
+                                </div>
+                            </article>
+
+                            <div class="mp-flight-modal" id="flight-booking-${booking.flightPurchaseIdx}">
+                                <button type="button" class="mp-flight-modal-backdrop mp-flight-modal-close" aria-label="닫기"></button>
+                                <div class="mp-flight-modal-card" role="dialog" aria-modal="true">
+                                    <div class="mp-flight-modal-head">
+                                        <div>
+                                            <span class="mp-flight-status">${bookingStatusLabel}</span>
+                                            <h3>항공권 예약 상세</h3>
+                                            <p>${booking.purchaseNo}</p>
+                                        </div>
+                                        <button type="button" class="mp-flight-modal-close mp-flight-modal-x" aria-label="닫기">×</button>
+                                    </div>
+
+                                    <div class="mp-flight-itinerary">
+                                        <div class="mp-flight-itinerary-item">
+                                            <span class="mp-flight-route-tag">가는 편</span>
+                                            <strong>${booking.originAirportCode} → ${booking.destinationAirportCode}</strong>
+                                            <p>${booking.airlineName} · ${booking.flightNo}</p>
+                                            <dl>
+                                                <dt>출발</dt>
+                                                <dd><fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                                <dt>도착</dt>
+                                                <dd><fmt:formatDate value="${booking.arrivalTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                            </dl>
+                                        </div>
+                                        <div class="mp-flight-itinerary-item">
+                                            <span class="mp-flight-route-tag return">오는 편</span>
+                                            <strong>${booking.returnOriginAirportCode} → ${booking.returnDestinationAirportCode}</strong>
+                                            <p>${booking.returnAirlineName} · ${booking.returnFlightNo}</p>
+                                            <dl>
+                                                <dt>출발</dt>
+                                                <dd><fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                                <dt>도착</dt>
+                                                <dd><fmt:formatDate value="${booking.returnArrivalTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                            </dl>
+                                        </div>
+                                    </div>
+
+                                    <div class="mp-flight-payment">
+                                        <div><span>할인 전 금액</span><strong><fmt:formatNumber value="${booking.originalAmount}" pattern="#,##0"/> C</strong></div>
+                                        <div><span>등급 할인</span><strong>${booking.discountRate}% · -<fmt:formatNumber value="${booking.discountAmount}" pattern="#,##0"/> C</strong></div>
+                                        <div><span>사용 캐시</span><strong><fmt:formatNumber value="${booking.usedCash}" pattern="#,##0"/> C</strong></div>
+                                        <div><span>사용 마일리지</span><strong><fmt:formatNumber value="${booking.usedMileage}" pattern="#,##0"/> M</strong></div>
+                                        <div class="total"><span>최종 결제금액</span><strong><fmt:formatNumber value="${booking.finalAmount}" pattern="#,##0"/> C</strong></div>
+                                        <div><span>결제일시</span><strong><fmt:formatDate value="${booking.paidAt}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
+                                    </div>
+
+                                    <p class="mp-flight-mock-note">이 항공권은 실제 발권이 아닌 TripTogether 포트폴리오용 Mock 예약 정보입니다.</p>
+                                    <a class="mp-flight-detail-link full" href="${pageContext.request.contextPath}/detail/${booking.spotIdx}">여행지 상세로 이동</a>
+                                </div>
+                            </div>
                         </c:forEach>
+                        </div>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -1090,6 +1150,41 @@
     }
 </script>
 </c:if>
+
+<script>
+    (function () {
+        var openedFlightModal = null;
+
+        function closeFlightBookingModal() {
+            if (!openedFlightModal) return;
+            openedFlightModal.classList.remove('is-open');
+            openedFlightModal = null;
+            document.body.classList.remove('mp-flight-modal-lock');
+        }
+
+        document.querySelectorAll('.mp-flight-modal-open').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var modalId = button.dataset.modalId;
+                var modal = document.getElementById(modalId);
+                if (!modal) return;
+                closeFlightBookingModal();
+                openedFlightModal = modal;
+                openedFlightModal.classList.add('is-open');
+                document.body.classList.add('mp-flight-modal-lock');
+            });
+        });
+
+        document.querySelectorAll('.mp-flight-modal-close').forEach(function (button) {
+            button.addEventListener('click', closeFlightBookingModal);
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeFlightBookingModal();
+            }
+        });
+    })();
+</script>
 
 <%@ include file="../common/footer.jsp" %>
 </body>

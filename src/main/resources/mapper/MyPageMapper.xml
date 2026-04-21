@@ -235,6 +235,7 @@
     <!-- 항공권 예매 매핑 -->
     <resultMap id="FlightBookingResultMap" type="org.triptogether.myPage.vo.MyPageFlightBookingDto">
         <id     property="flightPurchaseIdx"    column="flight_purchase_idx"/>
+        <result property="paymentIdx"           column="payment_idx"/>
         <result property="purchaseNo"           column="purchase_no"/>
         <result property="spotIdx"              column="spot_idx"/>
         <result property="spotName"             column="spot_name"/>
@@ -256,6 +257,12 @@
         <result property="totalPrice"           column="total_price"/>
         <result property="usedCash"             column="used_cash"/>
         <result property="usedMileage"          column="used_mileage"/>
+        <result property="originalAmount"       column="original_amount"/>
+        <result property="discountRate"         column="discount_rate"/>
+        <result property="discountAmount"       column="discount_amount"/>
+        <result property="finalAmount"          column="final_amount"/>
+        <result property="paymentStatus"        column="payment_status"/>
+        <result property="paidAt"               column="paid_at"/>
         <result property="status"               column="status"/>
         <result property="createdAt"            column="created_at"/>
     </resultMap>
@@ -326,6 +333,7 @@
     <select id="selectMyFlightBookingList" resultMap="FlightBookingResultMap">
         SELECT
             fps.flight_purchase_idx,
+            fps.payment_idx,
             fps.purchase_no,
             fps.spot_idx,
             st.name AS spot_name,
@@ -347,10 +355,17 @@
             fps.total_price,
             fps.used_cash,
             fps.used_mileage,
+            COALESCE(uph.original_amount, fps.outbound_price + fps.return_price, fps.total_price) AS original_amount,
+            COALESCE(uph.discount_rate, 0) AS discount_rate,
+            COALESCE(uph.discount_amount, 0) AS discount_amount,
+            COALESCE(uph.final_amount, fps.total_price) AS final_amount,
+            uph.payment_status,
+            uph.paid_at,
             fps.status,
             fps.created_at
         FROM FLIGHT_PURCHASE_SIMULATION fps
         LEFT JOIN SPOT_TRAVEL st ON fps.spot_idx = st.spot_idx
+        LEFT JOIN USER_PAYMENT_HISTORY uph ON fps.payment_idx = uph.payment_idx
         WHERE fps.user_idx = #{userIdx}
         ORDER BY fps.created_at DESC
         LIMIT 5

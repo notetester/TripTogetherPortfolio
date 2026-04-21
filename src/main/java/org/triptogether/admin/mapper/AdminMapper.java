@@ -51,7 +51,13 @@ public interface AdminMapper {
                                           @Param("releasedByUserIdx") Long releasedByUserIdx);
     void deactivateActiveBlocksByUser(@Param("userIdx") Long userIdx,
                                       @Param("releasedByUserIdx") Long releasedByUserIdx);
+    String findMemberRoleForUpdate(@Param("userIdx") Long userIdx);
     void updateMemberRole(@Param("userIdx") Long userIdx, @Param("role") String role);
+    void insertMemberRoleChangeHistory(@Param("userIdx") Long userIdx,
+                                       @Param("previousRole") String previousRole,
+                                       @Param("newRole") String newRole,
+                                       @Param("reason") String reason,
+                                       @Param("changedByUserIdx") Long changedByUserIdx);
     boolean hasEffectivePermission(@Param("userIdx") Long userIdx,
                                    @Param("permissionCode") String permissionCode);
 
