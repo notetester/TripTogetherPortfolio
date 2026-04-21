@@ -209,9 +209,10 @@ public class AuthServiceImpl implements AuthService {
         String normalizedIp = normalizeIp(ipAddress);
         var latest = ipBlockMapper.findLatestActiveHistoryRuleByIp(normalizedIp);
         if (latest == null) {
-            ipBlockMapper.deactivateBlockedIpByTargetKey(buildIpRuleTargetKey(normalizedIp), null);
+            ipBlockMapper.deactivateUserActionBlockedIpByTargetKey(buildIpRuleTargetKey(normalizedIp), null);
             return;
         }
+        ipBlockMapper.deactivateUserActionBlockedIpByTargetKey(buildIpRuleTargetKey(normalizedIp), null);
         ipBlockMapper.upsertBlockedIpWithHistory(
                 normalizedIp,
                 buildIpRuleTargetKey(normalizedIp),

@@ -37,10 +37,13 @@ public class AdminBlockController {
                                             @RequestParam(required = false) String rangeEndIp,
                                             @RequestParam(required = false) String countryCode,
                                             @RequestParam(required = false) String asn,
+                                            @RequestParam(defaultValue = "BLOCK") String ruleAction,
+                                            @RequestParam(required = false) String controlMode,
                                             @RequestParam(defaultValue = "MANUAL") String blockCategory,
                                             @RequestParam(defaultValue = "1") Integer priority,
                                             @RequestParam(required = false) Long ipBlockBatchIdx,
                                             @RequestParam(required = false) String reason,
+                                            @RequestParam(required = false) String detailMessage,
                                             @RequestParam(required = false) String expiresAt,
                                             HttpSession session) {
         Map<String, Object> result = new HashMap<>();
@@ -48,10 +51,10 @@ public class AdminBlockController {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             LocalDateTime parsed = (expiresAt != null && !expiresAt.isBlank()) ? LocalDateTime.parse(expiresAt) : null;
             adminBlockService.createGlobalIpRule(matchType, ipAddress, cidrNotation, rangeStartIp, rangeEndIp,
-                    countryCode, asn, blockCategory, priority, ipBlockBatchIdx, reason, parsed,
+                    countryCode, asn, ruleAction, controlMode, blockCategory, priority, ipBlockBatchIdx, reason, detailMessage, parsed,
                     loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
-            result.put("message", "IP 차단 규칙이 저장되었습니다.");
+            result.put("message", "IP 정책 규칙이 저장되었습니다.");
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -70,6 +73,23 @@ public class AdminBlockController {
             adminBlockService.toggleIpRule(ipBlocklistIdx, active, loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
             result.put("message", active ? "IP 차단 규칙이 재활성화되었습니다." : "IP 차단 규칙이 비활성화되었습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/ip-rules/{ipBlocklistIdx}/return-to-batch")
+    @ResponseBody
+    public Map<String, Object> returnIpRuleToBatch(@PathVariable Long ipBlocklistIdx,
+                                                   HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            adminBlockService.returnIpRuleToBatchControl(ipBlocklistIdx, loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", "규칙을 배치 제어 상태로 되돌렸습니다.");
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -100,12 +120,17 @@ public class AdminBlockController {
                                            @RequestParam String batchName,
                                            @RequestParam String sourceType,
                                            @RequestParam(required = false) String sourceName,
+                                           @RequestParam(defaultValue = "BLOCK") String batchRuleAction,
+                                           @RequestParam(defaultValue = "1") Integer defaultRulePriority,
+                                           @RequestParam(defaultValue = "BATCH_ONLY") String defaultDisableStrategy,
+                                           @RequestParam(defaultValue = "BATCH_ONLY") String defaultEnableStrategy,
                                            @RequestParam(required = false) String description,
                                            HttpSession session) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
-            adminBlockService.createIpBlockBatch(batchCode, batchName, sourceType, sourceName, description,
+            adminBlockService.createIpBlockBatch(batchCode, batchName, sourceType, sourceName,
+                    batchRuleAction, defaultRulePriority, defaultDisableStrategy, defaultEnableStrategy, description,
                     loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
             result.put("message", "IP 차단 배치가 생성되었습니다.");
@@ -120,15 +145,18 @@ public class AdminBlockController {
     @ResponseBody
     public Map<String, Object> toggleBatch(@PathVariable Long ipBlockBatchIdx,
                                            @RequestParam boolean active,
+                                           @RequestParam(required = false) String operationOption,
+                                           @RequestParam(required = false) String description,
                                            HttpSession session) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
-            adminBlockService.toggleIpBlockBatch(ipBlockBatchIdx, active, loginUser != null ? loginUser.getUserIdx() : null);
+            adminBlockService.toggleIpBlockBatch(ipBlockBatchIdx, active, operationOption, description,
+                    loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
             result.put("message", active
-                    ? "배치가 활성화되었습니다. 연결된 활성 규칙이 다시 차단 판정에 반영됩니다."
-                    : "배치가 비활성화되었습니다. 연결된 활성 규칙은 차단 판정에서 제외됩니다.");
+                    ? "배치 상태가 활성으로 변경되었습니다."
+                    : "배치 상태가 비활성으로 변경되었습니다.");
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());

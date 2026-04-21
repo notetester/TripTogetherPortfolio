@@ -43,4 +43,8 @@ public interface IpBlockMapper {
     /** 현재 IP 차단 규칙 비활성화 */
     void deactivateBlockedIpByTargetKey(@Param("blockTargetKey") String blockTargetKey,
                                         @Param("releasedByUserIdx") Long releasedByUserIdx);
+
+    /** USER_ACTION 범위의 현재 IP 차단 규칙 비활성화 */
+    void deactivateUserActionBlockedIpByTargetKey(@Param("blockTargetKey") String blockTargetKey,
+                                                  @Param("releasedByUserIdx") Long releasedByUserIdx);
 }

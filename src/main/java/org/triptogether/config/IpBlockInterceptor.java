@@ -36,7 +36,7 @@ public class IpBlockInterceptor implements HandlerInterceptor {
         for (IpBlockRuleVO rule : rules) {
             if (rule == null) continue;
             if (matchesRule(clientIp, rule)) {
-                return true;
+                return !"ALLOW".equalsIgnoreCase(rule.getRuleAction());
             }
         }
         return false;

@@ -9,6 +9,9 @@ import java.util.Date;
 @Data
 public class AdminBlockHistoryVO {
     private Long blockIdx;
+    private String ruleAction;
+    private String controlMode;
+    private String operationSource;
     private Long userIdx;
     private String userId;
     private String nickname;
@@ -32,9 +35,20 @@ public class AdminBlockHistoryVO {
     private String rangeStartIp;
     private String rangeEndIp;
     private Long ipBlockBatchIdx;
+    private Long batchOperationIdx;
     private String batchCode;
     private String batchName;
     private LocalDateTime listSyncedAt;
+    private Boolean beforeRuleIsActive;
+    private Boolean afterRuleIsActive;
+    private Boolean beforeBatchIsActive;
+    private Boolean afterBatchIsActive;
+    private Boolean beforeEffectiveActive;
+    private Boolean afterEffectiveActive;
+    private String beforeEffectiveStatus;
+    private String afterEffectiveStatus;
+    private String effectiveResult;
+    private String controlReason;
 
     public Date getBlockedAtDate() {
         return blockedAt == null ? null : Date.from(blockedAt.atZone(ZoneId.systemDefault()).toInstant());

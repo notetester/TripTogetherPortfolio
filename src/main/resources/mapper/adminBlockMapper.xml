@@ -33,9 +33,17 @@
         <id property="ipBlocklistIdx" column="ip_blocklist_idx"/>
         <result property="ipAddress" column="ip_address"/>
         <result property="blockRequestId" column="block_request_id"/>
+        <result property="ruleAction" column="rule_action"/>
+        <result property="controlMode" column="control_mode"/>
+        <result property="ruleOriginType" column="rule_origin_type"/>
         <result property="sourceHistoryBlockIdx" column="source_history_block_idx"/>
         <result property="sourceBlocklistIdx" column="source_blocklist_idx"/>
         <result property="blockTargetKey" column="block_target_key"/>
+        <result property="targetDisplayValue" column="target_display_value"/>
+        <result property="batchBoundAt" column="batch_bound_at"/>
+        <result property="batchBoundByUserIdx" column="batch_bound_by_user_idx"/>
+        <result property="batchDetachedAt" column="batch_detached_at"/>
+        <result property="batchDetachedByUserIdx" column="batch_detached_by_user_idx"/>
         <result property="matchType" column="match_type"/>
         <result property="cidrNotation" column="cidr_notation"/>
         <result property="rangeStartIp" column="range_start_ip"/>
@@ -50,11 +58,25 @@
         <result property="blockedByNickname" column="blocked_by_nickname"/>
         <result property="reason" column="reason"/>
         <result property="active" column="active"/>
+        <result property="effectiveActive" column="is_effective_active"/>
+        <result property="effectiveStatus" column="effective_status"/>
+        <result property="effectiveStatusReason" column="effective_status_reason"/>
+        <result property="effectiveSyncedAt" column="effective_synced_at"/>
+        <result property="effectiveSyncedBySource" column="effective_synced_by_source"/>
         <result property="blockedAt" column="blocked_at"/>
         <result property="expiresAt" column="expires_at"/>
         <result property="releasedAt" column="released_at"/>
         <result property="releasedByUserIdx" column="released_by_user_idx"/>
         <result property="releasedByNickname" column="released_by_nickname"/>
+        <result property="manualOverrideByUserIdx" column="manual_override_by_user_idx"/>
+        <result property="manualOverrideByNickname" column="manual_override_by_nickname"/>
+        <result property="manualOverrideAt" column="manual_override_at"/>
+        <result property="manualOverrideReason" column="manual_override_reason"/>
+        <result property="lastControlAction" column="last_control_action"/>
+        <result property="lastControlByUserIdx" column="last_control_by_user_idx"/>
+        <result property="lastControlByNickname" column="last_control_by_nickname"/>
+        <result property="lastControlAt" column="last_control_at"/>
+        <result property="lastControlReason" column="last_control_reason"/>
         <result property="riskScore" column="risk_score"/>
         <result property="autoBlock" column="auto_block"/>
         <result property="autoBlockSource" column="auto_block_source"/>
@@ -64,11 +86,15 @@
         <result property="batchCode" column="batch_code"/>
         <result property="batchName" column="batch_name"/>
         <result property="batchActive" column="batch_active"/>
-        <result property="effectiveStatus" column="effective_status"/>
+        <result property="batchSourceType" column="batch_source_type"/>
+        <result property="batchSourceName" column="batch_source_name"/>
     </resultMap>
 
     <resultMap id="blockHistoryRM" type="org.triptogether.admin.vo.AdminBlockHistoryVO">
         <id property="blockIdx" column="block_idx"/>
+        <result property="ruleAction" column="rule_action"/>
+        <result property="controlMode" column="control_mode"/>
+        <result property="operationSource" column="operation_source"/>
         <result property="userIdx" column="user_idx"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>
@@ -92,9 +118,20 @@
         <result property="rangeStartIp" column="range_start_ip"/>
         <result property="rangeEndIp" column="range_end_ip"/>
         <result property="ipBlockBatchIdx" column="ip_block_batch_idx"/>
+        <result property="batchOperationIdx" column="batch_operation_idx"/>
         <result property="batchCode" column="batch_code"/>
         <result property="batchName" column="batch_name"/>
         <result property="listSyncedAt" column="list_synced_at"/>
+        <result property="beforeRuleIsActive" column="before_rule_is_active"/>
+        <result property="afterRuleIsActive" column="after_rule_is_active"/>
+        <result property="beforeBatchIsActive" column="before_batch_is_active"/>
+        <result property="afterBatchIsActive" column="after_batch_is_active"/>
+        <result property="beforeEffectiveActive" column="before_effective_active"/>
+        <result property="afterEffectiveActive" column="after_effective_active"/>
+        <result property="beforeEffectiveStatus" column="before_effective_status"/>
+        <result property="afterEffectiveStatus" column="after_effective_status"/>
+        <result property="effectiveResult" column="effective_result"/>
+        <result property="controlReason" column="control_reason"/>
     </resultMap>
 
     <resultMap id="batchRM" type="org.triptogether.admin.vo.AdminIpBlockBatchVO">
@@ -103,8 +140,12 @@
         <result property="batchName" column="batch_name"/>
         <result property="sourceType" column="source_type"/>
         <result property="sourceName" column="source_name"/>
+        <result property="batchRuleAction" column="batch_rule_action"/>
+        <result property="defaultRulePriority" column="default_rule_priority"/>
         <result property="active" column="active"/>
         <result property="description" column="description"/>
+        <result property="defaultDisableStrategy" column="default_disable_strategy"/>
+        <result property="defaultEnableStrategy" column="default_enable_strategy"/>
         <result property="createdByUserIdx" column="created_by_user_idx"/>
         <result property="createdByNickname" column="created_by_nickname"/>
         <result property="updatedByUserIdx" column="updated_by_user_idx"/>
@@ -115,20 +156,24 @@
         <result property="activeRuleCount" column="active_rule_count"/>
         <result property="effectiveRuleCount" column="effective_rule_count"/>
         <result property="expiredRuleCount" column="expired_rule_count"/>
+        <result property="batchManagedRuleCount" column="batch_managed_rule_count"/>
+        <result property="manualOverrideRuleCount" column="manual_override_rule_count"/>
+        <result property="allowRuleCount" column="allow_rule_count"/>
+        <result property="blockRuleCount" column="block_rule_count"/>
     </resultMap>
 
-    <sql id="keywordWhere">
-        <if test="keyword != null and keyword != ''">
-            AND (
-                u.user_id LIKE CONCAT('%', #{keyword}, '%')
-                OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
-                OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
-                OR x.blocked_ip LIKE CONCAT('%', #{keyword}, '%')
-                OR x.reason LIKE CONCAT('%', #{keyword}, '%')
-                OR x.block_target_key LIKE CONCAT('%', #{keyword}, '%')
-            )
-        </if>
-    </sql>
+    <resultMap id="batchOperationRM" type="org.triptogether.admin.vo.AdminIpBlockBatchOperationVO">
+        <id property="ipBlockBatchOperationIdx" column="ip_block_batch_operation_idx"/>
+        <result property="ipBlockBatchIdx" column="ip_block_batch_idx"/>
+        <result property="operationType" column="operation_type"/>
+        <result property="operationOption" column="operation_option"/>
+        <result property="requestedRuleCount" column="requested_rule_count"/>
+        <result property="affectedRuleCount" column="affected_rule_count"/>
+        <result property="description" column="description"/>
+        <result property="requestedByUserIdx" column="requested_by_user_idx"/>
+        <result property="requestedByNickname" column="requested_by_nickname"/>
+        <result property="requestedAt" column="requested_at"/>
+    </resultMap>
 
     <select id="countActiveUserBlocks" resultType="long">
         SELECT COUNT(*)
@@ -138,11 +183,8 @@
 
     <select id="countActiveIpBlocks" resultType="long">
         SELECT COUNT(*)
-        FROM IP_BLOCKLIST ip
-        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = ip.ip_block_batch_idx
-        WHERE ip.is_active = 1
-          AND (ip.expires_at IS NULL OR ip.expires_at &gt; NOW())
-          AND (ip.ip_block_batch_idx IS NULL OR COALESCE(b.is_active, 0) = 1)
+        FROM IP_BLOCKLIST
+        WHERE is_effective_active = 1
     </select>
 
     <select id="countBlockHistories" resultType="long">
@@ -213,51 +255,85 @@
         LIMIT #{limit}
     </select>
 
+    <sql id="ipRuleSelectColumns">
+        ip.ip_blocklist_idx,
+        ip.ip_address,
+        ip.block_request_id,
+        ip.rule_action,
+        ip.control_mode,
+        ip.rule_origin_type,
+        ip.source_history_block_idx,
+        ip.source_blocklist_idx,
+        ip.block_target_key,
+        CASE
+            WHEN ip.match_type = 'SINGLE_IP' THEN ip.ip_address
+            WHEN ip.match_type = 'CIDR' THEN ip.cidr_notation
+            WHEN ip.match_type = 'RANGE' THEN CONCAT(ip.range_start_ip, ' ~ ', ip.range_end_ip)
+            WHEN ip.match_type = 'COUNTRY' THEN ip.country_code
+            WHEN ip.match_type = 'ASN' THEN ip.asn
+            ELSE ip.block_target_key
+        END AS target_display_value,
+        ip.batch_bound_at,
+        ip.batch_bound_by_user_idx,
+        ip.batch_detached_at,
+        ip.batch_detached_by_user_idx,
+        ip.match_type,
+        ip.cidr_notation,
+        ip.range_start_ip,
+        ip.range_end_ip,
+        ip.country_code,
+        ip.asn,
+        ip.source_scope,
+        ip.block_category,
+        ip.user_idx,
+        ip.block_type,
+        ip.blocked_by_user_idx,
+        bu.nickname AS blocked_by_nickname,
+        ip.reason,
+        ip.is_active AS active,
+        ip.is_effective_active,
+        ip.effective_status,
+        ip.effective_status_reason,
+        ip.effective_synced_at,
+        ip.effective_synced_by_source,
+        ip.blocked_at,
+        ip.expires_at,
+        ip.released_at,
+        ip.released_by_user_idx,
+        ru.nickname AS released_by_nickname,
+        ip.manual_override_by_user_idx,
+        mu.nickname AS manual_override_by_nickname,
+        ip.manual_override_at,
+        ip.manual_override_reason,
+        ip.last_control_action,
+        ip.last_control_by_user_idx,
+        lcu.nickname AS last_control_by_nickname,
+        ip.last_control_at,
+        ip.last_control_reason,
+        ip.risk_score,
+        ip.is_auto_block AS auto_block,
+        ip.auto_block_source,
+        ip.detail_message,
+        ip.priority,
+        ip.ip_block_batch_idx,
+        b.batch_code,
+        b.batch_name,
+        CASE
+            WHEN ip.ip_block_batch_idx IS NULL THEN 1
+            ELSE COALESCE(b.is_active, 0)
+        END AS batch_active,
+        b.source_type AS batch_source_type,
+        b.source_name AS batch_source_name
+    </sql>
+
     <select id="findIpBlocks" resultMap="ipBlockRM">
         SELECT
-            ip.ip_blocklist_idx,
-            ip.ip_address,
-            ip.block_request_id,
-            ip.source_history_block_idx,
-            ip.source_blocklist_idx,
-            ip.block_target_key,
-            ip.match_type,
-            ip.cidr_notation,
-            ip.range_start_ip,
-            ip.range_end_ip,
-            ip.country_code,
-            ip.asn,
-            ip.source_scope,
-            ip.block_category,
-            ip.user_idx,
-            ip.block_type,
-            ip.blocked_by_user_idx,
-            bu.nickname AS blocked_by_nickname,
-            ip.reason,
-            ip.is_active AS active,
-            ip.blocked_at,
-            ip.expires_at,
-            ip.released_at,
-            ip.released_by_user_idx,
-            ru.nickname AS released_by_nickname,
-            ip.risk_score,
-            ip.is_auto_block AS auto_block,
-            ip.auto_block_source,
-            ip.detail_message,
-            ip.priority,
-            ip.ip_block_batch_idx,
-            b.batch_code,
-            b.batch_name,
-            COALESCE(b.is_active, 1) AS batch_active,
-            CASE
-                WHEN ip.is_active = 0 THEN 'RULE_INACTIVE'
-                WHEN ip.expires_at IS NOT NULL AND ip.expires_at &lt;= NOW() THEN 'EXPIRED'
-                WHEN ip.ip_block_batch_idx IS NOT NULL AND COALESCE(b.is_active, 0) = 0 THEN 'BATCH_INACTIVE'
-                ELSE 'APPLIED'
-            END AS effective_status
+            <include refid="ipRuleSelectColumns"/>
         FROM IP_BLOCKLIST ip
         LEFT JOIN USERS bu ON bu.user_idx = ip.blocked_by_user_idx
         LEFT JOIN USERS ru ON ru.user_idx = ip.released_by_user_idx
+        LEFT JOIN USERS mu ON mu.user_idx = ip.manual_override_by_user_idx
+        LEFT JOIN USERS lcu ON lcu.user_idx = ip.last_control_by_user_idx
         LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = ip.ip_block_batch_idx
         WHERE 1=1
         <if test="status != null and status != '' and status != 'ALL'">
@@ -275,6 +351,12 @@
         <if test="blockType != null and blockType != '' and blockType != 'ALL'">
             AND ip.block_type = #{blockType}
         </if>
+        <if test="ruleAction != null and ruleAction != '' and ruleAction != 'ALL'">
+            AND ip.rule_action = #{ruleAction}
+        </if>
+        <if test="controlMode != null and controlMode != '' and controlMode != 'ALL'">
+            AND ip.control_mode = #{controlMode}
+        </if>
         <if test="category != null and category != '' and category != 'ALL'">
             AND ip.block_category = #{category}
         </if>
@@ -282,27 +364,7 @@
             AND ip.ip_block_batch_idx = #{batchId}
         </if>
         <if test="effectiveStatus != null and effectiveStatus != '' and effectiveStatus != 'ALL'">
-            <choose>
-                <when test="effectiveStatus == 'APPLIED'">
-                    AND ip.is_active = 1
-                    AND (ip.expires_at IS NULL OR ip.expires_at &gt; NOW())
-                    AND (ip.ip_block_batch_idx IS NULL OR COALESCE(b.is_active, 0) = 1)
-                </when>
-                <when test="effectiveStatus == 'RULE_INACTIVE'">
-                    AND ip.is_active = 0
-                </when>
-                <when test="effectiveStatus == 'BATCH_INACTIVE'">
-                    AND ip.is_active = 1
-                    AND (ip.expires_at IS NULL OR ip.expires_at &gt; NOW())
-                    AND ip.ip_block_batch_idx IS NOT NULL
-                    AND COALESCE(b.is_active, 0) = 0
-                </when>
-                <when test="effectiveStatus == 'EXPIRED'">
-                    AND ip.is_active = 1
-                    AND ip.expires_at IS NOT NULL
-                    AND ip.expires_at &lt;= NOW()
-                </when>
-            </choose>
+            AND ip.effective_status = #{effectiveStatus}
         </if>
         <if test="keyword != null and keyword != ''">
             AND (
@@ -314,17 +376,25 @@
                 OR ip.country_code LIKE CONCAT('%', #{keyword}, '%')
                 OR ip.asn LIKE CONCAT('%', #{keyword}, '%')
                 OR ip.reason LIKE CONCAT('%', #{keyword}, '%')
+                OR ip.detail_message LIKE CONCAT('%', #{keyword}, '%')
                 OR b.batch_name LIKE CONCAT('%', #{keyword}, '%')
                 OR b.batch_code LIKE CONCAT('%', #{keyword}, '%')
             )
         </if>
-        ORDER BY ip.is_active DESC, ip.priority DESC, ip.updated_at DESC, ip.ip_blocklist_idx DESC
+        ORDER BY ip.is_effective_active DESC,
+                 ip.priority DESC,
+                 CASE WHEN ip.rule_action = 'BLOCK' THEN 0 ELSE 1 END ASC,
+                 ip.updated_at DESC,
+                 ip.ip_blocklist_idx DESC
         LIMIT #{limit}
     </select>
 
     <select id="findBlockHistories" resultMap="blockHistoryRM">
         SELECT
             h.block_idx,
+            h.rule_action,
+            h.control_mode,
+            h.operation_source,
             h.user_idx,
             u.user_id,
             u.nickname,
@@ -348,15 +418,32 @@
             h.range_start_ip,
             h.range_end_ip,
             h.ip_block_batch_idx,
+            h.batch_operation_idx,
             b.batch_code,
             b.batch_name,
-            h.list_synced_at
+            h.list_synced_at,
+            h.before_rule_is_active,
+            h.after_rule_is_active,
+            h.before_batch_is_active,
+            h.after_batch_is_active,
+            h.before_effective_active,
+            h.after_effective_active,
+            h.before_effective_status,
+            h.after_effective_status,
+            h.effective_result,
+            h.control_reason
         FROM USER_BLOCK_HISTORY h
         LEFT JOIN USERS u ON u.user_idx = h.user_idx
         LEFT JOIN USERS bu ON bu.user_idx = h.blocked_by_user_idx
         LEFT JOIN USERS ru ON ru.user_idx = h.released_by_user_idx
         LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = h.ip_block_batch_idx
         WHERE 1=1
+        <if test="status != null and status != '' and status != 'ALL'">
+            <choose>
+                <when test="status == 'ACTIVE'">AND h.is_active = 1</when>
+                <otherwise>AND h.is_active = 0</otherwise>
+            </choose>
+        </if>
         <if test="scope != null and scope != '' and scope != 'ALL'">
             AND h.block_scope = #{scope}
         </if>
@@ -365,6 +452,12 @@
         </if>
         <if test="blockType != null and blockType != '' and blockType != 'ALL'">
             AND h.block_type = #{blockType}
+        </if>
+        <if test="ruleAction != null and ruleAction != '' and ruleAction != 'ALL'">
+            AND h.rule_action = #{ruleAction}
+        </if>
+        <if test="controlMode != null and controlMode != '' and controlMode != 'ALL'">
+            AND h.control_mode = #{controlMode}
         </if>
         <if test="batchId != null">
             AND h.ip_block_batch_idx = #{batchId}
@@ -375,6 +468,7 @@
                 OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
                 OR h.blocked_ip LIKE CONCAT('%', #{keyword}, '%')
                 OR h.reason LIKE CONCAT('%', #{keyword}, '%')
+                OR h.control_reason LIKE CONCAT('%', #{keyword}, '%')
                 OR h.block_target_key LIKE CONCAT('%', #{keyword}, '%')
                 OR h.cidr_notation LIKE CONCAT('%', #{keyword}, '%')
                 OR h.range_start_ip LIKE CONCAT('%', #{keyword}, '%')
@@ -394,8 +488,12 @@
             b.batch_name,
             b.source_type,
             b.source_name,
+            b.batch_rule_action,
+            b.default_rule_priority,
             b.is_active AS active,
             b.description,
+            b.default_disable_strategy,
+            b.default_enable_strategy,
             b.created_by_user_idx,
             cu.nickname AS created_by_nickname,
             b.updated_by_user_idx,
@@ -404,18 +502,12 @@
             b.updated_at,
             (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx) AS total_rule_count,
             (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.is_active = 1) AS active_rule_count,
-            (SELECT COUNT(*)
-             FROM IP_BLOCKLIST ip
-             WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx
-               AND b.is_active = 1
-               AND ip.is_active = 1
-               AND (ip.expires_at IS NULL OR ip.expires_at &gt; NOW())) AS effective_rule_count,
-            (SELECT COUNT(*)
-             FROM IP_BLOCKLIST ip
-             WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx
-               AND ip.is_active = 1
-               AND ip.expires_at IS NOT NULL
-               AND ip.expires_at &lt;= NOW()) AS expired_rule_count
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.is_effective_active = 1) AS effective_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.effective_status = 'EXPIRED') AS expired_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.control_mode = 'BATCH') AS batch_managed_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.control_mode = 'MANUAL_OVERRIDE') AS manual_override_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.rule_action = 'ALLOW') AS allow_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.rule_action = 'BLOCK') AS block_rule_count
         FROM IP_BLOCK_BATCH b
         LEFT JOIN USERS cu ON cu.user_idx = b.created_by_user_idx
         LEFT JOIN USERS uu ON uu.user_idx = b.updated_by_user_idx
@@ -432,13 +524,46 @@
         LIMIT #{limit}
     </select>
 
-    <insert id="insertIpBlockBatch">
+    <select id="findRecentBatchOperations" resultMap="batchOperationRM">
+        SELECT
+            o.ip_block_batch_operation_idx,
+            o.ip_block_batch_idx,
+            o.operation_type,
+            o.operation_option,
+            o.requested_rule_count,
+            o.affected_rule_count,
+            o.description,
+            o.requested_by_user_idx,
+            u.nickname AS requested_by_nickname,
+            o.requested_at
+        FROM IP_BLOCK_BATCH_OPERATION o
+        LEFT JOIN USERS u ON u.user_idx = o.requested_by_user_idx
+        WHERE 1=1
+        <if test="batchId != null">
+            AND o.ip_block_batch_idx = #{batchId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                o.operation_type LIKE CONCAT('%', #{keyword}, '%')
+                OR o.operation_option LIKE CONCAT('%', #{keyword}, '%')
+                OR o.description LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY o.requested_at DESC, o.ip_block_batch_operation_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <insert id="insertIpBlockBatch" parameterType="org.triptogether.admin.vo.AdminIpBlockBatchVO" useGeneratedKeys="true" keyProperty="ipBlockBatchIdx">
         INSERT INTO IP_BLOCK_BATCH (
-            batch_code, batch_name, source_type, source_name, is_active, description,
+            batch_code, batch_name, source_type, source_name,
+            batch_rule_action, default_rule_priority,
+            is_active, description, default_disable_strategy, default_enable_strategy,
             created_by_user_idx, created_at, updated_by_user_idx, updated_at
         ) VALUES (
-            #{batchCode}, #{batchName}, #{sourceType}, #{sourceName}, 1, #{description},
-            #{createdByUserIdx}, NOW(), #{createdByUserIdx}, NOW()
+            #{batchCode}, #{batchName}, #{sourceType}, #{sourceName},
+            #{batchRuleAction}, #{defaultRulePriority},
+            1, #{description}, #{defaultDisableStrategy}, #{defaultEnableStrategy},
+            #{createdByUserIdx}, NOW(), #{updatedByUserIdx}, NOW()
         )
     </insert>
 
@@ -450,57 +575,86 @@
         WHERE ip_block_batch_idx = #{ipBlockBatchIdx}
     </update>
 
+    <select id="findIpBlockBatchById" resultMap="batchRM">
+        SELECT
+            b.ip_block_batch_idx,
+            b.batch_code,
+            b.batch_name,
+            b.source_type,
+            b.source_name,
+            b.batch_rule_action,
+            b.default_rule_priority,
+            b.is_active AS active,
+            b.description,
+            b.default_disable_strategy,
+            b.default_enable_strategy,
+            b.created_by_user_idx,
+            cu.nickname AS created_by_nickname,
+            b.updated_by_user_idx,
+            uu.nickname AS updated_by_nickname,
+            b.created_at,
+            b.updated_at,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx) AS total_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.is_active = 1) AS active_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.is_effective_active = 1) AS effective_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.effective_status = 'EXPIRED') AS expired_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.control_mode = 'BATCH') AS batch_managed_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.control_mode = 'MANUAL_OVERRIDE') AS manual_override_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.rule_action = 'ALLOW') AS allow_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.rule_action = 'BLOCK') AS block_rule_count
+        FROM IP_BLOCK_BATCH b
+        LEFT JOIN USERS cu ON cu.user_idx = b.created_by_user_idx
+        LEFT JOIN USERS uu ON uu.user_idx = b.updated_by_user_idx
+        WHERE b.ip_block_batch_idx = #{ipBlockBatchIdx}
+    </select>
+
+    <select id="findIpRulesByBatchId" resultMap="ipBlockRM">
+        SELECT
+            <include refid="ipRuleSelectColumns"/>
+        FROM IP_BLOCKLIST ip
+        LEFT JOIN USERS bu ON bu.user_idx = ip.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = ip.released_by_user_idx
+        LEFT JOIN USERS mu ON mu.user_idx = ip.manual_override_by_user_idx
+        LEFT JOIN USERS lcu ON lcu.user_idx = ip.last_control_by_user_idx
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = ip.ip_block_batch_idx
+        WHERE ip.ip_block_batch_idx = #{ipBlockBatchIdx}
+        ORDER BY ip.priority DESC,
+                 CASE WHEN ip.rule_action = 'BLOCK' THEN 0 ELSE 1 END ASC,
+                 ip.updated_at DESC,
+                 ip.ip_blocklist_idx DESC
+    </select>
+
     <select id="findIpBlockById" resultMap="ipBlockRM">
         SELECT
-            ip.ip_blocklist_idx,
-            ip.ip_address,
-            ip.block_request_id,
-            ip.source_history_block_idx,
-            ip.source_blocklist_idx,
-            ip.block_target_key,
-            ip.match_type,
-            ip.cidr_notation,
-            ip.range_start_ip,
-            ip.range_end_ip,
-            ip.country_code,
-            ip.asn,
-            ip.source_scope,
-            ip.block_category,
-            ip.user_idx,
-            ip.block_type,
-            ip.blocked_by_user_idx,
-            ip.reason,
-            ip.is_active AS active,
-            ip.blocked_at,
-            ip.expires_at,
-            ip.released_at,
-            ip.released_by_user_idx,
-            ip.risk_score,
-            ip.is_auto_block AS auto_block,
-            ip.auto_block_source,
-            ip.detail_message,
-            ip.priority,
-            ip.ip_block_batch_idx,
-            b.batch_code,
-            b.batch_name
+            <include refid="ipRuleSelectColumns"/>
         FROM IP_BLOCKLIST ip
+        LEFT JOIN USERS bu ON bu.user_idx = ip.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = ip.released_by_user_idx
+        LEFT JOIN USERS mu ON mu.user_idx = ip.manual_override_by_user_idx
+        LEFT JOIN USERS lcu ON lcu.user_idx = ip.last_control_by_user_idx
         LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = ip.ip_block_batch_idx
         WHERE ip.ip_blocklist_idx = #{ipBlocklistIdx}
     </select>
 
-    <insert id="insertGlobalBlockHistory">
+    <insert id="insertGlobalBlockHistory" parameterType="org.triptogether.admin.vo.AdminBlockHistoryVO">
         INSERT INTO USER_BLOCK_HISTORY (
-            block_request_id, block_target_key, history_kind, block_scope,
-            user_idx, block_type, blocked_ip, ip_match_type,
-            cidr_notation, range_start_ip, range_end_ip, ip_block_batch_idx,
-            is_active, reason, blocked_by_user_idx, blocked_at, expires_at,
-            created_by_user_idx, created_at, updated_by_user_idx, updated_at
+            block_request_id, block_target_key, rule_action, control_mode, operation_source,
+            history_kind, block_scope, user_idx, block_type, blocked_ip, ip_match_type,
+            cidr_notation, range_start_ip, range_end_ip, ip_block_batch_idx, batch_operation_idx,
+            is_active, before_rule_is_active, after_rule_is_active, before_batch_is_active, after_batch_is_active,
+            before_effective_active, after_effective_active, before_effective_status, after_effective_status,
+            reason, blocked_by_user_idx, blocked_at, released_by_user_idx, released_at, expires_at,
+            created_by_user_idx, created_at, updated_by_user_idx, updated_at, list_synced_at,
+            effective_result, control_reason
         ) VALUES (
-            #{blockRequestId}, #{blockTargetKey}, #{historyKind}, #{blockScope},
-            #{userIdx}, #{blockType}, #{blockedIp}, #{ipMatchType},
-            #{cidrNotation}, #{rangeStartIp}, #{rangeEndIp}, #{ipBlockBatchIdx},
-            1, #{reason}, #{blockedByUserIdx}, NOW(), #{expiresAt},
-            #{blockedByUserIdx}, NOW(), #{blockedByUserIdx}, NOW()
+            #{blockRequestId}, #{blockTargetKey}, #{ruleAction}, #{controlMode}, #{operationSource},
+            #{historyKind}, #{blockScope}, #{userIdx}, #{blockType}, #{blockedIp}, #{ipMatchType},
+            #{cidrNotation}, #{rangeStartIp}, #{rangeEndIp}, #{ipBlockBatchIdx}, #{batchOperationIdx},
+            #{active}, #{beforeRuleIsActive}, #{afterRuleIsActive}, #{beforeBatchIsActive}, #{afterBatchIsActive},
+            #{beforeEffectiveActive}, #{afterEffectiveActive}, #{beforeEffectiveStatus}, #{afterEffectiveStatus},
+            #{reason}, #{blockedByUserIdx}, #{blockedAt}, #{releasedByUserIdx}, #{releasedAt}, #{expiresAt},
+            #{blockedByUserIdx}, NOW(), #{blockedByUserIdx}, NOW(), #{listSyncedAt},
+            #{effectiveResult}, #{controlReason}
         )
     </insert>
 
@@ -508,60 +662,148 @@
         SELECT block_idx FROM USER_BLOCK_HISTORY WHERE block_request_id = #{blockRequestId} LIMIT 1
     </select>
 
-    <insert id="upsertIpBlockRule">
+    <insert id="insertIpBlockRule" parameterType="org.triptogether.admin.vo.AdminIpBlockVO" useGeneratedKeys="true" keyProperty="ipBlocklistIdx">
         INSERT INTO IP_BLOCKLIST (
-            ip_address, block_request_id, block_target_key, source_history_block_idx, source_blocklist_idx,
-            ip_block_batch_idx, match_type, cidr_notation, range_start_ip, range_end_ip, country_code, asn,
-            source_scope, block_category, user_idx, block_type, blocked_by_user_idx,
-            blocked_at, reason, is_active, expires_at, released_at, released_by_user_idx,
+            ip_address, block_request_id, block_target_key, rule_action, control_mode, rule_origin_type,
+            source_history_block_idx, source_blocklist_idx, ip_block_batch_idx,
+            batch_bound_at, batch_bound_by_user_idx, batch_detached_at, batch_detached_by_user_idx,
+            match_type, cidr_notation, range_start_ip, range_end_ip, country_code, asn,
+            source_scope, block_category, user_idx, block_type, blocked_by_user_idx, blocked_at,
+            reason, is_active, is_effective_active, effective_status, effective_status_reason,
+            effective_synced_at, effective_synced_by_source, expires_at, released_at, released_by_user_idx,
+            manual_override_by_user_idx, manual_override_at, manual_override_reason,
+            last_control_action, last_control_by_user_idx, last_control_at, last_control_reason,
             risk_score, is_auto_block, auto_block_source, detail_message, priority, last_synced_at, updated_at
         ) VALUES (
-            #{ipAddress}, #{blockRequestId}, #{blockTargetKey}, #{sourceHistoryBlockIdx}, NULL,
-            #{ipBlockBatchIdx}, #{matchType}, #{cidrNotation}, #{rangeStartIp}, #{rangeEndIp}, #{countryCode}, #{asn},
-            #{sourceScope}, #{blockCategory}, #{userIdx}, #{blockType}, #{blockedByUserIdx},
-            NOW(), #{reason}, 1, #{expiresAt}, NULL, NULL,
-            #{riskScore}, #{isAutoBlock}, #{autoBlockSource}, #{detailMessage}, #{priority}, NOW(), NOW()
+            #{ipAddress}, #{blockRequestId}, #{blockTargetKey}, #{ruleAction}, #{controlMode}, #{ruleOriginType},
+            #{sourceHistoryBlockIdx}, #{sourceBlocklistIdx}, #{ipBlockBatchIdx},
+            #{batchBoundAt}, #{batchBoundByUserIdx}, #{batchDetachedAt}, #{batchDetachedByUserIdx},
+            #{matchType}, #{cidrNotation}, #{rangeStartIp}, #{rangeEndIp}, #{countryCode}, #{asn},
+            #{sourceScope}, #{blockCategory}, #{userIdx}, #{blockType}, #{blockedByUserIdx}, #{blockedAt},
+            #{reason}, #{active}, #{effectiveActive}, #{effectiveStatus}, #{effectiveStatusReason},
+            #{effectiveSyncedAt}, #{effectiveSyncedBySource}, #{expiresAt}, #{releasedAt}, #{releasedByUserIdx},
+            #{manualOverrideByUserIdx}, #{manualOverrideAt}, #{manualOverrideReason},
+            #{lastControlAction}, #{lastControlByUserIdx}, #{lastControlAt}, #{lastControlReason},
+            #{riskScore}, #{autoBlock}, #{autoBlockSource}, #{detailMessage}, #{priority}, NOW(), NOW()
         )
-        ON DUPLICATE KEY UPDATE
-            ip_address = VALUES(ip_address),
-            block_request_id = VALUES(block_request_id),
-            source_history_block_idx = VALUES(source_history_block_idx),
-            ip_block_batch_idx = VALUES(ip_block_batch_idx),
-            match_type = VALUES(match_type),
-            cidr_notation = VALUES(cidr_notation),
-            range_start_ip = VALUES(range_start_ip),
-            range_end_ip = VALUES(range_end_ip),
-            country_code = VALUES(country_code),
-            asn = VALUES(asn),
-            source_scope = VALUES(source_scope),
-            block_category = VALUES(block_category),
-            user_idx = VALUES(user_idx),
-            block_type = VALUES(block_type),
-            blocked_by_user_idx = VALUES(blocked_by_user_idx),
-            blocked_at = NOW(),
-            reason = VALUES(reason),
-            is_active = 1,
-            expires_at = VALUES(expires_at),
-            released_at = NULL,
-            released_by_user_idx = NULL,
-            risk_score = VALUES(risk_score),
-            is_auto_block = VALUES(is_auto_block),
-            auto_block_source = VALUES(auto_block_source),
-            detail_message = VALUES(detail_message),
-            priority = VALUES(priority),
-            last_synced_at = NOW(),
-            updated_at = NOW()
     </insert>
 
-    <update id="updateIpBlockRuleActive">
+    <update id="updateIpBlockRule" parameterType="org.triptogether.admin.vo.AdminIpBlockVO">
         UPDATE IP_BLOCKLIST
-        SET is_active = #{active},
-            released_at = CASE WHEN #{active} THEN NULL ELSE NOW() END,
-            released_by_user_idx = CASE WHEN #{active} THEN NULL ELSE #{releasedByUserIdx} END,
+        SET block_request_id = #{blockRequestId},
+            rule_action = #{ruleAction},
+            control_mode = #{controlMode},
+            rule_origin_type = #{ruleOriginType},
+            source_history_block_idx = #{sourceHistoryBlockIdx},
+            source_blocklist_idx = #{sourceBlocklistIdx},
+            ip_block_batch_idx = #{ipBlockBatchIdx},
+            batch_bound_at = #{batchBoundAt},
+            batch_bound_by_user_idx = #{batchBoundByUserIdx},
+            batch_detached_at = #{batchDetachedAt},
+            batch_detached_by_user_idx = #{batchDetachedByUserIdx},
+            match_type = #{matchType},
+            cidr_notation = #{cidrNotation},
+            range_start_ip = #{rangeStartIp},
+            range_end_ip = #{rangeEndIp},
+            country_code = #{countryCode},
+            asn = #{asn},
+            source_scope = #{sourceScope},
+            block_category = #{blockCategory},
+            user_idx = #{userIdx},
+            block_type = #{blockType},
+            blocked_by_user_idx = #{blockedByUserIdx},
+            blocked_at = #{blockedAt},
+            reason = #{reason},
+            is_active = #{active},
+            is_effective_active = #{effectiveActive},
+            effective_status = #{effectiveStatus},
+            effective_status_reason = #{effectiveStatusReason},
+            effective_synced_at = #{effectiveSyncedAt},
+            effective_synced_by_source = #{effectiveSyncedBySource},
+            expires_at = #{expiresAt},
+            released_at = #{releasedAt},
+            released_by_user_idx = #{releasedByUserIdx},
+            manual_override_by_user_idx = #{manualOverrideByUserIdx},
+            manual_override_at = #{manualOverrideAt},
+            manual_override_reason = #{manualOverrideReason},
+            last_control_action = #{lastControlAction},
+            last_control_by_user_idx = #{lastControlByUserIdx},
+            last_control_at = #{lastControlAt},
+            last_control_reason = #{lastControlReason},
+            risk_score = #{riskScore},
+            is_auto_block = #{autoBlock},
+            auto_block_source = #{autoBlockSource},
+            detail_message = #{detailMessage},
+            priority = #{priority},
             last_synced_at = NOW(),
             updated_at = NOW()
         WHERE ip_blocklist_idx = #{ipBlocklistIdx}
     </update>
+
+    <insert id="insertIpBlockBatchOperation" parameterType="org.triptogether.admin.vo.AdminIpBlockBatchOperationVO" useGeneratedKeys="true" keyProperty="ipBlockBatchOperationIdx">
+        INSERT INTO IP_BLOCK_BATCH_OPERATION (
+            ip_block_batch_idx, operation_type, operation_option,
+            requested_rule_count, affected_rule_count, description,
+            requested_by_user_idx, requested_at
+        ) VALUES (
+            #{ipBlockBatchIdx}, #{operationType}, #{operationOption},
+            #{requestedRuleCount}, #{affectedRuleCount}, #{description},
+            #{requestedByUserIdx}, #{requestedAt}
+        )
+    </insert>
+
+    <update id="updateIpBlockBatchOperationAffectedCount">
+        UPDATE IP_BLOCK_BATCH_OPERATION
+        SET affected_rule_count = #{affectedRuleCount}
+        WHERE ip_block_batch_operation_idx = #{ipBlockBatchOperationIdx}
+    </update>
+
+    <select id="findLatestBatchDisableOperation" resultMap="batchOperationRM">
+        SELECT
+            o.ip_block_batch_operation_idx,
+            o.ip_block_batch_idx,
+            o.operation_type,
+            o.operation_option,
+            o.requested_rule_count,
+            o.affected_rule_count,
+            o.description,
+            o.requested_by_user_idx,
+            u.nickname AS requested_by_nickname,
+            o.requested_at
+        FROM IP_BLOCK_BATCH_OPERATION o
+        LEFT JOIN USERS u ON u.user_idx = o.requested_by_user_idx
+        WHERE o.ip_block_batch_idx = #{ipBlockBatchIdx}
+          AND o.operation_type = 'BATCH_DEACTIVATE'
+          AND o.operation_option = 'CASCADE_ACTIVE_RULES'
+        ORDER BY o.requested_at DESC, o.ip_block_batch_operation_idx DESC
+        LIMIT 1
+    </select>
+
+    <select id="findOperationRules" resultType="org.triptogether.admin.vo.AdminIpBlockBatchOperationRuleVO">
+        SELECT
+            ip_block_batch_operation_rule_idx,
+            ip_block_batch_operation_idx,
+            ip_blocklist_idx,
+            operation_effect,
+            before_is_active,
+            after_is_active,
+            before_control_mode,
+            after_control_mode,
+            memo
+        FROM IP_BLOCK_BATCH_OPERATION_RULE
+        WHERE ip_block_batch_operation_idx = #{ipBlockBatchOperationIdx}
+        ORDER BY ip_block_batch_operation_rule_idx ASC
+    </select>
+
+    <insert id="insertIpBlockBatchOperationRule" parameterType="org.triptogether.admin.vo.AdminIpBlockBatchOperationRuleVO" useGeneratedKeys="true" keyProperty="ipBlockBatchOperationRuleIdx">
+        INSERT INTO IP_BLOCK_BATCH_OPERATION_RULE (
+            ip_block_batch_operation_idx, ip_blocklist_idx, operation_effect,
+            before_is_active, after_is_active, before_control_mode, after_control_mode, memo
+        ) VALUES (
+            #{ipBlockBatchOperationIdx}, #{ipBlocklistIdx}, #{operationEffect},
+            #{beforeIsActive}, #{afterIsActive}, #{beforeControlMode}, #{afterControlMode}, #{memo}
+        )
+    </insert>
 
     <update id="deactivateBlockHistoriesByTargetKey">
         UPDATE USER_BLOCK_HISTORY
@@ -574,6 +816,7 @@
             updated_at = NOW(),
             list_synced_at = NOW()
         WHERE block_target_key = #{blockTargetKey}
+          AND block_scope = 'USER_ACTION'
           AND is_active = 1
     </update>
 
