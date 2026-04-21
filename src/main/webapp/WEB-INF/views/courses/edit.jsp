@@ -589,11 +589,6 @@
                                             <button type="button" class="remove-btn">삭제</button>
                                         </div>
 
-                                        <input type="hidden"
-                                               data-field="spot_id"
-                                               name="spotList[${s.index}].spot_id"
-                                               value="${spot.spot_id}">
-
                                         <div class="form-group">
                                             <label class="form-label">장소명</label>
                                             <input type="text"
@@ -731,7 +726,6 @@
             const badge = item.querySelector(".spot-badge");
             const title = item.querySelector(".spot-head-left span:last-child");
 
-            const spotIdInput = item.querySelector('[data-field="spot_id"]');
             const placeInput = item.querySelector('[data-field="place_name"]');
             const visitDateInput = item.querySelector('[data-field="visit_date"]');
             const visitOrderInput = item.querySelector('[data-field="visit_order"]');
@@ -739,7 +733,6 @@
             if (badge) badge.textContent = index + 1;
             if (title) title.textContent = "여행지 " + (index + 1);
 
-            if (spotIdInput) spotIdInput.name = "spotList[" + index + "].spot_id";
             if (placeInput) placeInput.name = "spotList[" + index + "].place_name";
             if (visitDateInput) visitDateInput.name = "spotList[" + index + "].visit_date";
             if (visitOrderInput) visitOrderInput.name = "spotList[" + index + "].visit_order";
@@ -824,7 +817,6 @@
             + '    </div>'
             + '    <button type="button" class="remove-btn">삭제</button>'
             + '</div>'
-            + '<input type="hidden" data-field="spot_id" value="">'
             + '<div class="form-group">'
             + '    <label class="form-label">장소명</label>'
             + '    <input type="text"'

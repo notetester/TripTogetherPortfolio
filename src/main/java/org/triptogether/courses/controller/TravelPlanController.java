@@ -66,9 +66,6 @@ public class TravelPlanController {
                 return "redirect:/auth/login";
             }
 
-            List<SpotTravelVO> spotTravelList = travelPlanService.getSpotTravelList();
-            model.addAttribute("spotTravelList", spotTravelList);
-
             return "courses/write";
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,10 +100,7 @@ public class TravelPlanController {
             }
 
             // 수정까지 고려해서 전체 여행지 목록도 같이 넘김
-            List<SpotTravelVO> spotTravelList = travelPlanService.getSpotTravelList();
-
             model.addAttribute("travelPlan", travelPlan);
-            model.addAttribute("spotTravelList", spotTravelList);
 
             return "courses/detail";
         } catch (Exception e) {
@@ -130,6 +124,7 @@ public class TravelPlanController {
             }
 
             travelPlanVO.setUser_idx(userIdx);
+            travelPlanVO.setPlan_source("MANUAL");
             travelPlanService.insertTravelPlan(travelPlanVO);
 
             redirectAttributes.addFlashAttribute("successMessage", "여행 일정이 등록되었습니다.");
@@ -174,9 +169,7 @@ public class TravelPlanController {
                 return "redirect:/courses/list";
             }
 
-            List<SpotTravelVO> spotTravelList = travelPlanService.getSpotTravelList();
             model.addAttribute("travelPlan", travelPlan);
-            model.addAttribute("spotTravelList", spotTravelList);
 
             return "courses/edit";
 
@@ -201,6 +194,10 @@ public class TravelPlanController {
             }
 
             travelPlanVO.setUser_idx(userIdx);
+            if (travelPlanVO.getPlan_source() == null || travelPlanVO.getPlan_source().trim().isEmpty()) {
+                travelPlanVO.setPlan_source("MANUAL");
+            }
+
             travelPlanService.editTravelPlan(travelPlanVO);
 
             redirectAttributes.addFlashAttribute("successMessage", "여행 일정이 수정되었습니다.");

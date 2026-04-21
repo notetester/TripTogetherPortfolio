@@ -274,25 +274,6 @@
             background: #fef2f2;
         }
 
-        .spot-preview {
-            margin-top: 10px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            font-size: 13px;
-            color: var(--gray-600);
-            line-height: 1.7;
-        }
-
-        .spot-preview strong {
-            color: var(--gray-800);
-        }
-
-        .spot-preview.empty {
-            color: var(--gray-400);
-        }
-
         .spot-actions {
             display: flex;
             gap: 10px;
@@ -515,8 +496,7 @@
                 <div class="header-title">
                     <h1>새 여행 일정 만들기</h1>
                     <p>
-                        여행 제목, 기간, 대표 목적지와 방문 장소를 한 번에 입력해 저장할 수 있어요.
-                        대표 목적지는 도시 목록에서 검색해 선택하고, 방문 장소는 직접 입력해 주세요.
+                        대표 목적지는 자유롭게 입력하고, 방문 여행지는 장소명·방문일·방문순서를 입력해 주세요.
                     </p>
                 </div>
 
@@ -529,13 +509,6 @@
               method="post">
 
             <input type="hidden" id="isPublic" name="is_public" value="0">
-
-            <!-- 대표 목적지 / 도시 자동완성용 -->
-            <datalist id="cityOptionList">
-                <c:forEach var="spot" items="${spotTravelList}">
-                    <option value="${spot.name}"></option>
-                </c:forEach>
-            </datalist>
 
             <div class="grid">
 
@@ -567,11 +540,9 @@
                                        id="destination"
                                        name="destination"
                                        class="form-input"
-                                       list="cityOptionList"
-                                       placeholder="도시명을 검색해 선택하세요"
-                                       autocomplete="off"
+                                       placeholder="예: 부산, 도쿄, 파리, 제주도"
                                        required>
-                                <div class="field-msg">SPOT_TRAVEL에 등록된 도시명만 선택할 수 있어요.</div>
+                                <div class="field-msg">대표 목적지는 자유롭게 입력할 수 있어요.</div>
                             </div>
 
                             <div class="form-row">
@@ -601,14 +572,13 @@
                             <div class="card-icon">📍</div>
                             <div>
                                 <div class="card-title">방문 여행지</div>
-                                <div class="card-sub">도시를 선택하고 실제 방문 장소명을 입력해 주세요.</div>
+                                <div class="card-sub">방문 장소명과 방문일, 방문 순서를 입력해 주세요.</div>
                             </div>
                         </div>
 
                         <div class="card-body">
                             <p class="helper-text">
-                                각 방문 여행지는 <strong>도시 선택 + 장소명 직접 입력</strong> 방식으로 저장돼요.
-                                저장 시 도시는 <strong>spot_id</strong>로, 장소명은 <strong>place_name</strong>으로 PLAN_SPOT에 들어가요.
+                                각 방문 여행지는 <strong>장소명 + 방문일 + 방문 순서</strong> 기준으로 저장돼요.
                             </p>
 
                             <div id="spotList" class="spot-list"></div>
@@ -714,112 +684,54 @@
     const startDateEl = document.getElementById("startDate");
     const endDateEl = document.getElementById("endDate");
 
-    const cityMasterList = [
-        <c:forEach var="spot" items="${spotTravelList}" varStatus="s">
-        {
-            spotId: "${spot.spot_id}",
-            name: "${spot.name}"
-        }<c:if test="${!s.last}">,</c:if>
-        </c:forEach>
-    ];
-
-    function findCityByName(cityName) {
-        if (!cityName) return null;
-        const trimmed = cityName.trim();
-        return cityMasterList.find(city => city.name === trimmed) || null;
-    }
-
-    function updateSpotPreview(wrapper) {
-        const cityInput = wrapper.querySelector(".city-name-input");
-        const placeInput = wrapper.querySelector('[data-field="place_name"]');
-        const preview = wrapper.querySelector(".spot-preview");
-
-        const cityName = cityInput.value.trim();
-        const placeName = placeInput.value.trim();
-
-        if (!cityName && !placeName) {
-            preview.classList.add("empty");
-            preview.innerHTML = "아직 입력된 방문 여행지가 없어요.";
-            return;
-        }
-
-        preview.classList.remove("empty");
-        preview.innerHTML = `
-            <div><strong>도시</strong> : ${cityName || "-"}</div>
-            <div><strong>장소명</strong> : ${placeName || "-"}</div>
-        `;
-    }
 
     function createSpotItem(index) {
+        const displayIndex = index + 1;
         const wrapper = document.createElement("div");
         wrapper.className = "spot-item";
 
-        wrapper.innerHTML = `
-            <div class="spot-head">
-                <div class="spot-head-left">
-                    <span class="spot-badge">${index + 1}</span>
-                    <span>여행지 ${index + 1}</span>
-                </div>
-                <button type="button" class="remove-btn">삭제</button>
-            </div>
+        wrapper.innerHTML =
+            '<div class="spot-head">' +
+            '<div class="spot-head-left">' +
+            '<span class="spot-badge">' + displayIndex + '</span>' +
+            '<span>여행지 ' + displayIndex + '</span>' +
+            '</div>' +
+            '<button type="button" class="remove-btn">삭제</button>' +
+            '</div>' +
 
-            <input type="hidden" class="hidden-input" data-field="spot_id">
+            '<div class="form-group">' +
+            '<label class="form-label">장소명</label>' +
+            '<input type="text" ' +
+            'class="form-input" ' +
+            'data-field="place_name" ' +
+            'placeholder="예: 해운대해수욕장" ' +
+            'required>' +
+            '<div class="field-msg">사용자가 직접 입력한 실제 방문 장소명이 저장돼요.</div>' +
+            '</div>' +
 
-            <div class="form-group">
-                <label class="form-label">도시 선택</label>
-                <input type="text"
-                       class="form-input city-name-input"
-                       list="cityOptionList"
-                       placeholder="도시명을 검색해 선택하세요"
-                       autocomplete="off"
-                       required>
-                <div class="field-msg">이 값은 SPOT_TRAVEL과 연결되어 spot_id로 저장돼요.</div>
-            </div>
+            '<div class="form-row" style="margin-top:16px;">' +
+            '<div class="form-group">' +
+            '<label class="form-label">방문일</label>' +
+            '<input type="date" ' +
+            'class="form-input" ' +
+            'data-field="visit_date" ' +
+            'required>' +
+            '</div>' +
 
-            <div class="form-group">
-                <label class="form-label">장소명</label>
-                <input type="text"
-                       class="form-input"
-                       data-field="place_name"
-                       placeholder="예: 해운대해수욕장"
-                       required>
-                <div class="field-msg">사용자가 직접 입력한 실제 방문 장소명이 저장돼요.</div>
-            </div>
-
-            <div class="spot-preview empty">아직 입력된 방문 여행지가 없어요.</div>
-
-            <div class="form-row" style="margin-top:16px;">
-                <div class="form-group">
-                    <label class="form-label">방문일</label>
-                    <input type="date"
-                           class="form-input"
-                           data-field="visit_date"
-                           required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">방문 순서</label>
-                    <input type="number"
-                           class="form-input"
-                           data-field="visit_order"
-                           min="1"
-                           value="${index + 1}"
-                           required>
-                </div>
-            </div>
-        `;
+            '<div class="form-group">' +
+            '<label class="form-label">방문 순서</label>' +
+            '<input type="number" ' +
+            'class="form-input" ' +
+            'data-field="visit_order" ' +
+            'min="1" ' +
+            'value="' + displayIndex + '" ' +
+            'required>' +
+            '</div>' +
+            '</div>';
 
         const removeBtn = wrapper.querySelector(".remove-btn");
-        const cityInput = wrapper.querySelector(".city-name-input");
-        const hiddenSpotIdInput = wrapper.querySelector('[data-field="spot_id"]');
         const placeInput = wrapper.querySelector('[data-field="place_name"]');
         const visitDateInput = wrapper.querySelector('[data-field="visit_date"]');
-
-        if (destinationEl.value.trim() && !cityInput.value.trim()) {
-            cityInput.value = destinationEl.value.trim();
-            const matchedCity = findCityByName(cityInput.value);
-            hiddenSpotIdInput.value = matchedCity ? matchedCity.spotId : "";
-        }
 
         if (startDateEl.value) {
             visitDateInput.value = startDateEl.value;
@@ -831,31 +743,13 @@
             updateSummary();
         });
 
-        cityInput.addEventListener("input", function () {
-            const matchedCity = findCityByName(cityInput.value);
-            hiddenSpotIdInput.value = matchedCity ? matchedCity.spotId : "";
-            updateSpotPreview(wrapper);
-            updateSummary();
-        });
-
-        cityInput.addEventListener("change", function () {
-            const matchedCity = findCityByName(cityInput.value);
-            hiddenSpotIdInput.value = matchedCity ? matchedCity.spotId : "";
-            updateSpotPreview(wrapper);
-            updateSummary();
-        });
-
-        placeInput.addEventListener("input", function () {
-            updateSpotPreview(wrapper);
-            updateSummary();
-        });
+        placeInput.addEventListener("input", updateSummary);
 
         wrapper.querySelectorAll(".form-input").forEach(input => {
             input.addEventListener("input", updateSummary);
             input.addEventListener("change", updateSummary);
         });
 
-        updateSpotPreview(wrapper);
         return wrapper;
     }
 
@@ -931,21 +825,6 @@
     });
 
     destinationEl.addEventListener("change", function () {
-        const destinationName = destinationEl.value.trim();
-
-        document.querySelectorAll(".city-name-input").forEach(cityInput => {
-            if (!cityInput.value.trim()) {
-                cityInput.value = destinationName;
-
-                const wrapper = cityInput.closest(".spot-item");
-                const hiddenSpotIdInput = wrapper.querySelector('[data-field="spot_id"]');
-                const matchedCity = findCityByName(destinationName);
-
-                hiddenSpotIdInput.value = matchedCity ? matchedCity.spotId : "";
-                updateSpotPreview(wrapper);
-            }
-        });
-
         updateSummary();
     });
 
@@ -972,15 +851,6 @@
     });
 
     formEl.addEventListener("submit", function (e) {
-        const destinationMatched = findCityByName(destinationEl.value);
-
-        if (!destinationMatched) {
-            e.preventDefault();
-            alert("대표 목적지는 목록에 있는 도시명 중에서 선택해 주세요.");
-            destinationEl.focus();
-            return;
-        }
-
         const spotItems = spotListEl.querySelectorAll(".spot-item");
 
         if (spotItems.length === 0) {
@@ -989,39 +859,46 @@
             return;
         }
 
+        const duplicateCheck = new Set();
+
         for (const item of spotItems) {
-            const cityInput = item.querySelector(".city-name-input");
-            const hiddenSpotIdInput = item.querySelector('[data-field="spot_id"]');
             const placeInput = item.querySelector('[data-field="place_name"]');
             const visitDateInput = item.querySelector('[data-field="visit_date"]');
+            const visitOrderInput = item.querySelector('[data-field="visit_order"]');
 
-            if (!cityInput.value.trim()) {
-                e.preventDefault();
-                alert("각 방문 여행지의 도시를 선택해 주세요.");
-                cityInput.focus();
-                return;
-            }
+            const placeName = placeInput.value.trim();
+            const visitDate = visitDateInput.value;
+            const visitOrder = visitOrderInput.value.trim();
 
-            if (!hiddenSpotIdInput.value.trim()) {
-                e.preventDefault();
-                alert("방문 여행지의 도시는 목록에 있는 도시명으로 선택해 주세요.");
-                cityInput.focus();
-                return;
-            }
-
-            if (!placeInput.value.trim()) {
+            if (!placeName) {
                 e.preventDefault();
                 alert("방문 장소명을 입력해 주세요.");
                 placeInput.focus();
                 return;
             }
 
-            if (!visitDateInput.value.trim()) {
+            if (!visitDate) {
                 e.preventDefault();
                 alert("방문일을 입력해 주세요.");
                 visitDateInput.focus();
                 return;
             }
+
+            if (!visitOrder || Number(visitOrder) < 1) {
+                e.preventDefault();
+                alert("방문 순서는 1 이상의 숫자로 입력해 주세요.");
+                visitOrderInput.focus();
+                return;
+            }
+
+            const duplicateKey = visitDate + "__" + visitOrder;
+            if (duplicateCheck.has(duplicateKey)) {
+                e.preventDefault();
+                alert("같은 날짜에는 동일한 방문 순서를 사용할 수 없어요.");
+                visitOrderInput.focus();
+                return;
+            }
+            duplicateCheck.add(duplicateKey);
         }
     });
 
