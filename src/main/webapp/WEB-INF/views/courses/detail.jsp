@@ -296,6 +296,82 @@
             font-weight: 600;
         }
 
+        .detail-filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+            padding: 14px 16px;
+            border: 1px solid #e7ecf5;
+            border-radius: 18px;
+            background: #f9fbff;
+        }
+
+        .spot-filter-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .spot-filter-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #344054;
+        }
+
+        .spot-filter-input {
+            height: 42px;
+            padding: 0 12px;
+            border: 1px solid #dbe3f0;
+            border-radius: 14px;
+            background: #fff;
+            font-size: 15px;
+            color: #1f2a44;
+        }
+
+        .spot-filter-input:focus {
+            outline: none;
+            border-color: #6c7cff;
+            box-shadow: 0 0 0 4px rgba(108, 124, 255, 0.12);
+        }
+
+        .spot-filter-reset {
+            height: 42px;
+            padding: 0 16px;
+            border: 1px solid #d7dfec;
+            border-radius: 14px;
+            background: #fff;
+            color: #344054;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+
+        .spot-filter-reset:hover {
+            background: #f3f6ff;
+            border-color: #c9d5e8;
+        }
+
+        .spot-filter-right {
+            font-size: 14px;
+            color: #667085;
+            font-weight: 600;
+        }
+
+        .filtered-empty {
+            display: none;
+            margin-top: 14px;
+            border: 1px dashed #d7e0ea;
+            border-radius: 18px;
+            background: #fafcff;
+            padding: 32px 20px;
+            text-align: center;
+            color: #6b7280;
+        }
+
         .empty-box {
             border: 1px dashed #d7e0ea;
             border-radius: 18px;
@@ -605,16 +681,19 @@
 
         <!-- 오른쪽 여행지 목록 -->
         <div class="card content-card">
-            <div class="detail-filter-bar">
-                <div>
-                    <h3 class="section-title">일정에 포함된 여행지</h3>
-                    <p class="section-desc">날짜를 선택하면 해당 날짜 일정만 볼 수 있어요.</p>
-                </div>
+            <div>
+                <h3 class="section-title">일정에 포함된 여행지</h3>
+                <p class="section-desc">날짜를 선택하면 해당 날짜 일정만 볼 수 있어요.</p>
+            </div>
 
-                <div class="filter-box">
-                    <span class="filter-label">날짜 선택</span>
-                    <input type="date" id="dateFilter" class="date-filter-input">
-                    <button type="button" class="filter-reset-btn" onclick="resetDateFilter()">전체보기</button>
+            <div class="detail-filter-bar">
+                <div class="spot-filter-left">
+                    <label for="dateFilter" class="spot-filter-label">날짜 선택</label>
+                    <input type="date" id="dateFilter" class="spot-filter-input">
+                    <button type="button" class="spot-filter-reset" onclick="resetDateFilter()">전체보기</button>
+                </div>
+                <div class="spot-filter-right">
+                    원하는 날짜의 일정만 골라서 볼 수 있어요.
                 </div>
             </div>
 

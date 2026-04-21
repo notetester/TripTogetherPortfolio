@@ -47,7 +47,12 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         if (travelPlanVO.getSpotList() != null && !travelPlanVO.getSpotList().isEmpty()) {
             int order = 1;
             for (PlanSpotVO spot : travelPlanVO.getSpotList()) {
-                if (spot.getSpot_id() == null || spot.getSpot_id().trim().isEmpty()) {
+
+                if (spot.getSpot_id() != null && spot.getSpot_id().trim().isEmpty()) {
+                    spot.setSpot_id(null);
+                }
+
+                if (spot.getPlace_name() == null || spot.getPlace_name().trim().isEmpty()) {
                     continue;
                 }
 
@@ -61,6 +66,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
                 travelPlanMapper.insertPlanSpot(spot);
             }
         }
+
     }
 
     @Override
@@ -77,7 +83,12 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         if (travelPlanVO.getSpotList() != null && !travelPlanVO.getSpotList().isEmpty()) {
             int order = 1;
             for (PlanSpotVO spot : travelPlanVO.getSpotList()) {
-                if (spot.getSpot_id() == null || spot.getSpot_id().trim().isEmpty()) {
+
+                if (spot.getSpot_id() != null && spot.getSpot_id().trim().isEmpty()) {
+                    spot.setSpot_id(null);
+                }
+
+                if (spot.getPlace_name() == null || spot.getPlace_name().trim().isEmpty()) {
                     continue;
                 }
 
