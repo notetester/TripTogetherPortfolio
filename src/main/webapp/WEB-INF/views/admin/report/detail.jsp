@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="activeMenu" value="reports"/>
 <c:set var="pageTitle" value="신고 상세"/>
 <%@ include file="../layout.jsp" %>
@@ -26,7 +27,7 @@
                                 <c:otherwise>${report.status}</c:otherwise>
                             </c:choose>
                         </span>
-                        <%-- post: 해당 게시글로 이동 / comment: sourceId(게시글 ID)로 원글 이동 --%>
+                        <%-- post: 게시글 / comment: 원글 게시글 / review: 스팟 상세 --%>
                         <%-- 원글이 삭제된 경우(targetStatus=DELETED) 링크 숨김 --%>
                         <c:if test="${report.targetType eq 'post' and report.targetStatus ne 'DELETED'}">
                             <a href="${pageContext.request.contextPath}/community/${report.targetId}"
@@ -35,10 +36,16 @@
                                style="font-size:12px;text-decoration:none;">원글 보기</a>
                         </c:if>
                         <c:if test="${report.targetType eq 'comment' and report.targetStatus ne 'DELETED'}">
-                            <a href="${pageContext.request.contextPath}/community/${report.sourceId}"
+                            <a href="${pageContext.request.contextPath}/community/${empty report.sourceId ? report.targetPostId : report.sourceId}"
                                target="_blank"
                                class="adm-btn adm-btn-ghost"
                                style="font-size:12px;text-decoration:none;">원글 보기</a>
+                        </c:if>
+                        <c:if test="${report.targetType eq 'review' and report.targetStatus ne 'DELETED' and not empty report.targetSpotIdx}">
+                            <a href="${pageContext.request.contextPath}/detail/${report.targetSpotIdx}"
+                               target="_blank"
+                               class="adm-btn adm-btn-ghost"
+                               style="font-size:12px;text-decoration:none;">스팟 보기</a>
                         </c:if>
                     </div>
                 </div>
@@ -50,17 +57,72 @@
                             <div style="min-width:90px;font-size:12px;color:#64748b;">신고 대상</div>
                             <div class="adm-detail-value">
                                 <c:choose>
-                                    <c:when test="${report.targetType eq 'post'}">게시글</c:when>
-                                    <c:when test="${report.targetType eq 'comment'}">댓글</c:when>
-                                    <c:when test="${report.targetType eq 'user'}">유저</c:when>
+                                    <c:when test="${report.targetType eq 'post'}">
+                                        커뮤니티 게시글<span class="adm-module-badge adm-module-community">커뮤니티</span>
+                                    </c:when>
+                                    <c:when test="${report.targetType eq 'comment'}">
+                                        커뮤니티 댓글<span class="adm-module-badge adm-module-community">커뮤니티</span>
+                                    </c:when>
+                                    <c:when test="${report.targetType eq 'review'}">
+                                        여행지 리뷰<span class="adm-module-badge adm-module-explore">여행지</span>
+                                    </c:when>
+                                    <c:when test="${report.targetType eq 'user'}">
+                                        유저<span class="adm-module-badge adm-module-user">회원</span>
+                                    </c:when>
                                     <c:otherwise>${report.targetType}</c:otherwise>
                                 </c:choose>
                                 <span style="color:#64748b;margin-left:4px;">#${report.targetId}</span>
                                 <c:if test="${report.targetStatus eq 'DELETED'}">
-                                    <span style="margin-left:8px;font-size:11px;background:#450a0a;color:#fca5a5;padding:2px 8px;border-radius:4px;">🗑 삭제됨</span>
+                                    <span style="margin-left:8px;font-size:11px;background:#450a0a;color:#fca5a5;padding:2px 8px;border-radius:4px;">
+                                        <c:choose>
+                                            <c:when test="${report.targetType eq 'review'}">🗑 차단됨</c:when>
+                                            <c:otherwise>🗑 삭제됨</c:otherwise>
+                                        </c:choose>
+                                    </span>
                                 </c:if>
                             </div>
                         </div>
+
+                        <%-- 컨텍스트 조각: 제목 / 본문 / 스팟명 --%>
+                        <c:if test="${report.targetType eq 'post' and not empty report.targetTitle}">
+                            <div style="display:flex;gap:12px;">
+                                <div style="min-width:90px;font-size:12px;color:#64748b;">제목</div>
+                                <div class="adm-detail-value" style="font-weight:600;">${fn:escapeXml(report.targetTitle)}</div>
+                            </div>
+                        </c:if>
+                        <c:if test="${report.targetType eq 'comment' and not empty report.targetContent}">
+                            <div style="display:flex;gap:12px;">
+                                <div style="min-width:90px;font-size:12px;color:#64748b;">댓글 본문</div>
+                                <div class="adm-detail-value" style="white-space:pre-wrap;word-break:break-word;">
+                                    <c:choose>
+                                        <c:when test="${fn:length(report.targetContent) > 200}">${fn:escapeXml(fn:substring(report.targetContent, 0, 200))}…</c:when>
+                                        <c:otherwise>${fn:escapeXml(report.targetContent)}</c:otherwise>
+                                    </c:choose>
+                                </div>
+                            </div>
+                        </c:if>
+                        <c:if test="${report.targetType eq 'review'}">
+                            <c:if test="${not empty report.targetSpotName}">
+                                <div style="display:flex;gap:12px;">
+                                    <div style="min-width:90px;font-size:12px;color:#64748b;">스팟</div>
+                                    <div class="adm-detail-value" style="font-weight:600;">
+                                        ${fn:escapeXml(report.targetSpotName)}
+                                        <span style="color:#64748b;margin-left:4px;font-weight:400;">#${report.targetSpotIdx}</span>
+                                    </div>
+                                </div>
+                            </c:if>
+                            <c:if test="${not empty report.targetContent}">
+                                <div style="display:flex;gap:12px;">
+                                    <div style="min-width:90px;font-size:12px;color:#64748b;">리뷰 본문</div>
+                                    <div class="adm-detail-value" style="white-space:pre-wrap;word-break:break-word;">
+                                        <c:choose>
+                                            <c:when test="${fn:length(report.targetContent) > 200}">${fn:escapeXml(fn:substring(report.targetContent, 0, 200))}…</c:when>
+                                            <c:otherwise>${fn:escapeXml(report.targetContent)}</c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </c:if>
 
                         <div style="display:flex;gap:12px;">
                             <div style="min-width:90px;font-size:12px;color:#64748b;">신고 사유</div>
@@ -147,16 +209,21 @@
                             <div style="font-size:11px;color:#64748b;margin-bottom:8px;">처리</div>
                             <div style="display:flex;flex-direction:column;gap:6px;">
 
-                                <%-- post / comment 공통 버튼 --%>
-                                <c:if test="${report.targetType eq 'post' or report.targetType eq 'comment'}">
+                                <%-- post / comment / review 공통 버튼 --%>
+                                <c:if test="${report.targetType eq 'post' or report.targetType eq 'comment' or report.targetType eq 'review'}">
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:11px;color:#94a3b8;border-color:#94a3b8;"
                                             onclick="resolve('REJECTED')">반려 (콘텐츠 유지)</button>
-                                    <%-- 이미 삭제된 콘텐츠면 삭제 계열 버튼 숨김 --%>
+                                    <%-- 이미 삭제/차단된 콘텐츠면 삭제 계열 버튼 숨김 --%>
                                     <c:if test="${report.targetStatus ne 'DELETED'}">
                                         <button class="adm-btn adm-btn-ghost"
                                                 style="font-size:11px;color:#fb923c;border-color:#fb923c;"
-                                                onclick="resolve('DELETE_CONTENT')">콘텐츠 삭제</button>
+                                                onclick="resolve('DELETE_CONTENT')">
+                                            <c:choose>
+                                                <c:when test="${report.targetType eq 'review'}">리뷰 차단</c:when>
+                                                <c:otherwise>콘텐츠 삭제</c:otherwise>
+                                            </c:choose>
+                                        </button>
                                     </c:if>
                                     <c:if test="${report.targetUserRole ne 'SYSTEM'}">
                                         <button class="adm-btn adm-btn-ghost"
@@ -165,7 +232,12 @@
                                         <c:if test="${report.targetStatus ne 'DELETED'}">
                                             <button class="adm-btn adm-btn-ghost"
                                                     style="font-size:11px;color:#dc2626;border-color:#dc2626;"
-                                                    onclick="resolve('DELETE_AND_BLOCK')">삭제 + 작성자 차단</button>
+                                                    onclick="resolve('DELETE_AND_BLOCK')">
+                                                <c:choose>
+                                                    <c:when test="${report.targetType eq 'review'}">리뷰 차단 + 작성자 차단</c:when>
+                                                    <c:otherwise>삭제 + 작성자 차단</c:otherwise>
+                                                </c:choose>
+                                            </button>
                                         </c:if>
                                     </c:if>
                                 </c:if>
@@ -201,8 +273,9 @@
 </div>
 
 <script>
-var ctx      = '${pageContext.request.contextPath}';
-var reportId = ${report.reportId};
+var ctx        = '${pageContext.request.contextPath}';
+var reportId   = ${report.reportId};
+var targetType = '${report.targetType}';
 
 function goBackToList() {
     var params = new URLSearchParams(window.location.search);
@@ -219,12 +292,13 @@ function goBackToList() {
     location.href = url;
 }
 
+var isReview = (targetType === 'review');
 var actionLabels = {
     REJECTED:         '반려 처리하시겠습니까?',
-    DELETE_CONTENT:   '콘텐츠를 삭제하시겠습니까?',
+    DELETE_CONTENT:   isReview ? '리뷰를 차단하시겠습니까?' : '콘텐츠를 삭제하시겠습니까?',
     BLOCK_AUTHOR:     '작성자를 차단하시겠습니까?',
     BLOCK_USER:       '해당 유저를 차단하시겠습니까?',
-    DELETE_AND_BLOCK: '콘텐츠를 삭제하고 작성자를 차단하시겠습니까?',
+    DELETE_AND_BLOCK: isReview ? '리뷰를 차단하고 작성자를 차단하시겠습니까?' : '콘텐츠를 삭제하고 작성자를 차단하시겠습니까?',
     REVERT_TO_PENDING:'검토중 상태로 복원하시겠습니까?'
 };
 
