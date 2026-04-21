@@ -767,6 +767,13 @@ document.getElementById('detailModal').addEventListener('click', function (e) {
 document.getElementById('blockModal').addEventListener('click', function (e) {
     if (e.target === this) closeBlockModal();
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const detailUserIdx = '${fn:escapeXml(param.detailUserIdx)}';
+    if (detailUserIdx) {
+        openDetail(detailUserIdx);
+    }
+});
 </script>
 
 <%@ include file="../layout-close.jsp" %>

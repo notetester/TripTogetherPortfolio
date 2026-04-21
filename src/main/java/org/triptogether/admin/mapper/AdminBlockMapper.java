@@ -28,6 +28,8 @@ public interface AdminBlockMapper {
     AdminIpBlockBatchVO findIpBlockBatchById(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
     List<AdminIpBlockVO> findIpRulesByBatchId(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx);
     AdminIpBlockVO findIpBlockById(@Param("ipBlocklistIdx") Long ipBlocklistIdx);
+    AdminUserBlockVO findUserBlockById(@Param("blockIdx") Long blockIdx);
+    AdminUserBlockVO findLatestActiveUserBlockByUserIdx(@Param("userIdx") Long userIdx);
 
     void insertGlobalBlockHistory(AdminBlockHistoryVO history);
 
@@ -46,8 +48,11 @@ public interface AdminBlockMapper {
     void deactivateBlockHistoriesByTargetKey(@Param("blockTargetKey") String blockTargetKey,
                                              @Param("releasedByUserIdx") Long releasedByUserIdx,
                                              @Param("historyKind") String historyKind);
+    void archiveUserBlockHistoriesByTargetKey(@Param("blockTargetKey") String blockTargetKey,
+                                              @Param("releasedByUserIdx") Long releasedByUserIdx);
 
     AdminUserBlockVO findUserBlockByTargetKey(@Param("blockTargetKey") String blockTargetKey);
+    void updateUserBlockSnapshot(AdminUserBlockVO block);
 
     void updateUserBlocklistActiveByTargetKey(@Param("blockTargetKey") String blockTargetKey,
                                               @Param("active") boolean active,

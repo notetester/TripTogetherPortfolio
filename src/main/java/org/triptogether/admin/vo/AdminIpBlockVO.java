@@ -3,11 +3,14 @@ package org.triptogether.admin.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.ZoneId;
 import java.util.Date;
 
 @Data
 public class AdminIpBlockVO {
+    private static final DateTimeFormatter INPUT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
     private Long ipBlocklistIdx;
     private String ipAddress;
     private String blockRequestId;
@@ -128,5 +131,9 @@ public class AdminIpBlockVO {
 
     public Date getLastControlAtDate() {
         return lastControlAt == null ? null : Date.from(lastControlAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public String getExpiresAtInputValue() {
+        return expiresAt == null ? "" : expiresAt.format(INPUT_DATE_TIME_FORMATTER);
     }
 }
