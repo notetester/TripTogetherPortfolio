@@ -167,6 +167,8 @@
     <resultMap id="batchOperationRM" type="org.triptogether.admin.vo.AdminIpBlockBatchOperationVO">
         <id property="ipBlockBatchOperationIdx" column="ip_block_batch_operation_idx"/>
         <result property="ipBlockBatchIdx" column="ip_block_batch_idx"/>
+        <result property="batchCode" column="batch_code"/>
+        <result property="batchName" column="batch_name"/>
         <result property="operationType" column="operation_type"/>
         <result property="operationOption" column="operation_option"/>
         <result property="requestedRuleCount" column="requested_rule_count"/>
@@ -532,6 +534,8 @@
         SELECT
             o.ip_block_batch_operation_idx,
             o.ip_block_batch_idx,
+            b.batch_code,
+            b.batch_name,
             o.operation_type,
             o.operation_option,
             o.requested_rule_count,
@@ -541,6 +545,7 @@
             u.nickname AS requested_by_nickname,
             o.requested_at
         FROM IP_BLOCK_BATCH_OPERATION o
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = o.ip_block_batch_idx
         LEFT JOIN USERS u ON u.user_idx = o.requested_by_user_idx
         WHERE 1=1
         <if test="batchId != null">
@@ -570,6 +575,22 @@
             #{createdByUserIdx}, NOW(), #{updatedByUserIdx}, NOW()
         )
     </insert>
+
+    <update id="updateIpBlockBatch" parameterType="org.triptogether.admin.vo.AdminIpBlockBatchVO">
+        UPDATE IP_BLOCK_BATCH
+        SET batch_code = #{batchCode},
+            batch_name = #{batchName},
+            source_type = #{sourceType},
+            source_name = #{sourceName},
+            batch_rule_action = #{batchRuleAction},
+            default_rule_priority = #{defaultRulePriority},
+            description = #{description},
+            default_disable_strategy = #{defaultDisableStrategy},
+            default_enable_strategy = #{defaultEnableStrategy},
+            updated_by_user_idx = #{updatedByUserIdx},
+            updated_at = NOW()
+        WHERE ip_block_batch_idx = #{ipBlockBatchIdx}
+    </update>
 
     <update id="updateIpBlockBatchActive">
         UPDATE IP_BLOCK_BATCH

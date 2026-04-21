@@ -73,6 +73,29 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     }
 
     @Override
+    public void updateIpBlockBatch(Long ipBlockBatchIdx, String batchCode, String batchName, String sourceType, String sourceName,
+                                   String batchRuleAction, Integer defaultRulePriority,
+                                   String defaultDisableStrategy, String defaultEnableStrategy,
+                                   String description, Long actorUserIdx) {
+        AdminIpBlockBatchVO batch = requireBatch(ipBlockBatchIdx);
+        if (isBlank(batchCode) || isBlank(batchName) || isBlank(sourceType)) {
+            throw new IllegalArgumentException("배치 코드, 배치명, 출처 유형은 필수입니다.");
+        }
+
+        batch.setBatchCode(batchCode.trim().toUpperCase());
+        batch.setBatchName(batchName.trim());
+        batch.setSourceType(sourceType.trim().toUpperCase());
+        batch.setSourceName(trimToNull(sourceName));
+        batch.setBatchRuleAction(safeUpper(batchRuleAction, batch.getBatchRuleAction() != null ? batch.getBatchRuleAction() : "BLOCK"));
+        batch.setDefaultRulePriority(defaultRulePriority != null && defaultRulePriority > 0 ? defaultRulePriority : 1);
+        batch.setDefaultDisableStrategy(resolveBatchDisableStrategy(defaultDisableStrategy));
+        batch.setDefaultEnableStrategy(resolveBatchEnableStrategy(defaultEnableStrategy));
+        batch.setDescription(trimToNull(description));
+        batch.setUpdatedByUserIdx(actorUserIdx);
+        adminBlockMapper.updateIpBlockBatch(batch);
+    }
+
+    @Override
     public void toggleIpBlockBatch(Long ipBlockBatchIdx, boolean active, String operationOption, String description, Long actorUserIdx) {
         AdminIpBlockBatchVO batch = requireBatch(ipBlockBatchIdx);
         if (batch.isActive() == active) {

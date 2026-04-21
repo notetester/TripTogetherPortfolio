@@ -20,6 +20,7 @@ public interface AdminBlockMapper {
     List<AdminIpBlockBatchOperationVO> findRecentBatchOperations(AdminBlockSearchVO search);
 
     void insertIpBlockBatch(AdminIpBlockBatchVO batch);
+    void updateIpBlockBatch(AdminIpBlockBatchVO batch);
 
     void updateIpBlockBatchActive(@Param("ipBlockBatchIdx") Long ipBlockBatchIdx,
                                   @Param("active") boolean active,
