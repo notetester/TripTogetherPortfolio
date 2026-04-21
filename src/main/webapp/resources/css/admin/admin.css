@@ -407,6 +407,15 @@ body {
     border-color: #2d3748; color: #94a3b8;
 }
 .adm-row-btn.detail:hover { border-color: #3b82f6; color: #93c5fd; background: rgba(59,130,246,.08); }
+.adm-row-btn.danger {
+    border-color: #2d3748; color: #94a3b8;
+}
+.adm-row-btn.danger:hover { border-color: #3b82f6; color: #93c5fd; background: rgba(59,130,246,.08); }
+
+/* ── 폼 그리드 (block 모달용, sa- 프리픽스 호환) ── */
+.sa-form-grid  { display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; }
+.sa-form-group { display:flex; flex-direction:column; gap:6px; }
+.sa-form-label { font-size:13px; color:#64748b; font-weight:500; }
 
 /* ══════════════════════════════════════════
    페이징
