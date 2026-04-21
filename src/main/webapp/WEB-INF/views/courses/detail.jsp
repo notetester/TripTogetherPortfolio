@@ -573,12 +573,12 @@
                     </div>
                 </div>
 
-                <div class="info-row">
-                    <div class="info-label">일정 번호</div>
-                    <div class="info-value">
-                        <c:out value="${travelPlan.plan_id}" />
-                    </div>
-                </div>
+<%--                <div class="info-row">--%>
+<%--                    <div class="info-label">일정 번호</div>--%>
+<%--                    <div class="info-value">--%>
+<%--                        <c:out value="${travelPlan.plan_id}" />--%>
+<%--                    </div>--%>
+<%--                </div>--%>
 
                 <div class="info-row">
                     <div class="info-label">여행지 개수</div>
