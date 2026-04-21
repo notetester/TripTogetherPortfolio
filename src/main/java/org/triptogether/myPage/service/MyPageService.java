@@ -1,6 +1,7 @@
 package org.triptogether.myPage.service;
 
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.admin.vo.BusinessAccountApplicationVO;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
 import org.triptogether.myPage.vo.MyPageFlightBookingDto;
@@ -41,6 +42,11 @@ public interface MyPageService {
 
     List<MyPageFlightBookingDto> getMyFlightBookingList(Long userIdx);
     int getMyFlightBookingCount(Long userIdx);
+
+    // ===== 기업 회원 신청 =====
+
+    BusinessAccountApplicationVO getLatestBusinessApplication(Long userIdx);
+    void submitBusinessApplication(BusinessAccountApplicationVO application, String currentUserRole);
 
     // ===== 알림 =====
 

@@ -8,13 +8,21 @@
     <insert id="insertFlightPurchase" useGeneratedKeys="true" keyProperty="flightPurchaseIdx" keyColumn="flight_purchase_idx">
         INSERT INTO FLIGHT_PURCHASE_SIMULATION (
             purchase_no, user_idx, spot_idx, offer_id, provider_type,
+            payment_idx,
             airline_name, flight_no, origin_airport_code, destination_airport_code,
-            departure_time, arrival_time, total_price, used_cash, used_mileage,
+            departure_time, arrival_time, trip_type,
+            return_airline_name, return_flight_no, return_origin_airport_code, return_destination_airport_code,
+            return_departure_time, return_arrival_time,
+            outbound_price, return_price, total_price, used_cash, used_mileage,
             status, created_at
         ) VALUES (
             #{purchaseNo}, #{userIdx}, #{spotIdx}, #{offerId}, #{providerType},
+            #{paymentIdx},
             #{airlineName}, #{flightNo}, #{originAirportCode}, #{destinationAirportCode},
-            #{departureTime}, #{arrivalTime}, #{totalPrice}, #{usedCash}, #{usedMileage},
+            #{departureTime}, #{arrivalTime}, #{tripType},
+            #{returnAirlineName}, #{returnFlightNo}, #{returnOriginAirportCode}, #{returnDestinationAirportCode},
+            #{returnDepartureTime}, #{returnArrivalTime},
+            #{outboundPrice}, #{returnPrice}, #{totalPrice}, #{usedCash}, #{usedMileage},
             #{status}, NOW()
         )
     </insert>

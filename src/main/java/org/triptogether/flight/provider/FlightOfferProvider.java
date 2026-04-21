@@ -3,6 +3,7 @@ package org.triptogether.flight.provider;
 import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.flight.vo.FlightOfferDto;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,11 +17,23 @@ public interface FlightOfferProvider {
 
     boolean supports(ExploreVO spot);
 
-    List<FlightOfferDto> getOffers(ExploreVO spot);
+    List<FlightOfferDto> getOffers(ExploreVO spot, LocalDate departureDate, LocalDate returnDate);
+
+    default List<FlightOfferDto> getOffers(ExploreVO spot) {
+        LocalDate departureDate = LocalDate.now().plusDays(14);
+        LocalDate returnDate = departureDate.plusDays(5);
+        return getOffers(spot, departureDate, returnDate);
+    }
 
     default Optional<FlightOfferDto> getLowestOffer(ExploreVO spot) {
         return getOffers(spot).stream()
                 .min((left, right) -> Long.compare(left.getTotalPrice(), right.getTotalPrice()));
+    }
+
+    default Optional<FlightOfferDto> getOffer(ExploreVO spot, LocalDate departureDate, LocalDate returnDate, String offerId) {
+        return getOffers(spot, departureDate, returnDate).stream()
+                .filter(offer -> offer.getOfferId().equals(offerId))
+                .findFirst();
     }
 
     default Optional<FlightOfferDto> getOffer(ExploreVO spot, String offerId) {

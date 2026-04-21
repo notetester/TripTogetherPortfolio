@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.service.AuthService;
 import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.SocialTempVO;
+import org.triptogether.auth.vo.UserRole;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.superAdmin.mapper.SuperAdminMapper;
 import org.triptogether.superAdmin.vo.SuperAdminPermissionVO;
@@ -574,7 +575,7 @@ public class AuthController {
     }
 
     private void loadAdminPermissions(HttpSession session, UsersVO user) {
-        if (!"ADMIN".equals(user.getUserRole())) {
+        if (!UserRole.from(user.getUserRole()).isAdminLike()) {
             session.removeAttribute("adminPermissions");
             return;
         }

@@ -16,6 +16,7 @@ public class FlightPurchaseCreateDto {
     private Long spotIdx;
     private String offerId;
     private String providerType;
+    private Long paymentIdx;
 
     private String airlineName;
     private String flightNo;
@@ -23,7 +24,16 @@ public class FlightPurchaseCreateDto {
     private String destinationAirportCode;
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
+    private String tripType;
+    private String returnAirlineName;
+    private String returnFlightNo;
+    private String returnOriginAirportCode;
+    private String returnDestinationAirportCode;
+    private LocalDateTime returnDepartureTime;
+    private LocalDateTime returnArrivalTime;
 
+    private long outboundPrice;
+    private long returnPrice;
     private long totalPrice;
     private long usedCash;
     private long usedMileage;

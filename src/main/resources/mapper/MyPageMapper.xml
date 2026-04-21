@@ -54,6 +54,24 @@
         <result property="createdAt"      column="created_at"/>
     </resultMap>
 
+    <!-- 기업 회원 신청 매핑 -->
+    <resultMap id="BusinessApplicationResultMap" type="org.triptogether.admin.vo.BusinessAccountApplicationVO">
+        <id     property="applicationIdx"     column="application_idx"/>
+        <result property="userIdx"            column="user_idx"/>
+        <result property="requestedRole"      column="requested_role"/>
+        <result property="companyName"        column="company_name"/>
+        <result property="businessNumber"     column="business_number"/>
+        <result property="managerName"        column="manager_name"/>
+        <result property="managerPhone"       column="manager_phone"/>
+        <result property="description"        column="description"/>
+        <result property="applicationStatus"  column="application_status"/>
+        <result property="rejectReason"       column="reject_reason"/>
+        <result property="reviewedByUserIdx"  column="reviewed_by_user_idx"/>
+        <result property="reviewedAt"         column="reviewed_at"/>
+        <result property="createdAt"          column="created_at"/>
+        <result property="updatedAt"          column="updated_at"/>
+    </resultMap>
+
     <!-- =============================================
          1. 내 커뮤니티 글 목록 조회
          - ACTIVE 상태 글만, 최신순 10개
@@ -235,6 +253,7 @@
     <!-- 항공권 예매 매핑 -->
     <resultMap id="FlightBookingResultMap" type="org.triptogether.myPage.vo.MyPageFlightBookingDto">
         <id     property="flightPurchaseIdx"    column="flight_purchase_idx"/>
+        <result property="paymentIdx"           column="payment_idx"/>
         <result property="purchaseNo"           column="purchase_no"/>
         <result property="spotIdx"              column="spot_idx"/>
         <result property="spotName"             column="spot_name"/>
@@ -244,9 +263,24 @@
         <result property="destinationAirportCode" column="destination_airport_code"/>
         <result property="departureTime"        column="departure_time"/>
         <result property="arrivalTime"          column="arrival_time"/>
+        <result property="tripType"             column="trip_type"/>
+        <result property="returnAirlineName"    column="return_airline_name"/>
+        <result property="returnFlightNo"       column="return_flight_no"/>
+        <result property="returnOriginAirportCode" column="return_origin_airport_code"/>
+        <result property="returnDestinationAirportCode" column="return_destination_airport_code"/>
+        <result property="returnDepartureTime"  column="return_departure_time"/>
+        <result property="returnArrivalTime"    column="return_arrival_time"/>
+        <result property="outboundPrice"        column="outbound_price"/>
+        <result property="returnPrice"          column="return_price"/>
         <result property="totalPrice"           column="total_price"/>
         <result property="usedCash"             column="used_cash"/>
         <result property="usedMileage"          column="used_mileage"/>
+        <result property="originalAmount"       column="original_amount"/>
+        <result property="discountRate"         column="discount_rate"/>
+        <result property="discountAmount"       column="discount_amount"/>
+        <result property="finalAmount"          column="final_amount"/>
+        <result property="paymentStatus"        column="payment_status"/>
+        <result property="paidAt"               column="paid_at"/>
         <result property="status"               column="status"/>
         <result property="createdAt"            column="created_at"/>
     </resultMap>
@@ -317,6 +351,7 @@
     <select id="selectMyFlightBookingList" resultMap="FlightBookingResultMap">
         SELECT
             fps.flight_purchase_idx,
+            fps.payment_idx,
             fps.purchase_no,
             fps.spot_idx,
             st.name AS spot_name,
@@ -326,13 +361,29 @@
             fps.destination_airport_code,
             fps.departure_time,
             fps.arrival_time,
+            fps.trip_type,
+            fps.return_airline_name,
+            fps.return_flight_no,
+            fps.return_origin_airport_code,
+            fps.return_destination_airport_code,
+            fps.return_departure_time,
+            fps.return_arrival_time,
+            fps.outbound_price,
+            fps.return_price,
             fps.total_price,
             fps.used_cash,
             fps.used_mileage,
+            COALESCE(uph.original_amount, fps.outbound_price + fps.return_price, fps.total_price) AS original_amount,
+            COALESCE(uph.discount_rate, 0) AS discount_rate,
+            COALESCE(uph.discount_amount, 0) AS discount_amount,
+            COALESCE(uph.final_amount, fps.total_price) AS final_amount,
+            uph.payment_status,
+            uph.paid_at,
             fps.status,
             fps.created_at
         FROM FLIGHT_PURCHASE_SIMULATION fps
         LEFT JOIN SPOT_TRAVEL st ON fps.spot_idx = st.spot_idx
+        LEFT JOIN USER_PAYMENT_HISTORY uph ON fps.payment_idx = uph.payment_idx
         WHERE fps.user_idx = #{userIdx}
         ORDER BY fps.created_at DESC
         LIMIT 5
@@ -346,5 +397,65 @@
         FROM FLIGHT_PURCHASE_SIMULATION
         WHERE user_idx = #{userIdx}
     </select>
+
+    <!-- =============================================
+         20. 내 기업 회원 신청 최신 건 조회
+         ============================================= -->
+    <select id="selectLatestBusinessApplication" resultMap="BusinessApplicationResultMap">
+        SELECT
+            application_idx,
+            user_idx,
+            requested_role,
+            company_name,
+            business_number,
+            manager_name,
+            manager_phone,
+            description,
+            application_status,
+            reject_reason,
+            reviewed_by_user_idx,
+            reviewed_at,
+            created_at,
+            updated_at
+        FROM BUSINESS_ACCOUNT_APPLICATION
+        WHERE user_idx = #{userIdx}
+        ORDER BY created_at DESC
+        LIMIT 1
+    </select>
+
+    <!-- =============================================
+         21. 검토 대기 중인 기업 회원 신청 개수
+         ============================================= -->
+    <select id="countPendingBusinessApplication" resultType="int">
+        SELECT COUNT(*)
+        FROM BUSINESS_ACCOUNT_APPLICATION
+        WHERE user_idx = #{userIdx}
+          AND application_status = 'PENDING'
+    </select>
+
+    <!-- =============================================
+         22. 기업 회원 신청 등록
+         ============================================= -->
+    <insert id="insertBusinessApplication" parameterType="org.triptogether.admin.vo.BusinessAccountApplicationVO">
+        INSERT INTO BUSINESS_ACCOUNT_APPLICATION (
+            user_idx,
+            requested_role,
+            company_name,
+            business_number,
+            manager_name,
+            manager_phone,
+            description,
+            application_status
+        ) VALUES (
+            #{userIdx},
+            #{requestedRole},
+            #{companyName},
+            #{businessNumber},
+            #{managerName},
+            #{managerPhone},
+            #{description},
+            'PENDING'
+        )
+    </insert>
 
 </mapper>

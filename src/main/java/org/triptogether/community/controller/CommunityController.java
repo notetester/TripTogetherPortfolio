@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.*;
+import org.triptogether.auth.vo.UserRole;
 import org.triptogether.perspective.PerspectiveService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -968,14 +969,14 @@ public class CommunityController {
     }
 
     /**
-     * 세션에서 로그인한 유저가 관리자(ADMIN)인지 확인한다.
+     * 세션에서 로그인한 유저가 관리자 계열인지 확인한다.
      */
     private boolean isAdminUser(HttpSession session) {
         try {
             Object loginUser = session.getAttribute("loginUser");
             if (loginUser == null) return false;
             Method method = loginUser.getClass().getMethod("getUserRole");
-            return "ADMIN".equals(method.invoke(loginUser));
+            return UserRole.from(String.valueOf(method.invoke(loginUser))).isAdminLike();
         } catch (Exception e) {
             return false;
         }

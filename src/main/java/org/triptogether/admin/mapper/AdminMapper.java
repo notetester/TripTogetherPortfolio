@@ -51,9 +51,24 @@ public interface AdminMapper {
                                           @Param("releasedByUserIdx") Long releasedByUserIdx);
     void deactivateActiveBlocksByUser(@Param("userIdx") Long userIdx,
                                       @Param("releasedByUserIdx") Long releasedByUserIdx);
+    String findMemberRoleForUpdate(@Param("userIdx") Long userIdx);
     void updateMemberRole(@Param("userIdx") Long userIdx, @Param("role") String role);
+    void insertMemberRoleChangeHistory(@Param("userIdx") Long userIdx,
+                                       @Param("previousRole") String previousRole,
+                                       @Param("newRole") String newRole,
+                                       @Param("reason") String reason,
+                                       @Param("changedByUserIdx") Long changedByUserIdx);
     boolean hasEffectivePermission(@Param("userIdx") Long userIdx,
                                    @Param("permissionCode") String permissionCode);
+
+    // ===== 기업 회원 신청 =====
+    List<BusinessAccountApplicationVO> findBusinessApplications(@Param("status") String status);
+    BusinessAccountApplicationVO findBusinessApplicationForUpdate(@Param("applicationIdx") Long applicationIdx);
+    void approveBusinessApplication(@Param("applicationIdx") Long applicationIdx,
+                                    @Param("reviewedByUserIdx") Long reviewedByUserIdx);
+    void rejectBusinessApplication(@Param("applicationIdx") Long applicationIdx,
+                                   @Param("rejectReason") String rejectReason,
+                                   @Param("reviewedByUserIdx") Long reviewedByUserIdx);
 
     // ===== 회원 로그인 이력 =====
     List<UserLoginHistoryVO> findLoginHistory(@Param("userIdx") Long userIdx,

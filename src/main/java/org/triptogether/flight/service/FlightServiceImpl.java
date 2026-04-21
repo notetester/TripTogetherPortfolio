@@ -14,8 +14,12 @@ import org.triptogether.flight.vo.FlightPurchaseRequestDto;
 import org.triptogether.flight.vo.FlightPurchaseResultDto;
 import org.triptogether.myPage.mapper.WalletMapper;
 import org.triptogether.myPage.vo.WalletHistoryDto;
+import org.triptogether.myPage.vo.WalletMemberGradePolicyDto;
 import org.triptogether.myPage.vo.WalletPaymentDto;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,16 +44,40 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public Optional<FlightOfferDto> getLowestOffer(Long spotIdx) {
-        return getSpot(spotIdx)
-                .filter(flightOfferProvider::supports)
-                .flatMap(flightOfferProvider::getLowestOffer);
+        return getLowestOffer(spotIdx, null);
+    }
+
+    @Override
+    public Optional<FlightOfferDto> getLowestOffer(Long spotIdx, Long userIdx) {
+        LocalDate departureDate = LocalDate.now().plusDays(14);
+        LocalDate returnDate = departureDate.plusDays(5);
+        return getOffers(spotIdx, departureDate, returnDate, userIdx).stream()
+                .min((left, right) -> Long.compare(left.getFinalPrice(), right.getFinalPrice()));
     }
 
     @Override
     public List<FlightOfferDto> getOffers(Long spotIdx) {
+        LocalDate departureDate = LocalDate.now().plusDays(14);
+        LocalDate returnDate = departureDate.plusDays(5);
+        return getOffers(spotIdx, departureDate, returnDate);
+    }
+
+    @Override
+    public List<FlightOfferDto> getOffers(Long spotIdx, LocalDate departureDate, LocalDate returnDate) {
+        return getOffers(spotIdx, departureDate, returnDate, null);
+    }
+
+    @Override
+    public List<FlightOfferDto> getOffers(Long spotIdx, LocalDate departureDate, LocalDate returnDate, Long userIdx) {
+        LocalDate safeDepartureDate = resolveDepartureDate(departureDate);
+        LocalDate safeReturnDate = resolveReturnDate(safeDepartureDate, returnDate);
+        UsersVO user = userIdx != null ? walletMapper.selectUserByIdx(userIdx) : null;
+        BigDecimal discountRate = resolveDiscountRate(user);
+
         return getSpot(spotIdx)
                 .filter(flightOfferProvider::supports)
-                .map(flightOfferProvider::getOffers)
+                .map(spot -> flightOfferProvider.getOffers(spot, safeDepartureDate, safeReturnDate))
+                .map(offers -> applyMemberDiscounts(offers, user, discountRate))
                 .orElse(List.of());
     }
 
@@ -61,26 +89,33 @@ public class FlightServiceImpl implements FlightService {
         ExploreVO spot = getSpot(request.getSpotIdx())
                 .orElseThrow(() -> new IllegalArgumentException("여행지 정보를 찾을 수 없습니다."));
 
-        FlightOfferDto offer = flightOfferProvider.getOffer(spot, request.getOfferId())
+        FlightOfferDto offer = flightOfferProvider.getOffer(spot, request.getDepartureDate(), request.getReturnDate(), request.getOfferId())
                 .orElseThrow(() -> new IllegalArgumentException("항공권 견적 정보를 찾을 수 없습니다."));
 
-        long totalPrice = offer.getTotalPrice();
+        final UsersVO user = walletMapper.selectUserByIdxForUpdate(userIdx);
+        if (user == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+
+        BigDecimal discountRate = resolveDiscountRate(user);
+        applyMemberDiscount(offer, user, discountRate);
+
+        long finalPrice = offer.getFinalPrice();
         long cashAmount = request.getCashAmount();
         long mileageAmount = request.getMileageAmount();
 
         if (cashAmount < 0 || mileageAmount < 0) {
             throw new IllegalArgumentException("결제 금액은 0 이상이어야 합니다.");
         }
-        if (cashAmount + mileageAmount != totalPrice) {
+        if (cashAmount + mileageAmount != finalPrice) {
             throw new IllegalArgumentException("캐시와 마일리지 합계가 항공권 금액과 일치해야 합니다.");
         }
 
-        long maxMileageUse = totalPrice * MAX_MILEAGE_RATE / 100;
+        long maxMileageUse = floorToThousand(finalPrice * MAX_MILEAGE_RATE / 100);
         if (mileageAmount > maxMileageUse) {
             throw new IllegalArgumentException("마일리지는 항공권 금액의 30%까지만 사용할 수 있습니다.");
         }
 
-        UsersVO user = walletMapper.selectUserByIdxForUpdate(userIdx);
         if (user == null) {
             throw new IllegalStateException("로그인이 필요합니다.");
         }
@@ -103,7 +138,7 @@ public class FlightServiceImpl implements FlightService {
             insertWalletHistory(userIdx, "MILEAGE", mileageAmount, mileageAfter, payment.getPaymentIdx(), spot.getName() + " 항공권 마일리지 결제");
         }
 
-        FlightPurchaseCreateDto purchase = buildFlightPurchase(userIdx, spot, offer, cashAmount, mileageAmount);
+        FlightPurchaseCreateDto purchase = buildFlightPurchase(userIdx, spot, offer, payment.getPaymentIdx(), cashAmount, mileageAmount);
         flightMapper.insertFlightPurchase(purchase);
 
         UsersVO updatedUser = walletMapper.selectUserByIdx(userIdx);
@@ -124,6 +159,84 @@ public class FlightServiceImpl implements FlightService {
         if (request == null || request.getSpotIdx() == null || request.getOfferId() == null || request.getOfferId().isBlank()) {
             throw new IllegalArgumentException("항공권 구매 정보가 올바르지 않습니다.");
         }
+        validateTravelDates(request.getDepartureDate(), request.getReturnDate());
+    }
+
+    private void validateTravelDates(LocalDate departureDate, LocalDate returnDate) {
+        if (departureDate == null || returnDate == null) {
+            throw new IllegalArgumentException("출발일과 귀국일을 선택해주세요.");
+        }
+        LocalDate today = LocalDate.now();
+        if (!departureDate.isAfter(today)) {
+            throw new IllegalArgumentException("출발일은 오늘 이후 날짜로 선택해주세요.");
+        }
+        if (!returnDate.isAfter(departureDate)) {
+            throw new IllegalArgumentException("귀국일은 출발일 이후 날짜로 선택해주세요.");
+        }
+    }
+
+    private LocalDate resolveDepartureDate(LocalDate departureDate) {
+        LocalDate defaultDepartureDate = LocalDate.now().plusDays(14);
+        if (departureDate == null || !departureDate.isAfter(LocalDate.now())) {
+            return defaultDepartureDate;
+        }
+        return departureDate;
+    }
+
+    private LocalDate resolveReturnDate(LocalDate departureDate, LocalDate returnDate) {
+        if (returnDate == null || !returnDate.isAfter(departureDate)) {
+            return departureDate.plusDays(5);
+        }
+        return returnDate;
+    }
+
+    private List<FlightOfferDto> applyMemberDiscounts(List<FlightOfferDto> offers,
+                                                       UsersVO user,
+                                                       BigDecimal discountRate) {
+        offers.forEach(offer -> applyMemberDiscount(offer, user, discountRate));
+        return offers;
+    }
+
+    private void applyMemberDiscount(FlightOfferDto offer,
+                                     UsersVO user,
+                                     BigDecimal discountRate) {
+        BigDecimal safeDiscountRate = discountRate != null ? discountRate : BigDecimal.ZERO;
+        long originalPrice = offer.getTotalPrice();
+        long discountAmount = calculateDiscountAmount(originalPrice, safeDiscountRate);
+        long finalPrice = Math.max(0, originalPrice - discountAmount);
+
+        offer.setMemberGrade(user != null ? user.getMemberGrade() : "BRONZE");
+        offer.setDiscountRate(safeDiscountRate.doubleValue());
+        offer.setDiscountAmount(discountAmount);
+        offer.setFinalPrice(finalPrice);
+        // 할인 적용 후 실제 결제금액 기준으로 마일리지 최대 사용 가능액을 다시 계산합니다.
+        offer.setMaxMileageUse(floorToThousand(finalPrice * MAX_MILEAGE_RATE / 100));
+    }
+
+    private BigDecimal resolveDiscountRate(UsersVO user) {
+        if (user == null || user.getMemberGrade() == null || user.getMemberGrade().isBlank()) {
+            return BigDecimal.ZERO;
+        }
+
+        WalletMemberGradePolicyDto policy = walletMapper.selectActiveMemberGradePolicyByGrade(user.getMemberGrade());
+        if (policy == null || policy.getDiscountRate() == null) {
+            return BigDecimal.ZERO;
+        }
+        return policy.getDiscountRate();
+    }
+
+    private long calculateDiscountAmount(long originalPrice, BigDecimal discountRate) {
+        if (originalPrice <= 0 || discountRate == null || discountRate.compareTo(BigDecimal.ZERO) <= 0) {
+            return 0;
+        }
+        return BigDecimal.valueOf(originalPrice)
+                .multiply(discountRate)
+                .divide(BigDecimal.valueOf(100), 0, RoundingMode.DOWN)
+                .longValue();
+    }
+
+    private long floorToThousand(long value) {
+        return (value / 1000) * 1000;
     }
 
     private WalletPaymentDto buildPaymentHistory(Long userIdx,
@@ -135,13 +248,13 @@ public class FlightServiceImpl implements FlightService {
         payment.setUserIdx(userIdx);
         payment.setPaymentType("PURCHASE");
         payment.setPaymentMethod(mileageAmount > 0 ? "CASH_MILEAGE" : "CASH");
-        payment.setOrderName(spot.getName() + " 항공권");
+        payment.setOrderName(spot.getName() + " 왕복 항공권");
         payment.setSourceType("FLIGHT_TICKET");
         payment.setSourceId(spot.getSpotIdx());
         payment.setOriginalAmount(offer.getTotalPrice());
-        payment.setDiscountRate(0);
-        payment.setDiscountAmount(0);
-        payment.setFinalAmount(offer.getTotalPrice());
+        payment.setDiscountRate(offer.getDiscountRate());
+        payment.setDiscountAmount(offer.getDiscountAmount());
+        payment.setFinalAmount(offer.getFinalPrice());
         payment.setUsedCash(cashAmount);
         payment.setUsedMileage(mileageAmount);
         payment.setEarnedMileage(0);
@@ -174,6 +287,7 @@ public class FlightServiceImpl implements FlightService {
     private FlightPurchaseCreateDto buildFlightPurchase(Long userIdx,
                                                         ExploreVO spot,
                                                         FlightOfferDto offer,
+                                                        Long paymentIdx,
                                                         long cashAmount,
                                                         long mileageAmount) {
         FlightPurchaseCreateDto purchase = new FlightPurchaseCreateDto();
@@ -182,13 +296,23 @@ public class FlightServiceImpl implements FlightService {
         purchase.setSpotIdx(spot.getSpotIdx());
         purchase.setOfferId(offer.getOfferId());
         purchase.setProviderType("MOCK");
+        purchase.setPaymentIdx(paymentIdx);
+        purchase.setTripType(offer.getTripType());
         purchase.setAirlineName(offer.getAirlineName());
         purchase.setFlightNo(offer.getFlightNo());
         purchase.setOriginAirportCode(offer.getOriginAirportCode());
         purchase.setDestinationAirportCode(offer.getDestinationAirportCode());
         purchase.setDepartureTime(offer.getDepartureTime());
         purchase.setArrivalTime(offer.getArrivalTime());
-        purchase.setTotalPrice(offer.getTotalPrice());
+        purchase.setReturnAirlineName(offer.getReturnAirlineName());
+        purchase.setReturnFlightNo(offer.getReturnFlightNo());
+        purchase.setReturnOriginAirportCode(offer.getReturnOriginAirportCode());
+        purchase.setReturnDestinationAirportCode(offer.getReturnDestinationAirportCode());
+        purchase.setReturnDepartureTime(offer.getReturnDepartureTime());
+        purchase.setReturnArrivalTime(offer.getReturnArrivalTime());
+        purchase.setOutboundPrice(offer.getOutboundPrice());
+        purchase.setReturnPrice(offer.getReturnPrice());
+        purchase.setTotalPrice(offer.getFinalPrice());
         purchase.setUsedCash(cashAmount);
         purchase.setUsedMileage(mileageAmount);
         purchase.setStatus("COMPLETED");

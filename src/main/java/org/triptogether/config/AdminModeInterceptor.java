@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.triptogether.auth.vo.UserRole;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -99,7 +100,7 @@ public class AdminModeInterceptor implements HandlerInterceptor {
     }
 
     /**
-     * 세션의 loginUser 객체에서 getUserRole()을 호출해 ADMIN 여부를 확인한다.
+     * 세션의 loginUser 객체에서 getUserRole()을 호출해 관리자 계열 여부를 확인한다.
      * loginUser VO는 auth 담당자가 관리하므로 리플렉션으로 접근한다.
      */
     private boolean isAdminUser(HttpSession session) {
@@ -107,7 +108,7 @@ public class AdminModeInterceptor implements HandlerInterceptor {
             Object loginUser = session.getAttribute("loginUser");
             if (loginUser == null) return false;
             Method method = loginUser.getClass().getMethod("getUserRole");
-            return "ADMIN".equals(method.invoke(loginUser));
+            return UserRole.from(String.valueOf(method.invoke(loginUser))).isAdminLike();
         } catch (Exception e) {
             return false;
         }

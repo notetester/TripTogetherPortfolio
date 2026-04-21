@@ -55,7 +55,7 @@ public class DetailController {
         model.addAttribute("isAdminMode", isAdminMode(session));
         model.addAttribute("canEditSpot", canEditSpot(session, spot));
         model.addAttribute("flightAvailable", flightService.isFlightAvailable(spotIdx));
-        model.addAttribute("lowestFlightOffer", flightService.getLowestOffer(spotIdx).orElse(null));
+        model.addAttribute("lowestFlightOffer", flightService.getLowestOffer(spotIdx, loginUserIdx).orElse(null));
 
         if (!model.containsAttribute("adminEditForm")) {
             model.addAttribute("adminEditForm", buildEditForm(spot));
@@ -288,7 +288,7 @@ public class DetailController {
 
     private boolean isAdminMode(HttpSession session) {
         UsersVO loginUser = getLoginUser(session);
-        if (loginUser == null || !"ADMIN".equals(loginUser.getUserRole())) {
+        if (loginUser == null || !loginUser.hasAdminRole()) {
             return false;
         }
         String viewMode = (String) session.getAttribute("viewMode");

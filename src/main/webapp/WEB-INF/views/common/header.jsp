@@ -30,6 +30,9 @@
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="header.nav.community"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/wallet'"><spring:message code="header.nav.wallet"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/shop'"><spring:message code="header.nav.shop"/></button>
+            <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userRole == 'BUSINESS' or sessionScope.loginUser.userRole == 'PARTNER')}">
+                <button class="nb js-header-nav" type="button" data-url="${pageContext.request.contextPath}/packages/manage">패키지 관리</button>
+            </c:if>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'"><spring:message code="header.nav.mypage"/></button>
             <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">
     <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'"><spring:message code="header.nav.admin"/></button>
@@ -87,6 +90,15 @@ function toggleViewMode() {
         const url = new URL(window.location.href);
         url.searchParams.set('lang', this.value);
         window.location.href = url.toString();
+    });
+})();
+
+(function () {
+    const navButtons = document.querySelectorAll('.js-header-nav[data-url]');
+    navButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            window.location.href = button.dataset.url;
+        });
     });
 })();
 </script>

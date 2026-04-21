@@ -19,10 +19,15 @@ public interface AdminService {
     void changeMemberStatus(Long userIdx, String status);
     void blockMember(Long userIdx, String blockType, String blockedIp, String reason, java.time.LocalDateTime expiresAt, Long actorUserIdx);
     void updateMemberMeta(AdminMemberVO member);
-    void changeMemberRole(Long userIdx, String role);
+    void changeMemberRole(Long userIdx, String role, String reason, Long changedByUserIdx);
     boolean hasEffectivePermission(Long userIdx, String permissionCode);
     Long getPostAuthorIdx(Long postId);
     Long getCommentAuthorIdx(Long commentId);
+
+    // ===== 기업 회원 신청 =====
+    List<BusinessAccountApplicationVO> getBusinessApplications(String status);
+    void approveBusinessApplication(Long applicationIdx, Long reviewerUserIdx);
+    void rejectBusinessApplication(Long applicationIdx, String rejectReason, Long reviewerUserIdx);
 
     // ===== 문의 관리 =====
     Map<String, Object> getInquiryList(AdminInquirySearchVO search);

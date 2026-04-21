@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.flight.vo.FlightOfferDto;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,23 +37,29 @@ public class MockFlightOfferProvider implements FlightOfferProvider {
     }
 
     @Override
-    public List<FlightOfferDto> getOffers(ExploreVO spot) {
+    public List<FlightOfferDto> getOffers(ExploreVO spot, LocalDate departureDate, LocalDate returnDate) {
         if (!supports(spot)) {
             return List.of();
         }
 
         AirportInfo destination = resolveDestinationAirport(spot);
         PriceRange priceRange = resolvePriceRange(spot);
-        long seed = Math.abs(Objects.hash(spot.getSpotIdx(), destination.code()));
+        LocalDate safeDepartureDate = departureDate != null ? departureDate : LocalDate.now().plusDays(14);
+        LocalDate safeReturnDate = returnDate != null ? returnDate : safeDepartureDate.plusDays(5);
+        long seed = Math.abs(Objects.hash(spot.getSpotIdx(), destination.code(), safeDepartureDate, safeReturnDate));
         long basePrice = priceRange.min() + (seed % Math.max(1, priceRange.max() - priceRange.min()));
-        basePrice = roundToThousand(basePrice);
+        basePrice = applyDateFactor(roundToThousand(basePrice), safeDepartureDate, safeReturnDate);
 
-        LocalDateTime firstDeparture = LocalDateTime.now().plusDays(14).withHour(9).withMinute(20).withSecond(0).withNano(0);
+        LocalDateTime firstDeparture = safeDepartureDate.atTime(9, 20);
+        LocalDateTime firstReturnDeparture = safeReturnDate.atTime(17, 35);
 
         List<FlightOfferDto> offers = new ArrayList<>();
-        offers.add(buildOffer(spot, destination, "Korean Air", "KE" + (700 + seed % 90), firstDeparture, 2, basePrice + 28000));
-        offers.add(buildOffer(spot, destination, "Asiana Airlines", "OZ" + (300 + seed % 80), firstDeparture.plusHours(3), 2, basePrice + 45000));
-        offers.add(buildOffer(spot, destination, resolveBudgetAirline(spot), "TT" + (100 + seed % 70), firstDeparture.plusHours(6), 2, basePrice));
+        offers.add(buildOffer(spot, destination, "Korean Air", "KE" + (700 + seed % 90), "KE" + (800 + seed % 90),
+                firstDeparture, firstReturnDeparture, 2, basePrice + 28000));
+        offers.add(buildOffer(spot, destination, "Asiana Airlines", "OZ" + (300 + seed % 80), "OZ" + (400 + seed % 80),
+                firstDeparture.plusHours(3), firstReturnDeparture.plusHours(2), 2, basePrice + 45000));
+        offers.add(buildOffer(spot, destination, resolveBudgetAirline(spot), "TT" + (100 + seed % 70), "TT" + (200 + seed % 70),
+                firstDeparture.plusHours(6), firstReturnDeparture.plusHours(4), 2, basePrice));
 
         offers.sort(Comparator.comparingLong(FlightOfferDto::getTotalPrice));
         return offers;
@@ -61,12 +69,15 @@ public class MockFlightOfferProvider implements FlightOfferProvider {
                                       AirportInfo destination,
                                       String airlineName,
                                       String flightNo,
+                                      String returnFlightNo,
                                       LocalDateTime departureTime,
+                                      LocalDateTime returnDepartureTime,
                                       int durationOffset,
-                                      long totalPrice) {
+                                      long outboundBasePrice) {
         FlightOfferDto offer = new FlightOfferDto();
-        offer.setOfferId("MOCK-" + spot.getSpotIdx() + "-" + flightNo);
+        offer.setOfferId("MOCK-" + spot.getSpotIdx() + "-" + departureTime.toLocalDate() + "-" + returnDepartureTime.toLocalDate() + "-" + flightNo);
         offer.setSpotIdx(spot.getSpotIdx());
+        offer.setTripType("ROUND_TRIP");
         offer.setAirlineName(airlineName);
         offer.setFlightNo(flightNo);
         offer.setOriginAirportCode("ICN");
@@ -75,9 +86,19 @@ public class MockFlightOfferProvider implements FlightOfferProvider {
         offer.setDestinationAirportName(destination.name());
         offer.setDepartureTime(departureTime);
         offer.setArrivalTime(departureTime.plusHours(destination.durationHours() + durationOffset));
-        offer.setDurationText(destination.durationHours() + durationOffset + "시간");
+        offer.setReturnAirlineName(airlineName);
+        offer.setReturnFlightNo(returnFlightNo);
+        offer.setReturnOriginAirportCode(destination.code());
+        offer.setReturnDestinationAirportCode("ICN");
+        offer.setReturnDepartureTime(returnDepartureTime);
+        offer.setReturnArrivalTime(returnDepartureTime.plusHours(destination.durationHours() + durationOffset));
+        offer.setDurationText("왕복 / 편도 " + (destination.durationHours() + durationOffset) + "시간");
         offer.setSeatClass("ECONOMY");
-        offer.setTotalPrice(roundToThousand(totalPrice));
+        long outboundPrice = roundToThousand(outboundBasePrice);
+        long returnPrice = roundToThousand(outboundBasePrice * 92 / 100);
+        offer.setOutboundPrice(outboundPrice);
+        offer.setReturnPrice(returnPrice);
+        offer.setTotalPrice(outboundPrice + returnPrice);
         // 서버 결제 검증도 "총액의 30%"를 상한으로 보므로 화면의 최대 사용값은
         // 반올림이 아니라 내림 처리해야 검증 상한을 넘지 않는다.
         offer.setMaxMileageUse(floorToThousand(offer.getTotalPrice() * 30 / 100));
@@ -176,6 +197,29 @@ public class MockFlightOfferProvider implements FlightOfferProvider {
 
     private long floorToThousand(long value) {
         return (value / 1000) * 1000;
+    }
+
+    private long applyDateFactor(long basePrice, LocalDate departureDate, LocalDate returnDate) {
+        double factor = 1.0;
+        if (isWeekend(departureDate) || isWeekend(returnDate)) {
+            factor += 0.12;
+        }
+        int daysUntilDeparture = Math.max(0, (int) java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), departureDate));
+        if (daysUntilDeparture <= 7) {
+            factor += 0.18;
+        } else if (daysUntilDeparture >= 45) {
+            factor -= 0.08;
+        }
+        int tripDays = Math.max(1, (int) java.time.temporal.ChronoUnit.DAYS.between(departureDate, returnDate));
+        if (tripDays >= 10) {
+            factor += 0.06;
+        }
+        return roundToThousand((long) (basePrice * factor));
+    }
+
+    private boolean isWeekend(LocalDate date) {
+        DayOfWeek day = date.getDayOfWeek();
+        return day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
     }
 
     private record AirportInfo(String code, String name, int durationHours) {}

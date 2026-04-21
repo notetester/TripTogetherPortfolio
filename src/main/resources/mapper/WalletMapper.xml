@@ -159,6 +159,24 @@
         ORDER BY sort_order ASC, priority ASC, member_grade_idx ASC
     </select>
 
+    <select id="selectActiveMemberGradePolicyByGrade" resultMap="WalletMemberGradePolicyMap">
+        SELECT
+            member_grade_idx,
+            policy_name,
+            member_grade,
+            min_monthly_payment,
+            discount_rate,
+            sort_order,
+            is_active,
+            description,
+            priority
+        FROM MEMBER_GRADE_POLICY
+        WHERE is_active = 1
+          AND member_grade = #{memberGrade}
+        ORDER BY priority ASC, sort_order ASC, member_grade_idx ASC
+        LIMIT 1
+    </select>
+
     <!--
         직전 달(현재 월 기준) 유저의 COMPLETED 결제 총액을 합산합니다.
         예: 현재가 2026-04이면 2026-03-01 ~ 2026-03-31 결제만 합산

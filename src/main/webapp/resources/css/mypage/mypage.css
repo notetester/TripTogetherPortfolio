@@ -532,6 +532,309 @@
     gap: 8px 12px;
 }
 
+.mp-flight-booking-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.mp-flight-ticket {
+  border: 1px solid rgba(37, 99, 235, .16);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 48%, #eef6ff 100%);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, .07);
+}
+
+.mp-flight-ticket-head,
+.mp-flight-ticket-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.mp-flight-ticket-head h4 {
+  margin: 6px 0 3px;
+  font-size: 15px;
+  color: var(--gray-900);
+}
+
+.mp-flight-ticket-head p,
+.mp-flight-ticket-foot span {
+  margin: 0;
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.mp-flight-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mp-flight-ticket-price {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.mp-flight-ticket-price span {
+  display: block;
+  font-size: 11px;
+  color: var(--gray-400);
+}
+
+.mp-flight-ticket-price strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.mp-flight-route-box {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .76);
+  border: 1px dashed rgba(37, 99, 235, .24);
+}
+
+.mp-flight-route-row {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--gray-600);
+}
+
+.mp-flight-route-row strong {
+  color: var(--gray-900);
+  font-size: 14px;
+}
+
+.mp-flight-route-tag {
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.mp-flight-route-tag.return {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.mp-flight-detail-link {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #111827;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mp-flight-detail-link.full {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 14px;
+}
+
+.mp-flight-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+}
+
+.mp-flight-modal.is-open {
+  display: block;
+}
+
+.mp-flight-modal-lock {
+  overflow: hidden;
+}
+
+.mp-flight-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, .58);
+  width: 100%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.mp-flight-modal-card {
+  position: relative;
+  width: min(720px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  margin: 24px auto;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, .28);
+  padding: 24px;
+}
+
+.mp-flight-modal-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.mp-flight-modal-head h3 {
+  margin: 10px 0 4px;
+  font-size: 22px;
+  color: var(--gray-900);
+}
+
+.mp-flight-modal-head p {
+  margin: 0;
+  color: var(--gray-500);
+  font-size: 13px;
+}
+
+.mp-flight-modal-x {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 22px;
+  font-weight: 800;
+  border: 0;
+  cursor: pointer;
+}
+
+.mp-flight-itinerary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mp-flight-itinerary-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 16px;
+  background: #f8fafc;
+}
+
+.mp-flight-itinerary-item strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.mp-flight-itinerary-item p {
+  margin: 6px 0 12px;
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+.mp-flight-itinerary-item dl {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 8px 10px;
+  margin: 0;
+  font-size: 13px;
+}
+
+.mp-flight-itinerary-item dt {
+  color: var(--gray-400);
+  font-weight: 700;
+}
+
+.mp-flight-itinerary-item dd {
+  margin: 0;
+  color: var(--gray-800);
+  font-weight: 700;
+}
+
+.mp-flight-payment {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #111827;
+  color: #fff;
+}
+
+.mp-flight-payment div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13px;
+}
+
+.mp-flight-payment span {
+  color: rgba(255, 255, 255, .68);
+}
+
+.mp-flight-payment strong {
+  color: #fff;
+}
+
+.mp-flight-payment .total {
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, .18);
+  font-size: 16px;
+}
+
+.mp-flight-mock-note {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .mp-flight-ticket-head,
+  .mp-flight-ticket-foot,
+  .mp-flight-payment div {
+    flex-direction: column;
+  }
+
+  .mp-flight-ticket-price {
+    text-align: left;
+  }
+
+  .mp-flight-route-row {
+    grid-template-columns: 1fr;
+  }
+
+  .mp-flight-itinerary {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── 리뷰 별점 ── */
 .mp-review-stars {
     color: #f59e0b;
@@ -1156,15 +1459,290 @@
 }
 
 .mp-item-section-list {
-  padding: 20px 24px 24px;
+    padding: 20px 24px 24px;
+}
+
+.mp-business-box {
+    padding: 20px 24px 24px;
+}
+
+.mp-business-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.mp-business-kicker {
+    display: block;
+    margin-bottom: 5px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mp-business-status strong {
+    color: #0f172a;
+    font-size: 18px;
+}
+
+.mp-business-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.mp-business-badge.PENDING {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.mp-business-badge.APPROVED {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.mp-business-badge.REJECTED {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.mp-business-note,
+.mp-business-reject {
+    margin: 0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: #334155;
+    background: #f8fafc;
+    line-height: 1.6;
+}
+
+.mp-business-reject {
+    margin-bottom: 16px;
+    background: #fff1f2;
+    color: #9f1239;
+    font-weight: 700;
+}
+
+.mp-business-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.mp-business-form label {
+    display: block;
+    margin-bottom: 7px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.mp-business-form input,
+.mp-business-form select,
+.mp-business-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    color: #0f172a;
+    background: #fff;
+    font-size: 14px;
+}
+
+.mp-business-form textarea {
+    resize: vertical;
+}
+
+.mp-business-form-full {
+    grid-column: 1 / -1;
+}
+
+.mp-business-submit {
+    width: 100%;
+    border: 0;
+    border-radius: 14px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #0f766e, #2563eb);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
 }
 
 .mp-item-card {
-  min-height: 100%;
+    min-height: 100%;
 }
 
 .mp-item-actions {
   margin-top: auto;
+}
+
+/* ── 마이페이지 대시보드 압축 레이아웃 ── */
+.mp-wrap {
+  padding-bottom: 48px;
+}
+
+.mp-banner {
+  padding: 30px 24px 50px;
+}
+
+.mp-inner {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.mp-inner > .mp-card {
+  margin-bottom: 0;
+}
+
+/* 상단 핵심 요약과 꾸미기 아이템은 가로 전체를 사용합니다. */
+.mp-inner > .mp-card:nth-of-type(1),
+.mp-inner > .mp-card:nth-of-type(2),
+.mp-inner > .mp-card:last-of-type {
+  grid-column: 1 / -1;
+}
+
+.mp-card {
+  border-radius: 14px;
+}
+
+.mp-card-head {
+  min-height: 52px;
+  padding: 14px 18px;
+}
+
+.mp-card-body {
+  padding: 4px 0;
+}
+
+.mp-list-item {
+  padding: 12px 18px;
+}
+
+.mp-list-title {
+  font-size: 13px;
+}
+
+.mp-list-meta {
+  gap: 6px 10px;
+  line-height: 1.35;
+}
+
+.mp-empty {
+  padding: 20px 18px;
+}
+
+/* 활동성 목록은 카드 자체가 길어지지 않도록 내부에서만 스크롤합니다. */
+.mp-inner > .mp-card:nth-of-type(4) .mp-card-body,
+.mp-inner > .mp-card:nth-of-type(5) .mp-card-body,
+.mp-inner > .mp-card:nth-of-type(6) .mp-card-body,
+.mp-inner > .mp-card:nth-of-type(7) .mp-card-body,
+.mp-inner > .mp-card:nth-of-type(8) .mp-card-body,
+.mp-inner > .mp-card:nth-of-type(9) .mp-card-body,
+.mp-inner > .mp-card:nth-of-type(10) .mp-card-body {
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.mp-info-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.mp-info-item {
+  min-height: auto;
+  padding: 14px 16px;
+}
+
+.mp-grade-bar-section {
+  padding: 14px 18px 16px;
+}
+
+.mp-currency-item {
+  min-height: 104px;
+  padding: 16px 10px;
+}
+
+.mp-stats-item {
+  min-height: 96px;
+  padding: 14px 10px;
+}
+
+.mp-flight-booking-grid {
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.mp-flight-ticket {
+  box-shadow: 0 6px 18px rgba(15, 23, 42, .06);
+}
+
+.mp-flight-route-box {
+  margin: 9px 0;
+}
+
+.mp-item-section-list {
+  max-height: 760px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.mp-item-section {
+  padding: 14px;
+}
+
+.mp-item-section-head h3 {
+  font-size: 16px;
+}
+
+.mp-item-grid {
+  gap: 10px;
+}
+
+.mp-item-preview {
+  min-height: 76px;
+}
+
+.mp-item-body {
+  padding: 12px;
+}
+
+.mp-item-body strong {
+  margin-top: 7px;
+}
+
+.mp-item-body p {
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+@media (max-width: 900px) {
+  .mp-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .mp-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mp-inner > .mp-card:nth-of-type(4) .mp-card-body,
+  .mp-inner > .mp-card:nth-of-type(5) .mp-card-body,
+  .mp-inner > .mp-card:nth-of-type(6) .mp-card-body,
+  .mp-inner > .mp-card:nth-of-type(7) .mp-card-body,
+  .mp-inner > .mp-card:nth-of-type(8) .mp-card-body,
+  .mp-inner > .mp-card:nth-of-type(9) .mp-card-body,
+  .mp-inner > .mp-card:nth-of-type(10) .mp-card-body {
+    max-height: none;
+    overflow: visible;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1180,7 +1758,19 @@
     padding: 16px;
   }
 
-  .mp-currency-grid,
+  .mp-business-box {
+    padding: 16px;
+  }
+
+  .mp-business-status {
+    flex-direction: column;
+  }
+
+  .mp-business-form {
+    grid-template-columns: 1fr;
+  }
+
+    .mp-currency-grid,
   .mp-stats-grid {
     grid-template-columns: 1fr;
   }

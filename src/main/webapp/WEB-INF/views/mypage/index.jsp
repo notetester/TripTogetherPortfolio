@@ -619,35 +619,101 @@
                         </div>
                     </c:when>
                     <c:otherwise>
+                        <div class="mp-flight-booking-grid">
                         <c:forEach var="booking" items="${flightBookingList}">
-                            <a href="${pageContext.request.contextPath}/detail/${booking.spotIdx}"
-                               class="mp-list-item mp-flight-booking-item">
-                                <div class="mp-list-content">
-                                    <div class="mp-list-title">
-                                        ${booking.spotName}
-                                        <span class="mp-flight-booking-no">${booking.purchaseNo}</span>
+                            <c:set var="bookingStatusLabel" value="예약완료"/>
+                            <c:if test="${booking.status eq 'CANCELLED'}">
+                                <c:set var="bookingStatusLabel" value="취소됨"/>
+                            </c:if>
+
+                            <article class="mp-flight-ticket">
+                                <div class="mp-flight-ticket-head">
+                                    <div>
+                                        <span class="mp-flight-status">${bookingStatusLabel}</span>
+                                        <h4>${booking.spotName} 왕복 항공권</h4>
+                                        <p>예약번호 ${booking.purchaseNo}</p>
                                     </div>
-                                    <div class="mp-list-meta mp-flight-booking-meta">
-                                        <span>${booking.airlineName} · ${booking.flightNo}</span>
-                                        <span>${booking.originAirportCode} → ${booking.destinationAirportCode}</span>
-                                        <span>
-                                            <fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/>
-                                            출발
-                                        </span>
-                                        <span>
-                                            총액 <fmt:formatNumber value="${booking.totalPrice}" pattern="#,##0"/> C
-                                        </span>
-                                        <span>
-                                            캐시 <fmt:formatNumber value="${booking.usedCash}" pattern="#,##0"/> C
-                                            · 마일리지 <fmt:formatNumber value="${booking.usedMileage}" pattern="#,##0"/> M
-                                        </span>
+                                    <div class="mp-flight-ticket-price">
+                                        <span>최종 결제</span>
+                                        <strong><fmt:formatNumber value="${booking.finalAmount}" pattern="#,##0"/> C</strong>
                                     </div>
                                 </div>
-                                <div class="mp-list-badges">
-                                    <span class="mp-badge mp-badge-flight">${booking.status}</span>
+
+                                <div class="mp-flight-route-box">
+                                    <div class="mp-flight-route-row">
+                                        <span class="mp-flight-route-tag">가는 편</span>
+                                        <strong>${booking.originAirportCode} → ${booking.destinationAirportCode}</strong>
+                                        <span><fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/></span>
+                                    </div>
+                                    <div class="mp-flight-route-row">
+                                        <span class="mp-flight-route-tag return">오는 편</span>
+                                        <strong>${booking.returnOriginAirportCode} → ${booking.returnDestinationAirportCode}</strong>
+                                        <span><fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/></span>
+                                    </div>
                                 </div>
-                            </a>
+
+                                <div class="mp-flight-ticket-foot">
+                                    <span>${booking.airlineName} · ${booking.flightNo} / ${booking.returnFlightNo}</span>
+                                    <button type="button"
+                                            class="mp-flight-detail-link mp-flight-modal-open"
+                                            data-modal-id="flight-booking-${booking.flightPurchaseIdx}">
+                                        상세보기
+                                    </button>
+                                </div>
+                            </article>
+
+                            <div class="mp-flight-modal" id="flight-booking-${booking.flightPurchaseIdx}">
+                                <button type="button" class="mp-flight-modal-backdrop mp-flight-modal-close" aria-label="닫기"></button>
+                                <div class="mp-flight-modal-card" role="dialog" aria-modal="true">
+                                    <div class="mp-flight-modal-head">
+                                        <div>
+                                            <span class="mp-flight-status">${bookingStatusLabel}</span>
+                                            <h3>항공권 예약 상세</h3>
+                                            <p>${booking.purchaseNo}</p>
+                                        </div>
+                                        <button type="button" class="mp-flight-modal-close mp-flight-modal-x" aria-label="닫기">×</button>
+                                    </div>
+
+                                    <div class="mp-flight-itinerary">
+                                        <div class="mp-flight-itinerary-item">
+                                            <span class="mp-flight-route-tag">가는 편</span>
+                                            <strong>${booking.originAirportCode} → ${booking.destinationAirportCode}</strong>
+                                            <p>${booking.airlineName} · ${booking.flightNo}</p>
+                                            <dl>
+                                                <dt>출발</dt>
+                                                <dd><fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                                <dt>도착</dt>
+                                                <dd><fmt:formatDate value="${booking.arrivalTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                            </dl>
+                                        </div>
+                                        <div class="mp-flight-itinerary-item">
+                                            <span class="mp-flight-route-tag return">오는 편</span>
+                                            <strong>${booking.returnOriginAirportCode} → ${booking.returnDestinationAirportCode}</strong>
+                                            <p>${booking.returnAirlineName} · ${booking.returnFlightNo}</p>
+                                            <dl>
+                                                <dt>출발</dt>
+                                                <dd><fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                                <dt>도착</dt>
+                                                <dd><fmt:formatDate value="${booking.returnArrivalTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                            </dl>
+                                        </div>
+                                    </div>
+
+                                    <div class="mp-flight-payment">
+                                        <div><span>할인 전 금액</span><strong><fmt:formatNumber value="${booking.originalAmount}" pattern="#,##0"/> C</strong></div>
+                                        <div><span>등급 할인</span><strong>${booking.discountRate}% · -<fmt:formatNumber value="${booking.discountAmount}" pattern="#,##0"/> C</strong></div>
+                                        <div><span>사용 캐시</span><strong><fmt:formatNumber value="${booking.usedCash}" pattern="#,##0"/> C</strong></div>
+                                        <div><span>사용 마일리지</span><strong><fmt:formatNumber value="${booking.usedMileage}" pattern="#,##0"/> M</strong></div>
+                                        <div class="total"><span>최종 결제금액</span><strong><fmt:formatNumber value="${booking.finalAmount}" pattern="#,##0"/> C</strong></div>
+                                        <div><span>결제일시</span><strong><fmt:formatDate value="${booking.paidAt}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
+                                    </div>
+
+                                    <p class="mp-flight-mock-note">이 항공권은 실제 발권이 아닌 TripTogether 포트폴리오용 Mock 예약 정보입니다.</p>
+                                    <a class="mp-flight-detail-link full" href="${pageContext.request.contextPath}/detail/${booking.spotIdx}">여행지 상세로 이동</a>
+                                </div>
+                            </div>
                         </c:forEach>
+                        </div>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -831,6 +897,99 @@
                 </c:choose>
             </div>
         </div>
+
+        <c:if test="${user.userRole eq 'USER'}">
+            <%-- ══════════════════════════════════════════
+                 기업 회원 신청
+                 - 운영자/봇/시스템 계정은 공급자 신청 대상이 아니므로 USER에게만 노출한다.
+            ══════════════════════════════════════════ --%>
+            <div class="mp-card">
+                <div class="mp-card-head">
+                    <div class="mp-card-title">
+                        <span class="mp-card-icon">🏢</span>
+                        기업 회원 신청
+                    </div>
+                </div>
+
+                <c:if test="${not empty businessApplicationMessage}">
+                    <div class="mp-item-alert mp-item-alert--success">${businessApplicationMessage}</div>
+                </c:if>
+                <c:if test="${not empty businessApplicationError}">
+                    <div class="mp-item-alert mp-item-alert--error">${businessApplicationError}</div>
+                </c:if>
+
+                <div class="mp-business-box">
+                    <div class="mp-business-status">
+                        <div>
+                            <span class="mp-business-kicker">현재 계정 유형</span>
+                            <strong>일반 회원</strong>
+                        </div>
+                        <c:if test="${not empty businessApplication}">
+                            <span class="mp-business-badge ${businessApplication.applicationStatus}">
+                                <c:choose>
+                                    <c:when test="${businessApplication.applicationStatus eq 'PENDING'}">검토 대기</c:when>
+                                    <c:when test="${businessApplication.applicationStatus eq 'APPROVED'}">승인 완료</c:when>
+                                    <c:when test="${businessApplication.applicationStatus eq 'REJECTED'}">반려</c:when>
+                                    <c:otherwise>${businessApplication.applicationStatus}</c:otherwise>
+                                </c:choose>
+                            </span>
+                        </c:if>
+                    </div>
+
+                    <c:choose>
+                        <c:when test="${not empty businessApplication and businessApplication.applicationStatus eq 'PENDING'}">
+                            <p class="mp-business-note">
+                                ${fn:escapeXml(businessApplication.companyName)} 신청이 관리자 검토를 기다리고 있습니다.
+                                신청일: <fmt:formatDate value="${businessApplication.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/>
+                            </p>
+                        </c:when>
+                        <c:otherwise>
+                            <c:if test="${not empty businessApplication and businessApplication.applicationStatus eq 'REJECTED'}">
+                                <div class="mp-business-reject">
+                                    이전 신청이 반려되었습니다.
+                                    <c:if test="${not empty businessApplication.rejectReason}">
+                                        사유: ${fn:escapeXml(businessApplication.rejectReason)}
+                                    </c:if>
+                                </div>
+                            </c:if>
+
+                            <form class="mp-business-form" method="post" action="${pageContext.request.contextPath}/mypage/business-application">
+                                <div>
+                                    <label>신청 유형</label>
+                                    <select name="requestedRole" required>
+                                        <option value="BUSINESS">비즈니스 회원</option>
+                                        <option value="PARTNER">파트너 회원</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>기업명</label>
+                                    <input type="text" name="companyName" maxlength="100" required placeholder="예: 트립투게더 투어">
+                                </div>
+                                <div>
+                                    <label>사업자등록번호</label>
+                                    <input type="text" name="businessNumber" maxlength="50" placeholder="선택 입력">
+                                </div>
+                                <div>
+                                    <label>담당자명</label>
+                                    <input type="text" name="managerName" maxlength="50" required placeholder="담당자 이름">
+                                </div>
+                                <div>
+                                    <label>담당자 연락처</label>
+                                    <input type="text" name="managerPhone" maxlength="30" required placeholder="010-0000-0000">
+                                </div>
+                                <div class="mp-business-form-full">
+                                    <label>신청 사유 / 기업 소개</label>
+                                    <textarea name="description" maxlength="1000" rows="4" placeholder="운영하려는 패키지 상품 방향이나 제휴 희망 내용을 적어주세요."></textarea>
+                                </div>
+                                <div class="mp-business-form-full">
+                                    <button type="submit" class="mp-business-submit">기업 회원 신청하기</button>
+                                </div>
+                            </form>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+        </c:if>
 
         <div class="mp-card">
             <div class="mp-card-head">
@@ -1084,6 +1243,41 @@
     }
 </script>
 </c:if>
+
+<script>
+    (function () {
+        var openedFlightModal = null;
+
+        function closeFlightBookingModal() {
+            if (!openedFlightModal) return;
+            openedFlightModal.classList.remove('is-open');
+            openedFlightModal = null;
+            document.body.classList.remove('mp-flight-modal-lock');
+        }
+
+        document.querySelectorAll('.mp-flight-modal-open').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var modalId = button.dataset.modalId;
+                var modal = document.getElementById(modalId);
+                if (!modal) return;
+                closeFlightBookingModal();
+                openedFlightModal = modal;
+                openedFlightModal.classList.add('is-open');
+                document.body.classList.add('mp-flight-modal-lock');
+            });
+        });
+
+        document.querySelectorAll('.mp-flight-modal-close').forEach(function (button) {
+            button.addEventListener('click', closeFlightBookingModal);
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeFlightBookingModal();
+            }
+        });
+    })();
+</script>
 
 <%@ include file="../common/footer.jsp" %>
 </body>

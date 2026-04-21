@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.triptogether.auth.service.AuthServiceImpl;
 import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.admin.vo.BusinessAccountApplicationVO;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.shop.service.ShopService;
@@ -311,6 +312,7 @@ public class ProfileController {
         model.addAttribute("notifications", myPageService.getNotifications(freshUser.getUserIdx()));
         model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(freshUser.getUserIdx()));
         model.addAttribute("inventoryItems", shopService.getInventoryItems(freshUser.getUserIdx()));
+        model.addAttribute("businessApplication", myPageService.getLatestBusinessApplication(freshUser.getUserIdx()));
 
         // ── 경험치 바 렌더링용 데이터 ──
         // 현재 레벨에 필요한 누적 경험치 (이 레벨의 시작점)
@@ -343,6 +345,37 @@ public class ProfileController {
         }
 
         return "mypage/index";
+    }
+
+    @PostMapping("/business-application")
+    public String submitBusinessApplication(@RequestParam String requestedRole,
+                                            @RequestParam String companyName,
+                                            @RequestParam(required = false) String businessNumber,
+                                            @RequestParam String managerName,
+                                            @RequestParam String managerPhone,
+                                            @RequestParam(required = false) String description,
+                                            HttpSession session,
+                                            RedirectAttributes redirectAttributes) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+
+        BusinessAccountApplicationVO application = new BusinessAccountApplicationVO();
+        application.setUserIdx(user.getUserIdx());
+        application.setRequestedRole(requestedRole);
+        application.setCompanyName(companyName);
+        application.setBusinessNumber(businessNumber);
+        application.setManagerName(managerName);
+        application.setManagerPhone(managerPhone);
+        application.setDescription(description);
+
+        try {
+            myPageService.submitBusinessApplication(application, user.getUserRole());
+            redirectAttributes.addFlashAttribute("businessApplicationMessage", "기업 회원 신청이 접수되었습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("businessApplicationError", e.getMessage());
+        }
+
+        return "redirect:/mypage";
     }
 
     @PostMapping("/items/equip")

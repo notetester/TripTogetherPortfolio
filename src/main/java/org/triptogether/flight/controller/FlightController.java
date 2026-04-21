@@ -2,6 +2,7 @@ package org.triptogether.flight.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import org.triptogether.flight.service.FlightService;
 import org.triptogether.flight.vo.FlightPurchaseRequestDto;
 import org.triptogether.flight.vo.FlightPurchaseResultDto;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,11 +24,21 @@ public class FlightController {
 
     @GetMapping("/offers")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> offers(@RequestParam Long spotIdx) {
+    public ResponseEntity<Map<String, Object>> offers(
+            @RequestParam Long spotIdx,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate departureDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate,
+            HttpSession session) {
+        UsersVO loginUser = getLoginUser(session);
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
         result.put("available", flightService.isFlightAvailable(spotIdx));
-        result.put("offers", flightService.getOffers(spotIdx));
+        result.put("offers", flightService.getOffers(
+                spotIdx,
+                departureDate,
+                returnDate,
+                loginUser != null ? loginUser.getUserIdx() : null
+        ));
         return ResponseEntity.ok(result);
     }
 

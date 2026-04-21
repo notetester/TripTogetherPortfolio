@@ -30,6 +30,8 @@ public interface WalletMapper {
 
     List<WalletMemberGradePolicyDto> selectActiveMemberGradePolicies();
 
+    WalletMemberGradePolicyDto selectActiveMemberGradePolicyByGrade(@Param("memberGrade") String memberGrade);
+
     /**
      * 특정 유저의 직전 달(현재 기준) COMPLETED 결제 총액을 조회합니다.
      * 등급 재산정 시 사용됩니다.

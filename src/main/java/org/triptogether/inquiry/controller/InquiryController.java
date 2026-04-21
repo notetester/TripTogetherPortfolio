@@ -15,6 +15,7 @@ import org.triptogether.inquiry.vo.InquirySearchDto;
 import org.triptogether.inquiry.vo.InquiryAttachmentDto;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.auth.vo.UserRole;
 import org.triptogether.perspective.PerspectiveService;
 
 import java.lang.reflect.Method;
@@ -74,7 +75,7 @@ public class InquiryController {
     }
 
     /**
-     * 세션에서 로그인한 유저가 운영진(ADMIN)인지 확인한다.
+     * 세션에서 로그인한 유저가 운영진 계열인지 확인한다.
      * 운영진이면 true, 아니면 false 반환.
      */
     private boolean isAdmin(HttpSession session) {
@@ -82,7 +83,7 @@ public class InquiryController {
             Object loginUser = session.getAttribute("loginUser");
             Method method = loginUser.getClass().getMethod("getUserRole");
             String role = (String) method.invoke(loginUser);
-            return "ADMIN".equals(role);
+            return UserRole.from(role).isAdminLike();
         } catch (Exception e) {
             return false;
         }

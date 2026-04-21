@@ -1,0 +1,22 @@
+package org.triptogether.travelPackage.service;
+
+import org.triptogether.travelPackage.vo.PackageSpotOptionVO;
+import org.triptogether.travelPackage.vo.TravelPackageForm;
+import org.triptogether.travelPackage.vo.TravelPackageVO;
+
+import java.util.List;
+
+public interface TravelPackageService {
+
+    List<TravelPackageVO> getSellerPackages(Long sellerUserIdx);
+
+    TravelPackageVO getSellerPackage(Long packageIdx, Long sellerUserIdx);
+
+    List<PackageSpotOptionVO> getSpotOptions();
+
+    void createPackage(Long sellerUserIdx, TravelPackageForm form);
+
+    void updatePackage(Long sellerUserIdx, TravelPackageForm form);
+
+    void submitPackage(Long sellerUserIdx, Long packageIdx);
+}
