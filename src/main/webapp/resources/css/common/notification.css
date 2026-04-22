@@ -1,0 +1,173 @@
+/* =============================================
+   TRIPTOGETHER - 헤더 알림 벨 (공통)
+   common/notification.css
+   ============================================= */
+
+/* 래퍼: 벨과 드롭다운의 기준점 */
+.noti-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 벨 버튼 */
+.noti-bell {
+  position: relative;
+  background: none;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+}
+.noti-bell:hover {
+  background: var(--gray-100);
+}
+.noti-bell-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* 안읽음 배지 */
+.noti-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/* 드롭다운 패널 */
+.noti-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 360px;
+  max-width: 90vw;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+  z-index: 200;
+  overflow: hidden;
+}
+.noti-dropdown[hidden] {
+  display: none;
+}
+
+/* 드롭다운 헤더 */
+.noti-dropdown-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.noti-dropdown-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-800);
+}
+.noti-mark-all {
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.noti-mark-all:hover {
+  text-decoration: underline;
+}
+
+/* 드롭다운 바디 */
+.noti-dropdown-body {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+/* 개별 알림 행 */
+.noti-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gray-100);
+  cursor: pointer;
+  transition: background .12s;
+  background: #f8faff;
+}
+.noti-row:last-child {
+  border-bottom: none;
+}
+.noti-row:hover {
+  background: var(--gray-100);
+}
+.noti-row.is-read {
+  background: #fff;
+  color: var(--gray-500);
+}
+
+.noti-type {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--blue);
+  white-space: nowrap;
+}
+.noti-row.is-read .noti-type {
+  color: var(--gray-400);
+}
+.noti-msg {
+  font-size: 13px;
+  color: var(--gray-800);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.noti-row.is-read .noti-msg {
+  color: var(--gray-500);
+}
+.noti-date {
+  font-size: 11px;
+  color: var(--gray-500);
+  white-space: nowrap;
+}
+
+/* 비었을 때 */
+.noti-empty {
+  padding: 32px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+/* 푸터 */
+.noti-dropdown-foot {
+  padding: 10px 16px;
+  border-top: 1px solid var(--gray-100);
+  text-align: center;
+  background: var(--gray-50, #fafafa);
+}
+.noti-dropdown-foot a {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+}
+.noti-dropdown-foot a:hover {
+  text-decoration: underline;
+}
