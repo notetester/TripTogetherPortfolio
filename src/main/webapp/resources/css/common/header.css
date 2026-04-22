@@ -31,9 +31,53 @@ nav { display: flex; align-items: center; gap: 4px; }
   background: none; border: none; padding: 8px 14px; border-radius: 8px;
   font-family: inherit; font-size: 14px; font-weight: 500; color: var(--gray-700);
   cursor: pointer; transition: all .2s;
+  white-space: nowrap;
 }
 .nb:hover  { background: var(--gray-100); color: var(--blue); }
 .nb.active { color: var(--blue); background: var(--blue-light); font-weight: 600; }
+
+/* 드롭다운 네비 (플래너/쇼핑) */
+.nb-drop { position: relative; }
+.nb-drop-trigger::after {
+  content: ' \25BE';
+  font-size: 11px;
+  margin-left: 2px;
+  opacity: .7;
+}
+.nb-drop-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 160px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  padding: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity .15s, transform .15s, visibility .15s;
+  z-index: 110;
+}
+.nb-drop:hover .nb-drop-menu,
+.nb-drop:focus-within .nb-drop-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nb-drop-menu a {
+  display: block;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+  text-decoration: none;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.nb-drop-menu a:hover { background: var(--gray-100); color: var(--blue); }
 
 /* 우측 영역 */
 .hr { display: flex; align-items: center; gap: 10px; }
