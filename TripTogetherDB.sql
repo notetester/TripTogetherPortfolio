@@ -17065,6 +17065,89 @@ ON DUPLICATE KEY UPDATE
   `policy_name` = VALUES(`policy_name`),
   `policy_group` = VALUES(`policy_group`);
 
+-- =====================================================
+-- TripTogether Chatbot Module (신규)
+-- =====================================================
+
+-- 1. 챗봇 대화 그룹
+CREATE TABLE IF NOT EXISTS `CHATBOT_CONVERSATION` (
+  `conversation_id`  BIGINT       NOT NULL AUTO_INCREMENT COMMENT '대화 PK',
+  `user_idx`         BIGINT       NULL       COMMENT '로그인 유저 (anon_session_id와 XOR)',
+  `anon_session_id`  VARCHAR(100) NULL       COMMENT '비로그인 HTTP 세션 ID',
+  `title`            VARCHAR(100) NOT NULL DEFAULT '새 대화'    COMMENT '대화 제목 (첫 메시지 prefix)',
+  `ip_address`       VARCHAR(45)  NOT NULL   COMMENT '최초 생성 IP',
+  `created_at`       DATETIME     NOT NULL DEFAULT NOW(),
+  `last_active`      DATETIME     NOT NULL DEFAULT NOW(),
+  `is_deleted`       TINYINT(1)   NOT NULL DEFAULT 0           COMMENT '유저 소프트 삭제 여부',
+  PRIMARY KEY (`conversation_id`),
+  KEY `idx_user` (`user_idx`, `is_deleted`, `last_active` DESC),
+  KEY `idx_anon` (`anon_session_id`, `is_deleted`, `last_active` DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 대화 그룹';
+
+-- 2. 챗봇 메시지
+CREATE TABLE IF NOT EXISTS `CHATBOT_MESSAGE` (
+  `message_id`        BIGINT NOT NULL AUTO_INCREMENT,
+  `conversation_id`   BIGINT NOT NULL,
+  `role`              ENUM('user','assistant') NOT NULL,
+  `content`           TEXT   NOT NULL,
+  `is_inappropriate`  TINYINT(1) NOT NULL DEFAULT 0   COMMENT 'AI가 부적절 판단한 유저 메시지',
+  `created_at`        DATETIME NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (`message_id`),
+  KEY `idx_conv`           (`conversation_id`, `created_at`),
+  KEY `idx_inappropriate`  (`is_inappropriate`, `created_at` DESC),
+  CONSTRAINT `fk_chatbot_msg_conv` FOREIGN KEY (`conversation_id`)
+    REFERENCES `CHATBOT_CONVERSATION` (`conversation_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 메시지';
+
+-- 3. 챗봇 전용 차단
+CREATE TABLE IF NOT EXISTS `CHATBOT_BLOCK` (
+  `block_id`     BIGINT NOT NULL AUTO_INCREMENT,
+  `block_type`   ENUM('USER','IP') NOT NULL,
+  `block_value`  VARCHAR(150) NOT NULL       COMMENT 'user_idx(문자) 또는 IP',
+  `reason`       VARCHAR(500) NULL,
+  `blocked_by`   BIGINT       NULL           COMMENT '처리 관리자 user_idx',
+  `blocked_at`   DATETIME     NOT NULL DEFAULT NOW(),
+  `expires_at`   DATETIME     NULL           COMMENT 'NULL=영구',
+  `is_active`    TINYINT(1)   NOT NULL DEFAULT 1,
+  PRIMARY KEY (`block_id`),
+  UNIQUE KEY `uk_active_type_value` (`is_active`, `block_type`, `block_value`),
+  KEY `idx_active` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 전용 차단 목록';
+
+-- 4. 등급별 한도
+CREATE TABLE IF NOT EXISTS `CHATBOT_GRADE_QUOTA` (
+  `quota_id`              INT          NOT NULL AUTO_INCREMENT,
+  `grade`                 VARCHAR(20)  NOT NULL UNIQUE COMMENT 'GUEST/BRONZE/SILVER/GOLD/DIAMOND/PLATINUM',
+  `max_conversations`     INT          NOT NULL DEFAULT 5      COMMENT '동시 보유 대화 수 한도',
+  `max_messages_per_day`  INT          NOT NULL DEFAULT 50     COMMENT '일일 메시지 발송 한도',
+  `max_context_messages`  INT          NOT NULL DEFAULT 10     COMMENT 'AI에 전달할 최근 메시지 수',
+  `updated_by`            BIGINT       NULL                    COMMENT '마지막 수정 관리자',
+  `updated_at`            DATETIME     NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+  PRIMARY KEY (`quota_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='등급별 챗봇 한도';
+
+-- 5. 일일 사용량 집계
+CREATE TABLE IF NOT EXISTS `CHATBOT_DAILY_USAGE` (
+  `usage_id`         BIGINT       NOT NULL AUTO_INCREMENT,
+  `user_idx`         BIGINT       NULL,
+  `anon_session_id`  VARCHAR(100) NULL,
+  `usage_date`       DATE         NOT NULL,
+  `message_count`    INT          NOT NULL DEFAULT 0,
+  PRIMARY KEY (`usage_id`),
+  UNIQUE KEY `uk_user_date` (`user_idx`, `usage_date`),
+  UNIQUE KEY `uk_anon_date` (`anon_session_id`, `usage_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='일일 사용량 집계';
+
+-- 기본 등급 정책 시드
+INSERT INTO `CHATBOT_GRADE_QUOTA` (`grade`, `max_conversations`, `max_messages_per_day`, `max_context_messages`) VALUES
+  ('GUEST',    1,  10,  6),
+  ('BRONZE',   3,  50,  10),
+  ('SILVER',   5,  100, 15),
+  ('GOLD',     10, 200, 20),
+  ('DIAMOND',  20, 500, 30),
+  ('PLATINUM', 30, 1000, 40)
+ON DUPLICATE KEY UPDATE grade = grade;
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
