@@ -6,180 +6,309 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.common.vo.ChatMessageVO;
+import org.triptogether.common.vo.ChatbotQuotaVO;
 import org.triptogether.common.vo.ChatbotRequestVO;
 import org.triptogether.common.vo.ChatbotResponseVO;
+import org.triptogether.common.vo.ConversationVO;
 
 import java.util.*;
 
+/**
+ * TripTogether 챗봇 서비스 (Gemini 기반).
+ *
+ * 처리 흐름:
+ *  1. 차단 체크 (IP + USER)
+ *  2. 등급별 한도 조회
+ *  3. 일일 메시지 한도 체크
+ *  4. 대화 조회/생성 (신규면 한도 체크 후 생성)
+ *  5. 유저 메시지 저장
+ *  6. 최근 N개 히스토리 로드
+ *  7. Gemini 호출
+ *  8. 응답 파싱 및 저장 (inappropriate 플래그 포함)
+ *  9. 사용량 +1, last_active 갱신
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatbotService {
 
     private final RestTemplate restTemplate;
+    private final ChatbotBlockService blockService;
+    private final ChatbotQuotaService quotaService;
+    private final ConversationService conversationService;
 
-    @Value("${claude.api.key}")
-    private String claudeApiKey;
+    @Value("${gemini.api.key}")
+    private String geminiApiKey;
 
-    @Value("${app.base-url}")
-    private String baseUrl;
+    private static final String GEMINI_URL =
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
 
-    private static final String CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
-    private static final String MODEL = "claude-sonnet-4-20250514";
-
-    // ══════════════════════════════════════════
-    // 시스템 프롬프트 — 사이트 구조 정의
-    // ══════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════
+    // 시스템 프롬프트
+    // ══════════════════════════════════════════════════════════
     private static final String SYSTEM_PROMPT = """
-            당신은 TripTogether 여행 플랫폼의 안내 도우미입니다.
-            사용자가 원하는 것을 파악하고, 사이트 내 적절한 페이지로 안내해주세요.
-            
-            ## 사이트 구조 (내부 링크)
-            
-            | 페이지 | 경로 | 설명 |
-            |--------|------|------|
+            당신은 'TripTogether' 여행 플랫폼의 공식 챗봇 '트립이'입니다.
+            친근하고 활기찬 톤으로 한국어로 대화합니다.
+
+            ## 사이트 구조 및 기능
+
+            | 기능 | 경로 | 설명 |
+            |------|------|------|
             | 홈 | / | 메인 페이지 |
-            | 여행지 탐색 | /explore | 전 세계 여행지 검색 및 필터링 |
-            | 여행 코스 | /courses | 다른 여행자가 공유한 여행 코스 |
-            | AI 도우미 | /assistant | AI가 맞춤 여행 계획 생성 |
-            | 커뮤니티 | /community/list | 여행 후기, 사진, 정보 공유 |
-            | 마이페이지 | /mypage | 내 프로필 및 활동 내역 |
-            | 로그인 | /auth/login | 로그인 페이지 |
-            | 회원가입 | /auth/register | 회원가입 페이지 |
-            | 아이디 찾기 | /auth/find-id | 아이디 찾기 |
-            | 비밀번호 찾기 | /auth/find-pw | 비밀번호 재설정 |
-            | 회원정보 수정 | /mypage/edit-confirm | 회원정보 수정 |
-            
+            | 여행지 탐색 | /explore | 국가·태그 필터로 여행지 검색, 리뷰 확인 |
+            | 여행 코스 | /courses | 다른 여행자의 코스 탐색 및 공유 |
+            | AI 도우미 | /assistant | AI가 여행 일정 자동 생성 |
+            | 커뮤니티 | /community/list | 여행 후기·팁 공유 게시판 |
+            | 여행 상품 | /travelPackage | 전문 가이드 패키지 상품 |
+            | 마이페이지 | /mypage | 내 활동·예약·포인트 |
+            | 문의하기 | /inquiry/list | 고객센터 문의 |
+            | 로그인 | /auth/login | 일반·소셜 로그인 |
+            | 회원가입 | /auth/register | 신규 가입 |
+
             ## 응답 규칙
-            
+
             반드시 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
-            
+
             ```json
             {
-              "message": "사용자에게 보여줄 안내 메시지 (최대 3문장, 친근하고 간결하게)",
+              "message": "최대 3문장, 친근하고 간결. 줄바꿈은 \\\\n 사용",
               "links": [
                 { "label": "버튼 텍스트", "url": "/경로", "icon": "이모지" }
               ],
-              "quickReplies": ["빠른 답변1", "빠른 답변2", "빠른 답변3"]
+              "quickReplies": ["빠른 답변1", "빠른 답변2"],
+              "inappropriate": false
             }
             ```
-            
-            - `links`: 관련 페이지 링크 버튼 (0~4개). 직접 관련 있는 것만 포함.
-            - `quickReplies`: 다음에 물어볼 법한 질문 예시 (0~3개). 자연스러운 후속 질문.
-            - 인사말이나 단순 대화에는 links를 비워도 됩니다.
-            - 여행 관련 질문에는 반드시 관련 링크를 제공하세요.
-            - 한국어로 응답하세요.
+
+            ### 응답 지침
+            - `links`: 직접 관련 있는 페이지만 0~4개. 실제 존재하는 경로만.
+            - `quickReplies`: 자연스러운 후속 질문 0~3개.
+            - `inappropriate`: 아래 기준에 해당하면 true.
+            - 여행·사이트 관련 질문에만 답하세요.
+            - 상품 관련 질문은 /travelPackage 링크 제공.
+            - 비로그인 사용자에게는 로그인·회원가입 링크를 적극 추천.
+
+            ### 부적절 채팅 기준 (inappropriate: true)
+            - 욕설, 비방, 혐오 표현
+            - 사이트와 무관한 질문 (날씨, 주식, 정치, 연예인 등 순수 잡담)
+            - 개인정보 요구 또는 제공
+            - 스팸성 반복 메시지
             """;
 
-    // ══════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════
     // 메인 처리
-    // ══════════════════════════════════════════
-    public ChatbotResponseVO ask(ChatbotRequestVO request) {
-        try {
-            // ── API 요청 페이로드 구성 ──
-            JsonObject payload = new JsonObject();
-            payload.addProperty("model", MODEL);
-            payload.addProperty("max_tokens", 1024);
-            payload.addProperty("system", buildSystemPrompt(request));
+    // ══════════════════════════════════════════════════════════
+    @Transactional
+    public ChatbotResponseVO ask(ChatbotRequestVO request,
+                                 UsersVO loginUser,
+                                 String anonSessionId,
+                                 String ipAddress) {
 
-            // 대화 히스토리 + 현재 질문
-            JsonArray messages = new JsonArray();
-            if (request.getHistory() != null) {
-                for (ChatbotRequestVO.HistoryItem h : request.getHistory()) {
-                    // assistant 메시지는 JSON 원문이 들어있으므로 텍스트만 추출
-                    String content = h.getContent();
-                    if ("assistant".equals(h.getRole())) {
-                        content = extractTextFromResponse(content);
-                    }
-                    JsonObject msg = new JsonObject();
-                    msg.addProperty("role", h.getRole());
-                    msg.addProperty("content", content);
-                    messages.add(msg);
-                }
+        Long userIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        boolean loggedIn = loginUser != null;
+
+        // 1. 차단 체크
+        if (blockService.isBlocked(ipAddress, userIdx)) {
+            return blockedResponse();
+        }
+
+        // 2. 등급별 한도 조회
+        String grade = quotaService.resolveGrade(loginUser);
+        ChatbotQuotaVO quota = quotaService.getQuotaByGrade(grade);
+        boolean quotaExempt = quotaService.isQuotaExempt(loginUser);
+
+        // 3. 일일 메시지 한도 체크
+        if (!quotaExempt && quota != null) {
+            int usage = quotaService.getTodayUsage(userIdx, userIdx == null ? anonSessionId : null);
+            if (usage >= quota.getMaxMessagesPerDay()) {
+                return quotaExceededResponse(quota.getMaxMessagesPerDay());
+            }
+        }
+
+        // 4. 대화 조회 또는 신규 생성
+        ConversationVO conversation = resolveOrCreateConversation(
+                request, userIdx, anonSessionId, ipAddress, quota, quotaExempt);
+        if (conversation == null) {
+            return conversationLimitResponse(quota != null ? quota.getMaxConversations() : 0);
+        }
+
+        // 5. 유저 메시지 저장
+        ChatMessageVO userMsg = new ChatMessageVO();
+        userMsg.setConversationId(conversation.getConversationId());
+        userMsg.setRole("user");
+        userMsg.setContent(request.getMessage());
+        userMsg.setIsInappropriate(false);
+        conversationService.saveMessage(userMsg);
+
+        // 6. 최근 N개 히스토리 로드 (현재 저장한 메시지 제외)
+        int contextLimit = quota != null ? quota.getMaxContextMessages() : 10;
+        List<ChatMessageVO> history = conversationService.getRecentMessages(
+                conversation.getConversationId(), contextLimit + 1);
+        if (!history.isEmpty() && Objects.equals(history.get(history.size() - 1).getMessageId(),
+                userMsg.getMessageId())) {
+            history = history.subList(0, history.size() - 1);
+        }
+
+        // 7. Gemini 호출
+        ChatbotResponseVO response = callGemini(request, history, loggedIn);
+
+        // 8. 부적절 플래그 처리
+        if (response.isInappropriate()) {
+            conversationService.markInappropriate(userMsg.getMessageId());
+            log.warn("[Chatbot] 부적절 메시지 - conversationId={}, messageId={}, ip={}",
+                    conversation.getConversationId(), userMsg.getMessageId(), ipAddress);
+        }
+
+        // 9. assistant 메시지 저장
+        ChatMessageVO botMsg = new ChatMessageVO();
+        botMsg.setConversationId(conversation.getConversationId());
+        botMsg.setRole("assistant");
+        botMsg.setContent(response.getMessage());
+        botMsg.setIsInappropriate(false);
+        conversationService.saveMessage(botMsg);
+
+        // 10. 대화 활동 시각 갱신
+        conversationService.touch(conversation.getConversationId());
+
+        // 11. 일일 사용량 +1 (면제자 제외)
+        if (!quotaExempt) {
+            quotaService.incrementTodayUsage(userIdx, userIdx == null ? anonSessionId : null);
+        }
+
+        // 12. 응답에 conversationId 포함
+        response.setConversationId(conversation.getConversationId());
+        return response;
+    }
+
+    // 대화 조회 or 신규 생성 + 소유권/한도 체크
+    private ConversationVO resolveOrCreateConversation(ChatbotRequestVO request,
+                                                        Long userIdx,
+                                                        String anonSessionId,
+                                                        String ipAddress,
+                                                        ChatbotQuotaVO quota,
+                                                        boolean quotaExempt) {
+        // 기존 대화 이어하기
+        if (request.getConversationId() != null) {
+            ConversationVO conv = conversationService.getConversation(request.getConversationId());
+            if (conv == null || Boolean.TRUE.equals(conv.getIsDeleted())) return null;
+            if (!conversationService.isOwner(conv, userIdx, anonSessionId)) return null;
+            return conv;
+        }
+
+        // 신규 대화 — 대화 수 한도 체크 (면제자 제외)
+        if (!quotaExempt && quota != null) {
+            int active = conversationService.countActiveConversations(userIdx,
+                    userIdx == null ? anonSessionId : null);
+            if (active >= quota.getMaxConversations()) {
+                return null;
+            }
+        }
+
+        return conversationService.createConversation(userIdx, anonSessionId, ipAddress, request.getMessage());
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // Gemini 호출
+    // ══════════════════════════════════════════════════════════
+    private ChatbotResponseVO callGemini(ChatbotRequestVO request,
+                                          List<ChatMessageVO> history,
+                                          boolean loggedIn) {
+        try {
+            JsonObject systemInstruction = new JsonObject();
+            JsonArray systemParts = new JsonArray();
+            JsonObject systemPart = new JsonObject();
+            systemPart.addProperty("text", buildSystemPrompt(request, loggedIn));
+            systemParts.add(systemPart);
+            systemInstruction.add("parts", systemParts);
+
+            JsonArray contents = new JsonArray();
+            for (ChatMessageVO h : history) {
+                JsonObject msgObj = new JsonObject();
+                msgObj.addProperty("role", "user".equals(h.getRole()) ? "user" : "model");
+                JsonArray parts = new JsonArray();
+                JsonObject part = new JsonObject();
+                String content = "assistant".equals(h.getRole())
+                        ? extractMessageText(h.getContent())
+                        : h.getContent();
+                part.addProperty("text", content);
+                parts.add(part);
+                msgObj.add("parts", parts);
+                contents.add(msgObj);
             }
 
-            // 현재 사용자 메시지 추가
-            JsonObject userMsg = new JsonObject();
-            userMsg.addProperty("role", "user");
-            userMsg.addProperty("content", request.getMessage());
-            messages.add(userMsg);
+            JsonObject curMsg = new JsonObject();
+            curMsg.addProperty("role", "user");
+            JsonArray curParts = new JsonArray();
+            JsonObject curPart = new JsonObject();
+            curPart.addProperty("text", request.getMessage());
+            curParts.add(curPart);
+            curMsg.add("parts", curParts);
+            contents.add(curMsg);
 
-            payload.add("messages", messages);
+            JsonObject generationConfig = new JsonObject();
+            generationConfig.addProperty("responseMimeType", "application/json");
+            generationConfig.addProperty("maxOutputTokens", 1024);
+            generationConfig.addProperty("temperature", 0.7);
 
-            // ── HTTP 요청 ──
+            JsonObject payload = new JsonObject();
+            payload.add("systemInstruction", systemInstruction);
+            payload.add("contents", contents);
+            payload.add("generationConfig", generationConfig);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("x-api-key", claudeApiKey);
-            headers.set("anthropic-version", "2023-06-01");
 
             ResponseEntity<String> response = restTemplate.exchange(
-                    CLAUDE_API_URL,
+                    GEMINI_URL + geminiApiKey,
                     HttpMethod.POST,
                     new HttpEntity<>(payload.toString(), headers),
                     String.class
             );
 
-            return parseClaudeResponse(response.getBody(), request.isLoggedIn());
+            return parseGeminiResponse(response.getBody(), loggedIn);
 
         } catch (Exception e) {
-            log.error("[Chatbot] API 호출 실패", e);
+            log.error("[Chatbot] Gemini API 호출 실패", e);
             return fallbackResponse();
         }
     }
 
-    // ── 시스템 프롬프트 + 현재 컨텍스트 조합 ──
-    private String buildSystemPrompt(ChatbotRequestVO request) {
-        StringBuilder sb = new StringBuilder(SYSTEM_PROMPT);
-
-        sb.append("\n\n## 현재 사용자 컨텍스트\n");
-        sb.append("- 로그인 상태: ").append(request.isLoggedIn() ? "로그인 중" : "비로그인").append("\n");
-
-        if (request.getCurrentPath() != null && !request.getCurrentPath().isBlank()) {
-            sb.append("- 현재 페이지: ").append(getCurrentPageName(request.getCurrentPath())).append("\n");
-        }
-
-        if (!request.isLoggedIn()) {
-            sb.append("\n비로그인 사용자에게는 로그인/회원가입 링크를 자주 추천하세요.\n");
-        }
-
-        return sb.toString();
-    }
-
-    // ── Claude 응답 파싱 ──
-    private ChatbotResponseVO parseClaudeResponse(String body, boolean loggedIn) {
+    private ChatbotResponseVO parseGeminiResponse(String body, boolean loggedIn) {
         try {
             JsonObject root = JsonParser.parseString(body).getAsJsonObject();
-            JsonArray content = root.getAsJsonArray("content");
-            String text = content.get(0).getAsJsonObject().get("text").getAsString().trim();
+            String text = root
+                    .getAsJsonArray("candidates").get(0).getAsJsonObject()
+                    .getAsJsonObject("content")
+                    .getAsJsonArray("parts").get(0).getAsJsonObject()
+                    .get("text").getAsString().trim();
 
-            // JSON 코드블록 제거
-            text = text.replaceAll("```json\\s*", "").replaceAll("```\\s*", "").trim();
+            text = text.replaceAll("(?s)```json\\s*", "").replaceAll("```\\s*", "").trim();
 
             JsonObject json = JsonParser.parseString(text).getAsJsonObject();
 
             ChatbotResponseVO vo = new ChatbotResponseVO();
             vo.setMessage(json.get("message").getAsString());
+            vo.setInappropriate(json.has("inappropriate") && json.get("inappropriate").getAsBoolean());
 
-            // links
             List<ChatbotResponseVO.SiteLink> links = new ArrayList<>();
             if (json.has("links") && !json.get("links").isJsonNull()) {
                 for (JsonElement el : json.getAsJsonArray("links")) {
                     JsonObject l = el.getAsJsonObject();
-                    // 비로그인 시 마이페이지 링크 필터
                     String url = l.get("url").getAsString();
                     if (!loggedIn && url.startsWith("/mypage")) continue;
-
                     links.add(ChatbotResponseVO.SiteLink.builder()
                             .label(l.get("label").getAsString())
                             .url(url)
-                            .icon(l.has("icon") ? l.get("icon").getAsString() : "")
+                            .icon(l.has("icon") ? l.get("icon").getAsString() : "→")
                             .build());
                 }
             }
             vo.setLinks(links);
 
-            // quickReplies
             List<String> quickReplies = new ArrayList<>();
             if (json.has("quickReplies") && !json.get("quickReplies").isJsonNull()) {
                 for (JsonElement el : json.getAsJsonArray("quickReplies")) {
@@ -196,30 +325,71 @@ public class ChatbotService {
         }
     }
 
-    // ── assistant 히스토리에서 텍스트만 추출 ──
-    private String extractTextFromResponse(String jsonContent) {
+    private String buildSystemPrompt(ChatbotRequestVO request, boolean loggedIn) {
+        StringBuilder sb = new StringBuilder(SYSTEM_PROMPT);
+        sb.append("\n\n## 현재 사용자 컨텍스트\n");
+        sb.append("- 로그인 상태: ").append(loggedIn ? "로그인 중" : "비로그인").append("\n");
+        if (request.getCurrentPath() != null && !request.getCurrentPath().isBlank()) {
+            sb.append("- 현재 페이지: ").append(getCurrentPageName(request.getCurrentPath())).append("\n");
+        }
+        return sb.toString();
+    }
+
+    private String extractMessageText(String content) {
         try {
-            JsonObject obj = JsonParser.parseString(jsonContent).getAsJsonObject();
-            return obj.has("message") ? obj.get("message").getAsString() : jsonContent;
+            JsonObject obj = JsonParser.parseString(content).getAsJsonObject();
+            return obj.has("message") ? obj.get("message").getAsString() : content;
         } catch (Exception e) {
-            return jsonContent;
+            return content;
         }
     }
 
-    // ── 현재 페이지 이름 반환 ──
     private String getCurrentPageName(String path) {
-        if (path.equals("/") || path.isEmpty())           return "홈";
-        if (path.startsWith("/explore"))                  return "여행지 탐색";
-        if (path.startsWith("/courses"))                  return "여행 코스";
-        if (path.startsWith("/assistant"))                return "AI 도우미";
-        if (path.startsWith("/community"))                return "커뮤니티";
-        if (path.startsWith("/mypage"))                   return "마이페이지";
-        if (path.startsWith("/auth"))                     return "인증 페이지";
-        if (path.startsWith("/detail"))                   return "여행지 상세";
+        if (path.equals("/") || path.isEmpty())    return "홈";
+        if (path.startsWith("/explore"))           return "여행지 탐색";
+        if (path.startsWith("/courses"))           return "여행 코스";
+        if (path.startsWith("/assistant"))         return "AI 도우미";
+        if (path.startsWith("/community"))         return "커뮤니티";
+        if (path.startsWith("/mypage"))            return "마이페이지";
+        if (path.startsWith("/auth"))              return "인증 페이지";
+        if (path.startsWith("/travelPackage"))     return "여행 상품";
+        if (path.startsWith("/inquiry"))           return "문의하기";
         return path;
     }
 
-    // ── 폴백 응답 ──
+    // ══════════════════════════════════════════════════════════
+    // 특수 응답
+    // ══════════════════════════════════════════════════════════
+    private ChatbotResponseVO blockedResponse() {
+        return ChatbotResponseVO.builder()
+                .message("죄송합니다. 현재 챗봇 이용이 제한된 상태입니다. 문의사항은 고객센터로 연락해 주세요.")
+                .links(List.of(
+                        ChatbotResponseVO.SiteLink.builder()
+                                .label("문의하기").url("/inquiry/list").icon("📩").build()
+                ))
+                .quickReplies(List.of())
+                .inappropriate(false)
+                .build();
+    }
+
+    private ChatbotResponseVO quotaExceededResponse(int limit) {
+        return ChatbotResponseVO.builder()
+                .message("오늘의 채팅 한도(" + limit + "건)를 모두 사용했어요. 내일 다시 만나요!")
+                .links(List.of())
+                .quickReplies(List.of())
+                .inappropriate(false)
+                .build();
+    }
+
+    private ChatbotResponseVO conversationLimitResponse(int limit) {
+        return ChatbotResponseVO.builder()
+                .message("대화 수 한도(" + limit + "개)에 도달했어요. 기존 대화를 삭제하거나 이어서 진행해 주세요.")
+                .links(List.of())
+                .quickReplies(List.of())
+                .inappropriate(false)
+                .build();
+    }
+
     private ChatbotResponseVO fallbackResponse() {
         return ChatbotResponseVO.builder()
                 .message("죄송해요, 잠시 문제가 생겼어요. 아래 링크를 이용해보세요! 🙏")
@@ -229,6 +399,7 @@ public class ChatbotService {
                         ChatbotResponseVO.SiteLink.builder().label("커뮤니티").url("/community/list").icon("💬").build()
                 ))
                 .quickReplies(List.of("인기 여행지 추천", "여행 코스 보기"))
+                .inappropriate(false)
                 .build();
     }
 }
