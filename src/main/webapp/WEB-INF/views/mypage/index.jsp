@@ -36,6 +36,7 @@
 <spring:message code="mypage.business.placeholder.managerName" var="businessManagerNamePlaceholder"/>
 <spring:message code="mypage.business.placeholder.managerPhone" var="businessManagerPhonePlaceholder"/>
 <spring:message code="mypage.business.placeholder.description" var="businessDescriptionPlaceholder"/>
+<spring:message code="mypage.notifications.deleteAllConfirm" var="notificationsDeleteAllConfirm"/>
 
 <%-- ── 레벨 바 · 등급 바 공통 추가 스타일 ── --%>
 <style>
@@ -544,8 +545,8 @@
             </div>
             <c:if test="${not empty notifications}">
                 <div class="mp-notif-actions">
-                    <button type="button" class="mp-notif-btn" id="mpNotifMarkAll">모두 읽음</button>
-                    <button type="button" class="mp-notif-btn mp-notif-btn-danger" id="mpNotifDeleteAll">전체 삭제</button>
+                    <button type="button" class="mp-notif-btn" id="mpNotifMarkAll"><spring:message code="mypage.notifications.markAllRead"/></button>
+                    <button type="button" class="mp-notif-btn mp-notif-btn-danger" id="mpNotifDeleteAll"><spring:message code="mypage.notifications.deleteAll"/></button>
                 </div>
             </c:if>
             <div class="mp-notif-footer">
@@ -1447,7 +1448,7 @@
         // 전체 삭제
         if (deleteAllBtn) {
             deleteAllBtn.addEventListener('click', function () {
-                if (!confirm('모든 알림을 삭제하시겠습니까?')) return;
+                if (!confirm("${fn:escapeXml(notificationsDeleteAllConfirm)}")) return;
                 fetch(ctx + '/api/notifications', {
                     method: 'DELETE',
                     headers: {'X-Requested-With': 'XMLHttpRequest'}
