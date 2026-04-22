@@ -12,6 +12,7 @@ import org.triptogether.config.IpBlockMapper;
 import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.moderation.service.ModerationPolicyService;
 import org.triptogether.moderation.vo.ContentModerationPolicyVO;
+import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.reward.service.RewardService;
@@ -334,6 +335,7 @@ public class CommunityServiceImpl implements CommunityService {
                 notification.setSourceType("community");
                 notification.setSourceId(postId);
                 notification.setMessage("내 글에 좋아요가 달렸어요.");
+                notification.setTargetUrl(NotificationUrlBuilder.community(postId));
                 myPageService.addNotification(notification);
 
                 rewardService.awardAction(
@@ -388,6 +390,7 @@ public class CommunityServiceImpl implements CommunityService {
             notification.setSourceType("community");
             notification.setSourceId(postId);
             notification.setMessage("내 글에 새 댓글이 달렸어요.");
+            notification.setTargetUrl(NotificationUrlBuilder.communityComment(postId, dto.getCommentId()));
             myPageService.addNotification(notification);
         }
         rewardService.awardAction(
@@ -440,6 +443,7 @@ public class CommunityServiceImpl implements CommunityService {
             notification.setSourceType("community");
             notification.setSourceId(postId);
             notification.setMessage("내 글에 새 대댓글이 달렸어요.");
+            notification.setTargetUrl(NotificationUrlBuilder.communityComment(postId, dto.getCommentId()));
             myPageService.addNotification(notification);
         }
 
@@ -453,6 +457,7 @@ public class CommunityServiceImpl implements CommunityService {
                 notification.setSourceType("community");
                 notification.setSourceId(postId);
                 notification.setMessage("내 댓글에 새 답글이 달렸어요.");
+                notification.setTargetUrl(NotificationUrlBuilder.communityComment(postId, dto.getCommentId()));
                 myPageService.addNotification(notification);
             }
         }

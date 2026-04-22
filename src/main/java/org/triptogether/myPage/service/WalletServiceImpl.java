@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.mapper.WalletMapper;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.WalletChargeResultDto;
@@ -189,6 +190,7 @@ public class WalletServiceImpl implements WalletService {
             noti.setMessage(isUpgrade
                     ? "회원 등급이 " + prevGrade + " → " + newGrade + "으로 승급되었습니다!"
                     : "회원 등급이 " + prevGrade + " → " + newGrade + "으로 변경되었습니다.");
+            noti.setTargetUrl(NotificationUrlBuilder.grade());
             myPageService.addNotification(noti);
 
             log.info("[등급변경] userIdx={}, {} → {}, 직전달 결제={}", userIdx, prevGrade, newGrade, lastMonthTotal);

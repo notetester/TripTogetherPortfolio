@@ -13,6 +13,7 @@ import org.triptogether.inquiry.service.InquiryService;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
 import org.triptogether.inquiry.vo.InquiryAttachmentDto;
+import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.auth.vo.UserRole;
@@ -258,6 +259,7 @@ public class InquiryController {
             notification.setSourceType("inquiry");
             notification.setSourceId(inquiryId);
             notification.setMessage("문의에 답변이 등록되었습니다.");
+            notification.setTargetUrl(NotificationUrlBuilder.inquiry(inquiryId));
             myPageService.addNotification(notification);
 
             result.put("success", true);

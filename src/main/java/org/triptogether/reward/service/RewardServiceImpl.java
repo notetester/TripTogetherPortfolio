@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.reward.mapper.RewardMapper;
@@ -81,6 +82,7 @@ public class RewardServiceImpl implements RewardService {
             levelUpNoti.setSourceType("levelup");             // 레벨업 전용 sourceType
             levelUpNoti.setSourceId((long) nextLevel);         // sourceId에 새 레벨 저장
             levelUpNoti.setMessage("Lv." + nextLevel + " 달성! 축하합니다!");
+            levelUpNoti.setTargetUrl(NotificationUrlBuilder.levelup());
             myPageService.addNotification(levelUpNoti);
         }
 
