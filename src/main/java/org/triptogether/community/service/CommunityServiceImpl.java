@@ -641,6 +641,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional
     public void clearPostBlur(Long postId) {
         communityMapper.clearPostBlur(postId);
+        notifyPostAction(postId, "작성하신 글의 가림 처리가 해제되었어요.");
     }
 
     // 댓글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
@@ -648,6 +649,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional
     public void clearCommentBlur(Long commentId) {
         communityMapper.clearCommentBlur(commentId);
+        notifyCommentAction(commentId, "작성하신 댓글의 가림 처리가 해제되었어요.");
     }
 
     // 댓글 신고 횟수 가져옴
@@ -662,36 +664,93 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public void blockUser(Long userIdx) {
         communityMapper.blockUser(userIdx);
+        notifyAccountAction(userIdx, "계정이 차단되었어요.");
     }
 
     // 유저 차단 해제함 (account_status = 'ACTIVE')
     @Override
     public void unblockUser(Long userIdx) {
         communityMapper.unblockUser(userIdx);
+        notifyAccountAction(userIdx, "계정 차단이 해제되었어요.");
     }
 
     // 게시글 차단함 (post_status = 'BLOCKED')
     @Override
     public void blockPost(Long postId) {
         communityMapper.blockPost(postId);
+        notifyPostAction(postId, "작성하신 글이 운영 정책에 따라 차단되었어요.");
     }
 
     // 게시글 차단 해제함
     @Override
     public void unblockPost(Long postId) {
         communityMapper.unblockPost(postId);
+        notifyPostAction(postId, "차단되었던 글이 복구되었어요.");
     }
 
     // 댓글/대댓글 차단함 (comment_status = 'BLOCKED')
     @Override
     public void blockComment(Long commentId) {
         communityMapper.blockComment(commentId);
+        notifyCommentAction(commentId, "작성하신 댓글이 운영 정책에 따라 차단되었어요.");
     }
 
     // 댓글/대댓글 차단 해제함
     @Override
     public void unblockComment(Long commentId) {
         communityMapper.unblockComment(commentId);
+        notifyCommentAction(commentId, "차단되었던 댓글이 복구되었어요.");
+    }
+
+    // ===== 알림 헬퍼 (차단/해제/BLUR 해제 공용) =====
+
+    // 글 관련 액션 알림 발송 (community sourceType)
+    private void notifyPostAction(Long postId, String message) {
+        try {
+            CommunityPostDto post = communityMapper.selectPost(postId);
+            if (post == null) return;
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(post.getUserIdx());
+            notification.setSourceType("community");
+            notification.setSourceId(postId);
+            notification.setMessage(message);
+            notification.setTargetUrl(NotificationUrlBuilder.community(postId));
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("글 알림 발송 실패: postId={}", postId, e);
+        }
+    }
+
+    // 댓글 관련 액션 알림 발송 (community sourceType, #comment-N 앵커 포함)
+    private void notifyCommentAction(Long commentId, String message) {
+        try {
+            CommunityCommentDto comment = communityMapper.selectComment(commentId);
+            if (comment == null) return;
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(comment.getUserIdx());
+            notification.setSourceType("community");
+            notification.setSourceId(comment.getPostId());
+            notification.setMessage(message);
+            notification.setTargetUrl(NotificationUrlBuilder.communityComment(comment.getPostId(), comment.getCommentId()));
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("댓글 알림 발송 실패: commentId={}", commentId, e);
+        }
+    }
+
+    // 계정 관련 액션 알림 발송 (account_block sourceType)
+    private void notifyAccountAction(Long userIdx, String message) {
+        try {
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(userIdx);
+            notification.setSourceType("account_block");
+            notification.setSourceId(userIdx);
+            notification.setMessage(message);
+            notification.setTargetUrl(NotificationUrlBuilder.mypage());
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("계정 알림 발송 실패: userIdx={}", userIdx, e);
+        }
     }
 
     // ===== IP 저장 =====
