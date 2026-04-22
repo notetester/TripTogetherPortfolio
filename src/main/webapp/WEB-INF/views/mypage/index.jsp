@@ -464,7 +464,7 @@
                     <c:otherwise>
                         <c:forEach var="noti" items="${notifications}">
                             <div class="mp-notif-item" data-notification-id="${noti.notificationId}"
-             onclick="deleteNotification('${noti.notificationId}', '${noti.sourceType}', '${noti.sourceId}')">
+             onclick="deleteNotification('${noti.notificationId}')">
                         <span class="mp-notif-type">
                             <c:choose>
                                 <c:when test="${noti.sourceType eq 'community'}">[커뮤니티]</c:when>
@@ -1124,21 +1124,17 @@
         if (e.persisted) location.reload();
     });
 
-    function deleteNotification(notificationId, sourceType, sourceId) {
+    function deleteNotification(notificationId) {
         var ctx = '${pageContext.request.contextPath}';
-        var fallbackUrl = ctx + (
-            sourceType === 'community' ? '/community/' + sourceId :
-            sourceType === 'inquiry'   ? '/inquiry/'   + sourceId :
-            sourceType === 'report'    ? '/report/'    + sourceId : '/mypage'
-        );
+        var fallbackUrl = ctx + '/mypage';
 
-        fetch(ctx + '/mypage/notification/' + notificationId + '/read', {
+        fetch(ctx + '/api/notifications/' + notificationId + '/read', {
             method: 'POST',
             headers: {'X-Requested-With': 'XMLHttpRequest'}
         }).then(r => r.json())
           .then(data => {
-              location.href = (data.success && data.redirectUrl)
-                  ? ctx + data.redirectUrl
+              location.href = (data.success && data.targetUrl)
+                  ? ctx + data.targetUrl
                   : fallbackUrl;
           })
           .catch(function() {
