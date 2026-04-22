@@ -52,13 +52,6 @@ public class AdminChatbotController {
         int offset = (page - 1) * pageSize;
 
         switch (tab) {
-            case "conversations" -> {
-                List<ConversationVO> list = conversationService.searchConversations(keyword, offset, pageSize);
-                int total = conversationService.countAllConversations(keyword);
-                model.addAttribute("conversations", list);
-                model.addAttribute("total", total);
-                model.addAttribute("totalPages", (int) Math.ceil((double) total / pageSize));
-            }
             case "inappropriate" -> {
                 List<ChatMessageVO> msgs = messageMapper.selectInappropriateMessages(offset, pageSize);
                 int total = messageMapper.countInappropriateMessages();
@@ -76,8 +69,16 @@ public class AdminChatbotController {
             }
             default -> {
                 model.addAttribute("totalConversations", conversationService.countAllConversations(""));
+                model.addAttribute("todayConversations", conversationService.countTodayConversations());
                 model.addAttribute("inappropriateCount", messageMapper.countInappropriateMessages());
                 model.addAttribute("activeBlockCount", blockService.getBlocks(true).size());
+
+                List<ConversationVO> list = conversationService.searchConversations(keyword, offset, pageSize);
+                int total = conversationService.countAllConversations(keyword);
+                model.addAttribute("conversations", list);
+                model.addAttribute("total", total);
+                model.addAttribute("totalPages", (int) Math.ceil((double) total / pageSize));
+                tab = "dashboard";
             }
         }
 

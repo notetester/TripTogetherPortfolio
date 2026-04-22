@@ -14,8 +14,8 @@
 
     <%-- ── 챗봇 내부 sub-tab ── --%>
     <div class="aih-tabs" style="display:flex;gap:4px;border-bottom:1px solid #e5e7eb;margin:20px 0;">
-        <c:set var="tabs" value="dashboard,conversations,inappropriate,blocks,quotas"/>
-        <c:set var="labels" value="대시보드,대화 세션,부적절 메시지,차단 관리,정책"/>
+        <c:set var="tabs" value="dashboard,inappropriate,blocks,quotas"/>
+        <c:set var="labels" value="대시보드,부적절 메시지,차단 관리,정책"/>
         <c:forTokens items="${tabs}" delims="," var="t" varStatus="st">
             <c:set var="label" value="${fn:split(labels, ',')[st.index]}"/>
             <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=${t}"
@@ -30,10 +30,14 @@
          대시보드 탭
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'dashboard'}">
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
             <div class="adm-card" style="padding:20px;">
                 <div style="font-size:12px;color:#64748b;margin-bottom:6px;">💬 전체 대화 수</div>
                 <div style="font-size:24px;font-weight:700;color:#38bdf8;">${totalConversations}</div>
+            </div>
+            <div class="adm-card" style="padding:20px;">
+                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">📅 오늘 대화</div>
+                <div style="font-size:24px;font-weight:700;color:#10b981;">${todayConversations}</div>
             </div>
             <div class="adm-card" style="padding:20px;">
                 <div style="font-size:12px;color:#64748b;margin-bottom:6px;">⚠️ 부적절 메시지</div>
@@ -44,25 +48,20 @@
                 <div style="font-size:24px;font-weight:700;color:#ef4444;">${activeBlockCount}</div>
             </div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:14px;font-weight:600;margin-bottom:8px;">ℹ️ 안내</div>
-            <div style="font-size:13px;color:#475569;line-height:1.6;">
-                좌측 상단 탭에서 대화 세션/부적절 메시지/차단/정책을 관리할 수 있습니다.<br>
-                챗봇 모델: Gemini 2.5 Flash.
-            </div>
-        </div>
-    </c:if>
 
-    <%-- ══════════════════════════════════════════
-         대화 세션 탭
-    ══════════════════════════════════════════ --%>
-    <c:if test="${tab == 'conversations'}">
+        <%-- ── 대화 세션 목록 (대시보드 내 통합) ── --%>
+        <div style="font-size:14px;font-weight:700;margin:8px 0 12px;">대화 세션</div>
+
         <div class="adm-card" style="padding:16px;margin-bottom:16px;">
             <form method="get" action="${pageContext.request.contextPath}/admin/ai-helper/chatbot" style="display:flex;gap:8px;">
-                <input type="hidden" name="tab" value="conversations"/>
+                <input type="hidden" name="tab" value="dashboard"/>
                 <input type="text" name="keyword" value="${keyword}" placeholder="유저ID / IP / 제목 / 세션ID" class="adm-input" style="flex:1;"/>
                 <button type="submit" class="adm-btn">검색</button>
+                <c:if test="${not empty keyword}">
+                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot" class="adm-btn adm-btn-ghost">초기화</a>
+                </c:if>
             </form>
+            <div style="font-size:12px;color:#64748b;margin-top:8px;">총 ${total}건</div>
         </div>
 
         <div class="adm-card" style="padding:0;overflow:hidden;">
@@ -97,7 +96,7 @@
                                     </td>
                                     <td>${c.ipAddress}</td>
                                     <td>${c.messageCount}</td>
-                                    <td><fmt:formatDate value="${c.lastActive}" pattern="yyyy-MM-dd HH:mm"/></td>
+                                    <td>${fn:replace(fn:substring(c.lastActive, 0, 16), 'T', ' ')}</td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${c.isDeleted}"><span style="color:#ef4444;">삭제됨</span></c:when>
@@ -123,10 +122,11 @@
         <c:if test="${totalPages > 1}">
             <div style="display:flex;justify-content:center;gap:4px;margin-top:16px;">
                 <c:forEach begin="1" end="${totalPages}" var="p">
-                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=conversations&page=${p}&keyword=${keyword}" class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
+                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=dashboard&page=${p}&keyword=${keyword}" class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
                 </c:forEach>
             </div>
         </c:if>
+
     </c:if>
 
     <%-- ══════════════════════════════════════════
@@ -155,7 +155,7 @@
                                     <td>${m.messageId}</td>
                                     <td>${m.conversationId}</td>
                                     <td style="max-width:600px;word-break:break-all;">${m.content}</td>
-                                    <td><fmt:formatDate value="${m.createdAt}" pattern="yyyy-MM-dd HH:mm"/></td>
+                                    <td>${fn:replace(fn:substring(m.createdAt, 0, 16), 'T', ' ')}</td>
                                     <td>
                                         <button type="button" class="adm-btn adm-btn-ghost" data-conv-id="${m.conversationId}" onclick="viewMessages(this.dataset.convId)">대화 보기</button>
                                     </td>
@@ -228,10 +228,10 @@
                                     <td>${b.blockValue}</td>
                                     <td>${b.reason}</td>
                                     <td>${b.blockedBy}</td>
-                                    <td><fmt:formatDate value="${b.blockedAt}" pattern="yyyy-MM-dd HH:mm"/></td>
+                                    <td>${fn:replace(fn:substring(b.blockedAt, 0, 16), 'T', ' ')}</td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${b.expiresAt != null}"><fmt:formatDate value="${b.expiresAt}" pattern="yyyy-MM-dd HH:mm"/></c:when>
+                                            <c:when test="${b.expiresAt != null}">${fn:replace(fn:substring(b.expiresAt, 0, 16), 'T', ' ')}</c:when>
                                             <c:otherwise>영구</c:otherwise>
                                         </c:choose>
                                     </td>
