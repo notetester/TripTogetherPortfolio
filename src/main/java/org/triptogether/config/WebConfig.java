@@ -41,6 +41,7 @@ public class WebConfig implements WebMvcConfigurer {
     private final AdminModeInterceptor adminModeInterceptor;
     private final ActivityLogInterceptor activityLogInterceptor;
     private final IpBlockInterceptor ipBlockInterceptor;
+    private final NotificationInterceptor notificationInterceptor;
 
     /**
      * 다국어 메시지 파일을 읽는 스프링 기본 MessageSource 빈.
@@ -153,5 +154,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(adminModeInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/resources/**", "/upload/**", "/api/**");
+
+        // 헤더 알림 데이터 주입 (로그인 유저 한정, View 있는 페이지만)
+        registry.addInterceptor(notificationInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/resources/**", "/upload/**", "/api/**", "/sse/**",
+                        "/favicon.ico", "/error", "/css/**", "/js/**", "/images/**"
+                );
     }
 }
