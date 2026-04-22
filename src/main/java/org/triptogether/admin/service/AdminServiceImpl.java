@@ -129,6 +129,10 @@ public class AdminServiceImpl implements AdminService {
         }
         switch (status) {
             case "ACTIVE" -> {
+                // 이전 상태 조회 (BLOCKED → ACTIVE 전환 감지용)
+                AdminMemberVO prev = adminMapper.findMemberDetail(userIdx);
+                String prevStatus = prev != null ? prev.getAccountStatus() : null;
+
                 List<String> blockedIps = adminMapper.findActiveBlockedIpsByUser(userIdx);
                 adminMapper.deactivateCurrentBlocklistByUser(userIdx, null);
                 adminMapper.deactivateActiveBlocksByUser(userIdx, null);
@@ -142,10 +146,30 @@ public class AdminServiceImpl implements AdminService {
                             .distinct()
                             .forEach(this::refreshIpRuleFromHistory);
                 }
+
+                // BLOCKED → ACTIVE 전환 시에만 알림 발송
+                if ("BLOCKED".equals(prevStatus)) {
+                    notifyAccountUnblocked(userIdx);
+                }
             }
             case "DORMANT" -> adminMapper.markMemberDormant(userIdx);
             case "DELETED" -> adminMapper.updateMemberStatus(userIdx, "DELETED");
             case "BLOCKED" -> blockMember(userIdx, "USER_ONLY", null, "관리자 상태 변경 차단", null, null);
+        }
+    }
+
+    // 계정 차단 해제 시 본인에게 알림 발송
+    private void notifyAccountUnblocked(Long userIdx) {
+        try {
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(userIdx);
+            notification.setSourceType("account_block");
+            notification.setSourceId(userIdx);
+            notification.setMessage("계정 차단이 해제되었어요.");
+            notification.setTargetUrl(NotificationUrlBuilder.mypage());
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("계정 차단 해제 알림 발송 실패: userIdx={}", userIdx, e);
         }
     }
 
