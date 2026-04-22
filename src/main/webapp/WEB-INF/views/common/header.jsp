@@ -24,7 +24,7 @@
         </div>
         <nav>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'"><spring:message code="header.nav.explore"/></button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses/list'"><spring:message code="header.nav.courses"/></button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses'"><spring:message code="header.nav.courses"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/assistant'"><spring:message code="header.nav.assistant"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="header.nav.community"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/wallet'"><spring:message code="header.nav.wallet"/></button>

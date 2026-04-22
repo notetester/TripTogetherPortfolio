@@ -32,4 +32,7 @@ public class TravelPlanVO {
     private LocalDateTime updated_at;
 
     private List<PlanSpotVO> spotList;
+
+    private String nickname;
+
 }
