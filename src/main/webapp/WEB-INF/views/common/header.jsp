@@ -92,6 +92,7 @@
                                                         <c:when test="${n.sourceType eq 'report'}">[신고]</c:when>
                                                         <c:when test="${n.sourceType eq 'levelup'}">[레벨업]</c:when>
                                                         <c:when test="${n.sourceType eq 'grade'}">[등급]</c:when>
+                                                        <c:when test="${n.sourceType eq 'account_block'}">[계정]</c:when>
                                                         <c:otherwise>[알림]</c:otherwise>
                                                     </c:choose>
                                                 </span>

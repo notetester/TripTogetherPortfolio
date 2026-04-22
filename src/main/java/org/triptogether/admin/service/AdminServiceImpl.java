@@ -1,6 +1,7 @@
 package org.triptogether.admin.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.admin.mapper.AdminMapper;
@@ -8,9 +9,13 @@ import org.triptogether.config.IpBlockMapper;
 import org.triptogether.admin.vo.*;
 import org.triptogether.auth.vo.UserRole;
 import org.triptogether.auth.vo.UserLoginHistoryVO;
+import org.triptogether.myPage.function.NotificationUrlBuilder;
+import org.triptogether.myPage.service.MyPageService;
+import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.report.vo.ReportSearchDto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +27,14 @@ import java.util.UUID;
  * <p>컨트롤러는 화면 흐름만 담당하고,</p>
  * <p>조회 조건 보정 / 허용값 검증 / 페이징 계산은 이 서비스에서 맡는다.</p>
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
 
     private final AdminMapper adminMapper;
     private final IpBlockMapper ipBlockMapper;
+    private final MyPageService myPageService;
 
     // ===== 대시보드 통계 =====
 
@@ -175,6 +182,36 @@ public class AdminServiceImpl implements AdminService {
             String ipRuleTargetKey = buildIpRuleTargetKey(normalizedIp);
             ipBlockMapper.deactivateUserActionBlockedIpByTargetKey(ipRuleTargetKey, actorUserIdx);
             ipBlockMapper.upsertBlockedIpWithHistory(normalizedIp, ipRuleTargetKey, reason, userIdx, blockType, actorUserIdx, expiresAt, blockRequestId, historyBlockIdx, sourceBlocklistIdx);
+        }
+
+        // 계정 차단 알림 (USER_ONLY / USER_IP 일 때만, IP_ONLY 제외)
+        if ("USER_ONLY".equals(blockType) || "USER_IP".equals(blockType)) {
+            notifyAccountBlocked(userIdx, reason, expiresAt);
+        }
+    }
+
+    // 계정 차단 시 본인에게 알림 발송
+    private void notifyAccountBlocked(Long userIdx, String reason, LocalDateTime expiresAt) {
+        try {
+            String message;
+            if (expiresAt != null) {
+                String until = expiresAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                message = "계정이 " + until + "까지 차단되었어요.";
+            } else {
+                message = "계정이 차단되었어요.";
+            }
+            if (reason != null && !reason.isBlank()) {
+                message += " 사유: " + reason;
+            }
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(userIdx);
+            notification.setSourceType("account_block");
+            notification.setSourceId(userIdx);
+            notification.setMessage(message);
+            notification.setTargetUrl(NotificationUrlBuilder.mypage());
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("계정 차단 알림 발송 실패: userIdx={}", userIdx, e);
         }
     }
 

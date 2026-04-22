@@ -20,11 +20,12 @@
 
     // 소스 타입 → 표시 라벨
     const TYPE_LABELS = {
-        community: '[커뮤니티]',
-        inquiry:   '[문의]',
-        report:    '[신고]',
-        levelup:   '[레벨업]',
-        grade:     '[등급]'
+        community:     '[커뮤니티]',
+        inquiry:       '[문의]',
+        report:        '[신고]',
+        levelup:       '[레벨업]',
+        grade:         '[등급]',
+        account_block: '[계정]'
     };
     function typeLabel(sourceType) {
         return TYPE_LABELS[sourceType] || '[알림]';
