@@ -2,28 +2,43 @@
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="reports"/>
-<c:set var="pageTitle" value="신고 상세"/>
+<spring:message code="admin.reports.detail.pageTitle" var="adminReportsDetailPageTitle"/>
+<spring:message code="admin.reports.detail.backToList" var="adminReportsDetailBackToList"/>
+<spring:message code="admin.reports.detail.reporterInfoTitle" var="adminReportsDetailReporterInfoTitle"/>
+<spring:message code="admin.reports.detail.processingTitle" var="adminReportsDetailProcessingTitle"/>
+<spring:message code="admin.reports.detail.confirmRejected" var="adminReportsDetailConfirmRejected"/>
+<spring:message code="admin.reports.detail.confirmDeleteContent" var="adminReportsDetailConfirmDeleteContent"/>
+<spring:message code="admin.reports.detail.confirmBlockAuthor" var="adminReportsDetailConfirmBlockAuthor"/>
+<spring:message code="admin.reports.detail.confirmBlockUser" var="adminReportsDetailConfirmBlockUser"/>
+<spring:message code="admin.reports.detail.confirmDeleteAndBlock" var="adminReportsDetailConfirmDeleteAndBlock"/>
+<spring:message code="admin.reports.detail.confirmDeleteAndBlockReview" var="adminReportsDetailConfirmDeleteAndBlockReview"/>
+<spring:message code="admin.reports.detail.confirmDeleteReview" var="adminReportsDetailConfirmDeleteReview"/>
+<spring:message code="admin.reports.detail.confirmRevert" var="adminReportsDetailConfirmRevert"/>
+<spring:message code="admin.reports.detail.processFailed" var="adminReportsDetailProcessFailed"/>
+<spring:message code="admin.common.memberInfoView" var="adminCommonMemberInfoView"/>
+<c:set var="pageTitle" value="${adminReportsDetailPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div style="margin-bottom:16px;">
-        <a href="javascript:goBackToList()" style="color:#64748b;text-decoration:none;font-size:13px;">← 목록으로</a>
+        <a href="javascript:goBackToList()" class="adm-back-link">← ${adminReportsDetailBackToList}</a>
     </div>
 
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start;">
+    <div class="adm-split-layout">
 
         <%-- ── 왼쪽: 신고 내용 ── --%>
         <div>
             <div class="adm-card">
                 <div class="adm-card-head">
-                    <div class="adm-card-title">신고 #${report.reportId}</div>
+                    <div class="adm-card-title"><spring:message code="admin.reports.detail.title" arguments="${report.reportId}"/></div>
                     <div style="display:flex;gap:8px;align-items:center;">
                         <span class="status-badge ${report.status}">
                             <c:choose>
-                                <c:when test="${report.status eq 'IN_REVIEW'}">검토중</c:when>
-                                <c:when test="${report.status eq 'RESOLVED'}">처리완료</c:when>
-                                <c:when test="${report.status eq 'DISMISSED'}">반려</c:when>
+                                <c:when test="${report.status eq 'IN_REVIEW'}"><spring:message code="admin.reports.status.inReview"/></c:when>
+                                <c:when test="${report.status eq 'RESOLVED'}"><spring:message code="admin.reports.status.resolved"/></c:when>
+                                <c:when test="${report.status eq 'DISMISSED'}"><spring:message code="admin.reports.status.dismissed"/></c:when>
                                 <c:otherwise>${report.status}</c:otherwise>
                             </c:choose>
                         </span>
@@ -33,19 +48,19 @@
                             <a href="${pageContext.request.contextPath}/community/${report.targetId}"
                                target="_blank"
                                class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;">원글 보기</a>
+                               style="font-size:12px;text-decoration:none;"><spring:message code="admin.reports.detail.viewOriginal"/></a>
                         </c:if>
                         <c:if test="${report.targetType eq 'comment' and report.targetStatus ne 'DELETED'}">
                             <a href="${pageContext.request.contextPath}/community/${empty report.sourceId ? report.targetPostId : report.sourceId}"
                                target="_blank"
                                class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;">원글 보기</a>
+                               style="font-size:12px;text-decoration:none;"><spring:message code="admin.reports.detail.viewOriginal"/></a>
                         </c:if>
                         <c:if test="${report.targetType eq 'review' and report.targetStatus ne 'DELETED' and not empty report.targetSpotIdx}">
                             <a href="${pageContext.request.contextPath}/detail/${report.targetSpotIdx}"
                                target="_blank"
                                class="adm-btn adm-btn-ghost"
-                               style="font-size:12px;text-decoration:none;">스팟 보기</a>
+                               style="font-size:12px;text-decoration:none;"><spring:message code="admin.reports.detail.viewSpot"/></a>
                         </c:if>
                     </div>
                 </div>
@@ -53,21 +68,21 @@
 
                     <%-- 대상 정보 --%>
                     <div style="display:flex;flex-direction:column;gap:14px;">
-                        <div style="display:flex;gap:12px;">
-                            <div style="min-width:90px;font-size:12px;color:#64748b;">신고 대상</div>
+                        <div class="adm-meta-row">
+                            <div class="adm-meta-key"><spring:message code="admin.reports.detail.reportTarget"/></div>
                             <div class="adm-detail-value">
                                 <c:choose>
                                     <c:when test="${report.targetType eq 'post'}">
-                                        커뮤니티 게시글<span class="adm-module-badge adm-module-community">커뮤니티</span>
+                                        <spring:message code="admin.reports.target.post"/><span class="adm-module-badge adm-module-community"><spring:message code="admin.layout.menu.community"/></span>
                                     </c:when>
                                     <c:when test="${report.targetType eq 'comment'}">
-                                        커뮤니티 댓글<span class="adm-module-badge adm-module-community">커뮤니티</span>
+                                        <spring:message code="admin.reports.target.comment"/><span class="adm-module-badge adm-module-community"><spring:message code="admin.layout.menu.community"/></span>
                                     </c:when>
                                     <c:when test="${report.targetType eq 'review'}">
-                                        여행지 리뷰<span class="adm-module-badge adm-module-explore">여행지</span>
+                                        <spring:message code="admin.reports.target.review"/><span class="adm-module-badge adm-module-explore"><spring:message code="admin.layout.menu.explore"/></span>
                                     </c:when>
                                     <c:when test="${report.targetType eq 'user'}">
-                                        유저<span class="adm-module-badge adm-module-user">회원</span>
+                                        <spring:message code="admin.reports.target.user"/><span class="adm-module-badge adm-module-user"><spring:message code="admin.common.member"/></span>
                                     </c:when>
                                     <c:otherwise>${report.targetType}</c:otherwise>
                                 </c:choose>
@@ -75,8 +90,8 @@
                                 <c:if test="${report.targetStatus eq 'DELETED'}">
                                     <span style="margin-left:8px;font-size:11px;background:#450a0a;color:#fca5a5;padding:2px 8px;border-radius:4px;">
                                         <c:choose>
-                                            <c:when test="${report.targetType eq 'review'}">🗑 차단됨</c:when>
-                                            <c:otherwise>🗑 삭제됨</c:otherwise>
+                                            <c:when test="${report.targetType eq 'review'}">🗑 <spring:message code="admin.reports.targetBlocked"/></c:when>
+                                            <c:otherwise>🗑 <spring:message code="admin.reports.targetDeleted"/></c:otherwise>
                                         </c:choose>
                                     </span>
                                 </c:if>
@@ -85,14 +100,14 @@
 
                         <%-- 컨텍스트 조각: 제목 / 본문 / 스팟명 --%>
                         <c:if test="${report.targetType eq 'post' and not empty report.targetTitle}">
-                            <div style="display:flex;gap:12px;">
-                                <div style="min-width:90px;font-size:12px;color:#64748b;">제목</div>
+                            <div class="adm-meta-row">
+                                <div class="adm-meta-key"><spring:message code="admin.common.title"/></div>
                                 <div class="adm-detail-value" style="font-weight:600;">${fn:escapeXml(report.targetTitle)}</div>
                             </div>
                         </c:if>
                         <c:if test="${report.targetType eq 'comment' and not empty report.targetContent}">
-                            <div style="display:flex;gap:12px;">
-                                <div style="min-width:90px;font-size:12px;color:#64748b;">댓글 본문</div>
+                            <div class="adm-meta-row">
+                                <div class="adm-meta-key"><spring:message code="admin.reports.detail.commentBody"/></div>
                                 <div class="adm-detail-value" style="white-space:pre-wrap;word-break:break-word;">
                                     <c:choose>
                                         <c:when test="${fn:length(report.targetContent) > 200}">${fn:escapeXml(fn:substring(report.targetContent, 0, 200))}…</c:when>
@@ -103,8 +118,8 @@
                         </c:if>
                         <c:if test="${report.targetType eq 'review'}">
                             <c:if test="${not empty report.targetSpotName}">
-                                <div style="display:flex;gap:12px;">
-                                    <div style="min-width:90px;font-size:12px;color:#64748b;">스팟</div>
+                                <div class="adm-meta-row">
+                                    <div class="adm-meta-key"><spring:message code="admin.reports.detail.spot"/></div>
                                     <div class="adm-detail-value" style="font-weight:600;">
                                         ${fn:escapeXml(report.targetSpotName)}
                                         <span style="color:#64748b;margin-left:4px;font-weight:400;">#${report.targetSpotIdx}</span>
@@ -112,8 +127,8 @@
                                 </div>
                             </c:if>
                             <c:if test="${not empty report.targetContent}">
-                                <div style="display:flex;gap:12px;">
-                                    <div style="min-width:90px;font-size:12px;color:#64748b;">리뷰 본문</div>
+                                <div class="adm-meta-row">
+                                    <div class="adm-meta-key"><spring:message code="admin.reports.detail.reviewBody"/></div>
                                     <div class="adm-detail-value" style="white-space:pre-wrap;word-break:break-word;">
                                         <c:choose>
                                             <c:when test="${fn:length(report.targetContent) > 200}">${fn:escapeXml(fn:substring(report.targetContent, 0, 200))}…</c:when>
@@ -124,17 +139,17 @@
                             </c:if>
                         </c:if>
 
-                        <div style="display:flex;gap:12px;">
-                            <div style="min-width:90px;font-size:12px;color:#64748b;">신고 사유</div>
+                        <div class="adm-meta-row">
+                            <div class="adm-meta-key"><spring:message code="admin.common.reason"/></div>
                             <div class="adm-detail-value">
                                 <c:choose>
-                                    <c:when test="${report.reason eq 'spam'}">스팸/광고</c:when>
-                                    <c:when test="${report.reason eq 'abuse'}">욕설/비방</c:when>
-                                    <c:when test="${report.reason eq 'privacy'}">개인정보 노출</c:when>
-                                    <c:when test="${report.reason eq 'adult'}">음란물</c:when>
-                                    <c:when test="${report.reason eq 'illegal'}">불법 정보</c:when>
-                                    <c:when test="${report.reason eq 'other'}">기타</c:when>
-                                    <c:when test="${report.reason eq 'user'}">유저 신고</c:when>
+                                    <c:when test="${report.reason eq 'spam'}"><spring:message code="admin.reports.reason.spam"/></c:when>
+                                    <c:when test="${report.reason eq 'abuse'}"><spring:message code="admin.reports.reason.abuse"/></c:when>
+                                    <c:when test="${report.reason eq 'privacy'}"><spring:message code="admin.reports.reason.privacy"/></c:when>
+                                    <c:when test="${report.reason eq 'adult'}"><spring:message code="admin.reports.reason.adult"/></c:when>
+                                    <c:when test="${report.reason eq 'illegal'}"><spring:message code="admin.reports.reason.illegal"/></c:when>
+                                    <c:when test="${report.reason eq 'other'}"><spring:message code="admin.reports.reason.other"/></c:when>
+                                    <c:when test="${report.reason eq 'user'}"><spring:message code="admin.reports.reason.user"/></c:when>
                                     <c:when test="${not empty report.reason}">${report.reason}</c:when>
                                     <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
                                 </c:choose>
@@ -142,21 +157,21 @@
                         </div>
 
                         <c:if test="${not empty report.description}">
-                            <div style="display:flex;gap:12px;">
-                                <div style="min-width:90px;font-size:12px;color:#64748b;">상세 설명</div>
-                                <div class="adm-report-desc">${report.description}</div>
-                            </div>
-                        </c:if>
+                        <div class="adm-meta-row">
+                            <div class="adm-meta-key"><spring:message code="admin.common.description"/></div>
+                            <div class="adm-report-desc">${report.description}</div>
+                        </div>
+                    </c:if>
 
-                        <div style="display:flex;gap:12px;">
-                            <div style="min-width:90px;font-size:12px;color:#64748b;">동일 대상 신고</div>
+                        <div class="adm-meta-row">
+                            <div class="adm-meta-key"><spring:message code="admin.reports.detail.sameTargetReports"/></div>
                             <div style="font-size:13px;">
                                 <c:choose>
                                     <c:when test="${report.targetReportCount >= 3}">
-                                        <span style="color:#f87171;font-weight:700;">🔴 ${report.targetReportCount}건</span>
+                                        <span style="color:#f87171;font-weight:700;">🔴 ${report.targetReportCount}<spring:message code="admin.common.countSuffix"/></span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span style="color:#94a3b8;">${report.targetReportCount}건</span>
+                                        <span style="color:#94a3b8;">${report.targetReportCount}<spring:message code="admin.common.countSuffix"/></span>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -164,12 +179,12 @@
 
                         <div style="border-top:1px solid #1e2736;padding-top:12px;
                                     display:flex;gap:20px;font-size:12px;color:#64748b;">
-                            <span>신고일 <fmt:formatDate value="${report.createdAt}" pattern="yyyy.MM.dd HH:mm"/></span>
+                            <span><spring:message code="admin.reports.reportedAt"/> <fmt:formatDate value="${report.createdAt}" type="both" dateStyle="short" timeStyle="short"/></span>
                             <c:if test="${not empty report.resolvedAt}">
-                                <span>처리일 <fmt:formatDate value="${report.resolvedAt}" pattern="yyyy.MM.dd HH:mm"/></span>
+                                <span><spring:message code="admin.reports.resolvedAt"/> <fmt:formatDate value="${report.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/></span>
                             </c:if>
                             <c:if test="${not empty report.resolveAction}">
-                                <span>처리 내용: ${report.resolveAction}</span>
+                                <span><spring:message code="admin.reports.detail.resolveAction"/> ${report.resolveAction}</span>
                             </c:if>
                         </div>
                     </div>
@@ -180,62 +195,62 @@
 
         <%-- ── 오른쪽: 신고자 정보 + 처리 버튼 ── --%>
         <div>
-            <div class="adm-card" style="position:sticky;top:80px;">
+            <div class="adm-card adm-side-sticky">
                 <div class="adm-card-head">
-                    <div class="adm-card-title">신고자 정보</div>
+                    <div class="adm-card-title">${adminReportsDetailReporterInfoTitle}</div>
                 </div>
                 <div class="adm-card-body">
-                    <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div class="adm-side-section">
 
                         <div>
-                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;">아이디</div>
+                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.userId"/></div>
                             <div style="font-size:14px;font-weight:600;">${report.userId}</div>
                         </div>
                         <div>
-                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;">닉네임</div>
+                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.nickname"/></div>
                             <div style="font-size:14px;font-weight:600;">${report.nickname}</div>
                         </div>
 
-                        <div style="border-top:1px solid #1e2736;padding-top:12px;">
+                        <div class="adm-meta-actions">
                             <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${report.userId}"
                                class="adm-btn adm-btn-ghost"
                                style="text-align:center;font-size:12px;text-decoration:none;display:block;">
-                                회원 정보 보기
+                                ${adminCommonMemberInfoView}
                             </a>
                         </div>
 
                         <%-- 처리 버튼: targetType에 따라 조건부 --%>
-                        <div style="border-top:1px solid #1e2736;padding-top:12px;">
-                            <div style="font-size:11px;color:#64748b;margin-bottom:8px;">처리</div>
+                        <div class="adm-meta-actions">
+                            <div style="font-size:11px;color:#64748b;margin-bottom:8px;">${adminReportsDetailProcessingTitle}</div>
                             <div style="display:flex;flex-direction:column;gap:6px;">
 
                                 <%-- post / comment / review 공통 버튼 --%>
                                 <c:if test="${report.targetType eq 'post' or report.targetType eq 'comment' or report.targetType eq 'review'}">
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:11px;color:#94a3b8;border-color:#94a3b8;"
-                                            onclick="resolve('REJECTED')">반려 (콘텐츠 유지)</button>
+                                            onclick="resolve('REJECTED')"><spring:message code="admin.reports.detail.rejectKeepContent"/></button>
                                     <%-- 이미 삭제/차단된 콘텐츠면 삭제 계열 버튼 숨김 --%>
                                     <c:if test="${report.targetStatus ne 'DELETED'}">
                                         <button class="adm-btn adm-btn-ghost"
                                                 style="font-size:11px;color:#fb923c;border-color:#fb923c;"
                                                 onclick="resolve('DELETE_CONTENT')">
-                                            <c:choose>
-                                                <c:when test="${report.targetType eq 'review'}">리뷰 차단</c:when>
-                                                <c:otherwise>콘텐츠 삭제</c:otherwise>
-                                            </c:choose>
-                                        </button>
-                                    </c:if>
+                                                <c:choose>
+                                                    <c:when test="${report.targetType eq 'review'}"><spring:message code="admin.reports.detail.blockReview"/></c:when>
+                                                    <c:otherwise><spring:message code="admin.reports.detail.deleteContent"/></c:otherwise>
+                                                </c:choose>
+                                            </button>
+                                        </c:if>
                                     <c:if test="${report.targetUserRole ne 'SYSTEM'}">
                                         <button class="adm-btn adm-btn-ghost"
                                                 style="font-size:11px;color:#f87171;border-color:#f87171;"
-                                                onclick="resolve('BLOCK_AUTHOR')">작성자 차단</button>
+                                                onclick="resolve('BLOCK_AUTHOR')"><spring:message code="admin.reports.detail.blockAuthor"/></button>
                                         <c:if test="${report.targetStatus ne 'DELETED'}">
                                             <button class="adm-btn adm-btn-ghost"
                                                     style="font-size:11px;color:#dc2626;border-color:#dc2626;"
                                                     onclick="resolve('DELETE_AND_BLOCK')">
                                                 <c:choose>
-                                                    <c:when test="${report.targetType eq 'review'}">리뷰 차단 + 작성자 차단</c:when>
-                                                    <c:otherwise>삭제 + 작성자 차단</c:otherwise>
+                                                    <c:when test="${report.targetType eq 'review'}"><spring:message code="admin.reports.detail.blockReviewAndAuthor"/></c:when>
+                                                    <c:otherwise><spring:message code="admin.reports.detail.deleteAndBlockAuthor"/></c:otherwise>
                                                 </c:choose>
                                             </button>
                                         </c:if>
@@ -246,11 +261,11 @@
                                 <c:if test="${report.targetType eq 'user'}">
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:11px;color:#94a3b8;border-color:#94a3b8;"
-                                            onclick="resolve('REJECTED')">반려 (계정 유지)</button>
+                                            onclick="resolve('REJECTED')"><spring:message code="admin.reports.detail.rejectKeepUser"/></button>
                                     <c:if test="${report.targetUserRole ne 'SYSTEM'}">
                                         <button class="adm-btn adm-btn-ghost"
                                                 style="font-size:11px;color:#f87171;border-color:#f87171;"
-                                                onclick="resolve('BLOCK_USER')">유저 차단</button>
+                                                onclick="resolve('BLOCK_USER')"><spring:message code="admin.reports.detail.blockUser"/></button>
                                     </c:if>
                                 </c:if>
 
@@ -258,7 +273,7 @@
                                 <c:if test="${report.status eq 'RESOLVED' or report.status eq 'DISMISSED'}">
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:11px;color:#7dd3fc;border-color:#7dd3fc;margin-top:4px;"
-                                            onclick="resolve('REVERT_TO_PENDING')">검토중으로 복원</button>
+                                            onclick="resolve('REVERT_TO_PENDING')"><spring:message code="admin.reports.detail.revertToPending"/></button>
                                 </c:if>
 
                             </div>
@@ -276,6 +291,17 @@
 var ctx        = '${pageContext.request.contextPath}';
 var reportId   = ${report.reportId};
 var targetType = '${report.targetType}';
+var REPORT_DETAIL_MSG = {
+    rejected: '${fn:escapeXml(adminReportsDetailConfirmRejected)}',
+    deleteContent: '${fn:escapeXml(adminReportsDetailConfirmDeleteContent)}',
+    blockAuthor: '${fn:escapeXml(adminReportsDetailConfirmBlockAuthor)}',
+    blockUser: '${fn:escapeXml(adminReportsDetailConfirmBlockUser)}',
+    deleteAndBlock: '${fn:escapeXml(adminReportsDetailConfirmDeleteAndBlock)}',
+    deleteAndBlockReview: '${fn:escapeXml(adminReportsDetailConfirmDeleteAndBlockReview)}',
+    deleteReview: '${fn:escapeXml(adminReportsDetailConfirmDeleteReview)}',
+    revert: '${fn:escapeXml(adminReportsDetailConfirmRevert)}',
+    processFailed: '${fn:escapeXml(adminReportsDetailProcessFailed)}'
+};
 
 function goBackToList() {
     var params = new URLSearchParams(window.location.search);
@@ -294,16 +320,16 @@ function goBackToList() {
 
 var isReview = (targetType === 'review');
 var actionLabels = {
-    REJECTED:         '반려 처리하시겠습니까?',
-    DELETE_CONTENT:   isReview ? '리뷰를 차단하시겠습니까?' : '콘텐츠를 삭제하시겠습니까?',
-    BLOCK_AUTHOR:     '작성자를 차단하시겠습니까?',
-    BLOCK_USER:       '해당 유저를 차단하시겠습니까?',
-    DELETE_AND_BLOCK: isReview ? '리뷰를 차단하고 작성자를 차단하시겠습니까?' : '콘텐츠를 삭제하고 작성자를 차단하시겠습니까?',
-    REVERT_TO_PENDING:'검토중 상태로 복원하시겠습니까?'
+    REJECTED:         REPORT_DETAIL_MSG.rejected,
+    DELETE_CONTENT:   isReview ? REPORT_DETAIL_MSG.deleteReview : REPORT_DETAIL_MSG.deleteContent,
+    BLOCK_AUTHOR:     REPORT_DETAIL_MSG.blockAuthor,
+    BLOCK_USER:       REPORT_DETAIL_MSG.blockUser,
+    DELETE_AND_BLOCK: isReview ? REPORT_DETAIL_MSG.deleteAndBlockReview : REPORT_DETAIL_MSG.deleteAndBlock,
+    REVERT_TO_PENDING: REPORT_DETAIL_MSG.revert
 };
 
 function resolve(action) {
-    if (!confirm(actionLabels[action] || '처리하시겠습니까?')) return;
+    if (!confirm(actionLabels[action] || REPORT_DETAIL_MSG.processFailed)) return;
     fetch(ctx + '/admin/report/' + reportId + '/resolve', {
         method: 'POST',
         headers: {
@@ -314,7 +340,7 @@ function resolve(action) {
     }).then(function(r) { return r.json(); })
       .then(function(d) {
         if (d.success) { location.reload(); }
-        else { alert(d.message || '처리 실패'); }
+        else { alert(d.message || REPORT_DETAIL_MSG.processFailed); }
     });
 }
 </script>

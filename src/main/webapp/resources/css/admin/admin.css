@@ -1282,3 +1282,252 @@ body.sa-light .adm-report-desc {
     color: #0f172a;
     background: #f1f5f9;
 }
+
+.adm-admin-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.adm-tab-link {
+    text-decoration: none;
+    text-align: center;
+    padding: 12px 14px;
+}
+
+.adm-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.adm-summary-card {
+    padding: 20px;
+}
+
+.adm-summary-label {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.adm-summary-value {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.adm-summary-value.is-primary { color: #38bdf8; }
+.adm-summary-value.is-success { color: #34d399; }
+.adm-summary-value.is-warning { color: #fbbf24; }
+.adm-summary-value.is-accent  { color: #fb923c; }
+.adm-summary-value.is-danger  { color: #f87171; }
+.adm-summary-sub {
+    font-size: 11px;
+    color: #475569;
+    margin-top: 4px;
+}
+
+.adm-muted-note {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.adm-muted-inline {
+    color: #475569;
+}
+
+.adm-inline-warning {
+    font-size: 10px;
+    background: #422006;
+    color: #fb923c;
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+body.sa-light .adm-inline-warning {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.adm-inline-danger {
+    font-size: 10px;
+    background: #7f1d1d;
+    color: #fca5a5;
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+body.sa-light .adm-inline-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.adm-mono-text {
+    font-size: 11px;
+    color: #94a3b8;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+body.sa-light .adm-mono-text {
+    color: #475569;
+}
+
+.adm-link-ellipsis {
+    font-size: 12px;
+    color: #7dd3fc;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+body.sa-light .adm-link-ellipsis {
+    color: #2563eb;
+}
+
+.adm-cell-ellipsis {
+    font-size: 13px;
+    color: #e2e8f0;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+body.sa-light .adm-cell-ellipsis {
+    color: #0f172a;
+}
+
+.adm-split-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.adm-side-sticky {
+    position: sticky;
+    top: 80px;
+}
+
+.adm-back-link {
+    color: #64748b;
+    text-decoration: none;
+    font-size: 13px;
+}
+body.sa-light .adm-back-link {
+    color: #475569;
+}
+
+.adm-meta-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.adm-meta-row {
+    display: flex;
+    gap: 12px;
+}
+
+.adm-meta-key {
+    min-width: 90px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.adm-meta-actions {
+    border-top: 1px solid #1e2736;
+    padding-top: 12px;
+}
+body.sa-light .adm-meta-actions {
+    border-top-color: #e2e8f0;
+}
+
+.adm-side-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.adm-modal-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.adm-modal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.adm-modal-label {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.adm-modal-value {
+    color: #94a3b8;
+    font-size: 13px;
+}
+body.sa-light .adm-modal-value {
+    color: #475569;
+}
+
+.adm-warning-box {
+    margin-top: 12px;
+    padding: 10px;
+    background: #422006;
+    border-radius: 6px;
+    color: #fb923c;
+    font-size: 12px;
+}
+body.sa-light .adm-warning-box {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.adm-action-stack {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.adm-link-button {
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+@media (max-width: 900px) {
+    .adm-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .adm-split-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-side-sticky {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .adm-admin-tabs,
+    .adm-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-meta-row,
+    .adm-modal-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .adm-meta-key {
+        min-width: 0;
+    }
+}
