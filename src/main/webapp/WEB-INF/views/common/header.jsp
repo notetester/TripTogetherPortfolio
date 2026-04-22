@@ -5,6 +5,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+    (function () {
+        // 구버전 키(sa_theme) → 신규 키(tt_theme) 일회성 마이그레이션
+        try {
+            var legacy = localStorage.getItem('sa_theme');
+            if (legacy !== null) {
+                if (!localStorage.getItem('tt_theme')) {
+                    localStorage.setItem('tt_theme', legacy === 'sa-light' ? 'light' : 'dark');
+                }
+                localStorage.removeItem('sa_theme');
+            }
+            // 일반 사이트 기본은 라이트. tt_theme === 'dark' 일 때만 html.dark 적용
+            if (localStorage.getItem('tt_theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        } catch (e) {}
+    })();
+    </script>
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/TripTogetherFavicon.png"> <%-- 파비콘 --%>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +33,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/header.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/notification.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/item-effects.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/dark-theme.css">
     <c:if test="${not empty pageCSS}">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/${pageCSS}">
     </c:if>
@@ -48,6 +67,7 @@
 
         </nav>
         <div class="hr">
+            <button type="button" class="tt-theme-btn" id="ttThemeBtn" aria-label="Toggle theme">🌙</button>
             <label>
                 <select class="lang-sel" id="langSel">
                     <option value="ko" ${pageContext.response.locale.language == 'ko' ? 'selected' : ''}><spring:message code="header.lang.ko"/></option>
@@ -137,6 +157,28 @@ function toggleViewMode() {
 </c:if>
 
 <script>
+(function () {
+    const btn = document.getElementById('ttThemeBtn');
+    if (!btn) return;
+
+    const syncIcon = function () {
+        btn.textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    };
+    syncIcon();
+
+    btn.addEventListener('click', function () {
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            localStorage.setItem('tt_theme', 'light');
+        } else {
+            html.classList.add('dark');
+            localStorage.setItem('tt_theme', 'dark');
+        }
+        syncIcon();
+    });
+})();
+
 (function () {
     const langSel = document.getElementById('langSel');
     if (!langSel) return;
