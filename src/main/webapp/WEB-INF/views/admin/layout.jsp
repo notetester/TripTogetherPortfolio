@@ -106,6 +106,13 @@
                 <span class="adm-nav-badge soon"><spring:message code="admin.layout.soon"/></span>
             </span>
 
+            <c:if test="${hasAiHelperAdmin}">
+            <div class="adm-nav-section" style="margin-top:8px;">AI 도우미</div>
+            <a class="adm-nav-item ${activeMenu=='aiHelper'?'active':''}" href="${pageContext.request.contextPath}/admin/ai-helper">
+                <span class="adm-nav-icon">🤖</span> AI 도우미 관리
+            </a>
+            </c:if>
+
             <div class="adm-nav-section" style="margin-top:8px;"><spring:message code="admin.layout.section.system"/></div>
             <a class="adm-nav-item ${activeMenu=='superAdmin'?'active':''}" href="${pageContext.request.contextPath}/superAdmin">
                 <span class="adm-nav-icon">🔑</span> <spring:message code="admin.layout.menu.superAdmin"/>

@@ -47,7 +47,7 @@ Mapper SQL is in `src/main/resources/mapper/*.xml`. Views are JSPs in `src/main/
 - `community` — Community posts (types: `tip`, `question`, general), tags, images, comments, replies, likes, reports. Soft-deletes: status set to `'DELETED'`.
 - `courses` — Travel plans with ordered spot lists (PLAN_SPOT table).
 - `assistant` — Multi-turn AI travel assistant via Claude API (`claude-3-5-haiku-20241022`). Conversation history managed in-memory per request.
-- `common` — `MainController` (home/index routing) and `ChatbotController` (site navigation chatbot via `claude-sonnet-4-20250514` that returns structured JSON with links and quick replies).
+- `common` — `MainController` (home/index routing) and `ChatbotController` (footer chatbot via Gemini `gemini-2.5-flash`). ChatGPT-style multiple conversation groups (CHATBOT_CONVERSATION), DB-persisted messages, grade-based quotas (CHATBOT_GRADE_QUOTA: GUEST/BRONZE/.../PLATINUM), daily usage limits, IP/USER chatbot-specific blocks (CHATBOT_BLOCK, separate from USER_BLOCKLIST). Assistant module is unrelated (Claude-based).
 - `admin` — Admin dashboard: member management, inquiry management, login audit logs, security audit logs, stats.
 - `inquiry` — 1:1 user inquiry system with admin answers.
 - `myPage` — Profile editing, social account linking/unlinking, notification feed.
@@ -84,7 +84,11 @@ Files are stored at `${file.upload.path}` (default: `src/main/resources/upload/`
 
 ### Notification system
 
-`MyPageService.addNotification(FeedNotificationDto)` is called cross-module (e.g., from `CommunityServiceImpl`) when events occur on a user's content.
+`MyPageService.addNotification(FeedNotificationDto)` is called cross-module (e.g., from `CommunityServiceImpl`) when events occur on a user's content. Read/unread model via `is_read`; target URL column stored per notification. Real-time push via SSE (`/sse/notifications`, `NotificationSseService`). Header bell + dropdown injected by `NotificationInterceptor`; toast popup on new arrivals.
+
+### Chatbot system (common)
+
+Footer chatbot uses Gemini (`gemini-2.0-flash`). Uses `ChatbotService.ask(request, user, anonSessionId, ip)` with the pipeline: block check → quota check → conversation resolve/create → Gemini call → save messages → quota increment. Grade quota from `CHATBOT_GRADE_QUOTA` (ADMIN/SUPERADMIN bypass). Conversation ownership: either `user_idx` (logged-in) or `anon_session_id` (guest, sessionStorage-tracked). Admin page `/admin/ai-helper` requires `AI_HELPER_ADMIN` permission. Do NOT confuse with `assistant` module (Claude-based, independent).
 
 ---
 
@@ -156,12 +160,9 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 
 ## 커뮤니티 신고/차단 상태 규칙 (중요)
 - **신고 3회 이상 누적 (`report_count >= 3`)**:
-  - `post_status` / `comment_status`는 `'BLOCKED'`로 전환됨
-  - 그러나 일반 사용자 목록에 계속 표시됨 (리스트 쿼리 조건에 포함)
+  - 일반 사용자 목록에 계속 표시됨 (리스트 쿼리 조건에 포함) BLOCKED 되지 않음 매우 중요
   - 본문 BLUR 처리 + "⚠️ 신고된 콘텐츠입니다. 클릭하여 확인" 오버레이
   - 클릭하면 블러 벗겨져 내용 공개 (점진적 공개 UX)
 - **관리자 직접 차단 (`report_count < 3` + `status='BLOCKED'`)**:
   - 일반 사용자 목록에서 **완전 숨김** ("blind")
   - 관리자 모드에서만 표시
-- 즉, `BLOCKED` 상태값 자체는 같음. `report_count` 조건으로 렌더링 분기
-- "BLOCKED = 안 보임"이라고 단정 금지. 반드시 `report_count`까지 확인할 것

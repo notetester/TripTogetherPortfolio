@@ -2071,6 +2071,28 @@ CREATE TABLE IF NOT EXISTS `MYPAGE_FEED_NOTIFICATION` (
   KEY `idx_user_unread` (`user_idx`,`is_read`,`created_at` DESC)
 ) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='마이페이지 피드 알림';
 
+-- ============================================
+-- 마이그레이션: 알림 타겟 URL 및 복합 인덱스 추가
+-- ============================================
+ALTER TABLE `MYPAGE_FEED_NOTIFICATION`
+  ADD COLUMN `target_url` VARCHAR(255) NULL COMMENT '알림 클릭 시 이동할 상대경로 (contextPath 제외)' AFTER `message`;
+
+ALTER TABLE `MYPAGE_FEED_NOTIFICATION`
+  ADD INDEX `idx_user_unread` (`user_idx`, `is_read`, `created_at` DESC);
+
+-- 기존 데이터 백필
+UPDATE `MYPAGE_FEED_NOTIFICATION`
+   SET `target_url` = CONCAT('/community/', `source_id`)
+ WHERE `source_type` = 'community' AND `target_url` IS NULL;
+
+UPDATE `MYPAGE_FEED_NOTIFICATION`
+   SET `target_url` = CONCAT('/inquiry/', `source_id`)
+ WHERE `source_type` = 'inquiry' AND `target_url` IS NULL;
+
+UPDATE `MYPAGE_FEED_NOTIFICATION`
+   SET `target_url` = '/mypage'
+ WHERE `source_type` IN ('report', 'levelup', 'grade') AND `target_url` IS NULL;
+
 -- 테이블 데이터 team1_db.MYPAGE_FEED_NOTIFICATION:~17 rows (대략적) 내보내기
 INSERT INTO `MYPAGE_FEED_NOTIFICATION` (`notification_id`, `user_idx`, `source_type`, `source_id`, `message`, `target_url`, `created_at`, `is_read`) VALUES
 	(57, 2, 'community', 87, '내 글에 새 댓글이 달렸어요.', '/community/87', '2026-04-15 07:07:34', 0),

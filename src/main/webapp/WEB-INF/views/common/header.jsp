@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <head>
     <meta charset="UTF-8">
@@ -12,6 +13,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/variables.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/layout.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/header.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/notification.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/item-effects.css">
     <c:if test="${not empty pageCSS}">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/${pageCSS}">
@@ -56,6 +58,58 @@
             </label>
             <c:choose>
                 <c:when test="${not empty sessionScope.loginUser}">
+                    <%-- 알림 벨 --%>
+                    <div class="noti-wrap">
+                        <button type="button" class="noti-bell" id="notiBell" aria-label="알림">
+                            <span class="noti-bell-icon">🔔</span>
+                            <c:if test="${headerUnreadCount > 0}">
+                                <span class="noti-badge">${headerUnreadCount > 99 ? '99+' : headerUnreadCount}</span>
+                            </c:if>
+                        </button>
+                        <div class="noti-dropdown" id="notiDropdown" hidden>
+                            <div class="noti-dropdown-head">
+                                <span class="noti-dropdown-title">알림</span>
+                                <button type="button" class="noti-mark-all" id="notiMarkAll">모두 읽음</button>
+                            </div>
+                            <div class="noti-dropdown-body">
+                                <c:choose>
+                                    <c:when test="${empty headerRecentNotifications}">
+                                        <div class="noti-empty">새로운 알림이 없어요.</div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach var="n" items="${headerRecentNotifications}">
+                                            <c:set var="readClass" value=""/>
+                                            <c:if test="${n.isRead}">
+                                                <c:set var="readClass" value="is-read"/>
+                                            </c:if>
+                                            <div class="noti-row ${readClass}"
+                                                 data-id="${n.notificationId}"
+                                                 data-target="${n.targetUrl}">
+                                                <span class="noti-type">
+                                                    <c:choose>
+                                                        <c:when test="${n.sourceType eq 'community'}">[커뮤니티]</c:when>
+                                                        <c:when test="${n.sourceType eq 'inquiry'}">[문의]</c:when>
+                                                        <c:when test="${n.sourceType eq 'report'}">[신고]</c:when>
+                                                        <c:when test="${n.sourceType eq 'levelup'}">[레벨업]</c:when>
+                                                        <c:when test="${n.sourceType eq 'grade'}">[등급]</c:when>
+                                                        <c:when test="${n.sourceType eq 'account_block'}">[계정]</c:when>
+                                                        <c:otherwise>[알림]</c:otherwise>
+                                                    </c:choose>
+                                                </span>
+                                                <span class="noti-msg">${n.message}</span>
+                                                <span class="noti-date">
+                                                    <fmt:formatDate value="${n.createdAt}" pattern="MM-dd HH:mm"/>
+                                                </span>
+                                            </div>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <div class="noti-dropdown-foot">
+                                <a href="${pageContext.request.contextPath}/mypage">전체 보기</a>
+                            </div>
+                        </div>
+                    </div>
                     <span class="user-nick">${sessionScope.loginUser.nickname}</span>
                     <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/logout'"><spring:message code="header.auth.logout"/></button>
                 </c:when>
@@ -103,3 +157,6 @@ function toggleViewMode() {
     });
 })();
 </script>
+<c:if test="${not empty sessionScope.loginUser}">
+<script src="${pageContext.request.contextPath}/resources/js/common/notification.js" defer></script>
+</c:if>

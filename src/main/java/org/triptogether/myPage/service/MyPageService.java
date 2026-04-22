@@ -61,14 +61,26 @@ public interface MyPageService {
     // 알림 목록 조회 (최신순 10개)
     List<FeedNotificationDto> getNotifications(Long userIdx);
 
+    // 헤더 드롭다운용 최근 N개 조회
+    List<FeedNotificationDto> getRecentNotifications(Long userIdx, int limit);
+
     // 알림 총 개수 조회
     int getNotificationCount(Long userIdx);
+
+    // 안읽은 알림 개수 조회 (배지용)
+    int getUnreadCount(Long userIdx);
 
     // 알림 단건 조회
     FeedNotificationDto getNotification(Long notificationId);
 
     // 알림 등록 (크로스모듈 호출 - community/inquiry/report → myPage)
     void addNotification(FeedNotificationDto notification);
+
+    // 알림 단건 읽음 처리
+    void markAsRead(Long notificationId);
+
+    // 알림 전체 읽음 처리
+    void markAllAsRead(Long userIdx);
 
     // 알림 단건 삭제
     void deleteNotification(Long notificationId);

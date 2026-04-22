@@ -21,6 +21,12 @@ public class FeedNotificationDto {
     /** 알림 메시지 */
     private String message;
 
+    /** 알림 클릭 시 이동할 상대경로 (contextPath 제외) */
+    private String targetUrl;
+
     /** 알림 생성 일시 */
     private Date createdAt;
+
+    /** 읽음 여부 (false: 안읽음, true: 읽음) */
+    private Boolean isRead;
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.report.mapper.ReportMapper;
@@ -141,6 +142,7 @@ public class ReportServiceImpl implements ReportService {
                 notification.setMessage("RESOLVED".equals(status)
                         ? "접수하신 신고가 처리되었습니다."
                         : "접수하신 신고가 반려되었습니다.");
+                notification.setTargetUrl(NotificationUrlBuilder.report());
                 myPageService.addNotification(notification);
             }
         }

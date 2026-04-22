@@ -499,37 +499,55 @@
             <div class="mp-card-head">
                 <div class="mp-card-title">
                     <span class="mp-card-icon">📬</span> <spring:message code="mypage.card.notifications"/>
-                    <c:if test="${not empty notifications}">
-                        <span class="mp-notif-count">${totalNotificationCount}</span>
+                    <c:if test="${headerUnreadCount > 0}">
+                        <span class="mp-notif-count">${headerUnreadCount}</span>
                     </c:if>
                 </div>
             </div>
-            <div class="mp-notif-list">
+            <div class="mp-notif-list" id="mpNotifList">
                 <c:choose>
                     <c:when test="${empty notifications}">
                         <div class="mp-notif-empty"><spring:message code="mypage.empty.notifications"/></div>
                     </c:when>
                     <c:otherwise>
-                        <c:forEach var="noti" items="${notifications}">
-                            <div class="mp-notif-item" data-notification-id="${noti.notificationId}"
-             onclick="deleteNotification('${noti.notificationId}', '${noti.sourceType}', '${noti.sourceId}')">
-                        <span class="mp-notif-type">
-                            <c:choose>
-                                <c:when test="${noti.sourceType eq 'community'}">[<spring:message code="mypage.notification.type.community"/>]</c:when>
-                                <c:when test="${noti.sourceType eq 'inquiry'}">[<spring:message code="mypage.notification.type.inquiry"/>]</c:when>
-                                <c:when test="${noti.sourceType eq 'report'}">[<spring:message code="mypage.notification.type.report"/>]</c:when>
-                                <c:otherwise>[<spring:message code="mypage.notification.type.default"/>]</c:otherwise>
-                            </c:choose>
-                        </span>
-                                <span class="mp-notif-msg">${noti.message}</span>
-                                <span class="mp-notif-date">
-                            <fmt:formatDate value="${noti.createdAt}" pattern="yyyy-MM-dd"/>
-                        </span>
-                            </div>
-                        </c:forEach>
+<c:forEach var="noti" items="${notifications}">
+    <c:set var="unreadClass" value="unread"/>
+    <c:if test="${noti.isRead}">
+        <c:set var="unreadClass" value=""/>
+    </c:if>
+
+    <div class="mp-notif-item ${unreadClass}"
+         data-notification-id="${noti.notificationId}"
+         data-target="${noti.targetUrl}">
+        <span class="mp-notif-type">
+            <c:choose>
+                <c:when test="${noti.sourceType eq 'community'}">[<spring:message code="mypage.notification.type.community"/>]</c:when>
+                <c:when test="${noti.sourceType eq 'inquiry'}">[<spring:message code="mypage.notification.type.inquiry"/>]</c:when>
+                <c:when test="${noti.sourceType eq 'report'}">[<spring:message code="mypage.notification.type.report"/>]</c:when>
+                <c:when test="${noti.sourceType eq 'levelup'}">[<spring:message code="mypage.notification.type.levelup"/>]</c:when>
+                <c:when test="${noti.sourceType eq 'grade'}">[<spring:message code="mypage.notification.type.grade"/>]</c:when>
+                <c:when test="${noti.sourceType eq 'account_block'}">[<spring:message code="mypage.notification.type.accountBlock"/>]</c:when>
+                <c:otherwise>[<spring:message code="mypage.notification.type.default"/>]</c:otherwise>
+            </c:choose>
+        </span>
+        <span class="mp-notif-msg">${noti.message}</span>
+        <span class="mp-notif-date">
+            <fmt:formatDate value="${noti.createdAt}" pattern="yyyy-MM-dd"/>
+        </span>
+        <button type="button"
+                class="mp-notif-delete"
+                aria-label="<spring:message code='mypage.notifications.delete'/>">🗑️</button>
+    </div>
+</c:forEach>
                     </c:otherwise>
                 </c:choose>
             </div>
+            <c:if test="${not empty notifications}">
+                <div class="mp-notif-actions">
+                    <button type="button" class="mp-notif-btn" id="mpNotifMarkAll">모두 읽음</button>
+                    <button type="button" class="mp-notif-btn mp-notif-btn-danger" id="mpNotifDeleteAll">전체 삭제</button>
+                </div>
+            </c:if>
             <div class="mp-notif-footer">
                 <spring:message code="mypage.notifications.limit"/>
             </div>
@@ -1365,27 +1383,82 @@
         if (e.persisted) location.reload();
     });
 
-    function deleteNotification(notificationId, sourceType, sourceId) {
-        var ctx = '${pageContext.request.contextPath}';
-        var fallbackUrl = ctx + (
-            sourceType === 'community' ? '/community/' + sourceId :
-            sourceType === 'inquiry'   ? '/inquiry/'   + sourceId :
-            sourceType === 'report'    ? '/report/'    + sourceId : '/mypage'
-        );
+    (function () {
+        const ctx = '${pageContext.request.contextPath}';
+        const list = document.getElementById('mpNotifList');
+        const markAllBtn = document.getElementById('mpNotifMarkAll');
+        const deleteAllBtn = document.getElementById('mpNotifDeleteAll');
+        if (!list) return;
 
-        fetch(ctx + '/mypage/notification/' + notificationId + '/read', {
-            method: 'POST',
-            headers: {'X-Requested-With': 'XMLHttpRequest'}
-        }).then(r => r.json())
-          .then(data => {
-              location.href = (data.success && data.redirectUrl)
-                  ? ctx + data.redirectUrl
-                  : fallbackUrl;
-          })
-          .catch(function() {
-              location.href = fallbackUrl;
-          });
-    }
+        // 이벤트 위임: 알림 아이템 클릭 or 삭제 버튼 클릭
+        list.addEventListener('click', function (e) {
+            const deleteBtn = e.target.closest('.mp-notif-delete');
+            const item = e.target.closest('.mp-notif-item');
+            if (!item) return;
+            const id = item.dataset.notificationId;
+
+            // 삭제 버튼 클릭 → 이벤트 전파 차단 + DELETE
+            if (deleteBtn) {
+                e.stopPropagation();
+                fetch(ctx + '/api/notifications/' + id, {
+                    method: 'DELETE',
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
+                }).then(r => r.json())
+                  .then(function (data) {
+                      if (data.success) item.remove();
+                  })
+                  .catch(function () {});
+                return;
+            }
+
+            // 아이템 클릭 → 읽음 처리 + 이동
+            const fallbackUrl = ctx + '/mypage';
+            fetch(ctx + '/api/notifications/' + id + '/read', {
+                method: 'POST',
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            }).then(r => r.json())
+              .then(function (data) {
+                  location.href = (data.success && data.targetUrl)
+                      ? ctx + data.targetUrl
+                      : fallbackUrl;
+              })
+              .catch(function () { location.href = fallbackUrl; });
+        });
+
+        // 모두 읽음
+        if (markAllBtn) {
+            markAllBtn.addEventListener('click', function () {
+                fetch(ctx + '/api/notifications/read-all', {
+                    method: 'POST',
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
+                }).then(r => r.json())
+                  .then(function (data) {
+                      if (!data.success) return;
+                      list.querySelectorAll('.mp-notif-item').forEach(function (el) {
+                          el.classList.remove('unread');
+                      });
+                      const badge = document.querySelector('.mp-notif-count');
+                      if (badge) badge.remove();
+                  })
+                  .catch(function () {});
+            });
+        }
+
+        // 전체 삭제
+        if (deleteAllBtn) {
+            deleteAllBtn.addEventListener('click', function () {
+                if (!confirm('모든 알림을 삭제하시겠습니까?')) return;
+                fetch(ctx + '/api/notifications', {
+                    method: 'DELETE',
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
+                }).then(r => r.json())
+                  .then(function (data) {
+                      if (data.success) location.reload();
+                  })
+                  .catch(function () {});
+            });
+        }
+    })();
 
     /**
      * 날짜 포맷팅 (YYYY-MM-DD)

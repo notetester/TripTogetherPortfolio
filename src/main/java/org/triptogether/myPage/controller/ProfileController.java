@@ -355,10 +355,11 @@ public class ProfileController {
         // 활성 등급 정책 목록 (등급 바의 "다음 등급 기준값" 산출에 사용)
         model.addAttribute("gradePolicies", walletService.getActiveMemberGradePolicies());
 
-        // ── 레벨업 알림 팝업용: 가장 최근 levelup 알림이 있으면 전달 후 삭제 ──
+        // ── 레벨업 알림 팝업용: 읽지 않은 levelup 알림이 있으면 전달 후 읽음 처리 ──
+        List<FeedNotificationDto> allNotifications = myPageService.getNotifications(freshUser.getUserIdx());
         FeedNotificationDto levelUpNoti = null;
-        for (FeedNotificationDto noti : notifications) {
-            if ("levelup".equals(noti.getSourceType())) {
+        for (FeedNotificationDto noti : allNotifications) {
+            if ("levelup".equals(noti.getSourceType()) && !Boolean.TRUE.equals(noti.getIsRead())) {
                 levelUpNoti = noti;
                 break;
             }
@@ -366,8 +367,8 @@ public class ProfileController {
         if (levelUpNoti != null) {
             // 팝업에 표시할 새 레벨 번호를 model에 전달
             model.addAttribute("levelUpLevel", levelUpNoti.getSourceId());
-            // 표시했으니 알림 삭제 (한 번만 팝업)
-            myPageService.deleteNotification(levelUpNoti.getNotificationId());
+            // 표시했으니 읽음 처리 (한 번만 팝업, 이력은 보존)
+            myPageService.markAsRead(levelUpNoti.getNotificationId());
         }
 
         return "mypage/index";
@@ -600,112 +601,6 @@ public class ProfileController {
         }
 
         return "redirect:/mypage";
-    }
-
-    /* =============================================
-   POST /mypage/notification/{notificationId}/read - 알림 삭제 및 리다이렉트 URL 반환
-   ============================================= */
-
-    /**
-     * 알림 클릭 처리.
-     * 알림을 삭제하고 연결된 콘텐츠(커뮤니티/문의/신고)의 리다이렉트 URL을 반환한다.
-     */
-    @PostMapping("/notification/{notificationId}/read")
-    @ResponseBody
-    public Map<String, Object> deleteNotification(@PathVariable Long notificationId) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            // 1. 알림 조회 (sourceType, sourceId 확인)
-            FeedNotificationDto notification = myPageService.getNotification(notificationId);
-
-            if (notification == null) {
-                result.put("success", false);
-                result.put("message", "알림을 찾을 수 없습니다.");
-                return result;
-            }
-
-            // 2. 알림 삭제
-            myPageService.deleteNotification(notificationId);
-
-            // 3. redirectUrl 생성
-            String redirectUrl = buildRedirectUrl(notification.getSourceType(), notification.getSourceId());
-
-            result.put("success", true);
-            result.put("redirectUrl", redirectUrl);
-        } catch (Exception e) {
-            log.error("알림 삭제 중 오류", e);
-            result.put("success", false);
-            result.put("message", "오류가 발생했습니다.");
-        }
-        return result;
-    }
-
-    /**
-     * sourceType과 sourceId를 기반으로 리다이렉트 URL 생성
-     */
-    private String buildRedirectUrl(String sourceType, Long sourceId) {
-        if ("community".equals(sourceType)) {
-            return "/community/" + sourceId;
-        } else if ("inquiry".equals(sourceType)) {
-            return "/inquiry/" + sourceId;
-        } else if ("report".equals(sourceType)) {
-            return "/report/" + sourceId;
-        }
-
-        return "/mypage";
-    }
-
-    /* =============================================
-   GET /mypage/notifications/all - 모든 알림 조회 (무제한)
-   ============================================= */
-
-    /**
-     * 전체 알림 목록 조회 (무제한).
-     * 메인에서 최신 10개만 보여주고, 더보기 시 이 API로 전체를 불러온다.
-     */
-    @GetMapping("/notifications/all")
-    @ResponseBody
-    public Map<String, Object> getAllNotifications(HttpSession session) {
-        Map<String, Object> result = new HashMap<>();
-        UsersVO user = loginUser(session);
-        if (user == null) {
-            result.put("success", false);
-            return result;
-        }
-        try {
-            List<FeedNotificationDto> notifications = myPageService.getAllNotifications(user.getUserIdx());
-            result.put("success", true);
-            result.put("notifications", notifications);
-        } catch (Exception e) {
-            result.put("success", false);
-        }
-        return result;
-    }
-
-    /* =============================================
-   POST /mypage/notifications/read-all - 모든 알림 삭제
-   ============================================= */
-
-    /**
-     * 모든 알림 삭제.
-     * 해당 유저의 알림을 전부 삭제한다.
-     */
-    @PostMapping("/notifications/read-all")
-    @ResponseBody
-    public Map<String, Object> deleteAllNotifications(HttpSession session) {
-        Map<String, Object> result = new HashMap<>();
-        UsersVO user = loginUser(session);
-        if (user == null) {
-            result.put("success", false);
-            return result;
-        }
-        try {
-            myPageService.deleteAllNotifications(user.getUserIdx());
-            result.put("success", true);
-        } catch (Exception e) {
-            result.put("success", false);
-        }
-        return result;
     }
 
     // ── 유틸 ──────────────────────────────────────

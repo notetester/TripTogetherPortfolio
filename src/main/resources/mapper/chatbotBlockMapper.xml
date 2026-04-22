@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.common.mapper.ChatbotBlockMapper">
+
+    <resultMap id="BlockResultMap" type="ChatbotBlockVO">
+        <id     property="blockId"     column="block_id"/>
+        <result property="blockType"   column="block_type"/>
+        <result property="blockValue"  column="block_value"/>
+        <result property="reason"      column="reason"/>
+        <result property="blockedBy"   column="blocked_by"/>
+        <result property="blockedAt"   column="blocked_at"/>
+        <result property="expiresAt"   column="expires_at"/>
+        <result property="isActive"    column="is_active"/>
+    </resultMap>
+
+    <!-- =============================================
+         1. 활성 차단 여부 (IP/USER)
+         ============================================= -->
+    <select id="isBlocked" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM CHATBOT_BLOCK
+        WHERE block_type  = #{blockType}
+          AND block_value = #{blockValue}
+          AND is_active   = 1
+          AND (expires_at IS NULL OR expires_at > NOW())
+    </select>
+
+    <!-- =============================================
+         2. 차단 등록 / 재활성화
+         - UNIQUE (is_active, block_type, block_value) 이므로
+           is_active=1 인 기존 행이 있으면 갱신, 없으면 INSERT
+         ============================================= -->
+    <insert id="upsertBlock" parameterType="ChatbotBlockVO">
+        INSERT INTO CHATBOT_BLOCK
+            (block_type, block_value, reason, blocked_by, blocked_at, expires_at, is_active)
+        VALUES
+            (#{blockType}, #{blockValue}, #{reason}, #{blockedBy}, NOW(), #{expiresAt}, 1)
+        ON DUPLICATE KEY UPDATE
+            reason     = VALUES(reason),
+            blocked_by = VALUES(blocked_by),
+            blocked_at = NOW(),
+            expires_at = VALUES(expires_at)
+    </insert>
+
+    <!-- =============================================
+         3. 차단 해제
+         ============================================= -->
+    <update id="deactivateBlock">
+        UPDATE CHATBOT_BLOCK
+           SET is_active = 0
+         WHERE block_id = #{blockId}
+    </update>
+
+    <!-- =============================================
+         4. 단건 조회
+         ============================================= -->
+    <select id="selectBlock" resultMap="BlockResultMap">
+        SELECT block_id, block_type, block_value, reason, blocked_by,
+               blocked_at, expires_at, is_active
+        FROM CHATBOT_BLOCK
+        WHERE block_id = #{blockId}
+    </select>
+
+    <!-- =============================================
+         5. 차단 목록 (관리자)
+         ============================================= -->
+    <select id="selectBlocks" resultMap="BlockResultMap">
+        SELECT block_id, block_type, block_value, reason, blocked_by,
+               blocked_at, expires_at, is_active
+        FROM CHATBOT_BLOCK
+        <if test="onlyActive">
+            WHERE is_active = 1
+        </if>
+        ORDER BY blocked_at DESC
+    </select>
+
+</mapper>

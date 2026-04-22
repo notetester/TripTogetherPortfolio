@@ -1120,10 +1120,12 @@
     gap: 12px;
     padding: 12px 16px;
     border-radius: 8px;
-    background: var(--gray-50);
+    background: #fff;
     cursor: pointer;
     transition: background .15s;
     min-height: 48px;
+    position: relative;
+    color: var(--gray-500);
 }
 
 .mp-notif-item:hover { background: var(--gray-100); }
@@ -1131,6 +1133,56 @@
 .mp-notif-item.unread {
     background: #eff6ff;
     border-left: 3px solid var(--blue);
+    color: var(--gray-800);
+}
+
+.mp-notif-item .mp-notif-msg { color: inherit; }
+.mp-notif-item.unread .mp-notif-msg { color: var(--gray-800); font-weight: 500; }
+
+/* 알림 삭제 버튼 (호버 시 표시) */
+.mp-notif-delete {
+    background: none;
+    border: none;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s, background .15s;
+}
+.mp-notif-item:hover .mp-notif-delete {
+    opacity: 0.6;
+}
+.mp-notif-delete:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* 하단 액션 버튼 영역 */
+.mp-notif-actions {
+    display: flex;
+    gap: 8px;
+    padding: 8px 20px 0;
+    justify-content: flex-end;
+}
+.mp-notif-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--gray-200);
+    background: #fff;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all .15s;
+}
+.mp-notif-btn:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+.mp-notif-btn-danger:hover {
+    border-color: #ef4444;
+    color: #ef4444;
 }
 
 .mp-notif-type {

@@ -1,6 +1,7 @@
 package org.triptogether.myPage.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.admin.vo.BusinessAccountApplicationVO;
@@ -17,11 +18,13 @@ import org.triptogether.myPage.vo.MyPageReviewDto;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MyPageServiceImpl implements MyPageService {
 
     private final MyPageMapper myPageMapper;
+    private final NotificationSseService notificationSseService;
 
     // ===== 커뮤니티 =====
 
@@ -188,8 +191,18 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
+    public List<FeedNotificationDto> getRecentNotifications(Long userIdx, int limit) {
+        return myPageMapper.selectRecentNotifications(userIdx, limit);
+    }
+
+    @Override
     public int getNotificationCount(Long userIdx) {
         return myPageMapper.selectNotificationCount(userIdx);
+    }
+
+    @Override
+    public int getUnreadCount(Long userIdx) {
+        return myPageMapper.selectUnreadCount(userIdx);
     }
 
     @Override
@@ -200,6 +213,21 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public void addNotification(FeedNotificationDto notification) {
         myPageMapper.insertNotification(notification);
+        try {
+            notificationSseService.sendTo(notification.getUserIdx(), notification);
+        } catch (Exception e) {
+            log.warn("SSE 푸시 실패 (DB 저장은 완료): userIdx={}", notification.getUserIdx(), e);
+        }
+    }
+
+    @Override
+    public void markAsRead(Long notificationId) {
+        myPageMapper.updateRead(notificationId);
+    }
+
+    @Override
+    public void markAllAsRead(Long userIdx) {
+        myPageMapper.updateReadAll(userIdx);
     }
 
     @Override
