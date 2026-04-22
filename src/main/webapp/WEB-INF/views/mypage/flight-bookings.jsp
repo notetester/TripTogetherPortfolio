@@ -8,6 +8,7 @@
 <spring:message code="mypage.common.status.reserved" var="statusReserved"/>
 <spring:message code="mypage.common.status.cancelled" var="statusCancelled"/>
 <spring:message code="mypage.booking.cancelPlaceholder" var="bookingCancelPlaceholder"/>
+<spring:message code="mypage.none" var="mypageNoneLabel"/>
 <main class="mp-container">
     <div class="mp-card">
         <div class="mp-card-head">
@@ -91,7 +92,7 @@
                                             <span><spring:message code="mypage.booking.cancelReason"/></span>
                                             <strong>
                                                 <c:choose>
-                                                    <c:when test="${empty booking.cancelReason}">-</c:when>
+                                                    <c:when test="${empty booking.cancelReason}">${mypageNoneLabel}</c:when>
                                                     <c:otherwise>${booking.cancelReason}</c:otherwise>
                                                 </c:choose>
                                             </strong>

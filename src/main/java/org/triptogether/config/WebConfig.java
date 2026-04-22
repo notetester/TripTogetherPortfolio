@@ -65,6 +65,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "classpath:messages/inquiry",
                 "classpath:messages/mypage",
                 "classpath:messages/package",
+                "classpath:messages/report",
                 "classpath:messages/recommend",
                 "classpath:messages/shop",
                 "classpath:messages/wallet"

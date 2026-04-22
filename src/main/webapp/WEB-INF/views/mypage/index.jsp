@@ -37,6 +37,21 @@
 <spring:message code="mypage.business.placeholder.managerPhone" var="businessManagerPhonePlaceholder"/>
 <spring:message code="mypage.business.placeholder.description" var="businessDescriptionPlaceholder"/>
 <spring:message code="mypage.notifications.deleteAllConfirm" var="notificationsDeleteAllConfirm"/>
+<spring:message code="mypage.grade.name.bronze" var="gradeBronzeLabel"/>
+<spring:message code="mypage.grade.name.silver" var="gradeSilverLabel"/>
+<spring:message code="mypage.grade.name.gold" var="gradeGoldLabel"/>
+<spring:message code="mypage.grade.name.diamond" var="gradeDiamondLabel"/>
+<spring:message code="mypage.grade.name.platinum" var="gradePlatinumLabel"/>
+<spring:message code="mypage.lang.en" var="mypageLangEnLabel"/>
+<spring:message code="mypage.lang.ja" var="mypageLangJaLabel"/>
+<spring:message code="mypage.lang.zh" var="mypageLangZhLabel"/>
+<spring:message code="mypage.level.badge" var="mypageLevelBadgeLabel"/>
+<spring:message code="mypage.level.expUnit" var="mypageLevelExpUnitLabel"/>
+<spring:message code="mypage.level.prefix" var="mypageLevelPrefix"/>
+<spring:message code="mypage.levelup.title" var="mypageLevelupTitle"/>
+<spring:message code="mypage.items.emptyIcon" var="mypageItemsEmptyIconLabel"/>
+<spring:message code="mypage.items.icon" var="mypageItemsIconLabel"/>
+<spring:message code="mypage.items.packageIcon" var="mypageItemsPackageIconLabel"/>
 
 <%-- ── 레벨 바 · 등급 바 공통 추가 스타일 ── --%>
 <style>
@@ -132,9 +147,9 @@
                     <span>
                         <c:choose>
                             <c:when test="${user.preferredLang eq 'ko'}">🇰🇷 <spring:message code="mypage.lang.ko"/></c:when>
-                            <c:when test="${user.preferredLang eq 'en'}">🇺🇸 English</c:when>
-                            <c:when test="${user.preferredLang eq 'ja'}">🇯🇵 日本語</c:when>
-                            <c:when test="${user.preferredLang eq 'zh'}">🇨🇳 中文</c:when>
+                            <c:when test="${user.preferredLang eq 'en'}">🇺🇸 ${mypageLangEnLabel}</c:when>
+                            <c:when test="${user.preferredLang eq 'ja'}">🇯🇵 ${mypageLangJaLabel}</c:when>
+                            <c:when test="${user.preferredLang eq 'zh'}">🇨🇳 ${mypageLangZhLabel}</c:when>
                             <c:otherwise>${user.preferredLang}</c:otherwise>
                         </c:choose>
                     </span>
@@ -155,12 +170,12 @@
                 <div class="mp-card-title"><span class="mp-card-icon">🏷️</span> <spring:message code="mypage.summary.title"/></div>
             </div>
             <div class="mp-info-grid">
-                <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.memberGrade"/></div><div class="mp-info-value">${user.memberGrade}</div></div>
+                <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.memberGrade"/></div><div class="mp-info-value"><c:choose><c:when test="${user.memberGrade eq 'BRONZE'}">${gradeBronzeLabel}</c:when><c:when test="${user.memberGrade eq 'SILVER'}">${gradeSilverLabel}</c:when><c:when test="${user.memberGrade eq 'GOLD'}">${gradeGoldLabel}</c:when><c:when test="${user.memberGrade eq 'DIAMOND'}">${gradeDiamondLabel}</c:when><c:when test="${user.memberGrade eq 'PLATINUM'}">${gradePlatinumLabel}</c:when><c:otherwise>${user.memberGrade}</c:otherwise></c:choose></div></div>
                 <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.verifiedMember"/></div><div class="mp-info-value"><c:choose><c:when test="${user.verifiedMember}"><span style="color:#15803d;">● <spring:message code="mypage.summary.verified"/></span></c:when><c:otherwise><span style="color:#64748b;">○ <spring:message code="mypage.summary.unverified"/></span></c:otherwise></c:choose></div></div>
                 <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.asset.cash"/></div><div class="mp-info-value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0"/></div></div>
                 <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.asset.mileage"/></div><div class="mp-info-value"><fmt:formatNumber value="${user.mileageBalance}" pattern="#,##0"/></div></div>
                 <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.asset.points"/></div><div class="mp-info-value"><fmt:formatNumber value="${user.pointBalance}" pattern="#,##0"/></div></div>
-                <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.levelExp"/></div><div class="mp-info-value">Lv.${user.levelNo} / <fmt:formatNumber value="${user.expPoints}" pattern="#,##0"/> EXP</div></div>
+                <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.levelExp"/></div><div class="mp-info-value">${mypageLevelPrefix} ${user.levelNo} / <fmt:formatNumber value="${user.expPoints}" pattern="#,##0"/> ${mypageLevelExpUnitLabel}</div></div>
                 <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.postCount"/></div><div class="mp-info-value">${user.totalPostCount}</div></div>
                 <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.commentCount"/></div><div class="mp-info-value">${user.totalCommentCount}</div></div>
             </div>
@@ -188,7 +203,7 @@
                 <%-- LEVEL 뱃지 + 바를 가로 한 줄로 (등급 바와 동일한 구조) --%>
                 <div class="mp-grade-row">
                     <%-- 왼쪽: LEVEL 뱃지 (BRONZE 뱃지와 동일한 알약 스타일) --%>
-                    <span class="mp-grade-badge mp-badge-level">⚡ LEVEL</span>
+                    <span class="mp-grade-badge mp-badge-level">⚡ ${mypageLevelBadgeLabel}</span>
                     <%-- 오른쪽: 레벨 경험치 바 --%>
                     <div class="mp-level-wrap">
                     <%--
@@ -206,11 +221,11 @@
                     <c:if test="${expPercent < 0}"><c:set var="expPercent" value="0" /></c:if>
 
                     <div class="mp-level-header">
-                        <span class="mp-level-label">Lv. ${user.levelNo}</span>
+                        <span class="mp-level-label">${mypageLevelPrefix} ${user.levelNo}</span>
                         <span class="mp-level-xp">
                             <fmt:formatNumber value="${user.expPoints}" pattern="#,##0" />
                             /
-                            <fmt:formatNumber value="${nextLevelExp}" pattern="#,##0" /> XP
+                            <fmt:formatNumber value="${nextLevelExp}" pattern="#,##0" /> ${mypageLevelExpUnitLabel}
                         </span>
                     </div>
                     <div class="mp-xp-bar">
@@ -272,17 +287,38 @@
                 </c:otherwise>
             </c:choose>
 
+            <c:set var="currentGradeLabel" value="${user.memberGrade}" />
+            <c:if test="${user.memberGrade eq 'BRONZE'}"><c:set var="currentGradeLabel" value="${gradeBronzeLabel}" /></c:if>
+            <c:if test="${user.memberGrade eq 'SILVER'}"><c:set var="currentGradeLabel" value="${gradeSilverLabel}" /></c:if>
+            <c:if test="${user.memberGrade eq 'GOLD'}"><c:set var="currentGradeLabel" value="${gradeGoldLabel}" /></c:if>
+            <c:if test="${user.memberGrade eq 'DIAMOND'}"><c:set var="currentGradeLabel" value="${gradeDiamondLabel}" /></c:if>
+            <c:if test="${user.memberGrade eq 'PLATINUM'}"><c:set var="currentGradeLabel" value="${gradePlatinumLabel}" /></c:if>
+
+            <c:set var="expectedGradeLabel" value="${expectedGrade}" />
+            <c:if test="${expectedGrade eq 'BRONZE'}"><c:set var="expectedGradeLabel" value="${gradeBronzeLabel}" /></c:if>
+            <c:if test="${expectedGrade eq 'SILVER'}"><c:set var="expectedGradeLabel" value="${gradeSilverLabel}" /></c:if>
+            <c:if test="${expectedGrade eq 'GOLD'}"><c:set var="expectedGradeLabel" value="${gradeGoldLabel}" /></c:if>
+            <c:if test="${expectedGrade eq 'DIAMOND'}"><c:set var="expectedGradeLabel" value="${gradeDiamondLabel}" /></c:if>
+            <c:if test="${expectedGrade eq 'PLATINUM'}"><c:set var="expectedGradeLabel" value="${gradePlatinumLabel}" /></c:if>
+
+            <c:set var="nextGradeLabel" value="${nextGradeName}" />
+            <c:if test="${nextGradeName eq 'BRONZE'}"><c:set var="nextGradeLabel" value="${gradeBronzeLabel}" /></c:if>
+            <c:if test="${nextGradeName eq 'SILVER'}"><c:set var="nextGradeLabel" value="${gradeSilverLabel}" /></c:if>
+            <c:if test="${nextGradeName eq 'GOLD'}"><c:set var="nextGradeLabel" value="${gradeGoldLabel}" /></c:if>
+            <c:if test="${nextGradeName eq 'DIAMOND'}"><c:set var="nextGradeLabel" value="${gradeDiamondLabel}" /></c:if>
+            <c:if test="${nextGradeName eq 'PLATINUM'}"><c:set var="nextGradeLabel" value="${gradePlatinumLabel}" /></c:if>
+
             <div class="mp-grade-bar-section">
                 <%-- 등급 뱃지 + 바를 가로로 나란히 배치 (레벨 바와 동일한 구조) --%>
                 <div class="mp-grade-row">
                     <%-- 왼쪽: 등급 뱃지 --%>
                     <span class="mp-grade-badge mp-grade-${user.memberGrade}">
                         <c:choose>
-                            <c:when test="${user.memberGrade eq 'BRONZE'}">🥉 BRONZE</c:when>
-                            <c:when test="${user.memberGrade eq 'SILVER'}">🥈 SILVER</c:when>
-                            <c:when test="${user.memberGrade eq 'GOLD'}">🥇 GOLD</c:when>
-                            <c:when test="${user.memberGrade eq 'DIAMOND'}">💎 DIAMOND</c:when>
-                            <c:when test="${user.memberGrade eq 'PLATINUM'}">👑 PLATINUM</c:when>
+                            <c:when test="${user.memberGrade eq 'BRONZE'}">🥉 ${gradeBronzeLabel}</c:when>
+                            <c:when test="${user.memberGrade eq 'SILVER'}">🥈 ${gradeSilverLabel}</c:when>
+                            <c:when test="${user.memberGrade eq 'GOLD'}">🥇 ${gradeGoldLabel}</c:when>
+                            <c:when test="${user.memberGrade eq 'DIAMOND'}">💎 ${gradeDiamondLabel}</c:when>
+                            <c:when test="${user.memberGrade eq 'PLATINUM'}">👑 ${gradePlatinumLabel}</c:when>
                             <c:otherwise>${user.memberGrade}</c:otherwise>
                         </c:choose>
                     </span>
@@ -315,19 +351,13 @@
                     </c:when>
                     <c:when test="${expectedGrade ne user.memberGrade}">
                         <div class="mp-grade-promotion">
-                            <spring:message code="mypage.grade.promotionExpected" arguments="${user.memberGrade},${expectedGrade}"/>
+                            <spring:message code="mypage.grade.promotionExpected" arguments="${currentGradeLabel},${expectedGradeLabel}"/>
                         </div>
                     </c:when>
                     <c:otherwise>
                         <div class="mp-grade-next-hint">
                             <spring:message code="mypage.grade.next"/>:
-                            <c:choose>
-                                <c:when test="${nextGradeName eq 'SILVER'}">🥈 SILVER</c:when>
-                                <c:when test="${nextGradeName eq 'GOLD'}">🥇 GOLD</c:when>
-                                <c:when test="${nextGradeName eq 'DIAMOND'}">💎 DIAMOND</c:when>
-                                <c:when test="${nextGradeName eq 'PLATINUM'}">👑 PLATINUM</c:when>
-                                <c:otherwise>${nextGradeName}</c:otherwise>
-                            </c:choose>
+                            ${nextGradeLabel}
                             (<spring:message code="mypage.grade.thisMonthPaymentPrefix"/> <fmt:formatNumber value="${nextGradeMin}" pattern="#,##0" /> C <spring:message code="mypage.grade.thisMonthPaymentSuffix"/>)
                         </div>
                     </c:otherwise>
@@ -427,9 +457,9 @@
                     <div class="mp-info-value">
                         <c:choose>
                             <c:when test="${user.preferredLang eq 'ko'}">🇰🇷 <spring:message code="mypage.lang.ko"/></c:when>
-                            <c:when test="${user.preferredLang eq 'en'}">🇺🇸 English</c:when>
-                            <c:when test="${user.preferredLang eq 'ja'}">🇯🇵 日本語</c:when>
-                            <c:when test="${user.preferredLang eq 'zh'}">🇨🇳 中文</c:when>
+                            <c:when test="${user.preferredLang eq 'en'}">🇺🇸 ${mypageLangEnLabel}</c:when>
+                            <c:when test="${user.preferredLang eq 'ja'}">🇯🇵 ${mypageLangJaLabel}</c:when>
+                            <c:when test="${user.preferredLang eq 'zh'}">🇨🇳 ${mypageLangZhLabel}</c:when>
                             <c:otherwise>${user.preferredLang}</c:otherwise>
                         </c:choose>
                     </div>
@@ -488,7 +518,7 @@
                     </button>
                 </c:if>
                 <button type="button" class="mp-tab-btn" data-mp-tab="items" role="tab" aria-selected="false">
-                    <span>ITEM</span>
+                    <span>${mypageItemsIconLabel}</span>
                     <spring:message code="mypage.tabs.itemsOnly"/>
                 </button>
             </div>
@@ -654,7 +684,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                     <c:if test="${plan.planSource eq 'AI'}">
-                                        <span class="mp-badge mp-badge-ai">AI</span>
+                                        <span class="mp-badge mp-badge-ai"><spring:message code="mypage.plan.source.ai"/></span>
                                     </c:if>
                                 </div>
                             </a>
@@ -847,7 +877,7 @@
                                         <img src="${fn:escapeXml(packageBooking.mainImagePath)}" alt="${fn:escapeXml(packageBooking.packageTitle)}">
                                     </c:if>
                                     <c:if test="${empty packageBooking.mainImagePath}">
-                                        <div class="mp-package-no-image">PACKAGE</div>
+                                        <div class="mp-package-no-image">${mypageItemsPackageIconLabel}</div>
                                     </c:if>
                                     <div>
                                         <strong><spring:message code="mypage.booking.peopleReserved" arguments="${packageBooking.peopleCount}"/></strong>
@@ -887,7 +917,7 @@
                                             <img src="${fn:escapeXml(packageBooking.mainImagePath)}" alt="${fn:escapeXml(packageBooking.packageTitle)}">
                                         </c:if>
                                         <c:if test="${empty packageBooking.mainImagePath}">
-                                            <div class="mp-package-no-image">PACKAGE</div>
+                                            <div class="mp-package-no-image">${mypageItemsPackageIconLabel}</div>
                                         </c:if>
                                         <div>
                                             <h4>${packageBooking.packageTitle}</h4>
@@ -909,7 +939,7 @@
                                                 <span><spring:message code="mypage.booking.cancelReason"/></span>
                                                 <strong>
                                                     <c:choose>
-                                                        <c:when test="${empty packageBooking.cancelReason}">-</c:when>
+                                                        <c:when test="${empty packageBooking.cancelReason}"><spring:message code="mypage.none"/></c:when>
                                                         <c:otherwise>${packageBooking.cancelReason}</c:otherwise>
                                                     </c:choose>
                                                 </strong>
@@ -1227,7 +1257,7 @@
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">ITEM</span> <spring:message code="mypage.card.items"/>
+                    <span class="mp-card-icon">${mypageItemsIconLabel}</span> <spring:message code="mypage.card.items"/>
                 </div>
             </div>
 
@@ -1241,7 +1271,7 @@
             <c:choose>
                 <c:when test="${empty inventoryItems}">
                     <div class="mp-empty">
-                        <div class="mp-empty-icon">SHOP</div>
+                        <div class="mp-empty-icon">${mypageItemsEmptyIconLabel}</div>
                         <div><spring:message code="mypage.empty.items"/></div>
                         <button class="mp-item-shop-btn"
                                 type="button"
@@ -1267,7 +1297,7 @@
                         <c:if test="${hasNicknameColor}">
                             <section class="mp-item-section">
                                 <div class="mp-item-section-head">
-                                    <span>NC</span>
+                                    <span><spring:message code="mypage.items.section.nicknameColor.code"/></span>
                                     <div>
                                         <h3><spring:message code="mypage.items.section.nicknameColor"/></h3>
                                         <p><spring:message code="mypage.items.section.nicknameColor.desc"/></p>
@@ -1286,7 +1316,7 @@
                         <c:if test="${hasNicknameEffect}">
                             <section class="mp-item-section">
                                 <div class="mp-item-section-head">
-                                    <span>NE</span>
+                                    <span><spring:message code="mypage.items.section.nicknameEffect.code"/></span>
                                     <div>
                                         <h3><spring:message code="mypage.items.section.nicknameEffect"/></h3>
                                         <p><spring:message code="mypage.items.section.nicknameEffect.desc"/></p>
@@ -1305,7 +1335,7 @@
                         <c:if test="${hasProfileBadge}">
                             <section class="mp-item-section">
                                 <div class="mp-item-section-head">
-                                    <span>PB</span>
+                                    <span><spring:message code="mypage.items.section.profileBadge.code"/></span>
                                     <div>
                                         <h3><spring:message code="mypage.items.section.profileBadge"/></h3>
                                         <p><spring:message code="mypage.items.section.profileBadge.desc"/></p>
@@ -1324,7 +1354,7 @@
                         <c:if test="${hasBubbleStyle}">
                             <section class="mp-item-section">
                                 <div class="mp-item-section-head">
-                                    <span>CB</span>
+                                    <span><spring:message code="mypage.items.section.bubbleStyle.code"/></span>
                                     <div>
                                         <h3><spring:message code="mypage.items.section.bubbleStyle"/></h3>
                                         <p><spring:message code="mypage.items.section.bubbleStyle.desc"/></p>
@@ -1482,8 +1512,8 @@
 <div id="levelup-overlay" class="levelup-overlay">
     <div class="levelup-popup">
         <div class="levelup-icon">🎉</div>
-        <div class="levelup-title">LEVEL UP!</div>
-        <div class="levelup-level">Lv.${levelUpLevel}</div>
+        <div class="levelup-title">${mypageLevelupTitle}</div>
+        <div class="levelup-level">${mypageLevelPrefix} ${levelUpLevel}</div>
         <div class="levelup-msg"><spring:message code="mypage.levelup.message"/></div>
         <button class="levelup-close-btn" onclick="closeLevelUpPopup()"><spring:message code="mypage.common.confirm"/></button>
     </div>

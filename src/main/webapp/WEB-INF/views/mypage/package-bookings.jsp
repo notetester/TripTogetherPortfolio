@@ -10,6 +10,8 @@
 <spring:message code="mypage.common.status.cancelled" var="statusCancelled"/>
 <spring:message code="mypage.common.status.completed" var="statusCompleted"/>
 <spring:message code="mypage.booking.cancelPlaceholder" var="bookingCancelPlaceholder"/>
+<spring:message code="mypage.items.packageIcon" var="mypageItemsPackageIconLabel"/>
+<spring:message code="mypage.none" var="mypageNoneLabel"/>
 <main class="mp-container">
     <div class="mp-card">
         <div class="mp-card-head">
@@ -64,7 +66,7 @@
                                         <img src="${fn:escapeXml(packageBooking.mainImagePath)}" alt="${fn:escapeXml(packageBooking.packageTitle)}">
                                     </c:if>
                                     <c:if test="${empty packageBooking.mainImagePath}">
-                                        <div class="mp-package-no-image">PACKAGE</div>
+                                        <div class="mp-package-no-image">${mypageItemsPackageIconLabel}</div>
                                     </c:if>
                                     <div>
                                         <strong><spring:message code="mypage.booking.peopleReserved" arguments="${packageBooking.peopleCount}"/></strong>
@@ -89,10 +91,10 @@
                                         <div>
                                             <span><spring:message code="mypage.booking.cancelReason"/></span>
                                             <strong>
-                                                <c:choose>
-                                                    <c:when test="${empty packageBooking.cancelReason}">-</c:when>
-                                                    <c:otherwise>${packageBooking.cancelReason}</c:otherwise>
-                                                </c:choose>
+                                                    <c:choose>
+                                                        <c:when test="${empty packageBooking.cancelReason}">${mypageNoneLabel}</c:when>
+                                                        <c:otherwise>${packageBooking.cancelReason}</c:otherwise>
+                                                    </c:choose>
                                             </strong>
                                         </div>
                                     </c:if>
