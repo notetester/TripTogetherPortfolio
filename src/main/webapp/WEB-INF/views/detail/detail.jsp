@@ -149,6 +149,261 @@ html { scrollbar-gutter: stable; }
   .flight-date-grid { grid-template-columns:1fr; }
 }
 
+/* 연결 패키지 상품 */
+.detail-package-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:16px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--gray-100);
+}
+.detail-package-head h2 {
+  margin:0;
+  padding:0;
+  border:0;
+}
+.detail-package-controls {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+}
+.detail-package-page {
+  min-width:58px;
+  color:var(--gray-500);
+  font-size:13px;
+  font-weight:800;
+  text-align:center;
+}
+.detail-package-nav {
+  width:34px;
+  height:34px;
+  border:1px solid var(--gray-200);
+  border-radius:50%;
+  background:#fff;
+  color:var(--gray-700);
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:var(--shadow-sm);
+  transition:background .15s, color .15s, border-color .15s, opacity .15s;
+}
+.detail-package-nav:hover:not(:disabled) {
+  border-color:var(--blue);
+  background:var(--blue);
+  color:#fff;
+}
+.detail-package-nav:disabled {
+  opacity:.35;
+  cursor:not-allowed;
+}
+.detail-package-carousel {
+  position:relative;
+  overflow:hidden;
+}
+.detail-package-grid {
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scroll-behavior:smooth;
+  scroll-snap-type:x mandatory;
+  scrollbar-width:none;
+  padding:2px 2px 10px;
+}
+.detail-package-grid::-webkit-scrollbar {
+  display:none;
+}
+.detail-package-card {
+  overflow:hidden;
+  flex:0 0 280px;
+  scroll-snap-align:start;
+  border:1px solid var(--gray-200);
+  border-radius:14px;
+  background:#fff;
+  box-shadow:var(--shadow-sm);
+  cursor:pointer;
+  transition:transform .16s, box-shadow .16s, border-color .16s;
+}
+.detail-package-card:hover {
+  transform:translateY(-2px);
+  border-color:#bfdbfe;
+  box-shadow:0 14px 28px rgba(15,23,42,.12);
+}
+.detail-package-thumb {
+  position:relative;
+  overflow:hidden;
+  height:132px;
+  background:linear-gradient(135deg,var(--blue-light),#fff7ed);
+  display:grid;
+  place-items:center;
+  color:var(--blue);
+  font-weight:800;
+}
+.detail-package-thumb img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.detail-package-body {
+  padding:16px;
+}
+.detail-package-spot {
+  margin:0 0 6px;
+  color:var(--blue);
+  font-size:12px;
+  font-weight:800;
+}
+.detail-package-title {
+  margin:0;
+  color:var(--gray-900);
+  font-size:16px;
+  font-weight:800;
+  line-height:1.35;
+}
+.detail-package-summary {
+  min-height:40px;
+  margin:8px 0 14px;
+  color:var(--gray-500);
+  font-size:13px;
+  line-height:1.55;
+}
+.detail-package-meta {
+  display:grid;
+  gap:8px;
+  margin:0;
+}
+.detail-package-meta div {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  border-radius:10px;
+  padding:8px 10px;
+  background:var(--gray-50);
+  font-size:13px;
+}
+.detail-package-meta dt { color:var(--gray-500); font-weight:700; }
+.detail-package-meta dd { margin:0; color:var(--gray-800); font-weight:800; text-align:right; }
+.detail-package-modal {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:10020;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(15,23,42,.62);
+  box-sizing:border-box;
+}
+.detail-package-modal.show {
+  display:flex;
+}
+.detail-package-modal-card {
+  width:min(680px,100%);
+  max-height:90vh;
+  overflow:auto;
+  border-radius:20px;
+  background:#fff;
+  box-shadow:0 24px 64px rgba(15,23,42,.3);
+}
+.detail-package-modal-hero {
+  position:relative;
+  overflow:hidden;
+  height:220px;
+  background:linear-gradient(135deg,var(--blue-light),#fff7ed);
+  display:grid;
+  place-items:center;
+  color:var(--blue);
+  font-weight:900;
+}
+.detail-package-modal-hero img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.detail-package-modal-close {
+  position:absolute;
+  top:14px;
+  right:14px;
+  z-index:2;
+  width:36px;
+  height:36px;
+  border:0;
+  border-radius:50%;
+  background:rgba(15,23,42,.72);
+  color:#fff;
+  font-size:22px;
+  cursor:pointer;
+}
+.detail-package-modal-body {
+  padding:24px 26px 28px;
+}
+.detail-package-modal-kicker {
+  margin:0 0 8px;
+  color:var(--blue);
+  font-size:12px;
+  font-weight:900;
+}
+.detail-package-modal-title {
+  margin:0;
+  color:var(--gray-900);
+  font-size:24px;
+  font-weight:900;
+  line-height:1.35;
+}
+.detail-package-modal-summary {
+  margin:12px 0 18px;
+  color:var(--gray-600);
+  line-height:1.7;
+  white-space:pre-wrap;
+}
+.detail-package-modal-meta {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:0;
+}
+.detail-package-modal-meta div {
+  border-radius:14px;
+  padding:12px 14px;
+  background:var(--gray-50);
+}
+.detail-package-modal-meta dt {
+  margin-bottom:5px;
+  color:var(--gray-500);
+  font-size:12px;
+  font-weight:800;
+}
+.detail-package-modal-meta dd {
+  margin:0;
+  color:var(--gray-900);
+  font-weight:900;
+}
+@media (max-width:640px) {
+  .detail-package-head {
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .detail-package-controls {
+    align-self:flex-end;
+  }
+  .detail-package-card {
+    flex-basis:82%;
+  }
+  .detail-package-modal-meta {
+    grid-template-columns:1fr;
+  }
+  .detail-package-modal-hero {
+    height:180px;
+  }
+}
+
 /* 리뷰 요약 헤더 */
 .review-summary-wrap {
   display:flex; align-items:center; gap:32px;
@@ -688,6 +943,245 @@ html { scrollbar-gutter: stable; }
         </c:forEach>
       </div>
     </div>
+  </c:if>
+
+  <!-- 연결 패키지 상품 -->
+  <c:if test="${not empty approvedPackageList}">
+    <div class="det-section">
+      <div class="detail-package-head">
+        <h2>&#127873; 연결 패키지 상품</h2>
+        <div class="detail-package-controls" aria-label="패키지 상품 이동">
+          <button type="button" class="detail-package-nav" id="packagePrevBtn" aria-label="이전 패키지">&lt;</button>
+          <span class="detail-package-page" id="packagePageText">1 / 1</span>
+          <button type="button" class="detail-package-nav" id="packageNextBtn" aria-label="다음 패키지">&gt;</button>
+        </div>
+      </div>
+      <div class="detail-package-carousel">
+        <div class="detail-package-grid" id="detailPackageRail">
+          <c:forEach var="pkg" items="${approvedPackageList}">
+            <c:set var="pkgPeriod">
+              <c:choose>
+                <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">${pkg.startDate} ~ ${pkg.endDate}</c:when>
+                <c:otherwise>상시/미정</c:otherwise>
+              </c:choose>
+            </c:set>
+            <c:set var="pkgPeople">
+              최소 ${pkg.minPeople}명<c:if test="${not empty pkg.maxPeople}"> / 최대 ${pkg.maxPeople}명</c:if>
+            </c:set>
+            <fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0" var="pkgPriceText"/>
+            <article class="detail-package-card"
+                     tabindex="0"
+                     role="button"
+                     aria-label="${fn:escapeXml(pkg.packageTitle)} 상세 보기"
+                     data-title="${fn:escapeXml(pkg.packageTitle)}"
+                     data-summary="${fn:escapeXml(empty pkg.packageSummary ? '승인된 여행 패키지 상품입니다.' : pkg.packageSummary)}"
+                     data-image="${fn:escapeXml(pkg.mainImagePath)}"
+                     data-region="${fn:escapeXml(pkg.spotRegion)}"
+                     data-spot="${fn:escapeXml(pkg.spotName)}"
+                     data-price="${fn:escapeXml(pkgPriceText)} ${fn:escapeXml(pkg.currencyCode)}"
+                     data-period="${fn:escapeXml(pkgPeriod)}"
+                     data-people="${fn:escapeXml(pkgPeople)}"
+                     data-seller="${fn:escapeXml(pkg.sellerNickname)}">
+              <div class="detail-package-thumb">
+                <c:choose>
+                  <c:when test="${not empty pkg.mainImagePath}">
+                    <img src="${fn:escapeXml(pkg.mainImagePath)}" alt="${fn:escapeXml(pkg.packageTitle)}">
+                  </c:when>
+                  <c:otherwise>
+                    <span>TripTogether</span>
+                  </c:otherwise>
+                </c:choose>
+              </div>
+              <div class="detail-package-body">
+                <p class="detail-package-spot">${fn:escapeXml(pkg.spotRegion)} · ${fn:escapeXml(pkg.spotName)}</p>
+                <h3 class="detail-package-title">${fn:escapeXml(pkg.packageTitle)}</h3>
+                <p class="detail-package-summary">
+                  <c:choose>
+                    <c:when test="${not empty pkg.packageSummary}">${fn:escapeXml(pkg.packageSummary)}</c:when>
+                    <c:otherwise>승인된 여행 패키지 상품입니다.</c:otherwise>
+                  </c:choose>
+                </p>
+                <dl class="detail-package-meta">
+                  <div>
+                    <dt>가격</dt>
+                    <dd><fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(pkg.currencyCode)}</dd>
+                  </div>
+                  <div>
+                    <dt>일정</dt>
+                    <dd>
+                      <c:choose>
+                        <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
+                          ${pkg.startDate} ~ ${pkg.endDate}
+                        </c:when>
+                        <c:otherwise>상시/미정</c:otherwise>
+                      </c:choose>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>인원</dt>
+                    <dd>
+                      최소 ${pkg.minPeople}명
+                      <c:if test="${not empty pkg.maxPeople}"> / 최대 ${pkg.maxPeople}명</c:if>
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            </article>
+          </c:forEach>
+        </div>
+      </div>
+    </div>
+    <div class="detail-package-modal" id="packageDetailModal" aria-hidden="true">
+      <div class="detail-package-modal-card" role="dialog" aria-modal="true" aria-labelledby="packageModalTitle">
+        <div class="detail-package-modal-hero" id="packageModalHero">
+          <span id="packageModalHeroFallback">TripTogether</span>
+          <button type="button" class="detail-package-modal-close" id="packageModalCloseBtn" aria-label="닫기">×</button>
+        </div>
+        <div class="detail-package-modal-body">
+          <p class="detail-package-modal-kicker" id="packageModalKicker"></p>
+          <h3 class="detail-package-modal-title" id="packageModalTitle"></h3>
+          <p class="detail-package-modal-summary" id="packageModalSummary"></p>
+          <dl class="detail-package-modal-meta">
+            <div>
+              <dt>가격</dt>
+              <dd id="packageModalPrice"></dd>
+            </div>
+            <div>
+              <dt>일정</dt>
+              <dd id="packageModalPeriod"></dd>
+            </div>
+            <div>
+              <dt>인원</dt>
+              <dd id="packageModalPeople"></dd>
+            </div>
+            <div>
+              <dt>판매자</dt>
+              <dd id="packageModalSeller"></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <script>
+    (function () {
+      var rail = document.getElementById('detailPackageRail');
+      var prevBtn = document.getElementById('packagePrevBtn');
+      var nextBtn = document.getElementById('packageNextBtn');
+      var pageText = document.getElementById('packagePageText');
+      var modal = document.getElementById('packageDetailModal');
+      var modalHero = document.getElementById('packageModalHero');
+      var modalCloseBtn = document.getElementById('packageModalCloseBtn');
+      if (!rail || !prevBtn || !nextBtn || !pageText) return;
+
+      var pageSize = 3;
+
+      function getMoveSize() {
+        var firstCard = rail.querySelector('.detail-package-card');
+        if (!firstCard) return rail.clientWidth;
+        return (firstCard.getBoundingClientRect().width + 14) * pageSize;
+      }
+
+      function getCardStepSize() {
+        var firstCard = rail.querySelector('.detail-package-card');
+        if (!firstCard) return rail.clientWidth;
+        return firstCard.getBoundingClientRect().width + 14;
+      }
+
+      function getPageCount() {
+        var cardCount = rail.querySelectorAll('.detail-package-card').length;
+        return Math.max(1, Math.ceil(cardCount / pageSize));
+      }
+
+      function getCurrentPage() {
+        var pageWidth = getCardStepSize() * pageSize;
+        if (pageWidth <= 0) return 1;
+        return Math.min(getPageCount(), Math.floor((rail.scrollLeft + pageWidth / 2) / pageWidth) + 1);
+      }
+
+      function updateButtons() {
+        var maxScrollLeft = rail.scrollWidth - rail.clientWidth - 2;
+        prevBtn.disabled = rail.scrollLeft <= 2;
+        nextBtn.disabled = rail.scrollLeft >= maxScrollLeft;
+        pageText.textContent = getCurrentPage() + ' / ' + getPageCount();
+      }
+
+      prevBtn.addEventListener('click', function () {
+        rail.scrollBy({ left: -getMoveSize(), behavior: 'smooth' });
+      });
+      nextBtn.addEventListener('click', function () {
+        rail.scrollBy({ left: getMoveSize(), behavior: 'smooth' });
+      });
+      rail.addEventListener('scroll', updateButtons);
+      window.addEventListener('resize', updateButtons);
+      updateButtons();
+
+      function setText(id, value) {
+        var element = document.getElementById(id);
+        if (element) element.textContent = value || '-';
+      }
+
+      function openPackageModal(card) {
+        if (!modal || !modalHero) return;
+        var data = card.dataset;
+        var imagePath = data.image || '';
+
+        modalHero.querySelectorAll('img').forEach(function (img) {
+          img.remove();
+        });
+        if (imagePath) {
+          var image = document.createElement('img');
+          image.src = imagePath;
+          image.alt = data.title || '패키지 이미지';
+          modalHero.prepend(image);
+        }
+
+        setText('packageModalKicker', (data.region || '') + ' · ' + (data.spot || ''));
+        setText('packageModalTitle', data.title);
+        setText('packageModalSummary', data.summary);
+        setText('packageModalPrice', data.price);
+        setText('packageModalPeriod', data.period);
+        setText('packageModalPeople', data.people);
+        setText('packageModalSeller', data.seller);
+
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closePackageModal() {
+        if (!modal) return;
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      rail.querySelectorAll('.detail-package-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+          openPackageModal(card);
+        });
+        card.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openPackageModal(card);
+          }
+        });
+      });
+
+      if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', closePackageModal);
+      }
+      if (modal) {
+        modal.addEventListener('click', function (event) {
+          if (event.target === modal) closePackageModal();
+        });
+      }
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modal && modal.classList.contains('show')) {
+          closePackageModal();
+        }
+      });
+    })();
+    </script>
   </c:if>
 
   <!-- 위치 -->

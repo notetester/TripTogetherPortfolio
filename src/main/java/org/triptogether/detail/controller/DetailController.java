@@ -15,6 +15,7 @@ import org.triptogether.explore.vo.ExploreCreateDto;
 import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.explore.vo.ReviewVO;
 import org.triptogether.flight.service.FlightService;
+import org.triptogether.travelPackage.service.TravelPackageService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ public class DetailController {
 
     private final ExploreService exploreService;
     private final FlightService flightService;
+    private final TravelPackageService travelPackageService;
 
     @Value("${google.maps.api-key}")
     private String mapsApiKey;
@@ -56,6 +58,7 @@ public class DetailController {
         model.addAttribute("canEditSpot", canEditSpot(session, spot));
         model.addAttribute("flightAvailable", flightService.isFlightAvailable(spotIdx));
         model.addAttribute("lowestFlightOffer", flightService.getLowestOffer(spotIdx, loginUserIdx).orElse(null));
+        model.addAttribute("approvedPackageList", travelPackageService.getApprovedPackagesBySpot(spotIdx));
 
         if (!model.containsAttribute("adminEditForm")) {
             model.addAttribute("adminEditForm", buildEditForm(spot));

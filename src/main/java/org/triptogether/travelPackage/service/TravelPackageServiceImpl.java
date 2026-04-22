@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.travelPackage.mapper.TravelPackageMapper;
+import org.triptogether.travelPackage.vo.PackageReviewHistoryCreateVO;
 import org.triptogether.travelPackage.vo.PackageSpotOptionVO;
 import org.triptogether.travelPackage.vo.TravelPackageForm;
 import org.triptogether.travelPackage.vo.TravelPackageVO;
@@ -16,6 +17,8 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
     private static final String STATUS_DRAFT = "DRAFT";
     private static final String STATUS_PENDING = "PENDING";
+    private static final String STATUS_APPROVED = "APPROVED";
+    private static final String STATUS_REJECTED = "REJECTED";
 
     private final TravelPackageMapper travelPackageMapper;
 
@@ -90,6 +93,61 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         }
     }
 
+    @Override
+    public List<TravelPackageVO> getAdminPackages(String status) {
+        String normalizedStatus = normalizeAdminStatus(status);
+        return travelPackageMapper.selectAdminPackages(normalizedStatus);
+    }
+
+    @Override
+    @Transactional
+    public void approvePackage(Long packageIdx, Long adminUserIdx) {
+        validateReviewer(adminUserIdx);
+        TravelPackageVO currentPackage = getReviewTarget(packageIdx);
+
+        int updated = travelPackageMapper.approvePackage(packageIdx, adminUserIdx);
+        if (updated == 0) {
+            throw new IllegalStateException("승인 대기 상태의 패키지만 승인할 수 있습니다.");
+        }
+
+        insertReviewHistory(currentPackage, STATUS_APPROVED, "관리자 승인", adminUserIdx);
+    }
+
+    @Override
+    @Transactional
+    public void rejectPackage(Long packageIdx, String rejectReason, Long adminUserIdx) {
+        validateReviewer(adminUserIdx);
+        String reason = trimToNull(rejectReason);
+        if (reason == null) {
+            throw new IllegalArgumentException("반려 사유를 입력해주세요.");
+        }
+        if (reason.length() > 500) {
+            throw new IllegalArgumentException("반려 사유는 500자 이하로 입력해주세요.");
+        }
+
+        TravelPackageVO currentPackage = getReviewTarget(packageIdx);
+
+        int updated = travelPackageMapper.rejectPackage(packageIdx, reason);
+        if (updated == 0) {
+            throw new IllegalStateException("승인 대기 상태의 패키지만 반려할 수 있습니다.");
+        }
+
+        insertReviewHistory(currentPackage, STATUS_REJECTED, reason, adminUserIdx);
+    }
+
+    @Override
+    public List<TravelPackageVO> getApprovedPackages() {
+        return travelPackageMapper.selectApprovedPackages();
+    }
+
+    @Override
+    public List<TravelPackageVO> getApprovedPackagesBySpot(Long spotIdx) {
+        if (spotIdx == null) {
+            return List.of();
+        }
+        return travelPackageMapper.selectApprovedPackagesBySpot(spotIdx);
+    }
+
     private TravelPackageVO toVO(TravelPackageForm form) {
         TravelPackageVO travelPackage = new TravelPackageVO();
         travelPackage.setPackageIdx(form.getPackageIdx());
@@ -111,6 +169,52 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         if (sellerUserIdx == null) {
             throw new IllegalStateException("로그인이 필요합니다.");
         }
+    }
+
+    private void validateReviewer(Long adminUserIdx) {
+        if (adminUserIdx == null) {
+            throw new IllegalStateException("관리자 로그인이 필요합니다.");
+        }
+    }
+
+    private TravelPackageVO getReviewTarget(Long packageIdx) {
+        if (packageIdx == null) {
+            throw new IllegalArgumentException("검토할 패키지 상품 정보가 없습니다.");
+        }
+        TravelPackageVO currentPackage = travelPackageMapper.selectPackageForReview(packageIdx);
+        if (currentPackage == null) {
+            throw new IllegalArgumentException("검토할 패키지 상품을 찾을 수 없습니다.");
+        }
+        if (!STATUS_PENDING.equals(currentPackage.getPackageStatus())) {
+            throw new IllegalStateException("승인 대기 상태의 패키지만 검토할 수 있습니다.");
+        }
+        return currentPackage;
+    }
+
+    private void insertReviewHistory(TravelPackageVO currentPackage,
+                                     String newStatus,
+                                     String reviewReason,
+                                     Long reviewerUserIdx) {
+        PackageReviewHistoryCreateVO history = new PackageReviewHistoryCreateVO();
+        history.setPackageIdx(currentPackage.getPackageIdx());
+        history.setPreviousStatus(currentPackage.getPackageStatus());
+        history.setNewStatus(newStatus);
+        history.setReviewReason(reviewReason);
+        history.setReviewedByUserIdx(reviewerUserIdx);
+        travelPackageMapper.insertPackageReviewHistory(history);
+    }
+
+    private String normalizeAdminStatus(String status) {
+        String normalized = trimToNull(status);
+        if (normalized == null || "ALL".equalsIgnoreCase(normalized)) {
+            return null;
+        }
+
+        String upperStatus = normalized.toUpperCase();
+        if (List.of(STATUS_PENDING, STATUS_APPROVED, STATUS_REJECTED, "BLOCKED", STATUS_DRAFT).contains(upperStatus)) {
+            return upperStatus;
+        }
+        return STATUS_PENDING;
     }
 
     private void validateForm(TravelPackageForm form) {
