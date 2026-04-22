@@ -172,9 +172,83 @@
         });
     }
 
-    // ===== 토스트 (Phase 3-4에서 구현) =====
-    function showToast(_noti) {
-        // stub — 다음 단계에서 구현
+    // ===== 토스트 =====
+    const TOAST_AUTO_HIDE_MS = 3000;
+    const TOAST_MAX_STACK = 5;
+    let toastStack = null;
+
+    function ensureToastStack() {
+        if (toastStack && document.body.contains(toastStack)) return toastStack;
+        toastStack = document.createElement('div');
+        toastStack.className = 'noti-toast-stack';
+        document.body.appendChild(toastStack);
+        return toastStack;
+    }
+
+    function removeToast(toast) {
+        if (!toast || toast.classList.contains('is-hiding')) return;
+        toast.classList.add('is-hiding');
+        setTimeout(function () {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+    }
+
+    function showToast(noti) {
+        const stack = ensureToastStack();
+
+        const toast = document.createElement('div');
+        toast.className = 'noti-toast';
+
+        const bar = document.createElement('div');
+        bar.className = 'noti-toast-bar';
+
+        const bodyEl = document.createElement('div');
+        bodyEl.className = 'noti-toast-body';
+
+        const type = document.createElement('span');
+        type.className = 'noti-toast-type';
+        type.textContent = typeLabel(noti.sourceType);
+
+        const msg = document.createElement('span');
+        msg.className = 'noti-toast-msg';
+        msg.textContent = noti.message || '';
+
+        bodyEl.appendChild(type);
+        bodyEl.appendChild(msg);
+
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'noti-toast-close';
+        closeBtn.setAttribute('aria-label', '닫기');
+        closeBtn.textContent = '✕';
+        closeBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            removeToast(toast);
+        });
+
+        toast.appendChild(bar);
+        toast.appendChild(bodyEl);
+        toast.appendChild(closeBtn);
+
+        toast.addEventListener('click', function () {
+            const targetUrl = noti.targetUrl || '/mypage';
+            fetch(ctx + '/api/notifications/' + noti.notificationId + '/read', {
+                method: 'POST',
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            }).catch(function () {});
+            location.href = ctx + targetUrl;
+        });
+
+        stack.insertBefore(toast, stack.firstChild);
+
+        // 최대 개수 초과 시 가장 오래된 것 제거
+        const items = stack.querySelectorAll('.noti-toast');
+        for (let i = TOAST_MAX_STACK; i < items.length; i++) {
+            removeToast(items[i]);
+        }
+
+        // 자동 숨김
+        setTimeout(function () { removeToast(toast); }, TOAST_AUTO_HIDE_MS);
     }
 
     // ===== SSE 구독 =====
