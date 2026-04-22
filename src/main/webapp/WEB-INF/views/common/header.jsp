@@ -46,15 +46,29 @@
         </div>
         <nav>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'"><spring:message code="header.nav.explore"/></button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses'"><spring:message code="header.nav.courses"/></button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/assistant'"><spring:message code="header.nav.assistant"/></button>
+
+            <div class="nb-drop">
+                <button type="button" class="nb nb-drop-trigger"><spring:message code="header.nav.planner"/></button>
+                <div class="nb-drop-menu">
+                    <a href="${pageContext.request.contextPath}/courses"><spring:message code="header.nav.courses"/></a>
+                    <a href="${pageContext.request.contextPath}/assistant"><spring:message code="header.nav.assistant"/></a>
+                </div>
+            </div>
+
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="header.nav.community"/></button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/wallet'"><spring:message code="header.nav.wallet"/></button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/shop'"><spring:message code="header.nav.shop"/></button>
-            <button class="nb js-header-nav" type="button" data-url="${pageContext.request.contextPath}/packages"><spring:message code="header.nav.packages"/></button>
-            <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userRole == 'BUSINESS' or sessionScope.loginUser.userRole == 'PARTNER')}">
-                <button class="nb js-header-nav" type="button" data-url="${pageContext.request.contextPath}/packages/manage"><spring:message code="header.nav.packagesManage"/></button>
-            </c:if>
+
+            <div class="nb-drop">
+                <button type="button" class="nb nb-drop-trigger"><spring:message code="header.nav.shopping"/></button>
+                <div class="nb-drop-menu">
+                    <a href="${pageContext.request.contextPath}/wallet"><spring:message code="header.nav.wallet"/></a>
+                    <a href="${pageContext.request.contextPath}/shop"><spring:message code="header.nav.shop"/></a>
+                    <a href="${pageContext.request.contextPath}/packages"><spring:message code="header.nav.packages"/></a>
+                    <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userRole == 'BUSINESS' or sessionScope.loginUser.userRole == 'PARTNER')}">
+                        <a href="${pageContext.request.contextPath}/packages/manage"><spring:message code="header.nav.packagesManage"/></a>
+                    </c:if>
+                </div>
+            </div>
+
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'"><spring:message code="header.nav.mypage"/></button>
             <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">
     <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'"><spring:message code="header.nav.admin"/></button>
@@ -67,7 +81,12 @@
 
         </nav>
         <div class="hr">
-            <button type="button" class="tt-theme-btn" id="ttThemeBtn" aria-label="Toggle theme">🌙</button>
+            <button type="button" class="tt-theme-btn" id="ttThemeBtn" aria-label="Toggle theme"
+                    data-light-label="<spring:message code='header.theme.light'/>"
+                    data-dark-label="<spring:message code='header.theme.dark'/>">
+                <span class="tt-theme-icon">🌙</span>
+                <span class="tt-theme-label"><spring:message code="header.theme.dark"/></span>
+            </button>
             <label>
                 <select class="lang-sel" id="langSel">
                     <option value="ko" ${pageContext.response.locale.language == 'ko' ? 'selected' : ''}><spring:message code="header.lang.ko"/></option>
@@ -161,8 +180,15 @@ function toggleViewMode() {
     const btn = document.getElementById('ttThemeBtn');
     if (!btn) return;
 
+    const iconEl = btn.querySelector('.tt-theme-icon');
+    const labelEl = btn.querySelector('.tt-theme-label');
+    const lightLabel = btn.dataset.lightLabel;
+    const darkLabel = btn.dataset.darkLabel;
+
     const syncIcon = function () {
-        btn.textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+        const isDark = document.documentElement.classList.contains('dark');
+        if (iconEl) iconEl.textContent = isDark ? '☀️' : '🌙';
+        if (labelEl) labelEl.textContent = isDark ? lightLabel : darkLabel;
     };
     syncIcon();
 

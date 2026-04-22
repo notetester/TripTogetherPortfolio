@@ -13,23 +13,25 @@
 .tt-theme-btn {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    padding: 0;
+    gap: 4px;
+    padding: 6px 12px;
     border: 1px solid var(--gray-200);
-    border-radius: 50%;
+    border-radius: 6px;
     background: #fff;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 13px;
+    font-weight: 600;
     line-height: 1;
+    color: var(--gray-700);
+    white-space: nowrap;
     transition: background .15s, border-color .15s, transform .1s;
 }
 .tt-theme-btn:hover {
     background: var(--gray-50);
     border-color: var(--gray-400);
 }
-.tt-theme-btn:active { transform: scale(.92); }
+.tt-theme-btn:active { transform: scale(.96); }
+.tt-theme-icon { font-size: 14px; line-height: 1; }
 
 /* ===== 다크 모드 기본 ===== */
 html.dark {
@@ -68,6 +70,15 @@ html.dark .tt-theme-btn {
     color: #fde68a;
 }
 html.dark .tt-theme-btn:hover { background: #232935; border-color: #3b4556; }
+
+/* ----- 드롭다운 네비 ----- */
+html.dark .nb-drop-menu {
+    background: #151922;
+    border-color: #232935;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .4);
+}
+html.dark .nb-drop-menu a { color: #d1d5db; }
+html.dark .nb-drop-menu a:hover { background: #1f2432; color: #93c5fd; }
 
 html.dark .admin-mode-btn.user {
     background: #1f2432;
