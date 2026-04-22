@@ -532,3 +532,143 @@
 .comm-admin-dropdown-menu button:hover {
     background: #f3f4f6;
 }
+
+/* =============================================
+   다크 테마 오버라이드 (html.dark)
+   ============================================= */
+
+/* ── 페이지 헤더 ── */
+html.dark .comm-ph {
+    background: #151922;
+    border-bottom-color: #232935;
+}
+html.dark .comm-ph h1 { color: #f1f5f9; }
+html.dark .comm-sub { color: #9ca3af; }
+
+/* ── 지역 탭 ── */
+html.dark .region-tab { color: #9ca3af; }
+html.dark .region-tab:hover,
+html.dark .region-tab.active { color: #93c5fd; }
+html.dark .region-tab::after { background: #60a5fa; }
+
+/* ── 검색창 ── */
+html.dark .comm-search-box {
+    background: #1a1f2b;
+    border-color: #2b3241;
+}
+html.dark .comm-search-box:focus-within {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .15);
+}
+html.dark .comm-search-select { color: #cbd5e1; }
+html.dark .comm-search-divider { background: #2b3241; }
+html.dark .comm-search-input { color: #f1f5f9; }
+html.dark .comm-search-input::placeholder { color: #6b7280; }
+html.dark .comm-search-btn { color: #9ca3af; }
+html.dark .comm-search-btn:hover { color: #93c5fd; }
+
+/* ── 검색 결과 바 ── */
+html.dark .search-result-bar {
+    background: #1e293b;
+    color: #cbd5e1;
+}
+html.dark .search-result-bar strong { color: #93c5fd; }
+html.dark .search-clear-btn { color: #9ca3af; }
+
+/* ── 광고 배너 ── */
+html.dark .comm-ad-banner {
+    background: #151922;
+    border-bottom-color: #232935;
+}
+html.dark .comm-ad-banner-inner {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #6b7280;
+}
+
+/* ── 필터/정렬 바 ── */
+html.dark .comm-filter-bar { border-bottom-color: #232935; }
+html.dark .type-btn,
+html.dark .sort-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .type-btn:hover,
+html.dark .sort-btn:hover { border-color: #60a5fa; color: #93c5fd; }
+html.dark .total-count { color: #9ca3af; }
+html.dark .total-count strong { color: #f1f5f9; }
+
+/* ── 섹션 타이틀 ── */
+html.dark .comm-section-title {
+    color: #f1f5f9;
+    border-bottom-color: #2b3241;
+}
+html.dark .comm-section-toggle {
+    color: #9ca3af;
+    border-color: #2b3241;
+}
+html.dark .comm-section-toggle:hover { color: #93c5fd; border-color: #60a5fa; }
+
+/* ── 오늘 인기 카드 ── */
+html.dark .comm-today-card {
+    background: #1a1f2b;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+html.dark .comm-today-card-noimg { background: #232935; }
+html.dark .comm-today-card-title { color: #f1f5f9; }
+html.dark .comm-today-card-author { color: #9ca3af; }
+html.dark .comm-today-card-stats { color: #6b7280; }
+html.dark .comm-carousel-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+
+/* ── 게시글 카드 ── */
+html.dark .post-card {
+    background: #1a1f2b;
+    border-color: #232935;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+html.dark .post-card:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .5); }
+html.dark .post-card-img-placeholder { background: #232935; }
+html.dark .post-author-name { color: #cbd5e1; }
+html.dark .post-date { color: #9ca3af; }
+html.dark .post-card-title { color: #f1f5f9; }
+html.dark .post-card:hover .post-card-title { color: #93c5fd; }
+html.dark .post-card-content { color: #cbd5e1; }
+html.dark .post-stat { color: #9ca3af; }
+
+/* ── 페이지네이션 ── */
+html.dark .page-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .page-btn:hover { border-color: #60a5fa; color: #93c5fd; }
+
+/* ── 빈 상태 ── */
+html.dark .empty-state { color: #6b7280; }
+
+/* ── 차단 배지 ── */
+html.dark .blocked-badge {
+    color: #fca5a5;
+    background: #3b1d1d;
+    border-color: #7f1d1d;
+}
+
+/* ── 어드민 툴바 ── */
+html.dark .comm-admin-toolbar {
+    background: #3a2d0a;
+    border-color: #a16207;
+}
+html.dark .comm-admin-selected-count { color: #fde68a; }
+
+html.dark .comm-admin-dropdown-menu {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
+}
+html.dark .comm-admin-dropdown-menu button { color: #cbd5e1; }
+html.dark .comm-admin-dropdown-menu button:hover { background: #232935; }
