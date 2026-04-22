@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.common.mapper.ChatbotQuotaMapper">
+
+    <resultMap id="QuotaResultMap" type="ChatbotQuotaVO">
+        <id     property="quotaId"              column="quota_id"/>
+        <result property="grade"                column="grade"/>
+        <result property="maxConversations"     column="max_conversations"/>
+        <result property="maxMessagesPerDay"    column="max_messages_per_day"/>
+        <result property="maxContextMessages"   column="max_context_messages"/>
+        <result property="updatedBy"            column="updated_by"/>
+        <result property="updatedAt"            column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="UsageResultMap" type="ChatbotDailyUsageVO">
+        <id     property="usageId"        column="usage_id"/>
+        <result property="userIdx"        column="user_idx"/>
+        <result property="anonSessionId"  column="anon_session_id"/>
+        <result property="usageDate"      column="usage_date"/>
+        <result property="messageCount"   column="message_count"/>
+    </resultMap>
+
+    <!-- =============================================
+         1. 특정 등급 한도 조회
+         ============================================= -->
+    <select id="selectQuotaByGrade" resultMap="QuotaResultMap">
+        SELECT quota_id, grade, max_conversations, max_messages_per_day,
+               max_context_messages, updated_by, updated_at
+        FROM CHATBOT_GRADE_QUOTA
+        WHERE grade = #{grade}
+    </select>
+
+    <!-- =============================================
+         2. 전체 등급 한도 목록
+         ============================================= -->
+    <select id="selectAllQuotas" resultMap="QuotaResultMap">
+        SELECT quota_id, grade, max_conversations, max_messages_per_day,
+               max_context_messages, updated_by, updated_at
+        FROM CHATBOT_GRADE_QUOTA
+        ORDER BY quota_id
+    </select>
+
+    <!-- =============================================
+         3. 등급 한도 업데이트 (관리자)
+         ============================================= -->
+    <update id="updateQuota" parameterType="ChatbotQuotaVO">
+        UPDATE CHATBOT_GRADE_QUOTA
+           SET max_conversations    = #{maxConversations},
+               max_messages_per_day = #{maxMessagesPerDay},
+               max_context_messages = #{maxContextMessages},
+               updated_by           = #{updatedBy}
+         WHERE quota_id = #{quotaId}
+    </update>
+
+    <!-- =============================================
+         4. 일일 사용량 조회
+         ============================================= -->
+    <select id="selectDailyUsage" resultMap="UsageResultMap">
+        SELECT usage_id, user_idx, anon_session_id, usage_date, message_count
+        FROM CHATBOT_DAILY_USAGE
+        WHERE usage_date = #{usageDate}
+          <choose>
+              <when test="userIdx != null">AND user_idx = #{userIdx}</when>
+              <otherwise>AND anon_session_id = #{anonSessionId}</otherwise>
+          </choose>
+    </select>
+
+    <!-- =============================================
+         5. 일일 사용량 +1 (UPSERT)
+         - UNIQUE (user_idx, usage_date) 또는 (anon_session_id, usage_date)
+         - user_idx가 있으면 user_idx 기준, 없으면 anon_session_id 기준 upsert
+         ============================================= -->
+    <insert id="upsertDailyUsageIncrement">
+        INSERT INTO CHATBOT_DAILY_USAGE
+            (user_idx, anon_session_id, usage_date, message_count)
+        VALUES
+            (#{userIdx}, #{anonSessionId}, #{usageDate}, 1)
+        ON DUPLICATE KEY UPDATE
+            message_count = message_count + 1
+    </insert>
+
+</mapper>
