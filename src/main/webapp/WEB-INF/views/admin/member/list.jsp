@@ -72,7 +72,7 @@
                             <option value="ALL"    ${search.provider=='ALL'    ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
                             <option value="KAKAO"  ${search.provider=='KAKAO'  ? 'selected' : ''}><spring:message code="admin.social.kakao"/></option>
                             <option value="NAVER"  ${search.provider=='NAVER'  ? 'selected' : ''}><spring:message code="admin.social.naver"/></option>
-                            <option value="GOOGLE" ${search.provider=='GOOGLE' ? 'selected' : ''}>Google</option>
+                            <option value="GOOGLE" ${search.provider=='GOOGLE' ? 'selected' : ''}><spring:message code="admin.social.google"/></option>
                             <option value="NONE"   ${search.provider=='NONE'   ? 'selected' : ''}><spring:message code="admin.members.noLinkedProvider"/></option>
                         </select>
                     </div>
@@ -232,18 +232,34 @@
 
                         <%-- 소셜 연동 --%>
                         <td>
-                            <div class="social-icons">
+                            <div class="adm-social-list is-compact">
                                 <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('KAKAO')}">
-                                    <div class="social-icon-sm K" title="<spring:message code='admin.social.kakao'/>">k</div>
+                                    <span class="adm-social-pill kakao" title="<spring:message code='admin.social.kakao'/>">
+                                        <span class="adm-social-icon kakao-mark">k</span>
+                                        <span class="adm-social-label"><spring:message code="admin.social.kakao"/></span>
+                                    </span>
                                 </c:if>
                                 <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('NAVER')}">
-                                    <div class="social-icon-sm N" title="<spring:message code='admin.social.naver'/>">N</div>
+                                    <span class="adm-social-pill naver" title="<spring:message code='admin.social.naver'/>">
+                                        <span class="adm-social-icon naver-mark">N</span>
+                                        <span class="adm-social-label"><spring:message code="admin.social.naver"/></span>
+                                    </span>
                                 </c:if>
                                 <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('GOOGLE')}">
-                                    <div class="social-icon-sm G" title="Google">G</div>
+                                    <span class="adm-social-pill google" title="<spring:message code='admin.social.google'/>">
+                                        <span class="adm-social-icon google-mark">
+                                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                                            </svg>
+                                        </span>
+                                        <span class="adm-social-label"><spring:message code="admin.social.google"/></span>
+                                    </span>
                                 </c:if>
                                 <c:if test="${empty m.linkedProviders}">
-                                    <span style="color:#475569;font-size:12px;">—</span>
+                                    <span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider"/></span>
                                 </c:if>
                             </div>
                         </td>
@@ -535,21 +551,44 @@ function roleLabel(role) {
 
 function buildSocialHtml(linkedProviders) {
     if (!linkedProviders) {
-        return '<span style="color:#475569;font-size:12px;">' + escapeHtml(ADMIN_MEMBER_MSG.noLinkedProvider) + '</span>';
+        return '<span class="adm-social-empty">' + escapeHtml(ADMIN_MEMBER_MSG.noLinkedProvider) + '</span>';
     }
 
     const providerMap = {
-        KAKAO: 'k <spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
-        NAVER: 'N <spring:message code="admin.social.naver" javaScriptEscape="true"/>',
-        GOOGLE: 'G Google'
+        KAKAO: {
+            label: '<spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
+            className: 'kakao',
+            icon: '<span class="adm-social-icon kakao-mark">k</span>'
+        },
+        NAVER: {
+            label: '<spring:message code="admin.social.naver" javaScriptEscape="true"/>',
+            className: 'naver',
+            icon: '<span class="adm-social-icon naver-mark">N</span>'
+        },
+        GOOGLE: {
+            label: '<spring:message code="admin.social.google" javaScriptEscape="true"/>',
+            className: 'google',
+            icon: '<span class="adm-social-icon google-mark"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>'
+        }
     };
 
-    return linkedProviders
+    const items = linkedProviders
         .split(',')
         .map(provider => provider.trim())
         .filter(provider => provider.length > 0)
-        .map(provider => '<span style="margin-right:8px;font-size:12px;color:#94a3b8;">' + escapeHtml(providerMap[provider] || provider) + '</span>')
-        .join('') || '<span style="color:#475569;font-size:12px;">' + escapeHtml(ADMIN_MEMBER_MSG.noLinkedProvider) + '</span>';
+        .map(function(provider) {
+            const info = providerMap[provider];
+            if (!info) {
+                return '<span class="adm-social-pill"><span class="adm-social-label">' + escapeHtml(provider) + '</span></span>';
+            }
+            return '<span class="adm-social-pill ' + info.className + '">' + info.icon + '<span class="adm-social-label">' + escapeHtml(info.label) + '</span></span>';
+        });
+
+    if (!items.length) {
+        return '<span class="adm-social-empty">' + escapeHtml(ADMIN_MEMBER_MSG.noLinkedProvider) + '</span>';
+    }
+
+    return '<div class="adm-social-list">' + items.join('') + '</div>';
 }
 
 /* ── 페이지 이동 ── */
@@ -841,9 +880,9 @@ function buildActionTab(m) {
         + '<div class="adm-context-panel">'
         + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>' + '</div>'
         + '<div class="detail-label">' + '<spring:message code="admin.members.accountStatus" javaScriptEscape="true"/>' + '</div>'
-        + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE">ACTIVE</option><option value="DORMANT">DORMANT</option><option value="BLOCKED">BLOCKED</option><option value="DELETED">DELETED</option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.common.apply" javaScriptEscape="true"/>' + '</button></div>'
+        + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE"><spring:message code="admin.status.ACTIVE" javaScriptEscape="true"/></option><option value="DORMANT"><spring:message code="admin.status.DORMANT" javaScriptEscape="true"/></option><option value="BLOCKED"><spring:message code="admin.status.BLOCKED" javaScriptEscape="true"/></option><option value="DELETED"><spring:message code="admin.status.DELETED" javaScriptEscape="true"/></option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.common.apply" javaScriptEscape="true"/>' + '</button></div>'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.common.role" javaScriptEscape="true"/>' + '</div>'
-        + '<select id="memberRoleSelect" class="adm-select" style="width:100%;"><option value="USER">USER</option><option value="BUSINESS">BUSINESS</option><option value="PARTNER">PARTNER</option><option value="BOT">BOT</option><option value="ADMIN">ADMIN</option></select>'
+        + '<select id="memberRoleSelect" class="adm-select" style="width:100%;"><option value="USER"><spring:message code="admin.role.USER" javaScriptEscape="true"/></option><option value="BUSINESS"><spring:message code="admin.role.BUSINESS" javaScriptEscape="true"/></option><option value="PARTNER"><spring:message code="admin.role.PARTNER" javaScriptEscape="true"/></option><option value="BOT"><spring:message code="admin.role.BOT" javaScriptEscape="true"/></option><option value="ADMIN"><spring:message code="admin.role.ADMIN" javaScriptEscape="true"/></option></select>'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.action.roleReason" javaScriptEscape="true"/>' + '</div>'
         + '<input id="memberRoleReason" class="adm-input" type="text" maxlength="500" placeholder="' + '<spring:message code="admin.context.action.roleReasonPlaceholder" javaScriptEscape="true"/>' + '">'
         + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.changeRole" javaScriptEscape="true"/>' + '</button>'
@@ -978,7 +1017,7 @@ function buildHistTab(history) {
         EMAIL: '<spring:message code="admin.context.email" javaScriptEscape="true"/>',
         KAKAO: '<spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
         NAVER: '<spring:message code="admin.social.naver" javaScriptEscape="true"/>',
-        GOOGLE: 'Google'
+        GOOGLE: '<spring:message code="admin.social.google" javaScriptEscape="true"/>'
     };
 
     let rows = '';
@@ -997,7 +1036,7 @@ function buildHistTab(history) {
     return ''
         + '<div style="overflow-x:auto;max-height:340px;overflow-y:auto;">'
         + '<table class="history-table">'
-        + '<thead><tr><th>' + '<spring:message code="admin.common.time" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.provider" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.success" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.failReason" javaScriptEscape="true"/>' + '</th><th>IP</th></tr></thead>'
+        + '<thead><tr><th>' + '<spring:message code="admin.common.time" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.provider" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.success" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.failReason" javaScriptEscape="true"/>' + '</th><th><spring:message code="admin.common.ip" javaScriptEscape="true"/></th></tr></thead>'
         + '<tbody>' + rows + '</tbody>'
         + '</table>'
         + '</div>';

@@ -4,15 +4,16 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="packages"/>
-<c:set var="pageTitle"  value="패키지 상품 관리"/>
+<spring:message code="admin.packages.pageTitle" var="adminPackagesPageTitle"/>
+<c:set var="pageTitle"  value="${adminPackagesPageTitle}"/>
 <spring:message code="package.revision.rejectReason" var="revisionRejectReasonPlaceholder"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1>패키지 상품 관리</h1>
-            <p>비즈니스/파트너 회원이 승인 요청한 여행 패키지를 검토하고 사용자 노출 여부를 결정합니다.</p>
+            <h1><spring:message code="admin.packages.pageTitle"/></h1>
+            <p><spring:message code="admin.packages.pageSubtitle"/></p>
         </div>
     </div>
 
@@ -28,20 +29,20 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/packages">
                 <div class="adm-filter-bar">
                     <div>
-                        <div class="adm-filter-label">검토 상태</div>
+                        <div class="adm-filter-label"><spring:message code="admin.packages.filter.status"/></div>
                         <select class="adm-select" name="status">
-                            <option value="ALL" ${status eq 'ALL' ? 'selected' : ''}>전체</option>
-                            <option value="PENDING" ${status eq 'PENDING' ? 'selected' : ''}>승인 대기</option>
-                            <option value="APPROVED" ${status eq 'APPROVED' ? 'selected' : ''}>승인 완료</option>
-                            <option value="REJECTED" ${status eq 'REJECTED' ? 'selected' : ''}>반려</option>
-                            <option value="DRAFT" ${status eq 'DRAFT' ? 'selected' : ''}>임시저장</option>
-                            <option value="BLOCKED" ${status eq 'BLOCKED' ? 'selected' : ''}>차단</option>
+                            <option value="ALL" ${status eq 'ALL' ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
+                            <option value="PENDING" ${status eq 'PENDING' ? 'selected' : ''}><spring:message code="admin.packages.status.pending"/></option>
+                            <option value="APPROVED" ${status eq 'APPROVED' ? 'selected' : ''}><spring:message code="admin.packages.status.approved"/></option>
+                            <option value="REJECTED" ${status eq 'REJECTED' ? 'selected' : ''}><spring:message code="admin.packages.status.rejected"/></option>
+                            <option value="DRAFT" ${status eq 'DRAFT' ? 'selected' : ''}><spring:message code="admin.packages.status.draft"/></option>
+                            <option value="BLOCKED" ${status eq 'BLOCKED' ? 'selected' : ''}><spring:message code="admin.packages.status.blocked"/></option>
                         </select>
                     </div>
                     <div style="display:flex;gap:6px;align-items:flex-end;">
-                        <button type="submit" class="adm-btn adm-btn-primary">검색</button>
+                        <button type="submit" class="adm-btn adm-btn-primary"><spring:message code="admin.common.searchButton"/></button>
                         <a href="${pageContext.request.contextPath}/admin/packages"
-                           class="adm-btn adm-btn-ghost">초기화</a>
+                           class="adm-btn adm-btn-ghost"><spring:message code="admin.common.reset"/></a>
                     </div>
                 </div>
             </form>
@@ -153,12 +154,12 @@
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th>패키지</th>
-                    <th>판매자</th>
-                    <th>연결 여행지</th>
-                    <th>가격/일정</th>
-                    <th>상태</th>
-                    <th>검토</th>
+                    <th><spring:message code="admin.packages.column.package"/></th>
+                    <th><spring:message code="admin.packages.column.seller"/></th>
+                    <th><spring:message code="admin.packages.column.spot"/></th>
+                    <th><spring:message code="admin.packages.column.priceSchedule"/></th>
+                    <th><spring:message code="admin.common.status"/></th>
+                    <th><spring:message code="admin.packages.column.review"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -174,7 +175,7 @@
                                                  style="width:100%;height:100%;object-fit:cover;">
                                         </c:when>
                                         <c:otherwise>
-                                            <div style="height:100%;display:grid;place-items:center;color:#94a3b8;font-size:11px;font-weight:800;">NO IMG</div>
+                                            <div style="height:100%;display:grid;place-items:center;color:#94a3b8;font-size:11px;font-weight:800;"><spring:message code="admin.packages.noImage"/></div>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -185,7 +186,7 @@
                                             ${fn:escapeXml(pkg.packageSummary)}
                                         </div>
                                     </c:if>
-                                    <div style="font-size:11px;color:#64748b;margin-top:4px;">등록 ${pkg.createdAt}</div>
+                                    <div style="font-size:11px;color:#64748b;margin-top:4px;"><spring:message code="admin.packages.createdAt" arguments="${pkg.createdAt}"/></div>
                                 </div>
                             </div>
                         </td>
@@ -206,12 +207,12 @@
                                     <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                                         ${pkg.startDate} ~ ${pkg.endDate}
                                     </c:when>
-                                    <c:otherwise>상시/미정</c:otherwise>
+                                    <c:otherwise><spring:message code="admin.packages.always"/></c:otherwise>
                                 </c:choose>
                             </div>
                             <div style="font-size:12px;color:#94a3b8;">
-                                최소 ${pkg.minPeople}명
-                                <c:if test="${not empty pkg.maxPeople}"> / 최대 ${pkg.maxPeople}명</c:if>
+                                <spring:message code="admin.packages.minPeople" arguments="${pkg.minPeople}"/>
+                                <c:if test="${not empty pkg.maxPeople}"> / <spring:message code="admin.packages.maxPeople" arguments="${pkg.maxPeople}"/></c:if>
                             </div>
                         </td>
                         <td>
@@ -247,16 +248,16 @@
                                     <div class="business-review-actions">
                                         <form method="post" action="${pageContext.request.contextPath}/admin/packages/${pkg.packageIdx}/approve">
                                             <button type="submit" class="adm-row-btn detail"
-                                                    onclick="return confirm('이 패키지를 승인하고 사용자에게 노출할까요?');">승인</button>
+                                                    onclick="return confirm('<spring:message code="admin.packages.confirmApprove" javaScriptEscape="true"/>');"><spring:message code="admin.packages.status.approved"/></button>
                                         </form>
                                         <form method="post" action="${pageContext.request.contextPath}/admin/packages/${pkg.packageIdx}/reject">
-                                            <input class="adm-input" name="rejectReason" maxlength="500" placeholder="반려 사유" required>
-                                            <button type="submit" class="adm-row-btn danger">반려</button>
+                                            <input class="adm-input" name="rejectReason" maxlength="500" placeholder="<spring:message code='admin.packages.rejectReasonPlaceholder'/>" required>
+                                            <button type="submit" class="adm-row-btn danger"><spring:message code="admin.packages.status.rejected"/></button>
                                         </form>
                                     </div>
                                 </c:when>
                                 <c:otherwise>
-                                    <span style="color:#64748b;font-size:12px;">검토 대기 아님</span>
+                                    <span style="color:#64748b;font-size:12px;"><spring:message code="admin.packages.reviewDone"/></span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -266,7 +267,7 @@
                 <c:if test="${empty packageList}">
                     <tr>
                         <td colspan="6" style="text-align:center;padding:40px;color:#64748b;">
-                            조건에 맞는 패키지 상품이 없습니다.
+                            <spring:message code="admin.packages.noResults"/>
                         </td>
                     </tr>
                 </c:if>
@@ -276,5 +277,4 @@
     </div>
 </div>
 
-</body>
-</html>
+<%@ include file="../layout-close.jsp" %>

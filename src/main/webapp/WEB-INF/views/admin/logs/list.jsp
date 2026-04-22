@@ -21,8 +21,8 @@
                         <div class="adm-filter-label"><spring:message code="admin.logs.event"/></div>
                         <select class="adm-select" name="eventType">
                             <option value="ALL" ${search.eventType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="LOGIN" ${search.eventType=='LOGIN'?'selected':''}>LOGIN</option>
-                            <option value="LOGOUT" ${search.eventType=='LOGOUT'?'selected':''}>LOGOUT</option>
+                            <option value="LOGIN" ${search.eventType=='LOGIN'?'selected':''}><spring:message code="admin.logs.event.login"/></option>
+                            <option value="LOGOUT" ${search.eventType=='LOGOUT'?'selected':''}><spring:message code="admin.logs.event.logout"/></option>
                         </select>
                     </div>
                     <div>
@@ -37,30 +37,30 @@
                         <div class="adm-filter-label"><spring:message code="admin.logs.authType"/></div>
                         <select class="adm-select" name="authType">
                             <option value="ALL" ${search.authType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="PASSWORD" ${search.authType=='PASSWORD'?'selected':''}>PASSWORD</option>
-                            <option value="SOCIAL" ${search.authType=='SOCIAL'?'selected':''}>SOCIAL</option>
+                            <option value="PASSWORD" ${search.authType=='PASSWORD'?'selected':''}><spring:message code="admin.logs.authType.password"/></option>
+                            <option value="SOCIAL" ${search.authType=='SOCIAL'?'selected':''}><spring:message code="admin.logs.authType.social"/></option>
                         </select>
                     </div>
                     <div>
                         <div class="adm-filter-label"><spring:message code="admin.logs.provider"/></div>
                         <select class="adm-select" name="authProvider">
                             <option value="ALL" ${search.authProvider=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="LOCAL" ${search.authProvider=='LOCAL'?'selected':''}>LOCAL</option>
-                            <option value="KAKAO" ${search.authProvider=='KAKAO'?'selected':''}>KAKAO</option>
-                            <option value="NAVER" ${search.authProvider=='NAVER'?'selected':''}>NAVER</option>
-                            <option value="GOOGLE" ${search.authProvider=='GOOGLE'?'selected':''}>GOOGLE</option>
+                            <option value="LOCAL" ${search.authProvider=='LOCAL'?'selected':''}><spring:message code="admin.logs.provider.local"/></option>
+                            <option value="KAKAO" ${search.authProvider=='KAKAO'?'selected':''}><spring:message code="admin.logs.provider.kakao"/></option>
+                            <option value="NAVER" ${search.authProvider=='NAVER'?'selected':''}><spring:message code="admin.logs.provider.naver"/></option>
+                            <option value="GOOGLE" ${search.authProvider=='GOOGLE'?'selected':''}><spring:message code="admin.logs.provider.google"/></option>
                         </select>
                     </div>
                     <div>
                         <div class="adm-filter-label"><spring:message code="admin.logs.authFlow"/></div>
                         <select class="adm-select" name="loginMethod">
                             <option value="ALL" ${search.loginMethod=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="LOCAL" ${search.loginMethod=='LOCAL'?'selected':''}>LOCAL</option>
-                            <option value="ID" ${search.loginMethod=='ID'?'selected':''}>ID</option>
-                            <option value="EMAIL" ${search.loginMethod=='EMAIL'?'selected':''}>EMAIL</option>
-                            <option value="KAKAO" ${search.loginMethod=='KAKAO'?'selected':''}>KAKAO</option>
-                            <option value="NAVER" ${search.loginMethod=='NAVER'?'selected':''}>NAVER</option>
-                            <option value="GOOGLE" ${search.loginMethod=='GOOGLE'?'selected':''}>GOOGLE</option>
+                            <option value="LOCAL" ${search.loginMethod=='LOCAL'?'selected':''}><spring:message code="admin.logs.authFlow.local"/></option>
+                            <option value="ID" ${search.loginMethod=='ID'?'selected':''}><spring:message code="admin.logs.authFlow.id"/></option>
+                            <option value="EMAIL" ${search.loginMethod=='EMAIL'?'selected':''}><spring:message code="admin.logs.authFlow.email"/></option>
+                            <option value="KAKAO" ${search.loginMethod=='KAKAO'?'selected':''}><spring:message code="admin.logs.provider.kakao"/></option>
+                            <option value="NAVER" ${search.loginMethod=='NAVER'?'selected':''}><spring:message code="admin.logs.provider.naver"/></option>
+                            <option value="GOOGLE" ${search.loginMethod=='GOOGLE'?'selected':''}><spring:message code="admin.logs.provider.google"/></option>
                         </select>
                     </div>
                     <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
@@ -87,7 +87,7 @@
                     <th><spring:message code="admin.context.inputValue"/></th>
                     <th><spring:message code="admin.common.result"/></th>
                     <th><spring:message code="admin.common.reason"/></th>
-                    <th>IP</th>
+                    <th><spring:message code="admin.common.ip"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -115,13 +115,47 @@
                         </td>
                         <td>
                             <span class="status-badge ${item.eventType == 'LOGOUT' ? 'PENDING' : 'ACTIVE'}">
-                                <c:out value="${item.eventType}"/>
+                                <c:choose>
+                                    <c:when test="${item.eventType eq 'LOGIN'}"><spring:message code="admin.logs.event.login"/></c:when>
+                                    <c:when test="${item.eventType eq 'LOGOUT'}"><spring:message code="admin.logs.event.logout"/></c:when>
+                                    <c:otherwise><c:out value="${item.eventType}"/></c:otherwise>
+                                </c:choose>
                             </span>
                         </td>
-                        <td>${item.authType}</td>
-                        <td><c:out value="${item.authProvider}"/></td>
                         <td>
-                            <div><c:out value="${empty item.authFlow ? item.loginMethod : item.authFlow}"/></div>
+                            <c:choose>
+                                <c:when test="${item.authType eq 'PASSWORD'}"><spring:message code="admin.logs.authType.password"/></c:when>
+                                <c:when test="${item.authType eq 'SOCIAL'}"><spring:message code="admin.logs.authType.social"/></c:when>
+                                <c:otherwise><c:out value="${item.authType}"/></c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${item.authProvider eq 'LOCAL'}"><spring:message code="admin.logs.provider.local"/></c:when>
+                                <c:when test="${item.authProvider eq 'KAKAO'}"><spring:message code="admin.logs.provider.kakao"/></c:when>
+                                <c:when test="${item.authProvider eq 'NAVER'}"><spring:message code="admin.logs.provider.naver"/></c:when>
+                                <c:when test="${item.authProvider eq 'GOOGLE'}"><spring:message code="admin.logs.provider.google"/></c:when>
+                                <c:otherwise><c:out value="${item.authProvider}"/></c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <div>
+                                <c:choose>
+                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'LOCAL'}"><spring:message code="admin.logs.authFlow.local"/></c:when>
+                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'ID'}"><spring:message code="admin.logs.authFlow.id"/></c:when>
+                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'EMAIL'}"><spring:message code="admin.logs.authFlow.email"/></c:when>
+                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'KAKAO'}"><spring:message code="admin.logs.provider.kakao"/></c:when>
+                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'NAVER'}"><spring:message code="admin.logs.provider.naver"/></c:when>
+                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'GOOGLE'}"><spring:message code="admin.logs.provider.google"/></c:when>
+                                    <c:when test="${item.authFlow eq 'PASSWORD_ID'}"><spring:message code="admin.logs.authFlow.passwordId"/></c:when>
+                                    <c:when test="${item.authFlow eq 'PASSWORD_EMAIL'}"><spring:message code="admin.logs.authFlow.passwordEmail"/></c:when>
+                                    <c:when test="${item.authFlow eq 'SOCIAL_LOGIN'}"><spring:message code="admin.logs.authFlow.socialLogin"/></c:when>
+                                    <c:when test="${item.authFlow eq 'SOCIAL_REGISTER'}"><spring:message code="admin.logs.authFlow.socialRegister"/></c:when>
+                                    <c:when test="${item.authFlow eq 'LOGOUT_LOCAL'}"><spring:message code="admin.logs.authFlow.logoutLocal"/></c:when>
+                                    <c:when test="${item.authFlow eq 'LOGOUT_SOCIAL'}"><spring:message code="admin.logs.authFlow.logoutSocial"/></c:when>
+                                    <c:otherwise><c:out value="${empty item.authFlow ? item.loginMethod : item.authFlow}"/></c:otherwise>
+                                </c:choose>
+                            </div>
                             <c:if test="${not empty item.requestUri}">
                                 <div style="margin-top:4px;font-size:11px;color:#64748b;max-width:220px;word-break:break-all;">
                                     <c:out value="${item.requestUri}"/>
@@ -130,11 +164,24 @@
                         </td>
                         <td>
                             <div><c:out value="${empty item.loginIdentifier ? '-' : item.loginIdentifier}"/></div>
-                            <c:if test="${not empty item.flowTraceId}">
-                                <div style="margin-top:4px;font-size:11px;color:#64748b;">
-                                    trace: <c:out value="${item.flowTraceId}"/>
-                                </div>
-                            </c:if>
+                            <div class="adm-inline-actions">
+                                <c:if test="${not empty item.loginIdentifier}">
+                                    <button type="button"
+                                            class="adm-inline-chip"
+                                            data-keyword="${item.loginIdentifier}"
+                                            onclick="applyKeywordFilter(this)">
+                                        <spring:message code="admin.common.sameValue"/>
+                                    </button>
+                                </c:if>
+                                <c:if test="${not empty item.requestUri}">
+                                    <button type="button"
+                                            class="adm-inline-chip"
+                                            data-keyword="${item.requestUri}"
+                                            onclick="applyKeywordFilter(this)">
+                                        <spring:message code="admin.common.uri"/>
+                                    </button>
+                                </c:if>
+                            </div>
                         </td>
                         <td>
                             <c:choose>
@@ -146,14 +193,55 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.ipAddress}">
-                                    <button type="button"
-                                            class="adm-inline-link js-open-ip-context"
-                                            data-ip-address="${item.ipAddress}"
-                                            data-default-tab="logins"
-                                            style="color:#93c5fd;">${item.ipAddress}</button>
+                                    <div>
+                                        <button type="button"
+                                                class="adm-inline-link js-open-ip-context"
+                                                data-ip-address="${item.ipAddress}"
+                                                data-default-tab="logins"
+                                                style="color:#93c5fd;">${item.ipAddress}</button>
+                                    </div>
+                                    <div class="adm-inline-actions">
+                                        <button type="button"
+                                                class="adm-inline-chip"
+                                                data-keyword="${item.ipAddress}"
+                                                onclick="applyKeywordFilter(this)">
+                                            <spring:message code="admin.common.sameIp"/>
+                                        </button>
+                                    </div>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
+                        </td>
+                        <td>
+                            <div style="font-size:12px;color:#64748b;">
+                                <c:if test="${not empty item.flowTraceId}">
+                                    <div><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></div>
+                                </c:if>
+                                <c:if test="${empty item.flowTraceId}">
+                                    <div>-</div>
+                                </c:if>
+                                <c:if test="${not empty item.requestId}">
+                                    <div style="margin-top:4px;"><c:out value="${item.requestId}"/></div>
+                                </c:if>
+                            </div>
+                            <div class="adm-inline-actions">
+                                <c:if test="${not empty item.requestId}">
+                                    <button type="button"
+                                            class="adm-inline-chip"
+                                            data-keyword="${item.requestId}"
+                                            onclick="applyKeywordFilter(this)">
+                                        <spring:message code="admin.common.sameRequest"/>
+                                    </button>
+                                </c:if>
+                                <c:if test="${not empty item.flowTraceId}">
+                                    <button type="button"
+                                            class="adm-inline-chip"
+                                            data-keyword="${item.flowTraceId}"
+                                            onclick="applyKeywordFilter(this)">
+                                        <spring:message code="admin.common.sameFlow"/>
+                                    </button>
+                                </c:if>
+                            </div>
                         </td>
                     </tr>
                 </c:forEach>
@@ -180,6 +268,15 @@
 <%@ include file="../common/context-modal.jspf" %>
 
 <script>
+function applyKeywordFilter(button) {
+    var keyword = button.getAttribute('data-keyword');
+    if (!keyword) return;
+    const params = new URLSearchParams(window.location.search);
+    params.set('keyword', keyword);
+    params.set('page', '1');
+    location.href = '${pageContext.request.contextPath}/admin/logins?' + params.toString();
+}
+
 function goPage(page) {
     const params = new URLSearchParams(window.location.search);
     params.set('page', page);

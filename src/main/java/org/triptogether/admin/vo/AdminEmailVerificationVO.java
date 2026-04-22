@@ -20,6 +20,7 @@ public class AdminEmailVerificationVO {
     private Long verifyIdx;
     private Long emailVerificationRequestIdx;
     private String requestId;
+    private String flowTraceId;
     private Long userIdx;
     private String userId;
     private String nickname;

@@ -74,6 +74,7 @@
         <id  property="verifyIdx"   column="verify_idx"/>
         <result property="emailVerificationRequestIdx" column="email_verification_request_idx"/>
         <result property="requestId"    column="request_id"/>
+        <result property="flowTraceId"  column="flow_trace_id"/>
         <result property="userIdx"      column="user_idx"/>
         <result property="email"        column="email"/>
         <result property="token"        column="token"/>
@@ -89,6 +90,7 @@
     <resultMap id="verifyReqRM" type="org.triptogether.auth.vo.EmailVerificationRequestVO">
         <id property="emailVerificationRequestIdx" column="email_verification_request_idx"/>
         <result property="requestId" column="request_id"/>
+        <result property="flowTraceId" column="flow_trace_id"/>
         <result property="userIdx" column="user_idx"/>
         <result property="purpose" column="purpose"/>
         <result property="pendingEmail" column="pending_email"/>
@@ -341,10 +343,10 @@
 
     <insert id="insertEmailVerificationRequest" useGeneratedKeys="true" keyProperty="emailVerificationRequestIdx" keyColumn="email_verification_request_idx">
         INSERT INTO EMAIL_VERIFICATION_REQUEST (
-            request_id, user_idx, purpose, pending_email, token, status,
+            request_id, flow_trace_id, user_idx, purpose, pending_email, token, status,
             requested_at, expired_at, ip_address, user_agent
         ) VALUES (
-            #{requestId}, #{userIdx}, #{purpose}, #{pendingEmail}, #{token}, #{status},
+            #{requestId}, #{flowTraceId}, #{userIdx}, #{purpose}, #{pendingEmail}, #{token}, #{status},
             NOW(), #{expiredAt}, #{ipAddress}, #{userAgent}
         )
     </insert>
@@ -426,10 +428,10 @@
 
     <insert id="insertEmailVerification" useGeneratedKeys="true" keyProperty="verifyIdx" keyColumn="verify_idx">
         INSERT INTO EMAIL_VERIFICATION (
-            email_verification_request_idx, request_id, user_idx, email, token, purpose, expired_at,
+            email_verification_request_idx, request_id, flow_trace_id, user_idx, email, token, purpose, expired_at,
             used, used_at, cancelled_at
         ) VALUES (
-            #{emailVerificationRequestIdx}, #{requestId}, #{userIdx}, #{email}, #{token}, #{purpose}, #{expiredAt},
+            #{emailVerificationRequestIdx}, #{requestId}, #{flowTraceId}, #{userIdx}, #{email}, #{token}, #{purpose}, #{expiredAt},
             FALSE, #{usedAt}, #{cancelledAt}
         )
     </insert>
