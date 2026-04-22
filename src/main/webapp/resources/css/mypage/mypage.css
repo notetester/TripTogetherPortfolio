@@ -2129,3 +2129,281 @@
     border-bottom: none;
   }
 }
+
+/* =============================================
+   다크 테마 오버라이드 (html.dark)
+   ============================================= */
+
+/* ── 페이지 베이스 ── */
+html.dark .mypage-wrap,
+html.dark .mp-wrap { background: #0f1115; }
+
+html.dark .mypage-header h1 { color: #f1f5f9; }
+html.dark .mypage-header p,
+html.dark .mypage-back { color: #9ca3af; }
+html.dark .mypage-back:hover { color: #93c5fd; }
+
+/* ── 편집 카드 ── */
+html.dark .edit-card {
+    background: #1a1f2b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+html.dark .edit-card-head { border-bottom-color: #232935; }
+html.dark .edit-card-head-icon { background: #232935; }
+html.dark .edit-card-head-title { color: #f1f5f9; }
+html.dark .edit-card-head-sub,
+html.dark .edit-card-chevron { color: #9ca3af; }
+
+/* ── 토글 스위치 ── */
+html.dark .toggle-wrap { border-bottom-color: #232935; }
+html.dark .toggle-label { color: #e5e7eb; }
+html.dark .toggle-sub { color: #9ca3af; }
+html.dark .toggle-slider { background: #2b3241; }
+
+/* ── 저장 메시지 ── */
+html.dark .save-msg.success { background: #14331f; color: #86efac; }
+html.dark .save-msg.error { background: #3b1d1d; color: #fca5a5; }
+
+/* ── 이메일 배지 ── */
+html.dark .email-status-badge.verified { background: #14331f; color: #86efac; }
+html.dark .email-status-badge.unverified { background: #3a2d0a; color: #fde68a; }
+
+/* ── 소셜 연동 ── */
+html.dark .social-link-item { border-bottom-color: #232935; }
+html.dark .social-link-name { color: #f1f5f9; }
+html.dark .social-link-status { color: #9ca3af; }
+html.dark .social-link-status.linked { color: #86efac; }
+html.dark .social-link-icon.GOOGLE {
+    background: #1f2432;
+    color: #e5e7eb;
+    border-color: #2b3241;
+}
+html.dark .btn-social-action.unlink {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .btn-social-action.link {
+    background: #1e293b;
+    color: #93c5fd;
+    border-color: #1e40af;
+}
+
+/* ── 위험 구역 ── */
+html.dark .danger-zone { border-color: #7f1d1d; }
+html.dark .danger-zone-text p { color: #cbd5e1; }
+html.dark .btn-danger { background: #1a1f2b; }
+
+/* ── 마이페이지 메인 카드 ── */
+html.dark .mp-card {
+    background: #1a1f2b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+html.dark .mp-card-head { border-bottom-color: #232935; }
+html.dark .mp-card-title { color: #f1f5f9; }
+html.dark .mp-card-count { background: #1e293b; color: #93c5fd; }
+html.dark .mp-card-more { color: #9ca3af; }
+html.dark .mp-card-more:hover { color: #93c5fd; }
+
+/* ── 목록 행 ── */
+html.dark .mp-list-item { border-bottom-color: #232935; }
+html.dark .mp-list-item:hover { background: #1f2432; }
+html.dark .mp-list-icon { background: #232935; }
+html.dark .mp-list-title { color: #f1f5f9; }
+html.dark .mp-list-meta { color: #9ca3af; }
+
+/* ── 내 정보 ── */
+html.dark .mp-info-item { border-color: #232935 !important; }
+html.dark .mp-info-label { color: #9ca3af; }
+html.dark .mp-info-value { color: #f1f5f9; }
+
+/* ── 등급 / 재화 / 통계 ── */
+html.dark .mp-grade-section { border-bottom-color: #232935; }
+html.dark .mp-level-label { color: #f1f5f9; }
+html.dark .mp-level-xp { color: #9ca3af; }
+html.dark .mp-xp-bar { background: #232935; }
+
+html.dark .mp-currency-item,
+html.dark .mp-stats-item { border-color: #232935; }
+html.dark .mp-currency-label,
+html.dark .mp-stats-label { color: #9ca3af; }
+html.dark .mp-currency-value,
+html.dark .mp-stats-value { color: #f1f5f9; }
+html.dark .mp-stats-grid { border-top-color: #232935; }
+
+/* ── 알림 ── */
+html.dark .mp-notif-item {
+    background: #1a1f2b;
+    color: #cbd5e1;
+}
+html.dark .mp-notif-item:hover { background: #232935; }
+html.dark .mp-notif-item.unread {
+    background: #1e293b;
+    border-left-color: #60a5fa;
+    color: #f1f5f9;
+}
+html.dark .mp-notif-item.unread .mp-notif-msg { color: #f1f5f9; }
+html.dark .mp-notif-msg { color: #cbd5e1; }
+html.dark .mp-notif-type { color: #93c5fd; }
+html.dark .mp-notif-date,
+html.dark .mp-notif-footer,
+html.dark .mp-notif-empty { color: #9ca3af; }
+html.dark .mp-notif-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .mp-notif-btn:hover { color: #93c5fd; border-color: #60a5fa; }
+
+/* ── 빈 상태 / placeholder ── */
+html.dark .mp-empty,
+html.dark .mp-placeholder,
+html.dark .mp-placeholder-msg,
+html.dark .mp-placeholder-sub { color: #9ca3af; }
+
+/* ── 리뷰 ── */
+html.dark .mp-review-excerpt { color: #cbd5e1; }
+
+/* ── 항공권 티켓 ── */
+html.dark .mp-flight-ticket {
+    background: linear-gradient(135deg, #1a1f2b 0%, #1c2433 50%, #1e2a44 100%);
+    border-color: rgba(96, 165, 250, .25);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
+}
+html.dark .mp-flight-ticket-head h4 { color: #f1f5f9; }
+html.dark .mp-flight-ticket-head p,
+html.dark .mp-flight-ticket-foot span { color: #9ca3af; }
+html.dark .mp-flight-ticket-price strong { color: #f1f5f9; }
+html.dark .mp-flight-ticket-price span { color: #9ca3af; }
+html.dark .mp-flight-route-box {
+    background: rgba(15, 17, 21, .55);
+    border-color: rgba(96, 165, 250, .25);
+}
+html.dark .mp-flight-route-row { color: #cbd5e1; }
+html.dark .mp-flight-route-row strong { color: #f1f5f9; }
+html.dark .mp-flight-route-tag { background: #1e293b; color: #93c5fd; }
+html.dark .mp-flight-status { background: #1e293b; color: #93c5fd; }
+html.dark .mp-package-status { background: #14331f; color: #86efac; }
+html.dark .mp-flight-detail-link { background: #f1f5f9; color: #0f172a; }
+
+/* 패키지 티켓 (초록 계열) */
+html.dark .mp-package-ticket {
+    background: linear-gradient(135deg, #1a1f2b 0%, #19281f 60%, #1a3326 100%);
+    border-color: rgba(34, 197, 94, .22);
+}
+
+/* 항공권 모달 */
+html.dark .mp-flight-modal-card {
+    background: #151922;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .65);
+}
+html.dark .mp-flight-modal-head h3 { color: #f1f5f9; }
+html.dark .mp-flight-modal-head p { color: #9ca3af; }
+html.dark .mp-flight-modal-x { background: #1f2432; color: #cbd5e1; }
+html.dark .mp-flight-itinerary-item {
+    background: #0f1115;
+    border-color: #232935;
+}
+html.dark .mp-flight-itinerary-item strong { color: #f1f5f9; }
+html.dark .mp-flight-itinerary-item p { color: #9ca3af; }
+html.dark .mp-flight-itinerary-item dt { color: #9ca3af; }
+html.dark .mp-flight-itinerary-item dd { color: #f1f5f9; }
+html.dark .mp-flight-payment { background: #0a0d13; }
+html.dark .mp-flight-mock-note { background: #2a1d0a; color: #fde68a; }
+
+/* 패키지 알림 */
+html.dark .mp-package-booking-alert.success {
+    background: #14331f;
+    color: #86efac;
+    border-color: #14532d;
+}
+html.dark .mp-package-booking-alert.error {
+    background: #3b1d1d;
+    color: #fca5a5;
+    border-color: #7f1d1d;
+}
+html.dark .mp-package-summary-box {
+    background: rgba(15, 17, 21, .6);
+    border-color: rgba(34, 197, 94, .25);
+}
+html.dark .mp-package-summary-box strong { color: #f1f5f9; }
+html.dark .mp-package-summary-box span { color: #9ca3af; }
+html.dark .mp-package-summary-box p { color: #cbd5e1; }
+html.dark .mp-package-modal-summary {
+    background: #0f1115;
+    border-color: #232935;
+}
+html.dark .mp-package-modal-summary h4 { color: #f1f5f9; }
+html.dark .mp-package-modal-summary p { color: #cbd5e1; }
+html.dark .mp-package-modal-summary a { color: #93c5fd; }
+html.dark .mp-package-cancel-form {
+    background: #2a1313;
+    border-color: #7f1d1d;
+}
+html.dark .mp-package-cancel-form textarea {
+    background: #1a1f2b;
+    color: #f1f5f9;
+    border-color: #7f1d1d;
+}
+
+/* ── 아이템(꾸미기) 섹션 ── */
+html.dark .mp-item-alert--success { background: #14331f; color: #86efac; }
+html.dark .mp-item-alert--error { background: #3b1d1d; color: #fca5a5; }
+html.dark .mp-item-section {
+    background: #151922;
+    border-color: #232935;
+}
+html.dark .mp-item-section-head h3 { color: #f1f5f9; }
+html.dark .mp-item-section-head p { color: #9ca3af; }
+html.dark .mp-item-card {
+    background: #1a1f2b;
+    border-color: #232935;
+}
+html.dark .mp-item-preview { background: #0f1115; }
+html.dark .mp-item-type { background: #232935; color: #cbd5e1; }
+html.dark .mp-item-body strong { color: #f1f5f9; }
+html.dark .mp-item-body p { color: #9ca3af; }
+html.dark .mp-item-date { color: #6b7280; }
+html.dark .mp-item-actions { border-top-color: #232935; }
+html.dark .mp-item-btn--ghost { background: #232935; color: #cbd5e1; }
+html.dark .mp-equipped-badge { background: #1e293b; color: #93c5fd; }
+
+/* ── 비즈니스(기업회원 신청) ── */
+html.dark .mp-business-kicker { color: #9ca3af; }
+html.dark .mp-business-status strong { color: #f1f5f9; }
+html.dark .mp-business-note {
+    background: #151922;
+    color: #cbd5e1;
+}
+html.dark .mp-business-reject {
+    background: #2a1313;
+    color: #fca5a5;
+}
+html.dark .mp-business-form label { color: #cbd5e1; }
+html.dark .mp-business-form input,
+html.dark .mp-business-form select,
+html.dark .mp-business-form textarea {
+    background: #1a1f2b;
+    color: #f1f5f9;
+    border-color: #2b3241;
+}
+
+/* ── 대시보드 탭 ── */
+html.dark .mp-tab-nav {
+    background: rgba(26, 31, 43, .9);
+    border-color: rgba(96, 165, 250, .15);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .35);
+}
+html.dark .mp-tab-btn { color: #9ca3af; }
+html.dark .mp-tab-btn:hover { background: #1f2432; color: #f1f5f9; }
+html.dark .mp-tab-btn.is-active {
+    background: linear-gradient(135deg, #0f766e, #2563eb);
+    color: #fff;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, .35);
+}
+
+/* ── 반응형 보더 보정 ── */
+@media (max-width: 640px) {
+    html.dark .mp-currency-item,
+    html.dark .mp-stats-item { border-bottom-color: #232935; }
+}
