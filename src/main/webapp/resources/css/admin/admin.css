@@ -1732,3 +1732,37 @@ body.sa-light .adm-warning-box {
         min-width: 0;
     }
 }
+
+/* ══════════════════════════════════════════
+   사이드바 드롭다운 그룹
+══════════════════════════════════════════ */
+.adm-nav-group { display: block; }
+.adm-nav-group-head {
+    width: 100%;
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: 0;
+    font-size: 10px; font-weight: 700;
+    color: #475569;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: 12px 10px 6px;
+    margin-top: 8px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+}
+.adm-nav-group-head:hover { color: #94a3b8; }
+.adm-nav-group-caret {
+    display: inline-block;
+    transition: transform .15s ease;
+    font-size: 9px;
+    width: 10px;
+    color: #64748b;
+}
+.adm-nav-group.open .adm-nav-group-caret { transform: rotate(90deg); }
+.adm-nav-group-title { flex: 1; }
+.adm-nav-group-body { display: none; }
+.adm-nav-group.open > .adm-nav-group-body { display: block; }
+
+body.sa-light .adm-nav-group-head       { color: #94a3b8; }
+body.sa-light .adm-nav-group-head:hover { color: #64748b; }
+body.sa-light .adm-nav-group-caret      { color: #94a3b8; }
