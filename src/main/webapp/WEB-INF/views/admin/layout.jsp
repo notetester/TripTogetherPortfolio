@@ -101,10 +101,11 @@
                 <span class="adm-nav-icon">🎁</span> <spring:message code="admin.layout.menu.packages"/>
             </a>
             </c:if>
-            <span class="adm-nav-item disabled">
+            <c:if test="${hasCourseAdmin}">
+            <a class="adm-nav-item ${activeMenu=='courses'?'active':''}" href="${pageContext.request.contextPath}/admin/courses">
                 <span class="adm-nav-icon">🗺️</span> <spring:message code="admin.layout.menu.courses"/>
-                <span class="adm-nav-badge soon"><spring:message code="admin.layout.soon"/></span>
-            </span>
+            </a>
+            </c:if>
 
             <c:if test="${hasAiHelperAdmin}">
             <div class="adm-nav-section" style="margin-top:8px;">AI 도우미</div>
