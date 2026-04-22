@@ -2,6 +2,7 @@ package org.triptogether.travelPackage.vo;
 
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -32,6 +33,7 @@ public class TravelPackageForm {
     private Integer minPeople;
     private Integer maxPeople;
     private String mainImagePath;
+    private MultipartFile mainImageFile;
 
     /**
      * DRAFT: 임시저장

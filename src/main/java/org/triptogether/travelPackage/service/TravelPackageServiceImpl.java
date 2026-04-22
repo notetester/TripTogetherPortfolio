@@ -1,8 +1,10 @@
 package org.triptogether.travelPackage.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.myPage.mapper.WalletMapper;
 import org.triptogether.myPage.vo.WalletHistoryDto;
@@ -18,7 +20,12 @@ import org.triptogether.travelPackage.vo.TravelPackageForm;
 import org.triptogether.travelPackage.vo.TravelPackageRevisionVO;
 import org.triptogether.travelPackage.vo.TravelPackageVO;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Locale;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -30,9 +37,13 @@ public class TravelPackageServiceImpl implements TravelPackageService {
     private static final String STATUS_APPROVED = "APPROVED";
     private static final String STATUS_REJECTED = "REJECTED";
     private static final long MAX_MILEAGE_RATE = 30;
+    private static final Set<String> ALLOWED_IMAGE_EXTENSIONS = Set.of(".jpg", ".jpeg", ".png", ".gif", ".webp");
 
     private final TravelPackageMapper travelPackageMapper;
     private final WalletMapper walletMapper;
+
+    @Value("${file.upload.path}")
+    private String uploadPath;
 
     @Override
     public List<TravelPackageVO> getSellerPackages(Long sellerUserIdx) {
@@ -64,7 +75,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         validateSeller(sellerUserIdx);
         validateForm(form);
 
-        TravelPackageVO travelPackage = toVO(form);
+        TravelPackageVO travelPackage = toVO(form, null);
         travelPackage.setSellerUserIdx(sellerUserIdx);
         travelPackage.setPackageStatus(resolveRequestedStatus(form.getAction()));
 
@@ -91,7 +102,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
             return;
         }
 
-        TravelPackageVO travelPackage = toVO(form);
+        TravelPackageVO travelPackage = toVO(form, currentPackage.getMainImagePath());
         travelPackage.setSellerUserIdx(sellerUserIdx);
         travelPackage.setPackageStatus(resolveRequestedStatus(form.getAction()));
 
@@ -336,7 +347,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         return walletMapper.selectUserByIdx(userIdx);
     }
 
-    private TravelPackageVO toVO(TravelPackageForm form) {
+    private TravelPackageVO toVO(TravelPackageForm form, String currentImagePath) {
         TravelPackageVO travelPackage = new TravelPackageVO();
         travelPackage.setPackageIdx(form.getPackageIdx());
         travelPackage.setSpotIdx(form.getSpotIdx());
@@ -349,7 +360,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         travelPackage.setEndDate(form.getEndDate());
         travelPackage.setMinPeople(form.getMinPeople());
         travelPackage.setMaxPeople(form.getMaxPeople());
-        travelPackage.setMainImagePath(trimToNull(form.getMainImagePath()));
+        travelPackage.setMainImagePath(resolveMainImagePath(form, currentImagePath));
         return travelPackage;
     }
 
@@ -370,10 +381,57 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         revision.setEndDate(form.getEndDate());
         revision.setMinPeople(form.getMinPeople());
         revision.setMaxPeople(form.getMaxPeople());
-        revision.setMainImagePath(trimToNull(form.getMainImagePath()));
+        TravelPackageVO currentPackage = travelPackageMapper.selectSellerPackage(form.getPackageIdx(), sellerUserIdx);
+        String currentImagePath = currentPackage != null ? currentPackage.getMainImagePath() : null;
+        revision.setMainImagePath(resolveMainImagePath(form, currentImagePath));
         revision.setRevisionStatus(STATUS_PENDING);
 
         travelPackageMapper.insertPackageRevision(revision);
+    }
+
+    private String resolveMainImagePath(TravelPackageForm form, String currentImagePath) {
+        MultipartFile imageFile = form.getMainImageFile();
+        if (imageFile == null || imageFile.isEmpty()) {
+            String submittedPath = trimToNull(form.getMainImagePath());
+            return submittedPath != null ? submittedPath : currentImagePath;
+        }
+        return storePackageImage(imageFile);
+    }
+
+    private String storePackageImage(MultipartFile imageFile) {
+        String originalFilename = imageFile.getOriginalFilename();
+        String extension = extractExtension(originalFilename);
+        if (!ALLOWED_IMAGE_EXTENSIONS.contains(extension)) {
+            throw new IllegalArgumentException("패키지 대표 이미지는 JPG, PNG, GIF, WEBP 형식만 업로드할 수 있습니다.");
+        }
+
+        try {
+            Path packageUploadDir = Path.of(System.getProperty("user.dir"), uploadPath, "package").normalize();
+            Files.createDirectories(packageUploadDir);
+
+            String savedFilename = UUID.randomUUID().toString().replace("-", "") + extension;
+            Path targetPath = packageUploadDir.resolve(savedFilename).normalize();
+
+            if (!targetPath.startsWith(packageUploadDir)) {
+                throw new IllegalArgumentException("파일 저장 경로가 올바르지 않습니다.");
+            }
+
+            imageFile.transferTo(targetPath);
+            return "/upload/package/" + savedFilename;
+        } catch (IOException e) {
+            throw new IllegalStateException("패키지 대표 이미지 업로드에 실패했습니다.");
+        }
+    }
+
+    private String extractExtension(String filename) {
+        if (filename == null) {
+            return "";
+        }
+        int dotIndex = filename.lastIndexOf('.');
+        if (dotIndex < 0) {
+            return "";
+        }
+        return filename.substring(dotIndex).toLowerCase(Locale.ROOT);
     }
 
     private void validateSeller(Long sellerUserIdx) {

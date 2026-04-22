@@ -453,6 +453,35 @@
   font-weight: 700;
 }
 
+.pkg-current-image {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #dbeafe;
+  border-radius: 16px;
+  padding: 12px;
+  background: #eff6ff;
+}
+
+.pkg-current-image img {
+  width: 120px;
+  height: 78px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #e2e8f0;
+}
+
+.pkg-current-image strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #0f172a;
+  font-weight: 900;
+}
+
+.pkg-current-image small {
+  display: block;
+}
+
 .pkg-form-actions {
   display: flex;
   justify-content: flex-end;
