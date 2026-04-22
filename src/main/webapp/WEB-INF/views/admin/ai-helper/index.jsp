@@ -44,7 +44,7 @@
             <div style="font-size:14px;font-weight:600;margin-bottom:8px;">ℹ️ 안내</div>
             <div style="font-size:13px;color:#475569;line-height:1.6;">
                 좌측 상단 탭에서 대화 세션/부적절 메시지/차단/정책을 관리할 수 있습니다.<br>
-                챗봇 모델: Gemini 2.0 Flash.
+                챗봇 모델: Gemini 2.5 Flash.
             </div>
         </div>
     </c:if>
