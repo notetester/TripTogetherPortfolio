@@ -127,9 +127,11 @@
                 <span class="adm-nav-icon">🔑</span> <spring:message code="admin.layout.menu.superAdmin"/>
             </a>
             </c:if>
+            <c:if test="${hasOpsPolicyAdmin}">
             <a class="adm-nav-item ${activeMenu=='policies'?'active':''}" href="${pageContext.request.contextPath}/admin/policies">
                 <span class="adm-nav-icon">⚙️</span> <spring:message code="admin.layout.menu.policies"/>
             </a>
+            </c:if>
             <c:if test="${hasContentModerationAdmin}">
             <a class="adm-nav-item ${activeMenu=='moderation'?'active':''}" href="${pageContext.request.contextPath}/admin/moderation">
                 <span class="adm-nav-icon">🛡️</span> <spring:message code="admin.layout.menu.moderation"/>

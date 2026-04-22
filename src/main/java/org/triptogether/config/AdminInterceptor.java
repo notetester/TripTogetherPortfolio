@@ -96,7 +96,8 @@ public class AdminInterceptor implements HandlerInterceptor {
         "/admin/inquiries",   "INQUIRY_ADMIN",
         "/admin/explore",     "EXPLORE_ADMIN",
         "/admin/courses",     "COURSE_ADMIN",
-        "/admin/moderation",  "CONTENT_MODERATION_ADMIN"
+        "/admin/moderation",  "CONTENT_MODERATION_ADMIN",
+        "/admin/policies",    "OPS_POLICY_ADMIN"
     );
 
     private static final Map<String, String> AUDIT_URLS = Map.of(
