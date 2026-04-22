@@ -8,6 +8,40 @@
 <%@ include file="../common/header.jsp" %>
 
 <body>
+<spring:message code="detail.common.close" var="detailCloseLabel"/>
+<spring:message code="detail.package.title" var="detailPackageTitleLabel"/>
+<spring:message code="detail.package.carousel" var="detailPackageCarouselLabel"/>
+<spring:message code="detail.package.prev" var="detailPackagePrevLabel"/>
+<spring:message code="detail.package.next" var="detailPackageNextLabel"/>
+<spring:message code="detail.package.period.always" var="detailPackagePeriodAlwaysLabel"/>
+<spring:message code="detail.package.defaultSummary" var="detailPackageDefaultSummaryLabel"/>
+<spring:message code="detail.package.price" var="detailPackagePriceLabel"/>
+<spring:message code="detail.package.period" var="detailPackagePeriodLabel"/>
+<spring:message code="detail.package.people" var="detailPackagePeopleLabel"/>
+<spring:message code="detail.package.seller" var="detailPackageSellerLabel"/>
+<spring:message code="detail.package.booking.title" var="detailPackageBookingTitleLabel"/>
+<spring:message code="detail.package.booking.people" var="detailPackageBookingPeopleLabel"/>
+<spring:message code="detail.package.booking.mileage" var="detailPackageBookingMileageLabel"/>
+<spring:message code="detail.package.booking.total" var="detailPackageBookingTotalLabel"/>
+<spring:message code="detail.package.booking.maxMileage" var="detailPackageBookingMaxMileageLabel"/>
+<spring:message code="detail.package.booking.cash" var="detailPackageBookingCashLabel"/>
+<spring:message code="detail.package.booking.balance" var="detailPackageBookingBalanceLabel"/>
+<spring:message code="detail.package.booking.action" var="detailPackageBookingActionLabel"/>
+<spring:message code="detail.flight.cheapestFromSeoul" var="detailFlightCheapestLabel"/>
+<spring:message code="detail.flight.modal.title" var="detailFlightTitleLabel"/>
+<spring:message code="detail.flight.modal.subtitle" var="detailFlightSubtitleLabel"/>
+<spring:message code="detail.flight.departureDate" var="detailFlightDepartureDateLabel"/>
+<spring:message code="detail.flight.returnDate" var="detailFlightReturnDateLabel"/>
+<spring:message code="detail.flight.loading" var="detailFlightLoadingLabel"/>
+<spring:message code="detail.flight.originalPrice" var="detailFlightOriginalPriceLabel"/>
+<spring:message code="detail.flight.gradeDiscount" var="detailFlightGradeDiscountLabel"/>
+<spring:message code="detail.flight.totalPrice" var="detailFlightTotalPriceLabel"/>
+<spring:message code="detail.flight.cashBalance" var="detailFlightCashBalanceLabel"/>
+<spring:message code="detail.flight.mileageBalance" var="detailFlightMileageBalanceLabel"/>
+<spring:message code="detail.flight.useMileage" var="detailFlightUseMileageLabel"/>
+<spring:message code="detail.flight.useCash" var="detailFlightUseCashLabel"/>
+<spring:message code="detail.flight.useMaxMileage" var="detailFlightUseMaxMileageLabel"/>
+<spring:message code="detail.flight.purchase" var="detailFlightPurchaseLabel"/>
 <style>
 html { scrollbar-gutter: stable; }
 /* 히어로 영역 */
@@ -1038,11 +1072,11 @@ html { scrollbar-gutter: stable; }
   <c:if test="${not empty approvedPackageList}">
     <div class="det-section">
       <div class="detail-package-head">
-        <h2>&#127873; 연결 패키지 상품</h2>
-        <div class="detail-package-controls" aria-label="패키지 상품 이동">
-          <button type="button" class="detail-package-nav" id="packagePrevBtn" aria-label="이전 패키지">&lt;</button>
+        <h2>&#127873; ${detailPackageTitleLabel}</h2>
+        <div class="detail-package-controls" aria-label="${detailPackageCarouselLabel}">
+          <button type="button" class="detail-package-nav" id="packagePrevBtn" aria-label="${detailPackagePrevLabel}">&lt;</button>
           <span class="detail-package-page" id="packagePageText">1 / 1</span>
-          <button type="button" class="detail-package-nav" id="packageNextBtn" aria-label="다음 패키지">&gt;</button>
+          <button type="button" class="detail-package-nav" id="packageNextBtn" aria-label="${detailPackageNextLabel}">&gt;</button>
         </div>
       </div>
       <div class="detail-package-carousel">
@@ -1051,19 +1085,25 @@ html { scrollbar-gutter: stable; }
             <c:set var="pkgPeriod">
               <c:choose>
                 <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">${pkg.startDate} ~ ${pkg.endDate}</c:when>
-                <c:otherwise>상시/미정</c:otherwise>
+                <c:otherwise>${detailPackagePeriodAlwaysLabel}</c:otherwise>
               </c:choose>
             </c:set>
-            <c:set var="pkgPeople">
-              최소 ${pkg.minPeople}명<c:if test="${not empty pkg.maxPeople}"> / 최대 ${pkg.maxPeople}명</c:if>
-            </c:set>
+            <c:choose>
+              <c:when test="${not empty pkg.maxPeople}">
+                <spring:message code="detail.package.people.range" arguments="${pkg.minPeople},${pkg.maxPeople}" var="pkgPeople"/>
+              </c:when>
+              <c:otherwise>
+                <spring:message code="detail.package.people.minOnly" arguments="${pkg.minPeople}" var="pkgPeople"/>
+              </c:otherwise>
+            </c:choose>
+            <spring:message code="detail.package.viewDetail" arguments="${fn:escapeXml(pkg.packageTitle)}" var="pkgDetailLabel"/>
             <fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0" var="pkgPriceText"/>
             <article class="detail-package-card"
                      tabindex="0"
                      role="button"
-                     aria-label="${fn:escapeXml(pkg.packageTitle)} 상세 보기"
+                     aria-label="${pkgDetailLabel}"
                      data-title="${fn:escapeXml(pkg.packageTitle)}"
-                     data-summary="${fn:escapeXml(empty pkg.packageSummary ? '승인된 여행 패키지 상품입니다.' : pkg.packageSummary)}"
+                     data-summary="${fn:escapeXml(empty pkg.packageSummary ? detailPackageDefaultSummaryLabel : pkg.packageSummary)}"
                      data-content="${fn:escapeXml(pkg.packageContent)}"
                      data-image="${fn:escapeXml(pkg.mainImagePath)}"
                      data-package-idx="${pkg.packageIdx}"
@@ -1092,31 +1132,28 @@ html { scrollbar-gutter: stable; }
                 <p class="detail-package-summary">
                   <c:choose>
                     <c:when test="${not empty pkg.packageSummary}">${fn:escapeXml(pkg.packageSummary)}</c:when>
-                    <c:otherwise>승인된 여행 패키지 상품입니다.</c:otherwise>
+                    <c:otherwise>${detailPackageDefaultSummaryLabel}</c:otherwise>
                   </c:choose>
                 </p>
                 <dl class="detail-package-meta">
                   <div>
-                    <dt>가격</dt>
+                    <dt>${detailPackagePriceLabel}</dt>
                     <dd><fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(pkg.currencyCode)}</dd>
                   </div>
                   <div>
-                    <dt>일정</dt>
+                    <dt>${detailPackagePeriodLabel}</dt>
                     <dd>
                       <c:choose>
                         <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                           ${pkg.startDate} ~ ${pkg.endDate}
                         </c:when>
-                        <c:otherwise>상시/미정</c:otherwise>
+                        <c:otherwise>${detailPackagePeriodAlwaysLabel}</c:otherwise>
                       </c:choose>
                     </dd>
                   </div>
                   <div>
-                    <dt>인원</dt>
-                    <dd>
-                      최소 ${pkg.minPeople}명
-                      <c:if test="${not empty pkg.maxPeople}"> / 최대 ${pkg.maxPeople}명</c:if>
-                    </dd>
+                    <dt>${detailPackagePeopleLabel}</dt>
+                    <dd>${pkgPeople}</dd>
                   </div>
                 </dl>
               </div>
@@ -1129,7 +1166,7 @@ html { scrollbar-gutter: stable; }
       <div class="detail-package-modal-card" role="dialog" aria-modal="true" aria-labelledby="packageModalTitle">
         <div class="detail-package-modal-hero" id="packageModalHero">
           <span id="packageModalHeroFallback">TripTogether</span>
-          <button type="button" class="detail-package-modal-close" id="packageModalCloseBtn" aria-label="닫기">×</button>
+          <button type="button" class="detail-package-modal-close" id="packageModalCloseBtn" aria-label="${detailCloseLabel}">×</button>
         </div>
         <div class="detail-package-modal-body">
           <p class="detail-package-modal-kicker" id="packageModalKicker"></p>
@@ -1137,43 +1174,43 @@ html { scrollbar-gutter: stable; }
           <p class="detail-package-modal-summary" id="packageModalSummary"></p>
           <dl class="detail-package-modal-meta">
             <div>
-              <dt>가격</dt>
+              <dt>${detailPackagePriceLabel}</dt>
               <dd id="packageModalPrice"></dd>
             </div>
             <div>
-              <dt>일정</dt>
+              <dt>${detailPackagePeriodLabel}</dt>
               <dd id="packageModalPeriod"></dd>
             </div>
             <div>
-              <dt>인원</dt>
+              <dt>${detailPackagePeopleLabel}</dt>
               <dd id="packageModalPeople"></dd>
             </div>
             <div>
-              <dt>판매자</dt>
+              <dt>${detailPackageSellerLabel}</dt>
               <dd id="packageModalSeller"></dd>
             </div>
           </dl>
           <div class="detail-package-booking">
-            <h4>예약/결제 시뮬레이션</h4>
+            <h4>${detailPackageBookingTitleLabel}</h4>
             <div class="detail-package-booking-grid">
               <div class="detail-package-booking-field">
-                <label for="packagePeopleCount">예약 인원</label>
+                <label for="packagePeopleCount">${detailPackageBookingPeopleLabel}</label>
                 <input type="number" id="packagePeopleCount" min="1" step="1" value="1">
               </div>
               <div class="detail-package-booking-field">
-                <label for="packageMileageAmount">사용 마일리지</label>
+                <label for="packageMileageAmount">${detailPackageBookingMileageLabel}</label>
                 <input type="number" id="packageMileageAmount" min="0" step="1000" value="0">
               </div>
             </div>
             <div class="detail-package-pay-summary">
-              <div><span>총 결제 금액</span><strong id="packageBookingTotal">0 C</strong></div>
-              <div><span>마일리지 최대 사용</span><strong id="packageBookingMaxMileage">0 M</strong></div>
-              <div><span>캐시 결제 예정</span><strong id="packageBookingCash">0 C</strong></div>
-              <div><span>내 보유 캐시/마일리지</span><strong id="packageBookingBalance">0 C / 0 M</strong></div>
+              <div><span>${detailPackageBookingTotalLabel}</span><strong id="packageBookingTotal">0 C</strong></div>
+              <div><span>${detailPackageBookingMaxMileageLabel}</span><strong id="packageBookingMaxMileage">0 M</strong></div>
+              <div><span>${detailPackageBookingCashLabel}</span><strong id="packageBookingCash">0 C</strong></div>
+              <div><span>${detailPackageBookingBalanceLabel}</span><strong id="packageBookingBalance">0 C / 0 M</strong></div>
             </div>
             <div class="detail-package-booking-actions">
               <span class="detail-package-booking-message" id="packageBookingMessage"></span>
-              <button type="button" class="detail-package-booking-btn" id="packageBookingBtn">예약하기</button>
+              <button type="button" class="detail-package-booking-btn" id="packageBookingBtn">${detailPackageBookingActionLabel}</button>
             </div>
           </div>
         </div>
@@ -1288,15 +1325,15 @@ html { scrollbar-gutter: stable; }
         setText('packageBookingBalance', formatAmount(userCashBalance) + ' C / ' + formatAmount(userMileageBalance) + ' M');
 
         if (!isLoggedIn) {
-          bookingBtn.textContent = '로그인 후 예약';
+          bookingBtn.textContent = detailMessages.packageLoginAction;
           bookingBtn.disabled = false;
-          setBookingMessage('로그인 후 패키지 예약이 가능합니다.', '');
+          setBookingMessage(detailMessages.packageLoginRequired, '');
           return;
         }
-        bookingBtn.textContent = '예약하기';
+        bookingBtn.textContent = detailMessages.packageBookingAction;
         if (userCashBalance < cashAmount) {
           bookingBtn.disabled = true;
-          setBookingMessage('캐시 잔액이 부족합니다.', 'error');
+          setBookingMessage(detailMessages.packageInsufficientCash, 'error');
           return;
         }
         bookingBtn.disabled = false;
@@ -1320,7 +1357,7 @@ html { scrollbar-gutter: stable; }
         if (imagePath) {
           var image = document.createElement('img');
           image.src = imagePath;
-          image.alt = data.title || '패키지 이미지';
+          image.alt = data.title || '<spring:message code="detail.package.imageAlt" javaScriptEscape="true"/>';
           modalHero.prepend(image);
         }
 
@@ -1388,7 +1425,7 @@ html { scrollbar-gutter: stable; }
             return;
           }
           bookingBtn.disabled = true;
-          setBookingMessage('예약 처리 중입니다...', '');
+          setBookingMessage(detailMessages.packageProcessing, '');
           fetch(contextPath + '/packages/' + currentPackage.packageIdx + '/book', {
             method: 'POST',
             headers: {
@@ -1408,17 +1445,17 @@ html { scrollbar-gutter: stable; }
                 return;
               }
               bookingBtn.disabled = false;
-              setBookingMessage(data.message || '예약 처리 중 오류가 발생했습니다.', 'error');
+              setBookingMessage(data.message || detailMessages.packageError, 'error');
               return;
             }
             userCashBalance = Number(data.cashBalance || 0);
             userMileageBalance = Number(data.mileageBalance || 0);
-            setBookingMessage('예약 완료: ' + data.bookingNo, 'success');
+            setBookingMessage(formatMessage(detailMessages.packageSuccessTemplate, data.bookingNo), 'success');
             updatePackageBookingPreview();
           })
           .catch(function () {
             bookingBtn.disabled = false;
-            setBookingMessage('예약 처리 중 오류가 발생했습니다.', 'error');
+            setBookingMessage(detailMessages.packageError, 'error');
           });
         });
       }
@@ -1457,7 +1494,7 @@ html { scrollbar-gutter: stable; }
                   data-spot-idx="${spot.spotIdx}">
             <span class="flight-chip-icon">✈</span>
             <span>
-              <span class="flight-chip-label">서울 출발 최저가</span>
+              <span class="flight-chip-label">${detailFlightCheapestLabel}</span>
               <span class="flight-chip-price">
                   <fmt:formatNumber value="${lowestFlightOffer.finalPrice}" pattern="#,##0"/> C
               </span>
@@ -1474,65 +1511,65 @@ html { scrollbar-gutter: stable; }
       <div class="flight-modal-card" role="dialog" aria-modal="true" aria-labelledby="flightModalTitle">
         <div class="flight-modal-head">
           <div>
-            <h3 class="flight-modal-title" id="flightModalTitle">서울 출발 항공권</h3>
+            <h3 class="flight-modal-title" id="flightModalTitle">${detailFlightTitleLabel}</h3>
             <div class="flight-modal-sub">
-              Mock 항공권 견적입니다. 실제 외부 결제는 진행되지 않고 보유 캐시/마일리지 잔액만 차감됩니다.
+              ${detailFlightSubtitleLabel}
             </div>
           </div>
-          <button type="button" class="flight-modal-close" id="closeFlightModalBtn" aria-label="닫기">×</button>
+          <button type="button" class="flight-modal-close" id="closeFlightModalBtn" aria-label="${detailCloseLabel}">×</button>
         </div>
         <div class="flight-modal-body">
           <div class="flight-date-grid">
             <div class="flight-date-field">
-              <label for="flightDepartureDate">출발일</label>
+              <label for="flightDepartureDate">${detailFlightDepartureDateLabel}</label>
               <input type="date" id="flightDepartureDate">
             </div>
             <div class="flight-date-field">
-              <label for="flightReturnDate">귀국일</label>
+              <label for="flightReturnDate">${detailFlightReturnDateLabel}</label>
               <input type="date" id="flightReturnDate">
             </div>
           </div>
 
           <div class="flight-offer-list" id="flightOfferList">
-            <div class="flight-pay-msg">항공권 정보를 불러오는 중입니다.</div>
+            <div class="flight-pay-msg">${detailFlightLoadingLabel}</div>
           </div>
 
           <div class="flight-pay-box">
             <div class="flight-pay-row">
-              <span>할인 전 금액</span>
+              <span>${detailFlightOriginalPriceLabel}</span>
               <strong id="flightOriginalPrice">-</strong>
             </div>
             <div class="flight-pay-row">
-              <span>등급 할인</span>
+              <span>${detailFlightGradeDiscountLabel}</span>
               <strong id="flightGradeDiscount">-</strong>
             </div>
             <div class="flight-pay-row">
-              <span>최종 결제 금액</span>
+              <span>${detailFlightTotalPriceLabel}</span>
               <strong id="flightTotalPrice">-</strong>
             </div>
             <div class="flight-pay-row">
-              <span>보유 캐시</span>
+              <span>${detailFlightCashBalanceLabel}</span>
               <strong id="flightCashBalance">
                 <fmt:formatNumber value="${loginUser.cashBalance}" pattern="#,##0"/> C
               </strong>
             </div>
             <div class="flight-pay-row">
-              <span>보유 마일리지</span>
+              <span>${detailFlightMileageBalanceLabel}</span>
               <strong id="flightMileageBalance">
                 <fmt:formatNumber value="${loginUser.mileageBalance}" pattern="#,##0"/> M
               </strong>
             </div>
             <div class="flight-pay-row">
-              <span>사용 마일리지 <small id="flightMileageLimitText"></small></span>
+              <span>${detailFlightUseMileageLabel} <small id="flightMileageLimitText"></small></span>
               <input type="number" id="flightMileageInput" class="flight-pay-input" min="0" step="1000" value="0">
             </div>
             <div class="flight-pay-row">
-              <span>사용 캐시</span>
+              <span>${detailFlightUseCashLabel}</span>
               <input type="number" id="flightCashInput" class="flight-pay-input" min="0" step="1000" value="0" readonly>
             </div>
             <div class="flight-pay-actions">
-              <button type="button" class="flight-pay-btn secondary" id="flightUseMaxMileageBtn">마일리지 최대 사용</button>
-              <button type="button" class="flight-pay-btn primary" id="flightPurchaseBtn">구매하기</button>
+              <button type="button" class="flight-pay-btn secondary" id="flightUseMaxMileageBtn">${detailFlightUseMaxMileageLabel}</button>
+              <button type="button" class="flight-pay-btn primary" id="flightPurchaseBtn">${detailFlightPurchaseLabel}</button>
             </div>
             <div class="flight-pay-msg" id="flightPayMessage"></div>
           </div>
@@ -1686,7 +1723,7 @@ html { scrollbar-gutter: stable; }
                   <c:if test="${rv.userIdx == loginUserIdx}">
                     <button class="review-delete-btn"
                             data-review-idx="${rv.reviewIdx}"
-                            data-spot-idx="${spot.spotIdx}">삭제</button>
+                            data-spot-idx="${spot.spotIdx}"><spring:message code="detail.review.delete"/></button>
                   </c:if>
                   <c:if test="${isAdminMode}">
                     <button class="det-admin-review-btn"
@@ -1747,46 +1784,46 @@ html { scrollbar-gutter: stable; }
 
 <div id="rpt-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
-    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;">⚠ 신고하기</div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;"><spring:message code="community.detail.report.title"/></div>
     <input type="hidden" id="rptTargetType" value="">
     <input type="hidden" id="rptTargetId" value="">
     <div style="margin-bottom:16px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">신고 사유 <span style="color:#ef4444;">*</span></label>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;"><spring:message code="community.detail.report.reason"/> <span style="color:#ef4444;">*</span></label>
       <select id="rptReason" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;">
-        <option value="">선택해주세요</option>
-        <option value="spam">스팸/광고</option>
-        <option value="abuse">욕설/비방</option>
-        <option value="privacy">개인정보 노출</option>
-        <option value="illegal">불법/유해 정보</option>
-        <option value="etc">기타</option>
+        <option value=""><spring:message code="community.detail.report.reason.choose"/></option>
+        <option value="spam"><spring:message code="community.detail.report.reason.spam"/></option>
+        <option value="abuse"><spring:message code="community.detail.report.reason.abuse"/></option>
+        <option value="privacy"><spring:message code="community.detail.report.reason.privacy"/></option>
+        <option value="illegal"><spring:message code="community.detail.report.reason.illegal"/></option>
+        <option value="etc"><spring:message code="community.detail.report.reason.other"/></option>
       </select>
       <div id="rptReasonMsg" style="font-size:12px;color:#ef4444;margin-top:6px;"></div>
     </div>
     <div style="margin-bottom:20px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">상세 설명</label>
-      <textarea id="rptDescription" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="신고 사유를 자세히 적어주세요."></textarea>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;"><spring:message code="community.detail.report.description"/></label>
+      <textarea id="rptDescription" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="<spring:message code='community.detail.report.description.placeholder'/>"></textarea>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button type="button" id="rptCancelBtn" class="det-action-btn">취소</button>
-      <button type="button" id="rptSubmitBtn" class="det-action-btn active">신고 접수</button>
+      <button type="button" id="rptCancelBtn" class="det-action-btn"><spring:message code="community.detail.cancel"/></button>
+      <button type="button" id="rptSubmitBtn" class="det-action-btn active"><spring:message code="community.detail.report.submit"/></button>
     </div>
   </div>
 </div>
 
 <div id="rpt-user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
-    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;">🚫 유저 신고</div>
-    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">신고 사유를 10자 이상 자세히 적어주세요.</div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;"><spring:message code="community.detail.userReport.title"/></div>
+    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;"><spring:message code="community.detail.userReport.description"/></div>
     <input type="hidden" id="rptUserTargetIdx" value="">
     <input type="hidden" id="rptUserSourceType" value="">
     <input type="hidden" id="rptUserSourceId" value="">
     <div style="margin-bottom:20px;">
-      <textarea id="rptUserDescription" rows="6" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="예: 허위 정보 반복 게시, 욕설, 도배 등"></textarea>
+      <textarea id="rptUserDescription" rows="6" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="<spring:message code='community.detail.userReport.placeholder'/>"></textarea>
       <div id="rptUserDescMsg" style="font-size:12px;color:#ef4444;margin-top:6px;"></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button type="button" id="rptUserCancelBtn" class="det-action-btn">취소</button>
-      <button type="button" id="rptUserSubmitBtn" class="det-action-btn active">신고 접수</button>
+      <button type="button" id="rptUserCancelBtn" class="det-action-btn"><spring:message code="community.detail.cancel"/></button>
+      <button type="button" id="rptUserSubmitBtn" class="det-action-btn active"><spring:message code="community.detail.report.submit"/></button>
     </div>
   </div>
 </div>
@@ -1800,6 +1837,69 @@ html { scrollbar-gutter: stable; }
   const ctx      = '${pageContext.request.contextPath}';
   const spotIdx  = '${spot.spotIdx}';
   const loginUserIdx = '${loginUserIdx}';
+  const detailMessages = window.detailMessages = {
+    genericError: '<spring:message code="detail.common.error" javaScriptEscape="true"/>',
+    loginRequired: '<spring:message code="detail.common.loginRequired" javaScriptEscape="true"/>',
+    tagLimit: '<spring:message code="detail.edit.tags.max" javaScriptEscape="true"/>',
+    favAdded: '<spring:message code="detail.fav.added" javaScriptEscape="true"/>',
+    favRemoved: '<spring:message code="detail.fav.removed" javaScriptEscape="true"/>',
+    likeAdded: '<spring:message code="detail.like.added" javaScriptEscape="true"/>',
+    likeRemoved: '<spring:message code="detail.like.removed" javaScriptEscape="true"/>',
+    reviewSubmitLoading: '<spring:message code="detail.review.submit.loading" javaScriptEscape="true"/>',
+    reviewSubmitFail: '<spring:message code="detail.review.submit.fail" javaScriptEscape="true"/>',
+    reviewSubmitSuccess: '<spring:message code="detail.review.submit.success" javaScriptEscape="true"/>',
+    reviewDeleteConfirm: '<spring:message code="detail.review.delete.confirm" javaScriptEscape="true"/>',
+    reviewDeleteFail: '<spring:message code="detail.review.delete.fail" javaScriptEscape="true"/>',
+    reviewDeleteSuccess: '<spring:message code="detail.review.delete.success" javaScriptEscape="true"/>',
+    reviewEmptyVisible: '<spring:message code="detail.review.empty.visible" javaScriptEscape="true"/>',
+    reviewBlockConfirm: '<spring:message code="detail.review.block.confirm" javaScriptEscape="true"/>',
+    reviewBlockFail: '<spring:message code="detail.review.block.fail" javaScriptEscape="true"/>',
+    reviewBlockSuccess: '<spring:message code="detail.review.block.success" javaScriptEscape="true"/>',
+    reviewBlockNone: '<spring:message code="detail.review.block.none" javaScriptEscape="true"/>',
+    reviewBlockBulkConfirmAll: '<spring:message code="detail.review.block.bulkConfirmAll" javaScriptEscape="true"/>',
+    reviewBlockBulkConfirmSelected: '<spring:message code="detail.review.block.bulkConfirmSelected" javaScriptEscape="true"/>',
+    reviewBlockBulkSuccessTemplate: '<spring:message code="detail.review.block.bulkSuccess" javaScriptEscape="true"/>',
+    reviewBlockSelectedLabel: '<spring:message code="detail.review.admin.blockSelected" javaScriptEscape="true"/>',
+    reviewLikeSuccess: '<spring:message code="detail.review.like.success" javaScriptEscape="true"/>',
+    reviewWriteTitle: '<spring:message code="detail.review.write" javaScriptEscape="true"/>',
+    reviewSubmitLabel: '<spring:message code="detail.review.submit" javaScriptEscape="true"/>',
+    reviewEmptyHtml: '<spring:message code="detail.review.empty" javaScriptEscape="true"/>',
+    packageLoginAction: '<spring:message code="detail.package.booking.loginAction" javaScriptEscape="true"/>',
+    packageBookingAction: '<spring:message code="detail.package.booking.action" javaScriptEscape="true"/>',
+    packageLoginRequired: '<spring:message code="detail.package.booking.loginRequired" javaScriptEscape="true"/>',
+    packageInsufficientCash: '<spring:message code="detail.package.booking.insufficientCash" javaScriptEscape="true"/>',
+    packageProcessing: '<spring:message code="detail.package.booking.processing" javaScriptEscape="true"/>',
+    packageError: '<spring:message code="detail.package.booking.error" javaScriptEscape="true"/>',
+    packageSuccessTemplate: '<spring:message code="detail.package.booking.success" javaScriptEscape="true"/>',
+    flightDateRequired: '<spring:message code="detail.flight.dateRequired" javaScriptEscape="true"/>',
+    flightReturnInvalid: '<spring:message code="detail.flight.returnDateInvalid" javaScriptEscape="true"/>',
+    flightNoDiscount: '<spring:message code="detail.flight.noDiscount" javaScriptEscape="true"/>',
+    flightLoading: '<spring:message code="detail.flight.loading" javaScriptEscape="true"/>',
+    flightEmpty: '<spring:message code="detail.flight.empty" javaScriptEscape="true"/>',
+    flightLoadFail: '<spring:message code="detail.flight.loadFail" javaScriptEscape="true"/>',
+    flightOutboundLabel: '<spring:message code="detail.flight.outboundLabel" javaScriptEscape="true"/>',
+    flightReturnLabel: '<spring:message code="detail.flight.returnLabel" javaScriptEscape="true"/>',
+    flightDepartLabel: '<spring:message code="detail.flight.departLabel" javaScriptEscape="true"/>',
+    flightArriveLabel: '<spring:message code="detail.flight.arriveLabel" javaScriptEscape="true"/>',
+    flightMileageLimitTemplate: '<spring:message code="detail.flight.mileageLimit" javaScriptEscape="true"/>',
+    flightLoginRequired: '<spring:message code="detail.flight.loginRequired" javaScriptEscape="true"/>',
+    flightSelectOffer: '<spring:message code="detail.flight.selectOffer" javaScriptEscape="true"/>',
+    flightPurchaseFail: '<spring:message code="detail.flight.purchaseFail" javaScriptEscape="true"/>',
+    flightPurchaseError: '<spring:message code="detail.flight.purchaseError" javaScriptEscape="true"/>',
+    flightPurchaseSuccessTemplate: '<spring:message code="detail.flight.purchaseSuccess" javaScriptEscape="true"/>',
+    locationNoCoordinates: '<spring:message code="detail.location.noCoordinates" javaScriptEscape="true"/>',
+    aiLoadFail: '<spring:message code="detail.ai.loadFail" javaScriptEscape="true"/>',
+    reportReasonRequired: '<spring:message code="community.detail.report.reasonRequired" javaScriptEscape="true"/>',
+    reportSubmitted: '<spring:message code="community.detail.report.submitted" javaScriptEscape="true"/>',
+    requestFail: '<spring:message code="community.detail.request.fail" javaScriptEscape="true"/>',
+    userReportMinLength: '<spring:message code="community.detail.userReport.minLength" javaScriptEscape="true"/>'
+  };
+  function formatMessage(template) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return String(template || '').replace(/\{(\d+)\}/g, function (_, index) {
+      return typeof args[index] !== 'undefined' ? args[index] : '';
+    });
+  }
   const adminEditModal = document.getElementById('adminEditModal');
   if (adminEditModal && adminEditModal.classList.contains('show')) {
     document.body.classList.add('modal-open');
@@ -1857,7 +1957,7 @@ html { scrollbar-gutter: stable; }
       const checked = document.querySelectorAll('#adminEditForm input[name="tags"]:checked');
       if (checked.length > 4) {
         this.checked = false;
-        showToast('태그는 최대 4개까지 선택할 수 있습니다.');
+        showToast(detailMessages.tagLimit);
       }
     });
   });
@@ -1868,7 +1968,7 @@ html { scrollbar-gutter: stable; }
       .then(r => r.json())
       .then(data => {
         if (!data.success) {
-          showToast('로그인이 필요합니다 🔐');
+          showToast(detailMessages.loginRequired);
           setTimeout(() => { window.location.href = ctx + '/auth/login'; }, 1500);
           return;
         }
@@ -1879,7 +1979,7 @@ html { scrollbar-gutter: stable; }
             active ? (key === 'favorited' ? '⭐' : '❤️') : (key === 'favorited' ? '☆' : '🤍');
         showToast(active ? onMsg : offMsg);
       })
-      .catch(() => showToast('처리 중 오류가 발생했습니다.'));
+      .catch(() => showToast(detailMessages.genericError));
   }
 
   const favBtn  = document.querySelector('.fav-btn');
@@ -1887,12 +1987,16 @@ html { scrollbar-gutter: stable; }
 
   favBtn && favBtn.addEventListener('click', function () {
     toggleAction('/explore/favorite/' + spotIdx, this,
-                 '찜 완료', '찜하기', '⭐ 찜 추가', '찜 취소', 'favorited');
+                 '<spring:message code="detail.fav.done" javaScriptEscape="true"/>',
+                 '<spring:message code="detail.fav.do" javaScriptEscape="true"/>',
+                 detailMessages.favAdded, detailMessages.favRemoved, 'favorited');
   });
 
   likeBtn && likeBtn.addEventListener('click', function () {
     toggleAction('/explore/like/' + spotIdx, this,
-                 '좋아요 완료', '좋아요', '❤️ 좋아요', '좋아요 취소', 'liked');
+                 '<spring:message code="detail.like.done" javaScriptEscape="true"/>',
+                 '<spring:message code="detail.like.do" javaScriptEscape="true"/>',
+                 detailMessages.likeAdded, detailMessages.likeRemoved, 'liked');
   });
 
   /* 별점 선택기 */
@@ -1937,7 +2041,7 @@ html { scrollbar-gutter: stable; }
       if (selectedRating === 0 || !content) return;
 
       submitBtn.disabled = true;
-      submitBtn.textContent = '등록 중...';
+      submitBtn.textContent = detailMessages.reviewSubmitLoading;
 
       fetch(ctx + '/detail/' + spotIdx + '/review', {
         method: 'POST',
@@ -1947,18 +2051,18 @@ html { scrollbar-gutter: stable; }
       .then(r => r.json())
       .then(data => {
         if (!data.success) {
-          showToast(data.message || '등록 실패');
+          showToast(data.message || detailMessages.reviewSubmitFail);
           submitBtn.disabled = false;
-          submitBtn.textContent = '등록하기';
+          submitBtn.textContent = detailMessages.reviewSubmitLabel;
           return;
         }
-        showToast('리뷰가 등록되었습니다.');
+        showToast(detailMessages.reviewSubmitSuccess);
         setTimeout(() => location.reload(), 800);
       })
       .catch(() => {
-        showToast('처리 중 오류가 발생했습니다.');
+        showToast(detailMessages.genericError);
         submitBtn.disabled = false;
-        submitBtn.textContent = '등록하기';
+        submitBtn.textContent = detailMessages.reviewSubmitLabel;
       });
     });
   }
@@ -1971,24 +2075,24 @@ html { scrollbar-gutter: stable; }
   function bindDeleteBtns() {
     document.querySelectorAll('.review-delete-btn').forEach(btn => {
       btn.addEventListener('click', function () {
-        if (!confirm('리뷰를 삭제하시겠습니까?')) return;
+        if (!confirm(detailMessages.reviewDeleteConfirm)) return;
         const rIdx = this.dataset.reviewIdx;
         const sIdx = this.dataset.spotIdx;
 
         fetch(ctx + '/detail/' + sIdx + '/review/' + rIdx, { method: 'DELETE' })
           .then(r => r.json())
           .then(data => {
-            if (!data.success) { showToast(data.message || '삭제 실패'); return; }
+            if (!data.success) { showToast(data.message || detailMessages.reviewDeleteFail); return; }
 
             // 1. 카드 제거
             const card = document.getElementById('rv-' + rIdx);
             card && card.remove();
-            showToast('리뷰가 삭제되었습니다.');
+            showToast(detailMessages.reviewDeleteSuccess);
 
             // 2. 리뷰 목록이 비었으면 빈 상태 메시지 표시
             const list = document.getElementById('reviewList');
             if (list && list.querySelectorAll('.review-card').length === 0) {
-              list.innerHTML = '<div class="review-empty">아직 작성된 리뷰가 없습니다. 첫 번째 리뷰를 남겨보세요! 😊</div>';
+              list.innerHTML = '<div class="review-empty">' + detailMessages.reviewEmptyHtml + '</div>';
             }
 
             // 3. "이미 작성" 안내 박스를 지우고 작성 폼 복원
@@ -1996,7 +2100,7 @@ html { scrollbar-gutter: stable; }
             if (alreadyBox) alreadyBox.remove();
             showWriteForm();
           })
-          .catch(() => showToast('처리 중 오류가 발생했습니다.'));
+          .catch(() => showToast(detailMessages.genericError));
       });
     });
   }
@@ -2005,7 +2109,7 @@ html { scrollbar-gutter: stable; }
   function bindBlockBtns() {
     document.querySelectorAll('[data-block-review-idx]').forEach(btn => {
       btn.addEventListener('click', function () {
-        if (!confirm('이 리뷰를 차단하시겠습니까? 차단 후 상세 화면에서 더 이상 노출되지 않습니다.')) return;
+        if (!confirm(detailMessages.reviewBlockConfirm)) return;
 
         const reviewIdx = this.dataset.blockReviewIdx;
         const currentSpotIdx = this.dataset.blockSpotIdx;
@@ -2016,20 +2120,20 @@ html { scrollbar-gutter: stable; }
           .then(r => r.json())
           .then(data => {
             if (!data.success) {
-              showToast(data.message || '차단 실패');
+              showToast(data.message || detailMessages.reviewBlockFail);
               return;
             }
 
             const card = document.getElementById('rv-' + reviewIdx);
             card && card.remove();
-            showToast('리뷰가 차단되었습니다.');
+            showToast(detailMessages.reviewBlockSuccess);
 
             const list = document.getElementById('reviewList');
             if (list && list.querySelectorAll('.review-card').length === 0) {
-              list.innerHTML = '<div class="review-empty">현재 노출 가능한 리뷰가 없습니다.</div>';
+              list.innerHTML = '<div class="review-empty">' + detailMessages.reviewEmptyVisible + '</div>';
             }
           })
-          .catch(() => showToast('처리 중 오류가 발생했습니다.'));
+          .catch(() => showToast(detailMessages.genericError));
       });
     });
   }
@@ -2061,8 +2165,8 @@ html { scrollbar-gutter: stable; }
     if (blockSelectedReviewsBtn) {
       blockSelectedReviewsBtn.disabled = checkedCheckboxes.length === 0;
       blockSelectedReviewsBtn.textContent = checkedCheckboxes.length > 0
-        ? '선택 차단 (' + checkedCheckboxes.length + ')'
-        : '선택 차단';
+        ? detailMessages.reviewBlockSelectedLabel + ' (' + checkedCheckboxes.length + ')'
+        : detailMessages.reviewBlockSelectedLabel;
     }
   }
 
@@ -2085,14 +2189,14 @@ html { scrollbar-gutter: stable; }
       });
 
       if (selectedIds.length === 0) {
-        showToast('차단할 리뷰를 선택해주세요.');
+        showToast(detailMessages.reviewBlockNone);
         return;
       }
 
       const isAllSelected = document.querySelectorAll('[data-review-select]').length === selectedIds.length;
       const confirmMessage = isAllSelected
-        ? '현재 보이는 리뷰를 모두 차단하시겠습니까?'
-        : '선택한 리뷰를 차단하시겠습니까?';
+        ? detailMessages.reviewBlockBulkConfirmAll
+        : detailMessages.reviewBlockBulkConfirmSelected;
       if (!confirm(confirmMessage)) return;
 
       fetch(ctx + '/detail/' + spotIdx + '/review/block-bulk', {
@@ -2103,7 +2207,7 @@ html { scrollbar-gutter: stable; }
         .then(function (r) { return r.json(); })
         .then(function (data) {
           if (!data.success) {
-            showToast(data.message || '차단 실패');
+            showToast(data.message || detailMessages.reviewBlockFail);
             return;
           }
 
@@ -2118,17 +2222,17 @@ html { scrollbar-gutter: stable; }
           }
 
           syncReviewSelectionUi();
-          showToast((data.blockedCount || selectedIds.length) + '개의 리뷰가 차단되었습니다.');
+          showToast(formatMessage(detailMessages.reviewBlockBulkSuccessTemplate, data.blockedCount || selectedIds.length));
 
           const list = document.getElementById('reviewList');
           if (list && list.querySelectorAll('.review-card').length === 0) {
             const tools = document.querySelector('.review-admin-tools');
             tools && tools.remove();
-            list.innerHTML = '<div class="review-empty">현재 노출 가능한 리뷰가 없습니다.</div>';
+            list.innerHTML = '<div class="review-empty">' + detailMessages.reviewEmptyVisible + '</div>';
           }
         })
         .catch(function () {
-          showToast('처리 중 오류가 발생했습니다.');
+          showToast(detailMessages.genericError);
         });
     });
 
@@ -2144,7 +2248,7 @@ html { scrollbar-gutter: stable; }
 
     area.innerHTML = `
       <div class="review-form-box" id="reviewFormBox">
-        <h3>✍ 리뷰 작성</h3>
+        <h3>✍ ${detailMessages.reviewWriteTitle}</h3>
         <div class="star-picker" id="starPicker">
           <span class="sp" data-v="1">★</span>
           <span class="sp" data-v="2">★</span>
@@ -2153,10 +2257,10 @@ html { scrollbar-gutter: stable; }
           <span class="sp" data-v="5">★</span>
         </div>
         <textarea class="review-textarea" id="reviewContent"
-                  maxlength="500" placeholder="여행지에 대한 솔직한 후기를 남겨주세요. (최대 500자)"></textarea>
+                  maxlength="500" placeholder="<spring:message code='detail.review.placeholder' javaScriptEscape='true'/>"></textarea>
         <div class="review-form-foot">
           <span class="review-char"><span id="charCount">0</span> / 500</span>
-          <button class="review-submit-btn" id="reviewSubmitBtn" disabled>등록하기</button>
+          <button class="review-submit-btn" id="reviewSubmitBtn" disabled>${detailMessages.reviewSubmitLabel}</button>
         </div>
       </div>`;
 
@@ -2200,7 +2304,7 @@ html { scrollbar-gutter: stable; }
           .then(r => r.json())
           .then(data => {
             if (!data.success) {
-              showToast(data.message || '처리 중 오류가 발생했습니다.');
+              showToast(data.message || detailMessages.genericError);
               return;
             }
 
@@ -2209,9 +2313,9 @@ html { scrollbar-gutter: stable; }
             const count = this.querySelector('.review-like-count');
             if (icon) icon.textContent = data.liked ? '❤️' : '🤍';
             if (count) count.textContent = data.likeCount;
-            showToast(data.message || '리뷰 좋아요가 반영되었습니다.');
+            showToast(data.message || detailMessages.reviewLikeSuccess);
           })
-          .catch(() => showToast('처리 중 오류가 발생했습니다.'));
+          .catch(() => showToast(detailMessages.genericError));
       });
     });
   }
@@ -2243,7 +2347,7 @@ html { scrollbar-gutter: stable; }
     const description = document.getElementById('rptDescription').value.trim();
 
     if (!reason) {
-      rptReasonMsg.textContent = '신고 사유를 선택해주세요.';
+      rptReasonMsg.textContent = detailMessages.reportReasonRequired;
       return;
     }
     rptReasonMsg.textContent = '';
@@ -2257,9 +2361,9 @@ html { scrollbar-gutter: stable; }
       .then(r => r.json())
       .then(data => {
         rptModal.style.display = 'none';
-        showToast(data.message || '신고가 접수되었습니다.');
+        showToast(data.message || detailMessages.reportSubmitted);
       })
-      .catch(() => showToast('처리 중 오류가 발생했습니다.'))
+      .catch(() => showToast(detailMessages.requestFail))
       .finally(() => { rptSubmitBtn.disabled = false; });
   });
 
@@ -2282,7 +2386,7 @@ html { scrollbar-gutter: stable; }
     const description = rptUserDescArea.value.trim();
 
     if (description.length < 10) {
-      rptUserDescMsg.textContent = '신고 사유를 10자 이상 입력해주세요.';
+      rptUserDescMsg.textContent = detailMessages.userReportMinLength;
       return;
     }
     rptUserDescMsg.textContent = '';
@@ -2300,9 +2404,9 @@ html { scrollbar-gutter: stable; }
       .then(r => r.json())
       .then(data => {
         rptUserModal.style.display = 'none';
-        showToast(data.message || '신고가 접수되었습니다.');
+        showToast(data.message || detailMessages.reportSubmitted);
       })
-      .catch(() => showToast('처리 중 오류가 발생했습니다.'))
+      .catch(() => showToast(detailMessages.requestFail))
       .finally(() => { rptUserSubmitBtn.disabled = false; });
   });
 
@@ -2326,6 +2430,13 @@ html { scrollbar-gutter: stable; }
 <c:if test="${flightAvailable and not empty lowestFlightOffer}">
 <script>
 (function () {
+  var detailMessages = window.detailMessages || {};
+  function formatMessage(template) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return String(template || '').replace(/\{(\d+)\}/g, function (_, index) {
+      return typeof args[index] !== 'undefined' ? args[index] : '';
+    });
+  }
   var flightModal = document.getElementById('flightModal');
   var openBtn = document.getElementById('openFlightModalBtn');
   var closeBtn = document.getElementById('closeFlightModalBtn');
@@ -2383,11 +2494,11 @@ html { scrollbar-gutter: stable; }
   function validateSelectedDates() {
     var dates = getSelectedDates();
     if (!dates.departureDate || !dates.returnDate) {
-      messageEl.textContent = '출발일과 귀국일을 선택해주세요.';
+      messageEl.textContent = detailMessages.flightDateRequired;
       return false;
     }
     if (dates.returnDate <= dates.departureDate) {
-      messageEl.textContent = '귀국일은 출발일 이후 날짜로 선택해주세요.';
+      messageEl.textContent = detailMessages.flightReturnInvalid;
       return false;
     }
     return true;
@@ -2405,7 +2516,7 @@ html { scrollbar-gutter: stable; }
     var discountRate = Number(offer.discountRate || 0);
     var discountAmount = Number(offer.discountAmount || 0);
     if (discountRate <= 0 || discountAmount <= 0) {
-      return '할인 없음';
+      return detailMessages.flightNoDiscount;
     }
     return escapeHtml(offer.memberGrade || 'BRONZE') + ' ' + discountRate.toFixed(2) + '% · -' + formatMoney(discountAmount, 'C');
   }
@@ -2454,7 +2565,7 @@ html { scrollbar-gutter: stable; }
     if (!validateSelectedDates()) return;
     if (offers.length > 0) return;
     var dates = getSelectedDates();
-    offerList.innerHTML = '<div class="flight-pay-msg">항공권 정보를 불러오는 중입니다.</div>';
+    offerList.innerHTML = '<div class="flight-pay-msg">' + detailMessages.flightLoading + '</div>';
 
     fetch(ctx + '/flight/offers?spotIdx=' + encodeURIComponent(spotIdx)
       + '&departureDate=' + encodeURIComponent(dates.departureDate)
@@ -2462,7 +2573,7 @@ html { scrollbar-gutter: stable; }
       .then(function (res) { return res.json(); })
       .then(function (data) {
         if (!data.success || !data.available || !data.offers || data.offers.length === 0) {
-          offerList.innerHTML = '<div class="flight-pay-msg">표시할 항공권 정보가 없습니다.</div>';
+          offerList.innerHTML = '<div class="flight-pay-msg">' + detailMessages.flightEmpty + '</div>';
           return;
         }
         offers = data.offers;
@@ -2470,7 +2581,7 @@ html { scrollbar-gutter: stable; }
         selectOffer(offers[0].offerId);
       })
       .catch(function () {
-        offerList.innerHTML = '<div class="flight-pay-msg">항공권 정보를 불러오지 못했습니다.</div>';
+        offerList.innerHTML = '<div class="flight-pay-msg">' + detailMessages.flightLoadFail + '</div>';
       });
   }
 
@@ -2491,8 +2602,8 @@ html { scrollbar-gutter: stable; }
         '    <strong>' + escapeHtml(offer.destinationAirportCode) + '</strong>',
         '    <span>' + escapeHtml(offer.durationText) + '</span>',
         '  </div>',
-        '  <div class="flight-no">가는 편 ' + formatDateTime(offer.departureTime) + ' 출발 · ' + formatDateTime(offer.arrivalTime) + ' 도착</div>',
-        '  <div class="flight-no">오는 편 ' + escapeHtml(offer.returnOriginAirportCode) + ' → ' + escapeHtml(offer.returnDestinationAirportCode) + ' · ' + formatDateTime(offer.returnDepartureTime) + ' 출발 · ' + formatDateTime(offer.returnArrivalTime) + ' 도착</div>',
+        '  <div class="flight-no">' + detailMessages.flightOutboundLabel + ' ' + formatDateTime(offer.departureTime) + ' ' + detailMessages.flightDepartLabel + ' · ' + formatDateTime(offer.arrivalTime) + ' ' + detailMessages.flightArriveLabel + '</div>',
+        '  <div class="flight-no">' + detailMessages.flightReturnLabel + ' ' + escapeHtml(offer.returnOriginAirportCode) + ' → ' + escapeHtml(offer.returnDestinationAirportCode) + ' · ' + formatDateTime(offer.returnDepartureTime) + ' ' + detailMessages.flightDepartLabel + ' · ' + formatDateTime(offer.returnArrivalTime) + ' ' + detailMessages.flightArriveLabel + '</div>',
         '</div>'
       ].join('');
     }).join('');
@@ -2515,7 +2626,7 @@ html { scrollbar-gutter: stable; }
     originalPriceEl.textContent = formatMoney(selectedOffer.totalPrice, 'C');
     gradeDiscountEl.textContent = getDiscountText(selectedOffer);
     totalPriceEl.textContent = formatMoney(getFinalPrice(selectedOffer), 'C');
-    mileageLimitText.textContent = '(최대 ' + formatMoney(selectedOffer.maxMileageUse, 'M') + ')';
+    mileageLimitText.textContent = formatMessage(detailMessages.flightMileageLimitTemplate, formatMoney(selectedOffer.maxMileageUse, 'M'));
     mileageInput.max = Math.min(selectedOffer.maxMileageUse, mileageBalance);
     mileageInput.value = 0;
     updateCashAmount();
@@ -2535,11 +2646,11 @@ html { scrollbar-gutter: stable; }
 
   function purchaseFlight() {
     if (!isLoggedIn) {
-      messageEl.textContent = '로그인 후 항공권을 구매할 수 있습니다.';
+      messageEl.textContent = detailMessages.flightLoginRequired;
       return;
     }
     if (!selectedOffer) {
-      messageEl.textContent = '구매할 항공권을 선택해주세요.';
+      messageEl.textContent = detailMessages.flightSelectOffer;
       return;
     }
     if (!validateSelectedDates()) return;
@@ -2548,12 +2659,12 @@ html { scrollbar-gutter: stable; }
     var cashAmount = Number(cashInput.value || 0);
     var dates = getSelectedDates();
     if (cashAmount > cashBalance) {
-      messageEl.textContent = '캐시 잔액이 부족합니다.';
+      messageEl.textContent = detailMessages.packageInsufficientCash;
       return;
     }
 
     purchaseBtn.disabled = true;
-    messageEl.textContent = '구매 처리 중입니다.';
+    messageEl.textContent = detailMessages.packageProcessing;
 
     fetch(ctx + '/flight/purchase', {
       method: 'POST',
@@ -2570,18 +2681,18 @@ html { scrollbar-gutter: stable; }
       .then(function (res) { return res.json(); })
       .then(function (data) {
         if (!data.success) {
-          messageEl.textContent = data.message || '항공권 구매에 실패했습니다.';
+          messageEl.textContent = data.message || detailMessages.flightPurchaseFail;
           return;
         }
         cashBalance = Number(data.cashBalance || 0);
         mileageBalance = Number(data.mileageBalance || 0);
         cashBalanceEl.textContent = formatMoney(cashBalance, 'C');
         mileageBalanceEl.textContent = formatMoney(mileageBalance, 'M');
-        messageEl.textContent = '구매 완료 · 예매번호 ' + data.purchaseNo;
+        messageEl.textContent = formatMessage(detailMessages.flightPurchaseSuccessTemplate, data.purchaseNo);
         updateCashAmount();
       })
       .catch(function () {
-        messageEl.textContent = '항공권 구매 중 오류가 발생했습니다.';
+        messageEl.textContent = detailMessages.flightPurchaseError;
       })
       .finally(function () {
         purchaseBtn.disabled = false;
@@ -2632,6 +2743,7 @@ html { scrollbar-gutter: stable; }
 <%-- Google Maps: 위도/경도가 있는 경우만 로드 --%>
 <c:if test="${not empty spot.latitude and not empty spot.longitude and spot.latitude != 0 and spot.longitude != 0}">
 <script>
+var detailMessages = window.detailMessages || {};
 /* 여행지 좌표와 이름 */
 var SPOT_LAT  = parseFloat('<fmt:formatNumber value="${spot.latitude}"  pattern="0.######" groupingUsed="false"/>');
 var SPOT_LNG  = parseFloat('<fmt:formatNumber value="${spot.longitude}" pattern="0.######" groupingUsed="false"/>');
@@ -2710,7 +2822,7 @@ function initMap() {
   if (isNaN(SPOT_LAT) || isNaN(SPOT_LNG)) {
     document.getElementById('googleMap').innerHTML =
       '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6b7280;font-size:14px;">'
-      + '\uc88c\ud45c \uc815\ubcf4\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.</div>';
+      + detailMessages.locationNoCoordinates + '</div>';
     return;
   }
 
@@ -2951,7 +3063,7 @@ function initMap() {
       })
       .catch(function() {
         var loadMsg = document.getElementById('recLoadingMsg');
-        if (loadMsg) loadMsg.textContent = '異붿쿇 ?뺣낫瑜?遺덈윭?ㅼ? 紐삵뻽?듬땲??';
+        if (loadMsg) loadMsg.textContent = detailMessages.aiLoadFail;
       });
   }
 

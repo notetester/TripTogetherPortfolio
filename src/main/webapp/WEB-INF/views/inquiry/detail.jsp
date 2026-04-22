@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%--
   =============================================
   문의 게시판 상세 페이지
@@ -29,12 +30,44 @@
 <%@ include file="../common/header.jsp" %>
 <body>
 
+<spring:message code="inquiry.write.back" var="inquiryBackLabel"/>
+<spring:message code="inquiry.private.tag" var="inquiryPrivateTagLabel"/>
+<spring:message code="inquiry.badge.ai" var="inquiryAiBadgeLabel"/>
+<spring:message code="inquiry.anonymous" var="inquiryAnonymousLabel"/>
+<spring:message code="inquiry.detail.views" var="inquiryViewsLabel"/>
+<spring:message code="inquiry.detail.edited" var="inquiryEditedLabel"/>
+<spring:message code="inquiry.detail.attachments" var="inquiryAttachmentsLabel"/>
+<spring:message code="inquiry.detail.answer.title" var="inquiryAnswerTitleLabel"/>
+<spring:message code="inquiry.detail.answer.pending" var="inquiryAnswerPendingLabel"/>
+<spring:message code="inquiry.detail.answer.pendingSub" var="inquiryAnswerPendingSubLabel"/>
+<spring:message code="inquiry.detail.admin.panel" var="inquiryAdminPanelLabel"/>
+<spring:message code="inquiry.detail.admin.status.label" var="inquiryAdminStatusLabel"/>
+<spring:message code="inquiry.detail.admin.deleteWaiting" var="inquiryAdminDeleteWaitingLabel"/>
+<spring:message code="inquiry.detail.admin.publicWaiting" var="inquiryAdminPublicWaitingLabel"/>
+<spring:message code="inquiry.detail.admin.privateWaiting" var="inquiryAdminPrivateWaitingLabel"/>
+<spring:message code="inquiry.detail.admin.answer.placeholder" var="inquiryAdminAnswerPlaceholder"/>
+<spring:message code="inquiry.detail.admin.answerEdit" var="inquiryAdminAnswerEditLabel"/>
+<spring:message code="inquiry.detail.admin.aiDraft" var="inquiryAdminAiDraftLabel"/>
+<spring:message code="inquiry.detail.admin.answerRegister" var="inquiryAdminAnswerRegisterLabel"/>
+<spring:message code="inquiry.detail.admin.answerComplete" var="inquiryAdminAnswerCompleteLabel"/>
+<spring:message code="inquiry.detail.save" var="inquirySaveLabel"/>
+<spring:message code="inquiry.detail.edit.disabled" var="inquiryEditDisabledLabel"/>
+<spring:message code="inquiry.detail.actions.list" var="inquiryActionListLabel"/>
+<spring:message code="inquiry.detail.edit" var="inquiryEditLabel"/>
+<spring:message code="inquiry.detail.delete" var="inquiryDeleteLabel"/>
+<spring:message code="inquiry.detail.user.cancel" var="inquiryUserCancelLabel"/>
+<spring:message code="inquiry.detail.user.complete" var="inquiryUserCompleteLabel"/>
+<spring:message code="inquiry.detail.user.deleteRequest" var="inquiryUserDeleteRequestLabel"/>
+<spring:message code="inquiry.detail.user.privateRequest" var="inquiryUserPrivateRequestLabel"/>
+<spring:message code="inquiry.detail.user.deleteCancel" var="inquiryUserDeleteCancelLabel"/>
+<spring:message code="inquiry.detail.user.publicRequest" var="inquiryUserPublicRequestLabel"/>
+
 <div class="inq-detail-wrap">
   <div class="inq-detail-inner">
 
     <%-- 뒤로가기 버튼 --%>
     <button class="inq-back-btn" onclick="goBackToList()">
-      &#8592; 목록으로
+      ${inquiryBackLabel}
     </button>
 
     <%-- =============================================
@@ -46,28 +79,33 @@
       <div class="inq-detail-head">
         <div class="inq-detail-meta">
           <%-- 카테고리 태그 --%>
-          <span class="inq-category-tag">${inquiry.category eq 'service' ? '서비스' :
-            inquiry.category eq 'payment' ? '결제' :
-            inquiry.category eq 'account' ? '계정' :
-            inquiry.category eq 'bug'     ? '오류신고' : '기타'}</span>
+          <span class="inq-category-tag">
+            <c:choose>
+              <c:when test="${inquiry.category eq 'service'}"><spring:message code="inquiry.category.service"/></c:when>
+              <c:when test="${inquiry.category eq 'payment'}"><spring:message code="inquiry.category.payment"/></c:when>
+              <c:when test="${inquiry.category eq 'account'}"><spring:message code="inquiry.category.account"/></c:when>
+              <c:when test="${inquiry.category eq 'bug'}"><spring:message code="inquiry.category.bug"/></c:when>
+              <c:otherwise><spring:message code="inquiry.category.etc"/></c:otherwise>
+            </c:choose>
+          </span>
 
           <%-- 상태 뱃지: CSS 클래스명이 status 값과 일치 (PENDING/IN_PROGRESS/COMPLETED) --%>
           <span class="inq-status-badge ${inquiry.status}">
             <c:choose>
-              <c:when test="${inquiry.status eq 'PENDING'}">대기중</c:when>
-              <c:when test="${inquiry.status eq 'IN_PROGRESS'}">처리중</c:when>
-              <c:when test="${inquiry.status eq 'COMPLETED'}">✓ 답변완료</c:when>
-              <c:when test="${inquiry.status eq 'CANCELLED'}">취소됨</c:when>
-              <c:when test="${inquiry.status eq 'USER_COMPLETED'}">해결됨</c:when>
-              <c:when test="${inquiry.status eq 'DELETE_REQUESTED'}">삭제요청</c:when>
-              <c:when test="${inquiry.status eq 'PRIVATE_REQUESTED'}">비공개요청</c:when>
-              <c:when test="${inquiry.status eq 'PUBLIC_REQUESTED'}">공개요청</c:when>
+              <c:when test="${inquiry.status eq 'PENDING'}"><spring:message code="inquiry.status.pending"/></c:when>
+              <c:when test="${inquiry.status eq 'IN_PROGRESS'}"><spring:message code="inquiry.status.inProgress"/></c:when>
+              <c:when test="${inquiry.status eq 'COMPLETED'}"><spring:message code="inquiry.status.answerDone"/></c:when>
+              <c:when test="${inquiry.status eq 'CANCELLED'}"><spring:message code="inquiry.status.cancelled"/></c:when>
+              <c:when test="${inquiry.status eq 'USER_COMPLETED'}"><spring:message code="inquiry.status.userCompleted"/></c:when>
+              <c:when test="${inquiry.status eq 'DELETE_REQUESTED'}"><spring:message code="inquiry.status.deleteRequested"/></c:when>
+              <c:when test="${inquiry.status eq 'PRIVATE_REQUESTED'}"><spring:message code="inquiry.status.privateRequested"/></c:when>
+              <c:when test="${inquiry.status eq 'PUBLIC_REQUESTED'}"><spring:message code="inquiry.status.publicRequested"/></c:when>
             </c:choose>
           </span>
 
           <%-- 비공개 태그 --%>
           <c:if test="${inquiry.isPrivate == 1}">
-            <span class="inq-private-tag">🔒 비공개</span>
+            <span class="inq-private-tag">${inquiryPrivateTagLabel}</span>
           </c:if>
         </div>
 
@@ -77,10 +115,10 @@
         <%-- 관리자 전용 AI 감지 배지 + BLUR 해제 버튼 --%>
         <c:if test="${isAdmin and inquiry.aiFlagged}">
           <div style="margin:8px 0;">
-            <span class="inq-ai-badge">AI 감지됨</span>
+            <span class="inq-ai-badge">${inquiryAiBadgeLabel}</span>
             <button type="button" class="inq-admin-clear-blur-btn"
                     id="postClearBlurBtn" data-id="${inquiry.inquiryId}">
-              BLUR 해제
+              <spring:message code="inquiry.admin.clearBlur"/>
             </button>
           </div>
         </c:if>
@@ -90,7 +128,7 @@
           <span class="inq-detail-nick">
             <%-- 비공개 글이고 어드민이 아니면 익명 표시 --%>
             <c:choose>
-              <c:when test="${inquiry.isPrivate == 1 and !isAdmin}">익명</c:when>
+              <c:when test="${inquiry.isPrivate == 1 and !isAdmin}">${inquiryAnonymousLabel}</c:when>
               <c:otherwise>${inquiry.nickname}</c:otherwise>
             </c:choose>
           </span>
@@ -99,10 +137,10 @@
             <fmt:formatDate value="${inquiry.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
           </span>
           <span class="inq-detail-divider">·</span>
-          <span class="inq-detail-views">조회 ${inquiry.viewCount}</span>
+          <span class="inq-detail-views">${inquiryViewsLabel} ${inquiry.viewCount}</span>
           <c:if test="${inquiry.updatedAt != null and inquiry.updatedAt.time != inquiry.createdAt.time}">
             <span class="inq-detail-divider">·</span>
-            <span class="inq-detail-edited">수정됨 <fmt:formatDate value="${inquiry.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></span>
+            <span class="inq-detail-edited">${inquiryEditedLabel} <fmt:formatDate value="${inquiry.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></span>
           </c:if>
         </div>
       </div>
@@ -115,7 +153,7 @@
       <%-- 첨부파일 목록 --%>
       <c:if test="${not empty attachmentList}">
         <div class="inq-attachment-list">
-          <div class="inq-attachment-title">📎 첨부파일</div>
+          <div class="inq-attachment-title">${inquiryAttachmentsLabel}</div>
           <c:forEach var="att" items="${attachmentList}">
             <div class="inq-attachment-item">
               <a href="${att.fileUrl}" target="_blank">
@@ -143,12 +181,12 @@
           <div class="inq-answer-head">
             <span class="inq-answer-icon">✅</span>
             <div>
-              <div class="inq-answer-title">운영진 답변</div>
+              <div class="inq-answer-title">${inquiryAnswerTitleLabel}</div>
               <div class="inq-answer-meta">
                 ${answer.adminNickname} ·
                 <fmt:formatDate value="${answer.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
                 <c:if test="${answer.updatedAt != null and answer.updatedAt.time != answer.createdAt.time}">
-                  · <span class="inq-detail-edited">수정됨 <fmt:formatDate value="${answer.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></span>
+                  · <span class="inq-detail-edited">${inquiryEditedLabel} <fmt:formatDate value="${answer.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></span>
                 </c:if>
               </div>
             </div>
@@ -163,8 +201,8 @@
       <c:otherwise>
         <div class="inq-no-answer">
           <div class="inq-no-answer-icon">⏳</div>
-          <div class="inq-no-answer-msg">답변을 준비 중입니다</div>
-          <div class="inq-no-answer-sub">빠른 시일 내에 답변 드리겠습니다</div>
+          <div class="inq-no-answer-msg">${inquiryAnswerPendingLabel}</div>
+          <div class="inq-no-answer-sub">${inquiryAnswerPendingSubLabel}</div>
         </div>
       </c:otherwise>
     </c:choose>
@@ -176,57 +214,57 @@
          ============================================= --%>
     <c:if test="${isAdmin and isAdminMode}">
       <div class="inq-admin-form">
-        <div class="inq-admin-form-title">🛡️ 관리자 패널</div>
+        <div class="inq-admin-form-title">${inquiryAdminPanelLabel}</div>
 
         <%-- 상태 변경 버튼 영역 --%>
         <div class="inq-admin-status-bar">
-          <span class="inq-admin-status-label">상태 변경:</span>
-          <button class="inq-btn-status inq-btn-status-pending" id="btnStatusPending">🔔 대기중</button>
-          <button class="inq-btn-status" id="btnStatusInProgress">🔄 처리중</button>
-          <button class="inq-btn-status inq-btn-status-complete" id="btnStatusCompleted">✅ 답변완료</button>
+          <span class="inq-admin-status-label">${inquiryAdminStatusLabel}</span>
+          <button class="inq-btn-status inq-btn-status-pending" id="btnStatusPending">🔔 <spring:message code="inquiry.status.pending"/></button>
+          <button class="inq-btn-status" id="btnStatusInProgress">🔄 <spring:message code="inquiry.status.inProgress"/></button>
+          <button class="inq-btn-status inq-btn-status-complete" id="btnStatusCompleted">✅ <spring:message code="inquiry.status.answerDone"/></button>
         </div>
 
         <%-- 삭제 요청 수락 버튼 (DELETE_REQUESTED 상태일 때만 표시) --%>
         <c:if test="${inquiry.status eq 'DELETE_REQUESTED'}">
           <div class="inq-admin-status-bar">
-            <span class="inq-admin-status-label">삭제 요청 대기중:</span>
+            <span class="inq-admin-status-label">${inquiryAdminDeleteWaitingLabel}</span>
             <button class="inq-btn-submit" id="btnApproveDelete"
-                    style="background:#ef4444;">🗑️ 삭제 수락</button>
+                    style="background:#ef4444;"><spring:message code="inquiry.detail.admin.deleteApprove"/></button>
           </div>
         </c:if>
 
         <%-- 공개/비공개 요청 수락 버튼 (해당 상태일 때만 표시) --%>
         <c:if test="${inquiry.status eq 'PUBLIC_REQUESTED'}">
           <div class="inq-admin-status-bar">
-            <span class="inq-admin-status-label">공개 요청 대기중:</span>
-            <button class="inq-btn-submit" id="btnApprovePublic">🔓 공개 수락</button>
+            <span class="inq-admin-status-label">${inquiryAdminPublicWaitingLabel}</span>
+            <button class="inq-btn-submit" id="btnApprovePublic"><spring:message code="inquiry.detail.admin.publicApprove"/></button>
           </div>
         </c:if>
         <c:if test="${inquiry.status eq 'PRIVATE_REQUESTED'}">
           <div class="inq-admin-status-bar">
-            <span class="inq-admin-status-label">비공개 요청 대기중:</span>
-            <button class="inq-btn-submit" id="btnApprovePrivate">🔒 비공개 수락</button>
+            <span class="inq-admin-status-label">${inquiryAdminPrivateWaitingLabel}</span>
+            <button class="inq-btn-submit" id="btnApprovePrivate"><spring:message code="inquiry.detail.admin.privateApprove"/></button>
           </div>
         </c:if>
 
         <%-- 답변 작성/수정 영역 --%>
         <textarea class="inq-form-textarea" id="adminContent" rows="6"
-                  placeholder="답변 내용을 입력해주세요..."
+                  placeholder="${inquiryAdminAnswerPlaceholder}"
                   <c:if test="${not empty answer}">disabled</c:if>
         ><c:if test="${not empty answer}">${answer.content}</c:if></textarea>
         <div class="inq-admin-form-actions">
           <c:choose>
             <%-- 답변 있을 때: 답변 수정 버튼 --%>
             <c:when test="${not empty answer}">
-              <button class="inq-btn-cancel" id="answerEditToggleBtn">✏️ 답변 수정</button>
-              <button class="inq-btn-submit" id="answerEditSaveBtn" style="display:none;">저장</button>
-              <button class="inq-btn-cancel" id="answerEditCancelBtn" style="display:none;">취소</button>
+              <button class="inq-btn-cancel" id="answerEditToggleBtn">${inquiryAdminAnswerEditLabel}</button>
+              <button class="inq-btn-submit" id="answerEditSaveBtn" style="display:none;">${inquirySaveLabel}</button>
+              <button class="inq-btn-cancel" id="answerEditCancelBtn" style="display:none;"><spring:message code="inquiry.write.cancel"/></button>
             </c:when>
             <%-- 답변 없을 때: AI 초안 / 등록 / 답변+완료 동시처리 버튼 --%>
             <c:otherwise>
-              <button class="inq-btn-cancel" id="aiDraftBtn">AI 초안</button>
-              <button class="inq-btn-cancel" id="answerBtn">답변 등록</button>
-              <button class="inq-btn-submit" id="answerAndCompleteBtn">답변 + 완료 처리</button>
+              <button class="inq-btn-cancel" id="aiDraftBtn">${inquiryAdminAiDraftLabel}</button>
+              <button class="inq-btn-cancel" id="answerBtn">${inquiryAdminAnswerRegisterLabel}</button>
+              <button class="inq-btn-submit" id="answerAndCompleteBtn">${inquiryAdminAnswerCompleteLabel}</button>
             </c:otherwise>
           </c:choose>
         </div>
@@ -243,23 +281,23 @@
         <div class="inq-write-card">
           <%-- 문의 유형 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label">문의 유형</label>
+            <label class="inq-form-label"><spring:message code="inquiry.write.type"/></label>
             <select class="inq-form-select" id="editCategory">
-              <option value="service" ${inquiry.category eq 'service' ? 'selected' : ''}>서비스 이용</option>
-              <option value="payment" ${inquiry.category eq 'payment' ? 'selected' : ''}>결제 / 환불</option>
-              <option value="account" ${inquiry.category eq 'account' ? 'selected' : ''}>계정 / 로그인</option>
-              <option value="bug"     ${inquiry.category eq 'bug'     ? 'selected' : ''}>오류 신고</option>
-              <option value="etc"     ${inquiry.category eq 'etc'     ? 'selected' : ''}>기타</option>
+              <option value="service" ${inquiry.category eq 'service' ? 'selected' : ''}><spring:message code="inquiry.write.type.service"/></option>
+              <option value="payment" ${inquiry.category eq 'payment' ? 'selected' : ''}><spring:message code="inquiry.write.type.payment"/></option>
+              <option value="account" ${inquiry.category eq 'account' ? 'selected' : ''}><spring:message code="inquiry.write.type.account"/></option>
+              <option value="bug"     ${inquiry.category eq 'bug'     ? 'selected' : ''}><spring:message code="inquiry.write.type.bug"/></option>
+              <option value="etc"     ${inquiry.category eq 'etc'     ? 'selected' : ''}><spring:message code="inquiry.write.type.etc"/></option>
             </select>
           </div>
           <%-- 제목 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label">제목</label>
+            <label class="inq-form-label"><spring:message code="inquiry.write.subject"/></label>
             <input class="inq-form-input" type="text" id="editTitle" value="${inquiry.title}">
           </div>
           <%-- 내용 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label">내용</label>
+            <label class="inq-form-label"><spring:message code="inquiry.write.content"/></label>
             <textarea class="inq-form-textarea" id="editContent" rows="10">${inquiry.content}</textarea>
           </div>
           <%-- 비공개 여부 --%>
@@ -267,12 +305,12 @@
             <label class="inq-private-toggle">
               <input type="checkbox" id="editIsPrivate" ${inquiry.isPrivate == 1 ? 'checked' : ''}>
               <span class="inq-toggle-slider"></span>
-              <span class="inq-toggle-label">비공개</span>
+              <span class="inq-toggle-label"><spring:message code="inquiry.write.private"/></span>
             </label>
           </div>
           <%-- 첨부파일 업로드 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label">첨부파일 추가</label>
+            <label class="inq-form-label"><spring:message code="inquiry.detail.attachAdd"/></label>
             <input type="file" class="inq-form-input" id="editAttachFile" multiple
                    accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.zip">
             <c:if test="${not empty attachmentList}">
@@ -289,8 +327,8 @@
           </div>
           <%-- 취소 / 저장 버튼 --%>
           <div class="inq-write-actions">
-            <button class="inq-btn-cancel" id="editCancelBtn">취소</button>
-            <button class="inq-btn-submit" id="editSaveBtn">저장</button>
+            <button class="inq-btn-cancel" id="editCancelBtn"><spring:message code="inquiry.write.cancel"/></button>
+            <button class="inq-btn-submit" id="editSaveBtn">${inquirySaveLabel}</button>
           </div>
         </div>
       </div>
@@ -299,7 +337,7 @@
     <%-- 수정 불가 안내 --%>
     <c:if test="${(isOwner or isAdmin) and (inquiry.status eq 'COMPLETED' or inquiry.status eq 'IN_PROGRESS' or inquiry.status eq 'USER_COMPLETED' or inquiry.status eq 'CANCELLED')}">
       <div style="font-size:13px; color:var(--gray-400); margin-bottom:8px;">
-        ⚠️ 현재 상태에서는 문의를 수정할 수 없습니다.
+        ${inquiryEditDisabledLabel}
       </div>
     </c:if>
 
@@ -311,60 +349,60 @@
     <div class="inq-detail-actions">
       <%-- 목록으로 버튼 --%>
       <button class="inq-btn-cancel" onclick="goBackToList()">
-        목록으로
+        ${inquiryActionListLabel}
       </button>
 
       <%-- PENDING: 수정 + 삭제 --%>
       <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'PENDING'}">
-        <button class="inq-btn-cancel" id="editBtn">✏️ 수정</button>
+        <button class="inq-btn-cancel" id="editBtn">${inquiryEditLabel}</button>
         <button class="inq-btn-submit" id="deleteBtn"
-                style="background:#ef4444;">🗑️ 삭제</button>
+                style="background:#ef4444;">${inquiryDeleteLabel}</button>
       </c:if>
 
       <%-- CANCELLED: 삭제만 --%>
       <c:if test="${(isOwner or isAdmin) and inquiry.status eq 'CANCELLED'}">
         <button class="inq-btn-submit" id="deleteBtn"
-                style="background:#ef4444;">🗑️ 삭제</button>
+                style="background:#ef4444;">${inquiryDeleteLabel}</button>
       </c:if>
 
       <%-- 유저 전용: 문의 취소 버튼 (PENDING/IN_PROGRESS일 때) --%>
       <c:if test="${isOwner and (inquiry.status eq 'PENDING' or inquiry.status eq 'IN_PROGRESS')}">
         <button class="inq-btn-submit" id="cancelInquiryBtn"
-                style="background:#f59e0b;">✖ 문의 취소</button>
+                style="background:#f59e0b;">${inquiryUserCancelLabel}</button>
       </c:if>
 
       <%-- 유저 전용: 해결됐어요 버튼 (IN_PROGRESS 또는 COMPLETED일 때) --%>
       <c:if test="${isOwner and (inquiry.status eq 'IN_PROGRESS' or inquiry.status eq 'COMPLETED')}">
         <button class="inq-btn-submit" id="userCompleteBtn"
-                style="background:#10b981;">해결됐어요 ✓</button>
+                style="background:#10b981;">${inquiryUserCompleteLabel}</button>
       </c:if>
 
       <%-- 유저 전용: COMPLETED일 때 삭제요청 / 비공개 요청 --%>
       <c:if test="${isOwner and inquiry.status eq 'COMPLETED'}">
         <button class="inq-btn-submit" id="deleteRequestBtn"
-                style="background:#ef4444;">🗑️ 삭제 요청</button>
+                style="background:#ef4444;">${inquiryUserDeleteRequestLabel}</button>
         <c:if test="${inquiry.isPrivate == 0}">
-          <button class="inq-btn-cancel" id="privateRequestBtn">🔒 비공개 요청</button>
+          <button class="inq-btn-cancel" id="privateRequestBtn">${inquiryUserPrivateRequestLabel}</button>
         </c:if>
       </c:if>
 
       <%-- 유저 전용: USER_COMPLETED일 때 삭제요청만 --%>
       <c:if test="${isOwner and inquiry.status eq 'USER_COMPLETED'}">
         <button class="inq-btn-submit" id="deleteRequestBtn"
-                style="background:#ef4444;">🗑️ 삭제 요청</button>
+                style="background:#ef4444;">${inquiryUserDeleteRequestLabel}</button>
       </c:if>
 
       <%-- 유저 전용: DELETE_REQUESTED일 때 삭제 요청 취소 --%>
       <c:if test="${isOwner and inquiry.status eq 'DELETE_REQUESTED'}">
         <button class="inq-btn-submit" id="deleteCancelBtn"
-                style="background:#f59e0b;">✖ 삭제 요청 취소</button>
+                style="background:#f59e0b;">${inquiryUserDeleteCancelLabel}</button>
       </c:if>
 
       <%-- 유저 전용: 비공개 상태일 때 공개 요청 (CANCELLED/USER_COMPLETED 제외) --%>
       <c:if test="${isOwner and inquiry.isPrivate == 1
                    and inquiry.status ne 'CANCELLED'
                    and inquiry.status ne 'USER_COMPLETED'}">
-        <button class="inq-btn-cancel" id="publicRequestBtn">🔓 공개 요청</button>
+        <button class="inq-btn-cancel" id="publicRequestBtn">${inquiryUserPublicRequestLabel}</button>
       </c:if>
     </div>
 
@@ -394,6 +432,49 @@ function goBackToList() {
 (function () {
   var ctx = '${pageContext.request.contextPath}';
   var inquiryId = ${inquiry.inquiryId};
+  var inquiryMessages = {
+    clearBlurConfirm: '<spring:message code="inquiry.admin.clearBlur.confirm" javaScriptEscape="true"/>',
+    clearBlurFail: '<spring:message code="inquiry.admin.clearBlur.fail" javaScriptEscape="true"/>',
+    genericError: '<spring:message code="inquiry.write.server" javaScriptEscape="true"/>',
+    requestFail: '<spring:message code="inquiry.detail.requestFail" javaScriptEscape="true"/>',
+    statusPendingConfirm: '<spring:message code="inquiry.detail.admin.status.pendingConfirm" javaScriptEscape="true"/>',
+    statusInProgressConfirm: '<spring:message code="inquiry.detail.admin.status.inProgressConfirm" javaScriptEscape="true"/>',
+    statusCompletedConfirm: '<spring:message code="inquiry.detail.admin.status.completedConfirm" javaScriptEscape="true"/>',
+    statusChangeFail: '<spring:message code="inquiry.detail.admin.status.changeFail" javaScriptEscape="true"/>',
+    aiDraftLoading: '<spring:message code="inquiry.detail.admin.aiDraft.loading" javaScriptEscape="true"/>',
+    aiDraftFail: '<spring:message code="inquiry.detail.admin.aiDraft.fail" javaScriptEscape="true"/>',
+    answerRequired: '<spring:message code="inquiry.detail.admin.answerRequired" javaScriptEscape="true"/>',
+    answerRegisterFail: '<spring:message code="inquiry.detail.admin.answerRegisterFail" javaScriptEscape="true"/>',
+    answerCompleteFail: '<spring:message code="inquiry.detail.admin.answerCompleteFail" javaScriptEscape="true"/>',
+    deleteApproveConfirm: '<spring:message code="inquiry.detail.admin.deleteApproveConfirm" javaScriptEscape="true"/>',
+    deleteApproveFail: '<spring:message code="inquiry.detail.admin.deleteApproveFail" javaScriptEscape="true"/>',
+    publicApproveConfirm: '<spring:message code="inquiry.detail.admin.publicApproveConfirm" javaScriptEscape="true"/>',
+    publicApproveFail: '<spring:message code="inquiry.detail.admin.publicApproveFail" javaScriptEscape="true"/>',
+    privateApproveConfirm: '<spring:message code="inquiry.detail.admin.privateApproveConfirm" javaScriptEscape="true"/>',
+    privateApproveFail: '<spring:message code="inquiry.detail.admin.privateApproveFail" javaScriptEscape="true"/>',
+    answerEditFail: '<spring:message code="inquiry.detail.admin.answerEdit.fail" javaScriptEscape="true"/>',
+    editOpen: '<spring:message code="inquiry.detail.edit" javaScriptEscape="true"/>',
+    editClose: '<spring:message code="inquiry.write.cancel" javaScriptEscape="true"/>',
+    editFail: '<spring:message code="inquiry.detail.edit.fail" javaScriptEscape="true"/>',
+    attachmentDeleteConfirm: '<spring:message code="inquiry.detail.attachDeleteConfirm" javaScriptEscape="true"/>',
+    attachmentDeleteFail: '<spring:message code="inquiry.detail.attachDeleteFail" javaScriptEscape="true"/>',
+    deleteConfirm: '<spring:message code="inquiry.detail.deleteConfirm" javaScriptEscape="true"/>',
+    deleteFail: '<spring:message code="inquiry.detail.deleteFail" javaScriptEscape="true"/>',
+    userCompleteConfirm: '<spring:message code="inquiry.detail.user.completeConfirm" javaScriptEscape="true"/>',
+    userCompleteFail: '<spring:message code="inquiry.detail.user.completeFail" javaScriptEscape="true"/>',
+    cancelConfirm: '<spring:message code="inquiry.detail.user.cancelConfirm" javaScriptEscape="true"/>',
+    cancelFail: '<spring:message code="inquiry.detail.user.cancelFail" javaScriptEscape="true"/>',
+    deleteRequestConfirm: '<spring:message code="inquiry.detail.user.deleteRequestConfirm" javaScriptEscape="true"/>',
+    deleteRequestFail: '<spring:message code="inquiry.detail.user.deleteRequestFail" javaScriptEscape="true"/>',
+    deleteCancelConfirm: '<spring:message code="inquiry.detail.user.deleteCancelConfirm" javaScriptEscape="true"/>',
+    deleteCancelFail: '<spring:message code="inquiry.detail.user.deleteCancelFail" javaScriptEscape="true"/>',
+    privateRequestConfirm: '<spring:message code="inquiry.detail.user.privateRequestConfirm" javaScriptEscape="true"/>',
+    privateRequestFail: '<spring:message code="inquiry.detail.user.privateRequestFail" javaScriptEscape="true"/>',
+    publicRequestConfirm: '<spring:message code="inquiry.detail.user.publicRequestConfirm" javaScriptEscape="true"/>',
+    publicRequestFail: '<spring:message code="inquiry.detail.user.publicRequestFail" javaScriptEscape="true"/>',
+    titleRequired: '<spring:message code="inquiry.write.error.title" javaScriptEscape="true"/>',
+    contentRequired: '<spring:message code="inquiry.write.error.content" javaScriptEscape="true"/>'
+  };
 
   /* =============================================
      공통 유틸: POST fetch
@@ -413,13 +494,13 @@ function goBackToList() {
   var postClearBlurBtn = document.getElementById('postClearBlurBtn');
   if (postClearBlurBtn) {
     postClearBlurBtn.addEventListener('click', async function () {
-      if (!confirm('BLUR을 해제하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.clearBlurConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/clear-blur', {});
         if (data.success) { location.reload(); }
-        else { alert(data.message || 'BLUR 해제에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.clearBlurFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
@@ -432,37 +513,37 @@ function goBackToList() {
 
   if (btnPending) {
     btnPending.addEventListener('click', async function () {
-      if (!confirm('상태를 "대기중"으로 변경하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.statusPendingConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/status', { status: 'PENDING' });
         if (data.success) { location.reload(); }
-        else { alert(data.message || '상태 변경에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.statusChangeFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
   if (btnInProgress) {
     btnInProgress.addEventListener('click', async function () {
-      if (!confirm('상태를 "처리중"으로 변경하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.statusInProgressConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/status', { status: 'IN_PROGRESS' });
         if (data.success) { location.reload(); }
-        else { alert(data.message || '상태 변경에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.statusChangeFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
   if (btnCompleted) {
     btnCompleted.addEventListener('click', async function () {
-      if (!confirm('상태를 "답변완료"로 변경하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.statusCompletedConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/status', { status: 'COMPLETED' });
         if (data.success) { location.reload(); }
-        else { alert(data.message || '상태 변경에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.statusChangeFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
@@ -474,20 +555,20 @@ function goBackToList() {
     aiDraftBtn.addEventListener('click', async function () {
       var btn = this;
       btn.disabled = true;
-      btn.textContent = '⏳ 생성 중...';
+      btn.textContent = inquiryMessages.aiDraftLoading;
       try {
         var res  = await fetch(ctx + '/inquiry/' + inquiryId + '/ai-draft', { method: 'POST' });
         var data = await res.json();
         if (data.success) {
           document.getElementById('adminContent').value = data.draft;
         } else {
-          alert(data.message || 'AI 초안 생성에 실패했습니다.');
+          alert(data.message || inquiryMessages.aiDraftFail);
         }
       } catch (e) {
-        alert('오류가 발생했습니다. 다시 시도해주세요.');
+        alert(inquiryMessages.genericError);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'AI 초안';
+        btn.textContent = '${inquiryAdminAiDraftLabel}';
       }
     });
   }
@@ -499,14 +580,14 @@ function goBackToList() {
   if (answerBtn) {
     answerBtn.addEventListener('click', async function () {
       var content = document.getElementById('adminContent').value.trim();
-      if (!content) { alert('답변 내용을 입력해주세요.'); return; }
+      if (!content) { alert(inquiryMessages.answerRequired); return; }
       this.disabled = true;
       this.classList.add('loading');
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/answer', { content: content, complete: 'false' });
         if (data.success) { location.reload(); }
-        else { alert(data.message || '답변 등록에 실패했습니다.'); this.disabled = false; this.classList.remove('loading'); }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+        else { alert(data.message || inquiryMessages.answerRegisterFail); this.disabled = false; this.classList.remove('loading'); }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; this.classList.remove('loading'); }
     });
   }
 
@@ -517,14 +598,14 @@ function goBackToList() {
   if (answerAndCompleteBtn) {
     answerAndCompleteBtn.addEventListener('click', async function () {
       var content = document.getElementById('adminContent').value.trim();
-      if (!content) { alert('답변 내용을 입력해주세요.'); return; }
+      if (!content) { alert(inquiryMessages.answerRequired); return; }
       this.disabled = true;
       this.classList.add('loading');
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/answer', { content: content, complete: 'true' });
         if (data.success) { location.reload(); }
-        else { alert(data.message || '처리에 실패했습니다.'); this.disabled = false; this.classList.remove('loading'); }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+        else { alert(data.message || inquiryMessages.answerCompleteFail); this.disabled = false; this.classList.remove('loading'); }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; this.classList.remove('loading'); }
     });
   }
 
@@ -537,37 +618,37 @@ function goBackToList() {
 
   if (btnApproveDelete) {
     btnApproveDelete.addEventListener('click', async function () {
-      if (!confirm('삭제 요청을 수락하고 문의를 삭제하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.deleteApproveConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/delete-approve', {});
         if (data.success) { location.href = ctx + '/inquiry/list'; }
-        else { alert(data.message || '처리에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.deleteApproveFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
   if (btnApprovePublic) {
     btnApprovePublic.addEventListener('click', async function () {
-      if (!confirm('공개 요청을 수락하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.publicApproveConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/visibility-approve', { type: 'public' });
         if (data.success) { location.reload(); }
-        else { alert(data.message || '처리에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.publicApproveFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
   if (btnApprovePrivate) {
     btnApprovePrivate.addEventListener('click', async function () {
-      if (!confirm('비공개 요청을 수락하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.privateApproveConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/visibility-approve', { type: 'private' });
         if (data.success) { location.reload(); }
-        else { alert(data.message || '처리에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.privateApproveFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
@@ -597,14 +678,14 @@ function goBackToList() {
 
     answerEditSaveBtn.addEventListener('click', async function () {
       var content = adminContent.value.trim();
-      if (!content) { alert('답변 내용을 입력해주세요.'); return; }
+      if (!content) { alert(inquiryMessages.answerRequired); return; }
       this.disabled = true;
       this.classList.add('loading');
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/answer/edit', { content: content });
         if (data.success) { location.reload(); }
-        else { alert(data.message || '답변 수정에 실패했습니다.'); this.disabled = false; this.classList.remove('loading'); }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+        else { alert(data.message || inquiryMessages.answerEditFail); this.disabled = false; this.classList.remove('loading'); }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; this.classList.remove('loading'); }
     });
   }
 
@@ -622,12 +703,12 @@ function goBackToList() {
     editBtn.addEventListener('click', function () {
       var isShown = editForm.style.display !== 'none';
       editForm.style.display = isShown ? 'none' : 'block';
-      editBtn.textContent = isShown ? '✏️ 수정' : '✏️ 취소';
+      editBtn.textContent = isShown ? inquiryMessages.editOpen : inquiryMessages.editClose;
     });
 
     editCancel.addEventListener('click', function () {
       editForm.style.display = 'none';
-      editBtn.textContent = '✏️ 수정';
+      editBtn.textContent = inquiryMessages.editOpen;
     });
 
     editSave.addEventListener('click', async function () {
@@ -635,8 +716,8 @@ function goBackToList() {
       var content   = document.getElementById('editContent').value.trim();
       var category  = document.getElementById('editCategory').value;
       var isPrivate = document.getElementById('editIsPrivate').checked ? 1 : 0;
-      if (!title)   { alert('제목을 입력해주세요.'); return; }
-      if (!content) { alert('내용을 입력해주세요.'); return; }
+      if (!title)   { alert(inquiryMessages.titleRequired); return; }
+      if (!content) { alert(inquiryMessages.contentRequired); return; }
       this.disabled = true;
       this.classList.add('loading');
       try {
@@ -660,33 +741,33 @@ function goBackToList() {
         });
         var data = await res.json();
         if (data.success) { location.reload(); }
-        else { alert(data.message || '수정에 실패했습니다.'); this.disabled = false; this.classList.remove('loading'); }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; this.classList.remove('loading'); }
+        else { alert(data.message || inquiryMessages.editFail); this.disabled = false; this.classList.remove('loading'); }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; this.classList.remove('loading'); }
     });
 
     // 첨부파일 개별 삭제 버튼
     document.querySelectorAll('.inq-attach-delete-btn').forEach(function (btn) {
       btn.addEventListener('click', async function () {
         var attachmentId = this.getAttribute('data-id');
-        if (!confirm('첨부파일을 삭제하시겠습니까?')) return;
+        if (!confirm(inquiryMessages.attachmentDeleteConfirm)) return;
         try {
           var data = await postJson('/inquiry/attachment/' + attachmentId + '/delete', {});
           if (data.success) { this.closest('.inq-attachment-edit-item').remove(); }
-          else { alert(data.message || '삭제에 실패했습니다.'); }
-        } catch (e) { alert('오류가 발생했습니다.'); }
+          else { alert(data.message || inquiryMessages.attachmentDeleteFail); }
+        } catch (e) { alert(inquiryMessages.genericError); }
       });
     });
   }
 
   if (deleteBtn) {
     deleteBtn.addEventListener('click', async function () {
-      if (!confirm('정말 삭제하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.deleteConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/delete', {});
         if (data.success) { location.href = ctx + '/inquiry/list'; }
-        else { alert(data.message || '삭제에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.deleteFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
@@ -699,13 +780,13 @@ function goBackToList() {
   var userCompleteBtn = document.getElementById('userCompleteBtn');
   if (userCompleteBtn) {
     userCompleteBtn.addEventListener('click', async function () {
-      if (!confirm('문의가 해결되었나요? 완료 처리하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.userCompleteConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/user-complete', {});
         if (data.success) { location.reload(); }
-        else { alert(data.message || '처리에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.userCompleteFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
@@ -715,13 +796,13 @@ function goBackToList() {
   var cancelInquiryBtn = document.getElementById('cancelInquiryBtn');
   if (cancelInquiryBtn) {
     cancelInquiryBtn.addEventListener('click', async function () {
-      if (!confirm('문의를 취소하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.cancelConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/cancel', {});
         if (data.success) { location.reload(); }
-        else { alert(data.message || '취소에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.cancelFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
@@ -731,13 +812,13 @@ function goBackToList() {
   var deleteRequestBtn = document.getElementById('deleteRequestBtn');
   if (deleteRequestBtn) {
     deleteRequestBtn.addEventListener('click', async function () {
-      if (!confirm('삭제를 요청하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.deleteRequestConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/delete-request', {});
         if (data.success) { location.reload(); }
-        else { alert(data.message || '삭제 요청에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.deleteRequestFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
@@ -747,13 +828,13 @@ function goBackToList() {
   var deleteCancelBtn = document.getElementById('deleteCancelBtn');
   if (deleteCancelBtn) {
     deleteCancelBtn.addEventListener('click', async function () {
-      if (!confirm('삭제 요청을 취소하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.deleteCancelConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/delete-cancel', {});
         if (data.success) { location.reload(); }
-        else { alert(data.message || '취소에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.deleteCancelFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
@@ -765,25 +846,25 @@ function goBackToList() {
 
   if (privateRequestBtn) {
     privateRequestBtn.addEventListener('click', async function () {
-      if (!confirm('비공개로 전환을 요청하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.privateRequestConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/visibility-request', { type: 'private' });
         if (data.success) { location.reload(); }
-        else { alert(data.message || '요청에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.privateRequestFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 
   if (publicRequestBtn) {
     publicRequestBtn.addEventListener('click', async function () {
-      if (!confirm('공개로 전환을 요청하시겠습니까?')) return;
+      if (!confirm(inquiryMessages.publicRequestConfirm)) return;
       this.disabled = true;
       try {
         var data = await postJson('/inquiry/' + inquiryId + '/visibility-request', { type: 'public' });
         if (data.success) { location.reload(); }
-        else { alert(data.message || '요청에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || inquiryMessages.publicRequestFail); this.disabled = false; }
+      } catch (e) { alert(inquiryMessages.genericError); this.disabled = false; }
     });
   }
 

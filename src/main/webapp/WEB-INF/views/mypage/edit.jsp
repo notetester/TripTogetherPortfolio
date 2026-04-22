@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="pageCSS" value="mypage/mypage.css"/>
 <%@ include file="../common/header.jsp" %>
 <html lang="ko">
@@ -8,9 +9,9 @@
   <div class="mypage-inner">
 
     <div class="mypage-header">
-      <button class="mypage-back" onclick="location.href='${pageContext.request.contextPath}/mypage'">← 마이페이지</button>
-      <h1>회원정보 수정</h1>
-      <p>내 계정 정보를 관리하세요</p>
+      <button class="mypage-back" onclick="location.href='${pageContext.request.contextPath}/mypage'"><spring:message code="mypage.edit.back"/></button>
+      <h1><spring:message code="mypage.edit.title"/></h1>
+      <p><spring:message code="mypage.edit.subtitle"/></p>
     </div>
 
     <c:if test="${not empty successMsg}">
@@ -24,45 +25,45 @@
       <div class="edit-card-head" onclick="toggleAcc('acc-profile',this)">
         <div class="edit-card-head-icon">👤</div>
         <div>
-          <div class="edit-card-head-title">기본 프로필</div>
-          <div class="edit-card-head-sub">닉네임, 국적, 언어 설정</div>
+          <div class="edit-card-head-title"><spring:message code="mypage.edit.profile.title"/></div>
+          <div class="edit-card-head-sub"><spring:message code="mypage.edit.profile.subtitle"/></div>
         </div>
         <span class="edit-card-chevron open">▼</span>
       </div>
       <div class="accordion-body open edit-card-body" id="acc-profile">
         <div class="form-group">
-          <label class="form-label" for="nickname">닉네임</label>
+          <label class="form-label" for="nickname"><spring:message code="mypage.nickname"/></label>
           <input class="form-input" type="text" id="nickname" value="${user.nickname}" maxlength="20">
           <div class="field-msg" id="nicknameMsg"></div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="nationality">국적</label>
+            <label class="form-label" for="nationality"><spring:message code="mypage.nationality"/></label>
             <select class="form-select" id="nationality">
-              <option value="KR" ${user.nationality=='KR'?'selected':''}>🇰🇷 대한민국</option>
-              <option value="US" ${user.nationality=='US'?'selected':''}>🇺🇸 미국</option>
-              <option value="JP" ${user.nationality=='JP'?'selected':''}>🇯🇵 일본</option>
-              <option value="CN" ${user.nationality=='CN'?'selected':''}>🇨🇳 중국</option>
-              <option value="GB" ${user.nationality=='GB'?'selected':''}>🇬🇧 영국</option>
-              <option value="FR" ${user.nationality=='FR'?'selected':''}>🇫🇷 프랑스</option>
-              <option value="DE" ${user.nationality=='DE'?'selected':''}>🇩🇪 독일</option>
-              <option value="AU" ${user.nationality=='AU'?'selected':''}>🇦🇺 호주</option>
-              <option value="CA" ${user.nationality=='CA'?'selected':''}>🇨🇦 캐나다</option>
-              <option value="OTHER" ${user.nationality=='OTHER'?'selected':''}>🌍 기타</option>
+              <option value="KR" ${user.nationality=='KR'?'selected':''}>🇰🇷 <spring:message code="mypage.country.kr"/></option>
+              <option value="US" ${user.nationality=='US'?'selected':''}>🇺🇸 <spring:message code="mypage.country.us"/></option>
+              <option value="JP" ${user.nationality=='JP'?'selected':''}>🇯🇵 <spring:message code="mypage.country.jp"/></option>
+              <option value="CN" ${user.nationality=='CN'?'selected':''}>🇨🇳 <spring:message code="mypage.country.cn"/></option>
+              <option value="GB" ${user.nationality=='GB'?'selected':''}>🇬🇧 <spring:message code="mypage.country.gb"/></option>
+              <option value="FR" ${user.nationality=='FR'?'selected':''}>🇫🇷 <spring:message code="mypage.country.fr"/></option>
+              <option value="DE" ${user.nationality=='DE'?'selected':''}>🇩🇪 <spring:message code="mypage.country.de"/></option>
+              <option value="AU" ${user.nationality=='AU'?'selected':''}>🇦🇺 <spring:message code="mypage.country.au"/></option>
+              <option value="CA" ${user.nationality=='CA'?'selected':''}>🇨🇦 <spring:message code="mypage.country.ca"/></option>
+              <option value="OTHER" ${user.nationality=='OTHER'?'selected':''}>🌍 <spring:message code="mypage.country.other"/></option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label" for="preferredLang">선호 언어</label>
+            <label class="form-label" for="preferredLang"><spring:message code="mypage.language"/></label>
             <select class="form-select" id="preferredLang">
-              <option value="ko" ${user.preferredLang=='ko'?'selected':''}>🇰🇷 한국어</option>
-              <option value="en" ${user.preferredLang=='en'?'selected':''}>🇺🇸 English</option>
-              <option value="ja" ${user.preferredLang=='ja'?'selected':''}>🇯🇵 日本語</option>
-              <option value="zh" ${user.preferredLang=='zh'?'selected':''}>🇨🇳 中文</option>
+              <option value="ko" ${user.preferredLang=='ko'?'selected':''}>🇰🇷 <spring:message code="mypage.lang.ko"/></option>
+              <option value="en" ${user.preferredLang=='en'?'selected':''}>🇺🇸 <spring:message code="mypage.lang.en"/></option>
+              <option value="ja" ${user.preferredLang=='ja'?'selected':''}>🇯🇵 <spring:message code="mypage.lang.ja"/></option>
+              <option value="zh" ${user.preferredLang=='zh'?'selected':''}>🇨🇳 <spring:message code="mypage.lang.zh"/></option>
             </select>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
-          <button class="btn-save" id="saveProfileBtn">저장</button>
+          <button class="btn-save" id="saveProfileBtn"><spring:message code="mypage.save"/></button>
           <span class="save-msg" id="saveProfileMsg"></span>
         </div>
       </div>
@@ -72,8 +73,8 @@
       <div class="edit-card-head" onclick="toggleAcc('acc-login',this)">
         <div class="edit-card-head-icon">🪪</div>
         <div>
-          <div class="edit-card-head-title">로그인 수단 관리</div>
-          <div class="edit-card-head-sub">아이디, 이메일 로그인, 비밀번호 정책</div>
+          <div class="edit-card-head-title"><spring:message code="mypage.edit.login.title"/></div>
+          <div class="edit-card-head-sub"><spring:message code="mypage.edit.login.subtitle"/></div>
         </div>
         <span class="edit-card-chevron">▼</span>
       </div>
@@ -82,23 +83,23 @@
         <input type="hidden" id="profileEmailRequestId" value="${profileEmailRequestId}">
 
         <div style="background:var(--gray-50);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:8px;">
-          <span class="email-status-badge ${hasUsableIdLogin ? 'verified' : 'unverified'}">아이디 로그인 ${hasUsableIdLogin ? '가능' : '없음'}</span>
-          <span class="email-status-badge ${hasUsableEmailLogin ? 'verified' : 'unverified'}">이메일 로그인 ${hasUsableEmailLogin ? '가능' : '없음'}</span>
-          <span class="email-status-badge ${socialCount gt 0 ? 'verified' : 'unverified'}">소셜 로그인 ${socialCount gt 0 ? '연동 ' : '없음'}${socialCount gt 0 ? socialCount : ''}</span>
+          <span class="email-status-badge ${hasUsableIdLogin ? 'verified' : 'unverified'}"><spring:message code="mypage.edit.idLogin"/> <c:choose><c:when test="${hasUsableIdLogin}"><spring:message code="mypage.available"/></c:when><c:otherwise><spring:message code="mypage.none"/></c:otherwise></c:choose></span>
+          <span class="email-status-badge ${hasUsableEmailLogin ? 'verified' : 'unverified'}"><spring:message code="mypage.edit.emailLogin"/> <c:choose><c:when test="${hasUsableEmailLogin}"><spring:message code="mypage.available"/></c:when><c:otherwise><spring:message code="mypage.none"/></c:otherwise></c:choose></span>
+          <span class="email-status-badge ${socialCount gt 0 ? 'verified' : 'unverified'}"><spring:message code="mypage.edit.socialLogin"/> <c:choose><c:when test="${socialCount gt 0}"><spring:message code="mypage.social.linkedCount" arguments="${socialCount}"/></c:when><c:otherwise><spring:message code="mypage.none"/></c:otherwise></c:choose></span>
         </div>
 
         <div class="form-group">
-          <label class="form-label">아이디</label>
+          <label class="form-label"><spring:message code="mypage.profile.userId"/></label>
           <c:choose>
             <c:when test="${not empty user.userId}">
               <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:12px 14px;font-weight:600;color:var(--gray-800);">
                 ${user.userId}
               </div>
-              <div class="field-msg success">아이디는 계정당 한 번만 등록할 수 있으며, 등록 후에는 변경하거나 삭제할 수 없습니다.</div>
+              <div class="field-msg success"><spring:message code="mypage.userId.once"/></div>
             </c:when>
             <c:otherwise>
-              <input class="form-input" type="text" id="localUserId" maxlength="30" placeholder="아이디를 등록하면 이후 변경하거나 삭제할 수 없습니다.">
-              <div class="field-msg" id="localUserIdMsg">아이디는 계정당 한 번만 등록할 수 있습니다.</div>
+              <input class="form-input" type="text" id="localUserId" maxlength="30" placeholder="<spring:message code='mypage.userId.placeholder'/>">
+              <div class="field-msg" id="localUserIdMsg"><spring:message code="mypage.userId.help"/></div>
             </c:otherwise>
           </c:choose>
         </div>
@@ -106,42 +107,42 @@
         <div style="height:1px;background:var(--gray-100);margin:16px 0;"></div>
 
         <div style="background:var(--gray-50);border-radius:10px;padding:14px 16px;margin-bottom:16px;">
-          <div style="font-size:13px;font-weight:600;color:var(--gray-600);margin-bottom:4px;">이메일 상태</div>
+          <div style="font-size:13px;font-weight:600;color:var(--gray-600);margin-bottom:4px;"><spring:message code="mypage.email.state"/></div>
           <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
             <span style="font-size:15px;font-weight:600;color:var(--gray-800);" id="currentEmail">
               <c:choose>
                 <c:when test="${not empty user.userEmail}">${user.userEmail}</c:when>
-                <c:otherwise>등록된 이메일 없음</c:otherwise>
+                <c:otherwise><spring:message code="mypage.email.none"/></c:otherwise>
               </c:choose>
             </span>
             <span class="email-status-badge ${user.emailVerified ? 'verified' : 'unverified'}" id="emailStatusBadge">
               <c:choose>
-                <c:when test="${user.emailVerified}">✓ 인증됨</c:when>
-                <c:otherwise>⚠ 미인증</c:otherwise>
+                <c:when test="${user.emailVerified}"><spring:message code="mypage.email.verified"/></c:when>
+                <c:otherwise><spring:message code="mypage.email.unverified"/></c:otherwise>
               </c:choose>
             </span>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="newEmail">이메일 변경 또는 등록</label>
+          <label class="form-label" for="newEmail"><spring:message code="mypage.email.change"/></label>
           <div style="display:flex;gap:8px;">
-            <input class="form-input" type="email" id="newEmail" placeholder="새 이메일 주소" style="flex:1;" value="${user.userEmail}">
-            <button class="btn-save" id="sendVerifyBtn" style="white-space:nowrap;padding:10px 16px;">인증 발송</button>
+            <input class="form-input" type="email" id="newEmail" placeholder="<spring:message code='mypage.email.new'/>" style="flex:1;" value="${user.userEmail}">
+            <button class="btn-save" id="sendVerifyBtn" style="white-space:nowrap;padding:10px 16px;"><spring:message code="mypage.email.send"/></button>
           </div>
           <div class="field-msg" id="emailMsg"></div>
-          <div class="field-msg">이메일은 미인증 상태로도 저장할 수 있습니다. 인증은 별도로 진행되며, 이메일 로그인을 사용하려면 인증이 완료되어야 합니다. 이메일을 제거하려면 입력창을 비운 뒤 저장해 주세요.</div>
+          <div class="field-msg"><spring:message code="mypage.email.help"/></div>
         </div>
 
         <div class="toggle-wrap">
           <div>
-            <div class="toggle-label">이메일 로그인 사용</div>
+            <div class="toggle-label"><spring:message code="mypage.email.use"/></div>
             <div class="toggle-sub" id="emailLoginSub">
               <c:choose>
-                <c:when test="${user.emailLoginEnabled}">현재 이메일 로그인 사용 중입니다.</c:when>
-                <c:when test="${user.emailVerified and user.passwordEnabled}">저장하면 이메일 로그인을 사용할 수 있습니다.</c:when>
-                <c:when test="${user.emailVerified and not user.passwordEnabled}">저장 시 비밀번호를 함께 설정해야 이메일 로그인을 사용할 수 있습니다.</c:when>
-                <c:otherwise>이메일 인증 여부는 체크 시점에 다시 확인합니다. 인증 완료 후 저장해야 최종 반영됩니다.</c:otherwise>
+                <c:when test="${user.emailLoginEnabled}"><spring:message code="mypage.email.use.current"/></c:when>
+                <c:when test="${user.emailVerified and user.passwordEnabled}"><spring:message code="mypage.email.use.enable"/></c:when>
+                <c:when test="${user.emailVerified and not user.passwordEnabled}"><spring:message code="mypage.email.use.needPassword"/></c:when>
+                <c:otherwise><spring:message code="mypage.email.use.check"/></c:otherwise>
               </c:choose>
             </div>
           </div>
@@ -153,33 +154,33 @@
         <div class="save-msg" id="emailLoginMsg" style="display:block;margin-top:8px;"></div>
 
         <div id="localPasswordBox" style="display:none;margin-top:16px;padding:16px;border:1px dashed var(--gray-200);border-radius:12px;background:var(--gray-50);">
-          <div style="font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:12px;">로컬 로그인 비밀번호 설정</div>
+          <div style="font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:12px;"><spring:message code="mypage.localPassword"/></div>
           <div class="form-group">
-            <label class="form-label" for="loginNewPassword">비밀번호</label>
+            <label class="form-label" for="loginNewPassword"><spring:message code="mypage.password"/></label>
             <div class="pw-wrap">
-              <input class="form-input" type="password" id="loginNewPassword" placeholder="영문, 숫자, 특수문자 포함 8자 이상" maxlength="64">
+              <input class="form-input" type="password" id="loginNewPassword" placeholder="<spring:message code='mypage.password.placeholder'/>" maxlength="64">
               <button type="button" class="pw-toggle" id="pt3">👁</button>
             </div>
             <div class="field-msg" id="loginNewPwMsg"></div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="loginConfirmPassword">비밀번호 확인</label>
+            <label class="form-label" for="loginConfirmPassword"><spring:message code="mypage.password.confirm"/></label>
             <div class="pw-wrap">
-              <input class="form-input" type="password" id="loginConfirmPassword" placeholder="비밀번호 재입력" maxlength="64">
+              <input class="form-input" type="password" id="loginConfirmPassword" placeholder="<spring:message code='mypage.password.confirm.placeholder'/>" maxlength="64">
               <button type="button" class="pw-toggle" id="pt4">👁</button>
             </div>
             <div class="field-msg" id="loginCfmPwMsg"></div>
           </div>
-          <div class="field-msg success" style="margin-top:4px;">아이디 로그인 또는 이메일 로그인을 처음 사용할 때만 비밀번호를 함께 설정합니다.</div>
+          <div class="field-msg success" style="margin-top:4px;"><spring:message code="mypage.password.firstTime"/></div>
         </div>
 
         <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
-          <button class="btn-save" id="saveLoginSettingsBtn">로그인 수단 저장</button>
+          <button class="btn-save" id="saveLoginSettingsBtn"><spring:message code="mypage.loginSave"/></button>
           <span class="save-msg" id="saveLoginSettingsMsg"></span>
         </div>
 
         <div style="margin-top:12px;padding:10px 14px;background:var(--gray-50);border-radius:8px;font-size:12px;color:var(--gray-500);">
-          ⚠️ 계정은 언제나 실제로 로그인 가능한 수단을 하나 이상 유지해야 합니다. 이메일 로그인만 사용 중인 상태에서 해제하면 비밀번호도 함께 해제될 수 있습니다.
+          <spring:message code="mypage.loginWarn"/>
         </div>
       </div>
     </div>
@@ -189,24 +190,24 @@
         <div class="edit-card-head" onclick="toggleAcc('acc-pw',this)">
           <div class="edit-card-head-icon">🔒</div>
           <div>
-            <div class="edit-card-head-title">비밀번호 변경</div>
-            <div class="edit-card-head-sub">현재 비밀번호 확인 후 새 비밀번호를 변경합니다</div>
+            <div class="edit-card-head-title"><spring:message code="mypage.passwordChange"/></div>
+            <div class="edit-card-head-sub"><spring:message code="mypage.passwordChange.subtitle"/></div>
           </div>
           <span class="edit-card-chevron">▼</span>
         </div>
         <div class="accordion-body edit-card-body" id="acc-pw">
           <div class="form-group">
-            <label class="form-label" for="currentPassword">현재 비밀번호</label>
+            <label class="form-label" for="currentPassword"><spring:message code="mypage.password.current"/></label>
             <div class="pw-wrap">
-              <input class="form-input" type="password" id="currentPassword" placeholder="현재 비밀번호 입력">
+              <input class="form-input" type="password" id="currentPassword" placeholder="<spring:message code='mypage.password.current.placeholder'/>">
               <button type="button" class="pw-toggle" id="pt0">👁</button>
             </div>
             <div class="field-msg" id="curPwMsg"></div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="newPassword">새 비밀번호</label>
+            <label class="form-label" for="newPassword"><spring:message code="mypage.password.new"/></label>
             <div class="pw-wrap">
-              <input class="form-input" type="password" id="newPassword" placeholder="영문, 숫자, 특수문자 포함 8자 이상" maxlength="64">
+              <input class="form-input" type="password" id="newPassword" placeholder="<spring:message code='mypage.password.placeholder'/>" maxlength="64">
               <button type="button" class="pw-toggle" id="pt1">👁</button>
             </div>
             <div class="pw-strength">
@@ -217,15 +218,15 @@
             <div class="field-msg" id="newPwMsg"></div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="confirmPassword">비밀번호 확인</label>
+            <label class="form-label" for="confirmPassword"><spring:message code="mypage.password.confirm"/></label>
             <div class="pw-wrap">
-              <input class="form-input" type="password" id="confirmPassword" placeholder="비밀번호 재입력" maxlength="64">
+              <input class="form-input" type="password" id="confirmPassword" placeholder="<spring:message code='mypage.password.confirm.placeholder'/>" maxlength="64">
               <button type="button" class="pw-toggle" id="pt2">👁</button>
             </div>
             <div class="field-msg" id="cfmPwMsg"></div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
-            <button class="btn-save" id="savePwBtn">비밀번호 변경</button>
+            <button class="btn-save" id="savePwBtn"><spring:message code="mypage.passwordChange"/></button>
             <span class="save-msg" id="savePwMsg"></span>
           </div>
         </div>
@@ -236,8 +237,8 @@
       <div class="edit-card-head" onclick="toggleAcc('acc-social',this)">
         <div class="edit-card-head-icon">🔗</div>
         <div>
-          <div class="edit-card-head-title">소셜 계정 연동</div>
-          <div class="edit-card-head-sub">카카오, 네이버, 구글 계정 연결 관리</div>
+          <div class="edit-card-head-title"><spring:message code="mypage.social.title"/></div>
+          <div class="edit-card-head-sub"><spring:message code="mypage.social.subtitle"/></div>
         </div>
         <span class="edit-card-chevron">▼</span>
       </div>
@@ -246,28 +247,28 @@
         <div class="social-link-item">
           <div class="social-link-icon KAKAO"><span class="kakao-mark-box">k</span></div>
           <div class="social-link-info">
-            <div class="social-link-name">카카오</div>
+            <div class="social-link-name"><spring:message code="mypage.social.kakao"/></div>
             <div class="social-link-status ${socialLinkMap['KAKAO'] ? 'linked' : ''}">
-              <c:choose><c:when test="${socialLinkMap['KAKAO']}">● 연동됨</c:when><c:otherwise>○ 연동되지 않음</c:otherwise></c:choose>
+              <c:choose><c:when test="${socialLinkMap['KAKAO']}"><spring:message code="mypage.social.status.linked"/></c:when><c:otherwise><spring:message code="mypage.social.status.unlinked"/></c:otherwise></c:choose>
             </div>
           </div>
           <c:choose>
-            <c:when test="${socialLinkMap['KAKAO']}"><button class="btn-social-action unlink" onclick="unlinkSocial('KAKAO', this)">연동 해제</button></c:when>
-            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/kakao'">연동하기</button></c:otherwise>
+            <c:when test="${socialLinkMap['KAKAO']}"><button class="btn-social-action unlink" onclick="unlinkSocial('KAKAO', this)"><spring:message code="mypage.social.unlink"/></button></c:when>
+            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/kakao'"><spring:message code="mypage.social.link"/></button></c:otherwise>
           </c:choose>
         </div>
 
         <div class="social-link-item">
           <div class="social-link-icon NAVER"><span class="naver-mark-box">N</span></div>
           <div class="social-link-info">
-            <div class="social-link-name">네이버</div>
+            <div class="social-link-name"><spring:message code="mypage.social.naver"/></div>
             <div class="social-link-status ${socialLinkMap['NAVER'] ? 'linked' : ''}">
-              <c:choose><c:when test="${socialLinkMap['NAVER']}">● 연동됨</c:when><c:otherwise>○ 연동되지 않음</c:otherwise></c:choose>
+              <c:choose><c:when test="${socialLinkMap['NAVER']}"><spring:message code="mypage.social.status.linked"/></c:when><c:otherwise><spring:message code="mypage.social.status.unlinked"/></c:otherwise></c:choose>
             </div>
           </div>
           <c:choose>
-            <c:when test="${socialLinkMap['NAVER']}"><button class="btn-social-action unlink" onclick="unlinkSocial('NAVER', this)">연동 해제</button></c:when>
-            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/naver'">연동하기</button></c:otherwise>
+            <c:when test="${socialLinkMap['NAVER']}"><button class="btn-social-action unlink" onclick="unlinkSocial('NAVER', this)"><spring:message code="mypage.social.unlink"/></button></c:when>
+            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/naver'"><spring:message code="mypage.social.link"/></button></c:otherwise>
           </c:choose>
         </div>
 
@@ -281,26 +282,26 @@
             </svg>
           </span></div>
           <div class="social-link-info">
-            <div class="social-link-name">Google</div>
+            <div class="social-link-name"><spring:message code="mypage.social.google"/></div>
             <div class="social-link-status ${socialLinkMap['GOOGLE'] ? 'linked' : ''}">
-              <c:choose><c:when test="${socialLinkMap['GOOGLE']}">● 연동됨</c:when><c:otherwise>○ 연동되지 않음</c:otherwise></c:choose>
+              <c:choose><c:when test="${socialLinkMap['GOOGLE']}"><spring:message code="mypage.social.status.linked"/></c:when><c:otherwise><spring:message code="mypage.social.status.unlinked"/></c:otherwise></c:choose>
             </div>
           </div>
           <c:choose>
-            <c:when test="${socialLinkMap['GOOGLE']}"><button class="btn-social-action unlink" onclick="unlinkSocial('GOOGLE', this)">연동 해제</button></c:when>
-            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/google'">연동하기</button></c:otherwise>
+            <c:when test="${socialLinkMap['GOOGLE']}"><button class="btn-social-action unlink" onclick="unlinkSocial('GOOGLE', this)"><spring:message code="mypage.social.unlink"/></button></c:when>
+            <c:otherwise><button class="btn-social-action link" onclick="location.href='${pageContext.request.contextPath}/auth/link/google'"><spring:message code="mypage.social.link"/></button></c:otherwise>
           </c:choose>
         </div>
 
         <div style="margin-top:12px;padding:10px 14px;background:var(--gray-50);border-radius:8px;font-size:12px;color:var(--gray-500);">
-          ⚠️ 소셜 연동은 해제 후에도 다른 로그인 수단이 하나 이상 남아 있는 경우에만 해제할 수 있습니다.
+          <spring:message code="mypage.social.warn"/>
         </div>
       </div>
     </div>
 
     <div style="text-align:center;margin-top:8px;">
       <form action="${pageContext.request.contextPath}/mypage/edit/done" method="post">
-        <button type="submit" class="btn-save" style="background:var(--gray-100);color:var(--gray-700);box-shadow:none;padding:12px 32px;font-size:15px;">✅ 수정 완료</button>
+        <button type="submit" class="btn-save" style="background:var(--gray-100);color:var(--gray-700);box-shadow:none;padding:12px 32px;font-size:15px;">✅ <spring:message code="mypage.edit.done"/></button>
       </form>
     </div>
 
@@ -313,6 +314,49 @@ const hasPasswordEnabled = ${user.passwordEnabled ? 'true' : 'false'};
 const hasFixedUserId = ${not empty user.userId ? 'true' : 'false'};
 const originalEmail = '${user.userEmail != null ? user.userEmail : ''}';
 const originalEmailVerified = ${user.emailVerified ? 'true' : 'false'};
+const editMessages = {
+  emailNone: '<spring:message code="mypage.email.none" javaScriptEscape="true"/>',
+  emailPendingSuffix: '<spring:message code="mypage.email.pendingSuffix" javaScriptEscape="true"/>',
+  emailEnterAndVerify: '<spring:message code="mypage.email.enterAndVerify" javaScriptEscape="true"/>',
+  emailUnverified: '<spring:message code="mypage.email.unverified" javaScriptEscape="true"/>',
+  emailVerified: '<spring:message code="mypage.email.verified" javaScriptEscape="true"/>',
+  emailVerifiedPending: '<spring:message code="mypage.email.verifiedPending" javaScriptEscape="true"/>',
+  emailUseNeedPassword: '<spring:message code="mypage.email.use.needPassword" javaScriptEscape="true"/>',
+  emailUseEnable: '<spring:message code="mypage.email.use.enable" javaScriptEscape="true"/>',
+  emailUseCheck: '<spring:message code="mypage.email.use.check" javaScriptEscape="true"/>',
+  emailValidRequired: '<spring:message code="mypage.email.validRequired" javaScriptEscape="true"/>',
+  emailResend: '<spring:message code="mypage.email.resend" javaScriptEscape="true"/>',
+  emailUseDisableWithPassword: '<spring:message code="mypage.email.use.disableWithPassword" javaScriptEscape="true"/>',
+  emailUseDisable: '<spring:message code="mypage.email.use.disable" javaScriptEscape="true"/>',
+  emailStatusChecked: '<spring:message code="mypage.email.statusChecked" javaScriptEscape="true"/>',
+  emailRemoveWithDisable: '<spring:message code="mypage.email.removeWithDisable" javaScriptEscape="true"/>',
+  nicknameDuplicate: '<spring:message code="mypage.edit.nicknameDuplicate" javaScriptEscape="true"/>',
+  passwordMatch: '<spring:message code="mypage.edit.passwordMatch" javaScriptEscape="true"/>',
+  passwordMismatch: '<spring:message code="mypage.edit.passwordMismatch" javaScriptEscape="true"/>',
+  passwordMinSet: '<spring:message code="mypage.password.minSet" javaScriptEscape="true"/>',
+  passwordMinLength: '<spring:message code="mypage.password.minLength" javaScriptEscape="true"/>',
+  socialUnlinkConfirm: '<spring:message code="mypage.social.unlinkConfirm" javaScriptEscape="true"/>',
+  socialUnlinkFail: '<spring:message code="mypage.social.unlinkFail" javaScriptEscape="true"/>',
+  providerKakao: '<spring:message code="mypage.social.kakao" javaScriptEscape="true"/>',
+  providerNaver: '<spring:message code="mypage.social.naver" javaScriptEscape="true"/>',
+  providerGoogle: '<spring:message code="mypage.social.google" javaScriptEscape="true"/>'
+};
+
+function formatMessage(template) {
+  const args = Array.prototype.slice.call(arguments, 1);
+  return String(template || '').replace(/\{(\d+)\}/g, function (_, index) {
+    return typeof args[index] !== 'undefined' ? args[index] : '';
+  });
+}
+
+function getProviderLabel(provider) {
+  switch (provider) {
+    case 'KAKAO': return editMessages.providerKakao;
+    case 'NAVER': return editMessages.providerNaver;
+    case 'GOOGLE': return editMessages.providerGoogle;
+    default: return provider;
+  }
+}
 
 function toggleAcc(id, head) {
   const body = document.getElementById(id);
@@ -360,8 +404,8 @@ if (cfmPw) {
     const pw = document.getElementById('newPassword').value;
     const msg = document.getElementById('cfmPwMsg');
     if (!this.value) { msg.className='field-msg'; msg.textContent=''; return; }
-    if (pw === this.value) { msg.className='field-msg success'; msg.textContent='비밀번호가 일치합니다.'; }
-    else { msg.className='field-msg error'; msg.textContent='비밀번호가 일치하지 않습니다.'; }
+    if (pw === this.value) { msg.className='field-msg success'; msg.textContent=editMessages.passwordMatch; }
+    else { msg.className='field-msg error'; msg.textContent=editMessages.passwordMismatch; }
   });
 }
 
@@ -379,8 +423,8 @@ if (loginCfmPw) {
   loginCfmPw.addEventListener('input', function () {
     const msg = document.getElementById('loginCfmPwMsg');
     if (!this.value) { msg.className='field-msg'; msg.textContent=''; return; }
-    if (loginNewPw.value === this.value) { msg.className='field-msg success'; msg.textContent='비밀번호가 일치합니다.'; }
-    else { msg.className='field-msg error'; msg.textContent='비밀번호가 일치하지 않습니다.'; }
+    if (loginNewPw.value === this.value) { msg.className='field-msg success'; msg.textContent=editMessages.passwordMatch; }
+    else { msg.className='field-msg error'; msg.textContent=editMessages.passwordMismatch; }
   });
 }
 
@@ -401,7 +445,7 @@ if (nickInput) {
       const res = await fetch(ctx + '/auth/check/nickname?value=' + encodeURIComponent(v));
       const data = await res.json();
       if (data.duplicate && v !== '${user.nickname}') {
-        msg.className='field-msg error'; msg.textContent='이미 사용 중인 닉네임입니다.';
+        msg.className='field-msg error'; msg.textContent=editMessages.nicknameDuplicate;
       } else {
         msg.className='field-msg'; msg.textContent='';
       }
@@ -432,17 +476,17 @@ async function refreshEmailVerificationState(emailInputValue) {
   const currentEmailEl = document.getElementById('currentEmail');
   if (currentEmailEl) {
     if (emailInputValue && emailInputValue !== originalEmail) {
-      currentEmailEl.textContent = emailInputValue + ' (저장 전)';
+      currentEmailEl.textContent = emailInputValue + ' ' + editMessages.emailPendingSuffix;
     } else {
-      currentEmailEl.textContent = originalEmail || '등록된 이메일 없음';
+      currentEmailEl.textContent = originalEmail || editMessages.emailNone;
     }
   }
   if (!emailInputValue) {
     if (badge) {
       badge.className = 'email-status-badge unverified';
-      badge.textContent = '⚠ 미인증';
+      badge.textContent = editMessages.emailUnverified;
     }
-    if (sub) sub.textContent = '이메일을 입력한 뒤 인증을 진행해 주세요.';
+    if (sub) sub.textContent = editMessages.emailEnterAndVerify;
     return {success:false, emailVerified:false, pendingVerified:false};
   }
 
@@ -454,19 +498,19 @@ async function refreshEmailVerificationState(emailInputValue) {
   if (badge) {
     if (data.emailVerified) {
       badge.className = 'email-status-badge verified';
-      badge.textContent = data.pendingVerified ? '✓ 인증 완료(저장 대기)' : '✓ 인증됨';
+      badge.textContent = data.pendingVerified ? editMessages.emailVerifiedPending : editMessages.emailVerified;
     } else {
       badge.className = 'email-status-badge unverified';
-      badge.textContent = '⚠ 미인증';
+      badge.textContent = editMessages.emailUnverified;
     }
   }
   if (sub) {
     if (data.emailVerified) {
       sub.textContent = data.requiresPassword
-        ? '저장 시 비밀번호를 함께 설정해야 이메일 로그인을 사용할 수 있습니다.'
-        : '저장하면 이메일 로그인을 활성화할 수 있습니다.';
+        ? editMessages.emailUseNeedPassword
+        : editMessages.emailUseEnable;
     } else {
-      sub.textContent = '이메일 인증 여부는 체크 시점에 다시 확인합니다. 인증 완료 후 저장해야 최종 반영됩니다.';
+      sub.textContent = editMessages.emailUseCheck;
     }
   }
   return data;
@@ -476,7 +520,7 @@ document.getElementById('sendVerifyBtn').addEventListener('click', async functio
   const email = document.getElementById('newEmail').value.trim();
   const msg = document.getElementById('emailMsg');
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    msg.className='field-msg error'; msg.textContent='유효한 이메일 주소를 입력해 주세요.'; return;
+    msg.className='field-msg error'; msg.textContent=editMessages.emailValidRequired; return;
   }
   this.classList.add('loading'); this.disabled = true;
   const res = await fetch(ctx + '/mypage/edit/email/send', {
@@ -488,7 +532,7 @@ document.getElementById('sendVerifyBtn').addEventListener('click', async functio
   msg.textContent = data.message;
   this.classList.remove('loading'); this.disabled = false;
   if (data.success) {
-    this.textContent = '재발송';
+    this.textContent = editMessages.emailResend;
     await refreshEmailVerificationState(email);
   }
 });
@@ -502,14 +546,14 @@ if (emailToggle) {
       const hasOnlyEmailLocal = !hasFixedUserId && hasPasswordEnabled && originalEmailVerified;
       const sub = document.getElementById('emailLoginSub');
       sub.textContent = hasOnlyEmailLocal
-        ? '저장 시 이메일 로그인을 해제하면 비밀번호도 함께 해제될 수 있습니다.'
-        : '저장 시 이메일 로그인이 해제됩니다.';
+        ? editMessages.emailUseDisableWithPassword
+        : editMessages.emailUseDisable;
       updateLocalPasswordBox();
       return;
     }
 
     const data = await refreshEmailVerificationState(emailInputValue);
-    showMsg(msg, data.success, data.message || '이메일 인증 상태를 확인했습니다.');
+    showMsg(msg, data.success, data.message || editMessages.emailStatusChecked);
     if (!data.success) {
       this.checked = false;
       updateLocalPasswordBox();
@@ -533,19 +577,19 @@ document.getElementById('saveLoginSettingsBtn').addEventListener('click', async 
   const pw2 = loginCfmPw ? loginCfmPw.value : '';
 
   if (enableEmailLogin && !emailValue) {
-    showMsg(msg, false, '이메일을 삭제하려면 이메일 로그인 사용을 함께 해제한 뒤 저장해 주세요.');
+    showMsg(msg, false, editMessages.emailRemoveWithDisable);
     return;
   }
 
   if (passwordBoxVisible) {
     if (pw.length < 8) {
       document.getElementById('loginNewPwMsg').className='field-msg error';
-      document.getElementById('loginNewPwMsg').textContent='비밀번호는 8자 이상으로 설정해 주세요.';
+      document.getElementById('loginNewPwMsg').textContent=editMessages.passwordMinSet;
       return;
     }
     if (pw !== pw2) {
       document.getElementById('loginCfmPwMsg').className='field-msg error';
-      document.getElementById('loginCfmPwMsg').textContent='비밀번호가 일치하지 않습니다.';
+      document.getElementById('loginCfmPwMsg').textContent=editMessages.passwordMismatch;
       return;
     }
   }
@@ -581,11 +625,11 @@ if (savePwBtn) {
 
     if (newPwVal.length < 8) {
       const nm = document.getElementById('newPwMsg');
-      nm.className='field-msg error'; nm.textContent='비밀번호는 8자 이상이어야 합니다.'; return;
+      nm.className='field-msg error'; nm.textContent=editMessages.passwordMinLength; return;
     }
     if (newPwVal !== cfmVal) {
       document.getElementById('cfmPwMsg').className='field-msg error';
-      document.getElementById('cfmPwMsg').textContent='비밀번호가 일치하지 않습니다.'; return;
+      document.getElementById('cfmPwMsg').textContent=editMessages.passwordMismatch; return;
     }
 
     btn.classList.add('loading'); btn.disabled = true;
@@ -608,7 +652,7 @@ if (savePwBtn) {
 }
 
 async function unlinkSocial(provider, btn) {
-  if (!confirm(provider + ' 연동을 해제하시겠습니까?')) return;
+  if (!confirm(formatMessage(editMessages.socialUnlinkConfirm, getProviderLabel(provider)))) return;
   btn.disabled = true;
   const res = await fetch(ctx + '/auth/unlink', {
     method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
@@ -618,7 +662,7 @@ async function unlinkSocial(provider, btn) {
   if (data.success) {
     location.reload();
   } else {
-    alert(data.message || '해제에 실패했습니다.');
+    alert(data.message || editMessages.socialUnlinkFail);
     btn.disabled = false;
   }
 }

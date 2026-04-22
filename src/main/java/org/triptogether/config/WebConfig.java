@@ -46,20 +46,28 @@ public class WebConfig implements WebMvcConfigurer {
     /**
      * 다국어 메시지 파일을 읽는 스프링 기본 MessageSource 빈.
      *
-     * <p>basename 이 {@code classpath:messages/messages} 이므로 아래 파일들을 자동으로 읽는다.</p>
-     * <ul>
-     *     <li>messages_ko.properties</li>
-     *     <li>messages_en.properties</li>
-     *     <li>messages_ja.properties</li>
-     *     <li>messages_zh.properties</li>
-     * </ul>
+     * <p>메시지 번들은 기능/도메인별로 분리되어 있으며, 각 basename 은 locale suffix 를 가진
+     * {@code *_ko.properties}, {@code *_en.properties}, {@code *_ja.properties},
+     * {@code *_zh.properties} 파일을 자동으로 읽는다.</p>
      */
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasenames(
-                "classpath:messages/messages",
-                "classpath:messages/community-detail-extra"
+                "classpath:messages/admin",
+                "classpath:messages/auth",
+                "classpath:messages/community",
+                "classpath:messages/detail",
+                "classpath:messages/explore",
+                "classpath:messages/footer",
+                "classpath:messages/header",
+                "classpath:messages/home",
+                "classpath:messages/inquiry",
+                "classpath:messages/mypage",
+                "classpath:messages/package",
+                "classpath:messages/recommend",
+                "classpath:messages/shop",
+                "classpath:messages/wallet"
         );
         messageSource.setDefaultEncoding("UTF-8");
         // 키를 아직 번역 파일에 넣지 못한 경우, 에러 대신 키 자체를 보여주면 누락 확인이 쉽다.

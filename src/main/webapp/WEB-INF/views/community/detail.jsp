@@ -15,6 +15,43 @@
 <%@ include file="../common/header.jsp" %>
 <body>
 
+<spring:message code="community.admin.selected" arguments="0" var="communitySelectedZeroLabel"/>
+<spring:message code="community.admin.selected" var="communitySelectedTemplate"/>
+<spring:message code="community.detail.comment.submitFail" var="communityCommentSubmitFail"/>
+<spring:message code="community.detail.comment.deleteConfirm" var="communityCommentDeleteConfirm"/>
+<spring:message code="community.detail.post.deleteConfirm" var="communityPostDeleteConfirm"/>
+<spring:message code="community.detail.comment.acceptConfirm" var="communityCommentAcceptConfirm"/>
+<spring:message code="community.detail.comment.acceptFail" var="communityCommentAcceptFail"/>
+<spring:message code="community.detail.reply.submitFail" var="communityReplySubmitFail"/>
+<spring:message code="community.detail.user.blockConfirm" var="communityUserBlockConfirm"/>
+<spring:message code="community.detail.user.blocked" var="communityUserBlocked"/>
+<spring:message code="community.detail.user.blockFail" var="communityUserBlockFail"/>
+<spring:message code="community.detail.user.unblockConfirm" var="communityUserUnblockConfirm"/>
+<spring:message code="community.detail.user.unblocked" var="communityUserUnblocked"/>
+<spring:message code="community.detail.user.unblockFail" var="communityUserUnblockFail"/>
+<spring:message code="community.detail.post.blockConfirm" var="communityPostBlockConfirm"/>
+<spring:message code="community.detail.post.blocked" var="communityPostBlocked"/>
+<spring:message code="community.detail.post.blockFail" var="communityPostBlockFail"/>
+<spring:message code="community.detail.post.unblockConfirm" var="communityPostUnblockConfirm"/>
+<spring:message code="community.detail.post.unblocked" var="communityPostUnblocked"/>
+<spring:message code="community.detail.post.unblockFail" var="communityPostUnblockFail"/>
+<spring:message code="community.detail.comment.blockConfirm" var="communityCommentBlockConfirm"/>
+<spring:message code="community.detail.comment.blocked" var="communityCommentBlocked"/>
+<spring:message code="community.detail.comment.blockFail" var="communityCommentBlockFail"/>
+<spring:message code="community.detail.comment.unblockConfirm" var="communityCommentUnblockConfirm"/>
+<spring:message code="community.detail.comment.unblocked" var="communityCommentUnblocked"/>
+<spring:message code="community.detail.comment.unblockFail" var="communityCommentUnblockFail"/>
+<spring:message code="community.detail.bulk.comments.none" var="communityBulkCommentsNone"/>
+<spring:message code="community.detail.bulk.comments.confirm" var="communityBulkCommentsConfirm"/>
+<spring:message code="community.detail.bulk.posts.none" var="communityBulkPostsNone"/>
+<spring:message code="community.detail.bulk.posts.confirm" var="communityBulkPostsConfirm"/>
+<spring:message code="community.detail.bulk.done" var="communityBulkDone"/>
+<spring:message code="community.detail.bulk.fail" var="communityBulkFail"/>
+<spring:message code="community.detail.request.fail" var="communityRequestFail"/>
+<spring:message code="community.detail.report.reasonRequired" var="communityReportReasonRequired"/>
+<spring:message code="community.detail.report.submitted" var="communityReportSubmitted"/>
+<spring:message code="community.detail.userReport.minLength" var="communityUserReportMinLength"/>
+
 <div class="detail-wrap">
 
   <button class="back-btn" onclick="location.href='${pageContext.request.contextPath}/community/list'">
@@ -52,18 +89,18 @@
             <c:if test="${isAdminMode and not isOwner}">
               <c:choose>
                 <c:when test="${post.accountStatus eq 'BLOCKED'}">
-                  <button class="block-btn unblock" onclick="unblockUser(${post.userIdx})">👤 유저차단해제</button>
+                  <button class="block-btn unblock" onclick="unblockUser(${post.userIdx})"><spring:message code="community.detail.user.unblock"/></button>
                 </c:when>
                 <c:otherwise>
-                  <button class="block-btn" onclick="blockUser(${post.userIdx})">👤 유저차단</button>
+                  <button class="block-btn" onclick="blockUser(${post.userIdx})"><spring:message code="community.detail.user.block"/></button>
                 </c:otherwise>
               </c:choose>
               <c:choose>
                 <c:when test="${post.postStatus eq 'BLOCKED'}">
-                  <button class="block-btn unblock" onclick="unblockPost(${post.postId})">🚫 글차단해제</button>
+                  <button class="block-btn unblock" onclick="unblockPost(${post.postId})"><spring:message code="community.detail.post.unblock"/></button>
                 </c:when>
                 <c:otherwise>
-                  <button class="block-btn" onclick="blockPost(${post.postId})">🚫 글차단</button>
+                  <button class="block-btn" onclick="blockPost(${post.postId})"><spring:message code="community.detail.post.block"/></button>
                 </c:otherwise>
               </c:choose>
             </c:if>
@@ -83,8 +120,8 @@
         <c:if test="${isOwner or isAdminMode}">
           <div class="detail-actions">
             <button class="action-btn edit-btn"
-                    onclick="location.href='${pageContext.request.contextPath}/community/edit/${post.postId}'">수정</button>
-            <button class="action-btn delete-btn" onclick="deletePost(${post.postId})">삭제</button>
+                    onclick="location.href='${pageContext.request.contextPath}/community/edit/${post.postId}'"><spring:message code="community.detail.edit"/></button>
+            <button class="action-btn delete-btn" onclick="deletePost(${post.postId})"><spring:message code="community.detail.delete"/></button>
             <c:if test="${isAdminMode and (post.aiFlagged or post.reportCount >= 3)}">
               <button class="action-btn" onclick="adminClearPostBlur(event, ${post.postId})">
                 <spring:message code="community.admin.clearBlur"/>
@@ -100,15 +137,15 @@
       <%-- 유형별 추가 정보 --%>
       <c:if test="${post.postType eq 'tip' and not empty tipCategory}">
         <div class="detail-type-extra">
-          <span class="type-extra-label">팁카테고리</span>
+          <span class="type-extra-label"><spring:message code="community.detail.tipCategory"/></span>
           <span class="type-extra-value">
             <c:choose>
-              <c:when test="${tipCategory eq 'transport'}">&#9992; 교통</c:when>
-              <c:when test="${tipCategory eq 'accom'}">&#127968; 숙소</c:when>
-              <c:when test="${tipCategory eq 'food'}">&#127869; 맛집</c:when>
-              <c:when test="${tipCategory eq 'money'}">&#128176; 환전·예산</c:when>
-              <c:when test="${tipCategory eq 'safety'}">&#128737; 안전</c:when>
-              <c:otherwise>&#128161; 기타</c:otherwise>
+              <c:when test="${tipCategory eq 'transport'}"><spring:message code="community.detail.tip.transport"/></c:when>
+              <c:when test="${tipCategory eq 'accom'}"><spring:message code="community.detail.tip.accom"/></c:when>
+              <c:when test="${tipCategory eq 'food'}"><spring:message code="community.detail.tip.food"/></c:when>
+              <c:when test="${tipCategory eq 'money'}"><spring:message code="community.detail.tip.money"/></c:when>
+              <c:when test="${tipCategory eq 'safety'}"><spring:message code="community.detail.tip.safety"/></c:when>
+              <c:otherwise><spring:message code="community.detail.tip.etc"/></c:otherwise>
             </c:choose>
           </span>
         </div>
@@ -116,8 +153,8 @@
       <c:if test="${post.postType eq 'question'}">
         <div class="detail-type-extra">
           <c:choose>
-            <c:when test="${isSolved}"><span class="solved-badge solved">&#10003; 해결됨</span></c:when>
-            <c:otherwise><span class="solved-badge unsolved">&#8987; 해결중</span></c:otherwise>
+            <c:when test="${isSolved}"><span class="solved-badge solved"><spring:message code="community.detail.question.solved"/></span></c:when>
+            <c:otherwise><span class="solved-badge unsolved"><spring:message code="community.detail.question.unsolved"/></span></c:otherwise>
           </c:choose>
         </div>
       </c:if>
@@ -141,7 +178,7 @@
           </c:forEach>
         </div>
         <c:if test="${imageList[0].autoImage}">
-          <p class="comm-auto-image-caption">해시태그 기반 대륙별 자동추천 이미지입니다. PixaBay 제공</p>
+          <p class="comm-auto-image-caption"><spring:message code="community.detail.autoImage"/></p>
         </c:if>
       </c:if>
 
@@ -182,7 +219,7 @@
         <span class="comment-count-badge">&#128172; ${post.commentCount}</span>
         <span class="view-count-badge">&#128065; ${post.viewCount}</span>
         <c:if test="${not empty sessionScope.loginUser and not isOwner}">
-          <button class="report-btn" data-post-id="${post.postId}" onclick="openReportModal('post', this.getAttribute('data-post-id'))">&#9888; 신고</button>
+          <button class="report-btn" data-post-id="${post.postId}" onclick="openReportModal('post', this.getAttribute('data-post-id'))"><spring:message code="community.detail.report"/></button>
         </c:if>
       </div>
 
@@ -220,25 +257,25 @@
       <c:if test="${isAdminMode}">
         <div class="comm-admin-toolbar" id="adminCommentToolbar">
           <label class="comm-admin-chk-all">
-            <input type="checkbox" id="chkAllComment"> 전체선택
+            <input type="checkbox" id="chkAllComment"> <spring:message code="community.admin.selectAll"/>
           </label>
-          <span class="comm-admin-selected-count" id="selectedCommentCount">0개 선택됨</span>
+          <span class="comm-admin-selected-count" id="selectedCommentCount">${communitySelectedZeroLabel}</span>
           <div class="comm-admin-actions">
-            <button class="comm-admin-btn btn-delete" onclick="doBulkCommentAction('delete')">삭제</button>
+            <button class="comm-admin-btn btn-delete" onclick="doBulkCommentAction('delete')"><spring:message code="community.admin.delete"/></button>
             <div class="comm-admin-dropdown">
-              <button class="comm-admin-btn btn-block-user">차단 ▾</button>
+              <button class="comm-admin-btn btn-block-user"><spring:message code="community.detail.comments.block"/> ▾</button>
               <div class="comm-admin-dropdown-menu">
-                <button onclick="doBulkCommentAction('blockUser')">아이디 차단</button>
-                <button onclick="doBulkCommentAction('blockIp')">아이피 차단</button>
-                <button onclick="doBulkCommentAction('blockBoth')">아이디+아이피 차단</button>
+                <button onclick="doBulkCommentAction('blockUser')"><spring:message code="community.detail.comments.block.user"/></button>
+                <button onclick="doBulkCommentAction('blockIp')"><spring:message code="community.detail.comments.block.ip"/></button>
+                <button onclick="doBulkCommentAction('blockBoth')"><spring:message code="community.detail.comments.block.both"/></button>
               </div>
             </div>
             <div class="comm-admin-dropdown">
-              <button class="comm-admin-btn btn-block-delete">차단+삭제 ▾</button>
+              <button class="comm-admin-btn btn-block-delete"><spring:message code="community.detail.comments.blockDelete"/> ▾</button>
               <div class="comm-admin-dropdown-menu">
-                <button onclick="doBulkCommentAction('blockUserAndDelete')">아이디 차단+삭제</button>
-                <button onclick="doBulkCommentAction('blockIpAndDelete')">아이피 차단+삭제</button>
-                <button onclick="doBulkCommentAction('blockAndDelete')">아이디+아이피+삭제</button>
+                <button onclick="doBulkCommentAction('blockUserAndDelete')"><spring:message code="community.detail.comments.blockDelete.user"/></button>
+                <button onclick="doBulkCommentAction('blockIpAndDelete')"><spring:message code="community.detail.comments.blockDelete.ip"/></button>
+                <button onclick="doBulkCommentAction('blockAndDelete')"><spring:message code="community.detail.comments.blockDelete.both"/></button>
               </div>
             </div>
           </div>
@@ -286,10 +323,10 @@
                                 <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
                                   <c:choose>
                                     <c:when test="${comment.accountStatus eq 'BLOCKED'}">
-                                      <button class="block-btn unblock" onclick="unblockUser(${comment.userIdx})">👤 유저차단해제</button>
+                                      <button class="block-btn unblock" onclick="unblockUser(${comment.userIdx})"><spring:message code="community.detail.user.unblock"/></button>
                                     </c:when>
                                     <c:otherwise>
-                                      <button class="block-btn" onclick="blockUser(${comment.userIdx})">👤 유저차단</button>
+                                      <button class="block-btn" onclick="blockUser(${comment.userIdx})"><spring:message code="community.detail.user.block"/></button>
                                     </c:otherwise>
                                   </c:choose>
                                   <c:choose>
@@ -302,20 +339,20 @@
                                   </c:choose>
                                 </c:if>
                                 <c:if test="${comment.commentId eq acceptedCommentId}">
-                                  <span class="accepted-badge">&#10003; 채택됨</span>
+                                  <span class="accepted-badge"><spring:message code="community.detail.comment.accepted"/></span>
                                 </c:if>
                                 <span class="comment-date">
                                   <fmt:formatDate value="${comment.createdAt}" pattern="yyyy-MM-dd"/>
                                 </span>
                                 <c:if test="${isOwner and post.postType eq 'question' and not isSolved and comment.commentId ne acceptedCommentId}">
-                                  <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})">채택하기</button>
+                                  <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})"><spring:message code="community.detail.comment.accept"/></button>
                                 </c:if>
                                 <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne comment.userIdx and not isAdminMode}">
                                   <span class="comment-author-link rpt-user-link" data-user-idx="${comment.userIdx}" data-source-type="comment" data-source-id="${comment.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
-                                  <button class="report-btn" data-comment-id="${comment.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">&#9888; 신고</button>
+                                  <button class="report-btn" data-comment-id="${comment.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))"><spring:message code="community.detail.report"/></button>
                                 </c:if>
                                 <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq comment.userIdx or isAdminMode)}">
-                                  <button class="comment-delete-btn" onclick="deleteComment(${comment.commentId})">삭제</button>
+                                  <button class="comment-delete-btn" onclick="deleteComment(${comment.commentId})"><spring:message code="community.detail.comment.delete"/></button>
                                 </c:if>
                               </div>
                               <div class="comment-text">${comment.content}</div>
@@ -326,13 +363,13 @@
                                     <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
                                   </c:when>
                                   <c:when test="${comment.commentStatus eq 'ACTIVE' and comment.reportCount >= 3}">
-                                    <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
+                                    <span class="blocked-badge"><spring:message code="community.detail.report.blocked"/></span>
                                   </c:when>
                                   <c:when test="${comment.commentStatus eq 'BLOCKED'}">
-                                    <span class="blocked-badge">🚫 차단된 댓글</span>
+                                    <span class="blocked-badge"><spring:message code="community.detail.badge.comment.blocked"/></span>
                                   </c:when>
                                   <c:when test="${comment.accountStatus eq 'BLOCKED'}">
-                                    <span class="blocked-badge">🚫 차단된 유저</span>
+                                    <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
                                   </c:when>
                                 </c:choose>
                               </c:if>
@@ -343,7 +380,7 @@
                                             onclick="toggleCommentLike(${comment.commentId}, this)">
                                       &#10084; <span id="commentLikeCount_${comment.commentId}">${comment.likeCount}</span>
                                     </button>
-                                    <button class="reply-btn" onclick="toggleReplyInput(${comment.commentId})">&#8618; 답글</button>
+                                    <button class="reply-btn" onclick="toggleReplyInput(${comment.commentId})"><spring:message code="community.detail.reply"/></button>
                                   </c:when>
                                   <c:otherwise>
                                     <button class="comment-like-btn"
@@ -359,8 +396,8 @@
                                             placeholder="<spring:message code='community.detail.reply.placeholder'/>" rows="2"
                                             onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); submitReply(${post.postId}, ${comment.commentId});}"></textarea>
                                   <div class="reply-input-actions">
-                                    <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.commentId})">취소</button>
-                                    <button class="reply-submit-btn" onclick="submitReply(${post.postId}, ${comment.commentId})">등록</button>
+                                    <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.commentId})"><spring:message code="community.detail.cancel"/></button>
+                                    <button class="reply-submit-btn" onclick="submitReply(${post.postId}, ${comment.commentId})"><spring:message code="community.detail.submit"/></button>
                                   </div>
                                 </div>
                               </c:if>
@@ -417,10 +454,10 @@
                                           <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
                                             <c:choose>
                                               <c:when test="${reply.accountStatus eq 'BLOCKED'}">
-                                                <button class="block-btn unblock" onclick="unblockUser(${reply.userIdx})">👤 유저차단해제</button>
+                                                <button class="block-btn unblock" onclick="unblockUser(${reply.userIdx})"><spring:message code="community.detail.user.unblock"/></button>
                                               </c:when>
                                               <c:otherwise>
-                                                <button class="block-btn" onclick="blockUser(${reply.userIdx})">👤 유저차단</button>
+                                                <button class="block-btn" onclick="blockUser(${reply.userIdx})"><spring:message code="community.detail.user.block"/></button>
                                               </c:otherwise>
                                             </c:choose>
                                             <c:choose>
@@ -437,10 +474,10 @@
                                           </span>
                                           <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne reply.userIdx and not isAdminMode}">
                                             <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
-                                            <button class="report-btn" data-comment-id="${reply.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">&#9888; 신고</button>
+                                            <button class="report-btn" data-comment-id="${reply.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))"><spring:message code="community.detail.report"/></button>
                                           </c:if>
                                           <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq reply.userIdx or isAdminMode)}">
-                                            <button class="comment-delete-btn" onclick="deleteComment(${reply.commentId})">삭제</button>
+                                            <button class="comment-delete-btn" onclick="deleteComment(${reply.commentId})"><spring:message code="community.detail.comment.delete"/></button>
                                         </c:if>
                                       </div>
                                       <div class="comment-text">${reply.content}</div>
@@ -451,13 +488,13 @@
                                             <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
                                           </c:when>
                                           <c:when test="${reply.commentStatus eq 'ACTIVE' and reply.reportCount >= 3}">
-                                            <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
+                                            <span class="blocked-badge"><spring:message code="community.detail.report.blocked"/></span>
                                           </c:when>
                                           <c:when test="${reply.commentStatus eq 'BLOCKED'}">
-                                            <span class="blocked-badge">🚫 차단된 댓글</span>
+                                            <span class="blocked-badge"><spring:message code="community.detail.badge.comment.blocked"/></span>
                                           </c:when>
                                           <c:when test="${reply.accountStatus eq 'BLOCKED'}">
-                                            <span class="blocked-badge">🚫 차단된 유저</span>
+                                            <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
                                           </c:when>
                                         </c:choose>
                                       </c:if>
@@ -546,8 +583,8 @@
           </c:when>
           <c:otherwise>
             <div class="comment-login-notice">
-              <p>댓글을 작성하려면
-                <a href="${pageContext.request.contextPath}/auth/login" class="login-link">로그인</a>이 필요합니다.
+              <p><spring:message code="community.detail.comment.loginRequiredPrefix"/>
+                <a href="${pageContext.request.contextPath}/auth/login" class="login-link"><spring:message code="auth.login.title"/></a><spring:message code="community.detail.comment.loginRequiredSuffix"/>
               </p>
             </div>
           </c:otherwise>
@@ -562,25 +599,25 @@
       <c:if test="${isAdminMode}">
         <div class="comm-admin-toolbar" id="adminRelatedToolbar">
           <label class="comm-admin-chk-all">
-            <input type="checkbox" id="chkAllRelated"> 전체선택
+            <input type="checkbox" id="chkAllRelated"> <spring:message code="community.admin.selectAll"/>
           </label>
-          <span class="comm-admin-selected-count" id="selectedRelatedCount">0개 선택됨</span>
+          <span class="comm-admin-selected-count" id="selectedRelatedCount">${communitySelectedZeroLabel}</span>
           <div class="comm-admin-actions">
-            <button class="comm-admin-btn btn-delete" onclick="doBulkPostAction('related','delete')">삭제</button>
+            <button class="comm-admin-btn btn-delete" onclick="doBulkPostAction('related','delete')"><spring:message code="community.admin.delete"/></button>
             <div class="comm-admin-dropdown">
-              <button class="comm-admin-btn btn-block-user">차단 ▾</button>
+              <button class="comm-admin-btn btn-block-user"><spring:message code="community.detail.comments.block"/> ▾</button>
               <div class="comm-admin-dropdown-menu">
-                <button onclick="doBulkPostAction('related','blockUser')">아이디 차단</button>
-                <button onclick="doBulkPostAction('related','blockIp')">아이피 차단</button>
-                <button onclick="doBulkPostAction('related','blockBoth')">아이디+아이피 차단</button>
+                <button onclick="doBulkPostAction('related','blockUser')"><spring:message code="community.detail.comments.block.user"/></button>
+                <button onclick="doBulkPostAction('related','blockIp')"><spring:message code="community.detail.comments.block.ip"/></button>
+                <button onclick="doBulkPostAction('related','blockBoth')"><spring:message code="community.detail.comments.block.both"/></button>
               </div>
             </div>
             <div class="comm-admin-dropdown">
-              <button class="comm-admin-btn btn-block-delete">차단+삭제 ▾</button>
+              <button class="comm-admin-btn btn-block-delete"><spring:message code="community.detail.comments.blockDelete"/> ▾</button>
               <div class="comm-admin-dropdown-menu">
-                <button onclick="doBulkPostAction('related','blockUserAndDelete')">아이디 차단+삭제</button>
-                <button onclick="doBulkPostAction('related','blockIpAndDelete')">아이피 차단+삭제</button>
-                <button onclick="doBulkPostAction('related','blockAndDelete')">아이디+아이피+삭제</button>
+                <button onclick="doBulkPostAction('related','blockUserAndDelete')"><spring:message code="community.detail.comments.blockDelete.user"/></button>
+                <button onclick="doBulkPostAction('related','blockIpAndDelete')"><spring:message code="community.detail.comments.blockDelete.ip"/></button>
+                <button onclick="doBulkPostAction('related','blockAndDelete')"><spring:message code="community.detail.comments.blockDelete.both"/></button>
               </div>
             </div>
           </div>
@@ -663,25 +700,25 @@
     <c:if test="${isAdminMode}">
       <div class="comm-admin-toolbar" id="adminLatestToolbar">
         <label class="comm-admin-chk-all">
-          <input type="checkbox" id="chkAllLatest"> 전체선택
+          <input type="checkbox" id="chkAllLatest"> <spring:message code="community.admin.selectAll"/>
         </label>
-        <span class="comm-admin-selected-count" id="selectedLatestCount">0개 선택됨</span>
+        <span class="comm-admin-selected-count" id="selectedLatestCount">${communitySelectedZeroLabel}</span>
         <div class="comm-admin-actions">
-          <button class="comm-admin-btn btn-delete" onclick="doBulkPostAction('latest','delete')">삭제</button>
+          <button class="comm-admin-btn btn-delete" onclick="doBulkPostAction('latest','delete')"><spring:message code="community.admin.delete"/></button>
           <div class="comm-admin-dropdown">
-            <button class="comm-admin-btn btn-block-user">차단 ▾</button>
+            <button class="comm-admin-btn btn-block-user"><spring:message code="community.detail.comments.block"/> ▾</button>
             <div class="comm-admin-dropdown-menu">
-              <button onclick="doBulkPostAction('latest','blockUser')">아이디 차단</button>
-              <button onclick="doBulkPostAction('latest','blockIp')">아이피 차단</button>
-              <button onclick="doBulkPostAction('latest','blockBoth')">아이디+아이피 차단</button>
+              <button onclick="doBulkPostAction('latest','blockUser')"><spring:message code="community.detail.comments.block.user"/></button>
+              <button onclick="doBulkPostAction('latest','blockIp')"><spring:message code="community.detail.comments.block.ip"/></button>
+              <button onclick="doBulkPostAction('latest','blockBoth')"><spring:message code="community.detail.comments.block.both"/></button>
             </div>
           </div>
           <div class="comm-admin-dropdown">
-            <button class="comm-admin-btn btn-block-delete">차단+삭제 ▾</button>
+            <button class="comm-admin-btn btn-block-delete"><spring:message code="community.detail.comments.blockDelete"/> ▾</button>
             <div class="comm-admin-dropdown-menu">
-              <button onclick="doBulkPostAction('latest','blockUserAndDelete')">아이디 차단+삭제</button>
-              <button onclick="doBulkPostAction('latest','blockIpAndDelete')">아이피 차단+삭제</button>
-              <button onclick="doBulkPostAction('latest','blockAndDelete')">아이디+아이피+삭제</button>
+              <button onclick="doBulkPostAction('latest','blockUserAndDelete')"><spring:message code="community.detail.comments.blockDelete.user"/></button>
+              <button onclick="doBulkPostAction('latest','blockIpAndDelete')"><spring:message code="community.detail.comments.blockDelete.ip"/></button>
+              <button onclick="doBulkPostAction('latest','blockAndDelete')"><spring:message code="community.detail.comments.blockDelete.both"/></button>
             </div>
           </div>
         </div>
@@ -689,7 +726,7 @@
     </c:if>
     <c:choose>
       <c:when test="${empty latestList}">
-        <div style="text-align:center;padding:24px;font-size:13px;color:var(--gray-400);">게시글이 없습니다.</div>
+        <div style="text-align:center;padding:24px;font-size:13px;color:var(--gray-400);"><spring:message code="community.latest.empty"/></div>
       </c:when>
       <c:otherwise>
         <div class="detail-post-list">
@@ -787,12 +824,12 @@
     <form action="${pageContext.request.contextPath}/community/list" method="get">
       <div class="detail-search-box">
         <select name="searchType" class="detail-search-select">
-          <option value="all">제목+내용+해시태그</option>
-          <option value="title">제목</option>
-          <option value="content">내용</option>
-          <option value="tag">해시태그</option>
-          <option value="author">글쓴이</option>
-          <option value="comment">댓글</option>
+          <option value="all"><spring:message code="community.search.all"/></option>
+          <option value="title"><spring:message code="community.search.title"/></option>
+          <option value="content"><spring:message code="community.search.content"/></option>
+          <option value="tag"><spring:message code="community.search.tag"/></option>
+          <option value="author"><spring:message code="community.search.author"/></option>
+          <option value="comment"><spring:message code="community.search.comment"/></option>
         </select>
         <span class="detail-search-divider"></span>
         <input type="text" name="keyword" class="detail-search-input"
@@ -808,6 +845,23 @@
 var CTX = '${pageContext.request.contextPath}';
 var COMMENT_CLOSE_LABEL = '<spring:message code="community.detail.comments.close" javaScriptEscape="true"/>';
 var COMMENT_OPEN_LABEL = '<spring:message code="community.detail.comments.open" javaScriptEscape="true"/>';
+var COMMUNITY_SELECTED_TEMPLATE = '<spring:message code="community.admin.selected" javaScriptEscape="true"/>';
+var COMMUNITY_ACTION_LABELS = {
+  delete: '<spring:message code="community.admin.delete" javaScriptEscape="true"/>',
+  blockUser: '<spring:message code="community.detail.comments.block.user" javaScriptEscape="true"/>',
+  blockIp: '<spring:message code="community.detail.comments.block.ip" javaScriptEscape="true"/>',
+  blockBoth: '<spring:message code="community.detail.comments.block.both" javaScriptEscape="true"/>',
+  blockUserAndDelete: '<spring:message code="community.detail.comments.blockDelete.user" javaScriptEscape="true"/>',
+  blockIpAndDelete: '<spring:message code="community.detail.comments.blockDelete.ip" javaScriptEscape="true"/>',
+  blockAndDelete: '<spring:message code="community.detail.comments.blockDelete.both" javaScriptEscape="true"/>'
+};
+
+function formatCommunityMessage(template) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  return template.replace(/\{(\d+)\}/g, function(_, idx) {
+    return typeof args[idx] !== 'undefined' ? args[idx] : '';
+  });
+}
 
 /* ===== 하단 카드 클릭 이동 ===== */
 document.addEventListener('click', function(e) {
@@ -862,8 +916,7 @@ function toggleCommentSection() {
   COMMENT_SECTION_OPEN = !COMMENT_SECTION_OPEN;
   container.style.display = COMMENT_SECTION_OPEN ? '' : 'none';
   if (pagination) pagination.style.display = COMMENT_SECTION_OPEN ? '' : 'none';
-  var label = COMMENT_SECTION_OPEN ? '댓글 닫기' : '댓글 열기';
-  label = COMMENT_SECTION_OPEN ? COMMENT_CLOSE_LABEL : COMMENT_OPEN_LABEL;
+  var label = COMMENT_SECTION_OPEN ? COMMENT_CLOSE_LABEL : COMMENT_OPEN_LABEL;
   document.getElementById('commToggleBtnTop').textContent = label;
   document.getElementById('commToggleBtnBottom').textContent = label;
 }
@@ -948,29 +1001,29 @@ function submitComment(postId) {
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data.success) location.reload();
-    else alert(data.message || '댓글 작성에 실패했습니다.');
+    else alert(data.message || '${fn:escapeXml(communityCommentSubmitFail)}');
   });
 }
 
 function deleteComment(commentId) {
-  if (!confirm('댓글을 삭제하시겠습니까?')) return;
+  if (!confirm('${fn:escapeXml(communityCommentDeleteConfirm)}')) return;
   fetch(CTX + '/community/comment/' + commentId, { method: 'DELETE', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
   .then(function(res) { if (res.ok) location.reload(); });
 }
 
 function deletePost(postId) {
-  if (!confirm('게시글을 삭제하시겠습니까?')) return;
+  if (!confirm('${fn:escapeXml(communityPostDeleteConfirm)}')) return;
   fetch(CTX + '/community/' + postId, { method: 'DELETE', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
   .then(function(res) { if (res.ok) location.href = CTX + '/community/list'; });
 }
 
 function acceptComment(postId, commentId) {
-  if (!confirm('이 댓글을 채택하시겠습니까? 채택 후에는 변경할 수 없어요.')) return;
+  if (!confirm('${fn:escapeXml(communityCommentAcceptConfirm)}')) return;
   fetch(CTX + '/community/' + postId + '/accept/' + commentId, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data.success) location.reload();
-    else alert(data.message || '채택 중 오류가 발생했습니다.');
+    else alert(data.message || '${fn:escapeXml(communityCommentAcceptFail)}');
   });
 }
 
@@ -992,7 +1045,7 @@ function submitReply(postId, commentId) {
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data.success) location.reload();
-    else alert(data.message || '답글 작성에 실패했습니다.');
+    else alert(data.message || '${fn:escapeXml(communityReplySubmitFail)}');
   });
 }
 
@@ -1015,62 +1068,62 @@ function openReportModal(targetType, targetId) {
 }
 
 function blockUser(userIdx) {
-  if (!confirm('이 유저를 차단하시겠습니까? 차단해제 시까지 해당 유저의 글/댓글이 블라인드 처리됩니다.')) return;
+  if (!confirm('${fn:escapeXml(communityUserBlockConfirm)}')) return;
   fetch(CTX + '/community/user/' + userIdx + '/block', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
   .then(function(res) { return res.json(); })
   .then(function(data) {
-    if (data.success) { alert('차단되었습니다.'); location.reload(); }
-    else alert(data.message || '차단 중 오류가 발생했습니다.');
+    if (data.success) { alert('${fn:escapeXml(communityUserBlocked)}'); location.reload(); }
+    else alert(data.message || '${fn:escapeXml(communityUserBlockFail)}');
   });
 }
 
 function unblockUser(userIdx) {
-  if (!confirm('이 유저의 차단을 해제하시겠습니까?')) return;
+  if (!confirm('${fn:escapeXml(communityUserUnblockConfirm)}')) return;
   fetch(CTX + '/community/user/' + userIdx + '/unblock', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
   .then(function(res) { return res.json(); })
   .then(function(data) {
-    if (data.success) { alert('차단이 해제되었습니다.'); location.reload(); }
-    else alert(data.message || '차단 해제 중 오류가 발생했습니다.');
+    if (data.success) { alert('${fn:escapeXml(communityUserUnblocked)}'); location.reload(); }
+    else alert(data.message || '${fn:escapeXml(communityUserUnblockFail)}');
   });
 }
 
 function blockPost(postId) {
-  if (!confirm('이 게시글을 차단하시겠습니까?')) return;
+  if (!confirm('${fn:escapeXml(communityPostBlockConfirm)}')) return;
   fetch(CTX + '/community/' + postId + '/block', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
   .then(function(res) { return res.json(); })
   .then(function(data) {
-    if (data.success) { alert('게시글이 차단되었습니다.'); location.reload(); }
-    else alert('차단에 실패했습니다.');
+    if (data.success) { alert('${fn:escapeXml(communityPostBlocked)}'); location.reload(); }
+    else alert(data.message || '${fn:escapeXml(communityPostBlockFail)}');
   });
 }
 
 function unblockPost(postId) {
-  if (!confirm('이 게시글의 차단을 해제하시겠습니까?')) return;
+  if (!confirm('${fn:escapeXml(communityPostUnblockConfirm)}')) return;
   fetch(CTX + '/community/' + postId + '/unblock', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
   .then(function(res) { return res.json(); })
   .then(function(data) {
-    if (data.success) { alert('게시글 차단이 해제되었습니다.'); location.reload(); }
-    else alert('차단 해제에 실패했습니다.');
+    if (data.success) { alert('${fn:escapeXml(communityPostUnblocked)}'); location.reload(); }
+    else alert(data.message || '${fn:escapeXml(communityPostUnblockFail)}');
   });
 }
 
 function blockComment(commentId) {
-  if (!confirm('이 댓글을 차단하시겠습니까?')) return;
+  if (!confirm('${fn:escapeXml(communityCommentBlockConfirm)}')) return;
   fetch(CTX + '/community/comment/' + commentId + '/block', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
   .then(function(res) { return res.json(); })
   .then(function(data) {
-    if (data.success) { alert('댓글이 차단되었습니다.'); location.reload(); }
-    else alert('차단에 실패했습니다.');
+    if (data.success) { alert('${fn:escapeXml(communityCommentBlocked)}'); location.reload(); }
+    else alert(data.message || '${fn:escapeXml(communityCommentBlockFail)}');
   });
 }
 
 function unblockComment(commentId) {
-  if (!confirm('이 댓글의 차단을 해제하시겠습니까?')) return;
+  if (!confirm('${fn:escapeXml(communityCommentUnblockConfirm)}')) return;
   fetch(CTX + '/community/comment/' + commentId + '/unblock', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
   .then(function(res) { return res.json(); })
   .then(function(data) {
-    if (data.success) { alert('댓글 차단이 해제되었습니다.'); location.reload(); }
-    else alert('차단 해제에 실패했습니다.');
+    if (data.success) { alert('${fn:escapeXml(communityCommentUnblocked)}'); location.reload(); }
+    else alert(data.message || '${fn:escapeXml(communityCommentUnblockFail)}');
   });
 }
 
@@ -1085,7 +1138,7 @@ function unblockComment(commentId) {
     }
 
     function updateCount() {
-        countLabel.textContent = getChecked().length + '개 선택됨';
+        countLabel.textContent = formatCommunityMessage(COMMUNITY_SELECTED_TEMPLATE, getChecked().length);
     }
 
     chkAll.addEventListener('change', function () {
@@ -1106,18 +1159,8 @@ function unblockComment(commentId) {
 
 window.doBulkCommentAction = function (action) {
     var checked = Array.from(document.querySelectorAll('.comm-admin-comment-chk:checked'));
-    if (checked.length === 0) { alert('선택된 댓글이 없습니다.'); return; }
-
-    var labels = {
-        'delete':              '삭제',
-        'blockUser':           '아이디 차단',
-        'blockIp':             '아이피 차단',
-        'blockBoth':           '아이디+아이피 차단',
-        'blockUserAndDelete':  '아이디 차단+삭제',
-        'blockIpAndDelete':    '아이피 차단+삭제',
-        'blockAndDelete':      '아이디+아이피+삭제'
-    };
-    if (!confirm(checked.length + '개 댓글에 대해 [' + labels[action] + '] 을(를) 실행하시겠습니까?')) return;
+    if (checked.length === 0) { alert('${fn:escapeXml(communityBulkCommentsNone)}'); return; }
+    if (!confirm(formatCommunityMessage('${fn:escapeXml(communityBulkCommentsConfirm)}', checked.length, COMMUNITY_ACTION_LABELS[action] || ''))) return;
 
     var commentIds = checked.map(function (c) { return c.getAttribute('data-id'); });
     var params     = new URLSearchParams();
@@ -1131,21 +1174,21 @@ window.doBulkCommentAction = function (action) {
     })
     .then(function (res) { return res.json(); })
     .then(function (data) {
-        if (data.success) { alert('처리가 완료되었습니다.'); location.reload(); }
-        else alert('처리 중 오류가 발생했습니다: ' + (data.message || ''));
+        if (data.success) { alert('${fn:escapeXml(communityBulkDone)}'); location.reload(); }
+        else alert(formatCommunityMessage('${fn:escapeXml(communityBulkFail)}', (data.message || '')));
     })
-    .catch(function () { alert('요청 중 오류가 발생했습니다.'); });
+    .catch(function () { alert('${fn:escapeXml(communityRequestFail)}'); });
 };
 
 /* ===== 추천/최신 섹션 어드민 ===== */
 function adminDeletePost(event, postId) {
   event.stopPropagation();
-  if (!confirm('이 게시글을 삭제하시겠습니까?')) return;
+  if (!confirm('${fn:escapeXml(communityPostDeleteConfirm)}')) return;
   fetch(CTX + '/community/' + postId, {
     method: 'DELETE', headers: {'X-Requested-With': 'XMLHttpRequest'}
   }).then(function(res) {
     if (res.ok) location.reload();
-    else alert('삭제에 실패했습니다.');
+    else alert('<spring:message code="community.admin.delete.fail" javaScriptEscape="true"/>');
   });
 }
 
@@ -1159,7 +1202,7 @@ function adminDeletePost(event, postId) {
     if (!chkAll) return;
     var countLabel = document.getElementById(s.countId);
     function updateCount() {
-      countLabel.textContent = document.querySelectorAll(s.cls + ':checked').length + '개 선택됨';
+      countLabel.textContent = formatCommunityMessage(COMMUNITY_SELECTED_TEMPLATE, document.querySelectorAll(s.cls + ':checked').length);
     }
     chkAll.addEventListener('change', function() {
       document.querySelectorAll(s.cls).forEach(function(c) { c.checked = chkAll.checked; });
@@ -1177,13 +1220,8 @@ function adminDeletePost(event, postId) {
 window.doBulkPostAction = function(section, action) {
   var cls = section === 'related' ? '.comm-admin-related-chk' : '.comm-admin-latest-chk';
   var checked = Array.from(document.querySelectorAll(cls + ':checked'));
-  if (checked.length === 0) { alert('선택된 게시글이 없습니다.'); return; }
-  var labels = {
-    'delete': '삭제', 'blockUser': '아이디 차단', 'blockIp': '아이피 차단',
-    'blockBoth': '아이디+아이피 차단', 'blockUserAndDelete': '아이디 차단+삭제',
-    'blockIpAndDelete': '아이피 차단+삭제', 'blockAndDelete': '아이디+아이피+삭제'
-  };
-  if (!confirm(checked.length + '개 게시글에 대해 [' + labels[action] + '] 을(를) 실행하시겠습니까?')) return;
+  if (checked.length === 0) { alert('${fn:escapeXml(communityBulkPostsNone)}'); return; }
+  if (!confirm(formatCommunityMessage('${fn:escapeXml(communityBulkPostsConfirm)}', checked.length, COMMUNITY_ACTION_LABELS[action] || ''))) return;
   var params = new URLSearchParams();
   params.append('action', action);
   checked.forEach(function(c) { params.append('postIds', c.getAttribute('data-id')); });
@@ -1193,14 +1231,14 @@ window.doBulkPostAction = function(section, action) {
     body: params.toString()
   }).then(function(res) { return res.json(); })
     .then(function(data) {
-      if (data.success) { alert('처리가 완료되었습니다.'); location.reload(); }
-      else alert('처리 중 오류가 발생했습니다: ' + (data.message || ''));
-    }).catch(function() { alert('요청 중 오류가 발생했습니다.'); });
+      if (data.success) { alert('${fn:escapeXml(communityBulkDone)}'); location.reload(); }
+      else alert(formatCommunityMessage('${fn:escapeXml(communityBulkFail)}', (data.message || '')));
+    }).catch(function() { alert('${fn:escapeXml(communityRequestFail)}'); });
 };
 
 function adminDeleteComment(event, commentId) {
   event.stopPropagation();
-  if (!confirm('이 댓글을 삭제하시겠습니까?')) return;
+  if (!confirm('${fn:escapeXml(communityCommentDeleteConfirm)}')) return;
   fetch(CTX + '/community/comment/' + commentId, {
     method: 'DELETE',
     headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -1285,7 +1323,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var description = document.getElementById('rptDescription').value.trim();
 
             if (!reason) {
-                rptReasonMsg.textContent = '신고 사유를 선택해주세요.';
+                rptReasonMsg.textContent = '${fn:escapeXml(communityReportReasonRequired)}';
                 rptReasonMsg.style.color = '#ef4444';
                 return;
             }
@@ -1300,9 +1338,9 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 rptModal.style.display = 'none';
-                alert(data.message || '신고가 접수되었습니다.');
+                alert(data.message || '${fn:escapeXml(communityReportSubmitted)}');
             })
-            .catch(function () { alert('오류가 발생했습니다.'); })
+            .catch(function () { alert('${fn:escapeXml(communityRequestFail)}'); })
             .finally(function () { rptSubmitBtn.disabled = false; });
         });
     }
@@ -1328,7 +1366,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var description   = rptUserDescArea.value.trim();
 
             if (description.length < 10) {
-                rptUserDescMsg.textContent = '신고 사유를 10자 이상 입력해주세요.';
+                rptUserDescMsg.textContent = '${fn:escapeXml(communityUserReportMinLength)}';
                 rptUserDescMsg.style.color = '#ef4444';
                 return;
             }
@@ -1347,9 +1385,9 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 rptUserModal.style.display = 'none';
-                alert(data.message || '신고가 접수되었습니다.');
+                alert(data.message || '${fn:escapeXml(communityReportSubmitted)}');
             })
-            .catch(function () { alert('오류가 발생했습니다.'); })
+            .catch(function () { alert('${fn:escapeXml(communityRequestFail)}'); })
             .finally(function () { rptUserSubmitBtn.disabled = false; });
         });
     }
@@ -1374,34 +1412,34 @@ document.addEventListener('DOMContentLoaded', function () {
      ============================================= --%>
 <div id="rpt-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
-    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;">&#9888; 신고하기</div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;"><spring:message code="community.detail.report.title"/></div>
     <input type="hidden" id="rptTargetType" value="">
     <input type="hidden" id="rptTargetId"   value="">
 
     <div style="margin-bottom:16px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">신고 사유 <span style="color:#ef4444;">*</span></label>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;"><spring:message code="community.detail.report.reason"/> <span style="color:#ef4444;">*</span></label>
       <select id="rptReason" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;">
-        <option value="">선택해주세요</option>
-        <option value="spam">스팸/광고</option>
-        <option value="abuse">욕설/비방</option>
-        <option value="privacy">개인정보 노출</option>
-        <option value="adult">음란물</option>
-        <option value="illegal">불법 정보</option>
-        <option value="other">기타</option>
+        <option value=""><spring:message code="community.detail.report.reason.choose"/></option>
+        <option value="spam"><spring:message code="community.detail.report.reason.spam"/></option>
+        <option value="abuse"><spring:message code="community.detail.report.reason.abuse"/></option>
+        <option value="privacy"><spring:message code="community.detail.report.reason.privacy"/></option>
+        <option value="adult"><spring:message code="community.detail.report.reason.adult"/></option>
+        <option value="illegal"><spring:message code="community.detail.report.reason.illegal"/></option>
+        <option value="other"><spring:message code="community.detail.report.reason.other"/></option>
       </select>
       <div id="rptReasonMsg" style="font-size:12px;min-height:16px;margin-top:4px;"></div>
     </div>
 
     <div style="margin-bottom:20px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">상세 사유 (선택)</label>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;"><spring:message code="community.detail.report.description"/></label>
       <textarea id="rptDescription" rows="4"
-                placeholder="상세 사유를 입력해주세요..."
+                placeholder="<spring:message code='community.detail.report.description.placeholder'/>"
                 style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;"></textarea>
     </div>
 
     <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button id="rptCancelBtn" style="padding:9px 20px;border-radius:8px;background:var(--gray-100);color:var(--gray-600);border:none;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;">취소</button>
-      <button id="rptSubmitBtn" style="padding:9px 20px;border-radius:8px;background:#ef4444;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">신고하기</button>
+      <button id="rptCancelBtn" style="padding:9px 20px;border-radius:8px;background:var(--gray-100);color:var(--gray-600);border:none;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;"><spring:message code="community.detail.cancel"/></button>
+      <button id="rptSubmitBtn" style="padding:9px 20px;border-radius:8px;background:#ef4444;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;"><spring:message code="community.detail.report.submit"/></button>
     </div>
   </div>
 </div>
@@ -1411,22 +1449,22 @@ document.addEventListener('DOMContentLoaded', function () {
      ============================================= --%>
 <div id="rpt-user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
-    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;">&#128683; 유저 신고</div>
-    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">신고 사유를 상세히 적어주세요 (최소 10자)</div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;"><spring:message code="community.detail.userReport.title"/></div>
+    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;"><spring:message code="community.detail.userReport.description"/></div>
     <input type="hidden" id="rptUserTargetIdx"  value="">
     <input type="hidden" id="rptUserSourceType" value="">
     <input type="hidden" id="rptUserSourceId"   value="">
 
     <div style="margin-bottom:20px;">
       <textarea id="rptUserDescription" rows="5"
-                placeholder="신고 사유를 입력해주세요..."
+                placeholder="<spring:message code='community.detail.userReport.placeholder'/>"
                 style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;"></textarea>
       <div id="rptUserDescMsg" style="font-size:12px;min-height:16px;margin-top:4px;"></div>
     </div>
 
     <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button id="rptUserCancelBtn" style="padding:9px 20px;border-radius:8px;background:var(--gray-100);color:var(--gray-600);border:none;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;">취소</button>
-      <button id="rptUserSubmitBtn" style="padding:9px 20px;border-radius:8px;background:#ef4444;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">신고하기</button>
+      <button id="rptUserCancelBtn" style="padding:9px 20px;border-radius:8px;background:var(--gray-100);color:var(--gray-600);border:none;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;"><spring:message code="community.detail.cancel"/></button>
+      <button id="rptUserSubmitBtn" style="padding:9px 20px;border-radius:8px;background:#ef4444;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;"><spring:message code="community.detail.report.submit"/></button>
     </div>
   </div>
 </div>
