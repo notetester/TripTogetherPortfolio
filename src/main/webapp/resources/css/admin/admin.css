@@ -1766,3 +1766,17 @@ body.sa-light .adm-warning-box {
 body.sa-light .adm-nav-group-head       { color: #94a3b8; }
 body.sa-light .adm-nav-group-head:hover { color: #64748b; }
 body.sa-light .adm-nav-group-caret      { color: #94a3b8; }
+
+/* ══════════════════════════════════════════
+   대시보드 차트
+══════════════════════════════════════════ */
+.adm-chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.adm-chart-box { position: relative; height: 260px; }
+@media (max-width: 900px) {
+    .adm-chart-grid { grid-template-columns: 1fr; }
+}

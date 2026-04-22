@@ -1137,6 +1137,31 @@
         FROM USERS
     </select>
 
+    <!-- 최근 N+1일 신규 가입자 (일별) -->
+    <select id="findDailyNewMembers" resultType="map">
+        SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS day,
+               COUNT(*) AS cnt
+        FROM USERS
+        WHERE created_at &gt;= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+          AND created_at &lt;  DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+        GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+        ORDER BY day
+    </select>
+
+    <!-- 최근 N+1일 로그인 성공/실패 (일별) -->
+    <select id="findDailyLoginStats" resultType="map">
+        SELECT DATE_FORMAT(login_at, '%Y-%m-%d') AS day,
+               SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS success_cnt,
+               SUM(CASE WHEN is_success = 0 THEN 1 ELSE 0 END) AS fail_cnt
+        FROM USER_LOGIN_HISTORY
+        WHERE event_type = 'LOGIN'
+          AND auth_type IN ('PASSWORD', 'SOCIAL')
+          AND login_at &gt;= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+          AND login_at &lt;  DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+        GROUP BY DATE_FORMAT(login_at, '%Y-%m-%d')
+        ORDER BY day
+    </select>
+
     <!-- ══════════════════════════════════════════
          문의 관리
     ══════════════════════════════════════════ -->

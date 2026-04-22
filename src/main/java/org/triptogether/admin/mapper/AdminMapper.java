@@ -14,6 +14,10 @@ public interface AdminMapper {
     // ===== 대시보드 통계 =====
     AdminStatsVO getStats();
 
+    // ===== 대시보드 차트 (시계열) =====
+    List<java.util.Map<String, Object>> findDailyNewMembers(@Param("days") int days);
+    List<java.util.Map<String, Object>> findDailyLoginStats(@Param("days") int days);
+
     // ===== 회원 관리 =====
     List<AdminMemberVO> findMembers(AdminSearchVO search);
     int countMembers(AdminSearchVO search);
