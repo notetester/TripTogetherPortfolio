@@ -156,3 +156,6 @@ function toggleViewMode() {
     });
 })();
 </script>
+<c:if test="${not empty sessionScope.loginUser}">
+<script src="${pageContext.request.contextPath}/resources/js/common/notification.js" defer></script>
+</c:if>
