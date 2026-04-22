@@ -9,13 +9,17 @@
 
 <div class="adm-content">
 
-    <%-- ── 탭 바 ── --%>
-    <div class="aih-tabs" style="display:flex;gap:4px;border-bottom:1px solid #e5e7eb;margin-bottom:20px;">
+    <%-- ── 최상위 섹션 탭 (AI 도우미 / AI 챗봇) ── --%>
+    <%@ include file="_section-tabs.jsp" %>
+
+    <%-- ── 챗봇 내부 sub-tab ── --%>
+    <div class="aih-tabs" style="display:flex;gap:4px;border-bottom:1px solid #e5e7eb;margin:20px 0;">
         <c:set var="tabs" value="dashboard,conversations,inappropriate,blocks,quotas"/>
         <c:set var="labels" value="대시보드,대화 세션,부적절 메시지,차단 관리,정책"/>
         <c:forTokens items="${tabs}" delims="," var="t" varStatus="st">
             <c:set var="label" value="${fn:split(labels, ',')[st.index]}"/>
-            <a href="?tab=${t}" class="aih-tab ${tab == t ? 'active' : ''}"
+            <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=${t}"
+               class="aih-tab ${tab == t ? 'active' : ''}"
                style="padding:10px 16px;text-decoration:none;font-size:13px;font-weight:${tab == t ? '700' : '500'};color:${tab == t ? '#1d4ed8' : '#64748b'};border-bottom:2px solid ${tab == t ? '#1d4ed8' : 'transparent'};margin-bottom:-1px;">
                 ${label}
             </a>
@@ -54,7 +58,7 @@
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'conversations'}">
         <div class="adm-card" style="padding:16px;margin-bottom:16px;">
-            <form method="get" style="display:flex;gap:8px;">
+            <form method="get" action="${pageContext.request.contextPath}/admin/ai-helper/chatbot" style="display:flex;gap:8px;">
                 <input type="hidden" name="tab" value="conversations"/>
                 <input type="text" name="keyword" value="${keyword}" placeholder="유저ID / IP / 제목 / 세션ID" class="adm-input" style="flex:1;"/>
                 <button type="submit" class="adm-btn">검색</button>
@@ -119,7 +123,7 @@
         <c:if test="${totalPages > 1}">
             <div style="display:flex;justify-content:center;gap:4px;margin-top:16px;">
                 <c:forEach begin="1" end="${totalPages}" var="p">
-                    <a href="?tab=conversations&page=${p}&keyword=${keyword}" class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
+                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=conversations&page=${p}&keyword=${keyword}" class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
                 </c:forEach>
             </div>
         </c:if>
@@ -165,7 +169,7 @@
         <c:if test="${totalPages > 1}">
             <div style="display:flex;justify-content:center;gap:4px;margin-top:16px;">
                 <c:forEach begin="1" end="${totalPages}" var="p">
-                    <a href="?tab=inappropriate&page=${p}" class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
+                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=inappropriate&page=${p}" class="adm-btn ${p == page ? 'adm-btn-primary' : 'adm-btn-ghost'}" style="min-width:32px;">${p}</a>
                 </c:forEach>
             </div>
         </c:if>

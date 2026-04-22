@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * 관리자 AI 도우미 관리 컨트롤러.
- * 탭 구성: dashboard / conversations / inappropriate / blocks / quotas
+ * 최상위 섹션: AI 도우미(assistant) / AI 챗봇(chatbot)
  * 권한: AI_HELPER_ADMIN (AdminInterceptor가 체크)
  */
 @Slf4j
@@ -39,13 +39,26 @@ public class AdminChatbotController {
 
     /**
      * GET /admin/ai-helper
-     * 탭별 데이터를 모델에 담아 단일 JSP 렌더링.
+     * AI 도우미(assistant) 섹션 - Claude 기반 여행 일정 생성 모듈 관리.
+     * 현재는 안내 placeholder. 추후 기능 확장.
      */
     @GetMapping
-    public String index(@RequestParam(defaultValue = "dashboard") String tab,
-                        @RequestParam(defaultValue = "1") int page,
-                        @RequestParam(defaultValue = "") String keyword,
-                        Model model) {
+    public String assistantSection(Model model) {
+        model.addAttribute("section", "assistant");
+        model.addAttribute("activeMenu", "aiHelper");
+        model.addAttribute("pageTitle", "AI 도우미 관리");
+        return "admin/ai-helper/assistant";
+    }
+
+    /**
+     * GET /admin/ai-helper/chatbot
+     * AI 챗봇(footer chatbot) 섹션 - 내부 sub-tab: dashboard / conversations / inappropriate / blocks / quotas.
+     */
+    @GetMapping("/chatbot")
+    public String chatbotSection(@RequestParam(defaultValue = "dashboard") String tab,
+                                 @RequestParam(defaultValue = "1") int page,
+                                 @RequestParam(defaultValue = "") String keyword,
+                                 Model model) {
 
         int pageSize = 20;
         int offset = (page - 1) * pageSize;
@@ -74,19 +87,19 @@ public class AdminChatbotController {
                 model.addAttribute("quotas", quotas);
             }
             default -> {
-                // dashboard: 간단 통계
                 model.addAttribute("totalConversations", conversationService.countAllConversations(""));
                 model.addAttribute("inappropriateCount", messageMapper.countInappropriateMessages());
                 model.addAttribute("activeBlockCount", blockService.getBlocks(true).size());
             }
         }
 
+        model.addAttribute("section", "chatbot");
         model.addAttribute("tab", tab);
         model.addAttribute("page", page);
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "aiHelper");
         model.addAttribute("pageTitle", "AI 도우미 관리");
-        return "admin/ai-helper/index";
+        return "admin/ai-helper/chatbot";
     }
 
     /**
