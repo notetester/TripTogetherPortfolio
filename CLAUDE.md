@@ -88,7 +88,7 @@ Files are stored at `${file.upload.path}` (default: `src/main/resources/upload/`
 
 ### Chatbot system (common)
 
-Footer chatbot uses Gemini (`gemini-2.0-flash`). Uses `ChatbotService.ask(request, user, anonSessionId, ip)` with the pipeline: block check → quota check → conversation resolve/create → Gemini call → save messages → quota increment. Grade quota from `CHATBOT_GRADE_QUOTA` (ADMIN/SUPERADMIN bypass). Conversation ownership: either `user_idx` (logged-in) or `anon_session_id` (guest, sessionStorage-tracked). Admin page `/admin/ai-helper` requires `AI_HELPER_ADMIN` permission. Do NOT confuse with `assistant` module (Claude-based, independent).
+Footer chatbot uses Gemini (`gemini-2.0-flash`). Uses `ChatbotService.ask(request, user, anonSessionId, ip)` with the pipeline: block check → quota check → conversation resolve/create → Gemini call → save messages → quota increment. Grade quota from `CHATBOT_GRADE_QUOTA` (ADMIN/SUPERADMIN bypass). Conversation ownership: either `user_idx` (logged-in) or `anon_session_id` (guest, sessionStorage-tracked). Admin page `/admin/ai-helper/chatbot` requires `AI_CHATBOT_ADMIN` permission (루트 `/admin/ai-helper`는 `ASSISTANT_ADMIN` — Claude 기반 assistant 모듈 담당). AdminInterceptor가 서브패스(`/chatbot`, `/conversations`, `/blocks`, `/quotas`)별로 분기하여 권한 체크. Do NOT confuse with `assistant` module (Claude-based, independent).
 
 ---
 

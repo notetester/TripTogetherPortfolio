@@ -320,7 +320,7 @@ CREATE TABLE IF NOT EXISTS `ADMIN_PERMISSION_POLICY` (
   KEY `idx_appolicy_active` (`is_active`),
   CONSTRAINT `fk_appolicy_created_by` FOREIGN KEY (`created_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_appolicy_updated_by` FOREIGN KEY (`updated_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='관리자 개별 권한 코드 정책';
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='관리자 개별 권한 코드 정책';
 
 -- 테이블 데이터 team1_db.ADMIN_PERMISSION_POLICY:~15 rows (대략적) 내보내기
 INSERT INTO `ADMIN_PERMISSION_POLICY` (`admin_permission_policy_idx`, `permission_code`, `display_name`, `description`, `is_active`, `created_by_user_idx`, `created_at`, `updated_by_user_idx`, `updated_at`, `priority`) VALUES
@@ -338,7 +338,8 @@ INSERT INTO `ADMIN_PERMISSION_POLICY` (`admin_permission_policy_idx`, `permissio
 	(12, 'USER_BLOCK_ADMIN', '유저 차단 관리자', '회원 차단/해제 및 회원 기준 차단 상태 관리', 1, NULL, '2026-04-20 06:52:05', NULL, '2026-04-20 06:52:05', 120),
 	(13, 'IP_BLOCK_ADMIN', 'IP 차단 관리자', '전역 IP / CIDR / RANGE 차단 규칙 관리', 1, NULL, '2026-04-20 06:52:05', NULL, '2026-04-20 06:52:05', 121),
 	(14, 'BLOCK_POLICY_ADMIN', '차단 정책 관리자', 'IP 차단 배치 및 차단 정책 운영 관리', 1, NULL, '2026-04-20 06:52:05', NULL, '2026-04-20 06:52:05', 122),
-	(15, 'BLOCK_AUDIT_ADMIN', '차단 감사 관리자', '차단 이력 및 현재 차단 현황 감사 조회', 1, NULL, '2026-04-20 06:52:05', NULL, '2026-04-20 06:52:05', 123);
+	(15, 'BLOCK_AUDIT_ADMIN', '차단 감사 관리자', '차단 이력 및 현재 차단 현황 감사 조회', 1, NULL, '2026-04-20 06:52:05', NULL, '2026-04-20 06:52:05', 123),
+	(16, 'AI_CHATBOT_ADMIN', 'AI 챗봇 관리자', 'AI 챗봇(Gemini) 대화/차단/쿼터 관리', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 12);
 
 -- 테이블 team1_db.ADMIN_POSITION_POLICY 구조 내보내기
 CREATE TABLE IF NOT EXISTS `ADMIN_POSITION_POLICY` (

@@ -92,7 +92,8 @@ public class AdminModeInterceptor implements HandlerInterceptor {
             modelAndView.addObject("hasCourseAdmin",    isSuperAdmin || perms.contains("COURSE_ADMIN"));
             modelAndView.addObject("hasAuditAdmin",     isSuperAdmin || perms.contains("AUDIT_ADMIN"));
             modelAndView.addObject("hasContentModerationAdmin", isSuperAdmin || perms.contains("CONTENT_MODERATION_ADMIN"));
-            modelAndView.addObject("hasAiHelperAdmin",  isSuperAdmin || perms.contains("AI_HELPER_ADMIN"));
+            modelAndView.addObject("hasAssistantAdmin", isSuperAdmin || perms.contains("ASSISTANT_ADMIN"));
+            modelAndView.addObject("hasAiChatbotAdmin", isSuperAdmin || perms.contains("AI_CHATBOT_ADMIN"));
             modelAndView.addObject("hasUserBlockAdmin", hasUserBlockAdmin);
             modelAndView.addObject("hasIpBlockAdmin", hasIpBlockAdmin);
             modelAndView.addObject("hasBlockPolicyAdmin", hasBlockPolicyAdmin);

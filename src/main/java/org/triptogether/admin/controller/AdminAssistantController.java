@@ -19,7 +19,7 @@ import java.util.Map;
  * URL: /admin/ai-helper (sub-tab: dashboard / sessions / messages)
  * SJ가 구현한 assistant 모듈(CHAT_POST/CHAT_COMMENT)의 관리 페이지.
  * AI 챗봇(common 모듈, Gemini) 관리는 AdminChatbotController가 담당.
- * 권한: AI_HELPER_ADMIN (AdminInterceptor가 체크)
+ * 권한: ASSISTANT_ADMIN (AdminInterceptor가 /admin/ai-helper 서브패스별 분기하여 체크)
  */
 @Slf4j
 @Controller

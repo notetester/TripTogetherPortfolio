@@ -107,10 +107,17 @@
             </a>
             </c:if>
 
-            <c:if test="${hasAiHelperAdmin}">
-            <div class="adm-nav-section" style="margin-top:8px;">AI 도우미</div>
-            <a class="adm-nav-item ${activeMenu=='aiHelper'?'active':''}" href="${pageContext.request.contextPath}/admin/ai-helper">
+            <c:if test="${hasAssistantAdmin or hasAiChatbotAdmin}">
+            <div class="adm-nav-section" style="margin-top:8px;">AI 관리</div>
+            </c:if>
+            <c:if test="${hasAssistantAdmin}">
+            <a class="adm-nav-item ${activeMenu=='aiHelper' and section ne 'chatbot'?'active':''}" href="${pageContext.request.contextPath}/admin/ai-helper">
                 <span class="adm-nav-icon">🤖</span> AI 도우미 관리
+            </a>
+            </c:if>
+            <c:if test="${hasAiChatbotAdmin}">
+            <a class="adm-nav-item ${activeMenu=='aiHelper' and section eq 'chatbot'?'active':''}" href="${pageContext.request.contextPath}/admin/ai-helper/chatbot">
+                <span class="adm-nav-icon">💬</span> AI 챗봇 관리
             </a>
             </c:if>
 

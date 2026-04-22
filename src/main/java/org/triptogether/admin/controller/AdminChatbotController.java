@@ -25,7 +25,7 @@ import java.util.Map;
  * 관리자 AI 챗봇(common 모듈, Gemini) 관리 컨트롤러.
  * URL: /admin/ai-helper/chatbot (sub-tab: dashboard / conversations / inappropriate / blocks / quotas)
  * AI 도우미(assistant 모듈, Claude) 관리는 AdminAssistantController가 담당.
- * 권한: AI_HELPER_ADMIN (AdminInterceptor가 체크)
+ * 권한: AI_CHATBOT_ADMIN (AdminInterceptor가 /admin/ai-helper 서브패스별 분기하여 체크)
  */
 @Slf4j
 @Controller
