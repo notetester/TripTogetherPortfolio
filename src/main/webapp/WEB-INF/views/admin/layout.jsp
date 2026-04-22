@@ -122,9 +122,11 @@
             </c:if>
 
             <div class="adm-nav-section" style="margin-top:8px;"><spring:message code="admin.layout.section.system"/></div>
+            <c:if test="${isSuperAdmin}">
             <a class="adm-nav-item ${activeMenu=='superAdmin'?'active':''}" href="${pageContext.request.contextPath}/superAdmin">
                 <span class="adm-nav-icon">🔑</span> <spring:message code="admin.layout.menu.superAdmin"/>
             </a>
+            </c:if>
             <a class="adm-nav-item ${activeMenu=='policies'?'active':''}" href="${pageContext.request.contextPath}/admin/policies">
                 <span class="adm-nav-icon">⚙️</span> <spring:message code="admin.layout.menu.policies"/>
             </a>

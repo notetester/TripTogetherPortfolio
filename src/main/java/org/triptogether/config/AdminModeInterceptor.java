@@ -84,6 +84,7 @@ public class AdminModeInterceptor implements HandlerInterceptor {
             boolean hasBlockPolicyAdmin = isSuperAdmin || perms.contains("BLOCK_POLICY_ADMIN");
             boolean hasBlockAuditAdmin = isSuperAdmin || perms.contains("BLOCK_AUDIT_ADMIN");
 
+            modelAndView.addObject("isSuperAdmin", isSuperAdmin);
             modelAndView.addObject("hasCommunityAdmin", isSuperAdmin || perms.contains("COMMUNITY_ADMIN"));
             modelAndView.addObject("hasMemberAdmin",    isSuperAdmin || perms.contains("MEMBER_ADMIN"));
             modelAndView.addObject("hasReportAdmin",    isSuperAdmin || perms.contains("REPORT_ADMIN"));
