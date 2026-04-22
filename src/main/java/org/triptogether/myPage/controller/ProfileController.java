@@ -328,11 +328,11 @@ public class ProfileController {
         // 활성 등급 정책 목록 (등급 바의 "다음 등급 기준값" 산출에 사용)
         model.addAttribute("gradePolicies", walletService.getActiveMemberGradePolicies());
 
-        // ── 레벨업 알림 팝업용: 가장 최근 levelup 알림이 있으면 전달 후 삭제 ──
+        // ── 레벨업 알림 팝업용: 읽지 않은 levelup 알림이 있으면 전달 후 읽음 처리 ──
         List<FeedNotificationDto> allNotifications = myPageService.getNotifications(freshUser.getUserIdx());
         FeedNotificationDto levelUpNoti = null;
         for (FeedNotificationDto noti : allNotifications) {
-            if ("levelup".equals(noti.getSourceType())) {
+            if ("levelup".equals(noti.getSourceType()) && !Boolean.TRUE.equals(noti.getIsRead())) {
                 levelUpNoti = noti;
                 break;
             }
@@ -340,8 +340,8 @@ public class ProfileController {
         if (levelUpNoti != null) {
             // 팝업에 표시할 새 레벨 번호를 model에 전달
             model.addAttribute("levelUpLevel", levelUpNoti.getSourceId());
-            // 표시했으니 알림 삭제 (한 번만 팝업)
-            myPageService.deleteNotification(levelUpNoti.getNotificationId());
+            // 표시했으니 읽음 처리 (한 번만 팝업, 이력은 보존)
+            myPageService.markAsRead(levelUpNoti.getNotificationId());
         }
 
         return "mypage/index";
