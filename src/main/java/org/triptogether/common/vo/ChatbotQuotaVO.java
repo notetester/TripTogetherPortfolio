@@ -1,0 +1,20 @@
+package org.triptogether.common.vo;
+
+import lombok.Data;
+import java.time.LocalDateTime;
+
+/**
+ * CHATBOT_GRADE_QUOTA 테이블 매핑.
+ * 관리자 페이지에서 등급별 한도를 편집 가능.
+ */
+@Data
+public class ChatbotQuotaVO {
+
+    private Integer quotaId;
+    private String grade;                  // GUEST/BRONZE/SILVER/GOLD/DIAMOND/PLATINUM
+    private Integer maxConversations;      // 동시 보유 대화 수 한도
+    private Integer maxMessagesPerDay;     // 일일 메시지 발송 한도
+    private Integer maxContextMessages;    // AI에 전달할 최근 메시지 수
+    private Long updatedBy;
+    private LocalDateTime updatedAt;
+}
