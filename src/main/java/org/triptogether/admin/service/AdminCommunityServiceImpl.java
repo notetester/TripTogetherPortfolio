@@ -86,6 +86,7 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
     @Override
     public void deletePost(Long postId) {
         adminCommunityMapper.updatePostStatus(postId, "DELETED");
+        notifyPostDeleted(postId);
     }
 
     @Override
@@ -102,6 +103,9 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
     public void bulkDeletePosts(List<Long> ids) {
         if (ids != null && !ids.isEmpty()) {
             adminCommunityMapper.bulkUpdatePostStatus(ids, "DELETED");
+            for (Long postId : ids) {
+                notifyPostDeleted(postId);
+            }
         }
     }
 
@@ -116,6 +120,7 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
     @Override
     public void deleteComment(Long commentId) {
         adminCommunityMapper.updateCommentStatus(commentId, "DELETED");
+        notifyCommentDeleted(commentId);
     }
 
     @Override
@@ -132,6 +137,9 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
     public void bulkDeleteComments(List<Long> ids) {
         if (ids != null && !ids.isEmpty()) {
             adminCommunityMapper.bulkUpdateCommentStatus(ids, "DELETED");
+            for (Long commentId : ids) {
+                notifyCommentDeleted(commentId);
+            }
         }
     }
 
@@ -168,6 +176,40 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
             myPageService.addNotification(notification);
         } catch (Exception e) {
             log.warn("댓글 차단 알림 발송 실패: commentId={}", commentId, e);
+        }
+    }
+
+    // 글 삭제 시 작성자에게 알림 발송 (targetUrl은 /mypage로 fallback)
+    private void notifyPostDeleted(Long postId) {
+        try {
+            CommunityPostDto post = communityMapper.selectPost(postId);
+            if (post == null) return;
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(post.getUserIdx());
+            notification.setSourceType("community");
+            notification.setSourceId(postId);
+            notification.setMessage("작성하신 글이 운영 정책에 따라 삭제되었어요.");
+            notification.setTargetUrl(NotificationUrlBuilder.mypage());
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("글 삭제 알림 발송 실패: postId={}", postId, e);
+        }
+    }
+
+    // 댓글 삭제 시 작성자에게 알림 발송 (targetUrl은 /mypage로 fallback)
+    private void notifyCommentDeleted(Long commentId) {
+        try {
+            CommunityCommentDto comment = communityMapper.selectComment(commentId);
+            if (comment == null) return;
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(comment.getUserIdx());
+            notification.setSourceType("community");
+            notification.setSourceId(comment.getPostId());
+            notification.setMessage("작성하신 댓글이 운영 정책에 따라 삭제되었어요.");
+            notification.setTargetUrl(NotificationUrlBuilder.mypage());
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("댓글 삭제 알림 발송 실패: commentId={}", commentId, e);
         }
     }
 
