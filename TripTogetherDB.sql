@@ -245,14 +245,13 @@ CREATE TABLE IF NOT EXISTS `ADMIN_PERMISSION_GROUP_ITEM` (
   CONSTRAINT `fk_apgi_group_code` FOREIGN KEY (`group_code`) REFERENCES `ADMIN_PERMISSION_GROUP_POLICY` (`group_code`) ON DELETE CASCADE,
   CONSTRAINT `fk_apgi_permission_code` FOREIGN KEY (`permission_code`) REFERENCES `ADMIN_PERMISSION_POLICY` (`permission_code`) ON DELETE CASCADE,
   CONSTRAINT `fk_apgi_updated_by` FOREIGN KEY (`updated_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='권한 그룹에 포함되는 세부 권한 목록';
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='권한 그룹에 포함되는 세부 권한 목록';
 
--- 테이블 데이터 team1_db.ADMIN_PERMISSION_GROUP_ITEM:~18 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.ADMIN_PERMISSION_GROUP_ITEM:~26 rows (대략적) 내보내기
 INSERT INTO `ADMIN_PERMISSION_GROUP_ITEM` (`admin_permission_group_item_idx`, `group_code`, `permission_code`, `is_active`, `created_by_user_idx`, `created_at`, `updated_by_user_idx`, `updated_at`, `priority`) VALUES
 	(1, 'CUSTOMER_SUPPORT', 'REPORT_ADMIN', 1, NULL, '2026-04-16 08:32:44', 6, '2026-04-17 16:11:41', 1),
 	(2, 'CUSTOMER_SUPPORT', 'INQUIRY_ADMIN', 1, NULL, '2026-04-16 08:32:44', 6, '2026-04-17 16:03:33', 1),
 	(3, 'MEMBER_OPERATIONS', 'MEMBER_ADMIN', 1, NULL, '2026-04-16 08:32:44', NULL, '2026-04-16 08:32:44', 1),
-	(4, 'COMMUNITY_OPERATIONS', 'COMMUNITY_ADMIN', 1, NULL, '2026-04-16 08:32:44', NULL, '2026-04-16 08:32:44', 1),
 	(17, 'COMMUNITY_OP', 'COMMUNITY_ADMIN', 1, 6, '2026-04-18 15:19:37', 6, '2026-04-18 15:19:37', 1),
 	(18, 'COMMUNITY_OP', 'INQUIRY_ADMIN', 1, 6, '2026-04-18 15:19:45', 6, '2026-04-18 15:19:46', 1),
 	(20, 'COMMUNITY_OP', 'REPORT_ADMIN', 1, 6, '2026-04-18 15:19:51', 6, '2026-04-18 15:19:51', 1),
@@ -266,7 +265,16 @@ INSERT INTO `ADMIN_PERMISSION_GROUP_ITEM` (`admin_permission_group_item_idx`, `g
 	(28, 'BLOCK_FULL_OPERATIONS', 'BLOCK_AUDIT_ADMIN', 1, NULL, '2026-04-20 06:52:23', NULL, '2026-04-20 06:52:23', 127),
 	(29, 'COMMUNITY_OP', 'USER_BLOCK_ADMIN', 1, 6, '2026-04-21 04:18:04', 6, '2026-04-21 04:18:04', 1),
 	(30, 'COMMUNITY_OP', 'IP_BLOCK_ADMIN', 1, 6, '2026-04-21 04:18:08', 6, '2026-04-21 04:18:08', 1),
-	(31, 'COMMUNITY_OP', 'CONTENT_MODERATION_ADMIN', 1, 6, '2026-04-21 04:18:12', 6, '2026-04-21 04:18:12', 1);
+	(31, 'COMMUNITY_OP', 'CONTENT_MODERATION_ADMIN', 1, 6, '2026-04-21 04:18:12', 6, '2026-04-21 04:18:12', 1),
+	(32, 'CONTENT_OPERATIONS', 'COMMUNITY_ADMIN', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 1),
+	(33, 'CONTENT_OPERATIONS', 'REPORT_ADMIN', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 1),
+	(34, 'CONTENT_OPERATIONS', 'CONTENT_MODERATION_ADMIN', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 1),
+	(35, 'TRAVEL_OPERATIONS', 'EXPLORE_ADMIN', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 1),
+	(36, 'TRAVEL_OPERATIONS', 'COURSE_ADMIN', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 1),
+	(37, 'AI_OPERATIONS', 'ASSISTANT_ADMIN', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 1),
+	(38, 'AI_OPERATIONS', 'AI_CHATBOT_ADMIN', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 1),
+	(39, 'SYSTEM_OPERATIONS', 'OPS_POLICY_ADMIN', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 1),
+	(40, 'LOG_AUDIT_OPERATIONS', 'AUDIT_ADMIN', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 1);
 
 -- 테이블 team1_db.ADMIN_PERMISSION_GROUP_POLICY 구조 내보내기
 CREATE TABLE IF NOT EXISTS `ADMIN_PERMISSION_GROUP_POLICY` (
@@ -287,19 +295,23 @@ CREATE TABLE IF NOT EXISTS `ADMIN_PERMISSION_GROUP_POLICY` (
   KEY `idx_apgpolicy_active` (`is_active`),
   CONSTRAINT `fk_apgpolicy_created_by` FOREIGN KEY (`created_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_apgpolicy_updated_by` FOREIGN KEY (`updated_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='관리자 권한 그룹 정책';
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='관리자 권한 그룹 정책';
 
--- 테이블 데이터 team1_db.ADMIN_PERMISSION_GROUP_POLICY:~9 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.ADMIN_PERMISSION_GROUP_POLICY:~13 rows (대략적) 내보내기
 INSERT INTO `ADMIN_PERMISSION_GROUP_POLICY` (`admin_permission_group_policy_idx`, `group_code`, `display_name`, `description`, `is_active`, `created_by_user_idx`, `created_at`, `updated_by_user_idx`, `updated_at`, `priority`) VALUES
 	(1, 'CUSTOMER_SUPPORT', '고객 대응 관리', '신고/문의 대응을 담당하는 권한 묶음', 1, NULL, '2026-04-16 08:32:39', NULL, '2026-04-16 08:32:39', 1),
 	(2, 'MEMBER_OPERATIONS', '회원 운영 관리', '회원 상태 및 회원 관리 권한 묶음', 1, NULL, '2026-04-16 08:32:39', NULL, '2026-04-16 08:32:39', 1),
-	(3, 'COMMUNITY_OPERATIONS', '커뮤니티 운영 관리', '커뮤니티 운영 권한 묶음', 1, NULL, '2026-04-16 08:32:39', NULL, '2026-04-16 08:32:39', 1),
-	(7, 'COMMUNITY_OP', '커뮤니티 운영팀', '', 1, 6, '2026-04-18 15:19:28', 6, '2026-04-18 15:19:28', 1),
+	(7, 'COMMUNITY_OP', '커뮤니티 운영팀', '커뮤니티 + 고객 대응 + 차단(유저/IP) + 콘텐츠 모더레이션 통합 운영팀', 1, 6, '2026-04-18 15:19:28', 6, '2026-04-23 00:00:00', 1),
 	(8, 'BLOCK_USER_OPERATIONS', '유저 차단 운영', '회원 차단/해제와 현재 회원 차단 상태 운영', 1, NULL, '2026-04-20 06:52:12', NULL, '2026-04-20 06:52:12', 120),
 	(9, 'BLOCK_IP_OPERATIONS', 'IP 차단 운영', '전역 IP 차단 규칙 운영', 1, NULL, '2026-04-20 06:52:12', NULL, '2026-04-20 06:52:12', 121),
 	(10, 'BLOCK_POLICY_OPERATIONS', '차단 정책 운영', '차단 배치 및 정책 운영', 1, NULL, '2026-04-20 06:52:12', NULL, '2026-04-20 06:52:12', 122),
 	(11, 'BLOCK_AUDIT_OPERATIONS', '차단 감사 운영', '차단 이력/현황 감사 조회', 1, NULL, '2026-04-20 06:52:12', NULL, '2026-04-20 06:52:12', 123),
-	(12, 'BLOCK_FULL_OPERATIONS', '차단 통합 운영', '차단 관련 전 기능 운영', 1, NULL, '2026-04-20 06:52:12', NULL, '2026-04-20 06:52:12', 124);
+	(12, 'BLOCK_FULL_OPERATIONS', '차단 통합 운영', '차단 관련 전 기능 운영', 1, NULL, '2026-04-20 06:52:12', NULL, '2026-04-20 06:52:12', 124),
+	(13, 'CONTENT_OPERATIONS', '콘텐츠 운영팀', '커뮤니티/신고/콘텐츠 정책 관리 통합 운영', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 20),
+	(14, 'TRAVEL_OPERATIONS', '여행 콘텐츠 운영팀', '여행지 및 여행코스 콘텐츠 운영', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 21),
+	(15, 'AI_OPERATIONS', 'AI 서비스 운영팀', 'AI 도우미 및 AI 챗봇 운영', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 22),
+	(16, 'SYSTEM_OPERATIONS', '시스템 운영팀', '시스템 운영 정책(휴면/정산/배치) 관리', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 23),
+	(17, 'LOG_AUDIT_OPERATIONS', '로그 감사 운영팀', '로그인/보안/이메일/활동 로그 감사 조회', 1, NULL, '2026-04-23 00:00:00', NULL, '2026-04-23 00:00:00', 24);
 
 -- 테이블 team1_db.ADMIN_PERMISSION_POLICY 구조 내보내기
 CREATE TABLE IF NOT EXISTS `ADMIN_PERMISSION_POLICY` (
