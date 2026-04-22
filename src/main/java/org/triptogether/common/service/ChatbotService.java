@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.common.vo.ChatMessageVO;
@@ -101,8 +101,9 @@ public class ChatbotService {
 
     // ══════════════════════════════════════════════════════════
     // 메인 처리
+    // 주의: @Transactional 을 걸면 외부 Gemini 호출 동안 DB 커넥션이 점유되므로 의도적으로 제외.
+    //       대신 conversation create 등 각 내부 서비스에서 자체 트랜잭션 관리.
     // ══════════════════════════════════════════════════════════
-    @Transactional
     public ChatbotResponseVO ask(ChatbotRequestVO request,
                                  UsersVO loginUser,
                                  String anonSessionId,
@@ -271,6 +272,10 @@ public class ChatbotService {
 
             return parseGeminiResponse(response.getBody(), loggedIn);
 
+        } catch (HttpClientErrorException e) {
+            log.error("[Chatbot] Gemini HTTP 오류 status={}, body={}",
+                    e.getStatusCode(), e.getResponseBodyAsString());
+            return fallbackResponse();
         } catch (Exception e) {
             log.error("[Chatbot] Gemini API 호출 실패", e);
             return fallbackResponse();
@@ -280,10 +285,35 @@ public class ChatbotService {
     private ChatbotResponseVO parseGeminiResponse(String body, boolean loggedIn) {
         try {
             JsonObject root = JsonParser.parseString(body).getAsJsonObject();
-            String text = root
-                    .getAsJsonArray("candidates").get(0).getAsJsonObject()
-                    .getAsJsonObject("content")
-                    .getAsJsonArray("parts").get(0).getAsJsonObject()
+
+            // API 오류 응답 처리
+            if (root.has("error")) {
+                log.error("[Chatbot] Gemini API error 응답: {}", root.get("error"));
+                return fallbackResponse();
+            }
+
+            // candidates 누락 또는 빈 배열
+            if (!root.has("candidates") || root.getAsJsonArray("candidates").isEmpty()) {
+                log.error("[Chatbot] Gemini 응답에 candidates 없음. body={}", body);
+                return fallbackResponse();
+            }
+
+            JsonObject candidate = root.getAsJsonArray("candidates").get(0).getAsJsonObject();
+
+            // 안전 필터로 차단된 경우 content 필드가 없음
+            if (!candidate.has("content")) {
+                String finishReason = candidate.has("finishReason") ? candidate.get("finishReason").getAsString() : "UNKNOWN";
+                log.warn("[Chatbot] Gemini 응답 content 없음. finishReason={}", finishReason);
+                return safetyBlockedResponse();
+            }
+
+            JsonObject content = candidate.getAsJsonObject("content");
+            if (!content.has("parts") || content.getAsJsonArray("parts").isEmpty()) {
+                log.error("[Chatbot] Gemini 응답 parts 없음. body={}", body);
+                return fallbackResponse();
+            }
+
+            String text = content.getAsJsonArray("parts").get(0).getAsJsonObject()
                     .get("text").getAsString().trim();
 
             text = text.replaceAll("(?s)```json\\s*", "").replaceAll("```\\s*", "").trim();
@@ -360,6 +390,15 @@ public class ChatbotService {
     // ══════════════════════════════════════════════════════════
     // 특수 응답
     // ══════════════════════════════════════════════════════════
+    private ChatbotResponseVO safetyBlockedResponse() {
+        return ChatbotResponseVO.builder()
+                .message("해당 질문에는 답변하기 어려워요. 여행 관련 질문으로 다시 물어봐 주세요.")
+                .links(List.of())
+                .quickReplies(List.of("인기 여행지 추천", "여행 코스 보기"))
+                .inappropriate(true)
+                .build();
+    }
+
     private ChatbotResponseVO blockedResponse() {
         return ChatbotResponseVO.builder()
                 .message("죄송합니다. 현재 챗봇 이용이 제한된 상태입니다. 문의사항은 고객센터로 연락해 주세요.")
