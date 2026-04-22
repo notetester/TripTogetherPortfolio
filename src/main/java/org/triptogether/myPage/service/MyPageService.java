@@ -5,6 +5,7 @@ import org.triptogether.admin.vo.BusinessAccountApplicationVO;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
 import org.triptogether.myPage.vo.MyPageFlightBookingDto;
+import org.triptogether.myPage.vo.MyPagePackageBookingDto;
 import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
 import org.triptogether.myPage.vo.MyPageReviewDto;
@@ -42,6 +43,13 @@ public interface MyPageService {
 
     List<MyPageFlightBookingDto> getMyFlightBookingList(Long userIdx);
     int getMyFlightBookingCount(Long userIdx);
+    List<MyPageFlightBookingDto> getMyFlightBookingAllList(Long userIdx);
+
+    // ===== 패키지 예약 =====
+
+    List<MyPagePackageBookingDto> getMyPackageBookingList(Long userIdx);
+    int getMyPackageBookingCount(Long userIdx);
+    List<MyPagePackageBookingDto> getMyPackageBookingAllList(Long userIdx);
 
     // ===== 기업 회원 신청 =====
 

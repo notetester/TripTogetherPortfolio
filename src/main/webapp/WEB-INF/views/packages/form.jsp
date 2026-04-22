@@ -1,25 +1,40 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="packages/packages.css"/>
+<spring:message code="package.form.spotPlaceholder" var="packageSpotPlaceholder"/>
+<spring:message code="package.form.titlePlaceholder" var="packageTitlePlaceholder"/>
+<spring:message code="package.form.summaryPlaceholder" var="packageSummaryPlaceholder"/>
+<spring:message code="package.form.contentPlaceholder" var="packageContentPlaceholder"/>
+<spring:message code="package.form.currentImage" var="packageCurrentImageLabel"/>
 <%@ include file="../common/header.jsp" %>
 <body>
 
 <main class="pkg-wrap">
     <section class="pkg-hero pkg-hero--form">
         <div>
-            <p class="pkg-eyebrow">PACKAGE FORM</p>
+            <p class="pkg-eyebrow"><spring:message code="package.form.eyebrow"/></p>
             <h1>
                 <c:choose>
-                    <c:when test="${formMode eq 'EDIT'}">패키지 상품 수정</c:when>
-                    <c:otherwise>패키지 상품 등록</c:otherwise>
+                    <c:when test="${formMode eq 'REVISION'}"><spring:message code="package.form.revisionTitle"/></c:when>
+                    <c:when test="${formMode eq 'EDIT'}"><spring:message code="package.form.editTitle"/></c:when>
+                    <c:otherwise><spring:message code="package.form.createTitle"/></c:otherwise>
                 </c:choose>
             </h1>
-            <p>승인 요청 전에는 임시저장으로 내용을 다듬을 수 있습니다.</p>
+            <p>
+                <c:choose>
+                    <c:when test="${formMode eq 'REVISION'}"><spring:message code="package.form.revisionDesc"/></c:when>
+                    <c:otherwise><spring:message code="package.form.defaultDesc"/></c:otherwise>
+                </c:choose>
+            </p>
         </div>
-        <a class="pkg-ghost-link" href="${pageContext.request.contextPath}/packages/manage">목록으로</a>
+        <a class="pkg-ghost-link" href="${pageContext.request.contextPath}/packages/manage">
+            <spring:message code="package.form.backToList"/>
+        </a>
     </section>
 
     <section class="pkg-panel pkg-form-panel">
@@ -36,83 +51,109 @@
             </c:otherwise>
         </c:choose>
 
-        <form class="pkg-form" method="post" action="${formAction}">
+        <form class="pkg-form" method="post" action="${formAction}" enctype="multipart/form-data">
             <div class="pkg-form-grid">
                 <label class="pkg-field pkg-field--wide">
-                    <span>연결 여행지 <em>*</em></span>
+                    <span><spring:message code="package.form.spot"/> <em>*</em></span>
                     <select name="spotIdx" required>
-                        <option value="">여행지를 선택하세요</option>
+                        <option value="">${packageSpotPlaceholder}</option>
                         <c:forEach var="spot" items="${spotOptions}">
                             <option value="${spot.spotIdx}" ${packageForm.spotIdx eq spot.spotIdx ? 'selected' : ''}>
                                 [${spot.region}] ${spot.name}
                             </option>
                         </c:forEach>
                     </select>
-                    <small>패키지는 반드시 기존 여행지 하나와 연결됩니다.</small>
+                    <small><spring:message code="package.form.spotHelp"/></small>
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span>패키지 상품명 <em>*</em></span>
+                    <span><spring:message code="package.form.title"/> <em>*</em></span>
                     <input type="text" name="packageTitle" maxlength="150" required
-                           value="${packageForm.packageTitle}" placeholder="예: 도쿄 야경 미식 3일 패키지">
+                           value="${packageForm.packageTitle}" placeholder="${packageTitlePlaceholder}">
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span>짧은 소개</span>
+                    <span><spring:message code="package.form.summary"/></span>
                     <input type="text" name="packageSummary" maxlength="300"
-                           value="${packageForm.packageSummary}" placeholder="목록 카드에 노출될 한 줄 소개">
+                           value="${packageForm.packageSummary}" placeholder="${packageSummaryPlaceholder}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>가격 <em>*</em></span>
+                    <span><spring:message code="package.form.price"/> <em>*</em></span>
                     <input type="number" name="packagePrice" min="0" required
                            value="${empty packageForm.packagePrice ? 0 : packageForm.packagePrice}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>통화</span>
+                    <span><spring:message code="package.form.currency"/></span>
                     <input type="text" name="currencyCode" maxlength="10"
                            value="${empty packageForm.currencyCode ? 'KRW' : packageForm.currencyCode}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>시작일</span>
+                    <span><spring:message code="package.form.startDate"/></span>
                     <input type="date" name="startDate" value="${packageForm.startDate}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>종료일</span>
+                    <span><spring:message code="package.form.endDate"/></span>
                     <input type="date" name="endDate" value="${packageForm.endDate}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>최소 인원 <em>*</em></span>
+                    <span><spring:message code="package.form.minPeople"/> <em>*</em></span>
                     <input type="number" name="minPeople" min="1" required
                            value="${empty packageForm.minPeople ? 1 : packageForm.minPeople}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>최대 인원</span>
+                    <span><spring:message code="package.form.maxPeople"/></span>
                     <input type="number" name="maxPeople" min="1" value="${packageForm.maxPeople}">
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span>대표 이미지 경로</span>
-                    <input type="text" name="mainImagePath" value="${packageForm.mainImagePath}"
-                           placeholder="예: /TripTogether/upload/package/sample.jpg 또는 https://...">
-                    <small>파일 업로드 기능은 다음 단계에서 붙일 수 있도록 현재는 경로 입력 방식으로 열어둡니다.</small>
+                    <span><spring:message code="package.form.mainImage"/></span>
+                    <c:if test="${not empty packageForm.mainImagePath}">
+                        <c:set var="mainImagePreviewPath" value="${pageContext.request.contextPath}${packageForm.mainImagePath}"/>
+                        <c:if test="${fn:startsWith(packageForm.mainImagePath, 'http://') or fn:startsWith(packageForm.mainImagePath, 'https://')}">
+                            <c:set var="mainImagePreviewPath" value="${packageForm.mainImagePath}"/>
+                        </c:if>
+                        <div class="pkg-current-image">
+                            <img src="${mainImagePreviewPath}" alt="${packageCurrentImageLabel}">
+                            <div>
+                                <strong><spring:message code="package.form.currentImage"/></strong>
+                                <small><spring:message code="package.form.keepImageHelp"/></small>
+                            </div>
+                        </div>
+                    </c:if>
+                    <input type="hidden" name="mainImagePath" value="${packageForm.mainImagePath}">
+                    <input type="file" name="mainImageFile" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp">
+                    <small><spring:message code="package.form.imageHelp"/></small>
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span>상세 설명 <em>*</em></span>
+                    <span><spring:message code="package.form.content"/> <em>*</em></span>
                     <textarea name="packageContent" rows="12" required
-                              placeholder="포함 사항, 일정, 유의사항, 취소 규정 등을 적어주세요.">${packageForm.packageContent}</textarea>
+                              placeholder="${packageContentPlaceholder}">${packageForm.packageContent}</textarea>
                 </label>
             </div>
 
             <div class="pkg-form-actions">
-                <button type="submit" name="action" value="DRAFT" class="pkg-secondary-btn">임시저장</button>
-                <button type="submit" name="action" value="PENDING" class="pkg-primary-btn">저장 후 승인 요청</button>
+                <c:choose>
+                    <c:when test="${formMode eq 'REVISION'}">
+                        <button type="submit" name="action" value="PENDING" class="pkg-primary-btn">
+                            <spring:message code="package.revision.request"/>
+                        </button>
+                    </c:when>
+                    <c:otherwise>
+                        <button type="submit" name="action" value="DRAFT" class="pkg-secondary-btn">
+                            <spring:message code="package.form.saveDraft"/>
+                        </button>
+                        <button type="submit" name="action" value="PENDING" class="pkg-primary-btn">
+                            <spring:message code="package.form.submitApproval"/>
+                        </button>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </form>
     </section>

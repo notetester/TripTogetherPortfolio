@@ -7,6 +7,7 @@ import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
 import org.triptogether.myPage.vo.MyPageFlightBookingDto;
+import org.triptogether.myPage.vo.MyPagePackageBookingDto;
 import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
 import org.triptogether.myPage.vo.MyPageReviewDto;
@@ -45,6 +46,13 @@ public interface MyPageMapper {
 
     List<MyPageFlightBookingDto> selectMyFlightBookingList(@Param("userIdx") Long userIdx);
     int selectMyFlightBookingCount(@Param("userIdx") Long userIdx);
+    List<MyPageFlightBookingDto> selectMyFlightBookingAllList(@Param("userIdx") Long userIdx);
+
+    // ===== 패키지 예약 =====
+
+    List<MyPagePackageBookingDto> selectMyPackageBookingList(@Param("userIdx") Long userIdx);
+    int selectMyPackageBookingCount(@Param("userIdx") Long userIdx);
+    List<MyPagePackageBookingDto> selectMyPackageBookingAllList(@Param("userIdx") Long userIdx);
 
     // ===== 기업 회원 신청 =====
 

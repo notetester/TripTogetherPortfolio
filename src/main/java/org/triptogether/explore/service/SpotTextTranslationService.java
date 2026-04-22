@@ -18,6 +18,11 @@ import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.explore.vo.RecommendVO;
 import org.triptogether.explore.vo.ReviewVO;
 import org.triptogether.explore.vo.SpotTextTranslationVO;
+/* ── 패키지 번역 기능에서 사용하는 VO import ── */
+import org.triptogether.travelPackage.vo.TravelPackageVO;
+import org.triptogether.travelPackage.vo.TravelPackageRevisionVO;
+/* ── 패키지 등록/수정 폼의 여행지 드롭다운 옵션 번역에 사용 ── */
+import org.triptogether.travelPackage.vo.PackageSpotOptionVO;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -41,6 +46,10 @@ public class SpotTextTranslationService {
     private static final String SOURCE_TYPE_COMMUNITY_COMMENT = "COMMUNITY_COMMENT";
     private static final String SOURCE_TYPE_COMMUNITY_TAG = "COMMUNITY_TAG";
     private static final String SOURCE_TYPE_RECOMMEND = "RECOMMEND";
+    /* ── 패키지 상품의 동적 텍스트(제목, 요약, 여행지명 등)를 번역하기 위한 소스 타입 ── */
+    private static final String SOURCE_TYPE_PACKAGE = "TRAVEL_PACKAGE";
+    /* ── 패키지 수정 요청본의 동적 텍스트를 번역하기 위한 소스 타입 ── */
+    private static final String SOURCE_TYPE_PACKAGE_REVISION = "TRAVEL_PACKAGE_REVISION";
     private static final String PROVIDER = "google-cloud-translation-v2";
     private static final String GOOGLE_TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2?key=%s";
 
@@ -196,6 +205,162 @@ public class SpotTextTranslationService {
                     comment.getContent(),
                     targetLang
             ));
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  패키지 상품(TravelPackageVO) 동적 텍스트 번역
+    //  - 패키지 제목(packageTitle), 요약(packageSummary), 반려 사유(rejectReason)
+    //  - 연결된 여행지명(spotName), 여행지 지역(spotRegion), 판매자 닉네임(sellerNickname)
+    //  이 필드들은 사용자/관리자가 직접 입력하거나 DB에서 조인된 동적 값이므로
+    //  프로퍼티 파일이 아닌 Google Translation API + DB 캐싱으로 번역합니다.
+    // ═══════════════════════════════════════════════════════════════════
+
+    /**
+     * 패키지 목록 전체를 현재 로케일에 맞게 번역합니다.
+     * Controller에서 model에 넘기기 직전에 호출하면 됩니다.
+     *
+     * @param packages 번역할 패키지 목록 (null이거나 비어있으면 무시)
+     */
+    public void translatePackages(List<TravelPackageVO> packages) {
+        // 현재 사용자의 언어를 확인 — ko(한국어)이면 원문 그대로 반환
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || packages == null || packages.isEmpty()) {
+            return;
+        }
+
+        for (TravelPackageVO pkg : packages) {
+            translatePackage(pkg, targetLang);
+        }
+    }
+
+    /**
+     * 패키지 단건을 현재 로케일에 맞게 번역합니다.
+     *
+     * @param pkg 번역할 패키지 VO (null이면 무시)
+     */
+    public void translatePackage(TravelPackageVO pkg) {
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || pkg == null) {
+            return;
+        }
+        translatePackage(pkg, targetLang);
+    }
+
+    /**
+     * 패키지 단건의 각 동적 필드를 번역하는 내부 메서드입니다.
+     * translateText()는 DB 캐시를 먼저 확인하고, 없으면 Google API를 호출한 뒤 캐싱합니다.
+     *
+     * @param pkg        번역 대상 패키지 VO
+     * @param targetLang 번역 목표 언어 코드 (en, ja, zh)
+     */
+    private void translatePackage(TravelPackageVO pkg, String targetLang) {
+        if (pkg == null) {
+            return;
+        }
+
+        // sourcePk: 번역 캐시에서 같은 패키지의 같은 필드를 구분하기 위한 키
+        Long sourcePk = pkg.getPackageIdx() == null ? 0L : pkg.getPackageIdx();
+
+        // 패키지 제목 번역 (예: "동대문중 미식 패키지" → "Dongdaemun Gourmet Package")
+        pkg.setPackageTitle(translateText(
+                SOURCE_TYPE_PACKAGE, sourcePk, "package_title",
+                pkg.getPackageTitle(), targetLang));
+
+        // 패키지 요약 번역 (예: "도심 속 미식 여행을 떠나보세요")
+        pkg.setPackageSummary(translateText(
+                SOURCE_TYPE_PACKAGE, sourcePk, "package_summary",
+                pkg.getPackageSummary(), targetLang));
+
+        // 반려 사유 번역 — 관리자가 한국어로 작성한 반려 사유를 판매자 언어로 번역
+        pkg.setRejectReason(translateText(
+                SOURCE_TYPE_PACKAGE, sourcePk, "reject_reason",
+                pkg.getRejectReason(), targetLang));
+
+        // 연결 여행지명 번역 (예: "동대문중학교" → 조인된 spot 테이블의 name)
+        pkg.setSpotName(translateText(
+                SOURCE_TYPE_SPOT, pkg.getSpotIdx() == null ? 0L : pkg.getSpotIdx(), "name",
+                pkg.getSpotName(), targetLang));
+
+        // 여행지 지역 번역 (예: "대한민국" → "South Korea")
+        pkg.setSpotRegion(translateText(
+                SOURCE_TYPE_SPOT, pkg.getSpotIdx() == null ? 0L : pkg.getSpotIdx(), "region",
+                pkg.getSpotRegion(), targetLang));
+    }
+
+    /**
+     * 패키지 수정 요청(리비전) 목록 전체를 현재 로케일에 맞게 번역합니다.
+     * AdminController에서 관리자 페이지 데이터를 넘기기 전에 호출합니다.
+     *
+     * @param revisions 번역할 수정 요청 목록 (null이거나 비어있으면 무시)
+     */
+    public void translatePackageRevisions(List<TravelPackageRevisionVO> revisions) {
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || revisions == null || revisions.isEmpty()) {
+            return;
+        }
+
+        for (TravelPackageRevisionVO revision : revisions) {
+            if (revision == null) {
+                continue;
+            }
+
+            Long sourcePk = revision.getPackageRevisionIdx() == null ? 0L : revision.getPackageRevisionIdx();
+
+            // 수정 요청본의 제목 번역
+            revision.setPackageTitle(translateText(
+                    SOURCE_TYPE_PACKAGE_REVISION, sourcePk, "package_title",
+                    revision.getPackageTitle(), targetLang));
+
+            // 수정 요청본의 요약 번역
+            revision.setPackageSummary(translateText(
+                    SOURCE_TYPE_PACKAGE_REVISION, sourcePk, "package_summary",
+                    revision.getPackageSummary(), targetLang));
+
+            // 현재 노출 중인 원본 패키지 제목 번역 (비교용으로 표시되는 값)
+            revision.setCurrentPackageTitle(translateText(
+                    SOURCE_TYPE_PACKAGE, revision.getPackageIdx() == null ? 0L : revision.getPackageIdx(),
+                    "package_title",
+                    revision.getCurrentPackageTitle(), targetLang));
+
+            // 연결 여행지명/지역 번역
+            revision.setSpotName(translateText(
+                    SOURCE_TYPE_SPOT, 0L, "name",
+                    revision.getSpotName(), targetLang));
+            revision.setSpotRegion(translateText(
+                    SOURCE_TYPE_SPOT, 0L, "region",
+                    revision.getSpotRegion(), targetLang));
+        }
+    }
+
+    /**
+     * 패키지 등록/수정 폼의 여행지 선택 드롭다운에 표시되는 여행지 이름과 지역을 번역합니다.
+     * form.jsp에서 "[대한민국] 동대문중학교" 같은 옵션이 현재 로케일에 맞게 번역됩니다.
+     *
+     * @param spotOptions 번역할 여행지 옵션 목록 (null이거나 비어있으면 무시)
+     */
+    public void translateSpotOptions(List<PackageSpotOptionVO> spotOptions) {
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || spotOptions == null || spotOptions.isEmpty()) {
+            return;
+        }
+
+        for (PackageSpotOptionVO option : spotOptions) {
+            if (option == null) {
+                continue;
+            }
+
+            Long sourcePk = option.getSpotIdx() == null ? 0L : option.getSpotIdx();
+
+            // 여행지 이름 번역 (예: "동대문중학교" → "Dongdaemun Middle School")
+            option.setName(translateText(
+                    SOURCE_TYPE_SPOT, sourcePk, "name",
+                    option.getName(), targetLang));
+
+            // 지역 번역 (예: "대한민국" → "South Korea")
+            option.setRegion(translateText(
+                    SOURCE_TYPE_SPOT, sourcePk, "region",
+                    option.getRegion(), targetLang));
         }
     }
 

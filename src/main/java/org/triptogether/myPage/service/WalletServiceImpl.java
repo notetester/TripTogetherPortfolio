@@ -223,7 +223,7 @@ public class WalletServiceImpl implements WalletService {
             throw new IllegalArgumentException("충전 금액은 1,000원 이상이어야 합니다.");
         }
         if (amount > MAX_CHARGE_AMOUNT) {
-            throw new IllegalArgumentException("한 번에 충전할 수 있는 최대 금액은 1,000,000원입니다.");
+            throw new IllegalArgumentException("1회 충전 한도는 1,000,000원입니다.");
         }
         if (amount % 100 != 0) {
             throw new IllegalArgumentException("충전 금액은 100원 단위로 입력해 주세요.");

@@ -22,6 +22,9 @@ public interface WalletMapper {
 
     void insertPaymentHistory(WalletPaymentDto payment);
 
+    void cancelPaymentHistory(@Param("paymentIdx") Long paymentIdx,
+                              @Param("userIdx") Long userIdx);
+
     void insertWalletHistory(WalletHistoryDto history);
 
     List<WalletPaymentDto> selectRecentPaymentHistory(@Param("userIdx") Long userIdx);

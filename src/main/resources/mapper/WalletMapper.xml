@@ -116,6 +116,15 @@
         )
     </insert>
 
+    <update id="cancelPaymentHistory">
+        UPDATE USER_PAYMENT_HISTORY
+        SET payment_status = 'CANCELLED',
+            cancelled_at = NOW()
+        WHERE payment_idx = #{paymentIdx}
+          AND user_idx = #{userIdx}
+          AND payment_status = 'COMPLETED'
+    </update>
+
     <insert id="insertWalletHistory">
         INSERT INTO USER_WALLET_HISTORY (
             user_idx, asset_type, change_type, amount, balance_after,

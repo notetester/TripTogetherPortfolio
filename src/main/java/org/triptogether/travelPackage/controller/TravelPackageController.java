@@ -2,14 +2,23 @@ package org.triptogether.travelPackage.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.travelPackage.service.TravelPackageService;
+/* ── 패키지의 동적 텍스트(제목, 요약, 여행지명 등)를 번역하기 위한 서비스 ── */
+import org.triptogether.explore.service.SpotTextTranslationService;
+import org.triptogether.travelPackage.vo.PackageBookingRequestVO;
+import org.triptogether.travelPackage.vo.PackageBookingResultVO;
 import org.triptogether.travelPackage.vo.TravelPackageForm;
 import org.triptogether.travelPackage.vo.TravelPackageVO;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -17,10 +26,16 @@ import org.triptogether.travelPackage.vo.TravelPackageVO;
 public class TravelPackageController {
 
     private final TravelPackageService travelPackageService;
+    /* ── 동적 텍스트 번역 서비스 — 사용자 로케일에 맞춰 패키지 제목/여행지명 등을 번역 ── */
+    private final SpotTextTranslationService translationService;
+    private final MessageSource messageSource;
 
     @GetMapping("")
     public String packageList(Model model) {
-        model.addAttribute("packageList", travelPackageService.getApprovedPackages());
+        java.util.List<TravelPackageVO> packages = travelPackageService.getApprovedPackages();
+        // ── 사용자 로케일이 ko가 아닌 경우, 패키지 제목/여행지명 등을 API+캐싱으로 번역 ──
+        translationService.translatePackages(packages);
+        model.addAttribute("packageList", packages);
         return "packages/list";
     }
 
@@ -31,7 +46,10 @@ public class TravelPackageController {
             return redirectByAuthState(loginUser);
         }
 
-        model.addAttribute("packageList", travelPackageService.getSellerPackages(loginUser.getUserIdx()));
+        // ── 판매자 관리 페이지에서도 여행지명·패키지 제목 등을 현재 로케일에 맞게 번역 ──
+        java.util.List<TravelPackageVO> packages = travelPackageService.getSellerPackages(loginUser.getUserIdx());
+        translationService.translatePackages(packages);
+        model.addAttribute("packageList", packages);
         return "packages/manage";
     }
 
@@ -42,9 +60,13 @@ public class TravelPackageController {
             return redirectByAuthState(loginUser);
         }
 
+        // ── 여행지 드롭다운의 이름/지역을 현재 로케일에 맞게 번역 ──
+        java.util.List<org.triptogether.travelPackage.vo.PackageSpotOptionVO> spotOptions = travelPackageService.getSpotOptions();
+        translationService.translateSpotOptions(spotOptions);
+
         model.addAttribute("formMode", "CREATE");
         model.addAttribute("packageForm", new TravelPackageForm());
-        model.addAttribute("spotOptions", travelPackageService.getSpotOptions());
+        model.addAttribute("spotOptions", spotOptions);
         return "packages/form";
     }
 
@@ -79,9 +101,14 @@ public class TravelPackageController {
 
         try {
             TravelPackageVO travelPackage = travelPackageService.getSellerPackage(packageIdx, loginUser.getUserIdx());
-            model.addAttribute("formMode", "EDIT");
+            model.addAttribute("formMode", "APPROVED".equals(travelPackage.getPackageStatus()) ? "REVISION" : "EDIT");
             model.addAttribute("packageForm", toForm(travelPackage));
-            model.addAttribute("spotOptions", travelPackageService.getSpotOptions());
+
+            // ── 여행지 드롭다운의 이름/지역을 현재 로케일에 맞게 번역 ──
+            java.util.List<org.triptogether.travelPackage.vo.PackageSpotOptionVO> spotOptions = travelPackageService.getSpotOptions();
+            translationService.translateSpotOptions(spotOptions);
+            model.addAttribute("spotOptions", spotOptions);
+
             return "packages/form";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("packageError", e.getMessage());
@@ -100,9 +127,12 @@ public class TravelPackageController {
         }
 
         try {
+            TravelPackageVO currentPackage = travelPackageService.getSellerPackage(packageIdx, loginUser.getUserIdx());
+            boolean revisionRequest = "APPROVED".equals(currentPackage.getPackageStatus());
             packageForm.setPackageIdx(packageIdx);
             travelPackageService.updatePackage(loginUser.getUserIdx(), packageForm);
-            redirectAttributes.addFlashAttribute("packageMessage", createSavedMessage(packageForm.getAction()));
+            redirectAttributes.addFlashAttribute("packageMessage",
+                    revisionRequest ? message("package.message.revisionSubmitted") : createSavedMessage(packageForm.getAction()));
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageError", e.getMessage());
         }
@@ -120,11 +150,64 @@ public class TravelPackageController {
 
         try {
             travelPackageService.submitPackage(loginUser.getUserIdx(), packageIdx);
-            redirectAttributes.addFlashAttribute("packageMessage", "관리자 승인 요청이 완료되었습니다.");
+            redirectAttributes.addFlashAttribute("packageMessage", message("package.message.submitCompleted"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageError", e.getMessage());
         }
         return "redirect:/packages/manage";
+    }
+
+    @PostMapping("/{packageIdx}/book")
+    @ResponseBody
+    public Map<String, Object> bookPackage(@PathVariable Long packageIdx,
+                                           @RequestBody PackageBookingRequestVO request,
+                                           HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        UsersVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            result.put("success", false);
+            result.put("loginRequired", true);
+            result.put("message", message("package.booking.loginRequired"));
+            return result;
+        }
+
+        try {
+            request.setPackageIdx(packageIdx);
+            PackageBookingResultVO bookingResult = travelPackageService.bookPackage(loginUser.getUserIdx(), request);
+            session.setAttribute("loginUser", bookingResult.getUser());
+            result.put("success", true);
+            result.put("message", message("package.booking.success"));
+            result.put("bookingNo", bookingResult.getBookingNo());
+            result.put("totalPrice", bookingResult.getTotalPrice());
+            result.put("usedCash", bookingResult.getUsedCash());
+            result.put("usedMileage", bookingResult.getUsedMileage());
+            result.put("cashBalance", bookingResult.getUser().getCashBalance());
+            result.put("mileageBalance", bookingResult.getUser().getMileageBalance());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            result.put("success", false);
+            result.put("message", message(e.getMessage()));
+        }
+        return result;
+    }
+
+    @PostMapping("/bookings/{packageBookingIdx}/cancel")
+    public String cancelPackageBooking(@PathVariable Long packageBookingIdx,
+                                       @RequestParam(required = false) String cancelReason,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        UsersVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            UsersVO updatedUser = travelPackageService.cancelPackageBooking(loginUser.getUserIdx(), packageBookingIdx, cancelReason);
+            session.setAttribute("loginUser", updatedUser);
+            redirectAttributes.addFlashAttribute("packageBookingMessage", message("package.message.bookingCancelled"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageBookingError", e.getMessage());
+        }
+        return "redirect:/mypage/bookings/packages";
     }
 
     private UsersVO getLoginUser(HttpSession session) {
@@ -133,11 +216,11 @@ public class TravelPackageController {
 
     private boolean canManagePackage(UsersVO loginUser, RedirectAttributes redirectAttributes) {
         if (loginUser == null) {
-            redirectAttributes.addFlashAttribute("loginMessage", "로그인이 필요합니다.");
+            redirectAttributes.addFlashAttribute("loginMessage", message("package.message.loginRequired"));
             return false;
         }
         if (!loginUser.canManagePackage()) {
-            redirectAttributes.addFlashAttribute("packageError", "비즈니스 또는 파트너 회원만 패키지 상품을 관리할 수 있습니다.");
+            redirectAttributes.addFlashAttribute("packageError", message("package.message.noPermission"));
             return false;
         }
         return true;
@@ -149,9 +232,13 @@ public class TravelPackageController {
 
     private String createSavedMessage(String action) {
         if ("PENDING".equalsIgnoreCase(action)) {
-            return "패키지 상품이 저장되고 관리자 승인 요청 상태로 변경되었습니다.";
+            return message("package.message.savedAndSubmitted");
         }
-        return "패키지 상품이 임시저장되었습니다.";
+        return message("package.message.savedDraft");
+    }
+
+    private String message(String codeOrMessage) {
+        return messageSource.getMessage(codeOrMessage, null, codeOrMessage, LocaleContextHolder.getLocale());
     }
 
     private TravelPackageForm toForm(TravelPackageVO travelPackage) {
