@@ -87,7 +87,7 @@ public class AdminChatbotController {
         model.addAttribute("page", page);
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "aiHelper");
-        model.addAttribute("pageTitle", "AI 도우미 관리");
+        model.addAttribute("pageTitle", "AI 챗봇 관리");
         return "admin/ai-helper/chatbot";
     }
 

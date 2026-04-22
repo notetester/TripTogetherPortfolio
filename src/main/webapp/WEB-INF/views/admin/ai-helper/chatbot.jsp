@@ -4,13 +4,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="aiHelper"/>
-<c:set var="pageTitle" value="AI 도우미 관리"/>
+<c:set var="pageTitle" value="AI 챗봇 관리"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
-
-    <%-- ── 최상위 섹션 탭 (AI 도우미 / AI 챗봇) ── --%>
-    <%@ include file="_section-tabs.jsp" %>
 
     <%-- ── 챗봇 내부 sub-tab ── --%>
     <div class="aih-tabs" style="display:flex;gap:4px;border-bottom:1px solid #e5e7eb;margin:20px 0;">
