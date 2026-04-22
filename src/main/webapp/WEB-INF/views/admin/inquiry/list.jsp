@@ -7,6 +7,7 @@
 <spring:message code="admin.inquiry.pageTitle" var="adminInquiryPageTitle"/>
 <spring:message code="admin.common.nickname" var="adminCommonNickname"/>
 <spring:message code="admin.common.userId" var="adminCommonUserId"/>
+<spring:message code="admin.common.id" var="adminCommonId"/>
 <spring:message code="admin.common.accountStatus" var="adminCommonAccountStatus"/>
 <spring:message code="admin.common.memberInfoView" var="adminCommonMemberInfoView"/>
 <spring:message code="admin.common.blockAccount" var="adminCommonBlockAccount"/>
@@ -21,22 +22,22 @@
 <div class="adm-content">
 
     <%-- ── 통계 카드 ── --%>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:12px;color:#64748b;margin-bottom:6px;"><spring:message code="admin.inquiry.kpi.total"/></div>
-            <div style="font-size:24px;font-weight:700;color:#38bdf8;">${stats.totalInquiries}</div>
+    <div class="adm-summary-grid">
+        <div class="adm-card adm-summary-card">
+            <div class="adm-summary-label"><spring:message code="admin.inquiry.kpi.total"/></div>
+            <div class="adm-summary-value is-primary">${stats.totalInquiries}</div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:12px;color:#64748b;margin-bottom:6px;"><spring:message code="admin.inquiry.status.pending"/></div>
-            <div style="font-size:24px;font-weight:700;color:#fbbf24;">${stats.pendingInquiries}</div>
+        <div class="adm-card adm-summary-card">
+            <div class="adm-summary-label"><spring:message code="admin.inquiry.status.pending"/></div>
+            <div class="adm-summary-value is-warning">${stats.pendingInquiries}</div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:12px;color:#64748b;margin-bottom:6px;"><spring:message code="admin.inquiry.status.inProgress"/></div>
-            <div style="font-size:24px;font-weight:700;color:#fb923c;">${stats.inProgressInquiries}</div>
+        <div class="adm-card adm-summary-card">
+            <div class="adm-summary-label"><spring:message code="admin.inquiry.status.inProgress"/></div>
+            <div class="adm-summary-value is-accent">${stats.inProgressInquiries}</div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:12px;color:#64748b;margin-bottom:6px;"><spring:message code="admin.inquiry.status.completed"/></div>
-            <div style="font-size:24px;font-weight:700;color:#34d399;">${stats.completedInquiries}</div>
+        <div class="adm-card adm-summary-card">
+            <div class="adm-summary-label"><spring:message code="admin.inquiry.status.completed"/></div>
+            <div class="adm-summary-value is-success">${stats.completedInquiries}</div>
         </div>
     </div>
 
@@ -111,7 +112,7 @@
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>${adminCommonId}</th>
                     <th><spring:message code="admin.inquiry.author"/></th>
                     <th><spring:message code="admin.inquiry.title"/></th>
                     <th><spring:message code="admin.inquiry.category"/></th>
@@ -131,10 +132,10 @@
                             data-nickname="${item.nickname}"
                             data-status="${item.accountStatus}"
                             onclick="openAuthorModal(this)">
-                            <div style="font-weight:600;font-size:13px;color:#7dd3fc;">${item.nickname}</div>
-                            <div style="font-size:11px;color:#64748b;">${item.userId}</div>
+                            <div class="adm-modal-nickname">${item.nickname}</div>
+                            <div class="adm-modal-value">${item.userId}</div>
                             <c:if test="${item.accountStatus == 'BLOCKED'}">
-                                <span style="font-size:10px;background:#7f1d1d;color:#fca5a5;padding:1px 5px;border-radius:3px;"><spring:message code="admin.reports.accountBlocked"/></span>
+                                <span class="adm-inline-danger"><spring:message code="admin.reports.accountBlocked"/></span>
                             </c:if>
                         </td>
                         <td>
@@ -177,7 +178,7 @@
                                 <c:otherwise><span style="color:#64748b;"><spring:message code="admin.inquiry.unanswered"/></span></c:otherwise>
                             </c:choose>
                         </td>
-                        <td><fmt:formatDate value="${item.createdAt}" pattern="yyyy.MM.dd HH:mm"/></td>
+                        <td><fmt:formatDate value="${item.createdAt}" type="both" dateStyle="short" timeStyle="short"/></td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
@@ -250,26 +251,26 @@ function openAuthorModal(el) {
         : '<span class="status-badge ACTIVE"  style="font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.active) + '</span>';
 
     var blockBtn = status !== 'BLOCKED'
-        ? '<button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;width:100%;margin-top:4px;" data-idx="' + userIdx + '" onclick="blockUserFromModal(this)">' + escHtml(INQUIRY_AUTHOR_MSG.blockAccount) + '</button>'
+        ? '<button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;width:100%;" data-idx="' + userIdx + '" onclick="blockUserFromModal(this)">' + escHtml(INQUIRY_AUTHOR_MSG.blockAccount) + '</button>'
         : '';
 
     document.getElementById('authorModalBody').innerHTML =
-        '<div style="display:flex;flex-direction:column;gap:10px;">'
-      + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
-      + '    <span style="color:#64748b;font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.nickname) + '</span>'
+        '<div class="adm-modal-stack">'
+      + '  <div class="adm-modal-row">'
+      + '    <span class="adm-modal-label">' + escHtml(INQUIRY_AUTHOR_MSG.nickname) + '</span>'
       + '    <span class="adm-modal-nickname">' + escHtml(nickname) + '</span>'
       + '  </div>'
-      + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
-      + '    <span style="color:#64748b;font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.userId) + '</span>'
-      + '    <span style="color:#94a3b8;font-size:13px;">' + escHtml(userId) + '</span>'
+      + '  <div class="adm-modal-row">'
+      + '    <span class="adm-modal-label">' + escHtml(INQUIRY_AUTHOR_MSG.userId) + '</span>'
+      + '    <span class="adm-modal-value">' + escHtml(userId) + '</span>'
       + '  </div>'
-      + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
-      + '    <span style="color:#64748b;font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.accountStatus) + '</span>'
+      + '  <div class="adm-modal-row">'
+      + '    <span class="adm-modal-label">' + escHtml(INQUIRY_AUTHOR_MSG.accountStatus) + '</span>'
       + '    ' + statusBadge
       + '  </div>'
       + '</div>'
-      + '<div style="margin-top:16px;display:flex;flex-direction:column;gap:6px;">'
-      + '  <a href="' + ctx + '/admin/members?searchType=userId&keyword=' + encodeURIComponent(userId) + '" class="adm-btn adm-btn-ghost" style="text-align:center;text-decoration:none;">' + escHtml(INQUIRY_AUTHOR_MSG.memberInfoView) + '</a>'
+      + '<div class="adm-action-stack">'
+      + '  <a href="' + ctx + '/admin/members?searchType=userId&keyword=' + encodeURIComponent(userId) + '" class="adm-btn adm-btn-ghost adm-link-button">' + escHtml(INQUIRY_AUTHOR_MSG.memberInfoView) + '</a>'
       + blockBtn
       + '</div>';
 

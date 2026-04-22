@@ -21,21 +21,21 @@
                         <div class="adm-filter-label"><spring:message code="admin.emailRequests.purpose"/></div>
                         <select class="adm-select" name="purpose">
                             <option value="ALL" ${search.purpose=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="PROFILE_EMAIL" ${search.purpose=='PROFILE_EMAIL'?'selected':''}>PROFILE_EMAIL</option>
-                            <option value="FIND_ID" ${search.purpose=='FIND_ID'?'selected':''}>FIND_ID</option>
-                            <option value="RESET_PW" ${search.purpose=='RESET_PW'?'selected':''}>RESET_PW</option>
-                            <option value="VERIFY" ${search.purpose=='VERIFY'?'selected':''}>VERIFY</option>
+                            <option value="PROFILE_EMAIL" ${search.purpose=='PROFILE_EMAIL'?'selected':''}><spring:message code="admin.emailRequests.purpose.profileEmail"/></option>
+                            <option value="FIND_ID" ${search.purpose=='FIND_ID'?'selected':''}><spring:message code="admin.emailRequests.purpose.findId"/></option>
+                            <option value="RESET_PW" ${search.purpose=='RESET_PW'?'selected':''}><spring:message code="admin.emailRequests.purpose.resetPw"/></option>
+                            <option value="VERIFY" ${search.purpose=='VERIFY'?'selected':''}><spring:message code="admin.emailRequests.purpose.verify"/></option>
                         </select>
                     </div>
                     <div>
                         <div class="adm-filter-label"><spring:message code="admin.common.status"/></div>
                         <select class="adm-select" name="status">
                             <option value="ALL" ${search.status=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="REQUESTED" ${search.status=='REQUESTED'?'selected':''}>REQUESTED</option>
-                            <option value="VERIFIED" ${search.status=='VERIFIED'?'selected':''}>VERIFIED</option>
-                            <option value="APPLIED" ${search.status=='APPLIED'?'selected':''}>APPLIED</option>
-                            <option value="EXPIRED" ${search.status=='EXPIRED'?'selected':''}>EXPIRED</option>
-                            <option value="CANCELLED" ${search.status=='CANCELLED'?'selected':''}>CANCELLED</option>
+                            <option value="REQUESTED" ${search.status=='REQUESTED'?'selected':''}><spring:message code="admin.emailRequests.status.requested"/></option>
+                            <option value="VERIFIED" ${search.status=='VERIFIED'?'selected':''}><spring:message code="admin.emailRequests.status.verified"/></option>
+                            <option value="APPLIED" ${search.status=='APPLIED'?'selected':''}><spring:message code="admin.emailRequests.status.applied"/></option>
+                            <option value="EXPIRED" ${search.status=='EXPIRED'?'selected':''}><spring:message code="admin.emailRequests.status.expired"/></option>
+                            <option value="CANCELLED" ${search.status=='CANCELLED'?'selected':''}><spring:message code="admin.emailRequests.status.cancelled"/></option>
                         </select>
                     </div>
                     <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
@@ -61,7 +61,7 @@
                     <th><spring:message code="admin.emailRequests.verifiedAt"/></th>
                     <th><spring:message code="admin.emailRequests.appliedAt"/></th>
                     <th><spring:message code="admin.context.expiresAt"/></th>
-                    <th>IP</th>
+                    <th><spring:message code="admin.common.ip"/></th>
                     <th><spring:message code="admin.context.requestId"/></th>
                 </tr>
                 </thead>
@@ -91,9 +91,28 @@
                                 </c:otherwise>
                             </c:choose>
                         </td>
-                        <td>${item.purpose}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${item.purpose == 'PROFILE_EMAIL'}"><spring:message code="admin.emailRequests.purpose.profileEmail"/></c:when>
+                                <c:when test="${item.purpose == 'FIND_ID'}"><spring:message code="admin.emailRequests.purpose.findId"/></c:when>
+                                <c:when test="${item.purpose == 'RESET_PW'}"><spring:message code="admin.emailRequests.purpose.resetPw"/></c:when>
+                                <c:when test="${item.purpose == 'VERIFY'}"><spring:message code="admin.emailRequests.purpose.verify"/></c:when>
+                                <c:otherwise><c:out value="${item.purpose}"/></c:otherwise>
+                            </c:choose>
+                        </td>
                         <td><c:out value="${item.pendingEmail}"/></td>
-                        <td><span class="status-badge ACTIVE">${item.status}</span></td>
+                        <td>
+                            <span class="status-badge ACTIVE">
+                                <c:choose>
+                                    <c:when test="${item.status == 'REQUESTED'}"><spring:message code="admin.emailRequests.status.requested"/></c:when>
+                                    <c:when test="${item.status == 'VERIFIED'}"><spring:message code="admin.emailRequests.status.verified"/></c:when>
+                                    <c:when test="${item.status == 'APPLIED'}"><spring:message code="admin.emailRequests.status.applied"/></c:when>
+                                    <c:when test="${item.status == 'EXPIRED'}"><spring:message code="admin.emailRequests.status.expired"/></c:when>
+                                    <c:when test="${item.status == 'CANCELLED'}"><spring:message code="admin.emailRequests.status.cancelled"/></c:when>
+                                    <c:otherwise><c:out value="${item.status}"/></c:otherwise>
+                                </c:choose>
+                            </span>
+                        </td>
                         <td><c:choose><c:when test="${not empty item.verifiedAtDate}"><fmt:formatDate value="${item.verifiedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
                         <td><c:choose><c:when test="${not empty item.appliedAtDate}"><fmt:formatDate value="${item.appliedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
                         <td><c:choose><c:when test="${not empty item.expiredAtDate}"><fmt:formatDate value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>

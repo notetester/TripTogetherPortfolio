@@ -86,17 +86,17 @@
                 <div class="social-card" style="flex:1;min-width:120px;text-align:center;padding:16px;border-radius:10px;">
                     <div style="font-size:24px;margin-bottom:8px;">🟡</div>
                     <div class="social-card-value" style="font-size:22px;font-weight:700;"><fmt:formatNumber value="${stats.kakaoLinked}" pattern="#,###"/></div>
-                    <div style="font-size:11px;color:#64748b;margin-top:4px;">Kakao</div>
+                    <div style="font-size:11px;color:#64748b;margin-top:4px;"><spring:message code="admin.logs.provider.kakao"/></div>
                 </div>
                 <div class="social-card" style="flex:1;min-width:120px;text-align:center;padding:16px;border-radius:10px;">
                     <div style="font-size:24px;margin-bottom:8px;color:#03c75a;font-weight:900;">N</div>
                     <div class="social-card-value" style="font-size:22px;font-weight:700;"><fmt:formatNumber value="${stats.naverLinked}" pattern="#,###"/></div>
-                    <div style="font-size:11px;color:#64748b;margin-top:4px;">Naver</div>
+                    <div style="font-size:11px;color:#64748b;margin-top:4px;"><spring:message code="admin.logs.provider.naver"/></div>
                 </div>
                 <div class="social-card" style="flex:1;min-width:120px;text-align:center;padding:16px;border-radius:10px;">
                     <div style="font-size:24px;margin-bottom:8px;color:#4285f4;font-weight:900;">G</div>
                     <div class="social-card-value" style="font-size:22px;font-weight:700;"><fmt:formatNumber value="${stats.googleLinked}" pattern="#,###"/></div>
-                    <div style="font-size:11px;color:#64748b;margin-top:4px;">Google</div>
+                    <div style="font-size:11px;color:#64748b;margin-top:4px;"><spring:message code="admin.logs.provider.google"/></div>
                 </div>
             </div>
         </div>

@@ -2,19 +2,39 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="community"/>
-<c:set var="pageTitle" value="게시글 상세 관리"/>
+<spring:message code="admin.community.detail.pageTitle" var="adminCommunityDetailPageTitle"/>
+<spring:message code="admin.community.detail.backToList" var="adminCommunityDetailBackToList"/>
+<spring:message code="admin.community.detail.notFound" var="adminCommunityDetailNotFound"/>
+<spring:message code="admin.community.detail.warning30d" var="adminCommunityDetailWarning30d"/>
+<spring:message code="admin.community.detail.viewOriginal" var="adminCommunityDetailViewOriginal"/>
+<spring:message code="admin.community.detail.reportHistory" var="adminCommunityDetailReportHistory"/>
+<spring:message code="admin.community.detail.noReports" var="adminCommunityDetailNoReports"/>
+<spring:message code="admin.community.detail.noComments" var="adminCommunityDetailNoComments"/>
+<spring:message code="admin.community.detail.noIp" var="adminCommunityDetailNoIp"/>
+<spring:message code="admin.community.detail.authorInfoTitle" var="adminCommunityDetailAuthorInfoTitle"/>
+<spring:message code="admin.community.detail.lastIp" var="adminCommunityDetailLastIp"/>
+<spring:message code="admin.community.detail.noRecord" var="adminCommunityDetailNoRecord"/>
+<spring:message code="admin.community.detail.accountStatus" var="adminCommunityDetailAccountStatus"/>
+<spring:message code="admin.community.detail.recentResolvedTitle" var="adminCommunityDetailRecentResolvedTitle"/>
+<spring:message code="admin.community.detail.blockAuthorAccount" var="adminCommunityDetailBlockAuthorAccount"/>
+<spring:message code="admin.community.detail.confirmPostAction" var="adminCommunityDetailConfirmPostAction"/>
+<spring:message code="admin.community.detail.confirmCommentAction" var="adminCommunityDetailConfirmCommentAction"/>
+<spring:message code="admin.community.detail.confirmBlockAuthor" var="adminCommunityDetailConfirmBlockAuthor"/>
+<spring:message code="admin.community.detail.actionFailed" var="adminCommunityDetailActionFailed"/>
+<c:set var="pageTitle" value="${adminCommunityDetailPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div style="margin-bottom:16px;">
         <a href="${pageContext.request.contextPath}/admin/community"
-           style="color:#64748b;text-decoration:none;font-size:13px;">← 목록으로</a>
+           class="adm-back-link">← ${adminCommunityDetailBackToList}</a>
     </div>
 
     <c:if test="${empty post}">
         <div class="adm-card" style="padding:40px;text-align:center;color:#64748b;">
-            게시글을 찾을 수 없습니다.
+            ${adminCommunityDetailNotFound}
         </div>
     </c:if>
 
@@ -22,16 +42,15 @@
 
         <%-- ── 30일 경고 배너 ── --%>
         <c:if test="${post.authorResolveCount30d > 0}">
-            <div style="background:#422006;border:1px solid #92400e;border-radius:8px;padding:14px 20px;
-                        margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+            <div class="adm-warning-box" style="margin-bottom:16px;display:flex;align-items:center;gap:10px;">
                 <span style="font-size:18px;">⚠️</span>
-                <span style="color:#fed7aa;font-size:14px;">
-                    이 게시글 작성자는 <strong>최근 30일 내 ${post.authorResolveCount30d}건</strong>의 신고가 처리된 이력이 있습니다.
+                <span style="font-size:14px;">
+                    <spring:message code="admin.community.detail.warning30d" arguments="${post.authorResolveCount30d}"/>
                 </span>
             </div>
         </c:if>
 
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start;">
+        <div class="adm-split-layout">
 
             <%-- ── 왼쪽: 게시글 내용 + 신고 목록 + 댓글 ── --%>
             <div>
@@ -39,13 +58,13 @@
                 <%-- 게시글 카드 --%>
                 <div class="adm-card" style="margin-bottom:20px;">
                     <div class="adm-card-head">
-                        <div class="adm-card-title">게시글 #${post.postId}</div>
+                        <div class="adm-card-title"><spring:message code="admin.community.detail.postTitle" arguments="${post.postId}"/></div>
                         <div style="display:flex;gap:8px;align-items:center;">
                             <span class="status-badge ${post.postStatus}">
                                 <c:choose>
-                                    <c:when test="${post.postStatus == 'ACTIVE'}">활성</c:when>
-                                    <c:when test="${post.postStatus == 'BLOCKED'}">차단됨</c:when>
-                                    <c:when test="${post.postStatus == 'DELETED'}">삭제됨</c:when>
+                                    <c:when test="${post.postStatus == 'ACTIVE'}"><spring:message code="admin.community.status.active"/></c:when>
+                                    <c:when test="${post.postStatus == 'BLOCKED'}"><spring:message code="admin.community.status.blocked"/></c:when>
+                                    <c:when test="${post.postStatus == 'DELETED'}"><spring:message code="admin.community.status.deleted"/></c:when>
                                     <c:otherwise>${post.postStatus}</c:otherwise>
                                 </c:choose>
                             </span>
@@ -53,19 +72,19 @@
                                 <a href="${pageContext.request.contextPath}/community/${post.postId}"
                                    target="_blank"
                                    class="adm-btn adm-btn-ghost"
-                                   style="font-size:12px;text-decoration:none;">원글 보기</a>
+                                   style="font-size:12px;text-decoration:none;">${adminCommunityDetailViewOriginal}</a>
                             </c:if>
                             <c:if test="${post.postStatus != 'BLOCKED'}">
                                 <button class="adm-btn adm-btn-ghost"
                                         style="font-size:12px;color:#f87171;border-color:#f87171;"
                                         data-id="${post.postId}"
-                                        onclick="actionPost(this.getAttribute('data-id'), 'block')">차단</button>
+                                        onclick="actionPost(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
                             </c:if>
                             <c:if test="${post.postStatus != 'DELETED'}">
                                 <button class="adm-btn adm-btn-ghost"
                                         style="font-size:12px;color:#64748b;"
                                         data-id="${post.postId}"
-                                        onclick="actionPost(this.getAttribute('data-id'), 'delete')">삭제</button>
+                                        onclick="actionPost(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
                             </c:if>
                         </div>
                     </div>
@@ -73,10 +92,10 @@
                         <div style="margin-bottom:8px;">
                             <span class="adm-post-type-badge">
                                 <c:choose>
-                                    <c:when test="${post.postType == 'review'}">여행이야기</c:when>
-                                    <c:when test="${post.postType == 'photo'}">사진</c:when>
-                                    <c:when test="${post.postType == 'tip'}">여행팁</c:when>
-                                    <c:when test="${post.postType == 'question'}">질문</c:when>
+                                    <c:when test="${post.postType == 'review'}"><spring:message code="admin.community.postType.review"/></c:when>
+                                    <c:when test="${post.postType == 'photo'}"><spring:message code="admin.community.postType.photo"/></c:when>
+                                    <c:when test="${post.postType == 'tip'}"><spring:message code="admin.community.postType.tip"/></c:when>
+                                    <c:when test="${post.postType == 'question'}"><spring:message code="admin.community.postType.question"/></c:when>
                                     <c:otherwise>${post.postType}</c:otherwise>
                                 </c:choose>
                             </span>
@@ -90,10 +109,10 @@
                             <span>❤ ${post.likeCount}</span>
                             <span>💬 ${post.commentCount}</span>
                             <c:if test="${post.reportCount > 0}">
-                                <span style="color:#f87171;">🚨 신고 ${post.reportCount}건</span>
+                                <span style="color:#f87171;">🚨 <spring:message code="admin.community.column.reportCount"/> ${post.reportCount}<spring:message code="admin.common.countSuffix"/></span>
                             </c:if>
                             <span>
-                                <fmt:formatDate value="${post.createdAt}" pattern="yyyy.MM.dd HH:mm"/>
+                                <fmt:formatDate value="${post.createdAt}" type="both" dateStyle="short" timeStyle="short"/>
                             </span>
                         </div>
                     </div>
@@ -102,24 +121,24 @@
                 <%-- 신고 내역 카드 --%>
                 <div class="adm-card" style="margin-bottom:20px;">
                     <div class="adm-card-head">
-                        <div class="adm-card-title">신고 내역</div>
-                        <div style="font-size:12px;color:#64748b;">${fn:length(reports)}건</div>
+                        <div class="adm-card-title">${adminCommunityDetailReportHistory}</div>
+                        <div style="font-size:12px;color:#64748b;">${fn:length(reports)}<spring:message code="admin.common.countSuffix"/></div>
                     </div>
                     <c:choose>
                         <c:when test="${empty reports}">
-                            <div style="padding:24px;text-align:center;color:#475569;font-size:13px;">신고 내역이 없습니다.</div>
+                            <div style="padding:24px;text-align:center;color:#475569;font-size:13px;">${adminCommunityDetailNoReports}</div>
                         </c:when>
                         <c:otherwise>
                             <div class="adm-table-wrap">
                                 <table class="adm-table">
                                     <thead>
                                     <tr>
-                                        <th>신고ID</th>
-                                        <th>신고자</th>
-                                        <th>사유</th>
-                                        <th>신고일</th>
-                                        <th>상태</th>
-                                        <th>처리일</th>
+                                        <th><spring:message code="admin.community.detail.reportId"/></th>
+                                        <th><spring:message code="admin.reports.reporter"/></th>
+                                        <th><spring:message code="admin.common.reason"/></th>
+                                        <th><spring:message code="admin.reports.reportedAt"/></th>
+                                        <th><spring:message code="admin.common.status"/></th>
+                                        <th><spring:message code="admin.reports.resolvedAt"/></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -132,30 +151,30 @@
                                             </td>
                                             <td style="font-size:12px;">
                                                 <c:choose>
-                                                    <c:when test="${r.reason == 'spam'}">스팸/광고</c:when>
-                                                    <c:when test="${r.reason == 'abuse'}">욕설/비방</c:when>
-                                                    <c:when test="${r.reason == 'privacy'}">개인정보</c:when>
-                                                    <c:when test="${r.reason == 'adult'}">음란물</c:when>
-                                                    <c:when test="${r.reason == 'illegal'}">불법 정보</c:when>
+                                                    <c:when test="${r.reason == 'spam'}"><spring:message code="admin.reports.reason.spam"/></c:when>
+                                                    <c:when test="${r.reason == 'abuse'}"><spring:message code="admin.reports.reason.abuse"/></c:when>
+                                                    <c:when test="${r.reason == 'privacy'}"><spring:message code="admin.reports.reason.privacy"/></c:when>
+                                                    <c:when test="${r.reason == 'adult'}"><spring:message code="admin.reports.reason.adult"/></c:when>
+                                                    <c:when test="${r.reason == 'illegal'}"><spring:message code="admin.reports.reason.illegal"/></c:when>
                                                     <c:otherwise>${r.reason}</c:otherwise>
                                                 </c:choose>
                                             </td>
                                             <td style="font-size:11px;color:#64748b;">
-                                                <fmt:formatDate value="${r.createdAt}" pattern="yyyy.MM.dd"/>
+                                                <fmt:formatDate value="${r.createdAt}" type="both" dateStyle="short" timeStyle="short"/>
                                             </td>
                                             <td>
                                                 <span class="status-badge ${r.status}" style="font-size:11px;">
                                                     <c:choose>
-                                                        <c:when test="${r.status == 'RESOLVED'}">처리완료</c:when>
-                                                        <c:when test="${r.status == 'DISMISSED'}">반려</c:when>
-                                                        <c:otherwise>미처리</c:otherwise>
+                                                        <c:when test="${r.status == 'RESOLVED'}"><spring:message code="admin.reports.status.resolved"/></c:when>
+                                                        <c:when test="${r.status == 'DISMISSED'}"><spring:message code="admin.reports.status.dismissed"/></c:when>
+                                                        <c:otherwise><spring:message code="admin.community.detail.reportStatusPending"/></c:otherwise>
                                                     </c:choose>
                                                 </span>
                                             </td>
                                             <td style="font-size:11px;color:#64748b;">
                                                 <c:choose>
                                                     <c:when test="${not empty r.resolvedAt}">
-                                                        <fmt:formatDate value="${r.resolvedAt}" pattern="yyyy.MM.dd"/>
+                                                        <fmt:formatDate value="${r.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/>
                                                         <c:if test="${not empty r.resolveAction}">
                                                             <div style="color:#475569;">${r.resolveAction}</div>
                                                         </c:if>
@@ -175,12 +194,12 @@
                 <%-- 댓글 목록 카드 --%>
                 <div class="adm-card">
                     <div class="adm-card-head">
-                        <div class="adm-card-title">댓글 목록</div>
-                        <div style="font-size:12px;color:#64748b;">${fn:length(comments)}건</div>
+                        <div class="adm-card-title"><spring:message code="admin.community.detail.commentsTitle"/></div>
+                        <div style="font-size:12px;color:#64748b;">${fn:length(comments)}<spring:message code="admin.common.countSuffix"/></div>
                     </div>
                     <c:choose>
                         <c:when test="${empty comments}">
-                            <div style="padding:24px;text-align:center;color:#475569;font-size:13px;">댓글이 없습니다.</div>
+                            <div style="padding:24px;text-align:center;color:#475569;font-size:13px;">${adminCommunityDetailNoComments}</div>
                         </c:when>
                         <c:otherwise>
                             <div style="padding:0 16px 16px;">
@@ -197,26 +216,26 @@
                                                 <span style="font-size:10px;color:#94a3b8;font-family:monospace;">
                                                     <c:choose>
                                                         <c:when test="${not empty comment.lastIp}">${comment.lastIp}</c:when>
-                                                        <c:otherwise>IP 없음</c:otherwise>
+                                                        <c:otherwise>${adminCommunityDetailNoIp}</c:otherwise>
                                                     </c:choose>
                                                 </span>
                                                 <c:if test="${comment.accountStatus == 'BLOCKED'}">
-                                                    <span style="font-size:10px;background:#7f1d1d;color:#fca5a5;padding:1px 5px;border-radius:3px;">계정차단</span>
+                                                    <span class="adm-inline-danger"><spring:message code="admin.community.accountBlocked"/></span>
                                                 </c:if>
                                                 <c:if test="${comment.authorResolveCount30d > 0}">
-                                                    <span style="font-size:10px;background:#422006;color:#fb923c;padding:1px 5px;border-radius:3px;">
-                                                        ⚠ 30일 ${comment.authorResolveCount30d}건
+                                                    <span class="adm-inline-warning">
+                                                        ⚠ <spring:message code="admin.community.rowResolved30d" arguments="${comment.authorResolveCount30d}"/>
                                                     </span>
                                                 </c:if>
                                                 <span class="status-badge ${comment.commentStatus}" style="font-size:10px;">
                                                     <c:choose>
-                                                        <c:when test="${comment.commentStatus == 'ACTIVE'}">활성</c:when>
-                                                        <c:when test="${comment.commentStatus == 'BLOCKED'}">차단</c:when>
+                                                        <c:when test="${comment.commentStatus == 'ACTIVE'}"><spring:message code="admin.community.status.active"/></c:when>
+                                                        <c:when test="${comment.commentStatus == 'BLOCKED'}"><spring:message code="admin.community.status.blocked"/></c:when>
                                                         <c:otherwise>${comment.commentStatus}</c:otherwise>
                                                     </c:choose>
                                                 </span>
                                                 <c:if test="${comment.reportCount > 0}">
-                                                    <span style="font-size:10px;color:#f87171;">🚨 ${comment.reportCount}</span>
+                                                    <span style="font-size:10px;color:#f87171;">🚨 ${comment.reportCount}<spring:message code="admin.common.countSuffix"/></span>
                                                 </c:if>
                                             </div>
                                             <%-- 댓글 액션 --%>
@@ -225,20 +244,20 @@
                                                     <button class="adm-btn adm-btn-ghost"
                                                             style="font-size:11px;padding:2px 8px;color:#f87171;border-color:#f87171;"
                                                             data-id="${comment.commentId}"
-                                                            onclick="actionComment(this.getAttribute('data-id'), 'block')">차단</button>
+                                                            onclick="actionComment(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
                                                 </c:if>
                                                 <button class="adm-btn adm-btn-ghost"
                                                         style="font-size:11px;padding:2px 8px;color:#64748b;"
                                                         data-id="${comment.commentId}"
-                                                        onclick="actionComment(this.getAttribute('data-id'), 'delete')">삭제</button>
+                                                        onclick="actionComment(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
                                             </div>
                                         </div>
                                         <%-- 댓글 내용 --%>
                                         <div style="font-size:13px;color:#cbd5e1;line-height:1.6;">${comment.content}</div>
                                         <div style="font-size:11px;color:#475569;margin-top:4px;">
-                                            <fmt:formatDate value="${comment.createdAt}" pattern="yyyy.MM.dd HH:mm"/>
+                                            <fmt:formatDate value="${comment.createdAt}" type="both" dateStyle="short" timeStyle="short"/>
                                             <c:if test="${not empty comment.parentCommentId}">
-                                                <span style="margin-left:8px;color:#334155;">↩ 대댓글</span>
+                                                <span style="margin-left:8px;color:#334155;">↩ <spring:message code="admin.community.kind.reply"/></span>
                                             </c:if>
                                         </div>
                                     </div>
@@ -251,64 +270,64 @@
 
             <%-- ── 오른쪽: 작성자 정보 ── --%>
             <div>
-                <div class="adm-card" style="position:sticky;top:80px;">
+                <div class="adm-card adm-side-sticky">
                     <div class="adm-card-head">
-                        <div class="adm-card-title">작성자 정보</div>
+                        <div class="adm-card-title">${adminCommunityDetailAuthorInfoTitle}</div>
                     </div>
                     <div class="adm-card-body">
-                        <div style="display:flex;flex-direction:column;gap:12px;">
+                        <div class="adm-side-section">
 
                             <div>
-                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">아이디</div>
+                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.userId"/></div>
                                 <div style="font-size:14px;font-weight:600;">${post.userId}</div>
                             </div>
 
                             <div>
-                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">닉네임</div>
+                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.nickname"/></div>
                                 <div style="font-size:14px;font-weight:600;">${post.nickname}</div>
                             </div>
 
                             <div>
-                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">최근 접속 IP</div>
+                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${adminCommunityDetailLastIp}</div>
                                 <div style="font-size:13px;font-family:monospace;color:#94a3b8;">
                                     <c:choose>
                                         <c:when test="${not empty post.lastIp}">${post.lastIp}</c:when>
-                                        <c:otherwise><span style="color:#475569;">기록 없음</span></c:otherwise>
+                                        <c:otherwise><span style="color:#475569;">${adminCommunityDetailNoRecord}</span></c:otherwise>
                                     </c:choose>
                                 </div>
                             </div>
 
                             <div>
-                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">계정 상태</div>
+                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${adminCommunityDetailAccountStatus}</div>
                                 <span class="status-badge ${post.accountStatus}">
                                     <c:choose>
-                                        <c:when test="${post.accountStatus == 'ACTIVE'}">정상</c:when>
-                                        <c:when test="${post.accountStatus == 'BLOCKED'}">차단됨</c:when>
-                                        <c:when test="${post.accountStatus == 'DORMANT'}">휴면</c:when>
-                                        <c:when test="${post.accountStatus == 'DELETED'}">탈퇴</c:when>
+                                        <c:when test="${post.accountStatus == 'ACTIVE'}"><spring:message code="admin.community.detail.accountStatus.active"/></c:when>
+                                        <c:when test="${post.accountStatus == 'BLOCKED'}"><spring:message code="admin.community.detail.accountStatus.blocked"/></c:when>
+                                        <c:when test="${post.accountStatus == 'DORMANT'}"><spring:message code="admin.community.detail.accountStatus.dormant"/></c:when>
+                                        <c:when test="${post.accountStatus == 'DELETED'}"><spring:message code="admin.community.detail.accountStatus.deleted"/></c:when>
                                         <c:otherwise>${post.accountStatus}</c:otherwise>
                                     </c:choose>
                                 </span>
                             </div>
 
                             <c:if test="${post.authorResolveCount30d > 0}">
-                                <div style="background:#422006;border-radius:6px;padding:10px;">
-                                    <div style="font-size:11px;color:#fb923c;font-weight:600;margin-bottom:4px;">⚠ 30일 신고 처리 이력</div>
-                                    <div style="font-size:13px;color:#fed7aa;">${post.authorResolveCount30d}건 처리됨</div>
+                                <div class="adm-warning-box">
+                                    <div style="font-size:11px;font-weight:600;margin-bottom:4px;">⚠ ${adminCommunityDetailRecentResolvedTitle}</div>
+                                    <div style="font-size:13px;"><spring:message code="admin.community.detail.recentResolvedCount" arguments="${post.authorResolveCount30d}"/></div>
                                 </div>
                             </c:if>
 
-                            <div style="border-top:1px solid #1e2736;padding-top:12px;display:flex;flex-direction:column;gap:6px;">
+                            <div class="adm-meta-actions adm-action-stack">
                                 <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${post.userId}"
-                                   class="adm-btn adm-btn-ghost" style="text-align:center;font-size:12px;">
-                                    회원 정보 보기
+                                   class="adm-btn adm-btn-ghost adm-link-button" style="font-size:12px;">
+                                    <spring:message code="admin.common.memberInfoView"/>
                                 </a>
                                 <c:if test="${post.accountStatus != 'BLOCKED'}">
                                     <button class="adm-btn adm-btn-ghost"
                                             style="font-size:12px;color:#f87171;border-color:#f87171;"
                                             data-useridx="${post.userIdx}"
                                             onclick="blockUser(this.getAttribute('data-useridx'))">
-                                        작성자 계정 차단
+                                        ${adminCommunityDetailBlockAuthorAccount}
                                     </button>
                                 </c:if>
                             </div>
@@ -323,42 +342,50 @@
 
 <script>
 var ctx = '${pageContext.request.contextPath}';
+var COMMUNITY_DETAIL_MSG = {
+    confirmPostAction: '${fn:escapeXml(adminCommunityDetailConfirmPostAction)}',
+    confirmCommentAction: '${fn:escapeXml(adminCommunityDetailConfirmCommentAction)}',
+    confirmBlockAuthor: '${fn:escapeXml(adminCommunityDetailConfirmBlockAuthor)}',
+    actionFailed: '${fn:escapeXml(adminCommunityDetailActionFailed)}',
+    block: '<spring:message code="admin.community.action.block" javaScriptEscape="true"/>',
+    delete: '<spring:message code="admin.community.action.delete" javaScriptEscape="true"/>'
+};
 
 function actionPost(postId, action) {
-    var label = action === 'block' ? '차단' : '삭제';
-    if (!confirm('게시글을 ' + label + '하시겠습니까?')) return;
+    var label = action === 'block' ? COMMUNITY_DETAIL_MSG.block : COMMUNITY_DETAIL_MSG.delete;
+    if (!confirm(COMMUNITY_DETAIL_MSG.confirmPostAction.replace('{0}', label))) return;
     fetch(ctx + '/admin/community/posts/' + postId + '/' + action, {
         method: 'POST',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     }).then(function (r) { return r.json(); })
       .then(function (d) {
         if (d.success) { location.reload(); }
-        else { alert(d.message || '처리 실패'); }
+        else { alert(d.message || COMMUNITY_DETAIL_MSG.actionFailed); }
     });
 }
 
 function actionComment(commentId, action) {
-    var label = action === 'block' ? '차단' : '삭제';
-    if (!confirm('댓글을 ' + label + '하시겠습니까?')) return;
+    var label = action === 'block' ? COMMUNITY_DETAIL_MSG.block : COMMUNITY_DETAIL_MSG.delete;
+    if (!confirm(COMMUNITY_DETAIL_MSG.confirmCommentAction.replace('{0}', label))) return;
     fetch(ctx + '/admin/community/comments/' + commentId + '/' + action, {
         method: 'POST',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     }).then(function (r) { return r.json(); })
       .then(function (d) {
         if (d.success) { location.reload(); }
-        else { alert(d.message || '처리 실패'); }
+        else { alert(d.message || COMMUNITY_DETAIL_MSG.actionFailed); }
     });
 }
 
 function blockUser(userIdx) {
-    if (!confirm('작성자 계정을 차단하시겠습니까?\n이 작업은 해당 사용자의 모든 활동을 중단시킵니다.')) return;
+    if (!confirm(COMMUNITY_DETAIL_MSG.confirmBlockAuthor)) return;
     fetch(ctx + '/admin/community/users/' + userIdx + '/block', {
         method: 'POST',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     }).then(function (r) { return r.json(); })
       .then(function (d) {
         if (d.success) { location.reload(); }
-        else { alert(d.message || '처리 실패'); }
+        else { alert(d.message || COMMUNITY_DETAIL_MSG.actionFailed); }
     });
 }
 </script>

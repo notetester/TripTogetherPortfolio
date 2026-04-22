@@ -90,23 +90,23 @@
                         <select class="adm-select" name="matchType">
                             <option value="ALL" ${search.matchType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
                             <option value="SINGLE_IP" ${search.matchType=='SINGLE_IP'?'selected':''}><spring:message code="admin.blocks.match.singleIp"/></option>
-                            <option value="CIDR" ${search.matchType=='CIDR'?'selected':''}>CIDR</option>
+                            <option value="CIDR" ${search.matchType=='CIDR'?'selected':''}><spring:message code="admin.blocks.match.cidr"/></option>
                             <option value="RANGE" ${search.matchType=='RANGE'?'selected':''}><spring:message code="admin.blocks.match.range"/></option>
                             <option value="COUNTRY" ${search.matchType=='COUNTRY'?'selected':''}><spring:message code="admin.blocks.match.country"/></option>
-                            <option value="ASN" ${search.matchType=='ASN'?'selected':''}>ASN</option>
+                            <option value="ASN" ${search.matchType=='ASN'?'selected':''}><spring:message code="admin.blocks.match.asn"/></option>
                         </select>
                     </div>
                     <div>
                         <div class="adm-filter-label"><spring:message code="admin.context.category"/></div>
                         <select class="adm-select" name="category">
                             <option value="ALL" ${search.category=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="MANUAL" ${search.category=='MANUAL'?'selected':''}>MANUAL</option>
-                            <option value="SPAM" ${search.category=='SPAM'?'selected':''}>SPAM</option>
-                            <option value="ABUSE" ${search.category=='ABUSE'?'selected':''}>ABUSE</option>
-                            <option value="BRUTE_FORCE" ${search.category=='BRUTE_FORCE'?'selected':''}>BRUTE_FORCE</option>
-                            <option value="GEO" ${search.category=='GEO'?'selected':''}>GEO</option>
-                            <option value="VPN" ${search.category=='VPN'?'selected':''}>VPN</option>
-                            <option value="SECURITY" ${search.category=='SECURITY'?'selected':''}>SECURITY</option>
+                            <option value="MANUAL" ${search.category=='MANUAL'?'selected':''}><spring:message code="admin.blocks.category.manual"/></option>
+                            <option value="SPAM" ${search.category=='SPAM'?'selected':''}><spring:message code="admin.blocks.category.spam"/></option>
+                            <option value="ABUSE" ${search.category=='ABUSE'?'selected':''}><spring:message code="admin.blocks.category.abuse"/></option>
+                            <option value="BRUTE_FORCE" ${search.category=='BRUTE_FORCE'?'selected':''}><spring:message code="admin.blocks.category.bruteForce"/></option>
+                            <option value="GEO" ${search.category=='GEO'?'selected':''}><spring:message code="admin.blocks.category.geo"/></option>
+                            <option value="VPN" ${search.category=='VPN'?'selected':''}><spring:message code="admin.blocks.category.vpn"/></option>
+                            <option value="SECURITY" ${search.category=='SECURITY'?'selected':''}><spring:message code="admin.blocks.category.security"/></option>
                         </select>
                     </div>
                     <div>
@@ -1178,13 +1178,13 @@
                 <div class="sa-form-group">
                     <label class="sa-form-label"><spring:message code="admin.context.category"/></label>
                     <select id="ipRuleEditCategory" class="adm-select">
-                        <option value="MANUAL">MANUAL</option>
-                        <option value="SPAM">SPAM</option>
-                        <option value="ABUSE">ABUSE</option>
-                        <option value="BRUTE_FORCE">BRUTE_FORCE</option>
-                        <option value="GEO">GEO</option>
-                        <option value="VPN">VPN</option>
-                        <option value="SECURITY">SECURITY</option>
+                        <option value="MANUAL"><spring:message code="admin.blocks.category.manual"/></option>
+                        <option value="SPAM"><spring:message code="admin.blocks.category.spam"/></option>
+                        <option value="ABUSE"><spring:message code="admin.blocks.category.abuse"/></option>
+                        <option value="BRUTE_FORCE"><spring:message code="admin.blocks.category.bruteForce"/></option>
+                        <option value="GEO"><spring:message code="admin.blocks.category.geo"/></option>
+                        <option value="VPN"><spring:message code="admin.blocks.category.vpn"/></option>
+                        <option value="SECURITY"><spring:message code="admin.blocks.category.security"/></option>
                     </select>
                 </div>
                 <div class="sa-form-group">
@@ -1246,30 +1246,30 @@
                     <label class="sa-form-label"><spring:message code="admin.blocks.matchType"/></label>
                     <select id="ipMatchType" class="adm-select" onchange="handleIpRuleTypeChange()">
                         <option value="SINGLE_IP"><spring:message code="admin.blocks.match.singleIp"/></option>
-                        <option value="CIDR">CIDR</option>
+                        <option value="CIDR"><spring:message code="admin.blocks.match.cidr"/></option>
                         <option value="RANGE"><spring:message code="admin.blocks.match.range"/></option>
                         <option value="COUNTRY"><spring:message code="admin.blocks.match.country"/></option>
-                        <option value="ASN">ASN</option>
+                        <option value="ASN"><spring:message code="admin.blocks.match.asn"/></option>
                     </select>
                 </div>
                 <div class="sa-form-group">
                     <label class="sa-form-label"><spring:message code="admin.context.category"/></label>
                     <select id="ipBlockCategory" class="adm-select">
-                        <option value="MANUAL">MANUAL</option>
-                        <option value="SPAM">SPAM</option>
-                        <option value="ABUSE">ABUSE</option>
-                        <option value="BRUTE_FORCE">BRUTE_FORCE</option>
-                        <option value="GEO">GEO</option>
-                        <option value="VPN">VPN</option>
-                        <option value="SECURITY">SECURITY</option>
+                        <option value="MANUAL"><spring:message code="admin.blocks.category.manual"/></option>
+                        <option value="SPAM"><spring:message code="admin.blocks.category.spam"/></option>
+                        <option value="ABUSE"><spring:message code="admin.blocks.category.abuse"/></option>
+                        <option value="BRUTE_FORCE"><spring:message code="admin.blocks.category.bruteForce"/></option>
+                        <option value="GEO"><spring:message code="admin.blocks.category.geo"/></option>
+                        <option value="VPN"><spring:message code="admin.blocks.category.vpn"/></option>
+                        <option value="SECURITY"><spring:message code="admin.blocks.category.security"/></option>
                     </select>
                 </div>
                 <div class="sa-form-group" id="fieldSingleIp">
-                    <label class="sa-form-label">IP</label>
+                    <label class="sa-form-label"><spring:message code="admin.common.ip"/></label>
                     <input id="ipAddressInput" class="adm-input" type="text" placeholder="203.0.113.10">
                 </div>
                 <div class="sa-form-group" id="fieldCidr" style="display:none;">
-                    <label class="sa-form-label">CIDR</label>
+                    <label class="sa-form-label"><spring:message code="admin.blocks.match.cidr"/></label>
                     <input id="cidrNotationInput" class="adm-input" type="text" placeholder="203.0.113.0/24">
                 </div>
                 <div class="sa-form-group" id="fieldRangeStart" style="display:none;">
@@ -1285,7 +1285,7 @@
                     <input id="countryCodeInput" class="adm-input" type="text" placeholder="CN">
                 </div>
                 <div class="sa-form-group" id="fieldAsn" style="display:none;">
-                    <label class="sa-form-label">ASN</label>
+                    <label class="sa-form-label"><spring:message code="admin.blocks.match.asn"/></label>
                     <input id="asnInput" class="adm-input" type="text" placeholder="AS12345">
                 </div>
                 <div class="sa-form-group">
@@ -1338,7 +1338,7 @@
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;">
                 <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchCode"/></label><input id="batchCode" class="adm-input" type="text" placeholder="VPN_FEED_202604"></div>
                 <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchName"/></label><input id="batchName" class="adm-input" type="text" placeholder="VPN Public Ranges 2026.04"></div>
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/></label><select id="batchSourceType" class="adm-select"><option value="MANUAL">MANUAL</option><option value="VPN_FEED">VPN_FEED</option><option value="SPAM_FEED">SPAM_FEED</option><option value="GEO_POLICY">GEO_POLICY</option><option value="AUTO_DETECTION">AUTO_DETECTION</option></select></div>
+<div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/></label><select id="batchSourceType" class="adm-select"><option value="MANUAL"><spring:message code="admin.blocks.sourceType.manual"/></option><option value="VPN_FEED"><spring:message code="admin.blocks.sourceType.vpnFeed"/></option><option value="SPAM_FEED"><spring:message code="admin.blocks.sourceType.spamFeed"/></option><option value="GEO_POLICY"><spring:message code="admin.blocks.sourceType.geoPolicy"/></option><option value="AUTO_DETECTION"><spring:message code="admin.blocks.sourceType.autoDetection"/></option></select></div>
                 <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/> <spring:message code="admin.common.value"/></label><input id="batchSourceName" class="adm-input" type="text" placeholder="Manual registration"></div>
                 <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.baseAction"/></label><select id="batchRuleAction" class="adm-select"><option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option><option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option></select></div>
                 <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.defaultPriority"/></label><input id="batchDefaultPriority" class="adm-input" type="number" min="1" value="1"></div>
@@ -1371,7 +1371,7 @@
             <div class="sa-form-grid" style="grid-template-columns:1fr 1fr;margin-top:18px;">
                 <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchCode"/></label><input id="batchEditCode" class="adm-input" type="text"></div>
                 <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.batchName"/></label><input id="batchEditName" class="adm-input" type="text"></div>
-                <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/></label><select id="batchEditSourceType" class="adm-select"><option value="MANUAL">MANUAL</option><option value="VPN_FEED">VPN_FEED</option><option value="SPAM_FEED">SPAM_FEED</option><option value="GEO_POLICY">GEO_POLICY</option><option value="AUTO_DETECTION">AUTO_DETECTION</option></select></div>
+<div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/></label><select id="batchEditSourceType" class="adm-select"><option value="MANUAL"><spring:message code="admin.blocks.sourceType.manual"/></option><option value="VPN_FEED"><spring:message code="admin.blocks.sourceType.vpnFeed"/></option><option value="SPAM_FEED"><spring:message code="admin.blocks.sourceType.spamFeed"/></option><option value="GEO_POLICY"><spring:message code="admin.blocks.sourceType.geoPolicy"/></option><option value="AUTO_DETECTION"><spring:message code="admin.blocks.sourceType.autoDetection"/></option></select></div>
                 <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.source"/> <spring:message code="admin.common.value"/></label><input id="batchEditSourceName" class="adm-input" type="text"></div>
                 <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.baseAction"/></label><select id="batchEditRuleAction" class="adm-select"><option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option><option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option></select></div>
                 <div class="sa-form-group"><label class="sa-form-label"><spring:message code="admin.blocks.defaultPriority"/></label><input id="batchEditPriority" class="adm-input" type="number" min="1"></div>
@@ -1852,21 +1852,44 @@ function buildRoleBadge(role) {
 
 function buildSocialHtml(linkedProviders) {
     if (!linkedProviders) {
-        return '<span style="color:#475569;font-size:12px;"><spring:message code="admin.members.noLinkedProvider" javaScriptEscape="true"/></span>';
+        return '<span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider" javaScriptEscape="true"/></span>';
     }
 
     const providerMap = {
-        KAKAO: 'k <spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
-        NAVER: 'N <spring:message code="admin.social.naver" javaScriptEscape="true"/>',
-        GOOGLE: 'G Google'
+        KAKAO: {
+            label: '<spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
+            className: 'kakao',
+            icon: '<span class="adm-social-icon kakao-mark">k</span>'
+        },
+        NAVER: {
+            label: '<spring:message code="admin.social.naver" javaScriptEscape="true"/>',
+            className: 'naver',
+            icon: '<span class="adm-social-icon naver-mark">N</span>'
+        },
+        GOOGLE: {
+            label: '<spring:message code="admin.social.google" javaScriptEscape="true"/>',
+            className: 'google',
+            icon: '<span class="adm-social-icon google-mark"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>'
+        }
     };
 
-    return linkedProviders
+    const items = linkedProviders
         .split(',')
         .map(provider => provider.trim())
         .filter(provider => provider.length > 0)
-        .map(provider => '<span style="margin-right:8px;font-size:12px;color:#94a3b8;">' + escapeHtml(providerMap[provider] || provider) + '</span>')
-        .join('') || '<span style="color:#475569;font-size:12px;"><spring:message code="admin.members.noLinkedProvider" javaScriptEscape="true"/></span>';
+        .map(function(provider) {
+            const info = providerMap[provider];
+            if (!info) {
+                return '<span class="adm-social-pill"><span class="adm-social-label">' + escapeHtml(provider) + '</span></span>';
+            }
+            return '<span class="adm-social-pill ' + info.className + '">' + info.icon + '<span class="adm-social-label">' + escapeHtml(info.label) + '</span></span>';
+        });
+
+    if (!items.length) {
+        return '<span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider" javaScriptEscape="true"/></span>';
+    }
+
+    return '<div class="adm-social-list">' + items.join('') + '</div>';
 }
 
 function buildMemberInfoTab(member) {
@@ -1920,7 +1943,7 @@ function buildMemberHistTab(history) {
         EMAIL: '<spring:message code="admin.context.email" javaScriptEscape="true"/>',
         KAKAO: '<spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
         NAVER: '<spring:message code="admin.social.naver" javaScriptEscape="true"/>',
-        GOOGLE: 'Google'
+        GOOGLE: '<spring:message code="admin.social.google" javaScriptEscape="true"/>'
     };
 
     let rows = '';
@@ -1939,7 +1962,7 @@ function buildMemberHistTab(history) {
     return ''
         + '<div style="overflow-x:auto;max-height:340px;overflow-y:auto;">'
         + '<table class="history-table">'
-        + '<thead><tr><th><spring:message code="admin.common.time" javaScriptEscape="true"/></th><th><spring:message code="admin.logs.provider" javaScriptEscape="true"/></th><th><spring:message code="admin.blocks.result" javaScriptEscape="true"/></th><th><spring:message code="admin.logs.failReason" javaScriptEscape="true"/></th><th>IP</th></tr></thead>'
+        + '<thead><tr><th><spring:message code="admin.common.time" javaScriptEscape="true"/></th><th><spring:message code="admin.logs.provider" javaScriptEscape="true"/></th><th><spring:message code="admin.blocks.result" javaScriptEscape="true"/></th><th><spring:message code="admin.logs.failReason" javaScriptEscape="true"/></th><th><spring:message code="admin.common.ip" javaScriptEscape="true"/></th></tr></thead>'
         + '<tbody>' + rows + '</tbody>'
         + '</table>'
         + '</div>';

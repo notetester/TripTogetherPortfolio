@@ -14,11 +14,11 @@
       <form method="get" action="${pageContext.request.contextPath}/admin/activity-logs">
         <div class="adm-filter-bar">
           <div class="adm-search-box" style="flex:1;min-width:220px;"><div class="adm-filter-label"><spring:message code="admin.common.search"/></div><span class="adm-search-ico">🔍</span><input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="<spring:message code='admin.activity.searchPlaceholder'/>"></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.activity.domain"/></div><select class="adm-select" name="activityDomain"><option value="ALL" ${search.activityDomain=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="GENERAL" ${search.activityDomain=='GENERAL'?'selected':''}>GENERAL</option><option value="AUTH" ${search.activityDomain=='AUTH'?'selected':''}>AUTH</option><option value="ADMIN" ${search.activityDomain=='ADMIN'?'selected':''}>ADMIN</option><option value="COMMUNITY" ${search.activityDomain=='COMMUNITY'?'selected':''}>COMMUNITY</option><option value="MYPAGE" ${search.activityDomain=='MYPAGE'?'selected':''}>MYPAGE</option><option value="INQUIRY" ${search.activityDomain=='INQUIRY'?'selected':''}>INQUIRY</option></select></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.activity.type"/></div><select class="adm-select" name="activityType"><option value="ALL" ${search.activityType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="PAGE_VIEW" ${search.activityType=='PAGE_VIEW'?'selected':''}>PAGE_VIEW</option><option value="ACTION" ${search.activityType=='ACTION'?'selected':''}>ACTION</option><option value="AJAX" ${search.activityType=='AJAX'?'selected':''}>AJAX</option><option value="API" ${search.activityType=='API'?'selected':''}>API</option></select></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.logs.provider"/></div><select class="adm-select" name="activityProvider"><option value="ALL" ${search.activityProvider=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="LOCAL" ${search.activityProvider=='LOCAL'?'selected':''}>LOCAL</option><option value="KAKAO" ${search.activityProvider=='KAKAO'?'selected':''}>KAKAO</option><option value="NAVER" ${search.activityProvider=='NAVER'?'selected':''}>NAVER</option><option value="GOOGLE" ${search.activityProvider=='GOOGLE'?'selected':''}>GOOGLE</option></select></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.activity.authEvent"/></div><select class="adm-select" name="authEventType"><option value="ALL" ${search.authEventType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="LOGIN" ${search.authEventType=='LOGIN'?'selected':''}>LOGIN</option><option value="LOGOUT" ${search.authEventType=='LOGOUT'?'selected':''}>LOGOUT</option><option value="LINK" ${search.authEventType=='LINK'?'selected':''}>LINK</option><option value="UNLINK" ${search.authEventType=='UNLINK'?'selected':''}>UNLINK</option></select></div>
-          <div><div class="adm-filter-label"><spring:message code="admin.activity.method"/></div><select class="adm-select" name="httpMethod"><option value="ALL" ${search.httpMethod=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="GET" ${search.httpMethod=='GET'?'selected':''}>GET</option><option value="POST" ${search.httpMethod=='POST'?'selected':''}>POST</option><option value="PUT" ${search.httpMethod=='PUT'?'selected':''}>PUT</option><option value="DELETE" ${search.httpMethod=='DELETE'?'selected':''}>DELETE</option></select></div>
+          <div><div class="adm-filter-label"><spring:message code="admin.activity.domain"/></div><select class="adm-select" name="activityDomain"><option value="ALL" ${search.activityDomain=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="GENERAL" ${search.activityDomain=='GENERAL'?'selected':''}><spring:message code="admin.activity.domain.general"/></option><option value="AUTH" ${search.activityDomain=='AUTH'?'selected':''}><spring:message code="admin.activity.domain.auth"/></option><option value="ADMIN" ${search.activityDomain=='ADMIN'?'selected':''}><spring:message code="admin.activity.domain.admin"/></option><option value="COMMUNITY" ${search.activityDomain=='COMMUNITY'?'selected':''}><spring:message code="admin.activity.domain.community"/></option><option value="MYPAGE" ${search.activityDomain=='MYPAGE'?'selected':''}><spring:message code="admin.activity.domain.mypage"/></option><option value="INQUIRY" ${search.activityDomain=='INQUIRY'?'selected':''}><spring:message code="admin.activity.domain.inquiry"/></option></select></div>
+          <div><div class="adm-filter-label"><spring:message code="admin.activity.type"/></div><select class="adm-select" name="activityType"><option value="ALL" ${search.activityType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="PAGE_VIEW" ${search.activityType=='PAGE_VIEW'?'selected':''}><spring:message code="admin.activity.type.pageView"/></option><option value="ACTION" ${search.activityType=='ACTION'?'selected':''}><spring:message code="admin.activity.type.action"/></option><option value="AJAX" ${search.activityType=='AJAX'?'selected':''}><spring:message code="admin.activity.type.ajax"/></option><option value="API" ${search.activityType=='API'?'selected':''}><spring:message code="admin.activity.type.api"/></option></select></div>
+          <div><div class="adm-filter-label"><spring:message code="admin.logs.provider"/></div><select class="adm-select" name="activityProvider"><option value="ALL" ${search.activityProvider=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="LOCAL" ${search.activityProvider=='LOCAL'?'selected':''}><spring:message code="admin.logs.provider.local"/></option><option value="KAKAO" ${search.activityProvider=='KAKAO'?'selected':''}><spring:message code="admin.logs.provider.kakao"/></option><option value="NAVER" ${search.activityProvider=='NAVER'?'selected':''}><spring:message code="admin.logs.provider.naver"/></option><option value="GOOGLE" ${search.activityProvider=='GOOGLE'?'selected':''}><spring:message code="admin.logs.provider.google"/></option></select></div>
+          <div><div class="adm-filter-label"><spring:message code="admin.activity.authEvent"/></div><select class="adm-select" name="authEventType"><option value="ALL" ${search.authEventType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="LOGIN" ${search.authEventType=='LOGIN'?'selected':''}><spring:message code="admin.activity.authEvent.login"/></option><option value="LOGOUT" ${search.authEventType=='LOGOUT'?'selected':''}><spring:message code="admin.activity.authEvent.logout"/></option><option value="LINK" ${search.authEventType=='LINK'?'selected':''}><spring:message code="admin.activity.authEvent.link"/></option><option value="UNLINK" ${search.authEventType=='UNLINK'?'selected':''}><spring:message code="admin.activity.authEvent.unlink"/></option></select></div>
+          <div><div class="adm-filter-label"><spring:message code="admin.activity.method"/></div><select class="adm-select" name="httpMethod"><option value="ALL" ${search.httpMethod=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="GET" ${search.httpMethod=='GET'?'selected':''}><spring:message code="admin.activity.method.get"/></option><option value="POST" ${search.httpMethod=='POST'?'selected':''}><spring:message code="admin.activity.method.post"/></option><option value="PUT" ${search.httpMethod=='PUT'?'selected':''}><spring:message code="admin.activity.method.put"/></option><option value="DELETE" ${search.httpMethod=='DELETE'?'selected':''}><spring:message code="admin.activity.method.delete"/></option></select></div>
           <div><div class="adm-filter-label"><spring:message code="admin.logs.success"/></div><select class="adm-select" name="success"><option value="ALL" ${search.success=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option><option value="SUCCESS" ${search.success=='SUCCESS'?'selected':''}><spring:message code="admin.common.success"/></option><option value="FAIL" ${search.success=='FAIL'?'selected':''}><spring:message code="admin.common.fail"/></option></select></div>
           <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
         </div>
@@ -26,7 +26,7 @@
     </div>
   </div>
   <div class="adm-card"><div class="adm-card-head"><div class="adm-card-title"><spring:message code="admin.activity.historyTitle"/></div><div style="font-size:12px;color:#64748b;"><spring:message code="admin.common.totalCount" arguments="${total}"/></div></div>
-    <div class="adm-table-wrap"><table class="adm-table"><thead><tr><th><spring:message code="admin.common.time"/></th><th><spring:message code="admin.common.member"/></th><th><spring:message code="admin.activity.domain"/></th><th><spring:message code="admin.activity.type"/></th><th><spring:message code="admin.activity.code"/></th><th>URI</th><th><spring:message code="admin.activity.method"/></th><th><spring:message code="admin.common.status"/></th><th>IP</th><th><spring:message code="admin.activity.flow"/></th></tr></thead><tbody>
+    <div class="adm-table-wrap"><table class="adm-table"><thead><tr><th><spring:message code="admin.common.time"/></th><th><spring:message code="admin.common.member"/></th><th><spring:message code="admin.activity.domain"/></th><th><spring:message code="admin.activity.type"/></th><th><spring:message code="admin.activity.code"/></th><th><spring:message code="admin.common.uri"/></th><th><spring:message code="admin.activity.method"/></th><th><spring:message code="admin.common.status"/></th><th><spring:message code="admin.common.ip"/></th><th><spring:message code="admin.activity.flow"/></th></tr></thead><tbody>
       <c:forEach items="${list}" var="item"><tr>
         <td><fmt:formatDate value="${item.createdAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></td>
         <td>
@@ -51,21 +51,60 @@
             </c:otherwise>
           </c:choose>
         </td>
-        <td><c:out value="${empty item.activityDomain ? '-' : item.activityDomain}"/></td>
-        <td>${item.activityType}</td>
+        <td>
+          <c:choose>
+            <c:when test="${item.activityDomain eq 'GENERAL'}"><spring:message code="admin.activity.domain.general"/></c:when>
+            <c:when test="${item.activityDomain eq 'AUTH'}"><spring:message code="admin.activity.domain.auth"/></c:when>
+            <c:when test="${item.activityDomain eq 'ADMIN'}"><spring:message code="admin.activity.domain.admin"/></c:when>
+            <c:when test="${item.activityDomain eq 'COMMUNITY'}"><spring:message code="admin.activity.domain.community"/></c:when>
+            <c:when test="${item.activityDomain eq 'MYPAGE'}"><spring:message code="admin.activity.domain.mypage"/></c:when>
+            <c:when test="${item.activityDomain eq 'INQUIRY'}"><spring:message code="admin.activity.domain.inquiry"/></c:when>
+            <c:otherwise><c:out value="${empty item.activityDomain ? '-' : item.activityDomain}"/></c:otherwise>
+          </c:choose>
+        </td>
+        <td>
+          <c:choose>
+            <c:when test="${item.activityType eq 'PAGE_VIEW'}"><spring:message code="admin.activity.type.pageView"/></c:when>
+            <c:when test="${item.activityType eq 'ACTION'}"><spring:message code="admin.activity.type.action"/></c:when>
+            <c:when test="${item.activityType eq 'AJAX'}"><spring:message code="admin.activity.type.ajax"/></c:when>
+            <c:when test="${item.activityType eq 'API'}"><spring:message code="admin.activity.type.api"/></c:when>
+            <c:otherwise><c:out value="${item.activityType}"/></c:otherwise>
+          </c:choose>
+        </td>
         <td>
           <div><c:out value="${empty item.activityCode ? '-' : item.activityCode}"/></div>
           <c:if test="${not empty item.activityProvider or not empty item.authEventType}">
             <div style="margin-top:4px;font-size:11px;color:#64748b;">
-              <c:out value="${empty item.activityProvider ? '-' : item.activityProvider}"/>
+              <c:choose>
+                <c:when test="${item.activityProvider eq 'LOCAL'}"><spring:message code="admin.logs.provider.local"/></c:when>
+                <c:when test="${item.activityProvider eq 'KAKAO'}"><spring:message code="admin.logs.provider.kakao"/></c:when>
+                <c:when test="${item.activityProvider eq 'NAVER'}"><spring:message code="admin.logs.provider.naver"/></c:when>
+                <c:when test="${item.activityProvider eq 'GOOGLE'}"><spring:message code="admin.logs.provider.google"/></c:when>
+                <c:otherwise><c:out value="${empty item.activityProvider ? '-' : item.activityProvider}"/></c:otherwise>
+              </c:choose>
               <c:if test="${not empty item.authEventType}">
-                / <c:out value="${item.authEventType}"/>
+                /
+                <c:choose>
+                  <c:when test="${item.authEventType eq 'LOGIN'}"><spring:message code="admin.activity.authEvent.login"/></c:when>
+                  <c:when test="${item.authEventType eq 'LOGOUT'}"><spring:message code="admin.activity.authEvent.logout"/></c:when>
+                  <c:when test="${item.authEventType eq 'LINK'}"><spring:message code="admin.activity.authEvent.link"/></c:when>
+                  <c:when test="${item.authEventType eq 'UNLINK'}"><spring:message code="admin.activity.authEvent.unlink"/></c:when>
+                  <c:otherwise><c:out value="${item.authEventType}"/></c:otherwise>
+                </c:choose>
               </c:if>
             </div>
           </c:if>
         </td>
         <td style="max-width:300px;word-break:break-all;"><c:out value="${item.requestUri}"/></td>
-        <td>${item.httpMethod}</td>
+        <td>
+          <c:choose>
+            <c:when test="${item.httpMethod eq 'GET'}"><spring:message code="admin.activity.method.get"/></c:when>
+            <c:when test="${item.httpMethod eq 'POST'}"><spring:message code="admin.activity.method.post"/></c:when>
+            <c:when test="${item.httpMethod eq 'PUT'}"><spring:message code="admin.activity.method.put"/></c:when>
+            <c:when test="${item.httpMethod eq 'DELETE'}"><spring:message code="admin.activity.method.delete"/></c:when>
+            <c:otherwise><c:out value="${item.httpMethod}"/></c:otherwise>
+          </c:choose>
+        </td>
         <td><c:out value="${item.responseStatus}"/> / <c:out value="${item.success ? adminActivitySuccessLabel : adminActivityFailLabel}"/></td>
         <td>
           <c:choose>

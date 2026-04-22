@@ -29,22 +29,22 @@
                         <div class="adm-filter-label"><spring:message code="admin.security.eventType"/></div>
                         <select class="adm-select" name="eventType">
                             <option value="ALL" ${search.eventType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="FIND_ID" ${search.eventType=='FIND_ID'?'selected':''}>FIND_ID</option>
-                            <option value="FIND_PASSWORD" ${search.eventType=='FIND_PASSWORD'?'selected':''}>FIND_PASSWORD</option>
-                            <option value="RESET_PASSWORD" ${search.eventType=='RESET_PASSWORD'?'selected':''}>RESET_PASSWORD</option>
-                            <option value="PASSWORD_CHANGE" ${search.eventType=='PASSWORD_CHANGE'?'selected':''}>PASSWORD_CHANGE</option>
-                            <option value="EMAIL_VERIFY" ${search.eventType=='EMAIL_VERIFY'?'selected':''}>EMAIL_VERIFY</option>
-                            <option value="EMAIL_LOGIN_TOGGLE" ${search.eventType=='EMAIL_LOGIN_TOGGLE'?'selected':''}>EMAIL_LOGIN_TOGGLE</option>
+                            <option value="FIND_ID" ${search.eventType=='FIND_ID'?'selected':''}><spring:message code="admin.security.eventType.findId"/></option>
+                            <option value="FIND_PASSWORD" ${search.eventType=='FIND_PASSWORD'?'selected':''}><spring:message code="admin.security.eventType.findPassword"/></option>
+                            <option value="RESET_PASSWORD" ${search.eventType=='RESET_PASSWORD'?'selected':''}><spring:message code="admin.security.eventType.resetPassword"/></option>
+                            <option value="PASSWORD_CHANGE" ${search.eventType=='PASSWORD_CHANGE'?'selected':''}><spring:message code="admin.security.eventType.passwordChange"/></option>
+                            <option value="EMAIL_VERIFY" ${search.eventType=='EMAIL_VERIFY'?'selected':''}><spring:message code="admin.security.eventType.emailVerify"/></option>
+                            <option value="EMAIL_LOGIN_TOGGLE" ${search.eventType=='EMAIL_LOGIN_TOGGLE'?'selected':''}><spring:message code="admin.security.eventType.emailLoginToggle"/></option>
                         </select>
                     </div>
                     <div>
                         <div class="adm-filter-label"><spring:message code="admin.security.stage"/></div>
                         <select class="adm-select" name="eventStage">
                             <option value="ALL" ${search.eventStage=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="REQUEST" ${search.eventStage=='REQUEST'?'selected':''}>REQUEST</option>
-                            <option value="ISSUE" ${search.eventStage=='ISSUE'?'selected':''}>ISSUE</option>
-                            <option value="VERIFY" ${search.eventStage=='VERIFY'?'selected':''}>VERIFY</option>
-                            <option value="COMPLETE" ${search.eventStage=='COMPLETE'?'selected':''}>COMPLETE</option>
+                            <option value="REQUEST" ${search.eventStage=='REQUEST'?'selected':''}><spring:message code="admin.security.stage.request"/></option>
+                            <option value="ISSUE" ${search.eventStage=='ISSUE'?'selected':''}><spring:message code="admin.security.stage.issue"/></option>
+                            <option value="VERIFY" ${search.eventStage=='VERIFY'?'selected':''}><spring:message code="admin.security.stage.verify"/></option>
+                            <option value="COMPLETE" ${search.eventStage=='COMPLETE'?'selected':''}><spring:message code="admin.security.stage.complete"/></option>
                         </select>
                     </div>
                     <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
@@ -71,7 +71,7 @@
                     <th><spring:message code="admin.context.targetEmail"/></th>
                     <th><spring:message code="admin.common.result"/></th>
                     <th><spring:message code="admin.common.reason"/></th>
-                    <th>IP</th>
+                    <th><spring:message code="admin.common.ip"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -116,8 +116,26 @@
                                 <c:otherwise><span style="color:#64748b;"><spring:message code="admin.security.actorSystem"/></span></c:otherwise>
                             </c:choose>
                         </td>
-                        <td>${item.eventType}</td>
-                        <td>${item.eventStage}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${item.eventType eq 'FIND_ID'}"><spring:message code="admin.security.eventType.findId"/></c:when>
+                                <c:when test="${item.eventType eq 'FIND_PASSWORD'}"><spring:message code="admin.security.eventType.findPassword"/></c:when>
+                                <c:when test="${item.eventType eq 'RESET_PASSWORD'}"><spring:message code="admin.security.eventType.resetPassword"/></c:when>
+                                <c:when test="${item.eventType eq 'PASSWORD_CHANGE'}"><spring:message code="admin.security.eventType.passwordChange"/></c:when>
+                                <c:when test="${item.eventType eq 'EMAIL_VERIFY'}"><spring:message code="admin.security.eventType.emailVerify"/></c:when>
+                                <c:when test="${item.eventType eq 'EMAIL_LOGIN_TOGGLE'}"><spring:message code="admin.security.eventType.emailLoginToggle"/></c:when>
+                                <c:otherwise><c:out value="${item.eventType}"/></c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${item.eventStage eq 'REQUEST'}"><spring:message code="admin.security.stage.request"/></c:when>
+                                <c:when test="${item.eventStage eq 'ISSUE'}"><spring:message code="admin.security.stage.issue"/></c:when>
+                                <c:when test="${item.eventStage eq 'VERIFY'}"><spring:message code="admin.security.stage.verify"/></c:when>
+                                <c:when test="${item.eventStage eq 'COMPLETE'}"><spring:message code="admin.security.stage.complete"/></c:when>
+                                <c:otherwise><c:out value="${item.eventStage}"/></c:otherwise>
+                            </c:choose>
+                        </td>
                         <td><c:out value="${empty item.inputIdentifier ? '-' : item.inputIdentifier}"/></td>
                         <td><c:out value="${empty item.targetEmail ? '-' : item.targetEmail}"/></td>
                         <td>
