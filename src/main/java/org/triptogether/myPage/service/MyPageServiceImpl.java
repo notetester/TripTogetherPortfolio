@@ -1,6 +1,7 @@
 package org.triptogether.myPage.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.admin.vo.BusinessAccountApplicationVO;
@@ -16,11 +17,13 @@ import org.triptogether.myPage.vo.MyPageReviewDto;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MyPageServiceImpl implements MyPageService {
 
     private final MyPageMapper myPageMapper;
+    private final NotificationSseService notificationSseService;
 
     // ===== 커뮤니티 =====
 
@@ -187,6 +190,11 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public void addNotification(FeedNotificationDto notification) {
         myPageMapper.insertNotification(notification);
+        try {
+            notificationSseService.sendTo(notification.getUserIdx(), notification);
+        } catch (Exception e) {
+            log.warn("SSE 푸시 실패 (DB 저장은 완료): userIdx={}", notification.getUserIdx(), e);
+        }
     }
 
     @Override
