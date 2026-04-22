@@ -160,3 +160,115 @@
   padding-left:12px; position:relative;
 }
 .guide-list li::before { content:'·'; position:absolute; left:0; color:var(--blue); font-weight:700; }
+
+/* =============================================
+   다크 테마 오버라이드 (html.dark)
+   ============================================= */
+
+html.dark .write-page-title { color: #f1f5f9; }
+
+html.dark .btn-cancel {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .btn-cancel:hover { border-color: #4b5563; color: #f1f5f9; }
+
+html.dark .section-label { color: #e5e7eb; }
+html.dark .section-label-sub,
+html.dark .input-counter,
+html.dark .input-hint { color: #9ca3af; }
+
+/* ── 입력 ── */
+html.dark .write-input,
+html.dark .write-textarea {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #f1f5f9;
+}
+html.dark .write-input::placeholder,
+html.dark .write-textarea::placeholder { color: #6b7280; }
+html.dark .write-input:focus,
+html.dark .write-textarea:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .15);
+}
+
+/* ── 이미지 업로드 ── */
+html.dark .img-preview-item { border-color: #2b3241; }
+html.dark .img-add-btn { border-color: #2b3241; }
+html.dark .img-add-btn:hover {
+    border-color: #60a5fa;
+    background: #1e293b;
+}
+html.dark .img-add-text { color: #9ca3af; }
+html.dark .img-add-count { color: #6b7280; }
+
+/* ── 태그 ── */
+html.dark .tag-input-wrap {
+    background: #1a1f2b;
+    border-color: #2b3241;
+}
+html.dark .tag-input-wrap:focus-within {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .15);
+}
+html.dark .tag-chip {
+    background: #1e293b;
+    color: #93c5fd;
+}
+html.dark .tag-chip-remove { color: #93c5fd; }
+html.dark .tag-input { color: #f1f5f9; }
+
+/* ── 팁 카테고리 ── */
+html.dark .tip-cat-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .tip-cat-btn:hover {
+    background: #1e293b;
+    border-color: #60a5fa;
+    color: #93c5fd;
+}
+
+/* ── 질문 안내 ── */
+html.dark .question-notice {
+    background: #2a1d0a;
+    border-color: #78350f;
+}
+html.dark .q-notice-title { color: #fde68a; }
+html.dark .q-notice-desc { color: #fdba74; }
+
+/* ── 사이드바 ── */
+html.dark .aside-card {
+    background: #1a1f2b;
+    border-color: #232935;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+html.dark .aside-card-title { color: #f1f5f9; }
+
+html.dark .type-select-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+}
+html.dark .type-select-btn:hover {
+    background: #1e293b;
+    border-color: #60a5fa;
+}
+html.dark .type-btn-label { color: #cbd5e1; }
+
+html.dark .region-select-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .region-select-btn:hover {
+    background: #1e293b;
+    border-color: #60a5fa;
+    color: #93c5fd;
+}
+
+html.dark .guide-card { background: #151922; }
+html.dark .guide-list li { color: #9ca3af; }
+html.dark .guide-list li::before { color: #60a5fa; }

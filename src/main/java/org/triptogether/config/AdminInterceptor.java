@@ -95,8 +95,9 @@ public class AdminInterceptor implements HandlerInterceptor {
         "/admin/reports",     "REPORT_ADMIN",
         "/admin/inquiries",   "INQUIRY_ADMIN",
         "/admin/explore",     "EXPLORE_ADMIN",
+        "/admin/courses",     "COURSE_ADMIN",
         "/admin/moderation",  "CONTENT_MODERATION_ADMIN",
-        "/admin/ai-helper",   "AI_HELPER_ADMIN"
+        "/admin/policies",    "OPS_POLICY_ADMIN"
     );
 
     private static final Map<String, String> AUDIT_URLS = Map.of(
@@ -108,6 +109,9 @@ public class AdminInterceptor implements HandlerInterceptor {
     );
 
     private String resolveRequiredPermission(String uri) {
+        if (uri.startsWith("/admin/ai-helper")) {
+            return resolveAiHelperPermission(uri);
+        }
         for (Map.Entry<String, String> entry : URL_PERMISSION_MAP.entrySet()) {
             if (uri.startsWith(entry.getKey())) return entry.getValue();
         }
@@ -115,5 +119,20 @@ public class AdminInterceptor implements HandlerInterceptor {
             if (uri.startsWith(entry.getKey())) return entry.getValue();
         }
         return null;
+    }
+
+    /**
+     * /admin/ai-helper 이하 경로의 필요 권한 해석.
+     * - /admin/ai-helper/chatbot, /conversations, /blocks, /quotas → AI_CHATBOT_ADMIN (Gemini 챗봇)
+     * - 그 외 (/admin/ai-helper 루트, /assistant/**) → ASSISTANT_ADMIN (Claude 도우미)
+     */
+    private String resolveAiHelperPermission(String uri) {
+        if (uri.startsWith("/admin/ai-helper/chatbot")
+                || uri.startsWith("/admin/ai-helper/conversations")
+                || uri.startsWith("/admin/ai-helper/blocks")
+                || uri.startsWith("/admin/ai-helper/quotas")) {
+            return "AI_CHATBOT_ADMIN";
+        }
+        return "ASSISTANT_ADMIN";
     }
 }

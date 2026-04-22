@@ -138,4 +138,13 @@
         </if>
     </select>
 
+    <!-- =============================================
+         11. 관리자: 오늘 생성된 대화 수
+         ============================================= -->
+    <select id="countTodayConversations" resultType="int">
+        SELECT COUNT(*)
+        FROM CHATBOT_CONVERSATION
+        WHERE DATE(created_at) = CURDATE()
+    </select>
+
 </mapper>

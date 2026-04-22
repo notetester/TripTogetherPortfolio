@@ -59,6 +59,25 @@
         </div>
     </div>
 
+    <div class="adm-chart-grid">
+        <div class="adm-card">
+            <div class="adm-card-head">
+                <div class="adm-card-title">최근 7일 신규 가입자</div>
+            </div>
+            <div class="adm-card-body">
+                <div class="adm-chart-box"><canvas id="chartNewMembers"></canvas></div>
+            </div>
+        </div>
+        <div class="adm-card">
+            <div class="adm-card-head">
+                <div class="adm-card-title">최근 7일 로그인 추이</div>
+            </div>
+            <div class="adm-card-body">
+                <div class="adm-chart-box"><canvas id="chartLogin"></canvas></div>
+            </div>
+        </div>
+    </div>
+
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-head">
             <div class="adm-card-title"><spring:message code="admin.dashboard.serviceOverview"/></div>
@@ -161,5 +180,93 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+    var DASH_CHART = {
+        labels:       [<c:forEach var="l" items="${chart.labels}"       varStatus="s">"${l}"${s.last?'':','}</c:forEach>],
+        newMembers:   [<c:forEach var="n" items="${chart.newMembers}"   varStatus="s">${n}${s.last?'':','}</c:forEach>],
+        loginSuccess: [<c:forEach var="n" items="${chart.loginSuccess}" varStatus="s">${n}${s.last?'':','}</c:forEach>],
+        loginFail:    [<c:forEach var="n" items="${chart.loginFail}"    varStatus="s">${n}${s.last?'':','}</c:forEach>]
+    };
+
+    function isLight() { return document.body.classList.contains('sa-light'); }
+    function colors() {
+        var light = isLight();
+        return {
+            grid:  light ? 'rgba(148,163,184,.25)' : 'rgba(100,116,139,.2)',
+            tick:  light ? '#475569' : '#94a3b8',
+            bar1:  'rgba(59,130,246,.85)',
+            bar1b: '#3b82f6',
+            bar2:  'rgba(34,197,94,.85)',
+            bar2b: '#22c55e',
+            bar3:  'rgba(239,68,68,.85)',
+            bar3b: '#ef4444'
+        };
+    }
+
+    var chartNew = null, chartLog = null;
+
+    function build() {
+        var c = colors();
+        var common = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: c.tick } },
+                tooltip: { intersect: false, mode: 'index' }
+            },
+            scales: {
+                x: { ticks: { color: c.tick }, grid: { color: c.grid } },
+                y: { beginAtZero: true, ticks: { color: c.tick, precision: 0 }, grid: { color: c.grid } }
+            }
+        };
+
+        if (chartNew) chartNew.destroy();
+        if (chartLog) chartLog.destroy();
+
+        chartNew = new Chart(document.getElementById('chartNewMembers'), {
+            type: 'bar',
+            data: {
+                labels: DASH_CHART.labels,
+                datasets: [{
+                    label: '신규 가입자',
+                    data: DASH_CHART.newMembers,
+                    backgroundColor: c.bar1,
+                    borderColor: c.bar1b,
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: Object.assign({}, common, {
+                plugins: Object.assign({}, common.plugins, { legend: { display: false } })
+            })
+        });
+
+        chartLog = new Chart(document.getElementById('chartLogin'), {
+            type: 'bar',
+            data: {
+                labels: DASH_CHART.labels,
+                datasets: [
+                    { label: '성공', data: DASH_CHART.loginSuccess, backgroundColor: c.bar2, borderColor: c.bar2b, borderWidth: 1, borderRadius: 4 },
+                    { label: '실패', data: DASH_CHART.loginFail,    backgroundColor: c.bar3, borderColor: c.bar3b, borderWidth: 1, borderRadius: 4 }
+                ]
+            },
+            options: Object.assign({}, common, {
+                scales: {
+                    x: Object.assign({ stacked: true }, common.scales.x),
+                    y: Object.assign({ stacked: true }, common.scales.y)
+                }
+            })
+        });
+    }
+
+    build();
+
+    var themeBtn = document.getElementById('saThemeBtn');
+    if (themeBtn) themeBtn.addEventListener('click', function(){ setTimeout(build, 0); });
+})();
+</script>
 
 <%@ include file="layout-close.jsp" %>

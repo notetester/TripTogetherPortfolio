@@ -111,6 +111,10 @@ public class ConversationService {
         return conversationMapper.countAllConversations(keyword);
     }
 
+    public int countTodayConversations() {
+        return conversationMapper.countTodayConversations();
+    }
+
     // ===== 헬퍼 =====
 
     private String buildTitle(String source) {

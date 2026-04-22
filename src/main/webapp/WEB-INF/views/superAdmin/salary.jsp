@@ -34,8 +34,12 @@
                 <input type="hidden" name="pageSize" value="${search.pageSize}">
                 <button type="submit" class="adm-btn adm-btn-primary">검색</button>
                 <a href="${pageContext.request.contextPath}/superAdmin/salary" class="adm-btn adm-btn-ghost">초기화</a>
+                <button type="button" class="adm-btn adm-btn-ghost" style="margin-left:auto;"
+                        onclick="triggerSalaryUpload()">⬆ Excel 업로드</button>
+                <input type="file" id="salaryUploadInput" accept=".xlsx,.xls" style="display:none;"
+                       onchange="handleSalaryFile(event)">
                 <a href="${pageContext.request.contextPath}/superAdmin/salary/export?keyword=${fn:escapeXml(search.keyword)}&filterDepartment=${fn:escapeXml(search.filterDepartment)}&filterPermissionCode=${fn:escapeXml(search.filterPermissionCode)}&filterAccountStatus=${fn:escapeXml(search.filterAccountStatus)}"
-                   class="adm-btn adm-btn-ghost" style="margin-left:auto;">
+                   class="adm-btn adm-btn-ghost">
                     ⬇ Excel 내보내기
                 </a>
                 <span style="font-size:13px;color:#94a3b8;">${total}명</span>
@@ -198,9 +202,42 @@
     </div>
 </div>
 
+<%-- 급여/역량 업로드 미리보기 모달 --%>
+<div class="adm-modal-overlay" id="salaryUploadPreviewModal">
+    <div class="adm-modal" style="width:1100px;max-width:98vw;">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title">급여/역량 엑셀 업로드 미리보기</div>
+            <button class="adm-modal-close" onclick="closeModal('salaryUploadPreviewModal')">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <div id="salaryPreviewSummary" style="display:flex;gap:16px;margin-bottom:12px;font-size:13px;"></div>
+            <div id="salaryPreviewWarn" style="display:none;margin-bottom:10px;padding:8px 12px;background:#fef3c7;color:#92400e;border-radius:6px;font-size:13px;"></div>
+            <div style="max-height:60vh;overflow:auto;border:1px solid #e5e7eb;border-radius:6px;">
+                <table class="sa-salary-table" id="salaryPreviewTable" style="font-size:12px;">
+                    <thead>
+                        <tr>
+                            <th style="width:50px;">행</th>
+                            <th style="width:90px;">상태</th>
+                            <th style="width:120px;">닉네임</th>
+                            <th style="width:200px;">이메일</th>
+                            <th>변경 내용</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salaryPreviewTbody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('salaryUploadPreviewModal')">취소</button>
+            <button class="adm-btn adm-btn-primary" id="salaryApplyBtn" onclick="applySalaryUpload()">적용</button>
+        </div>
+    </div>
+</div>
+
 <script>
 const CTX = '${pageContext.request.contextPath}';
 let currentSalaryIdx = null;
+let salaryPreviewRows = [];
 
 function openSalaryEdit(row) {
     currentSalaryIdx = row.getAttribute('data-idx');
@@ -241,6 +278,144 @@ function saveSalary() {
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function triggerSalaryUpload() {
+    document.getElementById('salaryUploadInput').value = '';
+    document.getElementById('salaryUploadInput').click();
+}
+
+function handleSalaryFile(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('file', file);
+    adm_toast('파일 검증 중…');
+    fetch(CTX + '/superAdmin/salary/upload/preview', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: fd
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success) { adm_toast(data.message || '미리보기 실패', 'error'); return; }
+        renderSalaryPreview(data.preview);
+        document.getElementById('salaryUploadPreviewModal').classList.add('open');
+    })
+    .catch(() => adm_toast('네트워크 오류', 'error'));
+}
+
+function renderSalaryPreview(preview) {
+    salaryPreviewRows = preview.rows || [];
+    const changeCnt    = preview.changeCount    || 0;
+    const unchangedCnt = preview.unchangedCount || 0;
+    const errorCnt     = preview.errorCount     || 0;
+    const totalCnt     = preview.totalCount     || salaryPreviewRows.length;
+
+    document.getElementById('salaryPreviewSummary').innerHTML =
+        '<span>총 <b>' + totalCnt + '</b>행</span>' +
+        '<span style="color:#2563eb;">변경 <b>' + changeCnt + '</b></span>' +
+        '<span style="color:#64748b;">미변경 <b>' + unchangedCnt + '</b></span>' +
+        '<span style="color:#dc2626;">오류 <b>' + errorCnt + '</b></span>';
+
+    const warnEl = document.getElementById('salaryPreviewWarn');
+    if (errorCnt > 0) {
+        warnEl.style.display = 'block';
+        warnEl.textContent = '오류 행은 적용 대상에서 제외되며, 변경 행만 반영됨.';
+    } else {
+        warnEl.style.display = 'none';
+    }
+
+    const tbody = document.getElementById('salaryPreviewTbody');
+    tbody.innerHTML = '';
+    salaryPreviewRows.forEach(r => {
+        const tr = document.createElement('tr');
+
+        let badge;
+        if (r.status === 'CHANGE') {
+            badge = '<span style="display:inline-block;padding:2px 8px;border-radius:10px;background:#dbeafe;color:#1d4ed8;font-size:11px;">CHANGE</span>';
+        } else if (r.status === 'ERROR') {
+            badge = '<span style="display:inline-block;padding:2px 8px;border-radius:10px;background:#fee2e2;color:#b91c1c;font-size:11px;">ERROR</span>';
+        } else {
+            badge = '<span style="display:inline-block;padding:2px 8px;border-radius:10px;background:#f1f5f9;color:#64748b;font-size:11px;">UNCHANGED</span>';
+        }
+
+        let diffHtml;
+        if (r.status === 'ERROR') {
+            diffHtml = '<span style="color:#b91c1c;">' + escapeHtml(r.errorMessage || '오류') + '</span>';
+        } else if (r.status === 'CHANGE' && r.newValues) {
+            const parts = [];
+            Object.keys(r.newValues).forEach(k => {
+                const oldV = (r.oldValues && r.oldValues[k]) || '∅';
+                const newV = r.newValues[k] || '∅';
+                parts.push('<div><b>' + escapeHtml(k) + '</b>: <span style="color:#64748b;text-decoration:line-through;">' + escapeHtml(oldV) + '</span> → <span style="color:#1d4ed8;">' + escapeHtml(newV) + '</span></div>');
+            });
+            diffHtml = parts.join('');
+        } else {
+            diffHtml = '<span style="color:#94a3b8;">변경 없음</span>';
+        }
+
+        tr.innerHTML =
+            '<td>' + (r.rowNumber || '') + '</td>' +
+            '<td>' + badge + '</td>' +
+            '<td>' + escapeHtml(r.nickname || '') + '</td>' +
+            '<td>' + escapeHtml(r.email || '') + '</td>' +
+            '<td style="white-space:normal;">' + diffHtml + '</td>';
+        tbody.appendChild(tr);
+    });
+
+    const btn = document.getElementById('salaryApplyBtn');
+    btn.textContent = changeCnt + '행 적용';
+    btn.disabled = (changeCnt === 0);
+}
+
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+}
+
+function applySalaryUpload() {
+    const apply = salaryPreviewRows
+        .filter(r => r.status === 'CHANGE')
+        .map(r => ({
+            userIdx:   r.userIdx,
+            email:     r.email,
+            seniority: (r.newValues && r.newValues['Seniority']) || null,
+            tier:      (r.newValues && r.newValues['Tier'])      || null,
+            level:     (r.newValues && r.newValues['Level'])     || null,
+            band:      (r.newValues && r.newValues['Band'])      || null,
+            grade:     (r.newValues && r.newValues['Grade'])     || null,
+            step:      (r.newValues && r.newValues['Step'])      || null
+        }));
+
+    if (apply.length === 0) { adm_toast('변경할 행이 없음', 'error'); return; }
+    if (!confirm(apply.length + '행을 적용하시겠습니까?')) return;
+
+    const btn = document.getElementById('salaryApplyBtn');
+    btn.disabled = true;
+
+    fetch(CTX + '/superAdmin/salary/upload/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({ rows: apply })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            adm_toast(data.applied + '행 적용 완료');
+            closeModal('salaryUploadPreviewModal');
+            location.reload();
+        } else {
+            adm_toast(data.message || '적용 실패', 'error');
+            btn.disabled = false;
+        }
+    })
+    .catch(() => {
+        adm_toast('네트워크 오류', 'error');
+        btn.disabled = false;
+    });
+}
 </script>
 
 <%@ include file="layout-close.jsp" %>

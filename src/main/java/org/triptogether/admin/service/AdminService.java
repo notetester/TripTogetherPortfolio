@@ -11,6 +11,7 @@ public interface AdminService {
 
     // ===== 대시보드 통계 =====
     AdminStatsVO getStats();
+    AdminDashboardChartVO getDashboardChart(int days);
 
     // ===== 회원 관리 =====
     Map<String, Object> getMemberList(AdminSearchVO search);

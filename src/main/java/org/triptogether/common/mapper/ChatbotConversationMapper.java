@@ -45,4 +45,7 @@ public interface ChatbotConversationMapper {
                                                 @Param("limit") int limit);
 
     int countAllConversations(@Param("keyword") String keyword);
+
+    // 오늘 생성된 대화 수 (관리자 대시보드용)
+    int countTodayConversations();
 }

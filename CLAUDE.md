@@ -88,7 +88,7 @@ Files are stored at `${file.upload.path}` (default: `src/main/resources/upload/`
 
 ### Chatbot system (common)
 
-Footer chatbot uses Gemini (`gemini-2.0-flash`). Uses `ChatbotService.ask(request, user, anonSessionId, ip)` with the pipeline: block check → quota check → conversation resolve/create → Gemini call → save messages → quota increment. Grade quota from `CHATBOT_GRADE_QUOTA` (ADMIN/SUPERADMIN bypass). Conversation ownership: either `user_idx` (logged-in) or `anon_session_id` (guest, sessionStorage-tracked). Admin page `/admin/ai-helper` requires `AI_HELPER_ADMIN` permission. Do NOT confuse with `assistant` module (Claude-based, independent).
+Footer chatbot uses Gemini (`gemini-2.0-flash`). Uses `ChatbotService.ask(request, user, anonSessionId, ip)` with the pipeline: block check → quota check → conversation resolve/create → Gemini call → save messages → quota increment. Grade quota from `CHATBOT_GRADE_QUOTA` (ADMIN/SUPERADMIN bypass). Conversation ownership: either `user_idx` (logged-in) or `anon_session_id` (guest, sessionStorage-tracked). Admin page `/admin/ai-helper/chatbot` requires `AI_CHATBOT_ADMIN` permission (루트 `/admin/ai-helper`는 `ASSISTANT_ADMIN` — Claude 기반 assistant 모듈 담당). AdminInterceptor가 서브패스(`/chatbot`, `/conversations`, `/blocks`, `/quotas`)별로 분기하여 권한 체크. Do NOT confuse with `assistant` module (Claude-based, independent).
 
 ---
 
@@ -124,6 +124,11 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 - 커밋 메시지는 기존 로그 스타일(짧은 한국어 요약) 유지
 - **커밋 메시지에 `Co-Authored-By: Claude` 절대 포함하지 말 것**
 - `--no-verify`, `--amend`, `git push --force` 등 위험 옵션은 사용자 명시 요청 시에만 사용
+- 다음 시점에 Claude는 커밋을 선제 제안해야 함:
+  - 기능 단위 구현이 마무리됐을 때
+  - 버그 수정이 확인됐을 때
+  - 사용자가 다음 주제로 넘어가려 할 때 워킹트리에 미커밋 변경이 남아 있을 때
+- 제안 내용: 커밋 단위 분할안 + 메시지 후보 → 사용자 승인 후 실행
 
 ## Victor 담당 모듈
 - 모든 모듈 수정 가능

@@ -62,6 +62,7 @@ public class AdminController {
     @GetMapping({"", "/"})
     public String dashboard(Model model) {
         model.addAttribute("stats", adminService.getStats());
+        model.addAttribute("chart", adminService.getDashboardChart(7));
         model.addAttribute("activeMenu", "dashboard");
         return "admin/dashboard";
     }

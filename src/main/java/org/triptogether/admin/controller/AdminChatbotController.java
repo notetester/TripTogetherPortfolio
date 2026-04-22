@@ -22,9 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 관리자 AI 도우미 관리 컨트롤러.
- * 최상위 섹션: AI 도우미(assistant) / AI 챗봇(chatbot)
- * 권한: AI_HELPER_ADMIN (AdminInterceptor가 체크)
+ * 관리자 AI 챗봇(common 모듈, Gemini) 관리 컨트롤러.
+ * URL: /admin/ai-helper/chatbot (sub-tab: dashboard / conversations / inappropriate / blocks / quotas)
+ * AI 도우미(assistant 모듈, Claude) 관리는 AdminAssistantController가 담당.
+ * 권한: AI_CHATBOT_ADMIN (AdminInterceptor가 /admin/ai-helper 서브패스별 분기하여 체크)
  */
 @Slf4j
 @Controller
@@ -36,19 +37,6 @@ public class AdminChatbotController {
     private final ChatbotBlockService blockService;
     private final ChatbotQuotaService quotaService;
     private final org.triptogether.common.mapper.ChatbotMessageMapper messageMapper;
-
-    /**
-     * GET /admin/ai-helper
-     * AI 도우미(assistant) 섹션 - Claude 기반 여행 일정 생성 모듈 관리.
-     * 현재는 안내 placeholder. 추후 기능 확장.
-     */
-    @GetMapping
-    public String assistantSection(Model model) {
-        model.addAttribute("section", "assistant");
-        model.addAttribute("activeMenu", "aiHelper");
-        model.addAttribute("pageTitle", "AI 도우미 관리");
-        return "admin/ai-helper/assistant";
-    }
 
     /**
      * GET /admin/ai-helper/chatbot
@@ -64,13 +52,6 @@ public class AdminChatbotController {
         int offset = (page - 1) * pageSize;
 
         switch (tab) {
-            case "conversations" -> {
-                List<ConversationVO> list = conversationService.searchConversations(keyword, offset, pageSize);
-                int total = conversationService.countAllConversations(keyword);
-                model.addAttribute("conversations", list);
-                model.addAttribute("total", total);
-                model.addAttribute("totalPages", (int) Math.ceil((double) total / pageSize));
-            }
             case "inappropriate" -> {
                 List<ChatMessageVO> msgs = messageMapper.selectInappropriateMessages(offset, pageSize);
                 int total = messageMapper.countInappropriateMessages();
@@ -88,8 +69,16 @@ public class AdminChatbotController {
             }
             default -> {
                 model.addAttribute("totalConversations", conversationService.countAllConversations(""));
+                model.addAttribute("todayConversations", conversationService.countTodayConversations());
                 model.addAttribute("inappropriateCount", messageMapper.countInappropriateMessages());
                 model.addAttribute("activeBlockCount", blockService.getBlocks(true).size());
+
+                List<ConversationVO> list = conversationService.searchConversations(keyword, offset, pageSize);
+                int total = conversationService.countAllConversations(keyword);
+                model.addAttribute("conversations", list);
+                model.addAttribute("total", total);
+                model.addAttribute("totalPages", (int) Math.ceil((double) total / pageSize));
+                tab = "dashboard";
             }
         }
 
@@ -98,7 +87,7 @@ public class AdminChatbotController {
         model.addAttribute("page", page);
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "aiHelper");
-        model.addAttribute("pageTitle", "AI 도우미 관리");
+        model.addAttribute("pageTitle", "AI 챗봇 관리");
         return "admin/ai-helper/chatbot";
     }
 

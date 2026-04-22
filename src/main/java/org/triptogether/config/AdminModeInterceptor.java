@@ -84,14 +84,18 @@ public class AdminModeInterceptor implements HandlerInterceptor {
             boolean hasBlockPolicyAdmin = isSuperAdmin || perms.contains("BLOCK_POLICY_ADMIN");
             boolean hasBlockAuditAdmin = isSuperAdmin || perms.contains("BLOCK_AUDIT_ADMIN");
 
+            modelAndView.addObject("isSuperAdmin", isSuperAdmin);
             modelAndView.addObject("hasCommunityAdmin", isSuperAdmin || perms.contains("COMMUNITY_ADMIN"));
             modelAndView.addObject("hasMemberAdmin",    isSuperAdmin || perms.contains("MEMBER_ADMIN"));
             modelAndView.addObject("hasReportAdmin",    isSuperAdmin || perms.contains("REPORT_ADMIN"));
             modelAndView.addObject("hasInquiryAdmin",   isSuperAdmin || perms.contains("INQUIRY_ADMIN"));
             modelAndView.addObject("hasExploreAdmin",   isSuperAdmin || perms.contains("EXPLORE_ADMIN"));
+            modelAndView.addObject("hasCourseAdmin",    isSuperAdmin || perms.contains("COURSE_ADMIN"));
             modelAndView.addObject("hasAuditAdmin",     isSuperAdmin || perms.contains("AUDIT_ADMIN"));
             modelAndView.addObject("hasContentModerationAdmin", isSuperAdmin || perms.contains("CONTENT_MODERATION_ADMIN"));
-            modelAndView.addObject("hasAiHelperAdmin",  isSuperAdmin || perms.contains("AI_HELPER_ADMIN"));
+            modelAndView.addObject("hasAssistantAdmin", isSuperAdmin || perms.contains("ASSISTANT_ADMIN"));
+            modelAndView.addObject("hasAiChatbotAdmin", isSuperAdmin || perms.contains("AI_CHATBOT_ADMIN"));
+            modelAndView.addObject("hasOpsPolicyAdmin", isSuperAdmin || perms.contains("OPS_POLICY_ADMIN"));
             modelAndView.addObject("hasUserBlockAdmin", hasUserBlockAdmin);
             modelAndView.addObject("hasIpBlockAdmin", hasIpBlockAdmin);
             modelAndView.addObject("hasBlockPolicyAdmin", hasBlockPolicyAdmin);

@@ -389,3 +389,65 @@
   z-index: 10;
   cursor: pointer;
 }
+
+/* ============================================
+   다크 테마 오버라이드
+   ============================================ */
+html.dark .hero-ov {
+  background: linear-gradient(135deg, rgba(0,0,0,.75), rgba(0,0,0,.55));
+}
+
+html.dark .btn-pri {
+  background: #1e293b;
+  color: #93c5fd;
+  box-shadow: 0 4px 12px rgba(0,0,0,.4);
+}
+html.dark .btn-pri:hover { background: #273449; box-shadow: 0 8px 20px rgba(0,0,0,.5); }
+
+html.dark .btn-sec {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.3);
+}
+html.dark .btn-sec:hover { background: rgba(255,255,255,.16); }
+
+html.dark .feat-sec { background: #151922; }
+html.dark .feat-card {
+  background: #1a1f2b;
+  box-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+html.dark .feat-card:hover { box-shadow: 0 10px 15px -3px rgba(0,0,0,.6); }
+html.dark .feat-card h3 { color: #f1f5f9; }
+html.dark .feat-card p  { color: #cbd5e1; }
+html.dark .fi-b { background: #1e293b; }
+html.dark .fi-p { background: #2a2346; }
+html.dark .fi-g { background: #14331f; }
+
+html.dark .dc,
+html.dark .tc,
+html.dark .cc {
+  background: #1a1f2b;
+  box-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+html.dark .dc:hover,
+html.dark .tc:hover,
+html.dark .cc:hover { box-shadow: 0 10px 15px -3px rgba(0,0,0,.6); }
+
+html.dark .dc-name,
+html.dark .tc-title,
+html.dark .cc-title { color: #f1f5f9; }
+html.dark .dc-ctry,
+html.dark .tc-auth,
+html.dark .tc-dest,
+html.dark .cc-stats,
+html.dark .cc-dt { color: #9ca3af; }
+html.dark .dc-rat { color: #e5e7eb; }
+html.dark .dc-rev { color: #6b7280; }
+html.dark .dc-desc { color: #cbd5e1; }
+html.dark .tc-likes { color: #9ca3af; }
+html.dark .cc-an { color: #e5e7eb; }
+
+html.dark .blocked-badge {
+  color: #fca5a5;
+  background: #3b1d1d;
+  border-color: #7f1d1d;
+}

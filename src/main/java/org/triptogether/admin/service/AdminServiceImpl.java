@@ -14,8 +14,10 @@ import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.report.vo.ReportSearchDto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,60 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public AdminStatsVO getStats() {
         return adminMapper.getStats();
+    }
+
+    @Override
+    public AdminDashboardChartVO getDashboardChart(int days) {
+        if (days < 1) days = 7;
+        int spanParam = days - 1;
+
+        List<Map<String, Object>> nmRows    = adminMapper.findDailyNewMembers(spanParam);
+        List<Map<String, Object>> loginRows = adminMapper.findDailyLoginStats(spanParam);
+
+        Map<String, Long> nmMap = new HashMap<>();
+        for (Map<String, Object> r : nmRows) {
+            nmMap.put(String.valueOf(r.get("day")), toLong(r.get("cnt")));
+        }
+        Map<String, long[]> loginMap = new HashMap<>();
+        for (Map<String, Object> r : loginRows) {
+            long s = toLong(r.get("success_cnt"));
+            long f = toLong(r.get("fail_cnt"));
+            loginMap.put(String.valueOf(r.get("day")), new long[]{ s, f });
+        }
+
+        DateTimeFormatter keyFmt   = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter labelFmt = DateTimeFormatter.ofPattern("MM/dd");
+
+        LocalDate today = LocalDate.now();
+        LocalDate start = today.minusDays(spanParam);
+
+        List<String> labels   = new ArrayList<>(days);
+        List<Long> newMembers = new ArrayList<>(days);
+        List<Long> loginOk    = new ArrayList<>(days);
+        List<Long> loginFail  = new ArrayList<>(days);
+
+        for (int i = 0; i < days; i++) {
+            LocalDate d = start.plusDays(i);
+            String key  = d.format(keyFmt);
+            labels.add(d.format(labelFmt));
+            newMembers.add(nmMap.getOrDefault(key, 0L));
+            long[] lv = loginMap.getOrDefault(key, new long[]{ 0L, 0L });
+            loginOk.add(lv[0]);
+            loginFail.add(lv[1]);
+        }
+
+        return AdminDashboardChartVO.builder()
+                .labels(labels)
+                .newMembers(newMembers)
+                .loginSuccess(loginOk)
+                .loginFail(loginFail)
+                .build();
+    }
+
+    private static long toLong(Object v) {
+        if (v == null) return 0L;
+        if (v instanceof Number n) return n.longValue();
+        try { return Long.parseLong(v.toString()); } catch (Exception e) { return 0L; }
     }
 
     // ===== 회원 관리 =====
