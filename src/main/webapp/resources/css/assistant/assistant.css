@@ -262,3 +262,81 @@ body { background: var(--gray-50); }
     .chat-header { padding: 16px; }
     .msg-bubble { max-width: 85%; }
 }
+
+/* =============================================
+   다크 테마 오버라이드 (html.dark)
+   ============================================= */
+
+html.dark body { background: #0f1115; }
+
+/* ── 사이드바 ── */
+html.dark .chat-side {
+    background: #1a1f2b;
+    border-right-color: #232935;
+}
+html.dark .ai-name { color: #f1f5f9; }
+html.dark .ai-status { color: #9ca3af; }
+
+html.dark .side-desc {
+    background: #1e293b;
+    color: #cbd5e1;
+}
+
+html.dark .quick-title { color: #9ca3af; }
+
+html.dark .qb {
+    background: #151922;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .qb:hover {
+    background: #1e293b;
+    border-color: #60a5fa;
+    color: #93c5fd;
+}
+
+html.dark .reset-btn {
+    border-color: #2b3241;
+    color: #9ca3af;
+}
+html.dark .reset-btn:hover {
+    background: #2a0a0a;
+    border-color: #4c1d1d;
+    color: #fca5a5;
+}
+
+/* ── 메인 채팅 ── */
+html.dark .chat-main { background: #1a1f2b; }
+html.dark .chat-header {
+    border-bottom-color: #232935;
+}
+html.dark .chat-header h2 { color: #f1f5f9; }
+html.dark .chat-sub { color: #9ca3af; }
+
+/* ── 메시지 버블 ── */
+html.dark .msg-row.ai .msg-bubble {
+    background: #1e293b;
+    color: #f1f5f9;
+}
+
+/* ── 로딩 ── */
+html.dark .dot-anim { background: #6b7280; }
+
+/* ── 입력 ── */
+html.dark .chat-input-wrap {
+    background: #1a1f2b;
+    border-top-color: #232935;
+}
+html.dark .chat-input-inner {
+    background: #151922;
+    border-color: #2b3241;
+}
+html.dark .chat-input-inner:focus-within {
+    background: #1a1f2b;
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .15);
+}
+html.dark .chat-input { color: #f1f5f9; }
+html.dark .chat-input::placeholder { color: #6b7280; }
+
+html.dark .chat-hint { color: #6b7280; }
