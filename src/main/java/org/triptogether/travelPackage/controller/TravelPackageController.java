@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.travelPackage.service.TravelPackageService;
+/* ── 패키지의 동적 텍스트(제목, 요약, 여행지명 등)를 번역하기 위한 서비스 ── */
+import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.travelPackage.vo.PackageBookingRequestVO;
 import org.triptogether.travelPackage.vo.PackageBookingResultVO;
 import org.triptogether.travelPackage.vo.TravelPackageForm;
@@ -24,11 +26,16 @@ import java.util.Map;
 public class TravelPackageController {
 
     private final TravelPackageService travelPackageService;
+    /* ── 동적 텍스트 번역 서비스 — 사용자 로케일에 맞춰 패키지 제목/여행지명 등을 번역 ── */
+    private final SpotTextTranslationService translationService;
     private final MessageSource messageSource;
 
     @GetMapping("")
     public String packageList(Model model) {
-        model.addAttribute("packageList", travelPackageService.getApprovedPackages());
+        java.util.List<TravelPackageVO> packages = travelPackageService.getApprovedPackages();
+        // ── 사용자 로케일이 ko가 아닌 경우, 패키지 제목/여행지명 등을 API+캐싱으로 번역 ──
+        translationService.translatePackages(packages);
+        model.addAttribute("packageList", packages);
         return "packages/list";
     }
 
@@ -39,7 +46,10 @@ public class TravelPackageController {
             return redirectByAuthState(loginUser);
         }
 
-        model.addAttribute("packageList", travelPackageService.getSellerPackages(loginUser.getUserIdx()));
+        // ── 판매자 관리 페이지에서도 여행지명·패키지 제목 등을 현재 로케일에 맞게 번역 ──
+        java.util.List<TravelPackageVO> packages = travelPackageService.getSellerPackages(loginUser.getUserIdx());
+        translationService.translatePackages(packages);
+        model.addAttribute("packageList", packages);
         return "packages/manage";
     }
 
@@ -50,9 +60,13 @@ public class TravelPackageController {
             return redirectByAuthState(loginUser);
         }
 
+        // ── 여행지 드롭다운의 이름/지역을 현재 로케일에 맞게 번역 ──
+        java.util.List<org.triptogether.travelPackage.vo.PackageSpotOptionVO> spotOptions = travelPackageService.getSpotOptions();
+        translationService.translateSpotOptions(spotOptions);
+
         model.addAttribute("formMode", "CREATE");
         model.addAttribute("packageForm", new TravelPackageForm());
-        model.addAttribute("spotOptions", travelPackageService.getSpotOptions());
+        model.addAttribute("spotOptions", spotOptions);
         return "packages/form";
     }
 
@@ -89,7 +103,12 @@ public class TravelPackageController {
             TravelPackageVO travelPackage = travelPackageService.getSellerPackage(packageIdx, loginUser.getUserIdx());
             model.addAttribute("formMode", "APPROVED".equals(travelPackage.getPackageStatus()) ? "REVISION" : "EDIT");
             model.addAttribute("packageForm", toForm(travelPackage));
-            model.addAttribute("spotOptions", travelPackageService.getSpotOptions());
+
+            // ── 여행지 드롭다운의 이름/지역을 현재 로케일에 맞게 번역 ──
+            java.util.List<org.triptogether.travelPackage.vo.PackageSpotOptionVO> spotOptions = travelPackageService.getSpotOptions();
+            translationService.translateSpotOptions(spotOptions);
+            model.addAttribute("spotOptions", spotOptions);
+
             return "packages/form";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("packageError", e.getMessage());
@@ -113,7 +132,7 @@ public class TravelPackageController {
             packageForm.setPackageIdx(packageIdx);
             travelPackageService.updatePackage(loginUser.getUserIdx(), packageForm);
             redirectAttributes.addFlashAttribute("packageMessage",
-                    revisionRequest ? "패키지 수정 요청이 관리자 검토 대기 상태로 등록되었습니다." : createSavedMessage(packageForm.getAction()));
+                    revisionRequest ? message("package.message.revisionSubmitted") : createSavedMessage(packageForm.getAction()));
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageError", e.getMessage());
         }
@@ -131,7 +150,7 @@ public class TravelPackageController {
 
         try {
             travelPackageService.submitPackage(loginUser.getUserIdx(), packageIdx);
-            redirectAttributes.addFlashAttribute("packageMessage", "관리자 승인 요청이 완료되었습니다.");
+            redirectAttributes.addFlashAttribute("packageMessage", message("package.message.submitCompleted"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageError", e.getMessage());
         }
@@ -184,7 +203,7 @@ public class TravelPackageController {
         try {
             UsersVO updatedUser = travelPackageService.cancelPackageBooking(loginUser.getUserIdx(), packageBookingIdx, cancelReason);
             session.setAttribute("loginUser", updatedUser);
-            redirectAttributes.addFlashAttribute("packageBookingMessage", "패키지 예약이 취소되고 사용한 캐시/마일리지가 환불되었습니다.");
+            redirectAttributes.addFlashAttribute("packageBookingMessage", message("package.message.bookingCancelled"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageBookingError", e.getMessage());
         }
@@ -197,11 +216,11 @@ public class TravelPackageController {
 
     private boolean canManagePackage(UsersVO loginUser, RedirectAttributes redirectAttributes) {
         if (loginUser == null) {
-            redirectAttributes.addFlashAttribute("loginMessage", "로그인이 필요합니다.");
+            redirectAttributes.addFlashAttribute("loginMessage", message("package.message.loginRequired"));
             return false;
         }
         if (!loginUser.canManagePackage()) {
-            redirectAttributes.addFlashAttribute("packageError", "비즈니스 또는 파트너 회원만 패키지 상품을 관리할 수 있습니다.");
+            redirectAttributes.addFlashAttribute("packageError", message("package.message.noPermission"));
             return false;
         }
         return true;
@@ -213,9 +232,9 @@ public class TravelPackageController {
 
     private String createSavedMessage(String action) {
         if ("PENDING".equalsIgnoreCase(action)) {
-            return "패키지 상품이 저장되고 관리자 승인 요청 상태로 변경되었습니다.";
+            return message("package.message.savedAndSubmitted");
         }
-        return "패키지 상품이 임시저장되었습니다.";
+        return message("package.message.savedDraft");
     }
 
     private String message(String codeOrMessage) {
