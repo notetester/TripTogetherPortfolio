@@ -1,5 +1,6 @@
 package org.triptogether.superAdmin.service;
 
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.superAdmin.vo.*;
 
 import java.util.List;
@@ -27,6 +28,10 @@ public interface SuperAdminService {
     List<SuperAdminMemberVO> getAdminsForOrgChart();
     List<SuperAdminMemberVO> getAllForSalaryTable(SuperAdminSearchVO search);
     int getSalaryTableCount(SuperAdminSearchVO search);
+
+    // ── 급여/역량 엑셀 업로드 ──
+    SalaryUploadPreviewDto previewSalaryUpload(MultipartFile file) throws Exception;
+    int applySalaryUpload(List<SalaryUploadApplyVO.ApplyRow> rows, Long changedBy);
 
     Map<String, Object> getStatsData();
 

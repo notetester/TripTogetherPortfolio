@@ -2486,6 +2486,28 @@ INSERT INTO `REPORT` (`report_id`, `user_idx`, `target_type`, `target_id`, `reas
 	(33, 2, 'user', 7, NULL, '유저가 나빠요 ㅠㅠㅠㅠㅠ', 'IN_REVIEW', '2026-04-22 07:41:41', NULL, '2026-04-22 07:41:41', NULL, NULL, 'post', 59),
 	(34, 2, 'post', 59, 'abuse', 'ㅁㄴㄹㅇㅁㄴㅇㄹㄴㅁㅇㄹㄴㅁㅇㄻㄴㅇㄹㄴㅁㅇㄹㄴㅁㅇㄹㄴㅁㅇㄹㄴㅇㄹ', 'IN_REVIEW', '2026-04-22 07:41:50', NULL, '2026-04-22 07:41:50', NULL, NULL, NULL, NULL);
 
+-- 테이블 team1_db.SALARY_CHANGE_AUDIT 구조 내보내기
+CREATE TABLE IF NOT EXISTS `SALARY_CHANGE_AUDIT` (
+  `salary_change_audit_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '급여/역량 변경 감사 PK',
+  `batch_id` varchar(40) NOT NULL COMMENT '동일 업로드 묶음 ID (UUID)',
+  `target_user_idx` bigint NOT NULL COMMENT '대상 관리자 PK',
+  `target_user_email` varchar(200) NOT NULL COMMENT '매칭 시점 이메일',
+  `field_name` varchar(30) NOT NULL COMMENT 'adminSeniority/Tier/Level/Band/Grade/Step',
+  `old_value` varchar(50) DEFAULT NULL COMMENT '변경 전 값',
+  `new_value` varchar(50) DEFAULT NULL COMMENT '변경 후 값',
+  `changed_by_user_idx` bigint DEFAULT NULL COMMENT '업로드 수행 SuperAdmin',
+  `changed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '변경 시각',
+  PRIMARY KEY (`salary_change_audit_idx`),
+  KEY `idx_sca_target` (`target_user_idx`),
+  KEY `idx_sca_batch` (`batch_id`),
+  KEY `idx_sca_changed_at` (`changed_at`),
+  KEY `fk_sca_changed_by` (`changed_by_user_idx`),
+  CONSTRAINT `fk_sca_target` FOREIGN KEY (`target_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE CASCADE,
+  CONSTRAINT `fk_sca_changed_by` FOREIGN KEY (`changed_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='급여/역량 일괄 변경 감사 로그';
+
+-- 테이블 데이터 team1_db.SALARY_CHANGE_AUDIT:~0 rows (대략적) 내보내기
+
 -- 테이블 team1_db.SPOT_FAVORITE 구조 내보내기
 CREATE TABLE IF NOT EXISTS `SPOT_FAVORITE` (
   `fav_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '찜 PK',

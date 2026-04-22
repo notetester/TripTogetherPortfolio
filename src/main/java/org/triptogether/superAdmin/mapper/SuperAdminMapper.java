@@ -79,6 +79,12 @@ public interface SuperAdminMapper {
     // ── 급여/역량 수정 ──
     void updateSalary(SuperAdminSalaryEditVO salaryVO);
 
+    // ── 이메일로 관리자 조회 (엑셀 업로드 매칭용) ──
+    SuperAdminMemberVO findMemberByEmailForSalary(@Param("email") String email);
+
+    // ── 급여/역량 변경 감사 로그 bulk insert ──
+    void insertSalaryAuditBulk(@Param("list") List<SalaryAuditVO> list);
+
     // ── 통계: 직책 분포 ──
     List<SuperAdminStatsVO> getStatsByPosition();
 

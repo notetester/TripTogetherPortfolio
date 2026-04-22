@@ -7,9 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.superAdmin.service.SuperAdminService;
 import org.triptogether.superAdmin.util.SalaryExcelExporter;
+import org.triptogether.superAdmin.vo.SalaryUploadApplyVO;
+import org.triptogether.superAdmin.vo.SalaryUploadPreviewDto;
 import org.triptogether.superAdmin.vo.SuperAdminEditVO;
 import org.triptogether.superAdmin.vo.SuperAdminMemberVO;
 import org.triptogether.superAdmin.vo.SuperAdminSalaryEditVO;
@@ -288,6 +291,42 @@ public class SuperAdminController {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=\"salary_export.xlsx\"");
         SalaryExcelExporter.export(list, response.getOutputStream());
+    }
+
+    // ── 급여/역량 Excel 업로드 미리보기 ──
+    @PostMapping("/salary/upload/preview")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> salaryUploadPreview(@RequestParam("file") MultipartFile file) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            SalaryUploadPreviewDto preview = superAdminService.previewSalaryUpload(file);
+            result.put("success", true);
+            result.put("preview", preview);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    // ── 급여/역량 Excel 업로드 확정 적용 ──
+    @PostMapping("/salary/upload/apply")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> salaryUploadApply(
+            @RequestBody SalaryUploadApplyVO body,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO login = (UsersVO) session.getAttribute("loginUser");
+            Long changedBy = (login != null) ? login.getUserIdx() : null;
+            int applied = superAdminService.applySalaryUpload(body.getRows(), changedBy);
+            result.put("success", true);
+            result.put("applied", applied);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
     }
 
     // ── 통계 대시보드 ──
