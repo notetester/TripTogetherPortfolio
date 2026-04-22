@@ -5,17 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="reports"/>
 <spring:message code="admin.reports.pageTitle" var="adminReportsPageTitle"/>
-<spring:message code="admin.common.nickname" var="adminCommonNickname"/>
-<spring:message code="admin.common.userId" var="adminCommonUserId"/>
 <spring:message code="admin.common.id" var="adminCommonId"/>
-<spring:message code="admin.common.accountStatus" var="adminCommonAccountStatus"/>
-<spring:message code="admin.common.memberInfoView" var="adminCommonMemberInfoView"/>
-<spring:message code="admin.common.blockAccount" var="adminCommonBlockAccount"/>
-<spring:message code="admin.common.activeLabel" var="adminCommonActiveLabel"/>
-<spring:message code="admin.common.blockedLabel" var="adminCommonBlockedLabel"/>
-<spring:message code="admin.reports.authorInfoTitle" var="adminReportsAuthorInfoTitle"/>
-<spring:message code="admin.reports.confirmBlockUser" var="adminReportsConfirmBlockUser"/>
-<spring:message code="admin.reports.blockFailed" var="adminReportsBlockFailed"/>
 <c:set var="pageTitle" value="${adminReportsPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
@@ -164,21 +154,58 @@
                                 </c:if>
                             </div>
                             <div class="mem-uid">#${r.targetId}</div>
+                            <div class="adm-inline-actions">
+                                <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}"
+                                   class="adm-inline-chip"><spring:message code="admin.common.viewDetail"/></a>
+                                <a href="${pageContext.request.contextPath}/admin/reports?targetType=${r.targetType}&amp;keyword=${r.targetId}"
+                                   class="adm-inline-chip"><spring:message code="admin.common.sameTarget"/></a>
+                                <c:if test="${r.targetType eq 'user' and not empty r.targetId}">
+                                    <button type="button"
+                                            class="adm-inline-chip js-open-member-context"
+                                            data-user-idx="${r.targetId}">
+                                        <spring:message code="admin.common.member"/>
+                                    </button>
+                                </c:if>
+                                <c:if test="${r.targetType eq 'post' and r.targetStatus ne 'DELETED'}">
+                                    <a href="${pageContext.request.contextPath}/community/${r.targetId}"
+                                       target="_blank"
+                                       class="adm-inline-chip"><spring:message code="admin.reports.detail.viewOriginal"/></a>
+                                </c:if>
+                                <c:if test="${r.targetType eq 'comment' and r.targetStatus ne 'DELETED' and (not empty r.sourceId or not empty r.targetPostId)}">
+                                    <a href="${pageContext.request.contextPath}/community/${empty r.sourceId ? r.targetPostId : r.sourceId}"
+                                       target="_blank"
+                                       class="adm-inline-chip"><spring:message code="admin.reports.detail.viewOriginal"/></a>
+                                </c:if>
+                                <c:if test="${r.targetType eq 'review' and r.targetStatus ne 'DELETED' and not empty r.targetSpotIdx}">
+                                    <a href="${pageContext.request.contextPath}/admin/explore/spots/${r.targetSpotIdx}"
+                                       class="adm-inline-chip"><spring:message code="admin.common.viewSpot"/></a>
+                                </c:if>
+                            </div>
                         </td>
 
                         <%-- 신고자 닉네임 --%>
-                        <td style="cursor:pointer;"
-                            data-useridx="${r.userIdx}"
-                            data-userid="${r.userId}"
-                            data-nickname="${r.nickname}"
-                            data-status="${r.accountStatus}"
-                            data-userrole="${r.userRole}"
-                            onclick="openAuthorModal(this)">
-                            <div class="adm-modal-nickname">${r.nickname}</div>
-                            <div class="adm-modal-value">${r.userId}</div>
+                        <td>
+                            <button type="button"
+                                    class="adm-inline-link js-open-member-context"
+                                    data-user-idx="${r.userIdx}"
+                                    style="font-weight:700;color:#93c5fd;">${r.nickname}</button>
+                            <div class="adm-modal-value">
+                                <button type="button"
+                                        class="adm-inline-link js-open-member-context"
+                                        data-user-idx="${r.userIdx}"
+                                        style="font-size:12px;color:#94a3b8;">${r.userId}</button>
+                            </div>
                             <c:if test="${r.accountStatus == 'BLOCKED'}">
                                 <span class="adm-inline-danger"><spring:message code="admin.reports.accountBlocked"/></span>
                             </c:if>
+                            <div class="adm-inline-actions">
+                                <button type="button"
+                                        class="adm-inline-chip"
+                                        data-keyword="${r.userId}"
+                                        onclick="applyReportKeywordFilter(this)">
+                                    <spring:message code="admin.common.sameReporter"/>
+                                </button>
+                            </div>
                         </td>
 
                         <%-- 사유 --%>
@@ -262,106 +289,27 @@
 <script>
 var ctx = '${pageContext.request.contextPath}';
 var listParams = 'page=${search.page}&status=${search.status}&targetType=${search.targetType}&reason=${search.reason}&keyword=' + encodeURIComponent('${search.keyword}');
-var REPORT_AUTHOR_MSG = {
-    blocked: '${fn:escapeXml(adminCommonBlockedLabel)}',
-    active: '${fn:escapeXml(adminCommonActiveLabel)}',
-    nickname: '${fn:escapeXml(adminCommonNickname)}',
-    userId: '${fn:escapeXml(adminCommonUserId)}',
-    accountStatus: '${fn:escapeXml(adminCommonAccountStatus)}',
-    memberInfoView: '${fn:escapeXml(adminCommonMemberInfoView)}',
-    blockAccount: '${fn:escapeXml(adminCommonBlockAccount)}',
-    confirmBlock: '${fn:escapeXml(adminReportsConfirmBlockUser)}',
-    blockFailed: '${fn:escapeXml(adminReportsBlockFailed)}',
-    title: '${fn:escapeXml(adminReportsAuthorInfoTitle)}'
-};
-
 // 행 클릭 시 어드민 신고 상세 페이지 이동
 document.querySelectorAll('.rpt-admin-row[data-id]').forEach(function (tr) {
     tr.addEventListener('click', function (e) {
-        if (e.target.closest('td[data-useridx]')) return;
+        if (e.target.closest('button, a')) return;
         location.href = ctx + '/admin/reports/' + this.getAttribute('data-id') + '?' + listParams;
     });
 });
-
 function goPage(page) {
     var params = new URLSearchParams(window.location.search);
     params.set('page', page);
     location.href = ctx + '/admin/reports?' + params.toString();
 }
 
-// ── 신고자 모달 ──
-function openAuthorModal(el) {
-    var userIdx  = el.getAttribute('data-useridx');
-    var userId   = el.getAttribute('data-userid');
-    var nickname = el.getAttribute('data-nickname');
-    var status   = el.getAttribute('data-status');
-    var userRole = el.getAttribute('data-userrole');
-
-    var statusBadge = status === 'BLOCKED'
-        ? '<span class="status-badge BLOCKED" style="font-size:12px;">' + escHtml(REPORT_AUTHOR_MSG.blocked) + '</span>'
-        : '<span class="status-badge ACTIVE"  style="font-size:12px;">' + escHtml(REPORT_AUTHOR_MSG.active) + '</span>';
-
-    var blockBtn = (status !== 'BLOCKED' && userRole !== 'SYSTEM')
-        ? '<button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;width:100%;" data-idx="' + userIdx + '" onclick="blockUserFromModal(this)">' + escHtml(REPORT_AUTHOR_MSG.blockAccount) + '</button>'
-        : '';
-
-    document.getElementById('authorModalBody').innerHTML =
-        '<div class="adm-modal-stack">'
-      + '  <div class="adm-modal-row">'
-      + '    <span class="adm-modal-label">' + escHtml(REPORT_AUTHOR_MSG.nickname) + '</span>'
-      + '    <span class="adm-modal-nickname">' + escHtml(nickname) + '</span>'
-      + '  </div>'
-      + '  <div class="adm-modal-row">'
-      + '    <span class="adm-modal-label">' + escHtml(REPORT_AUTHOR_MSG.userId) + '</span>'
-      + '    <span class="adm-modal-value">' + escHtml(userId) + '</span>'
-      + '  </div>'
-      + '  <div class="adm-modal-row">'
-      + '    <span class="adm-modal-label">' + escHtml(REPORT_AUTHOR_MSG.accountStatus) + '</span>'
-      + '    ' + statusBadge
-      + '  </div>'
-      + '</div>'
-      + '<div class="adm-action-stack">'
-      + '  <a href="' + ctx + '/admin/members?searchType=userId&keyword=' + encodeURIComponent(userId) + '" class="adm-btn adm-btn-ghost adm-link-button">' + escHtml(REPORT_AUTHOR_MSG.memberInfoView) + '</a>'
-      + blockBtn
-      + '</div>';
-
-    document.querySelector('#authorModal .adm-modal-title').textContent = REPORT_AUTHOR_MSG.title;
-    document.getElementById('authorModal').style.display = 'flex';
-}
-
-function closeAuthorModal() {
-    document.getElementById('authorModal').style.display = 'none';
-}
-
-function blockUserFromModal(btn) {
-    var userIdx = btn.getAttribute('data-idx');
-    if (!confirm(REPORT_AUTHOR_MSG.confirmBlock)) return;
-    fetch(ctx + '/admin/community/users/' + userIdx + '/block', {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    }).then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (d.success) { location.reload(); }
-        else { alert(d.message || REPORT_AUTHOR_MSG.blockFailed); }
-    });
-}
-
-function escHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function applyReportKeywordFilter(button) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('keyword', button.dataset.keyword || '');
+    params.set('page', '1');
+    location.href = ctx + '/admin/reports?' + params.toString();
 }
 </script>
 
-<%-- ── 신고자 정보 모달 ── --%>
-<div id="authorModal" class="adm-modal-overlay" style="display:none;"
-     onclick="if(event.target===this)closeAuthorModal()">
-    <div class="adm-modal" style="width:360px;">
-        <div class="adm-modal-head">
-            <span class="adm-modal-title">${adminReportsAuthorInfoTitle}</span>
-            <button class="adm-modal-close" onclick="closeAuthorModal()">✕</button>
-        </div>
-        <div class="adm-modal-body" id="authorModalBody"></div>
-    </div>
-</div>
+<%@ include file="../common/context-modal.jspf" %>
 
 <%@ include file="../layout-close.jsp" %>

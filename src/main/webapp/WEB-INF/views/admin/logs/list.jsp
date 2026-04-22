@@ -164,11 +164,24 @@
                         </td>
                         <td>
                             <div><c:out value="${empty item.loginIdentifier ? '-' : item.loginIdentifier}"/></div>
-                            <c:if test="${not empty item.flowTraceId}">
-                                <div style="margin-top:4px;font-size:11px;color:#64748b;">
-                                    <spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/>
-                                </div>
-                            </c:if>
+                            <div class="adm-inline-actions">
+                                <c:if test="${not empty item.loginIdentifier}">
+                                    <button type="button"
+                                            class="adm-inline-chip"
+                                            data-keyword="${item.loginIdentifier}"
+                                            onclick="applyKeywordFilter(this)">
+                                        <spring:message code="admin.common.sameValue"/>
+                                    </button>
+                                </c:if>
+                                <c:if test="${not empty item.requestUri}">
+                                    <button type="button"
+                                            class="adm-inline-chip"
+                                            data-keyword="${item.requestUri}"
+                                            onclick="applyKeywordFilter(this)">
+                                        <spring:message code="admin.common.uri"/>
+                                    </button>
+                                </c:if>
+                            </div>
                         </td>
                         <td>
                             <c:choose>
@@ -180,14 +193,55 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.ipAddress}">
-                                    <button type="button"
-                                            class="adm-inline-link js-open-ip-context"
-                                            data-ip-address="${item.ipAddress}"
-                                            data-default-tab="logins"
-                                            style="color:#93c5fd;">${item.ipAddress}</button>
+                                    <div>
+                                        <button type="button"
+                                                class="adm-inline-link js-open-ip-context"
+                                                data-ip-address="${item.ipAddress}"
+                                                data-default-tab="logins"
+                                                style="color:#93c5fd;">${item.ipAddress}</button>
+                                    </div>
+                                    <div class="adm-inline-actions">
+                                        <button type="button"
+                                                class="adm-inline-chip"
+                                                data-keyword="${item.ipAddress}"
+                                                onclick="applyKeywordFilter(this)">
+                                            <spring:message code="admin.common.sameIp"/>
+                                        </button>
+                                    </div>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
+                        </td>
+                        <td>
+                            <div style="font-size:12px;color:#64748b;">
+                                <c:if test="${not empty item.flowTraceId}">
+                                    <div><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></div>
+                                </c:if>
+                                <c:if test="${empty item.flowTraceId}">
+                                    <div>-</div>
+                                </c:if>
+                                <c:if test="${not empty item.requestId}">
+                                    <div style="margin-top:4px;"><c:out value="${item.requestId}"/></div>
+                                </c:if>
+                            </div>
+                            <div class="adm-inline-actions">
+                                <c:if test="${not empty item.requestId}">
+                                    <button type="button"
+                                            class="adm-inline-chip"
+                                            data-keyword="${item.requestId}"
+                                            onclick="applyKeywordFilter(this)">
+                                        <spring:message code="admin.common.sameRequest"/>
+                                    </button>
+                                </c:if>
+                                <c:if test="${not empty item.flowTraceId}">
+                                    <button type="button"
+                                            class="adm-inline-chip"
+                                            data-keyword="${item.flowTraceId}"
+                                            onclick="applyKeywordFilter(this)">
+                                        <spring:message code="admin.common.sameFlow"/>
+                                    </button>
+                                </c:if>
+                            </div>
                         </td>
                     </tr>
                 </c:forEach>
@@ -214,6 +268,15 @@
 <%@ include file="../common/context-modal.jspf" %>
 
 <script>
+function applyKeywordFilter(button) {
+    var keyword = button.getAttribute('data-keyword');
+    if (!keyword) return;
+    const params = new URLSearchParams(window.location.search);
+    params.set('keyword', keyword);
+    params.set('page', '1');
+    location.href = '${pageContext.request.contextPath}/admin/logins?' + params.toString();
+}
+
 function goPage(page) {
     const params = new URLSearchParams(window.location.search);
     params.set('page', page);

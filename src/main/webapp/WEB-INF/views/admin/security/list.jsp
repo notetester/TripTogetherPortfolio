@@ -136,8 +136,38 @@
                                 <c:otherwise><c:out value="${item.eventStage}"/></c:otherwise>
                             </c:choose>
                         </td>
-                        <td><c:out value="${empty item.inputIdentifier ? '-' : item.inputIdentifier}"/></td>
-                        <td><c:out value="${empty item.targetEmail ? '-' : item.targetEmail}"/></td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.inputIdentifier}">
+                                    <div><c:out value="${item.inputIdentifier}"/></div>
+                                    <div class="adm-inline-actions">
+                                        <button type="button"
+                                                class="adm-inline-chip"
+                                                data-keyword="${item.inputIdentifier}"
+                                                onclick="applyKeywordFilter(this)">
+                                            <spring:message code="admin.common.sameValue"/>
+                                        </button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.targetEmail}">
+                                    <div><c:out value="${item.targetEmail}"/></div>
+                                    <div class="adm-inline-actions">
+                                        <button type="button"
+                                                class="adm-inline-chip"
+                                                data-keyword="${item.targetEmail}"
+                                                onclick="applyKeywordFilter(this)">
+                                            <spring:message code="admin.common.sameEmail"/>
+                                        </button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
                         <td>
                             <c:choose>
                                 <c:when test="${item.success}"><span class="status-badge ACTIVE"><spring:message code="admin.common.success"/></span></c:when>
@@ -148,11 +178,21 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.ipAddress}">
-                                    <button type="button"
-                                            class="adm-inline-link js-open-ip-context"
-                                            data-ip-address="${item.ipAddress}"
-                                            data-default-tab="security"
-                                            style="color:#93c5fd;">${item.ipAddress}</button>
+                                    <div>
+                                        <button type="button"
+                                                class="adm-inline-link js-open-ip-context"
+                                                data-ip-address="${item.ipAddress}"
+                                                data-default-tab="security"
+                                                style="color:#93c5fd;">${item.ipAddress}</button>
+                                    </div>
+                                    <div class="adm-inline-actions">
+                                        <button type="button"
+                                                class="adm-inline-chip"
+                                                data-keyword="${item.ipAddress}"
+                                                onclick="applyKeywordFilter(this)">
+                                            <spring:message code="admin.common.sameIp"/>
+                                        </button>
+                                    </div>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
@@ -182,6 +222,15 @@
 <%@ include file="../common/context-modal.jspf" %>
 
 <script>
+function applyKeywordFilter(button) {
+    var keyword = button.getAttribute('data-keyword');
+    if (!keyword) return;
+    const params = new URLSearchParams(window.location.search);
+    params.set('keyword', keyword);
+    params.set('page', '1');
+    location.href = '${pageContext.request.contextPath}/admin/security?' + params.toString();
+}
+
 function goPage(page) {
     const params = new URLSearchParams(window.location.search);
     params.set('page', page);

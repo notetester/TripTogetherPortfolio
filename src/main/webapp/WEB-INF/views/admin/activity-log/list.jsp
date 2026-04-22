@@ -94,6 +94,35 @@
               </c:if>
             </div>
           </c:if>
+          <div class="adm-inline-actions">
+            <c:if test="${(item.targetType eq 'USER' or item.targetType eq 'user') and not empty item.targetId}">
+              <button type="button"
+                      class="adm-inline-chip js-open-member-context"
+                      data-user-idx="${item.targetId}">
+                <spring:message code="admin.common.viewTarget"/>
+              </button>
+            </c:if>
+            <c:if test="${(item.targetType eq 'REPORT' or item.targetType eq 'report') and not empty item.targetId}">
+              <a href="${pageContext.request.contextPath}/admin/reports/${item.targetId}"
+                 class="adm-inline-chip">
+                <spring:message code="admin.common.viewDetail"/>
+              </a>
+            </c:if>
+            <c:if test="${(item.targetType eq 'INQUIRY' or item.targetType eq 'inquiry') and not empty item.targetId}">
+              <a href="${pageContext.request.contextPath}/admin/inquiries/${item.targetId}"
+                 class="adm-inline-chip">
+                <spring:message code="admin.common.viewDetail"/>
+              </a>
+            </c:if>
+            <c:if test="${not empty item.targetId}">
+              <button type="button"
+                      class="adm-inline-chip"
+                      data-keyword="${item.targetId}"
+                      onclick="applyKeywordFilter(this)">
+                <spring:message code="admin.common.sameTarget"/>
+              </button>
+            </c:if>
+          </div>
         </td>
         <td style="max-width:300px;word-break:break-all;"><c:out value="${item.requestUri}"/></td>
         <td>
@@ -109,11 +138,21 @@
         <td>
           <c:choose>
             <c:when test="${not empty item.ipAddress}">
-              <button type="button"
-                      class="adm-inline-link js-open-ip-context"
-                      data-ip-address="${item.ipAddress}"
-                      data-default-tab="activity"
-                      style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
+              <div>
+                <button type="button"
+                        class="adm-inline-link js-open-ip-context"
+                        data-ip-address="${item.ipAddress}"
+                        data-default-tab="activity"
+                        style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
+              </div>
+              <div class="adm-inline-actions">
+                <button type="button"
+                        class="adm-inline-chip"
+                        data-keyword="${item.ipAddress}"
+                        onclick="applyKeywordFilter(this)">
+                  <spring:message code="admin.common.sameIp"/>
+                </button>
+              </div>
             </c:when>
             <c:otherwise>-</c:otherwise>
           </c:choose>
@@ -123,6 +162,24 @@
           <c:if test="${not empty item.flowTraceId}">
             <div style="margin-top:4px;"><c:out value="${item.flowTraceId}"/></div>
           </c:if>
+          <div class="adm-inline-actions">
+            <c:if test="${not empty item.requestId}">
+              <button type="button"
+                      class="adm-inline-chip"
+                      data-keyword="${item.requestId}"
+                      onclick="applyKeywordFilter(this)">
+                <spring:message code="admin.common.sameRequest"/>
+              </button>
+            </c:if>
+            <c:if test="${not empty item.flowTraceId}">
+              <button type="button"
+                      class="adm-inline-chip"
+                      data-keyword="${item.flowTraceId}"
+                      onclick="applyKeywordFilter(this)">
+                <spring:message code="admin.common.sameFlow"/>
+              </button>
+            </c:if>
+          </div>
         </td>
       </tr></c:forEach>
       <c:if test="${empty list}"><tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr></c:if>
@@ -131,5 +188,15 @@
   </div>
 </div>
 <%@ include file="../common/context-modal.jspf" %>
-<script>function goPage(page){const params=new URLSearchParams(window.location.search);params.set('page',page);location.href='${pageContext.request.contextPath}/admin/activity-logs?'+params.toString();}</script>
+<script>
+function applyKeywordFilter(button){
+  var keyword = button.getAttribute('data-keyword');
+  if(!keyword) return;
+  const params=new URLSearchParams(window.location.search);
+  params.set('keyword',keyword);
+  params.set('page','1');
+  location.href='${pageContext.request.contextPath}/admin/activity-logs?'+params.toString();
+}
+function goPage(page){const params=new URLSearchParams(window.location.search);params.set('page',page);location.href='${pageContext.request.contextPath}/admin/activity-logs?'+params.toString();}
+</script>
 <%@ include file="../layout-close.jsp" %>

@@ -17,7 +17,6 @@
 <spring:message code="admin.reports.detail.confirmDeleteReview" var="adminReportsDetailConfirmDeleteReview"/>
 <spring:message code="admin.reports.detail.confirmRevert" var="adminReportsDetailConfirmRevert"/>
 <spring:message code="admin.reports.detail.processFailed" var="adminReportsDetailProcessFailed"/>
-<spring:message code="admin.common.memberInfoView" var="adminCommonMemberInfoView"/>
 <c:set var="pageTitle" value="${adminReportsDetailPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
@@ -95,6 +94,39 @@
                                         </c:choose>
                                     </span>
                                 </c:if>
+                                <span class="adm-inline-actions" style="margin-left:8px;">
+                                    <c:if test="${report.targetType eq 'user' and not empty report.targetId}">
+                                        <button type="button"
+                                                class="adm-inline-chip js-open-member-context"
+                                                data-user-idx="${report.targetId}">
+                                            <spring:message code="admin.common.viewTarget"/>
+                                        </button>
+                                    </c:if>
+                                    <a href="${pageContext.request.contextPath}/admin/reports?targetType=${report.targetType}&amp;keyword=${report.targetId}"
+                                       class="adm-inline-chip">
+                                        <spring:message code="admin.common.sameTarget"/>
+                                    </a>
+                                    <c:if test="${report.targetType eq 'post' and report.targetStatus ne 'DELETED'}">
+                                        <a href="${pageContext.request.contextPath}/community/${report.targetId}"
+                                           target="_blank"
+                                           class="adm-inline-chip">
+                                            <spring:message code="admin.common.viewDetail"/>
+                                        </a>
+                                    </c:if>
+                                    <c:if test="${report.targetType eq 'comment' and report.targetStatus ne 'DELETED'}">
+                                        <a href="${pageContext.request.contextPath}/community/${empty report.sourceId ? report.targetPostId : report.sourceId}"
+                                           target="_blank"
+                                           class="adm-inline-chip">
+                                            <spring:message code="admin.common.viewDetail"/>
+                                        </a>
+                                    </c:if>
+                                    <c:if test="${report.targetType eq 'review' and report.targetStatus ne 'DELETED' and not empty report.targetSpotIdx}">
+                                        <a href="${pageContext.request.contextPath}/admin/explore/spots/${report.targetSpotIdx}"
+                                           class="adm-inline-chip">
+                                            <spring:message code="admin.common.viewSpot"/>
+                                        </a>
+                                    </c:if>
+                                </span>
                             </div>
                         </div>
 
@@ -212,11 +244,32 @@
                         </div>
 
                         <div class="adm-meta-actions">
-                            <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${report.userId}"
-                               class="adm-btn adm-btn-ghost"
-                               style="text-align:center;font-size:12px;text-decoration:none;display:block;">
-                                ${adminCommonMemberInfoView}
-                            </a>
+                            <c:choose>
+                                <c:when test="${not empty report.userIdx}">
+                                    <button type="button"
+                                            class="adm-btn adm-btn-ghost js-open-member-context"
+                                            data-user-idx="${report.userIdx}"
+                                            style="width:100%;text-align:center;font-size:12px;display:block;">
+                                        <spring:message code="admin.common.memberInfoView"/>
+                                    </button>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${report.userId}"
+                                       class="adm-btn adm-btn-ghost"
+                                       style="text-align:center;font-size:12px;text-decoration:none;display:block;">
+                                        <spring:message code="admin.common.memberInfoView"/>
+                                    </a>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+
+                        <div class="adm-inline-actions">
+                            <button type="button"
+                                    class="adm-inline-chip"
+                                    data-keyword="${report.userId}"
+                                    onclick="openReportFilter(this)">
+                                <spring:message code="admin.common.sameReporter"/>
+                            </button>
                         </div>
 
                         <%-- 처리 버튼: targetType에 따라 조건부 --%>
@@ -318,6 +371,15 @@ function goBackToList() {
     location.href = url;
 }
 
+function openReportFilter(button) {
+    var params = new URLSearchParams();
+    params.set('page', '1');
+    if (button.dataset.keyword) {
+        params.set('keyword', button.dataset.keyword);
+    }
+    location.href = ctx + '/admin/reports?' + params.toString();
+}
+
 var isReview = (targetType === 'review');
 var actionLabels = {
     REJECTED:         REPORT_DETAIL_MSG.rejected,
@@ -345,4 +407,5 @@ function resolve(action) {
 }
 </script>
 
+<%@ include file="../common/context-modal.jspf" %>
 <%@ include file="../layout-close.jsp" %>

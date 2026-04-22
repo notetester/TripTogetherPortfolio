@@ -136,8 +136,16 @@
                             </c:choose>
                         </td>
                         <td>
+                            <c:url var="spotReviewsManageUrl" value="/admin/explore/reviews">
+                                <c:param name="searchType" value="name"/>
+                                <c:param name="keyword" value="${spot.name}"/>
+                            </c:url>
                             <a href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}" class="adm-link-title" style="font-weight:600;">${fn:escapeXml(spot.name)}</a>
                             <div class="adm-cell-ellipsis" style="font-size:11px;color:#64748b;margin-top:4px;max-width:260px;">${fn:escapeXml(spot.address)}</div>
+                            <div class="adm-inline-actions">
+                                <a href="${pageContext.request.contextPath}/detail/${spot.spotIdx}" target="_blank" class="adm-inline-chip"><spring:message code="admin.explore.detail.userView"/></a>
+                                <a href="${pageContext.request.contextPath}${spotReviewsManageUrl}" class="adm-inline-chip"><spring:message code="admin.explore.detail.reviewsManageAll"/></a>
+                            </div>
                         </td>
                         <td>
                             <button type="button"

@@ -5,17 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="inquiries"/>
 <spring:message code="admin.inquiry.pageTitle" var="adminInquiryPageTitle"/>
-<spring:message code="admin.common.nickname" var="adminCommonNickname"/>
-<spring:message code="admin.common.userId" var="adminCommonUserId"/>
 <spring:message code="admin.common.id" var="adminCommonId"/>
-<spring:message code="admin.common.accountStatus" var="adminCommonAccountStatus"/>
-<spring:message code="admin.common.memberInfoView" var="adminCommonMemberInfoView"/>
-<spring:message code="admin.common.blockAccount" var="adminCommonBlockAccount"/>
-<spring:message code="admin.common.activeLabel" var="adminCommonActiveLabel"/>
-<spring:message code="admin.common.blockedLabel" var="adminCommonBlockedLabel"/>
-<spring:message code="admin.inquiry.authorInfoTitle" var="adminInquiryAuthorInfoTitle"/>
-<spring:message code="admin.inquiry.confirmBlockUser" var="adminInquiryConfirmBlockUser"/>
-<spring:message code="admin.inquiry.blockFailed" var="adminInquiryBlockFailed"/>
 <c:set var="pageTitle" value="${adminInquiryPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
@@ -86,9 +76,11 @@
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="searchType" style="width:110px;">
                                 <option value="all" ${search.searchType=='all'?'selected':''}><spring:message code="admin.common.all"/></option>
+                                <option value="inquiryId" ${search.searchType=='inquiryId'?'selected':''}><spring:message code="admin.inquiry.searchType.inquiryId"/></option>
                                 <option value="title" ${search.searchType=='title'?'selected':''}><spring:message code="admin.inquiry.searchType.title"/></option>
                                 <option value="content" ${search.searchType=='content'?'selected':''}><spring:message code="admin.inquiry.searchType.content"/></option>
                                 <option value="nickname" ${search.searchType=='nickname'?'selected':''}><spring:message code="admin.inquiry.searchType.nickname"/></option>
+                                <option value="userId" ${search.searchType=='userId'?'selected':''}><spring:message code="admin.inquiry.searchType.userId"/></option>
                             </select>
                             <div class="adm-search-box" style="flex:1;">
                                 <span class="adm-search-ico">🔍</span>
@@ -126,23 +118,45 @@
                     <tr class="adm-inq-row" data-id="${item.inquiryId}" style="cursor:pointer;">
                         <td>#${item.inquiryId}</td>
                         <%-- 작성자 --%>
-                        <td style="cursor:pointer;"
-                            data-useridx="${item.userIdx}"
-                            data-userid="${item.userId}"
-                            data-nickname="${item.nickname}"
-                            data-status="${item.accountStatus}"
-                            onclick="openAuthorModal(this)">
-                            <div class="adm-modal-nickname">${item.nickname}</div>
-                            <div class="adm-modal-value">${item.userId}</div>
+                        <td>
+                            <button type="button"
+                                    class="adm-inline-link js-open-member-context"
+                                    data-user-idx="${item.userIdx}"
+                                    style="font-weight:700;color:#93c5fd;">${item.nickname}</button>
+                            <div class="adm-modal-value">
+                                <button type="button"
+                                        class="adm-inline-link js-open-member-context"
+                                        data-user-idx="${item.userIdx}"
+                                        style="font-size:12px;color:#94a3b8;">${item.userId}</button>
+                            </div>
                             <c:if test="${item.accountStatus == 'BLOCKED'}">
                                 <span class="adm-inline-danger"><spring:message code="admin.reports.accountBlocked"/></span>
                             </c:if>
+                            <div class="adm-inline-actions">
+                                <button type="button"
+                                        class="adm-inline-chip"
+                                        data-search-type="userId"
+                                        data-keyword="${item.userId}"
+                                        onclick="applyInquiryFilter(this)">
+                                    <spring:message code="admin.common.sameAuthor"/>
+                                </button>
+                            </div>
                         </td>
                         <td>
                             <div class="mem-name">${item.title}</div>
                             <div class="mem-uid">
                                 <c:if test="${item.privateFlag}">🔒 <spring:message code="admin.inquiry.privateFlag"/> · </c:if>
                                 <spring:message code="admin.inquiry.viewCount" arguments="${item.viewCount}"/>
+                            </div>
+                            <div class="adm-inline-actions">
+                                <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}"
+                                   class="adm-inline-chip"><spring:message code="admin.common.viewDetail"/></a>
+                                <button type="button"
+                                        class="adm-inline-chip"
+                                        data-category="${item.category}"
+                                        onclick="applyInquiryFilter(this)">
+                                    <spring:message code="admin.common.sameCategory"/>
+                                </button>
                             </div>
                         </td>
                         <td>
@@ -209,22 +223,33 @@
 </div>
 
 <script>
-var INQUIRY_AUTHOR_MSG = {
-    blocked: '${fn:escapeXml(adminCommonBlockedLabel)}',
-    active: '${fn:escapeXml(adminCommonActiveLabel)}',
-    nickname: '${fn:escapeXml(adminCommonNickname)}',
-    userId: '${fn:escapeXml(adminCommonUserId)}',
-    accountStatus: '${fn:escapeXml(adminCommonAccountStatus)}',
-    memberInfoView: '${fn:escapeXml(adminCommonMemberInfoView)}',
-    blockAccount: '${fn:escapeXml(adminCommonBlockAccount)}',
-    confirmBlock: '${fn:escapeXml(adminInquiryConfirmBlockUser)}',
-    blockFailed: '${fn:escapeXml(adminInquiryBlockFailed)}',
-    title: '${fn:escapeXml(adminInquiryAuthorInfoTitle)}'
-};
-
 function goPage(page) {
     const params = new URLSearchParams(window.location.search);
     params.set('page', page);
+    location.href = '${pageContext.request.contextPath}/admin/inquiries?' + params.toString();
+}
+
+function applyInquiryFilter(button) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', '1');
+
+    if (button.dataset.category !== undefined) {
+        if (button.dataset.category) params.set('category', button.dataset.category);
+        else params.delete('category');
+        params.delete('searchType');
+        params.delete('keyword');
+    }
+
+    if (button.dataset.searchType !== undefined) {
+        if (button.dataset.searchType) params.set('searchType', button.dataset.searchType);
+        else params.delete('searchType');
+    }
+
+    if (button.dataset.keyword !== undefined) {
+        if (button.dataset.keyword) params.set('keyword', button.dataset.keyword);
+        else params.delete('keyword');
+    }
+
     location.href = '${pageContext.request.contextPath}/admin/inquiries?' + params.toString();
 }
 
@@ -234,83 +259,12 @@ var ctx = '${pageContext.request.contextPath}';
 var listParams = 'page=${search.page}&status=${search.status}&category=${search.category}&answered=${search.answered}&searchType=${search.searchType}&keyword=' + encodeURIComponent('${search.keyword}');
 document.querySelectorAll('.adm-inq-row[data-id]').forEach(function (tr) {
     tr.addEventListener('click', function (e) {
-        if (e.target.closest('td[data-useridx]')) return; // 작성자 셀 클릭은 모달로 처리
+        if (e.target.closest('button, a')) return;
         location.href = '${pageContext.request.contextPath}/admin/inquiries/' + this.getAttribute('data-id') + '?' + listParams;
     });
 });
-
-// ── 작성자 모달 ──
-function openAuthorModal(el) {
-    var userIdx  = el.getAttribute('data-useridx');
-    var userId   = el.getAttribute('data-userid');
-    var nickname = el.getAttribute('data-nickname');
-    var status   = el.getAttribute('data-status');
-
-    var statusBadge = status === 'BLOCKED'
-        ? '<span class="status-badge BLOCKED" style="font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.blocked) + '</span>'
-        : '<span class="status-badge ACTIVE"  style="font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.active) + '</span>';
-
-    var blockBtn = status !== 'BLOCKED'
-        ? '<button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;width:100%;" data-idx="' + userIdx + '" onclick="blockUserFromModal(this)">' + escHtml(INQUIRY_AUTHOR_MSG.blockAccount) + '</button>'
-        : '';
-
-    document.getElementById('authorModalBody').innerHTML =
-        '<div class="adm-modal-stack">'
-      + '  <div class="adm-modal-row">'
-      + '    <span class="adm-modal-label">' + escHtml(INQUIRY_AUTHOR_MSG.nickname) + '</span>'
-      + '    <span class="adm-modal-nickname">' + escHtml(nickname) + '</span>'
-      + '  </div>'
-      + '  <div class="adm-modal-row">'
-      + '    <span class="adm-modal-label">' + escHtml(INQUIRY_AUTHOR_MSG.userId) + '</span>'
-      + '    <span class="adm-modal-value">' + escHtml(userId) + '</span>'
-      + '  </div>'
-      + '  <div class="adm-modal-row">'
-      + '    <span class="adm-modal-label">' + escHtml(INQUIRY_AUTHOR_MSG.accountStatus) + '</span>'
-      + '    ' + statusBadge
-      + '  </div>'
-      + '</div>'
-      + '<div class="adm-action-stack">'
-      + '  <a href="' + ctx + '/admin/members?searchType=userId&keyword=' + encodeURIComponent(userId) + '" class="adm-btn adm-btn-ghost adm-link-button">' + escHtml(INQUIRY_AUTHOR_MSG.memberInfoView) + '</a>'
-      + blockBtn
-      + '</div>';
-
-    document.querySelector('#authorModal .adm-modal-title').textContent = INQUIRY_AUTHOR_MSG.title;
-    document.getElementById('authorModal').style.display = 'flex';
-}
-
-function closeAuthorModal() {
-    document.getElementById('authorModal').style.display = 'none';
-}
-
-function blockUserFromModal(btn) {
-    var userIdx = btn.getAttribute('data-idx');
-    if (!confirm(INQUIRY_AUTHOR_MSG.confirmBlock)) return;
-    fetch(ctx + '/admin/community/users/' + userIdx + '/block', {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    }).then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (d.success) { location.reload(); }
-        else { alert(d.message || INQUIRY_AUTHOR_MSG.blockFailed); }
-    });
-}
-
-function escHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
 </script>
 
-<%-- ── 작성자 정보 모달 ── --%>
-<div id="authorModal" class="adm-modal-overlay" style="display:none;"
-     onclick="if(event.target===this)closeAuthorModal()">
-    <div class="adm-modal" style="width:360px;">
-        <div class="adm-modal-head">
-            <span class="adm-modal-title">${adminInquiryAuthorInfoTitle}</span>
-            <button class="adm-modal-close" onclick="closeAuthorModal()">✕</button>
-        </div>
-        <div class="adm-modal-body" id="authorModalBody"></div>
-    </div>
-</div>
+<%@ include file="../common/context-modal.jspf" %>
 
 <%@ include file="../layout-close.jsp" %>

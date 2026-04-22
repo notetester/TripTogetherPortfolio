@@ -22,6 +22,7 @@ public class EmailVerificationRequestVO {
 
     private Long emailVerificationRequestIdx;
     private String requestId;
+    private String flowTraceId;
     private Long userIdx; // 식별 가능 시만 사용. 비회원/미식별 요청은 null 가능
     private String purpose;
     private String pendingEmail; // 의미상 요청 대상 이메일

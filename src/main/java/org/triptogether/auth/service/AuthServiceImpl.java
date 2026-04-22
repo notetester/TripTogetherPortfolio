@@ -275,11 +275,13 @@ public class AuthServiceImpl implements AuthService {
         authMapper.cancelActiveEmailVerificationRequests(user.getUserIdx(), "FIND_ID");
         authMapper.expireOldTokens(user.getUserEmail(), "FIND_ID");
         String requestId = UUID.randomUUID().toString();
+        String flowTraceId = resolveFlowTraceId(context, requestId);
         String token = UUID.randomUUID().toString();
         LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
 
         EmailVerificationRequestVO request = EmailVerificationRequestVO.builder()
                 .requestId(requestId)
+                .flowTraceId(flowTraceId)
                 .userIdx(user.getUserIdx())
                 .purpose("FIND_ID")
                 .pendingEmail(user.getUserEmail())
@@ -294,6 +296,7 @@ public class AuthServiceImpl implements AuthService {
         authMapper.insertEmailVerification(EmailVerificationVO.builder()
                 .emailVerificationRequestIdx(request.getEmailVerificationRequestIdx())
                 .requestId(requestId)
+                .flowTraceId(flowTraceId)
                 .userIdx(user.getUserIdx())
                 .email(user.getUserEmail())
                 .token(token)
@@ -400,11 +403,13 @@ public class AuthServiceImpl implements AuthService {
         authMapper.cancelActiveEmailVerificationRequests(user.getUserIdx(), "RESET_PW");
         authMapper.expireOldTokens(user.getUserEmail(), "RESET_PW");
         String requestId = UUID.randomUUID().toString();
+        String flowTraceId = resolveFlowTraceId(context, requestId);
         String token = UUID.randomUUID().toString();
         LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
 
         EmailVerificationRequestVO request = EmailVerificationRequestVO.builder()
                 .requestId(requestId)
+                .flowTraceId(flowTraceId)
                 .userIdx(user.getUserIdx())
                 .purpose("RESET_PW")
                 .pendingEmail(user.getUserEmail())
@@ -419,6 +424,7 @@ public class AuthServiceImpl implements AuthService {
         authMapper.insertEmailVerification(EmailVerificationVO.builder()
                 .emailVerificationRequestIdx(request.getEmailVerificationRequestIdx())
                 .requestId(requestId)
+                .flowTraceId(flowTraceId)
                 .userIdx(user.getUserIdx())
                 .email(user.getUserEmail())
                 .token(token)
@@ -522,10 +528,12 @@ public class AuthServiceImpl implements AuthService {
         authMapper.cancelActiveEmailVerificationRequests(userIdx, "PROFILE_EMAIL");
         authMapper.cancelTokensByRequestId(requestId);
 
+        String flowTraceId = resolveFlowTraceId(context, requestId);
         String token = UUID.randomUUID().toString();
         LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
         EmailVerificationRequestVO request = EmailVerificationRequestVO.builder()
                 .requestId(requestId)
+                .flowTraceId(flowTraceId)
                 .userIdx(userIdx)
                 .purpose("PROFILE_EMAIL")
                 .pendingEmail(email)
@@ -540,6 +548,7 @@ public class AuthServiceImpl implements AuthService {
         authMapper.insertEmailVerification(EmailVerificationVO.builder()
                 .emailVerificationRequestIdx(request.getEmailVerificationRequestIdx())
                 .requestId(requestId)
+                .flowTraceId(flowTraceId)
                 .userIdx(userIdx)
                 .email(email)
                 .token(token)
@@ -1731,6 +1740,13 @@ public class AuthServiceImpl implements AuthService {
 
     private boolean hasText(String value) {
         return value != null && !value.isBlank();
+    }
+
+    private String resolveFlowTraceId(LoginRequestContext context, String fallbackRequestId) {
+        if (context != null && hasText(context.getFlowTraceId())) {
+            return context.getFlowTraceId();
+        }
+        return fallbackRequestId;
     }
 
     private boolean isValidEmailFormat(String identifier) {

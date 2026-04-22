@@ -562,6 +562,82 @@ button, input, select, textarea {
     color: #94a3b8;
     font-size: 12px;
 }
+.adm-inline-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+.adm-inline-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 24px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid #2d3748;
+    background: #1e2330;
+    color: #cbd5e1;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+button.adm-inline-chip {
+    font: inherit;
+}
+.adm-inline-chip:hover {
+    border-color: #60a5fa;
+    color: #eff6ff;
+    background: rgba(59,130,246,.12);
+}
+.adm-inline-chip:focus-visible {
+    outline: 2px solid rgba(96,165,250,.55);
+    outline-offset: 2px;
+}
+.adm-social-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+.adm-social-summary-card {
+    min-width: 0;
+    padding: 16px;
+    border-radius: 10px;
+    text-align: left;
+}
+.adm-social-summary-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.adm-social-summary-icon.adm-social-icon {
+    width: 28px;
+    height: 28px;
+}
+.adm-social-summary-icon.kakao-mark {
+    border-radius: 8px;
+    font-size: 16px;
+}
+.adm-social-summary-icon.naver-mark {
+    font-size: 20px;
+}
+.adm-social-summary-icon.google-mark svg {
+    width: 28px;
+    height: 28px;
+}
+.adm-social-summary-label {
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 700;
+}
+.adm-social-summary-value {
+    font-size: 22px;
+    font-weight: 700;
+}
 .social-icon-sm {
     width: 20px; height: 20px; border-radius: 4px;
     display: flex; align-items: center; justify-content: center;
@@ -1182,6 +1258,19 @@ body.sa-light .adm-social-list.is-compact .adm-social-pill {
 }
 body.sa-light .adm-social-empty {
     color: #64748b;
+}
+body.sa-light .adm-inline-chip {
+    background: #ffffff;
+    border-color: #dbe2ea;
+    color: #334155;
+}
+body.sa-light .adm-inline-chip:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+body.sa-light .adm-social-summary-label {
+    color: #475569;
 }
 
 /* 테이블 */

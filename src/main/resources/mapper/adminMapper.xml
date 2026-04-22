@@ -154,6 +154,7 @@
     <resultMap id="emailVerificationRequestRM" type="org.triptogether.admin.vo.AdminEmailVerificationRequestVO">
         <id property="emailVerificationRequestIdx" column="email_verification_request_idx"/>
         <result property="requestId" column="request_id"/>
+        <result property="flowTraceId" column="flow_trace_id"/>
         <result property="userIdx" column="user_idx"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>
@@ -175,6 +176,7 @@
         <id property="verifyIdx" column="verify_idx"/>
         <result property="emailVerificationRequestIdx" column="email_verification_request_idx"/>
         <result property="requestId" column="request_id"/>
+        <result property="flowTraceId" column="flow_trace_id"/>
         <result property="userIdx" column="user_idx"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>
@@ -782,7 +784,7 @@
 
     <select id="findEmailVerificationRequestsByUser" resultMap="emailVerificationRequestRM">
         SELECT
-            r.email_verification_request_idx, r.request_id, r.user_idx,
+            r.email_verification_request_idx, r.request_id, r.flow_trace_id, r.user_idx,
             u.user_id, u.nickname,
             r.purpose, r.pending_email, r.status,
             r.requested_at, r.verified_at, r.applied_at, r.expired_at, r.cancelled_at,
@@ -796,11 +798,13 @@
 
     <select id="findEmailVerificationsByUser" resultMap="emailVerificationRM">
         SELECT
-            v.verify_idx, v.email_verification_request_idx, v.request_id, v.user_idx,
+            v.verify_idx, v.email_verification_request_idx, v.request_id,
+            COALESCE(v.flow_trace_id, r.flow_trace_id) AS flow_trace_id, v.user_idx,
             u.user_id, u.nickname,
             v.email, v.token, v.purpose, v.used,
             v.used_at, v.expired_at, v.cancelled_at, v.updated_at, v.created_at
         FROM EMAIL_VERIFICATION v
+        LEFT JOIN EMAIL_VERIFICATION_REQUEST r ON r.request_id = v.request_id
         LEFT JOIN USERS u ON u.user_idx = v.user_idx
         WHERE v.user_idx = #{userIdx}
         ORDER BY v.created_at DESC, v.verify_idx DESC
@@ -897,7 +901,7 @@
 
     <select id="findEmailVerificationRequestsByIp" resultMap="emailVerificationRequestRM">
         SELECT
-            r.email_verification_request_idx, r.request_id, r.user_idx,
+            r.email_verification_request_idx, r.request_id, r.flow_trace_id, r.user_idx,
             u.user_id, u.nickname,
             r.purpose, r.pending_email, r.status,
             r.requested_at, r.verified_at, r.applied_at, r.expired_at, r.cancelled_at,
@@ -911,7 +915,8 @@
 
     <select id="findEmailVerificationsByIp" resultMap="emailVerificationRM">
         SELECT
-            v.verify_idx, v.email_verification_request_idx, v.request_id, v.user_idx,
+            v.verify_idx, v.email_verification_request_idx, v.request_id,
+            COALESCE(v.flow_trace_id, r.flow_trace_id) AS flow_trace_id, v.user_idx,
             u.user_id, u.nickname,
             v.email, v.token, v.purpose, v.used,
             v.used_at, v.expired_at, v.cancelled_at, v.updated_at, v.created_at
@@ -1165,11 +1170,19 @@
                     <when test="searchType == 'nickname'">
                         AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
                     </when>
+                    <when test="searchType == 'userId'">
+                        AND u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'inquiryId'">
+                        AND CAST(ip.inquiry_id AS CHAR) LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
                     <otherwise>
                         AND (
                             ip.title LIKE CONCAT('%', #{keyword}, '%')
                             OR ip.content LIKE CONCAT('%', #{keyword}, '%')
                             OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                            OR CAST(ip.inquiry_id AS CHAR) LIKE CONCAT('%', #{keyword}, '%')
                         )
                     </otherwise>
                 </choose>
@@ -1275,6 +1288,7 @@
                     OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(h.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(h.request_uri, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(h.request_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(h.flow_trace_id, '') LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
@@ -1377,6 +1391,7 @@
                     OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(r.pending_email, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(r.request_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(r.flow_trace_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(r.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
@@ -1385,7 +1400,7 @@
 
     <select id="findEmailVerificationRequests" resultMap="emailVerificationRequestRM">
         SELECT
-            r.email_verification_request_idx, r.request_id, r.user_idx,
+            r.email_verification_request_idx, r.request_id, r.flow_trace_id, r.user_idx,
             u.user_id, u.nickname,
             r.purpose, r.pending_email, r.status,
             r.requested_at, r.verified_at, r.applied_at, r.expired_at, r.cancelled_at,
@@ -1418,6 +1433,7 @@
 
     <sql id="emailVerificationSearchBase">
         FROM EMAIL_VERIFICATION v
+        LEFT JOIN EMAIL_VERIFICATION_REQUEST r ON r.request_id = v.request_id
         LEFT JOIN USERS u ON v.user_idx = u.user_idx
         <where>
             <if test="used != null and used == 'USED'">
@@ -1435,7 +1451,8 @@
                     OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(v.email, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(v.request_id, '') LIKE CONCAT('%', #{keyword}, '%')
-                    OR IFNULL(v.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(COALESCE(v.flow_trace_id, r.flow_trace_id), '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(r.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
         </where>
@@ -1443,7 +1460,8 @@
 
     <select id="findEmailVerifications" resultMap="emailVerificationRM">
         SELECT
-            v.verify_idx, v.email_verification_request_idx, v.request_id, v.user_idx,
+            v.verify_idx, v.email_verification_request_idx, v.request_id,
+            COALESCE(v.flow_trace_id, r.flow_trace_id) AS flow_trace_id, v.user_idx,
             u.user_id, u.nickname,
             v.email, v.token, v.purpose, v.used,
             v.used_at, v.expired_at, v.cancelled_at, v.updated_at, v.created_at
@@ -1491,6 +1509,7 @@
                     IFNULL(u.user_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(a.request_uri, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(a.request_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(a.flow_trace_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(a.activity_code, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(a.activity_provider, '') LIKE CONCAT('%', #{keyword}, '%')
@@ -1538,7 +1557,12 @@
                 AND r.reason = #{reason}
             </if>
             <if test="keyword != null and keyword != ''">
-                AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                AND (
+                    IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(u.user_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR CAST(r.target_id AS CHAR) LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(r.description, '') LIKE CONCAT('%', #{keyword}, '%')
+                )
             </if>
         </where>
     </sql>

@@ -166,7 +166,26 @@
                                 <c:forEach var="b" items="${userBlocks}" begin="0" end="4">
                                     <tr>
                                         <td>${empty b.nickname ? '-' : b.nickname}</td>
-                                        <td>${empty b.blockedIp ? b.blockTargetKey : b.blockedIp}</td>
+                                        <td>
+                                            <div>${empty b.blockedIp ? b.blockTargetKey : b.blockedIp}</div>
+                                            <div class="adm-inline-actions">
+                                                <c:if test="${not empty b.blockedIp}">
+                                                    <button type="button"
+                                                            class="adm-inline-chip js-open-ip-context"
+                                                            data-ip-address="${b.blockedIp}"
+                                                            data-default-tab="blocks">
+                                                        <spring:message code="admin.common.viewDetail"/>
+                                                    </button>
+                                                </c:if>
+                                                <button type="button"
+                                                        class="adm-inline-chip js-apply-block-filter"
+                                                        data-section="user-blocks"
+                                                        data-field="target"
+                                                        data-keyword="${fn:escapeXml(empty b.blockedIp ? b.blockTargetKey : b.blockedIp)}">
+                                                    <spring:message code="admin.common.sameTarget"/>
+                                                </button>
+                                            </div>
+                                        </td>
                                         <td>${b.snapshotStatus}</td>
                                         <td>
                                             <button type="button"
@@ -210,7 +229,35 @@
                                 <tbody>
                                 <c:forEach var="r" items="${ipBlocks}" begin="0" end="4">
                                     <tr>
-                                        <td>${empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue}</td>
+                                        <td>
+                                            <div>${empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue}</div>
+                                            <div class="adm-inline-actions">
+                                                <c:if test="${not empty r.ipAddress}">
+                                                    <button type="button"
+                                                            class="adm-inline-chip js-open-ip-context"
+                                                            data-ip-address="${r.ipAddress}"
+                                                            data-default-tab="blocks">
+                                                        <spring:message code="admin.common.viewDetail"/>
+                                                    </button>
+                                                </c:if>
+                                                <button type="button"
+                                                        class="adm-inline-chip js-apply-block-filter"
+                                                        data-section="ip-rules"
+                                                        data-field="target"
+                                                        data-keyword="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}">
+                                                    <spring:message code="admin.common.sameTarget"/>
+                                                </button>
+                                                <c:if test="${not empty r.ipBlockBatchIdx}">
+                                                    <button type="button"
+                                                            class="adm-inline-chip js-apply-block-filter"
+                                                            data-section="ip-rules"
+                                                            data-field="batch"
+                                                            data-keyword="${fn:escapeXml(empty r.batchCode ? r.batchName : r.batchCode)}">
+                                                        <spring:message code="admin.common.sameBatch"/>
+                                                    </button>
+                                                </c:if>
+                                            </div>
+                                        </td>
                                         <td>${r.ruleActionLabel} / ${r.controlModeLabel}</td>
                                         <td>${r.finalStateLabel}</td>
                                         <td>
@@ -301,7 +348,35 @@
                                         <c:set var="historyCurrentType" value="BATCH"/>
                                     </c:if>
                                     <tr>
-                                        <td>${h.blockTargetKey}</td>
+                                        <td>
+                                            <div>${h.blockTargetKey}</div>
+                                            <div class="adm-inline-actions">
+                                                <c:if test="${not empty h.blockedIp}">
+                                                    <button type="button"
+                                                            class="adm-inline-chip js-open-ip-context"
+                                                            data-ip-address="${h.blockedIp}"
+                                                            data-default-tab="blocks">
+                                                        <spring:message code="admin.common.viewDetail"/>
+                                                    </button>
+                                                </c:if>
+                                                <button type="button"
+                                                        class="adm-inline-chip js-apply-block-filter"
+                                                        data-section="histories"
+                                                        data-field="target"
+                                                        data-keyword="${fn:escapeXml(h.blockTargetKey)}">
+                                                    <spring:message code="admin.common.sameTarget"/>
+                                                </button>
+                                                <c:if test="${not empty h.ipBlockBatchIdx}">
+                                                    <button type="button"
+                                                            class="adm-inline-chip js-apply-block-filter"
+                                                            data-section="histories"
+                                                            data-field="batch"
+                                                            data-keyword="${fn:escapeXml(empty h.batchCode ? h.batchName : h.batchCode)}">
+                                                        <spring:message code="admin.common.sameBatch"/>
+                                                    </button>
+                                                </c:if>
+                                            </div>
+                                        </td>
                                         <td>${h.historyKind}</td>
                                         <td>${empty h.effectiveResult ? '-' : h.effectiveResult}</td>
                                         <td>
@@ -402,10 +477,10 @@
                                         </div>
                                     </c:when>
                                     <c:otherwise>
-                                        <div style="font-weight:700;color:#e2e8f0;">${empty b.nickname ? '-' : b.nickname}</div>
-                                        <div style="font-size:12px;color:#94a3b8;">${empty b.userId ? '-' : b.userId}</div>
-                                    </c:otherwise>
-                                </c:choose>
+                                <div style="font-weight:700;color:#e2e8f0;">${empty b.nickname ? '-' : b.nickname}</div>
+                                <div style="font-size:12px;color:#94a3b8;">${empty b.userId ? '-' : b.userId}</div>
+                            </c:otherwise>
+                        </c:choose>
                             </td>
                             <td>${b.blockType}</td>
                             <td>
@@ -430,6 +505,23 @@
                                     <span>${empty b.blockedIp ? '-' : b.blockedIp}</span>
                                     <span style="display:block;font-size:11px;color:#64748b;">${b.blockTargetKey}</span>
                                 </button>
+                                <div class="adm-inline-actions">
+                                    <c:if test="${not empty b.blockedIp}">
+                                        <button type="button"
+                                                class="adm-inline-chip js-open-ip-context"
+                                                data-ip-address="${b.blockedIp}"
+                                                data-default-tab="blocks">
+                                            <spring:message code="admin.common.viewDetail"/>
+                                        </button>
+                                    </c:if>
+                                    <button type="button"
+                                            class="adm-inline-chip js-apply-block-filter"
+                                            data-section="user-blocks"
+                                            data-field="target"
+                                            data-keyword="${fn:escapeXml(empty b.blockedIp ? b.blockTargetKey : b.blockedIp)}">
+                                        <spring:message code="admin.common.sameTarget"/>
+                                    </button>
+                                </div>
                             </td>
                             <td><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span></td>
                             <td style="max-width:260px;white-space:normal;">${empty b.reason ? '-' : b.reason}</td>
@@ -618,6 +710,32 @@
                                     <span style="display:block;font-size:12px;color:#94a3b8;">${r.blockTargetKey}</span>
                                     <span style="display:block;font-size:11px;color:#64748b;">${r.matchType}</span>
                                 </button>
+                                <div class="adm-inline-actions">
+                                    <c:if test="${not empty r.ipAddress}">
+                                        <button type="button"
+                                                class="adm-inline-chip js-open-ip-context"
+                                                data-ip-address="${r.ipAddress}"
+                                                data-default-tab="blocks">
+                                            <spring:message code="admin.common.viewDetail"/>
+                                        </button>
+                                    </c:if>
+                                    <button type="button"
+                                            class="adm-inline-chip js-apply-block-filter"
+                                            data-section="ip-rules"
+                                            data-field="target"
+                                            data-keyword="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}">
+                                        <spring:message code="admin.common.sameTarget"/>
+                                    </button>
+                                    <c:if test="${not empty r.ipBlockBatchIdx}">
+                                        <button type="button"
+                                                class="adm-inline-chip js-apply-block-filter"
+                                                data-section="ip-rules"
+                                                data-field="batch"
+                                                data-keyword="${fn:escapeXml(empty r.batchCode ? r.batchName : r.batchCode)}">
+                                            <spring:message code="admin.common.sameBatch"/>
+                                        </button>
+                                    </c:if>
+                                </div>
                             </td>
                             <td>
                                 <div><span class="status-badge ${r.ruleAction == 'ALLOW' ? 'ACTIVE' : 'DORMANT'}">${r.ruleActionLabel}</span></div>
@@ -995,6 +1113,32 @@
                             <td>
                                 <div style="font-weight:700;color:#e2e8f0;">${h.blockTargetKey}</div>
                                 <div style="font-size:12px;color:#94a3b8;">${empty h.nickname ? '-' : h.nickname}</div>
+                                <div class="adm-inline-actions">
+                                    <c:if test="${not empty h.blockedIp}">
+                                        <button type="button"
+                                                class="adm-inline-chip js-open-ip-context"
+                                                data-ip-address="${h.blockedIp}"
+                                                data-default-tab="blocks">
+                                            <spring:message code="admin.common.viewDetail"/>
+                                        </button>
+                                    </c:if>
+                                    <button type="button"
+                                            class="adm-inline-chip js-apply-block-filter"
+                                            data-section="histories"
+                                            data-field="target"
+                                            data-keyword="${fn:escapeXml(h.blockTargetKey)}">
+                                        <spring:message code="admin.common.sameTarget"/>
+                                    </button>
+                                    <c:if test="${not empty h.ipBlockBatchIdx}">
+                                        <button type="button"
+                                                class="adm-inline-chip js-apply-block-filter"
+                                                data-section="histories"
+                                                data-field="batch"
+                                                data-keyword="${fn:escapeXml(empty h.batchCode ? h.batchName : h.batchCode)}">
+                                            <spring:message code="admin.common.sameBatch"/>
+                                        </button>
+                                    </c:if>
+                                </div>
                             </td>
                             <td>
                                 <div>${empty h.ruleAction ? '-' : h.ruleAction}</div>
@@ -1798,6 +1942,17 @@ function initializeLocalSections() {
     });
 }
 
+function applyBlockLocalFilter(section, field, keyword) {
+    const fieldSelect = document.querySelector('.js-local-field[data-section="' + section + '"]');
+    const keywordInput = document.querySelector('.js-local-keyword[data-section="' + section + '"]');
+    if (fieldSelect) fieldSelect.value = field || 'all';
+    if (keywordInput) keywordInput.value = keyword || '';
+    const state = getLocalState(section);
+    state.page = 1;
+    activateBlockTab(section);
+    renderLocalSection(section);
+}
+
 function findFirstButton(selector, predicate) {
     const buttons = Array.from(document.querySelectorAll(selector));
     return buttons.find(predicate) || null;
@@ -2480,6 +2635,16 @@ document.addEventListener('click', function (e) {
     const memberDetailBtn = e.target.closest('.js-open-member-detail');
     if (memberDetailBtn) {
         openMemberDetailModal(memberDetailBtn.dataset.userIdx);
+        return;
+    }
+
+    const applyBlockFilterBtn = e.target.closest('.js-apply-block-filter');
+    if (applyBlockFilterBtn) {
+        applyBlockLocalFilter(
+            applyBlockFilterBtn.dataset.section || 'all',
+            applyBlockFilterBtn.dataset.field || 'all',
+            applyBlockFilterBtn.dataset.keyword || ''
+        );
         return;
     }
 

@@ -100,7 +100,17 @@
                                 <c:otherwise><c:out value="${item.purpose}"/></c:otherwise>
                             </c:choose>
                         </td>
-                        <td><c:out value="${item.pendingEmail}"/></td>
+                        <td>
+                            <div><c:out value="${item.pendingEmail}"/></div>
+                            <div class="adm-inline-actions">
+                                <button type="button"
+                                        class="adm-inline-chip"
+                                        data-keyword="${item.pendingEmail}"
+                                        onclick="applyKeywordFilter(this)">
+                                    <spring:message code="admin.common.sameEmail"/>
+                                </button>
+                            </div>
+                        </td>
                         <td>
                             <span class="status-badge ACTIVE">
                                 <c:choose>
@@ -119,16 +129,42 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.ipAddress}">
-                                    <button type="button"
-                                            class="adm-inline-link js-open-ip-context"
-                                            data-ip-address="${item.ipAddress}"
-                                            data-default-tab="emailRequests"
-                                            style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
+                                    <div>
+                                        <button type="button"
+                                                class="adm-inline-link js-open-ip-context"
+                                                data-ip-address="${item.ipAddress}"
+                                                data-default-tab="emailRequests"
+                                                style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
+                                    </div>
+                                    <div class="adm-inline-actions">
+                                        <button type="button"
+                                                class="adm-inline-chip"
+                                                data-keyword="${item.ipAddress}"
+                                                onclick="applyKeywordFilter(this)">
+                                            <spring:message code="admin.common.sameIp"/>
+                                        </button>
+                                    </div>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
                         </td>
-                        <td style="font-size:12px;color:#64748b;"><c:out value="${item.requestId}"/></td>
+                        <td style="font-size:12px;color:#64748b;">
+                            <div><c:out value="${item.requestId}"/></div>
+                            <div class="adm-inline-actions">
+                                <button type="button"
+                                        class="adm-inline-chip"
+                                        data-keyword="${item.requestId}"
+                                        onclick="applyKeywordFilter(this)">
+                                    <spring:message code="admin.common.sameRequest"/>
+                                </button>
+                                <button type="button"
+                                        class="adm-inline-chip"
+                                        data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
+                                        onclick="openRelatedHistory('email-tokens', this)">
+                                    <spring:message code="admin.common.sameFlow"/>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
@@ -156,6 +192,19 @@ function goPage(page) {
   const params = new URLSearchParams(window.location.search);
   params.set('page', page);
   location.href = '${pageContext.request.contextPath}/admin/email-verifications?' + params.toString();
+}
+function applyKeywordFilter(button) {
+  const keyword = button.dataset.keyword || '';
+  const params = new URLSearchParams(window.location.search);
+  params.set('keyword', keyword);
+  params.set('page', '1');
+  location.href = '${pageContext.request.contextPath}/admin/email-verifications?' + params.toString();
+}
+function openRelatedHistory(path, button) {
+  const params = new URLSearchParams();
+  if (button.dataset.keyword) params.set('keyword', button.dataset.keyword);
+  params.set('page', '1');
+  location.href = '${pageContext.request.contextPath}/admin/' + path + '?' + params.toString();
 }
 </script>
 <%@ include file="../layout-close.jsp" %>

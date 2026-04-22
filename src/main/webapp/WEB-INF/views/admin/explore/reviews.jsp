@@ -95,7 +95,12 @@
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${review.reviewIdx}"></td>
                         <td class="adm-muted-inline">#${review.reviewIdx}</td>
-                        <td><a href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}" class="adm-link-title" style="font-weight:600;">${fn:escapeXml(review.spotName)}</a></td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}" class="adm-link-title" style="font-weight:600;">${fn:escapeXml(review.spotName)}</a>
+                            <div class="adm-inline-actions">
+                                <a href="${pageContext.request.contextPath}/detail/${review.spotIdx}" target="_blank" class="adm-inline-chip"><spring:message code="admin.explore.detail.userView"/></a>
+                            </div>
+                        </td>
                         <td>
                             <button type="button"
                                     class="adm-inline-link js-open-member-context"
