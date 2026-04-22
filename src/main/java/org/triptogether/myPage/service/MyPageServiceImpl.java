@@ -165,8 +165,18 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
+    public List<FeedNotificationDto> getRecentNotifications(Long userIdx, int limit) {
+        return myPageMapper.selectRecentNotifications(userIdx, limit);
+    }
+
+    @Override
     public int getNotificationCount(Long userIdx) {
         return myPageMapper.selectNotificationCount(userIdx);
+    }
+
+    @Override
+    public int getUnreadCount(Long userIdx) {
+        return myPageMapper.selectUnreadCount(userIdx);
     }
 
     @Override
@@ -177,6 +187,16 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public void addNotification(FeedNotificationDto notification) {
         myPageMapper.insertNotification(notification);
+    }
+
+    @Override
+    public void markAsRead(Long notificationId) {
+        myPageMapper.updateRead(notificationId);
+    }
+
+    @Override
+    public void markAllAsRead(Long userIdx) {
+        myPageMapper.updateReadAll(userIdx);
     }
 
     @Override
