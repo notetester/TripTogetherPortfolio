@@ -1,9 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: seojin
-  Date: 26. 4. 6.
-  Time: 오후 5:55
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -470,16 +464,28 @@
     <div class="container">
         <div class="page-header">
             <div>
-                <h1 class="page-title">내 여행일정</h1>
-                <div class="page-desc">내가 만든 여행일정을 한눈에 확인하고 관리할 수 있어요.</div>
+                <c:choose>
+                    <c:when test="${scope eq 'public'}">
+                        <h1 class="page-title">공개 일정</h1>
+                        <div class="page-desc">다른 사용자가 공개한 여행일정을 확인할 수 있어요.</div>
+                    </c:when>
+                    <c:otherwise>
+                        <h1 class="page-title">내 여행일정</h1>
+                        <div class="page-desc">내가 만든 여행일정을 한눈에 확인하고 관리할 수 있어요.</div>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
-            <div class="create-dropdown">
-                <button type="button" class="create-btn" id="createMenuButton">+ 일정 만들기 ▾</button>
-                <div class="create-menu" id="createMenu">
-                    <a href="${pageContext.request.contextPath}/courses/write">직접 만들기</a>
-                    <a href="${pageContext.request.contextPath}/courses/ai/form">AI로 생성하기</a>
-                </div>
+            <div class="scope-tab-group" style="display:flex; gap:10px; margin-bottom:20px;">
+                <a href="${pageContext.request.contextPath}/courses/list?scope=my"
+                   class="tab-btn ${scope ne 'public' ? 'active' : ''}">
+                    내 여행 일정
+                </a>
+
+                <a href="${pageContext.request.contextPath}/courses/list?scope=public"
+                   class="tab-btn ${scope eq 'public' ? 'active' : ''}">
+                    공개 일정
+                </a>
             </div>
         </div>
 
@@ -559,20 +565,22 @@
                                     <h2 class="plan-title">${plan.title}</h2>
                                 </a>
 
-                                <div class="quick-action-wrap">
-                                    <button type="button" class="quick-action-btn">⋯</button>
-                                    <div class="quick-menu">
-                                        <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">상세보기</a>
-                                        <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}">수정하기</a>
-                                        <form method="post"
-                                              action="${pageContext.request.contextPath}/courses/delete"
-                                              onsubmit="return confirm('정말 삭제하시겠습니까?');"
-                                              style="margin: 0;">
-                                            <input type="hidden" name="planId" value="${plan.plan_id}">
-                                            <button type="submit">삭제하기</button>
-                                        </form>
+                                <c:if test="${scope eq 'my' || plan.user_idx == loginUserIdx}">
+                                    <div class="quick-action-wrap">
+                                        <button type="button" class="quick-action-btn">⋯</button>
+                                        <div class="quick-menu">
+                                            <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">상세보기</a>
+                                            <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}">수정하기</a>
+                                            <form method="post"
+                                                  action="${pageContext.request.contextPath}/courses/delete"
+                                                  onsubmit="return confirm('정말 삭제하시겠습니까?');"
+                                                  style="margin: 0;">
+                                                <input type="hidden" name="planId" value="${plan.plan_id}">
+                                                <button type="submit">삭제하기</button>
+                                            </form>
+                                        </div>
                                     </div>
-                                </div>
+                                </c:if>
                             </div>
 
                             <div class="badge-row">

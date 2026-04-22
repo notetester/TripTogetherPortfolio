@@ -120,5 +120,23 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         travelPlanMapper.insertPlanSpot(planSpotVO);
     }
 
+    @Override
+    public List<TravelPlanVO> getPublicTravelList() {
+        return travelPlanMapper.getPublicTravelList();
+    }
+
+    @Override
+    public TravelPlanVO getTravelPlanDetailByPlanId(Long planId) {
+        TravelPlanVO detail = travelPlanMapper.getTravelPlanDetailByPlanId(planId);
+
+        if (detail != null) {
+            detail.setSpotList(
+                    travelPlanMapper.getPlanSpotListByPlanId(detail.getPlan_id())
+            );
+        }
+
+        return detail;
+    }
+
 
 }

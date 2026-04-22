@@ -606,6 +606,22 @@
 
         <div class="top-actions">
             <a href="${pageContext.request.contextPath}/courses/list" class="btn btn-light">목록으로</a>
+
+            <c:if test="${isOwner}">
+                <div class="detail-btn-group">
+                    <a href="${pageContext.request.contextPath}/courses/edit?planId=${travelPlan.plan_id}" class="detail-btn edit">
+                        수정하기
+                    </a>
+
+                    <form method="post"
+                          action="${pageContext.request.contextPath}/courses/delete"
+                          onsubmit="return confirm('정말 삭제하시겠습니까?');"
+                          style="display:inline;">
+                        <input type="hidden" name="planId" value="${travelPlan.plan_id}">
+                        <button type="submit" class="detail-btn delete">삭제하기</button>
+                    </form>
+                </div>
+            </c:if>
         </div>
     </div>
 
@@ -663,20 +679,29 @@
                     </div>
                 </div>
             </div>
+            <c:if test="${isOwner}">
+                <div class="bottom-actions">
+                    <a href="${pageContext.request.contextPath}/courses/edit?planId=${travelPlan.plan_id}"
+                       class="btn btn-primary">
+                        수정하기
+                    </a>
 
-            <div class="bottom-actions">
-                <a href="${pageContext.request.contextPath}/courses/edit?planId=${travelPlan.plan_id}"
-                   class="btn btn-primary">
-                    수정하기
-                </a>
+                    <form class="inline-form" method="post"
+                          action="${pageContext.request.contextPath}/courses/delete"
+                          onsubmit="return confirm('이 일정을 삭제할까요?');">
+                        <input type="hidden" name="planId" value="${travelPlan.plan_id}">
+                        <button type="submit" class="btn btn-danger">삭제하기</button>
+                    </form>
+                </div>
+            </c:if>
 
-                <form class="inline-form" method="post"
-                      action="${pageContext.request.contextPath}/courses/delete"
-                      onsubmit="return confirm('이 일정을 삭제할까요?');">
-                    <input type="hidden" name="planId" value="${travelPlan.plan_id}">
-                    <button type="submit" class="btn btn-danger">삭제하기</button>
-                </form>
-            </div>
+            <c:if test="${not isOwner}">
+                <div class="bottom-actions" style="justify-content:flex-start;">
+                    <div style="font-size:14px; color:#6b7280; font-weight:600;">
+                        다른 사용자가 공개한 여행 일정입니다.
+                    </div>
+                </div>
+            </c:if>
         </div>
 
         <!-- 오른쪽 여행지 목록 -->
