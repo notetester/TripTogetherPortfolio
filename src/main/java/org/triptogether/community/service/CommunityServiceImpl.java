@@ -556,14 +556,28 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     @Transactional
     public void updatePostReportCache(Long postId) {
+        CommunityPostDto post = communityMapper.selectPost(postId);
+        if (post == null) return;
+        boolean wasBlurred = (post.getReportCount() >= 3) || post.isAiFlagged();
         communityMapper.increasePostReportCount(postId);
+        boolean nowBlurred = ((post.getReportCount() + 1) >= 3) || post.isAiFlagged();
+        if (!wasBlurred && nowBlurred) {
+            notifyPostBlurred(post, "다수의 신고");
+        }
     }
 
     // 댓글 신고 횟수 캐시 업데이트함. 3회 이상이면 리스트/상세에서 BLUR 처리됨 (comment_status 는 ACTIVE 유지)
     @Override
     @Transactional
     public void updateCommentReportCache(Long commentId) {
+        CommunityCommentDto comment = communityMapper.selectComment(commentId);
+        if (comment == null) return;
+        boolean wasBlurred = (comment.getReportCount() >= 3) || comment.isAiFlagged();
         communityMapper.increaseCommentReportCount(commentId);
+        boolean nowBlurred = ((comment.getReportCount() + 1) >= 3) || comment.isAiFlagged();
+        if (!wasBlurred && nowBlurred) {
+            notifyCommentBlurred(comment, "다수의 신고");
+        }
     }
 
     // 게시글 신고 횟수 가져옴
@@ -578,14 +592,48 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     @Transactional
     public void flagPostAsToxic(Long postId) {
+        CommunityPostDto post = communityMapper.selectPost(postId);
+        if (post == null) return;
+        boolean wasBlurred = (post.getReportCount() >= 3) || post.isAiFlagged();
         communityMapper.setPostAiFlagged(postId);
+        if (!wasBlurred) {
+            notifyPostBlurred(post, "부적절한 표현 감지");
+        }
     }
 
     // 댓글 AI 감지 플래그 세팅
     @Override
     @Transactional
     public void flagCommentAsToxic(Long commentId) {
+        CommunityCommentDto comment = communityMapper.selectComment(commentId);
+        if (comment == null) return;
+        boolean wasBlurred = (comment.getReportCount() >= 3) || comment.isAiFlagged();
         communityMapper.setCommentAiFlagged(commentId);
+        if (!wasBlurred) {
+            notifyCommentBlurred(comment, "부적절한 표현 감지");
+        }
+    }
+
+    // BLUR 전환 시 작성자에게 알림 발송 (글)
+    private void notifyPostBlurred(CommunityPostDto post, String cause) {
+        FeedNotificationDto notification = new FeedNotificationDto();
+        notification.setUserIdx(post.getUserIdx());
+        notification.setSourceType("community");
+        notification.setSourceId(post.getPostId());
+        notification.setMessage("작성하신 글이 " + cause + "으로 가림 처리되었어요.");
+        notification.setTargetUrl(NotificationUrlBuilder.community(post.getPostId()));
+        myPageService.addNotification(notification);
+    }
+
+    // BLUR 전환 시 작성자에게 알림 발송 (댓글)
+    private void notifyCommentBlurred(CommunityCommentDto comment, String cause) {
+        FeedNotificationDto notification = new FeedNotificationDto();
+        notification.setUserIdx(comment.getUserIdx());
+        notification.setSourceType("community");
+        notification.setSourceId(comment.getPostId());
+        notification.setMessage("작성하신 댓글이 " + cause + "으로 가림 처리되었어요.");
+        notification.setTargetUrl(NotificationUrlBuilder.communityComment(comment.getPostId(), comment.getCommentId()));
+        myPageService.addNotification(notification);
     }
 
     // 게시글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
