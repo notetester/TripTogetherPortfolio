@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.flight.service.FlightService;
 import org.triptogether.flight.vo.FlightPurchaseRequestDto;
@@ -68,6 +69,26 @@ public class FlightController {
         }
 
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/purchases/{flightPurchaseIdx}/cancel")
+    public String cancelPurchase(@PathVariable Long flightPurchaseIdx,
+                                 @RequestParam(required = false) String cancelReason,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        UsersVO loginUser = getLoginUser(session);
+        if (loginUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            UsersVO updatedUser = flightService.cancelPurchase(loginUser.getUserIdx(), flightPurchaseIdx, cancelReason);
+            session.setAttribute("loginUser", updatedUser);
+            redirectAttributes.addFlashAttribute("flightBookingMessage", "항공권 예매가 취소되고 사용한 캐시/마일리지가 환불되었습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("flightBookingError", e.getMessage());
+        }
+        return "redirect:/mypage/bookings/flights";
     }
 
     private UsersVO getLoginUser(HttpSession session) {

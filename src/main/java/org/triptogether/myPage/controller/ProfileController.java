@@ -11,17 +11,27 @@ import org.triptogether.auth.service.AuthServiceImpl;
 import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.admin.vo.BusinessAccountApplicationVO;
+import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.myPage.vo.MyPageCommunityDto;
+import org.triptogether.myPage.vo.MyPageFlightBookingDto;
+import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPagePackageBookingDto;
+import org.triptogether.myPage.vo.MyPagePlanDto;
+import org.triptogether.myPage.vo.MyPageReviewDto;
 import org.triptogether.shop.service.ShopService;
+import org.triptogether.shop.vo.ShopInventoryItemDto;
 import org.triptogether.reward.service.RewardService;
 import org.triptogether.myPage.service.WalletService;
 import org.triptogether.myPage.vo.WalletMemberGradePolicyDto;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Locale;
 import java.util.UUID;
 
 @Slf4j
@@ -35,6 +45,7 @@ public class ProfileController {
     private final ShopService shopService;
     private final RewardService rewardService;
     private final WalletService walletService;
+    private final SpotTextTranslationService translationService;
 
     // ── 수정 전 비밀번호 확인 페이지 ──────────────
     @GetMapping("/edit-confirm")
@@ -296,22 +307,38 @@ public class ProfileController {
         }
         session.setAttribute("loginUser", freshUser);
 
+        List<MyPageCommunityDto> communityList = myPageService.getMyCommunityList(freshUser.getUserIdx());
+        List<MyPageInquiryDto> inquiryList = myPageService.getMyInquiryList(freshUser.getUserIdx());
+        List<MyPageReviewDto> reviewList = myPageService.getMyReviewList(freshUser.getUserIdx());
+        List<MyPagePlanDto> planList = myPageService.getMyPlanList(freshUser.getUserIdx());
+        List<FeedNotificationDto> notifications = myPageService.getNotifications(freshUser.getUserIdx());
+        List<ShopInventoryItemDto> inventoryItems = shopService.getInventoryItems(freshUser.getUserIdx());
+        List<MyPageFlightBookingDto> flightBookingList = myPageService.getMyFlightBookingList(freshUser.getUserIdx());
+        List<MyPagePackageBookingDto> packageBookingList = myPageService.getMyPackageBookingList(freshUser.getUserIdx());
+
+        translateMyPageDynamicTexts(
+                communityList, inquiryList, reviewList, planList,
+                notifications, inventoryItems, flightBookingList, packageBookingList
+        );
+
         model.addAttribute("user",           freshUser);
-        model.addAttribute("communityList",  myPageService.getMyCommunityList(freshUser.getUserIdx()));
+        model.addAttribute("communityList",  communityList);
         model.addAttribute("communityCount", myPageService.getMyCommunityCount(freshUser.getUserIdx()));
-        model.addAttribute("inquiryList",    myPageService.getMyInquiryList(freshUser.getUserIdx()));
+        model.addAttribute("inquiryList",    inquiryList);
         model.addAttribute("inquiryCount",   myPageService.getMyInquiryCount(freshUser.getUserIdx()));
         model.addAttribute("reportList",     myPageService.getMyReportList(freshUser.getUserIdx()));
         model.addAttribute("reportCount",    myPageService.getMyReportCount(freshUser.getUserIdx()));
-        model.addAttribute("reviewList",     myPageService.getMyReviewList(freshUser.getUserIdx()));
+        model.addAttribute("reviewList",     reviewList);
         model.addAttribute("reviewCount",    myPageService.getMyReviewCount(freshUser.getUserIdx()));
-        model.addAttribute("planList",       myPageService.getMyPlanList(freshUser.getUserIdx()));
+        model.addAttribute("planList",       planList);
         model.addAttribute("planCount",      myPageService.getMyPlanCount(freshUser.getUserIdx()));
-        model.addAttribute("flightBookingList", myPageService.getMyFlightBookingList(freshUser.getUserIdx()));
+        model.addAttribute("flightBookingList", flightBookingList);
         model.addAttribute("flightBookingCount", myPageService.getMyFlightBookingCount(freshUser.getUserIdx()));
-        model.addAttribute("notifications", myPageService.getNotifications(freshUser.getUserIdx()));
+        model.addAttribute("packageBookingList", packageBookingList);
+        model.addAttribute("packageBookingCount", myPageService.getMyPackageBookingCount(freshUser.getUserIdx()));
+        model.addAttribute("notifications", notifications);
         model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(freshUser.getUserIdx()));
-        model.addAttribute("inventoryItems", shopService.getInventoryItems(freshUser.getUserIdx()));
+        model.addAttribute("inventoryItems", inventoryItems);
         model.addAttribute("businessApplication", myPageService.getLatestBusinessApplication(freshUser.getUserIdx()));
 
         // ── 경험치 바 렌더링용 데이터 ──
@@ -347,6 +374,124 @@ public class ProfileController {
         return "mypage/index";
     }
 
+    /**
+     * DB에서 조회된 사용자 생성/운영 데이터는 기존 번역 캐시 테이블을 사용한다.
+     * 반면 상태 코드, 버튼, 라벨처럼 고정된 UI 문구는 JSP의 spring:message로 처리한다.
+     */
+    private void translateMyPageDynamicTexts(List<MyPageCommunityDto> communityList,
+                                             List<MyPageInquiryDto> inquiryList,
+                                             List<MyPageReviewDto> reviewList,
+                                             List<MyPagePlanDto> planList,
+                                             List<FeedNotificationDto> notifications,
+                                             List<ShopInventoryItemDto> inventoryItems,
+                                             List<MyPageFlightBookingDto> flightBookingList,
+                                             List<MyPagePackageBookingDto> packageBookingList) {
+        String targetLang = resolveTargetLanguage();
+        if (targetLang == null) {
+            return;
+        }
+
+        if (communityList != null) {
+            for (MyPageCommunityDto post : communityList) {
+                if (post == null) continue;
+                Long sourcePk = post.getPostId();
+                post.setTitle(translate("MYPAGE_COMMUNITY_POST", sourcePk, "title", post.getTitle(), targetLang));
+                post.setRegion(translate("MYPAGE_COMMUNITY_POST", sourcePk, "region", post.getRegion(), targetLang));
+            }
+        }
+
+        if (inquiryList != null) {
+            for (MyPageInquiryDto inquiry : inquiryList) {
+                if (inquiry == null) continue;
+                inquiry.setTitle(translate("MYPAGE_INQUIRY", inquiry.getInquiryId(), "title", inquiry.getTitle(), targetLang));
+            }
+        }
+
+        if (reviewList != null) {
+            for (MyPageReviewDto review : reviewList) {
+                if (review == null) continue;
+                review.setSpotName(translate("MYPAGE_REVIEW", review.getReviewIdx(), "spot_name", review.getSpotName(), targetLang));
+                review.setContent(translate("MYPAGE_REVIEW", review.getReviewIdx(), "content", review.getContent(), targetLang));
+            }
+        }
+
+        if (planList != null) {
+            for (MyPagePlanDto plan : planList) {
+                if (plan == null) continue;
+                plan.setTitle(translate("MYPAGE_PLAN", plan.getPlanId(), "title", plan.getTitle(), targetLang));
+                plan.setDestination(translate("MYPAGE_PLAN", plan.getPlanId(), "destination", plan.getDestination(), targetLang));
+            }
+        }
+
+        if (notifications != null) {
+            for (FeedNotificationDto notification : notifications) {
+                if (notification == null) continue;
+                notification.setMessage(translate(
+                        "MYPAGE_NOTIFICATION",
+                        notification.getNotificationId(),
+                        "message",
+                        notification.getMessage(),
+                        targetLang
+                ));
+            }
+        }
+
+        if (inventoryItems != null) {
+            for (ShopInventoryItemDto item : inventoryItems) {
+                if (item == null) continue;
+                item.setItemName(translate("POINT_SHOP_ITEM", 0L, "item_name", item.getItemName(), targetLang));
+                item.setDescription(translate("POINT_SHOP_ITEM", 0L, "description", item.getDescription(), targetLang));
+            }
+        }
+
+        translateFlightBookings(flightBookingList, targetLang);
+        translatePackageBookings(packageBookingList, targetLang);
+    }
+
+    private void translateFlightBookings(List<MyPageFlightBookingDto> flightBookingList, String targetLang) {
+        if (flightBookingList == null) {
+            return;
+        }
+        for (MyPageFlightBookingDto booking : flightBookingList) {
+            if (booking == null) continue;
+            booking.setSpotName(translate("MYPAGE_FLIGHT_BOOKING", booking.getFlightPurchaseIdx(), "spot_name", booking.getSpotName(), targetLang));
+            booking.setAirlineName(translate("MYPAGE_FLIGHT_BOOKING", booking.getFlightPurchaseIdx(), "airline_name", booking.getAirlineName(), targetLang));
+            booking.setReturnAirlineName(translate("MYPAGE_FLIGHT_BOOKING", booking.getFlightPurchaseIdx(), "return_airline_name", booking.getReturnAirlineName(), targetLang));
+            booking.setCancelReason(translate("MYPAGE_FLIGHT_BOOKING", booking.getFlightPurchaseIdx(), "cancel_reason", booking.getCancelReason(), targetLang));
+        }
+    }
+
+    private void translatePackageBookings(List<MyPagePackageBookingDto> packageBookingList, String targetLang) {
+        if (packageBookingList == null) {
+            return;
+        }
+        for (MyPagePackageBookingDto booking : packageBookingList) {
+            if (booking == null) continue;
+            Long sourcePk = booking.getPackageBookingIdx();
+            booking.setSpotName(translate("MYPAGE_PACKAGE_BOOKING", sourcePk, "spot_name", booking.getSpotName(), targetLang));
+            booking.setPackageTitle(translate("MYPAGE_PACKAGE_BOOKING", sourcePk, "package_title", booking.getPackageTitle(), targetLang));
+            booking.setPackageSummary(translate("MYPAGE_PACKAGE_BOOKING", sourcePk, "package_summary", booking.getPackageSummary(), targetLang));
+            booking.setSellerNickname(translate("MYPAGE_PACKAGE_BOOKING", sourcePk, "seller_nickname", booking.getSellerNickname(), targetLang));
+            booking.setCancelReason(translate("MYPAGE_PACKAGE_BOOKING", sourcePk, "cancel_reason", booking.getCancelReason(), targetLang));
+        }
+    }
+
+    private String resolveTargetLanguage() {
+        Locale locale = LocaleContextHolder.getLocale();
+        if (locale == null) {
+            return null;
+        }
+        String language = locale.getLanguage();
+        if (language == null || language.isBlank() || "ko".equals(language)) {
+            return null;
+        }
+        return language;
+    }
+
+    private String translate(String sourceType, Long sourcePk, String fieldName, String sourceText, String targetLang) {
+        return translationService.translateText(sourceType, sourcePk == null ? 0L : sourcePk, fieldName, sourceText, targetLang);
+    }
+
     @PostMapping("/business-application")
     public String submitBusinessApplication(@RequestParam String requestedRole,
                                             @RequestParam String companyName,
@@ -376,6 +521,52 @@ public class ProfileController {
         }
 
         return "redirect:/mypage";
+    }
+
+    @GetMapping("/bookings/flights")
+    public String flightBookingHistory(HttpSession session, Model model) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+
+        UsersVO freshUser = authService.getUserByIdx(user.getUserIdx());
+        if (freshUser == null) {
+            session.invalidate();
+            return "redirect:/auth/login";
+        }
+
+        session.setAttribute("loginUser", freshUser);
+        model.addAttribute("user", freshUser);
+        List<MyPageFlightBookingDto> flightBookingList = myPageService.getMyFlightBookingAllList(freshUser.getUserIdx());
+        String targetLang = resolveTargetLanguage();
+        if (targetLang != null) {
+            translateFlightBookings(flightBookingList, targetLang);
+        }
+        model.addAttribute("flightBookingList", flightBookingList);
+        model.addAttribute("flightBookingCount", myPageService.getMyFlightBookingCount(freshUser.getUserIdx()));
+        return "mypage/flight-bookings";
+    }
+
+    @GetMapping("/bookings/packages")
+    public String packageBookingHistory(HttpSession session, Model model) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+
+        UsersVO freshUser = authService.getUserByIdx(user.getUserIdx());
+        if (freshUser == null) {
+            session.invalidate();
+            return "redirect:/auth/login";
+        }
+
+        session.setAttribute("loginUser", freshUser);
+        model.addAttribute("user", freshUser);
+        List<MyPagePackageBookingDto> packageBookingList = myPageService.getMyPackageBookingAllList(freshUser.getUserIdx());
+        String targetLang = resolveTargetLanguage();
+        if (targetLang != null) {
+            translatePackageBookings(packageBookingList, targetLang);
+        }
+        model.addAttribute("packageBookingList", packageBookingList);
+        model.addAttribute("packageBookingCount", myPageService.getMyPackageBookingCount(freshUser.getUserIdx()));
+        return "mypage/package-bookings";
     }
 
     @PostMapping("/items/equip")

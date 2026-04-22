@@ -385,6 +385,92 @@ html { scrollbar-gutter: stable; }
   color:var(--gray-900);
   font-weight:900;
 }
+.detail-package-booking {
+  margin-top:18px;
+  border:1px solid #bfdbfe;
+  border-radius:16px;
+  padding:16px;
+  background:#eff6ff;
+}
+.detail-package-booking h4 {
+  margin:0 0 12px;
+  color:var(--gray-900);
+  font-size:15px;
+  font-weight:900;
+}
+.detail-package-booking-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.detail-package-booking-field {
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.detail-package-booking-field label {
+  color:var(--gray-600);
+  font-size:12px;
+  font-weight:800;
+}
+.detail-package-booking-field input {
+  width:100%;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  padding:10px 12px;
+  font-family:inherit;
+  font-weight:800;
+  box-sizing:border-box;
+}
+.detail-package-pay-summary {
+  display:grid;
+  gap:8px;
+  margin-top:12px;
+}
+.detail-package-pay-summary div {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  color:var(--gray-700);
+  font-size:13px;
+}
+.detail-package-pay-summary strong {
+  color:var(--gray-900);
+}
+.detail-package-booking-actions {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:14px;
+  flex-wrap:wrap;
+}
+.detail-package-booking-message {
+  min-height:18px;
+  color:var(--gray-600);
+  font-size:13px;
+  font-weight:700;
+}
+.detail-package-booking-message.is-error {
+  color:#dc2626;
+}
+.detail-package-booking-message.is-success {
+  color:#166534;
+}
+.detail-package-booking-btn {
+  border:0;
+  border-radius:10px;
+  padding:10px 18px;
+  background:var(--blue);
+  color:#fff;
+  font-family:inherit;
+  font-weight:900;
+  cursor:pointer;
+}
+.detail-package-booking-btn:disabled {
+  opacity:.55;
+  cursor:not-allowed;
+}
 @media (max-width:640px) {
   .detail-package-head {
     align-items:flex-start;
@@ -397,6 +483,9 @@ html { scrollbar-gutter: stable; }
     flex-basis:82%;
   }
   .detail-package-modal-meta {
+    grid-template-columns:1fr;
+  }
+  .detail-package-booking-grid {
     grid-template-columns:1fr;
   }
   .detail-package-modal-hero {
@@ -975,7 +1064,12 @@ html { scrollbar-gutter: stable; }
                      aria-label="${fn:escapeXml(pkg.packageTitle)} 상세 보기"
                      data-title="${fn:escapeXml(pkg.packageTitle)}"
                      data-summary="${fn:escapeXml(empty pkg.packageSummary ? '승인된 여행 패키지 상품입니다.' : pkg.packageSummary)}"
+                     data-content="${fn:escapeXml(pkg.packageContent)}"
                      data-image="${fn:escapeXml(pkg.mainImagePath)}"
+                     data-package-idx="${pkg.packageIdx}"
+                     data-unit-price="${pkg.packagePrice}"
+                     data-min-people="${pkg.minPeople}"
+                     data-max-people="${pkg.maxPeople}"
                      data-region="${fn:escapeXml(pkg.spotRegion)}"
                      data-spot="${fn:escapeXml(pkg.spotName)}"
                      data-price="${fn:escapeXml(pkgPriceText)} ${fn:escapeXml(pkg.currencyCode)}"
@@ -1059,6 +1153,29 @@ html { scrollbar-gutter: stable; }
               <dd id="packageModalSeller"></dd>
             </div>
           </dl>
+          <div class="detail-package-booking">
+            <h4>예약/결제 시뮬레이션</h4>
+            <div class="detail-package-booking-grid">
+              <div class="detail-package-booking-field">
+                <label for="packagePeopleCount">예약 인원</label>
+                <input type="number" id="packagePeopleCount" min="1" step="1" value="1">
+              </div>
+              <div class="detail-package-booking-field">
+                <label for="packageMileageAmount">사용 마일리지</label>
+                <input type="number" id="packageMileageAmount" min="0" step="1000" value="0">
+              </div>
+            </div>
+            <div class="detail-package-pay-summary">
+              <div><span>총 결제 금액</span><strong id="packageBookingTotal">0 C</strong></div>
+              <div><span>마일리지 최대 사용</span><strong id="packageBookingMaxMileage">0 M</strong></div>
+              <div><span>캐시 결제 예정</span><strong id="packageBookingCash">0 C</strong></div>
+              <div><span>내 보유 캐시/마일리지</span><strong id="packageBookingBalance">0 C / 0 M</strong></div>
+            </div>
+            <div class="detail-package-booking-actions">
+              <span class="detail-package-booking-message" id="packageBookingMessage"></span>
+              <button type="button" class="detail-package-booking-btn" id="packageBookingBtn">예약하기</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1074,6 +1191,11 @@ html { scrollbar-gutter: stable; }
       if (!rail || !prevBtn || !nextBtn || !pageText) return;
 
       var pageSize = 3;
+      var contextPath = '${pageContext.request.contextPath}';
+      var isLoggedIn = ${not empty sessionScope.loginUser};
+      var userCashBalance = Number('${empty sessionScope.loginUser ? 0 : sessionScope.loginUser.cashBalance}');
+      var userMileageBalance = Number('${empty sessionScope.loginUser ? 0 : sessionScope.loginUser.mileageBalance}');
+      var currentPackage = null;
 
       function getMoveSize() {
         var firstCard = rail.querySelector('.detail-package-card');
@@ -1120,10 +1242,77 @@ html { scrollbar-gutter: stable; }
         if (element) element.textContent = value || '-';
       }
 
+      function formatAmount(value) {
+        return Number(value || 0).toLocaleString();
+      }
+
+      function floorToThousand(value) {
+        return Math.floor(Number(value || 0) / 1000) * 1000;
+      }
+
+      function setBookingMessage(message, type) {
+        var messageEl = document.getElementById('packageBookingMessage');
+        if (!messageEl) return;
+        messageEl.textContent = message || '';
+        messageEl.classList.toggle('is-error', type === 'error');
+        messageEl.classList.toggle('is-success', type === 'success');
+      }
+
+      function updatePackageBookingPreview() {
+        if (!currentPackage) return;
+        var peopleInput = document.getElementById('packagePeopleCount');
+        var mileageInput = document.getElementById('packageMileageAmount');
+        var bookingBtn = document.getElementById('packageBookingBtn');
+        if (!peopleInput || !mileageInput || !bookingBtn) return;
+
+        var unitPrice = Number(currentPackage.unitPrice || 0);
+        var minPeople = Number(currentPackage.minPeople || 1);
+        var maxPeople = Number(currentPackage.maxPeople || 0);
+        var peopleCount = Number(peopleInput.value || minPeople);
+        if (peopleCount < minPeople) peopleCount = minPeople;
+        if (maxPeople > 0 && peopleCount > maxPeople) peopleCount = maxPeople;
+        peopleInput.value = peopleCount;
+
+        var totalPrice = unitPrice * peopleCount;
+        var maxMileageUse = floorToThousand(totalPrice * 30 / 100);
+        var mileageAmount = Number(mileageInput.value || 0);
+        if (mileageAmount < 0) mileageAmount = 0;
+        if (mileageAmount > maxMileageUse) mileageAmount = maxMileageUse;
+        if (mileageAmount > userMileageBalance) mileageAmount = floorToThousand(userMileageBalance);
+        mileageInput.value = mileageAmount;
+
+        var cashAmount = totalPrice - mileageAmount;
+        setText('packageBookingTotal', formatAmount(totalPrice) + ' C');
+        setText('packageBookingMaxMileage', formatAmount(maxMileageUse) + ' M');
+        setText('packageBookingCash', formatAmount(cashAmount) + ' C');
+        setText('packageBookingBalance', formatAmount(userCashBalance) + ' C / ' + formatAmount(userMileageBalance) + ' M');
+
+        if (!isLoggedIn) {
+          bookingBtn.textContent = '로그인 후 예약';
+          bookingBtn.disabled = false;
+          setBookingMessage('로그인 후 패키지 예약이 가능합니다.', '');
+          return;
+        }
+        bookingBtn.textContent = '예약하기';
+        if (userCashBalance < cashAmount) {
+          bookingBtn.disabled = true;
+          setBookingMessage('캐시 잔액이 부족합니다.', 'error');
+          return;
+        }
+        bookingBtn.disabled = false;
+        setBookingMessage('', '');
+      }
+
       function openPackageModal(card) {
         if (!modal || !modalHero) return;
         var data = card.dataset;
         var imagePath = data.image || '';
+        currentPackage = {
+          packageIdx: data.packageIdx,
+          unitPrice: Number(data.unitPrice || 0),
+          minPeople: Number(data.minPeople || 1),
+          maxPeople: Number(data.maxPeople || 0)
+        };
 
         modalHero.querySelectorAll('img').forEach(function (img) {
           img.remove();
@@ -1137,11 +1326,27 @@ html { scrollbar-gutter: stable; }
 
         setText('packageModalKicker', (data.region || '') + ' · ' + (data.spot || ''));
         setText('packageModalTitle', data.title);
-        setText('packageModalSummary', data.summary);
+        setText('packageModalSummary', data.content || data.summary);
         setText('packageModalPrice', data.price);
         setText('packageModalPeriod', data.period);
         setText('packageModalPeople', data.people);
         setText('packageModalSeller', data.seller);
+
+        var peopleInput = document.getElementById('packagePeopleCount');
+        var mileageInput = document.getElementById('packageMileageAmount');
+        if (peopleInput) {
+          peopleInput.min = currentPackage.minPeople || 1;
+          if (currentPackage.maxPeople > 0) {
+            peopleInput.max = currentPackage.maxPeople;
+          } else {
+            peopleInput.removeAttribute('max');
+          }
+          peopleInput.value = currentPackage.minPeople || 1;
+        }
+        if (mileageInput) {
+          mileageInput.value = 0;
+        }
+        updatePackageBookingPreview();
 
         modal.classList.add('show');
         modal.setAttribute('aria-hidden', 'false');
@@ -1169,6 +1374,53 @@ html { scrollbar-gutter: stable; }
 
       if (modalCloseBtn) {
         modalCloseBtn.addEventListener('click', closePackageModal);
+      }
+      var peopleInput = document.getElementById('packagePeopleCount');
+      var mileageInput = document.getElementById('packageMileageAmount');
+      var bookingBtn = document.getElementById('packageBookingBtn');
+      if (peopleInput) peopleInput.addEventListener('input', updatePackageBookingPreview);
+      if (mileageInput) mileageInput.addEventListener('input', updatePackageBookingPreview);
+      if (bookingBtn) {
+        bookingBtn.addEventListener('click', function () {
+          if (!currentPackage) return;
+          if (!isLoggedIn) {
+            window.location.href = contextPath + '/auth/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+            return;
+          }
+          bookingBtn.disabled = true;
+          setBookingMessage('예약 처리 중입니다...', '');
+          fetch(contextPath + '/packages/' + currentPackage.packageIdx + '/book', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+              peopleCount: Number(peopleInput.value || 1),
+              mileageAmount: Number(mileageInput.value || 0)
+            })
+          })
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (!data.success) {
+              if (data.loginRequired) {
+                window.location.href = contextPath + '/auth/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+                return;
+              }
+              bookingBtn.disabled = false;
+              setBookingMessage(data.message || '예약 처리 중 오류가 발생했습니다.', 'error');
+              return;
+            }
+            userCashBalance = Number(data.cashBalance || 0);
+            userMileageBalance = Number(data.mileageBalance || 0);
+            setBookingMessage('예약 완료: ' + data.bookingNo, 'success');
+            updatePackageBookingPreview();
+          })
+          .catch(function () {
+            bookingBtn.disabled = false;
+            setBookingMessage('예약 처리 중 오류가 발생했습니다.', 'error');
+          });
+        });
       }
       if (modal) {
         modal.addEventListener('click', function (event) {

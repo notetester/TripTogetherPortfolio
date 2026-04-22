@@ -3,6 +3,8 @@ package org.triptogether.admin.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,10 @@ import org.triptogether.explore.vo.ReviewVO;
 import org.triptogether.report.service.ReportService;
 import org.triptogether.report.vo.ReportSearchDto;
 import org.triptogether.travelPackage.service.TravelPackageService;
+/* ── 패키지의 동적 텍스트(제목, 요약, 여행지명 등)를 번역하기 위한 서비스 ── */
+import org.triptogether.explore.service.SpotTextTranslationService;
+import org.triptogether.travelPackage.vo.TravelPackageVO;
+import org.triptogether.travelPackage.vo.TravelPackageRevisionVO;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -46,6 +52,10 @@ public class AdminController {
     private final ReportService reportService;
     private final CommunityService communityService;
     private final TravelPackageService travelPackageService;
+    /* ── 다국어 flash message를 위한 MessageSource ── */
+    private final MessageSource messageSource;
+    /* ── 동적 텍스트 번역 서비스 — 관리자 페이지에서도 패키지 제목/여행지명 등을 로케일에 맞게 번역 ── */
+    private final SpotTextTranslationService translationService;
     private final ExploreService exploreService;
     private final AdminExploreService adminExploreService;
 
@@ -75,7 +85,16 @@ public class AdminController {
     @GetMapping("/packages")
     public String packageList(@RequestParam(defaultValue = "PENDING") String status,
                               Model model) {
-        model.addAttribute("packageList", travelPackageService.getAdminPackages(status));
+        // ── 패키지 목록 조회 후, 동적 텍스트(제목/여행지명 등)를 현재 로케일에 맞게 번역 ──
+        java.util.List<TravelPackageVO> packages = travelPackageService.getAdminPackages(status);
+        translationService.translatePackages(packages);
+        model.addAttribute("packageList", packages);
+
+        // ── 수정 요청(리비전) 목록도 동일하게 번역 처리 ──
+        java.util.List<TravelPackageRevisionVO> revisions = travelPackageService.getAdminPackageRevisions("PENDING");
+        translationService.translatePackageRevisions(revisions);
+        model.addAttribute("revisionList", revisions);
+
         model.addAttribute("status", status == null || status.isBlank() ? "PENDING" : status);
         model.addAttribute("activeMenu", "packages");
         return "admin/package/list";
@@ -89,7 +108,7 @@ public class AdminController {
         Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
         try {
             travelPackageService.approvePackage(packageIdx, reviewerUserIdx);
-            redirectAttributes.addFlashAttribute("packageReviewMessage", "패키지 상품을 승인했습니다.");
+            redirectAttributes.addFlashAttribute("packageReviewMessage", msg("package.admin.message.approved"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
         }
@@ -105,7 +124,38 @@ public class AdminController {
         Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
         try {
             travelPackageService.rejectPackage(packageIdx, rejectReason, reviewerUserIdx);
-            redirectAttributes.addFlashAttribute("packageReviewMessage", "패키지 상품을 반려했습니다.");
+            redirectAttributes.addFlashAttribute("packageReviewMessage", msg("package.admin.message.rejected"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
+        }
+        return "redirect:/admin/packages";
+    }
+
+    @PostMapping("/packages/revisions/{packageRevisionIdx}/approve")
+    public String approvePackageRevision(@PathVariable Long packageRevisionIdx,
+                                         HttpSession session,
+                                         RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            travelPackageService.approvePackageRevision(packageRevisionIdx, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("packageReviewMessage", msg("package.admin.message.revisionApproved"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
+        }
+        return "redirect:/admin/packages";
+    }
+
+    @PostMapping("/packages/revisions/{packageRevisionIdx}/reject")
+    public String rejectPackageRevision(@PathVariable Long packageRevisionIdx,
+                                        @RequestParam String rejectReason,
+                                        HttpSession session,
+                                        RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            travelPackageService.rejectPackageRevision(packageRevisionIdx, rejectReason, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("packageReviewMessage", msg("package.admin.message.revisionRejected"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
         }
@@ -670,6 +720,14 @@ public class AdminController {
             result.put("message", e.getMessage());
         }
         return result;
+    }
+
+    /**
+     * 프로퍼티 키에 해당하는 메시지를 현재 로케일에 맞게 반환합니다.
+     * 키가 없으면 키 문자열 자체를 반환합니다 (fallback).
+     */
+    private String msg(String code) {
+        return messageSource.getMessage(code, null, code, LocaleContextHolder.getLocale());
     }
 
 }

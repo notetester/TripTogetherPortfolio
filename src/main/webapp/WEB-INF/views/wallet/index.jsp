@@ -76,9 +76,10 @@
                 <form class="wallet-charge-form" method="post" action="${pageContext.request.contextPath}/wallet/charge">
                     <label for="amount"><spring:message code="wallet.charge.amount"/></label>
                     <div class="wallet-charge-input">
-                        <input id="amount" name="amount" type="number" min="1000" step="100" value="10000" required>
+                        <input id="amount" name="amount" type="number" min="1000" max="1000000" step="100" value="10000" required>
                         <span><spring:message code="wallet.charge.currency"/></span>
                     </div>
+                    <p class="wallet-charge-limit" id="chargeLimitMessage">1회 충전 한도는 1,000,000원입니다.</p>
 
                     <div class="wallet-charge-preview">
                         <div>
@@ -286,12 +287,16 @@
     var input = document.getElementById('amount');
     var cashPreview = document.getElementById('chargeCashPreview');
     var mileagePreview = document.getElementById('chargeMileagePreview');
+    var limitMessage = document.getElementById('chargeLimitMessage');
     if (!input || !cashPreview || !mileagePreview) return;
 
     var amount = Number(input.value || 0);
     var mileage = Math.floor(amount / 10);
     cashPreview.textContent = formatNumber(amount) + ' C';
     mileagePreview.textContent = formatNumber(mileage) + ' M';
+    if (limitMessage) {
+      limitMessage.classList.toggle('is-error', amount > 1000000);
+    }
   }
 
   function setChargeAmount(amount) {
@@ -304,7 +309,18 @@
   (function() {
     var input = document.getElementById('amount');
     if (!input) return;
+    var form = input.closest('form');
     input.addEventListener('input', updateChargePreview);
+    if (form) {
+      form.addEventListener('submit', function(event) {
+        var amount = Number(input.value || 0);
+        if (amount > 1000000) {
+          event.preventDefault();
+          alert('1회 충전 한도는 1,000,000원입니다.');
+          input.focus();
+        }
+      });
+    }
     updateChargePreview();
   })();
 </script>

@@ -11,6 +11,7 @@ import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
 import org.triptogether.myPage.vo.MyPageFlightBookingDto;
+import org.triptogether.myPage.vo.MyPagePackageBookingDto;
 import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
 import org.triptogether.myPage.vo.MyPageReviewDto;
@@ -95,6 +96,28 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public int getMyFlightBookingCount(Long userIdx) {
         return myPageMapper.selectMyFlightBookingCount(userIdx);
+    }
+
+    @Override
+    public List<MyPageFlightBookingDto> getMyFlightBookingAllList(Long userIdx) {
+        return myPageMapper.selectMyFlightBookingAllList(userIdx);
+    }
+
+    // ===== 패키지 예약 =====
+
+    @Override
+    public List<MyPagePackageBookingDto> getMyPackageBookingList(Long userIdx) {
+        return myPageMapper.selectMyPackageBookingList(userIdx);
+    }
+
+    @Override
+    public int getMyPackageBookingCount(Long userIdx) {
+        return myPageMapper.selectMyPackageBookingCount(userIdx);
+    }
+
+    @Override
+    public List<MyPagePackageBookingDto> getMyPackageBookingAllList(Long userIdx) {
+        return myPageMapper.selectMyPackageBookingAllList(userIdx);
     }
 
     // ===== 기업 회원 신청 =====

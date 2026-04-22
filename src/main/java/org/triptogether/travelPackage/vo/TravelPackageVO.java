@@ -46,4 +46,17 @@ public class TravelPackageVO {
     private String spotName;
     private String spotRegion;
     private String sellerNickname;
+    private Integer pendingRevisionCount;
+
+    /**
+     * 승인 상태는 유지되어도 운영 종료일이 지난 패키지는 사용자 화면/예약에서 제외된다.
+     * 화면에서는 이 계산값으로 "기간 만료" 배지를 표시해 판매자와 관리자가 이유를 바로 알 수 있게 한다.
+     */
+    public boolean isExpired() {
+        return endDate != null && endDate.isBefore(LocalDate.now());
+    }
+
+    public boolean isRevisionPending() {
+        return pendingRevisionCount != null && pendingRevisionCount > 0;
+    }
 }

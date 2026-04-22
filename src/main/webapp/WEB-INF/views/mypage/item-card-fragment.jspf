@@ -5,20 +5,20 @@
     <c:set var="itemDisplayName" value="${item.itemName}"/>
     <c:set var="itemDisplayDescription" value="${item.description}"/>
     <c:choose>
-        <c:when test="${item.itemCode eq 'NICK_COLOR_SKY'}"><c:set var="itemPreviewClass" value="preview-nick-sky"/><c:set var="itemPreviewText" value="TRIP"/><c:set var="itemDisplayName" value="스카이블루 닉네임"/><c:set var="itemDisplayDescription" value="시원한 파란색 닉네임 색상"/></c:when>
-        <c:when test="${item.itemCode eq 'NICK_COLOR_SUNSET'}"><c:set var="itemPreviewClass" value="preview-nick-sunset"/><c:set var="itemPreviewText" value="TRIP"/><c:set var="itemDisplayName" value="선셋오렌지 닉네임"/><c:set var="itemDisplayDescription" value="노을 감성의 주황색 닉네임 색상"/></c:when>
-        <c:when test="${item.itemCode eq 'NICK_COLOR_MINT'}"><c:set var="itemPreviewClass" value="preview-nick-mint"/><c:set var="itemPreviewText" value="TRIP"/><c:set var="itemDisplayName" value="민트그린 닉네임"/><c:set var="itemDisplayDescription" value="산뜻한 초록색 닉네임 색상"/></c:when>
-        <c:when test="${item.itemCode eq 'NICK_COLOR_ROSE'}"><c:set var="itemPreviewClass" value="preview-nick-rose"/><c:set var="itemPreviewText" value="TRIP"/><c:set var="itemDisplayName" value="로즈핑크 닉네임"/><c:set var="itemDisplayDescription" value="감성적인 분홍색 닉네임 색상"/></c:when>
-        <c:when test="${item.itemCode eq 'NICK_GLOW_RAINBOW'}"><c:set var="itemPreviewClass" value="preview-glow-rainbow"/><c:set var="itemPreviewText" value="TRIP"/><c:set var="itemDisplayName" value="레인보우 닉네임"/><c:set var="itemDisplayDescription" value="닉네임 자체에 무지개 그라데이션 색상을 적용하는 고급 색상 상품"/></c:when>
-        <c:when test="${item.itemCode eq 'NICK_GLOW_GOLD'}"><c:set var="itemPreviewClass" value="preview-glow-gold"/><c:set var="itemPreviewText" value="TRIP"/><c:set var="itemDisplayName" value="골드 글로우"/><c:set var="itemDisplayDescription" value="닉네임에 금빛 글로우 효과 적용"/></c:when>
-        <c:when test="${item.itemCode eq 'NICK_BORDER_NEON'}"><c:set var="itemPreviewClass" value="preview-border-neon"/><c:set var="itemPreviewText" value="TRIP"/><c:set var="itemDisplayName" value="네온블루 테두리"/><c:set var="itemDisplayDescription" value="닉네임에 네온블루 테두리 적용"/></c:when>
-        <c:when test="${item.itemCode eq 'BADGE_BEGINNER_TRAVELER'}"><c:set var="itemPreviewClass" value="preview-badge-green"/><c:set var="itemPreviewText" value="SPROUT"/><c:set var="itemDisplayName" value="새싹 여행자 뱃지"/><c:set var="itemDisplayDescription" value="초기 활동 유저용 기본 뱃지"/></c:when>
-        <c:when test="${item.itemCode eq 'BADGE_FOOD_EXPLORER'}"><c:set var="itemPreviewClass" value="preview-badge-orange"/><c:set var="itemPreviewText" value="FOOD"/><c:set var="itemDisplayName" value="미식 탐험가 뱃지"/><c:set var="itemDisplayDescription" value="맛집 여행 선호 유저용 뱃지"/></c:when>
-        <c:when test="${item.itemCode eq 'BADGE_NIGHT_COLLECTOR'}"><c:set var="itemPreviewClass" value="preview-badge-navy"/><c:set var="itemPreviewText" value="NIGHT"/><c:set var="itemDisplayName" value="야경 수집가 뱃지"/><c:set var="itemDisplayDescription" value="야경 여행 선호 유저용 뱃지"/></c:when>
-        <c:when test="${item.itemCode eq 'BADGE_REVIEW_MASTER'}"><c:set var="itemPreviewClass" value="preview-badge-purple"/><c:set var="itemPreviewText" value="REVIEW"/><c:set var="itemDisplayName" value="리뷰 장인 뱃지"/><c:set var="itemDisplayDescription" value="리뷰 활동 유저용 고급 뱃지"/></c:when>
-        <c:when test="${item.itemCode eq 'BUBBLE_PASTEL'}"><c:set var="itemPreviewClass" value="preview-bubble-pastel"/><c:set var="itemPreviewText" value="Pastel review"/><c:set var="itemDisplayName" value="파스텔 말풍선"/><c:set var="itemDisplayDescription" value="댓글과 리뷰를 파스텔 톤 카드로 표시"/></c:when>
-        <c:when test="${item.itemCode eq 'BUBBLE_MAP_PIN'}"><c:set var="itemPreviewClass" value="preview-bubble-map"/><c:set var="itemPreviewText" value="Map pin note"/><c:set var="itemDisplayName" value="지도핀 말풍선"/><c:set var="itemDisplayDescription" value="여행지 추천 느낌의 지도핀 스타일 말풍선"/></c:when>
-        <c:when test="${item.itemCode eq 'BUBBLE_SKY_CARD'}"><c:set var="itemPreviewClass" value="preview-bubble-sky"/><c:set var="itemPreviewText" value="Sky card"/><c:set var="itemDisplayName" value="스카이 카드 말풍선"/><c:set var="itemDisplayDescription" value="하늘색 카드 스타일 말풍선"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_COLOR_SKY'}"><c:set var="itemPreviewClass" value="preview-nick-sky"/><c:set var="itemPreviewText" value="TRIP"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_COLOR_SUNSET'}"><c:set var="itemPreviewClass" value="preview-nick-sunset"/><c:set var="itemPreviewText" value="TRIP"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_COLOR_MINT'}"><c:set var="itemPreviewClass" value="preview-nick-mint"/><c:set var="itemPreviewText" value="TRIP"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_COLOR_ROSE'}"><c:set var="itemPreviewClass" value="preview-nick-rose"/><c:set var="itemPreviewText" value="TRIP"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_GLOW_RAINBOW'}"><c:set var="itemPreviewClass" value="preview-glow-rainbow"/><c:set var="itemPreviewText" value="TRIP"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_GLOW_GOLD'}"><c:set var="itemPreviewClass" value="preview-glow-gold"/><c:set var="itemPreviewText" value="TRIP"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_BORDER_NEON'}"><c:set var="itemPreviewClass" value="preview-border-neon"/><c:set var="itemPreviewText" value="TRIP"/></c:when>
+        <c:when test="${item.itemCode eq 'BADGE_BEGINNER_TRAVELER'}"><c:set var="itemPreviewClass" value="preview-badge-green"/><c:set var="itemPreviewText" value="SPROUT"/></c:when>
+        <c:when test="${item.itemCode eq 'BADGE_FOOD_EXPLORER'}"><c:set var="itemPreviewClass" value="preview-badge-orange"/><c:set var="itemPreviewText" value="FOOD"/></c:when>
+        <c:when test="${item.itemCode eq 'BADGE_NIGHT_COLLECTOR'}"><c:set var="itemPreviewClass" value="preview-badge-navy"/><c:set var="itemPreviewText" value="NIGHT"/></c:when>
+        <c:when test="${item.itemCode eq 'BADGE_REVIEW_MASTER'}"><c:set var="itemPreviewClass" value="preview-badge-purple"/><c:set var="itemPreviewText" value="REVIEW"/></c:when>
+        <c:when test="${item.itemCode eq 'BUBBLE_PASTEL'}"><c:set var="itemPreviewClass" value="preview-bubble-pastel"/><c:set var="itemPreviewText" value="Pastel review"/></c:when>
+        <c:when test="${item.itemCode eq 'BUBBLE_MAP_PIN'}"><c:set var="itemPreviewClass" value="preview-bubble-map"/><c:set var="itemPreviewText" value="Map pin note"/></c:when>
+        <c:when test="${item.itemCode eq 'BUBBLE_SKY_CARD'}"><c:set var="itemPreviewClass" value="preview-bubble-sky"/><c:set var="itemPreviewText" value="Sky card"/></c:when>
     </c:choose>
     <div class="mp-item-preview ${itemPreviewClass}">
         <span>${itemPreviewText}</span>
@@ -26,30 +26,30 @@
     <div class="mp-item-body">
         <div class="mp-item-type">
             <c:choose>
-                <c:when test="${item.itemType eq 'NICKNAME_COLOR'}">닉네임 색상</c:when>
-                <c:when test="${item.itemType eq 'NICKNAME_EFFECT'}">닉네임 효과</c:when>
-                <c:when test="${item.itemType eq 'PROFILE_BADGE'}">프로필 뱃지</c:when>
-                <c:when test="${item.itemType eq 'BUBBLE_STYLE'}">말풍선 스타일</c:when>
+                <c:when test="${item.itemType eq 'NICKNAME_COLOR'}"><spring:message code="mypage.items.section.nicknameColor"/></c:when>
+                <c:when test="${item.itemType eq 'NICKNAME_EFFECT'}"><spring:message code="mypage.items.section.nicknameEffect.short"/></c:when>
+                <c:when test="${item.itemType eq 'PROFILE_BADGE'}"><spring:message code="mypage.items.section.profileBadge"/></c:when>
+                <c:when test="${item.itemType eq 'BUBBLE_STYLE'}"><spring:message code="mypage.items.section.bubbleStyle.short"/></c:when>
                 <c:otherwise>${item.itemType}</c:otherwise>
             </c:choose>
         </div>
         <strong>${itemDisplayName}</strong>
         <p>${itemDisplayDescription}</p>
-        <div class="mp-item-date">보유 수량 ${item.quantity}개</div>
+        <div class="mp-item-date"><spring:message code="mypage.items.quantity" arguments="${item.quantity}"/></div>
     </div>
     <div class="mp-item-actions">
         <c:choose>
             <c:when test="${item.equipped}">
-                <span class="mp-equipped-badge">장착중</span>
+                <span class="mp-equipped-badge"><spring:message code="mypage.items.equipped"/></span>
                 <form method="post" action="${pageContext.request.contextPath}/mypage/items/unequip">
                     <input type="hidden" name="equipSlot" value="${item.equipSlot}">
-                    <button type="submit" class="mp-item-btn mp-item-btn--ghost">해제</button>
+                    <button type="submit" class="mp-item-btn mp-item-btn--ghost"><spring:message code="mypage.items.unequip"/></button>
                 </form>
             </c:when>
             <c:otherwise>
                 <form method="post" action="${pageContext.request.contextPath}/mypage/items/equip">
                     <input type="hidden" name="itemCode" value="${item.itemCode}">
-                    <button type="submit" class="mp-item-btn">장착</button>
+                    <button type="submit" class="mp-item-btn"><spring:message code="mypage.items.equip"/></button>
                 </form>
             </c:otherwise>
         </c:choose>

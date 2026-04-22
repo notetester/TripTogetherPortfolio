@@ -27,14 +27,14 @@
         </div>
         <nav>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'"><spring:message code="header.nav.explore"/></button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses/list'"><spring:message code="header.nav.courses"/></button>
+            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses'"><spring:message code="header.nav.courses"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/assistant'"><spring:message code="header.nav.assistant"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="header.nav.community"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/wallet'"><spring:message code="header.nav.wallet"/></button>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/shop'"><spring:message code="header.nav.shop"/></button>
-            <button class="nb js-header-nav" type="button" data-url="${pageContext.request.contextPath}/packages">패키지</button>
+            <button class="nb js-header-nav" type="button" data-url="${pageContext.request.contextPath}/packages"><spring:message code="header.nav.packages"/></button>
             <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userRole == 'BUSINESS' or sessionScope.loginUser.userRole == 'PARTNER')}">
-                <button class="nb js-header-nav" type="button" data-url="${pageContext.request.contextPath}/packages/manage">패키지 관리</button>
+                <button class="nb js-header-nav" type="button" data-url="${pageContext.request.contextPath}/packages/manage"><spring:message code="header.nav.packagesManage"/></button>
             </c:if>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'"><spring:message code="header.nav.mypage"/></button>
             <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">

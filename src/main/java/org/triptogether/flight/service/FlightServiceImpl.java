@@ -12,6 +12,7 @@ import org.triptogether.flight.vo.FlightOfferDto;
 import org.triptogether.flight.vo.FlightPurchaseCreateDto;
 import org.triptogether.flight.vo.FlightPurchaseRequestDto;
 import org.triptogether.flight.vo.FlightPurchaseResultDto;
+import org.triptogether.flight.vo.FlightPurchaseVO;
 import org.triptogether.myPage.mapper.WalletMapper;
 import org.triptogether.myPage.vo.WalletHistoryDto;
 import org.triptogether.myPage.vo.WalletMemberGradePolicyDto;
@@ -143,6 +144,53 @@ public class FlightServiceImpl implements FlightService {
 
         UsersVO updatedUser = walletMapper.selectUserByIdx(userIdx);
         return new FlightPurchaseResultDto(purchase.getFlightPurchaseIdx(), purchase.getPurchaseNo(), offer, updatedUser);
+    }
+
+    @Override
+    @Transactional
+    public UsersVO cancelPurchase(Long userIdx, Long flightPurchaseIdx, String cancelReason) {
+        if (userIdx == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+        if (flightPurchaseIdx == null) {
+            throw new IllegalArgumentException("취소할 항공권 예매 정보가 없습니다.");
+        }
+
+        FlightPurchaseVO purchase = flightMapper.selectFlightPurchaseForUpdate(flightPurchaseIdx, userIdx);
+        if (purchase == null) {
+            throw new IllegalArgumentException("취소할 항공권 예매 정보를 찾을 수 없습니다.");
+        }
+        if (!"COMPLETED".equals(purchase.getStatus())) {
+            throw new IllegalStateException("예매완료 상태의 항공권만 취소할 수 있습니다.");
+        }
+
+        UsersVO user = walletMapper.selectUserByIdxForUpdate(userIdx);
+        if (user == null) {
+            throw new IllegalStateException("회원 정보를 찾을 수 없습니다.");
+        }
+
+        long cashAfter = safeAdd(user.getCashBalance(), purchase.getUsedCash());
+        long mileageAfter = safeAdd(user.getMileageBalance(), purchase.getUsedMileage());
+        walletMapper.updateWalletBalances(userIdx, cashAfter, mileageAfter);
+
+        String reason = normalizeCancelReason(cancelReason);
+        int updated = flightMapper.cancelFlightPurchase(flightPurchaseIdx, userIdx, reason);
+        if (updated == 0) {
+            throw new IllegalStateException("이미 취소되었거나 취소할 수 없는 항공권입니다.");
+        }
+
+        if (purchase.getPaymentIdx() != null) {
+            walletMapper.cancelPaymentHistory(purchase.getPaymentIdx(), userIdx);
+        }
+
+        insertRefundWalletHistory(userIdx, "CASH", purchase.getUsedCash(), cashAfter, purchase.getPaymentIdx(),
+                purchase.getPurchaseNo() + " 항공권 예매 취소 캐시 환불");
+        if (purchase.getUsedMileage() > 0) {
+            insertRefundWalletHistory(userIdx, "MILEAGE", purchase.getUsedMileage(), mileageAfter, purchase.getPaymentIdx(),
+                    purchase.getPurchaseNo() + " 항공권 예매 취소 마일리지 환불");
+        }
+
+        return walletMapper.selectUserByIdx(userIdx);
     }
 
     private Optional<ExploreVO> getSpot(Long spotIdx) {
@@ -282,6 +330,47 @@ public class FlightServiceImpl implements FlightService {
         history.setDetailMessage(detailMessage);
         history.setActorUserIdx(userIdx);
         walletMapper.insertWalletHistory(history);
+    }
+
+    private void insertRefundWalletHistory(Long userIdx,
+                                           String assetType,
+                                           long amount,
+                                           long balanceAfter,
+                                           Long paymentIdx,
+                                           String detailMessage) {
+        if (amount <= 0) {
+            return;
+        }
+
+        WalletHistoryDto history = new WalletHistoryDto();
+        history.setUserIdx(userIdx);
+        history.setAssetType(assetType);
+        history.setChangeType("REFUND");
+        history.setAmount(amount);
+        history.setBalanceAfter(balanceAfter);
+        history.setRelatedPaymentIdx(paymentIdx);
+        history.setDetailMessage(detailMessage);
+        history.setActorUserIdx(userIdx);
+        walletMapper.insertWalletHistory(history);
+    }
+
+    private long safeAdd(long baseAmount, long refundAmount) {
+        try {
+            return Math.addExact(baseAmount, refundAmount);
+        } catch (ArithmeticException e) {
+            throw new IllegalStateException("환불 처리 후 잔액이 너무 큽니다.");
+        }
+    }
+
+    private String normalizeCancelReason(String cancelReason) {
+        String reason = cancelReason == null ? null : cancelReason.trim();
+        if (reason == null || reason.isEmpty()) {
+            return "사용자 직접 취소";
+        }
+        if (reason.length() > 500) {
+            return reason.substring(0, 500);
+        }
+        return reason;
     }
 
     private FlightPurchaseCreateDto buildFlightPurchase(Long userIdx,

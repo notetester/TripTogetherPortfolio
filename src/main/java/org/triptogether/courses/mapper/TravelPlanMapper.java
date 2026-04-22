@@ -35,4 +35,10 @@ public interface TravelPlanMapper {
 
     // 일정 안 장소 전체 삭제
     void deletePlanSpotsByPlanId(Long plan_id);
+
+    // 공개 일정 목록 조회
+    List<TravelPlanVO> getPublicTravelList();
+
+    // planId 기준 단건 조회 (공개 상세 조회용)
+    TravelPlanVO getTravelPlanDetailByPlanId(Long planId);
 }

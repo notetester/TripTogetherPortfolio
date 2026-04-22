@@ -21,4 +21,8 @@ public interface TravelPlanService {
 
     // TravelPlanService.java
     void insertPlanSpot(PlanSpotVO planSpotVO);
+
+    List<TravelPlanVO> getPublicTravelList();
+
+    TravelPlanVO getTravelPlanDetailByPlanId(Long planId);
 }
