@@ -75,7 +75,13 @@
                         <th>메시지 수</th>
                         <th>최근 활동</th>
                         <th>상태</th>
-                        <th>액션</th>
+                        <th style="width:200px;">
+                            <div style="display:flex;gap:4px;justify-content:flex-end;">
+                                <span style="font-size:11px;padding:3px 8px;">액션</span>
+                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;">유저 차단</span>
+                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;">IP 차단</span>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,12 +109,14 @@
                                             <c:otherwise><span style="color:#10b981;">활성</span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td>
-                                        <button type="button" class="adm-btn adm-btn-ghost" data-conv-id="${c.conversationId}" onclick="viewMessages(this.dataset.convId)">보기</button>
-                                        <c:if test="${c.userIdx != null}">
-                                            <button type="button" class="adm-btn adm-btn-ghost" data-block-value="${c.userIdx}" onclick="blockUser(this.dataset.blockValue)">유저 차단</button>
-                                        </c:if>
-                                        <button type="button" class="adm-btn adm-btn-ghost" data-block-value="${c.ipAddress}" onclick="blockIp(this.dataset.blockValue)">IP 차단</button>
+                                    <td style="text-align:right;">
+                                        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
+                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-conv-id="${c.conversationId}" onclick="viewMessages(this.dataset.convId)">보기</button>
+                                            <c:if test="${c.userIdx != null}">
+                                                <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-block-value="${c.userIdx}" onclick="blockUser(this.dataset.blockValue)">유저 차단</button>
+                                            </c:if>
+                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-block-value="${c.ipAddress}" onclick="blockIp(this.dataset.blockValue)">IP 차단</button>
+                                        </div>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -282,9 +290,9 @@
                     <c:forEach var="q" items="${quotas}">
                         <tr data-quota-id="${q.quotaId}">
                             <td><strong>${q.grade}</strong></td>
-                            <td><input type="number" class="adm-input q-conv" value="${q.maxConversations}" style="width:100px;"/></td>
-                            <td><input type="number" class="adm-input q-msg" value="${q.maxMessagesPerDay}" style="width:100px;"/></td>
-                            <td><input type="number" class="adm-input q-ctx" value="${q.maxContextMessages}" style="width:100px;"/></td>
+                            <td><input type="number" class="adm-input q-conv" value="${q.maxConversations}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
+                            <td><input type="number" class="adm-input q-msg" value="${q.maxMessagesPerDay}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
+                            <td><input type="number" class="adm-input q-ctx" value="${q.maxContextMessages}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
                             <td>${q.updatedBy}</td>
                             <td>
                                 <button type="button" class="adm-btn adm-btn-primary" data-quota-id="${q.quotaId}" onclick="updateQuota(this.dataset.quotaId)">저장</button>

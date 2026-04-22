@@ -74,7 +74,12 @@
                         <th>메시지 수</th>
                         <th>생성일</th>
                         <th>마지막 활동</th>
-                        <th>액션</th>
+                        <th style="width:130px;">
+                            <div style="display:flex;gap:4px;justify-content:flex-end;">
+                                <span style="font-size:11px;padding:3px 8px;">액션</span>
+                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;">삭제</span>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -107,9 +112,11 @@
                                             <c:otherwise><span style="color:#94a3b8;">-</span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td>
-                                        <button type="button" class="adm-btn adm-btn-ghost" data-session-id="${s.chatPostIdx}" onclick="viewAssistantMessages(this.dataset.sessionId)">보기</button>
-                                        <button type="button" class="adm-btn adm-btn-ghost" data-session-id="${s.chatPostIdx}" onclick="deleteAssistantSession(this.dataset.sessionId)" style="color:#ef4444;">삭제</button>
+                                    <td style="text-align:right;">
+                                        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
+                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-session-id="${s.chatPostIdx}" onclick="viewAssistantMessages(this.dataset.sessionId)">보기</button>
+                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;color:#ef4444;" data-session-id="${s.chatPostIdx}" onclick="deleteAssistantSession(this.dataset.sessionId)">삭제</button>
+                                        </div>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -151,7 +158,11 @@
                         <th>유저</th>
                         <th>내용</th>
                         <th>시각</th>
-                        <th>액션</th>
+                        <th style="width:100px;">
+                            <div style="display:flex;gap:4px;justify-content:flex-end;">
+                                <span style="font-size:11px;padding:3px 8px;">액션</span>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -182,7 +193,7 @@
                                             <c:otherwise><span style="color:#94a3b8;">#${m.userIdx}</span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td style="max-width:500px;word-break:break-all;white-space:pre-wrap;font-size:12px;">
+                                    <td style="max-width:500px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">
                                         <c:choose>
                                             <c:when test="${fn:length(m.content) > 200}">
                                                 ${fn:escapeXml(fn:substring(m.content, 0, 200))}…
@@ -193,8 +204,10 @@
                                     <td>
                                         <fmt:formatDate value="${m.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
                                     </td>
-                                    <td>
-                                        <button type="button" class="adm-btn adm-btn-ghost" data-session-id="${m.chatPostIdx}" onclick="viewAssistantMessages(this.dataset.sessionId)">세션 보기</button>
+                                    <td style="text-align:right;">
+                                        <div style="display:flex;gap:4px;justify-content:flex-end;">
+                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-session-id="${m.chatPostIdx}" onclick="viewAssistantMessages(this.dataset.sessionId)">세션 보기</button>
+                                        </div>
                                     </td>
                                 </tr>
                             </c:forEach>
