@@ -5,38 +5,29 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="inquiries"/>
 <spring:message code="admin.inquiry.pageTitle" var="adminInquiryPageTitle"/>
-<spring:message code="admin.common.nickname" var="adminCommonNickname"/>
-<spring:message code="admin.common.userId" var="adminCommonUserId"/>
-<spring:message code="admin.common.accountStatus" var="adminCommonAccountStatus"/>
-<spring:message code="admin.common.memberInfoView" var="adminCommonMemberInfoView"/>
-<spring:message code="admin.common.blockAccount" var="adminCommonBlockAccount"/>
-<spring:message code="admin.common.activeLabel" var="adminCommonActiveLabel"/>
-<spring:message code="admin.common.blockedLabel" var="adminCommonBlockedLabel"/>
-<spring:message code="admin.inquiry.authorInfoTitle" var="adminInquiryAuthorInfoTitle"/>
-<spring:message code="admin.inquiry.confirmBlockUser" var="adminInquiryConfirmBlockUser"/>
-<spring:message code="admin.inquiry.blockFailed" var="adminInquiryBlockFailed"/>
+<spring:message code="admin.common.id" var="adminCommonId"/>
 <c:set var="pageTitle" value="${adminInquiryPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
 
     <%-- ── 통계 카드 ── --%>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:12px;color:#64748b;margin-bottom:6px;"><spring:message code="admin.inquiry.kpi.total"/></div>
-            <div style="font-size:24px;font-weight:700;color:#38bdf8;">${stats.totalInquiries}</div>
+    <div class="adm-summary-grid">
+        <div class="adm-card adm-summary-card">
+            <div class="adm-summary-label"><spring:message code="admin.inquiry.kpi.total"/></div>
+            <div class="adm-summary-value is-primary">${stats.totalInquiries}</div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:12px;color:#64748b;margin-bottom:6px;"><spring:message code="admin.inquiry.status.pending"/></div>
-            <div style="font-size:24px;font-weight:700;color:#fbbf24;">${stats.pendingInquiries}</div>
+        <div class="adm-card adm-summary-card">
+            <div class="adm-summary-label"><spring:message code="admin.inquiry.status.pending"/></div>
+            <div class="adm-summary-value is-warning">${stats.pendingInquiries}</div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:12px;color:#64748b;margin-bottom:6px;"><spring:message code="admin.inquiry.status.inProgress"/></div>
-            <div style="font-size:24px;font-weight:700;color:#fb923c;">${stats.inProgressInquiries}</div>
+        <div class="adm-card adm-summary-card">
+            <div class="adm-summary-label"><spring:message code="admin.inquiry.status.inProgress"/></div>
+            <div class="adm-summary-value is-accent">${stats.inProgressInquiries}</div>
         </div>
-        <div class="adm-card" style="padding:20px;">
-            <div style="font-size:12px;color:#64748b;margin-bottom:6px;"><spring:message code="admin.inquiry.status.completed"/></div>
-            <div style="font-size:24px;font-weight:700;color:#34d399;">${stats.completedInquiries}</div>
+        <div class="adm-card adm-summary-card">
+            <div class="adm-summary-label"><spring:message code="admin.inquiry.status.completed"/></div>
+            <div class="adm-summary-value is-success">${stats.completedInquiries}</div>
         </div>
     </div>
 
@@ -85,9 +76,11 @@
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="searchType" style="width:110px;">
                                 <option value="all" ${search.searchType=='all'?'selected':''}><spring:message code="admin.common.all"/></option>
+                                <option value="inquiryId" ${search.searchType=='inquiryId'?'selected':''}><spring:message code="admin.inquiry.searchType.inquiryId"/></option>
                                 <option value="title" ${search.searchType=='title'?'selected':''}><spring:message code="admin.inquiry.searchType.title"/></option>
                                 <option value="content" ${search.searchType=='content'?'selected':''}><spring:message code="admin.inquiry.searchType.content"/></option>
                                 <option value="nickname" ${search.searchType=='nickname'?'selected':''}><spring:message code="admin.inquiry.searchType.nickname"/></option>
+                                <option value="userId" ${search.searchType=='userId'?'selected':''}><spring:message code="admin.inquiry.searchType.userId"/></option>
                             </select>
                             <div class="adm-search-box" style="flex:1;">
                                 <span class="adm-search-ico">🔍</span>
@@ -111,7 +104,7 @@
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>${adminCommonId}</th>
                     <th><spring:message code="admin.inquiry.author"/></th>
                     <th><spring:message code="admin.inquiry.title"/></th>
                     <th><spring:message code="admin.inquiry.category"/></th>
@@ -125,23 +118,45 @@
                     <tr class="adm-inq-row" data-id="${item.inquiryId}" style="cursor:pointer;">
                         <td>#${item.inquiryId}</td>
                         <%-- 작성자 --%>
-                        <td style="cursor:pointer;"
-                            data-useridx="${item.userIdx}"
-                            data-userid="${item.userId}"
-                            data-nickname="${item.nickname}"
-                            data-status="${item.accountStatus}"
-                            onclick="openAuthorModal(this)">
-                            <div style="font-weight:600;font-size:13px;color:#7dd3fc;">${item.nickname}</div>
-                            <div style="font-size:11px;color:#64748b;">${item.userId}</div>
+                        <td>
+                            <button type="button"
+                                    class="adm-inline-link js-open-member-context"
+                                    data-user-idx="${item.userIdx}"
+                                    style="font-weight:700;color:#93c5fd;">${item.nickname}</button>
+                            <div class="adm-modal-value">
+                                <button type="button"
+                                        class="adm-inline-link js-open-member-context"
+                                        data-user-idx="${item.userIdx}"
+                                        style="font-size:12px;color:#94a3b8;">${item.userId}</button>
+                            </div>
                             <c:if test="${item.accountStatus == 'BLOCKED'}">
-                                <span style="font-size:10px;background:#7f1d1d;color:#fca5a5;padding:1px 5px;border-radius:3px;"><spring:message code="admin.reports.accountBlocked"/></span>
+                                <span class="adm-inline-danger"><spring:message code="admin.reports.accountBlocked"/></span>
                             </c:if>
+                            <div class="adm-inline-actions">
+                                <button type="button"
+                                        class="adm-inline-chip"
+                                        data-search-type="userId"
+                                        data-keyword="${item.userId}"
+                                        onclick="applyInquiryFilter(this)">
+                                    <spring:message code="admin.common.sameAuthor"/>
+                                </button>
+                            </div>
                         </td>
                         <td>
                             <div class="mem-name">${item.title}</div>
                             <div class="mem-uid">
                                 <c:if test="${item.privateFlag}">🔒 <spring:message code="admin.inquiry.privateFlag"/> · </c:if>
                                 <spring:message code="admin.inquiry.viewCount" arguments="${item.viewCount}"/>
+                            </div>
+                            <div class="adm-inline-actions">
+                                <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}"
+                                   class="adm-inline-chip"><spring:message code="admin.common.viewDetail"/></a>
+                                <button type="button"
+                                        class="adm-inline-chip"
+                                        data-category="${item.category}"
+                                        onclick="applyInquiryFilter(this)">
+                                    <spring:message code="admin.common.sameCategory"/>
+                                </button>
                             </div>
                         </td>
                         <td>
@@ -177,7 +192,7 @@
                                 <c:otherwise><span style="color:#64748b;"><spring:message code="admin.inquiry.unanswered"/></span></c:otherwise>
                             </c:choose>
                         </td>
-                        <td><fmt:formatDate value="${item.createdAt}" pattern="yyyy.MM.dd HH:mm"/></td>
+                        <td><fmt:formatDate value="${item.createdAt}" type="both" dateStyle="short" timeStyle="short"/></td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
@@ -208,22 +223,33 @@
 </div>
 
 <script>
-var INQUIRY_AUTHOR_MSG = {
-    blocked: '${fn:escapeXml(adminCommonBlockedLabel)}',
-    active: '${fn:escapeXml(adminCommonActiveLabel)}',
-    nickname: '${fn:escapeXml(adminCommonNickname)}',
-    userId: '${fn:escapeXml(adminCommonUserId)}',
-    accountStatus: '${fn:escapeXml(adminCommonAccountStatus)}',
-    memberInfoView: '${fn:escapeXml(adminCommonMemberInfoView)}',
-    blockAccount: '${fn:escapeXml(adminCommonBlockAccount)}',
-    confirmBlock: '${fn:escapeXml(adminInquiryConfirmBlockUser)}',
-    blockFailed: '${fn:escapeXml(adminInquiryBlockFailed)}',
-    title: '${fn:escapeXml(adminInquiryAuthorInfoTitle)}'
-};
-
 function goPage(page) {
     const params = new URLSearchParams(window.location.search);
     params.set('page', page);
+    location.href = '${pageContext.request.contextPath}/admin/inquiries?' + params.toString();
+}
+
+function applyInquiryFilter(button) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', '1');
+
+    if (button.dataset.category !== undefined) {
+        if (button.dataset.category) params.set('category', button.dataset.category);
+        else params.delete('category');
+        params.delete('searchType');
+        params.delete('keyword');
+    }
+
+    if (button.dataset.searchType !== undefined) {
+        if (button.dataset.searchType) params.set('searchType', button.dataset.searchType);
+        else params.delete('searchType');
+    }
+
+    if (button.dataset.keyword !== undefined) {
+        if (button.dataset.keyword) params.set('keyword', button.dataset.keyword);
+        else params.delete('keyword');
+    }
+
     location.href = '${pageContext.request.contextPath}/admin/inquiries?' + params.toString();
 }
 
@@ -233,83 +259,12 @@ var ctx = '${pageContext.request.contextPath}';
 var listParams = 'page=${search.page}&status=${search.status}&category=${search.category}&answered=${search.answered}&searchType=${search.searchType}&keyword=' + encodeURIComponent('${search.keyword}');
 document.querySelectorAll('.adm-inq-row[data-id]').forEach(function (tr) {
     tr.addEventListener('click', function (e) {
-        if (e.target.closest('td[data-useridx]')) return; // 작성자 셀 클릭은 모달로 처리
+        if (e.target.closest('button, a')) return;
         location.href = '${pageContext.request.contextPath}/admin/inquiries/' + this.getAttribute('data-id') + '?' + listParams;
     });
 });
-
-// ── 작성자 모달 ──
-function openAuthorModal(el) {
-    var userIdx  = el.getAttribute('data-useridx');
-    var userId   = el.getAttribute('data-userid');
-    var nickname = el.getAttribute('data-nickname');
-    var status   = el.getAttribute('data-status');
-
-    var statusBadge = status === 'BLOCKED'
-        ? '<span class="status-badge BLOCKED" style="font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.blocked) + '</span>'
-        : '<span class="status-badge ACTIVE"  style="font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.active) + '</span>';
-
-    var blockBtn = status !== 'BLOCKED'
-        ? '<button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;width:100%;margin-top:4px;" data-idx="' + userIdx + '" onclick="blockUserFromModal(this)">' + escHtml(INQUIRY_AUTHOR_MSG.blockAccount) + '</button>'
-        : '';
-
-    document.getElementById('authorModalBody').innerHTML =
-        '<div style="display:flex;flex-direction:column;gap:10px;">'
-      + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
-      + '    <span style="color:#64748b;font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.nickname) + '</span>'
-      + '    <span class="adm-modal-nickname">' + escHtml(nickname) + '</span>'
-      + '  </div>'
-      + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
-      + '    <span style="color:#64748b;font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.userId) + '</span>'
-      + '    <span style="color:#94a3b8;font-size:13px;">' + escHtml(userId) + '</span>'
-      + '  </div>'
-      + '  <div style="display:flex;justify-content:space-between;align-items:center;">'
-      + '    <span style="color:#64748b;font-size:12px;">' + escHtml(INQUIRY_AUTHOR_MSG.accountStatus) + '</span>'
-      + '    ' + statusBadge
-      + '  </div>'
-      + '</div>'
-      + '<div style="margin-top:16px;display:flex;flex-direction:column;gap:6px;">'
-      + '  <a href="' + ctx + '/admin/members?searchType=userId&keyword=' + encodeURIComponent(userId) + '" class="adm-btn adm-btn-ghost" style="text-align:center;text-decoration:none;">' + escHtml(INQUIRY_AUTHOR_MSG.memberInfoView) + '</a>'
-      + blockBtn
-      + '</div>';
-
-    document.querySelector('#authorModal .adm-modal-title').textContent = INQUIRY_AUTHOR_MSG.title;
-    document.getElementById('authorModal').style.display = 'flex';
-}
-
-function closeAuthorModal() {
-    document.getElementById('authorModal').style.display = 'none';
-}
-
-function blockUserFromModal(btn) {
-    var userIdx = btn.getAttribute('data-idx');
-    if (!confirm(INQUIRY_AUTHOR_MSG.confirmBlock)) return;
-    fetch(ctx + '/admin/community/users/' + userIdx + '/block', {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    }).then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (d.success) { location.reload(); }
-        else { alert(d.message || INQUIRY_AUTHOR_MSG.blockFailed); }
-    });
-}
-
-function escHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
 </script>
 
-<%-- ── 작성자 정보 모달 ── --%>
-<div id="authorModal" class="adm-modal-overlay" style="display:none;"
-     onclick="if(event.target===this)closeAuthorModal()">
-    <div class="adm-modal" style="width:360px;">
-        <div class="adm-modal-head">
-            <span class="adm-modal-title">${adminInquiryAuthorInfoTitle}</span>
-            <button class="adm-modal-close" onclick="closeAuthorModal()">✕</button>
-        </div>
-        <div class="adm-modal-body" id="authorModalBody"></div>
-    </div>
-</div>
+<%@ include file="../common/context-modal.jspf" %>
 
 <%@ include file="../layout-close.jsp" %>

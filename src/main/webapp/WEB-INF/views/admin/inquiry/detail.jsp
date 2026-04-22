@@ -14,7 +14,6 @@
 <spring:message code="admin.inquiry.detail.answerRegister" var="adminInquiryDetailAnswerRegister"/>
 <spring:message code="admin.inquiry.detail.save" var="adminInquiryDetailSave"/>
 <spring:message code="admin.common.cancel" var="adminCommonCancel"/>
-<spring:message code="admin.common.memberInfoView" var="adminCommonMemberInfoView"/>
 <spring:message code="admin.inquiry.detail.statusChange" var="adminInquiryDetailStatusChange"/>
 <spring:message code="admin.inquiry.detail.deleteInquiry" var="adminInquiryDetailDeleteInquiry"/>
 <spring:message code="admin.inquiry.detail.deleteRequestPending" var="adminInquiryDetailDeleteRequestPending"/>
@@ -75,6 +74,12 @@
                                 <c:otherwise><spring:message code="admin.inquiry.category.etc"/></c:otherwise>
                             </c:choose>
                         </span>
+                        <button type="button"
+                                class="adm-inline-chip"
+                                data-category="${inquiry.category}"
+                                onclick="applyInquiryFilter(this)">
+                            <spring:message code="admin.common.sameCategory"/>
+                        </button>
                         <c:if test="${inquiry.privateFlag}">
                             <span style="font-size:11px;color:#94a3b8;">🔒 <spring:message code="admin.inquiry.privateFlag"/></span>
                         </c:if>
@@ -164,11 +169,39 @@
                         </div>
 
                         <div class="adm-meta-actions">
-                            <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${inquiry.userId}"
-                               class="adm-btn adm-btn-ghost"
-                               style="text-align:center;font-size:12px;text-decoration:none;display:block;">
-                                ${adminCommonMemberInfoView}
-                            </a>
+                            <c:choose>
+                                <c:when test="${not empty inquiry.userIdx}">
+                                    <button type="button"
+                                            class="adm-btn adm-btn-ghost js-open-member-context"
+                                            data-user-idx="${inquiry.userIdx}"
+                                            style="width:100%;text-align:center;font-size:12px;display:block;">
+                                        <spring:message code="admin.common.memberInfoView"/>
+                                    </button>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="${pageContext.request.contextPath}/admin/members?searchType=userId&keyword=${inquiry.userId}"
+                                       class="adm-btn adm-btn-ghost"
+                                       style="text-align:center;font-size:12px;text-decoration:none;display:block;">
+                                        <spring:message code="admin.common.memberInfoView"/>
+                                    </a>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+
+                        <div class="adm-inline-actions">
+                            <button type="button"
+                                    class="adm-inline-chip"
+                                    data-search-type="userId"
+                                    data-keyword="${inquiry.userId}"
+                                    onclick="applyInquiryFilter(this)">
+                                <spring:message code="admin.common.sameAuthor"/>
+                            </button>
+                            <button type="button"
+                                    class="adm-inline-chip"
+                                    data-category="${inquiry.category}"
+                                    onclick="applyInquiryFilter(this)">
+                                <spring:message code="admin.common.sameCategory"/>
+                            </button>
                         </div>
 
                         <%-- 상태 변경 --%>
@@ -253,6 +286,21 @@ function goBackToList() {
     if (searchType) url += '&searchType=' + encodeURIComponent(searchType);
     if (keyword)    url += '&keyword='    + encodeURIComponent(keyword);
     location.href = url;
+}
+
+function applyInquiryFilter(button) {
+    var params = new URLSearchParams();
+    params.set('page', '1');
+    if (button.dataset.category) {
+        params.set('category', button.dataset.category);
+    }
+    if (button.dataset.searchType) {
+        params.set('searchType', button.dataset.searchType);
+    }
+    if (button.dataset.keyword) {
+        params.set('keyword', button.dataset.keyword);
+    }
+    location.href = ctx + '/admin/inquiries?' + params.toString();
 }
 
 function saveAnswer(isEdit) {
@@ -358,4 +406,5 @@ function hideEditForm() {
 }
 </script>
 
+<%@ include file="../common/context-modal.jspf" %>
 <%@ include file="../layout-close.jsp" %>
