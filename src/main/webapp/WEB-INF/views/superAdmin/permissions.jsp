@@ -36,7 +36,12 @@
                             <div class="sa-group-desc">${fn:escapeXml(p.description)}</div>
                         </div>
                         <div class="sa-group-cnt">직접 부여 ${p.usageCount}명</div>
-                        <div>
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            <c:if test="${p.permissionCode == 'FINANCE_ADMIN'}">
+                                <span class="adm-badge"
+                                      style="background:#f59e0b20;color:#fbbf24;border:1px solid #f59e0b;"
+                                      title="기능 연동 아직 안 됨 — 부여해도 체감 효과 없음">🚧 미구현</span>
+                            </c:if>
                             <c:choose>
                                 <c:when test="${p.active}"><span class="adm-badge adm-badge-green">활성</span></c:when>
                                 <c:otherwise><span class="adm-badge">비활성</span></c:otherwise>
