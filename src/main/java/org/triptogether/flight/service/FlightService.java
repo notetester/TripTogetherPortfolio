@@ -3,6 +3,7 @@ package org.triptogether.flight.service;
 import org.triptogether.flight.vo.FlightOfferDto;
 import org.triptogether.flight.vo.FlightPurchaseRequestDto;
 import org.triptogether.flight.vo.FlightPurchaseResultDto;
+import org.triptogether.auth.vo.UsersVO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,4 +24,6 @@ public interface FlightService {
     List<FlightOfferDto> getOffers(Long spotIdx, LocalDate departureDate, LocalDate returnDate, Long userIdx);
 
     FlightPurchaseResultDto purchase(Long userIdx, FlightPurchaseRequestDto request);
+
+    UsersVO cancelPurchase(Long userIdx, Long flightPurchaseIdx, String cancelReason);
 }

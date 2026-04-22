@@ -219,6 +219,11 @@
   background: #dcfce7;
 }
 
+.pkg-status--EXPIRED {
+  color: #92400e;
+  background: #fef3c7;
+}
+
 .pkg-status--REJECTED {
   color: #991b1b;
   background: #fee2e2;
@@ -353,7 +358,8 @@
 .pkg-card__actions a,
 .pkg-card__actions button,
 .pkg-waiting,
-.pkg-approved {
+.pkg-approved,
+.pkg-expired {
   border: 0;
   border-radius: 999px;
   padding: 10px 14px;
@@ -385,6 +391,11 @@
 .pkg-approved {
   color: #166534;
   background: #dcfce7;
+}
+
+.pkg-expired {
+  color: #92400e;
+  background: #fef3c7;
 }
 
 .pkg-form-grid {

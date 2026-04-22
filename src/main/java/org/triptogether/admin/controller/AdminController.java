@@ -76,6 +76,7 @@ public class AdminController {
     public String packageList(@RequestParam(defaultValue = "PENDING") String status,
                               Model model) {
         model.addAttribute("packageList", travelPackageService.getAdminPackages(status));
+        model.addAttribute("revisionList", travelPackageService.getAdminPackageRevisions("PENDING"));
         model.addAttribute("status", status == null || status.isBlank() ? "PENDING" : status);
         model.addAttribute("activeMenu", "packages");
         return "admin/package/list";
@@ -106,6 +107,37 @@ public class AdminController {
         try {
             travelPackageService.rejectPackage(packageIdx, rejectReason, reviewerUserIdx);
             redirectAttributes.addFlashAttribute("packageReviewMessage", "패키지 상품을 반려했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
+        }
+        return "redirect:/admin/packages";
+    }
+
+    @PostMapping("/packages/revisions/{packageRevisionIdx}/approve")
+    public String approvePackageRevision(@PathVariable Long packageRevisionIdx,
+                                         HttpSession session,
+                                         RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            travelPackageService.approvePackageRevision(packageRevisionIdx, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("packageReviewMessage", "패키지 수정 요청을 승인하고 원본에 반영했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
+        }
+        return "redirect:/admin/packages";
+    }
+
+    @PostMapping("/packages/revisions/{packageRevisionIdx}/reject")
+    public String rejectPackageRevision(@PathVariable Long packageRevisionIdx,
+                                        @RequestParam String rejectReason,
+                                        HttpSession session,
+                                        RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            travelPackageService.rejectPackageRevision(packageRevisionIdx, rejectReason, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("packageReviewMessage", "패키지 수정 요청을 반려했습니다.");
         } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
         }

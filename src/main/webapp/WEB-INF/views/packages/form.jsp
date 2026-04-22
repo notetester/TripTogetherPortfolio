@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="packages/packages.css"/>
@@ -13,11 +14,17 @@
             <p class="pkg-eyebrow">PACKAGE FORM</p>
             <h1>
                 <c:choose>
+                    <c:when test="${formMode eq 'REVISION'}"><spring:message code="package.form.revisionTitle"/></c:when>
                     <c:when test="${formMode eq 'EDIT'}">패키지 상품 수정</c:when>
                     <c:otherwise>패키지 상품 등록</c:otherwise>
                 </c:choose>
             </h1>
-            <p>승인 요청 전에는 임시저장으로 내용을 다듬을 수 있습니다.</p>
+            <p>
+                <c:choose>
+                    <c:when test="${formMode eq 'REVISION'}"><spring:message code="package.form.revisionDesc"/></c:when>
+                    <c:otherwise>승인 요청 전에는 임시저장으로 내용을 다듬을 수 있습니다.</c:otherwise>
+                </c:choose>
+            </p>
         </div>
         <a class="pkg-ghost-link" href="${pageContext.request.contextPath}/packages/manage">목록으로</a>
     </section>
@@ -111,8 +118,17 @@
             </div>
 
             <div class="pkg-form-actions">
-                <button type="submit" name="action" value="DRAFT" class="pkg-secondary-btn">임시저장</button>
-                <button type="submit" name="action" value="PENDING" class="pkg-primary-btn">저장 후 승인 요청</button>
+                <c:choose>
+                    <c:when test="${formMode eq 'REVISION'}">
+                        <button type="submit" name="action" value="PENDING" class="pkg-primary-btn">
+                            <spring:message code="package.revision.request"/>
+                        </button>
+                    </c:when>
+                    <c:otherwise>
+                        <button type="submit" name="action" value="DRAFT" class="pkg-secondary-btn">임시저장</button>
+                        <button type="submit" name="action" value="PENDING" class="pkg-primary-btn">저장 후 승인 요청</button>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </form>
     </section>

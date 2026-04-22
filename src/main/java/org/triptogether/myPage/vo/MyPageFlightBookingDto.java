@@ -43,5 +43,6 @@ public class MyPageFlightBookingDto {
     private String paymentStatus;
     private Date paidAt;
     private String status;
+    private String cancelReason;
     private Date createdAt;
 }

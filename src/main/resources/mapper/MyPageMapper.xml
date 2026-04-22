@@ -282,7 +282,32 @@
         <result property="paymentStatus"        column="payment_status"/>
         <result property="paidAt"               column="paid_at"/>
         <result property="status"               column="status"/>
+        <result property="cancelReason"         column="cancel_reason"/>
         <result property="createdAt"            column="created_at"/>
+    </resultMap>
+
+    <!-- 패키지 예약 매핑 -->
+    <resultMap id="PackageBookingResultMap" type="org.triptogether.myPage.vo.MyPagePackageBookingDto">
+        <id     property="packageBookingIdx" column="package_booking_idx"/>
+        <result property="bookingNo"         column="booking_no"/>
+        <result property="packageIdx"        column="package_idx"/>
+        <result property="spotIdx"           column="spot_idx"/>
+        <result property="spotName"          column="spot_name"/>
+        <result property="packageTitle"      column="package_title"/>
+        <result property="packageSummary"    column="package_summary"/>
+        <result property="mainImagePath"     column="main_image_path"/>
+        <result property="sellerNickname"    column="seller_nickname"/>
+        <result property="startDate"         column="start_date"/>
+        <result property="endDate"           column="end_date"/>
+        <result property="peopleCount"       column="people_count"/>
+        <result property="unitPrice"         column="unit_price"/>
+        <result property="totalPrice"        column="total_price"/>
+        <result property="usedCash"          column="used_cash"/>
+        <result property="usedMileage"       column="used_mileage"/>
+        <result property="bookingStatus"     column="booking_status"/>
+        <result property="bookedAt"          column="booked_at"/>
+        <result property="cancelledAt"       column="cancelled_at"/>
+        <result property="cancelReason"      column="cancel_reason"/>
     </resultMap>
 
     <!-- =============================================
@@ -380,6 +405,7 @@
             uph.payment_status,
             uph.paid_at,
             fps.status,
+            fps.cancel_reason,
             fps.created_at
         FROM FLIGHT_PURCHASE_SIMULATION fps
         LEFT JOIN SPOT_TRAVEL st ON fps.spot_idx = st.spot_idx
@@ -399,7 +425,128 @@
     </select>
 
     <!-- =============================================
-         20. 내 기업 회원 신청 최신 건 조회
+         20. 내 항공권 예매 전체 목록 조회
+         ============================================= -->
+    <select id="selectMyFlightBookingAllList" resultMap="FlightBookingResultMap">
+        SELECT
+            fps.flight_purchase_idx,
+            fps.payment_idx,
+            fps.purchase_no,
+            fps.spot_idx,
+            st.name AS spot_name,
+            fps.airline_name,
+            fps.flight_no,
+            fps.origin_airport_code,
+            fps.destination_airport_code,
+            fps.departure_time,
+            fps.arrival_time,
+            fps.trip_type,
+            fps.return_airline_name,
+            fps.return_flight_no,
+            fps.return_origin_airport_code,
+            fps.return_destination_airport_code,
+            fps.return_departure_time,
+            fps.return_arrival_time,
+            fps.outbound_price,
+            fps.return_price,
+            fps.total_price,
+            fps.used_cash,
+            fps.used_mileage,
+            COALESCE(uph.original_amount, fps.outbound_price + fps.return_price, fps.total_price) AS original_amount,
+            COALESCE(uph.discount_rate, 0) AS discount_rate,
+            COALESCE(uph.discount_amount, 0) AS discount_amount,
+            COALESCE(uph.final_amount, fps.total_price) AS final_amount,
+            uph.payment_status,
+            uph.paid_at,
+            fps.status,
+            fps.cancel_reason,
+            fps.created_at
+        FROM FLIGHT_PURCHASE_SIMULATION fps
+        LEFT JOIN SPOT_TRAVEL st ON fps.spot_idx = st.spot_idx
+        LEFT JOIN USER_PAYMENT_HISTORY uph ON fps.payment_idx = uph.payment_idx
+        WHERE fps.user_idx = #{userIdx}
+        ORDER BY fps.created_at DESC
+    </select>
+
+    <!-- =============================================
+         21. 내 패키지 예약 목록 조회
+         - 최신순 5개
+         ============================================= -->
+    <select id="selectMyPackageBookingList" resultMap="PackageBookingResultMap">
+        SELECT
+            tpb.package_booking_idx,
+            tpb.booking_no,
+            tpb.package_idx,
+            tp.spot_idx,
+            st.name AS spot_name,
+            tp.package_title,
+            tp.package_summary,
+            tp.main_image_path,
+            seller.nickname AS seller_nickname,
+            tp.start_date,
+            tp.end_date,
+            tpb.people_count,
+            tpb.unit_price,
+            tpb.total_price,
+            tpb.used_cash,
+            tpb.used_mileage,
+            tpb.booking_status,
+            tpb.booked_at,
+            tpb.cancelled_at,
+            tpb.cancel_reason
+        FROM TRAVEL_PACKAGE_BOOKING tpb
+        JOIN TRAVEL_PACKAGE tp ON tpb.package_idx = tp.package_idx
+        LEFT JOIN SPOT_TRAVEL st ON tp.spot_idx = st.spot_idx
+        LEFT JOIN USERS seller ON tp.seller_user_idx = seller.user_idx
+        WHERE tpb.user_idx = #{userIdx}
+        ORDER BY tpb.booked_at DESC
+        LIMIT 5
+    </select>
+
+    <!-- =============================================
+         21. 내 패키지 예약 총 개수 조회
+         ============================================= -->
+    <select id="selectMyPackageBookingCount" resultType="int">
+        SELECT COUNT(*)
+        FROM TRAVEL_PACKAGE_BOOKING
+        WHERE user_idx = #{userIdx}
+    </select>
+
+    <!-- =============================================
+         23. 내 패키지 예약 전체 목록 조회
+         ============================================= -->
+    <select id="selectMyPackageBookingAllList" resultMap="PackageBookingResultMap">
+        SELECT
+            tpb.package_booking_idx,
+            tpb.booking_no,
+            tpb.package_idx,
+            tp.spot_idx,
+            st.name AS spot_name,
+            tp.package_title,
+            tp.package_summary,
+            tp.main_image_path,
+            seller.nickname AS seller_nickname,
+            tp.start_date,
+            tp.end_date,
+            tpb.people_count,
+            tpb.unit_price,
+            tpb.total_price,
+            tpb.used_cash,
+            tpb.used_mileage,
+            tpb.booking_status,
+            tpb.booked_at,
+            tpb.cancelled_at,
+            tpb.cancel_reason
+        FROM TRAVEL_PACKAGE_BOOKING tpb
+        JOIN TRAVEL_PACKAGE tp ON tpb.package_idx = tp.package_idx
+        LEFT JOIN SPOT_TRAVEL st ON tp.spot_idx = st.spot_idx
+        LEFT JOIN USERS seller ON tp.seller_user_idx = seller.user_idx
+        WHERE tpb.user_idx = #{userIdx}
+        ORDER BY tpb.booked_at DESC
+    </select>
+
+    <!-- =============================================
+         24. 내 기업 회원 신청 최신 건 조회
          ============================================= -->
     <select id="selectLatestBusinessApplication" resultMap="BusinessApplicationResultMap">
         SELECT

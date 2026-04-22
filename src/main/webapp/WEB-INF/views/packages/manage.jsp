@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="packages/packages.css"/>
@@ -46,7 +47,21 @@
                     <c:forEach var="pkg" items="${packageList}">
                         <article class="pkg-card">
                             <div class="pkg-card__top">
-                                <span class="pkg-status pkg-status--${pkg.packageStatus}">${pkg.packageStatus}</span>
+                                <c:set var="displayStatusClass" value="${pkg.packageStatus}"/>
+                                <c:if test="${pkg.packageStatus eq 'APPROVED' and pkg.expired}">
+                                    <c:set var="displayStatusClass" value="EXPIRED"/>
+                                </c:if>
+                                <span class="pkg-status pkg-status--${displayStatusClass}">
+                                    <c:choose>
+                                        <c:when test="${displayStatusClass eq 'EXPIRED'}"><spring:message code="package.status.expired"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'APPROVED'}"><spring:message code="package.status.approved"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'PENDING'}"><spring:message code="package.status.pending"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'REJECTED'}"><spring:message code="package.status.rejected"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'DRAFT'}"><spring:message code="package.status.draft"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'BLOCKED'}"><spring:message code="package.status.blocked"/></c:when>
+                                        <c:otherwise>${pkg.packageStatus}</c:otherwise>
+                                    </c:choose>
+                                </span>
                                 <span class="pkg-date">${pkg.createdAt}</span>
                             </div>
 
@@ -116,7 +131,24 @@
                                     <span class="pkg-waiting">관리자 검토 대기 중</span>
                                 </c:if>
                                 <c:if test="${pkg.packageStatus eq 'APPROVED'}">
-                                    <span class="pkg-approved">승인 완료</span>
+                                    <c:choose>
+                                        <c:when test="${pkg.expired}">
+                                            <span class="pkg-expired"><spring:message code="package.manage.expiredHidden"/></span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="pkg-approved"><spring:message code="package.manage.approvedVisible"/></span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <c:choose>
+                                        <c:when test="${pkg.revisionPending}">
+                                            <span class="pkg-waiting"><spring:message code="package.revision.pending"/></span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a href="${pageContext.request.contextPath}/packages/manage/${pkg.packageIdx}/edit">
+                                                <spring:message code="package.revision.request"/>
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:if>
                             </div>
                         </article>
