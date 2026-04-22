@@ -96,6 +96,9 @@
             <a class="adm-nav-item ${activeMenu=='explore'?'active':''}" href="${pageContext.request.contextPath}/admin/explore">
                 <span class="adm-nav-icon">📍</span> 여행지 관리
             </a>
+            <a class="adm-nav-item ${activeMenu=='packages'?'active':''}" href="${pageContext.request.contextPath}/admin/packages">
+                <span class="adm-nav-icon">🎁</span> 패키지 상품 관리
+            </a>
             </c:if>
             <span class="adm-nav-item disabled">
                 <span class="adm-nav-icon">🗺️</span> 코스 관리

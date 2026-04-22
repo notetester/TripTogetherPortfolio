@@ -18,6 +18,12 @@ public class TravelPackageController {
 
     private final TravelPackageService travelPackageService;
 
+    @GetMapping("")
+    public String packageList(Model model) {
+        model.addAttribute("packageList", travelPackageService.getApprovedPackages());
+        return "packages/list";
+    }
+
     @GetMapping("/manage")
     public String managePage(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         UsersVO loginUser = getLoginUser(session);

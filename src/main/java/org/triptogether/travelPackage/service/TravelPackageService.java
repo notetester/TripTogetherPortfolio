@@ -19,4 +19,14 @@ public interface TravelPackageService {
     void updatePackage(Long sellerUserIdx, TravelPackageForm form);
 
     void submitPackage(Long sellerUserIdx, Long packageIdx);
+
+    List<TravelPackageVO> getAdminPackages(String status);
+
+    void approvePackage(Long packageIdx, Long adminUserIdx);
+
+    void rejectPackage(Long packageIdx, String rejectReason, Long adminUserIdx);
+
+    List<TravelPackageVO> getApprovedPackages();
+
+    List<TravelPackageVO> getApprovedPackagesBySpot(Long spotIdx);
 }

@@ -16,6 +16,7 @@ import org.triptogether.explore.service.ExploreService;
 import org.triptogether.explore.vo.ReviewVO;
 import org.triptogether.report.service.ReportService;
 import org.triptogether.report.vo.ReportSearchDto;
+import org.triptogether.travelPackage.service.TravelPackageService;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class AdminController {
     private final AdminService adminService;
     private final ReportService reportService;
     private final CommunityService communityService;
+    private final TravelPackageService travelPackageService;
     private final ExploreService exploreService;
     private final AdminExploreService adminExploreService;
 
@@ -66,6 +68,46 @@ public class AdminController {
         model.addAttribute("status", status == null || status.isBlank() ? "PENDING" : status);
         model.addAttribute("activeMenu", "businessApplications");
         return "admin/member/business-applications";
+    }
+
+    @GetMapping("/packages")
+    public String packageList(@RequestParam(defaultValue = "PENDING") String status,
+                              Model model) {
+        model.addAttribute("packageList", travelPackageService.getAdminPackages(status));
+        model.addAttribute("status", status == null || status.isBlank() ? "PENDING" : status);
+        model.addAttribute("activeMenu", "packages");
+        return "admin/package/list";
+    }
+
+    @PostMapping("/packages/{packageIdx}/approve")
+    public String approvePackage(@PathVariable Long packageIdx,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            travelPackageService.approvePackage(packageIdx, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("packageReviewMessage", "패키지 상품을 승인했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
+        }
+        return "redirect:/admin/packages";
+    }
+
+    @PostMapping("/packages/{packageIdx}/reject")
+    public String rejectPackage(@PathVariable Long packageIdx,
+                                @RequestParam String rejectReason,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            travelPackageService.rejectPackage(packageIdx, rejectReason, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("packageReviewMessage", "패키지 상품을 반려했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
+        }
+        return "redirect:/admin/packages";
     }
 
     @PostMapping("/business-applications/{applicationIdx}/approve")
