@@ -1,19 +1,29 @@
 package org.triptogether.admin.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.triptogether.admin.mapper.AdminCommunityMapper;
 import org.triptogether.admin.vo.*;
+import org.triptogether.community.mapper.CommunityMapper;
+import org.triptogether.community.vo.CommunityCommentDto;
+import org.triptogether.community.vo.CommunityPostDto;
+import org.triptogether.myPage.function.NotificationUrlBuilder;
+import org.triptogether.myPage.service.MyPageService;
+import org.triptogether.myPage.vo.FeedNotificationDto;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminCommunityServiceImpl implements AdminCommunityService {
 
     private final AdminCommunityMapper adminCommunityMapper;
+    private final CommunityMapper communityMapper;
+    private final MyPageService myPageService;
 
     // ===== 통계 =====
 
@@ -70,6 +80,7 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
     @Override
     public void blockPost(Long postId) {
         adminCommunityMapper.updatePostStatus(postId, "BLOCKED");
+        notifyPostBlocked(postId);
     }
 
     @Override
@@ -81,6 +92,9 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
     public void bulkBlockPosts(List<Long> ids) {
         if (ids != null && !ids.isEmpty()) {
             adminCommunityMapper.bulkUpdatePostStatus(ids, "BLOCKED");
+            for (Long postId : ids) {
+                notifyPostBlocked(postId);
+            }
         }
     }
 
@@ -96,6 +110,7 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
     @Override
     public void blockComment(Long commentId) {
         adminCommunityMapper.updateCommentStatus(commentId, "BLOCKED");
+        notifyCommentBlocked(commentId);
     }
 
     @Override
@@ -107,6 +122,9 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
     public void bulkBlockComments(List<Long> ids) {
         if (ids != null && !ids.isEmpty()) {
             adminCommunityMapper.bulkUpdateCommentStatus(ids, "BLOCKED");
+            for (Long commentId : ids) {
+                notifyCommentBlocked(commentId);
+            }
         }
     }
 
@@ -114,6 +132,42 @@ public class AdminCommunityServiceImpl implements AdminCommunityService {
     public void bulkDeleteComments(List<Long> ids) {
         if (ids != null && !ids.isEmpty()) {
             adminCommunityMapper.bulkUpdateCommentStatus(ids, "DELETED");
+        }
+    }
+
+    // ===== 알림 헬퍼 =====
+
+    // 글 차단 시 작성자에게 알림 발송
+    private void notifyPostBlocked(Long postId) {
+        try {
+            CommunityPostDto post = communityMapper.selectPost(postId);
+            if (post == null) return;
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(post.getUserIdx());
+            notification.setSourceType("community");
+            notification.setSourceId(postId);
+            notification.setMessage("작성하신 글이 운영 정책에 따라 차단되었어요.");
+            notification.setTargetUrl(NotificationUrlBuilder.community(postId));
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("글 차단 알림 발송 실패: postId={}", postId, e);
+        }
+    }
+
+    // 댓글 차단 시 작성자에게 알림 발송
+    private void notifyCommentBlocked(Long commentId) {
+        try {
+            CommunityCommentDto comment = communityMapper.selectComment(commentId);
+            if (comment == null) return;
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(comment.getUserIdx());
+            notification.setSourceType("community");
+            notification.setSourceId(comment.getPostId());
+            notification.setMessage("작성하신 댓글이 운영 정책에 따라 차단되었어요.");
+            notification.setTargetUrl(NotificationUrlBuilder.communityComment(comment.getPostId(), comment.getCommentId()));
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("댓글 차단 알림 발송 실패: commentId={}", commentId, e);
         }
     }
 
