@@ -524,3 +524,137 @@
     font-size: 28px;
   }
 }
+
+/* =============================================
+   다크 테마 오버라이드 (html.dark)
+   ============================================= */
+
+/* ── 배경 ── */
+html.dark .pkg-wrap {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(96, 165, 250, .10), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(251, 191, 36, .10), transparent 26%),
+    linear-gradient(180deg, #0f1115 0%, #151922 52%, #1a1f2b 100%);
+}
+
+/* ── hero (이미 어두움 → shadow 강화) ── */
+html.dark .pkg-hero { box-shadow: 0 28px 58px rgba(0, 0, 0, .55); }
+
+/* ── panel ── */
+html.dark .pkg-panel {
+  background: #1a1f2b;
+  border-color: #2b3241;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, .35);
+}
+
+/* ── 알림 ── */
+html.dark .pkg-alert--success { background: #14532d; color: #86efac; }
+html.dark .pkg-alert--error { background: #4c1d1d; color: #fca5a5; }
+
+/* ── 섹션 타이틀 ── */
+html.dark .pkg-section-title span { color: #60a5fa; }
+html.dark .pkg-section-title h2 { color: #f1f5f9; }
+html.dark .pkg-section-title p { color: #9ca3af; }
+
+/* ── empty ── */
+html.dark .pkg-empty {
+  background: #151922;
+  border-color: #2b3241;
+}
+html.dark .pkg-empty strong { color: #f1f5f9; }
+html.dark .pkg-empty p { color: #9ca3af; }
+
+/* ── card ── */
+html.dark .pkg-card {
+  background: #1a1f2b;
+  border-color: #2b3241;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, .35);
+}
+
+html.dark .pkg-date { color: #6b7280; }
+
+/* ── status 뱃지 ── */
+html.dark .pkg-status--DRAFT    { background: #232935; color: #cbd5e1; }
+html.dark .pkg-status--PENDING  { background: #3a2a05; color: #fde68a; }
+html.dark .pkg-status--APPROVED { background: #14532d; color: #86efac; }
+html.dark .pkg-status--EXPIRED  { background: #3a2a05; color: #fcd34d; }
+html.dark .pkg-status--REJECTED { background: #4c1d1d; color: #fca5a5; }
+html.dark .pkg-status--BLOCKED  { background: #3b0764; color: #d8b4fe; }
+
+/* ── thumb ── */
+html.dark .pkg-thumb {
+  border-color: #2b3241;
+  color: #93c5fd;
+  background:
+    linear-gradient(135deg, rgba(96, 165, 250, .15), rgba(251, 191, 36, .12)),
+    #151922;
+}
+
+/* ── card body ── */
+html.dark .pkg-card__body { background: #1a1f2b; }
+html.dark .pkg-spot { color: #60a5fa; }
+html.dark .pkg-card h3 { color: #f1f5f9; }
+html.dark .pkg-summary { color: #9ca3af; }
+
+/* ── meta ── */
+html.dark .pkg-meta div { background: #151922; }
+html.dark .pkg-meta dt { color: #9ca3af; }
+html.dark .pkg-meta dd { color: #f1f5f9; }
+
+/* ── 거절 사유 ── */
+html.dark .pkg-reject {
+  background: #2a0a0a;
+  color: #fca5a5;
+}
+
+/* ── card actions ── */
+html.dark .pkg-card__actions {
+  background: #151922;
+  border-top-color: #2b3241;
+}
+html.dark .pkg-card__actions a {
+  background: #232935;
+  color: #cbd5e1;
+}
+html.dark .pkg-public-card .pkg-card__actions a {
+  background: #0284c7;
+  color: #fff;
+}
+
+html.dark .pkg-waiting  { background: #3a2a05; color: #fde68a; }
+html.dark .pkg-approved { background: #14532d; color: #86efac; }
+html.dark .pkg-expired  { background: #3a2a05; color: #fcd34d; }
+
+/* ── form field ── */
+html.dark .pkg-field span { color: #f1f5f9; }
+html.dark .pkg-field em { color: #f87171; }
+html.dark .pkg-field input,
+html.dark .pkg-field select,
+html.dark .pkg-field textarea {
+  background: #1a1f2b;
+  border-color: #2b3241;
+  color: #f1f5f9;
+}
+html.dark .pkg-field input::placeholder,
+html.dark .pkg-field textarea::placeholder { color: #6b7280; }
+html.dark .pkg-field input:focus,
+html.dark .pkg-field select:focus,
+html.dark .pkg-field textarea:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, .15);
+}
+html.dark .pkg-field small { color: #9ca3af; }
+
+/* ── 현재 이미지 ── */
+html.dark .pkg-current-image {
+  background: #1e293b;
+  border-color: #2b3241;
+}
+html.dark .pkg-current-image img { background: #232935; }
+html.dark .pkg-current-image strong { color: #f1f5f9; }
+
+/* ── 보조 버튼 ── */
+html.dark .pkg-secondary-btn {
+  background: #232935;
+  color: #cbd5e1;
+}
