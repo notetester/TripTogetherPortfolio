@@ -432,13 +432,13 @@
 <div class="page-wrap">
     <div class="page-header">
         <div>
-            <h1 class="page-title">${coursesPublicPageTitle}</h1>
-            <p class="page-desc">${coursesPublicPageDesc}</p>
+            <h1 class="page-title"><spring:message code="course.public.title"/></h1>
+            <p class="page-desc"><spring:message code="course.public.desc"/></p>
         </div>
 
         <div class="top-btn-group">
-            <a href="${pageContext.request.contextPath}/courses/my" class="top-btn secondary">${coursesPublicTopMy}</a>
-            <a href="${pageContext.request.contextPath}/courses/write" class="top-btn primary">${coursesDirectCreate}</a>
+            <a href="${pageContext.request.contextPath}/courses/my" class="top-btn secondary"><spring:message code="course.action.myPlans"/></a>
+            <a href="${pageContext.request.contextPath}/courses/write" class="top-btn primary"><spring:message code="course.action.manualCreate"/></a>
         </div>
     </div>
 
@@ -488,56 +488,63 @@
                         <div class="plan-top">
                             <div>
                                 <h2 class="plan-name">${plan.title}</h2>
-                                <p class="plan-destination">${empty plan.destination ? coursesDestinationMissing : plan.destination}</p>
+                                <c:choose>
+                                    <c:when test="${empty plan.destination}">
+                                        <p class="plan-destination"><spring:message code="course.common.destinationEmpty"/></p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p class="plan-destination">${plan.destination}</p>
+                                    </c:otherwise>
+                                </c:choose>
                                 <p class="plan-writer">
                                     <c:choose>
                                         <c:when test="${not empty plan.nickname}">
-                                            <spring:message code="courses.public.writer.mine" arguments="${plan.nickname}"/>
+                                            <spring:message code="course.common.travelCourseOf" arguments="${plan.nickname}"/>
                                         </c:when>
                                         <c:otherwise>
-                                            ${coursesPublicWriterDefault}
+                                            <spring:message code="course.common.publicTravelCourse"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </p>
                             </div>
 
                             <div class="badge-group">
-                                <span class="badge public">${coursesVisibilityPublic}</span>
+                                <span class="badge public"><spring:message code="course.badge.public"/></span>
 
                                 <c:choose>
                                     <c:when test="${plan.plan_source eq 'AI'}">
-                                        <span class="badge ai">${coursesSourceAi}</span>
+                                        <span class="badge ai"><spring:message code="course.badge.ai"/></span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge manual">${coursesSourceManual}</span>
+                                        <span class="badge manual"><spring:message code="course.badge.manual"/></span>
                                     </c:otherwise>
                                 </c:choose>
 
                                 <c:if test="${loginUserIdx eq plan.user_idx}">
-                                    <span class="badge mine"><spring:message code="courses.common.minePlan"/></span>
+                                    <span class="badge mine"><spring:message code="course.badge.mine"/></span>
                                 </c:if>
                             </div>
                         </div>
 
                         <div class="plan-info">
                             <div class="info-row">
-                                <span class="info-label">여행 기간</span>
+                                <span class="info-label"><spring:message code="course.common.travelPeriod"/></span>
                                 <span class="info-value">
-                                    <fmt:formatDate value="${plan.start_date}" type="date" dateStyle="long"/>
+                                    <fmt:formatDate value="${plan.start_date}" pattern="yyyy-MM-dd"/>
                                     ~
-                                    <fmt:formatDate value="${plan.end_date}" type="date" dateStyle="long"/>
+                                    <fmt:formatDate value="${plan.end_date}" pattern="yyyy-MM-dd"/>
                                 </span>
                             </div>
                         </div>
 
                         <div class="card-btn-group">
                             <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}" class="card-btn my">
-                                ${coursesDetailLabel}
+                                <spring:message code="course.action.detail"/>
                             </a>
 
                             <c:if test="${loginUserIdx eq plan.user_idx}">
                                 <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}" class="card-btn detail">
-                                    ${coursesManageMine}
+                                    <spring:message code="course.action.manageMyPlan"/>
                                 </a>
                             </c:if>
                         </div>
@@ -551,9 +558,9 @@
 
         <c:otherwise>
             <div class="empty-box">
-                <h2 class="empty-title">${coursesPublicEmptyTitle}</h2>
-                <p class="empty-desc" style="white-space: pre-line;">${coursesPublicEmptyDesc}</p>
-                <a href="${pageContext.request.contextPath}/courses" class="empty-btn">${coursesPublicEmptyAction}</a>
+                <h2 class="empty-title"><spring:message code="course.public.empty.title"/></h2>
+                <p class="empty-desc"><spring:message code="course.public.empty.desc"/></p>
+                <a href="${pageContext.request.contextPath}/courses" class="empty-btn"><spring:message code="course.public.home"/></a>
             </div>
         </c:otherwise>
     </c:choose>

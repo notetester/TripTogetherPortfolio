@@ -3,6 +3,10 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<spring:message code="course.confirm.delete" var="courseDeleteConfirm"/>
+<spring:message code="course.filter.placeholder" var="courseFilterPlaceholder"/>
+<spring:message code="course.common.yearSuffix" javaScriptEscape="true" var="courseYearSuffixJs"/>
 <fmt:setLocale value="${pageContext.response.locale}"/>
 
 <%@ include file="../common/header.jsp" %>
@@ -606,17 +610,17 @@
 <div class="courses-page">
     <div class="page-header">
         <div>
-            <h1 class="page-title">${coursesMyPageTitle}</h1>
-            <p class="page-desc">${coursesMyPageDesc}</p>
+            <h1 class="page-title"><spring:message code="course.my.title"/></h1>
+            <p class="page-desc"><spring:message code="course.my.desc"/></p>
         </div>
 
         <div class="create-action-wrap">
             <button type="button" class="create-action-btn" id="createActionBtn">
-                ${coursesMyCreateButton} <span>▾</span>
+                + <spring:message code="course.action.create"/> <span>▾</span>
             </button>
             <div class="create-menu" id="createMenu">
-                <a href="${pageContext.request.contextPath}/courses/write">${coursesDirectCreate}</a>
-                <a href="${pageContext.request.contextPath}/courses/ai/form">${coursesAiCreate}</a>
+                <a href="${pageContext.request.contextPath}/courses/write"><spring:message code="course.action.manualCreate"/></a>
+                <a href="${pageContext.request.contextPath}/courses/ai/form"><spring:message code="course.action.aiCreate"/></a>
             </div>
         </div>
     </div>
@@ -634,31 +638,35 @@
             <div class="filter-panel">
                 <div class="filter-top">
                     <div class="source-tabs" id="sourceTabs">
-                        <button type="button" class="tab-btn active" data-source="all">${coursesAllLabel}</button>
-                        <button type="button" class="tab-btn" data-source="MANUAL">${coursesSourceManual}</button>
-                        <button type="button" class="tab-btn" data-source="AI">${coursesSourceAi}</button>
+                        <button type="button" class="tab-btn active" data-source="all"><spring:message code="course.filter.all"/></button>
+                        <button type="button" class="tab-btn" data-source="MANUAL"><spring:message code="course.badge.manual"/></button>
+                        <button type="button" class="tab-btn" data-source="AI"><spring:message code="course.badge.aiRecommend"/></button>
                     </div>
 
-                    <div class="plan-count">${coursesPlanCountPrefix} <span id="visiblePlanCount">0</span> ${coursesPlanCountSuffix}</div>
+                    <div class="plan-count">
+                        <spring:message code="course.filter.totalPrefix"/>
+                        <span id="visiblePlanCount">0</span>
+                        <spring:message code="course.filter.totalSuffix"/>
+                    </div>
                 </div>
 
                 <div class="filter-bottom">
                     <div class="filter-select-group">
                         <select id="tripStatusFilter" class="filter-select">
-                            <option value="all">${coursesPeriodAll}</option>
-                            <option value="upcoming">${coursesPeriodUpcoming}</option>
-                            <option value="now">${coursesPeriodNow}</option>
-                            <option value="past">${coursesPeriodPast}</option>
+                            <option value="all"><spring:message code="course.filter.allPeriod"/></option>
+                            <option value="upcoming"><spring:message code="course.filter.upcoming"/></option>
+                            <option value="now"><spring:message code="course.filter.now"/></option>
+                            <option value="past"><spring:message code="course.filter.past"/></option>
                         </select>
 
                         <select id="yearFilter" class="filter-select">
-                            <option value="all">${coursesYearAll}</option>
+                            <option value="all"><spring:message code="course.filter.allYear"/></option>
                         </select>
 
                         <select id="visibilityFilter" class="filter-select">
-                            <option value="all">${coursesVisibilityAll}</option>
-                            <option value="public">${coursesVisibilityPublic}</option>
-                            <option value="private">${coursesVisibilityPrivate}</option>
+                            <option value="all"><spring:message code="course.filter.status"/></option>
+                            <option value="public"><spring:message code="course.badge.public"/></option>
+                            <option value="private"><spring:message code="course.badge.private"/></option>
                         </select>
                     </div>
 
@@ -666,14 +674,14 @@
                         <input type="text"
                                id="searchInput"
                                class="search-input"
-                               placeholder="${coursesSearchPlaceholder}">
+                               placeholder="${courseFilterPlaceholder}">
                     </div>
                 </div>
             </div>
 
             <div class="no-result-box" id="noResultBox">
-                <h3>${coursesNoResultTitle}</h3>
-                <p>${coursesNoResultDesc}</p>
+                <h3><spring:message code="course.filter.noResult.title"/></h3>
+                <p><spring:message code="course.filter.noResult.desc"/></p>
             </div>
 
             <div class="plan-grid" id="planGrid">
@@ -682,7 +690,7 @@
 
                     <c:choose>
                         <c:when test="${empty plan.destination}">
-                            <c:set var="destinationValue" value="${coursesDestinationMissing}" />
+                            <spring:message code="course.common.destinationEmpty" var="destinationValue"/>
                         </c:when>
                         <c:otherwise>
                             <c:set var="destinationValue" value="${plan.destination}" />
@@ -728,13 +736,14 @@
                             <div class="quick-action-wrap">
                                 <button type="button" class="quick-action-btn">⋯</button>
                                 <div class="quick-menu">
-                                    <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">${coursesDetailLabel}</a>
-                                    <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}">${coursesEditLabel}</a>
+                                    <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}"><spring:message code="course.action.detail"/></a>
+                                    <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}"><spring:message code="course.action.edit"/></a>
                                     <form method="post"
                                           action="${pageContext.request.contextPath}/courses/delete"
-                                          onsubmit="return confirm('${fn:escapeXml(coursesDeleteConfirm)}');">
+                                          class="js-delete-plan-form"
+                                          data-confirm="${courseDeleteConfirm}">
                                         <input type="hidden" name="planId" value="${plan.plan_id}">
-                                        <button type="submit" class="delete-btn">${coursesDeleteLabel}</button>
+                                        <button type="submit" class="delete-btn"><spring:message code="course.action.delete"/></button>
                                     </form>
                                 </div>
                             </div>
@@ -745,43 +754,43 @@
 
                             <c:choose>
                                 <c:when test="${sourceValue eq 'AI'}">
-                                    <span class="badge ai">${coursesSourceAi}</span>
+                                    <span class="badge ai"><spring:message code="course.badge.aiRecommend"/></span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="badge manual">${coursesSourceManual}</span>
+                                    <span class="badge manual"><spring:message code="course.badge.manual"/></span>
                                 </c:otherwise>
                             </c:choose>
 
                             <c:choose>
                                 <c:when test="${visibilityValue eq 'public'}">
-                                    <span class="badge public">${coursesBadgePublic}</span>
+                                    <span class="badge public"><spring:message code="course.badge.public"/></span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="badge private">${coursesBadgePrivate}</span>
+                                    <span class="badge private"><spring:message code="course.badge.private"/></span>
                                 </c:otherwise>
                             </c:choose>
                         </div>
 
                         <div class="plan-date">
-                            <fmt:formatDate value="${plan.start_date}" type="date" dateStyle="long"/>
+                            <fmt:formatDate value="${plan.start_date}" pattern="yyyy-MM-dd"/>
                             ~
-                            <fmt:formatDate value="${plan.end_date}" type="date" dateStyle="long"/>
+                            <fmt:formatDate value="${plan.end_date}" pattern="yyyy-MM-dd"/>
                         </div>
 
                         <div class="plan-summary">
                             <c:choose>
                                 <c:when test="${sourceValue eq 'AI'}">
-                                    ${coursesSummaryAi}
+                                    <spring:message code="course.my.summary.ai"/>
                                 </c:when>
                                 <c:otherwise>
-                                    ${coursesSummaryManual}
+                                    <spring:message code="course.my.summary.manual"/>
                                 </c:otherwise>
                             </c:choose>
                         </div>
 
                         <div class="card-bottom">
                             <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}" class="detail-link">
-                                ${coursesDetailArrow}
+                                <spring:message code="course.action.detail"/> →
                             </a>
                         </div>
                     </div>
@@ -791,11 +800,11 @@
 
         <c:otherwise>
             <div class="empty-state">
-                <h2>${coursesEmptyTitle}</h2>
-                <p style="white-space: pre-line;">${coursesEmptyDesc}</p>
+                <h2><spring:message code="course.my.empty.title"/></h2>
+                <p><spring:message code="course.my.empty.desc"/></p>
                 <div class="empty-btn-group">
-                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-btn primary">${coursesDirectCreate}</a>
-                    <a href="${pageContext.request.contextPath}/courses/ai/form" class="empty-btn secondary">${coursesAiCreate}</a>
+                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-btn primary"><spring:message code="course.action.manualCreate"/></a>
+                    <a href="${pageContext.request.contextPath}/courses/ai/form" class="empty-btn secondary"><spring:message code="course.action.aiCreate"/></a>
                 </div>
             </div>
         </c:otherwise>
@@ -845,6 +854,14 @@
             });
         });
 
+        document.querySelectorAll('.js-delete-plan-form').forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!confirm(this.dataset.confirm || '')) {
+                    event.preventDefault();
+                }
+            });
+        });
+
         const tabButtons = document.querySelectorAll('#sourceTabs .tab-btn');
         const tripStatusFilter = document.getElementById('tripStatusFilter');
         const yearFilter = document.getElementById('yearFilter');
@@ -875,7 +892,7 @@
             sortedYears.forEach(function (year) {
                 const option = document.createElement('option');
                 option.value = year;
-                option.textContent = year + '<spring:message code="courses.common.year.suffix" javaScriptEscape="true"/>';
+                option.textContent = year + '${courseYearSuffixJs}';
                 yearFilter.appendChild(option);
             });
         }

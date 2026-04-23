@@ -13,11 +13,14 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.HtmlUtils;
 import org.triptogether.community.vo.CommunityCommentDto;
 import org.triptogether.community.vo.CommunityPostDto;
+import org.triptogether.courses.vo.PlanSpotVO;
+import org.triptogether.courses.vo.TravelPlanVO;
 import org.triptogether.explore.mapper.SpotTextTranslationMapper;
 import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.explore.vo.RecommendVO;
 import org.triptogether.explore.vo.ReviewVO;
 import org.triptogether.explore.vo.SpotTextTranslationVO;
+import org.triptogether.myPage.vo.WalletHistoryDto;
 /* ── 패키지 번역 기능에서 사용하는 VO import ── */
 import org.triptogether.travelPackage.vo.TravelPackageVO;
 import org.triptogether.travelPackage.vo.TravelPackageRevisionVO;
@@ -50,6 +53,9 @@ public class SpotTextTranslationService {
     private static final String SOURCE_TYPE_PACKAGE = "TRAVEL_PACKAGE";
     /* ── 패키지 수정 요청본의 동적 텍스트를 번역하기 위한 소스 타입 ── */
     private static final String SOURCE_TYPE_PACKAGE_REVISION = "TRAVEL_PACKAGE_REVISION";
+    private static final String SOURCE_TYPE_WALLET_HISTORY = "WALLET_HISTORY";
+    private static final String SOURCE_TYPE_TRAVEL_PLAN = "TRAVEL_PLAN";
+    private static final String SOURCE_TYPE_PLAN_SPOT = "PLAN_SPOT";
     private static final String PROVIDER = "google-cloud-translation-v2";
     private static final String GOOGLE_TRANSLATE_URL = "https://translation.googleapis.com/language/translate/v2?key=%s";
 
@@ -205,6 +211,83 @@ public class SpotTextTranslationService {
                     comment.getContent(),
                     targetLang
             ));
+        }
+    }
+
+    /**
+     * 내 지갑의 자산 변동 이력 상세 문구는 DB에 저장되는 동적 텍스트다.
+     * 고정 메시지 번들이 아니라 번역 캐시에 저장해두면 기존 이력도 언어 전환 시 번역해서 보여줄 수 있다.
+     */
+    public void translateWalletHistories(List<WalletHistoryDto> histories) {
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || histories == null || histories.isEmpty()) {
+            return;
+        }
+
+        for (WalletHistoryDto history : histories) {
+            if (history == null) {
+                continue;
+            }
+            Long sourcePk = history.getWalletHistoryIdx() == null ? 0L : history.getWalletHistoryIdx();
+            history.setDetailMessage(translateText(
+                    SOURCE_TYPE_WALLET_HISTORY,
+                    sourcePk,
+                    "detail_message",
+                    history.getDetailMessage(),
+                    targetLang
+            ));
+        }
+    }
+
+    /**
+     * 여행 코스 목록에 표시되는 DB 입력 문구를 현재 언어로 번역한다.
+     * 화면 고정 문구는 message properties가 담당하고, 사용자가 작성한 제목/목적지는 번역 캐시에 저장한다.
+     */
+    public void translateTravelPlans(List<TravelPlanVO> plans) {
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || plans == null || plans.isEmpty()) {
+            return;
+        }
+
+        for (TravelPlanVO plan : plans) {
+            translateTravelPlan(plan, targetLang);
+        }
+    }
+
+    /**
+     * 여행 코스 상세에 표시되는 일정 제목, 대표 목적지, 방문 장소명을 번역한다.
+     */
+    public void translateTravelPlan(TravelPlanVO plan) {
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || plan == null) {
+            return;
+        }
+        translateTravelPlan(plan, targetLang);
+    }
+
+    private void translateTravelPlan(TravelPlanVO plan, String targetLang) {
+        if (plan == null) {
+            return;
+        }
+
+        Long sourcePk = plan.getPlan_id() == null ? 0L : plan.getPlan_id();
+        plan.setTitle(translateText(SOURCE_TYPE_TRAVEL_PLAN, sourcePk, "title", plan.getTitle(), targetLang));
+        plan.setDestination(translateText(SOURCE_TYPE_TRAVEL_PLAN, sourcePk, "destination", plan.getDestination(), targetLang));
+
+        List<PlanSpotVO> spotList = plan.getSpotList();
+        if (spotList == null || spotList.isEmpty()) {
+            return;
+        }
+
+        for (PlanSpotVO spot : spotList) {
+            if (spot == null) {
+                continue;
+            }
+            Long spotSourcePk = spot.getPlan_spot_id() == null ? 0L : spot.getPlan_spot_id();
+            spot.setPlace_name(translateText(SOURCE_TYPE_PLAN_SPOT, spotSourcePk, "place_name", spot.getPlace_name(), targetLang));
+            spot.setName(translateText(SOURCE_TYPE_SPOT, extractLong(spot.getSpot_id()), "name", spot.getName(), targetLang));
+            spot.setRegion(translateText(SOURCE_TYPE_SPOT, extractLong(spot.getSpot_id()), "region", spot.getRegion(), targetLang));
+            spot.setAddress(translateText(SOURCE_TYPE_SPOT, extractLong(spot.getSpot_id()), "address", spot.getAddress(), targetLang));
         }
     }
 
