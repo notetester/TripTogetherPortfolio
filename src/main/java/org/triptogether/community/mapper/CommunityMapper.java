@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.triptogether.community.vo.*;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface CommunityMapper {
@@ -211,5 +212,13 @@ public interface CommunityMapper {
     int countRecentPostsByUser(@Param("userIdx") Long userIdx, @Param("minutes") int minutes);
     // 최근 N분 내 해당 유저의 댓글/대댓글 작성 수 조회
     int countRecentCommentsByUser(@Param("userIdx") Long userIdx, @Param("minutes") int minutes);
+
+    // ===== 챗봇 컨텍스트 =====
+    /**
+     * 공개(ACTIVE, 신고 3회 미만) 게시글 중 다중 키워드 매칭 상위 N건.
+     * 인기순(좋아요 수 DESC, 조회 수 DESC, 최신).
+     */
+    List<Map<String, Object>> searchPostsByKeywords(@Param("keywords") List<String> keywords,
+                                                     @Param("limit") int limit);
 
 }

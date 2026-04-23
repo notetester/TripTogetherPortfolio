@@ -1088,4 +1088,30 @@
           AND created_at >= DATE_SUB(NOW(), INTERVAL #{minutes} MINUTE)
     </select>
 
+    <!-- 챗봇 컨텍스트용 공개 게시글 다중 키워드 검색 -->
+    <select id="searchPostsByKeywords" resultType="java.util.HashMap">
+        SELECT
+            cp.post_id       AS postId,
+            cp.title         AS title,
+            cp.post_type     AS postType,
+            cp.region        AS region,
+            cp.like_count    AS likeCount,
+            cp.view_count    AS viewCount,
+            cp.comment_count AS commentCount,
+            cp.created_at    AS createdAt,
+            u.nickname       AS nickname
+        FROM COMMUNITY_POST cp
+        LEFT JOIN USERS u ON u.user_idx = cp.user_idx
+        WHERE cp.post_status = 'ACTIVE'
+          AND COALESCE(cp.report_count, 0) &lt; 3
+          AND (
+          <foreach collection="keywords" item="kw" separator=" OR ">
+                cp.title   LIKE CONCAT('%', #{kw}, '%')
+             OR cp.content LIKE CONCAT('%', #{kw}, '%')
+          </foreach>
+          )
+        ORDER BY cp.like_count DESC, cp.view_count DESC, cp.created_at DESC
+        LIMIT #{limit}
+    </select>
+
 </mapper>
