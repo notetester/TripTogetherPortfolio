@@ -43,6 +43,7 @@ public class ChatbotService {
     private final ChatbotQuotaService quotaService;
     private final ConversationService conversationService;
     private final IntentContextService intentContextService;
+    private final ChatbotFastPathService fastPathService;
 
     @Value("${gemini.api.key}")
     private String geminiApiKey;
@@ -178,6 +179,15 @@ public class ChatbotService {
         userMsg.setContent(request.getMessage());
         userMsg.setIsInappropriate(false);
         conversationService.saveMessage(userMsg);
+
+        // 5.5. 단순 네비게이션 요청이면 LLM 호출 없이 즉답 (fast-path)
+        ChatbotResponseVO fast = fastPathService.resolveOrNull(request.getMessage(), loggedIn);
+        if (fast != null) {
+            log.info("[Chatbot] fast-path 히트, LLM 호출 생략 — conversationId={}",
+                    conversation.getConversationId());
+            return finalizeAndRespond(conversation, userMsg, fast, userIdx, anonSessionId,
+                    quotaExempt, /*markInappropriate=*/false);
+        }
 
         // 6. 최근 N개 히스토리 로드 (현재 저장한 메시지 제외)
         int contextLimit = quota != null ? quota.getMaxContextMessages() : 10;
