@@ -13,6 +13,7 @@ import org.triptogether.common.service.ChatbotService;
 import org.triptogether.common.service.ConversationService;
 import org.triptogether.common.vo.ChatMessageVO;
 import org.triptogether.common.vo.ChatbotLinkClickVO;
+import org.triptogether.common.vo.ChatbotQuotaVO;
 import org.triptogether.common.vo.ChatbotRequestVO;
 import org.triptogether.common.vo.ChatbotResponseVO;
 import org.triptogether.common.vo.ConversationVO;
@@ -165,12 +166,18 @@ public class ChatbotController {
             return forbidden();
         }
 
-        // 쿼터 환급 — 이 대화의 오늘자 user 메시지 수만큼 차감 (ADMIN/SUPERADMIN 면제자는 원래 쿼터 카운트 안 하므로 skip)
+        // 쿼터 환급 — ADMIN/SUPERADMIN 면제자는 원래 카운트 안 하므로 skip.
+        // 등급별 quota_refund_enabled 플래그가 true 일 때만 실제 환급.
         boolean quotaExempt = quotaService.isQuotaExempt(loginUser);
         if (!quotaExempt) {
-            int todayUserMsgs = messageMapper.countTodayUserMessagesByConversation(conversationId);
-            if (todayUserMsgs > 0) {
-                quotaService.decreaseTodayUsage(userIdx, anonSessionId, todayUserMsgs);
+            String grade = quotaService.resolveGrade(loginUser);
+            ChatbotQuotaVO quota = quotaService.getQuotaByGrade(grade);
+            boolean refundEnabled = quota != null && Boolean.TRUE.equals(quota.getQuotaRefundEnabled());
+            if (refundEnabled) {
+                int todayUserMsgs = messageMapper.countTodayUserMessagesByConversation(conversationId);
+                if (todayUserMsgs > 0) {
+                    quotaService.decreaseTodayUsage(userIdx, anonSessionId, todayUserMsgs);
+                }
             }
         }
 

@@ -376,6 +376,7 @@
                         <th>동시 대화 수</th>
                         <th>일일 메시지 한도</th>
                         <th>AI 컨텍스트 길이</th>
+                        <th title="대화 삭제 시 그 대화에서 쓴 오늘자 메시지 수만큼 한도 환급">환급 허용</th>
                         <th>마지막 수정자</th>
                         <th>액션</th>
                     </tr>
@@ -387,6 +388,9 @@
                             <td><input type="number" class="adm-input q-conv" value="${q.maxConversations}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
                             <td><input type="number" class="adm-input q-msg" value="${q.maxMessagesPerDay}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
                             <td><input type="number" class="adm-input q-ctx" value="${q.maxContextMessages}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
+                            <td style="text-align:center;">
+                                <input type="checkbox" class="q-refund" ${q.quotaRefundEnabled ? 'checked' : ''} style="width:18px;height:18px;cursor:pointer;"/>
+                            </td>
                             <td>
                                 <c:choose>
                                     <c:when test="${not empty q.updatedBy}">
@@ -645,7 +649,8 @@
         const payload = {
             maxConversations:   parseInt(row.querySelector('.q-conv').value, 10),
             maxMessagesPerDay:  parseInt(row.querySelector('.q-msg').value, 10),
-            maxContextMessages: parseInt(row.querySelector('.q-ctx').value, 10)
+            maxContextMessages: parseInt(row.querySelector('.q-ctx').value, 10),
+            quotaRefundEnabled: row.querySelector('.q-refund').checked
         };
         const res = await fetch(ctx + '/admin/ai-helper/quotas/' + quotaId, {
             method: 'POST',
