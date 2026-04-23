@@ -127,7 +127,7 @@
 }
 .comm-ad-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; }
 .comm-ad-size  { font-size: 0.7rem; }
-@media (max-width: 1100px) { .comm-ad-banner-inner { width: 100%; border-radius: 0; border-left: none; border-right: none; } }
+@media (max-width: 1199px) { .comm-ad-banner-inner { width: 100%; border-radius: 0; border-left: none; border-right: none; } }
 .comm-section-title-today { margin-top:20px; }
 
 /* ===== 유형 필터 + 정렬 바 ===== */
@@ -175,8 +175,6 @@
 /* ===== 게시글 그리드 ===== */
 .comm-grid { display:grid; grid-template-columns:1fr; gap:20px; }
 .comm-grid > :empty { display:none; }
-
-@media (max-width:900px) { .comm-grid { grid-template-columns:1fr; } }
 
 /* ===== 오늘 인기 캐러셀 ===== */
 .comm-carousel-outer {
@@ -672,3 +670,31 @@ html.dark .comm-admin-dropdown-menu {
 }
 html.dark .comm-admin-dropdown-menu button { color: #cbd5e1; }
 html.dark .comm-admin-dropdown-menu button:hover { background: #232935; }
+
+/* =============================================
+   반응형 — 모바일
+   ============================================= */
+@media (max-width: 767px) {
+    .comm-ph .si { padding: 24px 16px 0; }
+    .comm-ph h1 { font-size: 1.4rem; }
+    .comm-ph-top { margin-bottom: 14px; }
+
+    .comm-body-wrap { padding: 16px 16px 48px; }
+
+    .post-card { flex-direction: column; }
+    .post-card-img-wrap,
+    .post-card-img-placeholder { width: 100%; height: 200px; }
+
+    .comm-filter-bar { margin-bottom: 16px; padding-bottom: 12px; }
+    .comm-section-title { font-size: 17px; margin: 20px 0 12px; }
+
+    .comm-admin-toolbar { gap: 8px; padding: 10px 12px; }
+    .comm-admin-actions { margin-left: 0; width: 100%; }
+
+    .comm-today-card-img,
+    .comm-today-card-noimg { height: 140px; }
+}
+
+@media (max-width: 479px) {
+    .comm-ad-banner { display: none; }
+}

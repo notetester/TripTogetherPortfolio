@@ -29,7 +29,7 @@
 
 /* ===== 레이아웃 ===== */
 .write-container { display:grid; grid-template-columns:1fr 300px; gap:28px; align-items:start; }
-@media (max-width:1024px) { .write-container { grid-template-columns:1fr; } }
+@media (max-width:1023px) { .write-container { grid-template-columns:1fr; } }
 
 .write-main { display:flex; flex-direction:column; gap:24px; }
 .write-section { display:flex; flex-direction:column; gap:8px; }
@@ -272,3 +272,28 @@ html.dark .region-select-btn:hover {
 html.dark .guide-card { background: #151922; }
 html.dark .guide-list li { color: #9ca3af; }
 html.dark .guide-list li::before { color: #60a5fa; }
+
+/* =============================================
+   반응형 — 모바일
+   ============================================= */
+@media (max-width: 767px) {
+    .write-wrap { padding: 16px 16px 48px; }
+    .write-page-title { font-size: 1.15rem; }
+
+    .write-top-actions,
+    .write-bottom-actions { width: 100%; }
+    .write-top-actions .btn-cancel,
+    .write-top-actions .btn-submit,
+    .write-bottom-actions .btn-cancel,
+    .write-bottom-actions .btn-submit { flex: 1; }
+
+    .write-input { padding: 10px 14px; font-size: 14px; }
+    .write-textarea { padding: 12px 14px; font-size: 14px; min-height: 220px; }
+
+    .aside-card { padding: 16px; }
+    .tip-cat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 479px) {
+    .tip-cat-grid { grid-template-columns: 1fr; }
+}
