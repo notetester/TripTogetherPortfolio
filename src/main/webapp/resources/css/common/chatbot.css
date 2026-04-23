@@ -104,17 +104,13 @@
     0%,100% { opacity:1; transform:scale(1); }
     50%      { opacity:.6; transform:scale(.85); }
 }
-.cb-close,
-.cb-header-btn {
+.cb-close {
     background: none; border: none;
-    color: rgba(255,255,255,.7); cursor: pointer; font-size: 16px;
-    padding: 4px 6px; border-radius: 6px; line-height:1;
+    color: rgba(255,255,255,.7); cursor: pointer; font-size: 18px;
+    padding: 4px; border-radius: 6px; line-height:1;
     transition: color .15s, background .15s;
 }
-.cb-close { font-size: 18px; }
-.cb-close:hover,
-.cb-header-btn:hover { color:#fff; background:rgba(255,255,255,.15); }
-.cb-header-btn[hidden] { display: none; }
+.cb-close:hover { color:#fff; background:rgba(255,255,255,.15); }
 
 /* ── 본문 ── */
 .cb-body {
@@ -399,6 +395,16 @@
     border-color: var(--blue);
     color: var(--blue);
 }
+
+/* ＋새 대화 버튼 하단 형제 (현재 대화 초기화). + 새 대화와 동일 톤, hover 시 위험 강조 */
+.cb-new-btn--reset {
+    margin-top: 0;
+}
+.cb-new-btn--reset:hover {
+    border-color: #dc2626;
+    color: #dc2626;
+}
+.cb-new-btn--reset[hidden] { display: none; }
 
 .cb-conv-list {
     flex: 1;

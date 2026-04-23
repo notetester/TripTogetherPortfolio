@@ -30,6 +30,10 @@
         <aside id="cb-sidebar" class="cb-sidebar">
             <button type="button" id="cb-new" class="cb-new-btn">＋ 새 대화</button>
             <div id="cb-conv-list" class="cb-conv-list"></div>
+            <button type="button" id="cb-reset" class="cb-new-btn cb-new-btn--reset"
+                    title="<spring:message code="footer.chatbot.header.reset"/>" hidden>
+                <spring:message code="footer.chatbot.header.reset"/>
+            </button>
         </aside>
     </c:if>
 
@@ -44,9 +48,6 @@
                     <span><spring:message code="footer.chatbot.status"/></span>
                 </div>
             </div>
-            <button type="button" class="cb-header-btn" id="cb-reset"
-                    aria-label="<spring:message code="footer.chatbot.header.reset"/>"
-                    title="<spring:message code="footer.chatbot.header.reset"/>" hidden>🧹</button>
             <button class="cb-close" id="cb-close" aria-label="<spring:message code="footer.chatbot.close"/>">✕</button>
         </div>
 
