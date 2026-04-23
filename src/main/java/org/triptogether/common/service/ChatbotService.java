@@ -41,6 +41,7 @@ public class ChatbotService {
     private final ChatbotBlockService blockService;
     private final ChatbotQuotaService quotaService;
     private final ConversationService conversationService;
+    private final IntentContextService intentContextService;
 
     @Value("${gemini.api.key}")
     private String geminiApiKey;
@@ -423,6 +424,12 @@ public class ChatbotService {
         sb.append("- 로그인 상태: ").append(loggedIn ? "로그인 중" : "비로그인").append("\n");
         if (request.getCurrentPath() != null && !request.getCurrentPath().isBlank()) {
             sb.append("- 현재 페이지: ").append(getCurrentPageName(request.getCurrentPath())).append("\n");
+        }
+
+        // 실시간 사이트 콘텐츠 주입 (여행지 후보 등). 매칭 없으면 빈 문자열.
+        String context = intentContextService.buildContextSection(request.getMessage());
+        if (!context.isEmpty()) {
+            sb.append("\n").append(context);
         }
         return sb.toString();
     }
