@@ -88,4 +88,23 @@
          ORDER BY clicked_at ASC
     </select>
 
+    <!-- =============================================
+         7. URL 별 클릭자 목록 (닉네임 조인, 최신순)
+         ============================================= -->
+    <select id="selectClickersByUrl" resultType="map">
+        SELECT c.click_id        AS clickId,
+               c.message_id      AS messageId,
+               c.conversation_id AS conversationId,
+               c.user_idx        AS userIdx,
+               u.nickname        AS nickname,
+               c.anon_session_id AS anonSessionId,
+               c.ip_address      AS ipAddress,
+               c.clicked_at      AS clickedAt
+          FROM CHATBOT_LINK_CLICK c
+          LEFT JOIN USERS u ON u.user_idx = c.user_idx
+         WHERE c.url = #{url}
+         ORDER BY c.clicked_at DESC
+         LIMIT #{limit}
+    </select>
+
 </mapper>

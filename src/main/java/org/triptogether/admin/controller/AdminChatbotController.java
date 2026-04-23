@@ -131,6 +131,22 @@ public class AdminChatbotController {
     }
 
     /**
+     * GET /admin/ai-helper/chatbot/clicks/by-url
+     * 특정 URL 의 클릭자 이력 (최신순).
+     */
+    @GetMapping("/chatbot/clicks/by-url")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> clicksByUrl(@RequestParam String url,
+                                                            @RequestParam(defaultValue = "100") int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 500));
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("url", url);
+        result.put("clickers", linkClickService.getClickersByUrl(url, safeLimit));
+        return ResponseEntity.ok(result);
+    }
+
+    /**
      * POST /admin/ai-helper/blocks
      * 차단 등록/갱신.
      */

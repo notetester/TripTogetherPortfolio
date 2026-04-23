@@ -46,4 +46,8 @@ public class ChatbotLinkClickService {
     public List<ChatbotLinkClickVO> getClicksByConversation(Long conversationId) {
         return mapper.selectClicksByConversation(conversationId);
     }
+
+    public List<Map<String, Object>> getClickersByUrl(String url, int limit) {
+        return mapper.selectClickersByUrl(url, limit);
+    }
 }

@@ -211,7 +211,12 @@
                                     <td style="font-family:monospace;font-size:12px;word-break:break-all;">
                                         <a href="${pageContext.request.contextPath}${row.url}" target="_blank" style="color:#1d4ed8;text-decoration:none;">${row.url}</a>
                                     </td>
-                                    <td style="text-align:right;font-weight:600;">${row.clickCount}</td>
+                                    <td style="text-align:right;font-weight:600;">
+                                        <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;padding:3px 10px;"
+                                                data-url="${row.url}" onclick="viewClickersByUrl(this.dataset.url)">
+                                            ${row.clickCount}
+                                        </button>
+                                    </td>
                                     <td>
                                         <div style="width:100%;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
                                             <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#60a5fa,#2563eb);"></div>
@@ -395,6 +400,17 @@
 
 </div>
 
+<%-- URL 별 클릭자 목록 모달 --%>
+<div id="clickersModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;width:780px;max-width:92vw;max-height:82vh;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
+        <div style="padding:16px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <h3 id="clickersModalTitle" style="margin:0;font-size:15px;flex:1;word-break:break-all;">URL 클릭자 목록</h3>
+            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('clickersModal').style.display='none'">닫기</button>
+        </div>
+        <div id="clickersModalBody" style="padding:16px;overflow-y:auto;flex:1;"></div>
+    </div>
+</div>
+
 <%-- 대화 메시지 조회 모달 --%>
 <div id="msgModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
     <div style="background:#fff;width:700px;max-width:90vw;max-height:80vh;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
@@ -473,6 +489,44 @@
         const str = String(s);
         return str.length >= 16 ? str.substring(0, 16).replace('T', ' ') : str;
     }
+
+    // URL 별 클릭자 목록 모달
+    window.viewClickersByUrl = async function (url) {
+        try {
+            const res = await fetch(ctx + '/admin/ai-helper/chatbot/clicks/by-url?url=' + encodeURIComponent(url));
+            const data = await res.json();
+            if (!data.success) { alert('조회 실패'); return; }
+            document.getElementById('clickersModalTitle').textContent = 'URL 클릭자 — ' + url;
+            const rows = (data.clickers || []);
+            if (rows.length === 0) {
+                document.getElementById('clickersModalBody').innerHTML =
+                    '<div style="padding:40px;text-align:center;color:#94a3b8;">클릭 이력이 없습니다.</div>';
+            } else {
+                let html = '<table class="adm-table" style="width:100%;font-size:12px;">' +
+                           '<thead><tr>' +
+                           '<th>시각</th><th>유저</th><th>세션</th><th>IP</th><th>대화</th><th>메시지</th>' +
+                           '</tr></thead><tbody>';
+                rows.forEach(function (r) {
+                    const userText = r.userIdx
+                        ? (escHtml(r.nickname || '') + ' <span style="color:#94a3b8;font-size:10px;">#' + r.userIdx + '</span>')
+                        : '<span style="color:#94a3b8;">게스트</span>';
+                    const anon = r.anonSessionId ? ('<span style="color:#64748b;font-family:monospace;font-size:10px;">' + escHtml(String(r.anonSessionId).substring(0, 12)) + '…</span>') : '-';
+                    html += '<tr>' +
+                            '<td style="white-space:nowrap;">' + escHtml(formatClickTime(r.clickedAt)) + '</td>' +
+                            '<td>' + userText + '</td>' +
+                            '<td>' + anon + '</td>' +
+                            '<td style="font-family:monospace;">' + escHtml(r.ipAddress || '-') + '</td>' +
+                            '<td>#' + escHtml(r.conversationId) + '</td>' +
+                            '<td>#' + escHtml(r.messageId) + '</td>' +
+                            '</tr>';
+                });
+                html += '</tbody></table>';
+                html = '<div style="font-size:12px;color:#64748b;margin-bottom:10px;">총 <strong style="color:#1d4ed8;">' + rows.length + '</strong>건 (최대 100)</div>' + html;
+                document.getElementById('clickersModalBody').innerHTML = html;
+            }
+            document.getElementById('clickersModal').style.display = 'flex';
+        } catch (e) { alert('조회 중 오류'); }
+    };
 
     // assistant 메시지 content 렌더링
     //   - JSON 파싱 성공: message 텍스트 + links + quickReplies + inappropriate 를 블록으로 분리 표시

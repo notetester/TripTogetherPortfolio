@@ -38,4 +38,8 @@ public interface ChatbotLinkClickMapper {
 
     /** 특정 대화의 전체 클릭 이력 (오름차순) */
     List<ChatbotLinkClickVO> selectClicksByConversation(@Param("conversationId") Long conversationId);
+
+    /** 특정 URL 을 클릭한 사용자/IP 이력 (최신순) */
+    List<Map<String, Object>> selectClickersByUrl(@Param("url") String url,
+                                                    @Param("limit") int limit);
 }
