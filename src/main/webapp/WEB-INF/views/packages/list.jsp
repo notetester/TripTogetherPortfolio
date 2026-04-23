@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="packages/packages.css"/>
@@ -11,26 +12,26 @@
 <main class="pkg-wrap">
     <section class="pkg-hero">
         <div>
-            <p class="pkg-eyebrow">TRAVEL PACKAGE</p>
-            <h1>여행 패키지 상품</h1>
-            <p>관리자 검토를 통과한 공식 패키지 상품만 모아서 보여줍니다.</p>
+            <p class="pkg-eyebrow"><spring:message code="package.list.eyebrow"/></p>
+            <h1><spring:message code="package.list.title"/></h1>
+            <p><spring:message code="package.list.desc"/></p>
         </div>
     </section>
 
     <section class="pkg-panel">
         <div class="pkg-section-title">
             <div>
-                <span>APPROVED PRODUCTS</span>
-                <h2>승인된 패키지</h2>
+                <span><spring:message code="package.list.approvedEyebrow"/></span>
+                <h2><spring:message code="package.list.approvedTitle"/></h2>
             </div>
-            <p>여행지와 연결된 패키지만 노출됩니다.</p>
+            <p><spring:message code="package.list.approvedDesc"/></p>
         </div>
 
         <c:choose>
             <c:when test="${empty packageList}">
                 <div class="pkg-empty">
-                    <strong>현재 노출 중인 패키지 상품이 없습니다.</strong>
-                    <p>관리자 승인이 완료된 상품이 생기면 이곳에 표시됩니다.</p>
+                    <strong><spring:message code="package.list.empty"/></strong>
+                    <p><spring:message code="package.list.emptyDesc"/></p>
                 </div>
             </c:when>
             <c:otherwise>
@@ -53,34 +54,36 @@
                                 <p class="pkg-summary">
                                     <c:choose>
                                         <c:when test="${not empty pkg.packageSummary}">${fn:escapeXml(pkg.packageSummary)}</c:when>
-                                        <c:otherwise>상세 설명에서 패키지 정보를 확인해보세요.</c:otherwise>
+                                        <c:otherwise><spring:message code="package.list.noSummary"/></c:otherwise>
                                     </c:choose>
                                 </p>
                                 <dl class="pkg-meta">
                                     <div>
-                                        <dt>가격</dt>
+                                        <dt><spring:message code="package.common.priceLabel"/></dt>
                                         <dd><fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(pkg.currencyCode)}</dd>
                                     </div>
                                     <div>
-                                        <dt>여행지</dt>
+                                        <dt><spring:message code="package.common.spotLabel"/></dt>
                                         <dd>${fn:escapeXml(pkg.spotName)}</dd>
                                     </div>
                                     <div>
-                                        <dt>일정</dt>
+                                        <dt><spring:message code="package.common.scheduleLabel"/></dt>
                                         <dd>
                                             <c:choose>
                                                 <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                                                     ${pkg.startDate} ~ ${pkg.endDate}
                                                 </c:when>
-                                                <c:otherwise>상시/미정</c:otherwise>
+                                                <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
                                             </c:choose>
                                         </dd>
                                     </div>
                                 </dl>
                             </div>
                             <div class="pkg-card__actions">
-                                <a href="${pageContext.request.contextPath}/detail/${pkg.spotIdx}">여행지에서 보기</a>
-                                <span class="pkg-approved">승인 상품</span>
+                                <a href="${pageContext.request.contextPath}/detail/${pkg.spotIdx}">
+                                    <spring:message code="package.list.viewAtSpot"/>
+                                </a>
+                                <span class="pkg-approved"><spring:message code="package.list.approvedBadge"/></span>
                             </div>
                         </article>
                     </c:forEach>

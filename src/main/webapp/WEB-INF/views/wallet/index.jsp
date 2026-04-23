@@ -6,6 +6,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="wallet/wallet.css"/>
+<spring:message code="wallet.charge.limit" var="walletChargeLimitMessage"/>
+<spring:message code="wallet.charge.limit" javaScriptEscape="true" var="walletChargeLimitMessageJs"/>
 <%@ include file="../common/header.jsp" %>
 <body>
 
@@ -79,7 +81,7 @@
                         <input id="amount" name="amount" type="number" min="1000" max="1000000" step="100" value="10000" required>
                         <span><spring:message code="wallet.charge.currency"/></span>
                     </div>
-                    <p class="wallet-charge-limit" id="chargeLimitMessage">1회 충전 한도는 1,000,000원입니다.</p>
+                    <p class="wallet-charge-limit" id="chargeLimitMessage">${walletChargeLimitMessage}</p>
 
                     <div class="wallet-charge-preview">
                         <div>
@@ -316,7 +318,7 @@
         var amount = Number(input.value || 0);
         if (amount > 1000000) {
           event.preventDefault();
-          alert('1회 충전 한도는 1,000,000원입니다.');
+          alert('${walletChargeLimitMessageJs}');
           input.focus();
         }
       });

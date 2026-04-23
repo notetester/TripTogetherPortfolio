@@ -57,6 +57,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "classpath:messages/admin",
                 "classpath:messages/auth",
                 "classpath:messages/community",
+                "classpath:messages/course",
                 "classpath:messages/detail",
                 "classpath:messages/explore",
                 "classpath:messages/footer",

@@ -2,6 +2,8 @@ package org.triptogether.travelPackage.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +43,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
     private final TravelPackageMapper travelPackageMapper;
     private final WalletMapper walletMapper;
+    private final MessageSource messageSource;
 
     @Value("${file.upload.path}")
     private String uploadPath;
@@ -55,11 +58,11 @@ public class TravelPackageServiceImpl implements TravelPackageService {
     public TravelPackageVO getSellerPackage(Long packageIdx, Long sellerUserIdx) {
         validateSeller(sellerUserIdx);
         if (packageIdx == null) {
-            throw new IllegalArgumentException("패키지 상품 정보가 올바르지 않습니다.");
+            throw new IllegalArgumentException(msg("package.error.infoInvalid"));
         }
         TravelPackageVO travelPackage = travelPackageMapper.selectSellerPackage(packageIdx, sellerUserIdx);
         if (travelPackage == null) {
-            throw new IllegalArgumentException("수정 가능한 패키지 상품을 찾을 수 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.editableNotFound"));
         }
         return travelPackage;
     }
@@ -89,12 +92,12 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         validateForm(form);
 
         if (form.getPackageIdx() == null) {
-            throw new IllegalArgumentException("수정할 패키지 상품 정보가 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.updateInfoMissing"));
         }
 
         TravelPackageVO currentPackage = travelPackageMapper.selectSellerPackage(form.getPackageIdx(), sellerUserIdx);
         if (currentPackage == null) {
-            throw new IllegalArgumentException("수정 가능한 패키지 상품을 찾을 수 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.editableNotFound"));
         }
 
         if (STATUS_APPROVED.equals(currentPackage.getPackageStatus())) {
@@ -108,7 +111,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
         int updated = travelPackageMapper.updatePackage(travelPackage);
         if (updated == 0) {
-            throw new IllegalStateException("임시저장 또는 반려 상태의 패키지만 수정할 수 있습니다.");
+            throw new IllegalStateException(msg("package.error.updateAllowedOnlyDraftRejected"));
         }
     }
 
@@ -117,12 +120,12 @@ public class TravelPackageServiceImpl implements TravelPackageService {
     public void submitPackage(Long sellerUserIdx, Long packageIdx) {
         validateSeller(sellerUserIdx);
         if (packageIdx == null) {
-            throw new IllegalArgumentException("승인 요청할 패키지 상품 정보가 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.submitInfoMissing"));
         }
 
         int updated = travelPackageMapper.submitPackage(packageIdx, sellerUserIdx);
         if (updated == 0) {
-            throw new IllegalStateException("임시저장 또는 반려 상태의 패키지만 승인 요청할 수 있습니다.");
+            throw new IllegalStateException(msg("package.error.submitAllowedOnlyDraftRejected"));
         }
     }
 
@@ -140,10 +143,10 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
         int updated = travelPackageMapper.approvePackage(packageIdx, adminUserIdx);
         if (updated == 0) {
-            throw new IllegalStateException("승인 대기 상태의 패키지만 승인할 수 있습니다.");
+            throw new IllegalStateException(msg("package.error.pendingOnlyApprove"));
         }
 
-        insertReviewHistory(currentPackage, STATUS_APPROVED, "관리자 승인", adminUserIdx);
+        insertReviewHistory(currentPackage, STATUS_APPROVED, msg("package.history.adminApproved"), adminUserIdx);
     }
 
     @Override
@@ -152,17 +155,17 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         validateReviewer(adminUserIdx);
         String reason = trimToNull(rejectReason);
         if (reason == null) {
-            throw new IllegalArgumentException("반려 사유를 입력해주세요.");
+            throw new IllegalArgumentException(msg("package.error.rejectReasonRequired"));
         }
         if (reason.length() > 500) {
-            throw new IllegalArgumentException("반려 사유는 500자 이하로 입력해주세요.");
+            throw new IllegalArgumentException(msg("package.error.rejectReasonTooLong"));
         }
 
         TravelPackageVO currentPackage = getReviewTarget(packageIdx);
 
         int updated = travelPackageMapper.rejectPackage(packageIdx, reason);
         if (updated == 0) {
-            throw new IllegalStateException("승인 대기 상태의 패키지만 반려할 수 있습니다.");
+            throw new IllegalStateException(msg("package.error.pendingOnlyReview"));
         }
 
         insertReviewHistory(currentPackage, STATUS_REJECTED, reason, adminUserIdx);
@@ -182,19 +185,19 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
         int applied = travelPackageMapper.applyPackageRevision(packageRevisionIdx);
         if (applied == 0) {
-            throw new IllegalStateException("승인된 원본 패키지에만 수정 요청을 반영할 수 있습니다.");
+            throw new IllegalStateException(msg("package.error.revisionApplyApprovedOnly"));
         }
 
         int updated = travelPackageMapper.approvePackageRevision(packageRevisionIdx, adminUserIdx);
         if (updated == 0) {
-            throw new IllegalStateException("검토 대기 상태의 수정 요청만 승인할 수 있습니다.");
+            throw new IllegalStateException(msg("package.error.revisionPendingOnlyApprove"));
         }
 
         PackageReviewHistoryCreateVO history = new PackageReviewHistoryCreateVO();
         history.setPackageIdx(revision.getPackageIdx());
         history.setPreviousStatus("REVISION_PENDING");
         history.setNewStatus("REVISION_APPROVED");
-        history.setReviewReason("수정 요청 승인");
+        history.setReviewReason(msg("package.history.revisionApproved"));
         history.setReviewedByUserIdx(adminUserIdx);
         travelPackageMapper.insertPackageReviewHistory(history);
     }
@@ -205,16 +208,16 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         validateReviewer(adminUserIdx);
         String reason = trimToNull(rejectReason);
         if (reason == null) {
-            throw new IllegalArgumentException("반려 사유를 입력해주세요.");
+            throw new IllegalArgumentException(msg("package.error.rejectReasonRequired"));
         }
         if (reason.length() > 500) {
-            throw new IllegalArgumentException("반려 사유는 500자 이하로 입력해주세요.");
+            throw new IllegalArgumentException(msg("package.error.rejectReasonTooLong"));
         }
 
         TravelPackageRevisionVO revision = getRevisionReviewTarget(packageRevisionIdx);
         int updated = travelPackageMapper.rejectPackageRevision(packageRevisionIdx, reason, adminUserIdx);
         if (updated == 0) {
-            throw new IllegalStateException("검토 대기 상태의 수정 요청만 반려할 수 있습니다.");
+            throw new IllegalStateException(msg("package.error.revisionPendingOnlyReject"));
         }
 
         PackageReviewHistoryCreateVO history = new PackageReviewHistoryCreateVO();
@@ -254,25 +257,25 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
         UsersVO user = walletMapper.selectUserByIdxForUpdate(userIdx);
         if (user == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
+            throw new IllegalStateException(msg("package.error.loginRequired"));
         }
 
         long totalPrice = calculateTotalPrice(travelPackage.getPackagePrice(), peopleCount);
         long mileageAmount = request.getMileageAmount() != null ? request.getMileageAmount() : 0L;
         long maxMileageUse = floorToThousand(totalPrice * MAX_MILEAGE_RATE / 100);
         if (mileageAmount < 0) {
-            throw new IllegalArgumentException("마일리지 사용 금액은 0 이상이어야 합니다.");
+            throw new IllegalArgumentException(msg("package.error.mileageNegative"));
         }
         if (mileageAmount > maxMileageUse) {
-            throw new IllegalArgumentException("마일리지는 패키지 결제 금액의 30%까지만 사용할 수 있습니다.");
+            throw new IllegalArgumentException(msg("package.error.mileageLimit"));
         }
         if (user.getMileageBalance() < mileageAmount) {
-            throw new IllegalStateException("마일리지 잔액이 부족합니다.");
+            throw new IllegalStateException(msg("package.error.mileageInsufficient"));
         }
 
         long cashAmount = totalPrice - mileageAmount;
         if (user.getCashBalance() < cashAmount) {
-            throw new IllegalStateException("캐시 잔액이 부족합니다.");
+            throw new IllegalStateException(msg("package.error.cashInsufficient"));
         }
 
         long cashAfter = user.getCashBalance() - cashAmount;
@@ -283,10 +286,10 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         walletMapper.insertPaymentHistory(payment);
 
         insertWalletHistory(userIdx, "CASH", cashAmount, cashAfter, payment.getPaymentIdx(),
-                travelPackage.getPackageTitle() + " 패키지 캐시 결제");
+                msg("package.history.cashPayment", travelPackage.getPackageTitle()));
         if (mileageAmount > 0) {
             insertWalletHistory(userIdx, "MILEAGE", mileageAmount, mileageAfter, payment.getPaymentIdx(),
-                    travelPackage.getPackageTitle() + " 패키지 마일리지 결제");
+                    msg("package.history.mileagePayment", travelPackage.getPackageTitle()));
         }
 
         PackageBookingCreateVO booking = buildPackageBooking(userIdx, travelPackage, peopleCount, totalPrice, cashAmount, mileageAmount);
@@ -308,23 +311,23 @@ public class TravelPackageServiceImpl implements TravelPackageService {
     @Transactional
     public UsersVO cancelPackageBooking(Long userIdx, Long packageBookingIdx, String cancelReason) {
         if (userIdx == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
+            throw new IllegalStateException(msg("package.error.loginRequired"));
         }
         if (packageBookingIdx == null) {
-            throw new IllegalArgumentException("취소할 패키지 예약 정보가 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.cancelInfoMissing"));
         }
 
         PackageBookingVO booking = travelPackageMapper.selectPackageBookingForUpdate(packageBookingIdx, userIdx);
         if (booking == null) {
-            throw new IllegalArgumentException("취소할 패키지 예약을 찾을 수 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.cancelNotFound"));
         }
         if (!"BOOKED".equals(booking.getBookingStatus())) {
-            throw new IllegalStateException("예약완료 상태의 패키지만 취소할 수 있습니다.");
+            throw new IllegalStateException(msg("package.error.cancelOnlyBooked"));
         }
 
         UsersVO user = walletMapper.selectUserByIdxForUpdate(userIdx);
         if (user == null) {
-            throw new IllegalStateException("회원 정보를 찾을 수 없습니다.");
+            throw new IllegalStateException(msg("package.error.userNotFound"));
         }
 
         long cashAfter = safeAdd(user.getCashBalance(), booking.getUsedCash());
@@ -334,14 +337,14 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         String reason = normalizeCancelReason(cancelReason);
         int updated = travelPackageMapper.cancelPackageBooking(packageBookingIdx, userIdx, reason);
         if (updated == 0) {
-            throw new IllegalStateException("이미 취소되었거나 취소할 수 없는 예약입니다.");
+            throw new IllegalStateException(msg("package.error.cancelUnavailable"));
         }
 
         insertRefundWalletHistory(userIdx, "CASH", booking.getUsedCash(), cashAfter,
-                booking.getBookingNo() + " 패키지 예약 취소 캐시 환불");
+                msg("package.history.refundCash", booking.getBookingNo()));
         if (booking.getUsedMileage() > 0) {
             insertRefundWalletHistory(userIdx, "MILEAGE", booking.getUsedMileage(), mileageAfter,
-                    booking.getBookingNo() + " 패키지 예약 취소 마일리지 환불");
+                    msg("package.history.refundMileage", booking.getBookingNo()));
         }
         travelPackageMapper.decreasePackageBookingCount(booking.getPackageIdx());
         return walletMapper.selectUserByIdx(userIdx);
@@ -366,7 +369,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
     private void createRevisionRequest(Long sellerUserIdx, TravelPackageForm form) {
         if (travelPackageMapper.selectPendingRevisionByPackage(form.getPackageIdx()) != null) {
-            throw new IllegalStateException("이미 관리자 검토 대기 중인 수정 요청이 있습니다.");
+            throw new IllegalStateException(msg("package.error.pendingRevisionExists"));
         }
 
         TravelPackageRevisionVO revision = new TravelPackageRevisionVO();
@@ -402,7 +405,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         String originalFilename = imageFile.getOriginalFilename();
         String extension = extractExtension(originalFilename);
         if (!ALLOWED_IMAGE_EXTENSIONS.contains(extension)) {
-            throw new IllegalArgumentException("패키지 대표 이미지는 JPG, PNG, GIF, WEBP 형식만 업로드할 수 있습니다.");
+            throw new IllegalArgumentException(msg("package.error.imageInvalidType"));
         }
 
         try {
@@ -413,13 +416,13 @@ public class TravelPackageServiceImpl implements TravelPackageService {
             Path targetPath = packageUploadDir.resolve(savedFilename).normalize();
 
             if (!targetPath.startsWith(packageUploadDir)) {
-                throw new IllegalArgumentException("파일 저장 경로가 올바르지 않습니다.");
+                throw new IllegalArgumentException(msg("package.error.filePathInvalid"));
             }
 
             imageFile.transferTo(targetPath);
             return "/upload/package/" + savedFilename;
         } catch (IOException e) {
-            throw new IllegalStateException("패키지 대표 이미지 업로드에 실패했습니다.");
+            throw new IllegalStateException(msg("package.error.imageUploadFailed"));
         }
     }
 
@@ -436,40 +439,40 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
     private void validateSeller(Long sellerUserIdx) {
         if (sellerUserIdx == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
+            throw new IllegalStateException(msg("package.error.sellerRequired"));
         }
     }
 
     private void validateReviewer(Long adminUserIdx) {
         if (adminUserIdx == null) {
-            throw new IllegalStateException("관리자 로그인이 필요합니다.");
+            throw new IllegalStateException(msg("package.error.adminRequired"));
         }
     }
 
     private TravelPackageVO getReviewTarget(Long packageIdx) {
         if (packageIdx == null) {
-            throw new IllegalArgumentException("검토할 패키지 상품 정보가 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.reviewInfoMissing"));
         }
         TravelPackageVO currentPackage = travelPackageMapper.selectPackageForReview(packageIdx);
         if (currentPackage == null) {
-            throw new IllegalArgumentException("검토할 패키지 상품을 찾을 수 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.reviewNotFound"));
         }
         if (!STATUS_PENDING.equals(currentPackage.getPackageStatus())) {
-            throw new IllegalStateException("승인 대기 상태의 패키지만 검토할 수 있습니다.");
+            throw new IllegalStateException(msg("package.error.pendingOnlyReview"));
         }
         return currentPackage;
     }
 
     private TravelPackageRevisionVO getRevisionReviewTarget(Long packageRevisionIdx) {
         if (packageRevisionIdx == null) {
-            throw new IllegalArgumentException("검토할 패키지 수정 요청 정보가 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.revisionReviewInfoMissing"));
         }
         TravelPackageRevisionVO revision = travelPackageMapper.selectPackageRevisionForReview(packageRevisionIdx);
         if (revision == null) {
-            throw new IllegalArgumentException("검토할 패키지 수정 요청을 찾을 수 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.revisionReviewNotFound"));
         }
         if (!STATUS_PENDING.equals(revision.getRevisionStatus())) {
-            throw new IllegalStateException("검토 대기 상태의 수정 요청만 처리할 수 있습니다.");
+            throw new IllegalStateException(msg("package.error.revisionPendingOnlyProcess"));
         }
         return revision;
     }
@@ -515,46 +518,46 @@ public class TravelPackageServiceImpl implements TravelPackageService {
 
     private void validateForm(TravelPackageForm form) {
         if (form == null) {
-            throw new IllegalArgumentException("패키지 상품 입력값이 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.formMissing"));
         }
         if (form.getSpotIdx() == null) {
-            throw new IllegalArgumentException("연결할 여행지를 선택해주세요.");
+            throw new IllegalArgumentException(msg("package.error.spotRequired"));
         }
         if (isBlank(form.getPackageTitle())) {
-            throw new IllegalArgumentException("패키지 상품명을 입력해주세요.");
+            throw new IllegalArgumentException(msg("package.error.titleRequired"));
         }
         if (trim(form.getPackageTitle()).length() > 150) {
-            throw new IllegalArgumentException("패키지 상품명은 150자 이하로 입력해주세요.");
+            throw new IllegalArgumentException(msg("package.error.titleTooLong"));
         }
         if (form.getPackageSummary() != null && trim(form.getPackageSummary()).length() > 300) {
-            throw new IllegalArgumentException("짧은 소개는 300자 이하로 입력해주세요.");
+            throw new IllegalArgumentException(msg("package.error.summaryTooLong"));
         }
         if (isBlank(form.getPackageContent())) {
-            throw new IllegalArgumentException("패키지 상세 설명을 입력해주세요.");
+            throw new IllegalArgumentException(msg("package.error.contentRequired"));
         }
         if (form.getPackagePrice() == null || form.getPackagePrice() < 0) {
-            throw new IllegalArgumentException("패키지 가격은 0원 이상으로 입력해주세요.");
+            throw new IllegalArgumentException(msg("package.error.priceInvalid"));
         }
         if (form.getMinPeople() == null || form.getMinPeople() < 1) {
-            throw new IllegalArgumentException("최소 인원은 1명 이상이어야 합니다.");
+            throw new IllegalArgumentException(msg("package.error.minPeopleInvalid"));
         }
         if (form.getMaxPeople() != null && form.getMaxPeople() < form.getMinPeople()) {
-            throw new IllegalArgumentException("최대 인원은 최소 인원보다 작을 수 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.maxPeopleInvalid"));
         }
         if (form.getStartDate() != null && form.getEndDate() != null && form.getEndDate().isBefore(form.getStartDate())) {
-            throw new IllegalArgumentException("종료일은 시작일보다 빠를 수 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.endBeforeStart"));
         }
     }
 
     private void validateBookingRequest(Long userIdx, PackageBookingRequestVO request) {
         if (userIdx == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
+            throw new IllegalStateException(msg("package.error.loginRequired"));
         }
         if (request == null || request.getPackageIdx() == null) {
-            throw new IllegalArgumentException("예약할 패키지 상품 정보가 없습니다.");
+            throw new IllegalArgumentException(msg("package.error.bookingInfoMissing"));
         }
         if (request.getPeopleCount() == null) {
-            throw new IllegalArgumentException("예약 인원을 선택해주세요.");
+            throw new IllegalArgumentException(msg("package.error.peopleRequired"));
         }
     }
 
@@ -562,21 +565,21 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         int minPeople = travelPackage.getMinPeople() != null ? travelPackage.getMinPeople() : 1;
         Integer maxPeople = travelPackage.getMaxPeople();
         if (peopleCount < minPeople) {
-            throw new IllegalArgumentException("예약 인원은 최소 " + minPeople + "명 이상이어야 합니다.");
+            throw new IllegalArgumentException(msg("package.error.peopleMin", minPeople));
         }
         if (maxPeople != null && peopleCount > maxPeople) {
-            throw new IllegalArgumentException("예약 인원은 최대 " + maxPeople + "명까지 가능합니다.");
+            throw new IllegalArgumentException(msg("package.error.peopleMax", maxPeople));
         }
     }
 
     private long calculateTotalPrice(Long unitPrice, int peopleCount) {
         if (unitPrice == null || unitPrice < 0) {
-            throw new IllegalStateException("패키지 가격 정보가 올바르지 않습니다.");
+            throw new IllegalStateException(msg("package.error.priceInfoInvalid"));
         }
         try {
             return Math.multiplyExact(unitPrice, peopleCount);
         } catch (ArithmeticException e) {
-            throw new IllegalArgumentException("결제 금액이 너무 큽니다.");
+            throw new IllegalArgumentException(msg("package.error.amountTooLarge"));
         }
     }
 
@@ -589,7 +592,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         payment.setUserIdx(userIdx);
         payment.setPaymentType("PURCHASE");
         payment.setPaymentMethod(mileageAmount > 0 ? "CASH_MILEAGE" : "CASH");
-        payment.setOrderName(travelPackage.getPackageTitle() + " 패키지 예약");
+        payment.setOrderName(msg("package.payment.orderName", travelPackage.getPackageTitle()));
         payment.setSourceType("TRAVEL_PACKAGE");
         payment.setSourceId(travelPackage.getPackageIdx());
         payment.setOriginalAmount(totalPrice);
@@ -672,14 +675,14 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         try {
             return Math.addExact(baseAmount, refundAmount);
         } catch (ArithmeticException e) {
-            throw new IllegalStateException("환불 처리 후 잔액이 너무 큽니다.");
+            throw new IllegalStateException(msg("package.error.refundBalanceTooLarge"));
         }
     }
 
     private String normalizeCancelReason(String cancelReason) {
         String reason = trimToNull(cancelReason);
         if (reason == null) {
-            return "사용자 직접 취소";
+            return msg("package.history.defaultCancelReason");
         }
         if (reason.length() > 500) {
             return reason.substring(0, 500);
@@ -710,5 +713,9 @@ public class TravelPackageServiceImpl implements TravelPackageService {
     private String trimToDefault(String value, String defaultValue) {
         String trimmed = trimToNull(value);
         return trimmed == null ? defaultValue : trimmed;
+    }
+
+    private String msg(String code, Object... args) {
+        return messageSource.getMessage(code, args, code, LocaleContextHolder.getLocale());
     }
 }
