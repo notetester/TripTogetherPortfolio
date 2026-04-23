@@ -176,7 +176,7 @@
                   onclick="applyKeywordFilter(this)">
             <span style="font-size:12px;color:#64748b;"><c:out value="${empty item.requestId ? '-' : item.requestId}"/></span>
             <c:if test="${not empty item.flowTraceId}">
-              <span class="adm-cell-link-note"><c:out value="${item.flowTraceId}"/></span>
+              <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
             </c:if>
           </button>
         </td>

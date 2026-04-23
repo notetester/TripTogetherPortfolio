@@ -19,6 +19,8 @@ public class UserSecurityHistoryVO {
     private boolean success;
     private String failReason;
     private String detailMessage;
+    private String requestId;
+    private String flowTraceId;
     private String ipAddress;
     private String userAgent;
     private LocalDateTime occurredAt;

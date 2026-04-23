@@ -23955,6 +23955,8 @@ CREATE TABLE IF NOT EXISTS `USER_SECURITY_HISTORY` (
   `is_success` tinyint(1) NOT NULL COMMENT '성공 여부',
   `fail_reason` varchar(255) DEFAULT NULL COMMENT '실패 사유 (EMAIL_NOT_FOUND / EMAIL_NOT_VERIFIED / TOKEN_EXPIRED / WRONG_PASSWORD 등)',
   `detail_message` varchar(500) DEFAULT NULL COMMENT '관리자 참고용 상세 메시지',
+  `request_id` varchar(36) DEFAULT NULL COMMENT '연결된 HTTP 요청 식별자(UUID). USER_ACTIVITY_LOG.request_id 와 연결',
+  `flow_trace_id` varchar(36) DEFAULT NULL COMMENT '여러 요청에 걸친 흐름 식별자(UUID). 이메일 발송→검증 등 다단계 추적용',
   `ip_address` varchar(45) DEFAULT NULL COMMENT '접속 IP',
   `user_agent` varchar(500) DEFAULT NULL COMMENT '브라우저 / 디바이스 정보',
   `occurred_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '이벤트 시각',
@@ -23965,6 +23967,8 @@ CREATE TABLE IF NOT EXISTS `USER_SECURITY_HISTORY` (
   KEY `idx_ush_actor_user_idx` (`actor_user_idx`,`occurred_at` DESC),
   KEY `idx_ush_target_email` (`target_email`),
   KEY `idx_ush_success` (`is_success`,`occurred_at` DESC),
+  KEY `idx_ush_request_id` (`request_id`),
+  KEY `idx_ush_flow_trace_id` (`flow_trace_id`),
   CONSTRAINT `fk_security_actor_user` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_security_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='계정 복구 / 인증 / 비밀번호 변경 등 보안 이벤트 이력';

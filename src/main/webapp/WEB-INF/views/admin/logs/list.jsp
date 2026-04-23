@@ -89,6 +89,7 @@
                     <th><spring:message code="admin.common.result"/></th>
                     <th><spring:message code="admin.common.reason"/></th>
                     <th><spring:message code="admin.common.ip"/></th>
+                    <th><spring:message code="admin.context.requestId"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -230,7 +231,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
+                    <tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
