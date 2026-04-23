@@ -503,6 +503,7 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_CONVERSATION` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_active` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '유저 소프트 삭제 여부',
+  `sort_order` int NOT NULL DEFAULT '0' COMMENT '유저가 드래그로 조정한 목록 정렬값 (오름차순 표시)',
   PRIMARY KEY (`conversation_id`),
   KEY `idx_user` (`user_idx`,`is_deleted`,`last_active` DESC),
   KEY `idx_anon` (`anon_session_id`,`is_deleted`,`last_active` DESC)

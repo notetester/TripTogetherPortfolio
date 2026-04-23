@@ -112,6 +112,39 @@ public class ChatbotController {
     }
 
     /**
+     * PATCH /chatbot/conversations/order
+     * 대화 목록 정렬 순서 변경 (드래그앤드롭).
+     * Body: { ids: [11, 7, 23, ...] } — 화면 상단부터 하단 순으로 나열된 conversationId 배열.
+     */
+    @PatchMapping("/conversations/order")
+    public ResponseEntity<Map<String, Object>> reorderConversations(@RequestBody Map<String, Object> body,
+                                                                     HttpSession session) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        Long userIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        String anonSessionId = loginUser == null ? session.getId() : null;
+
+        Object raw = body.get("ids");
+        if (!(raw instanceof List<?> rawList) || rawList.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<Long> ids = new java.util.ArrayList<>();
+        for (Object v : rawList) {
+            if (v == null) continue;
+            if (v instanceof Number n) ids.add(n.longValue());
+            else {
+                try { ids.add(Long.parseLong(v.toString())); } catch (Exception e) { return ResponseEntity.badRequest().build(); }
+            }
+        }
+
+        boolean ok = conversationService.reorderConversations(ids, userIdx, anonSessionId);
+        if (!ok) return forbidden();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
      * DELETE /chatbot/conversations/{id}
      * 소프트 삭제 (유저에겐 숨김, 관리자는 조회 가능).
      */

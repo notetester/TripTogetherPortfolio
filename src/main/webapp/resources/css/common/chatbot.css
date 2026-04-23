@@ -420,15 +420,27 @@
     gap: 4px;
     padding: 8px 10px;
     border-radius: 6px;
-    cursor: pointer;
+    cursor: grab;
     margin-bottom: 2px;
-    transition: background .12s;
+    transition: background .12s, opacity .12s;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
 }
 .cb-conv-item:hover {
     background: #e5e7eb;
 }
 .cb-conv-item.active {
     background: #dbeafe;
+}
+.cb-conv-item.is-dragging {
+    opacity: .5;
+    cursor: grabbing;
+}
+.cb-conv-item.is-drop-before {
+    border-top-color: var(--blue);
+}
+.cb-conv-item.is-drop-after {
+    border-bottom-color: var(--blue);
 }
 
 .cb-conv-title {

@@ -137,6 +137,7 @@
             const row = document.createElement('div');
             row.className = 'cb-conv-item';
             row.dataset.convId = c.conversationId;
+            row.draggable = true;
             if (currentConvId === c.conversationId) row.classList.add('active');
 
             const title = document.createElement('span');
@@ -155,8 +156,69 @@
 
             row.appendChild(title);
             row.appendChild(menu);
+            bindDnD(row);
             convList.appendChild(row);
         });
+    }
+
+    // ===== 대화 목록 드래그앤드롭 =====
+    let dragSrc = null;
+
+    function bindDnD(row) {
+        row.addEventListener('dragstart', function (e) {
+            dragSrc = row;
+            row.classList.add('is-dragging');
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+                try { e.dataTransfer.setData('text/plain', row.dataset.convId || ''); } catch (err) {}
+            }
+        });
+        row.addEventListener('dragend', function () {
+            row.classList.remove('is-dragging');
+            clearDropIndicators();
+            dragSrc = null;
+        });
+        row.addEventListener('dragover', function (e) {
+            if (!dragSrc || dragSrc === row) return;
+            e.preventDefault();
+            if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+            const rect = row.getBoundingClientRect();
+            const before = (e.clientY - rect.top) < rect.height / 2;
+            clearDropIndicators();
+            row.classList.add(before ? 'is-drop-before' : 'is-drop-after');
+        });
+        row.addEventListener('dragleave', function () {
+            row.classList.remove('is-drop-before', 'is-drop-after');
+        });
+        row.addEventListener('drop', function (e) {
+            if (!dragSrc || dragSrc === row) return;
+            e.preventDefault();
+            const before = row.classList.contains('is-drop-before');
+            clearDropIndicators();
+            if (before) convList.insertBefore(dragSrc, row);
+            else convList.insertBefore(dragSrc, row.nextSibling);
+            persistConvOrder();
+        });
+    }
+
+    function clearDropIndicators() {
+        if (!convList) return;
+        convList.querySelectorAll('.is-drop-before, .is-drop-after').forEach(function (el) {
+            el.classList.remove('is-drop-before', 'is-drop-after');
+        });
+    }
+
+    function persistConvOrder() {
+        if (!convList) return;
+        const ids = Array.from(convList.querySelectorAll('.cb-conv-item[data-conv-id]'))
+            .map(function (el) { return parseInt(el.dataset.convId, 10); })
+            .filter(function (n) { return !isNaN(n); });
+        if (ids.length === 0) return;
+        fetch(ctx + '/chatbot/conversations/order', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: ids })
+        }).catch(function () {});
     }
 
     // ===== 대화 메뉴 팝오버 =====
