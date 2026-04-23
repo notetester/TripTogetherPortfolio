@@ -375,6 +375,33 @@
     </select>
 
     <!-- =============================================
+         챗봇 컨텍스트용 다중 키워드 검색
+         - name/region/address/description 에 OR LIKE
+         - 인기순(리뷰 수 DESC, 평점 DESC)
+         ============================================= -->
+    <select id="searchSpotsByKeywords" resultType="java.util.HashMap">
+        SELECT
+            st.spot_idx     AS spotIdx,
+            st.name         AS name,
+            st.region       AS region,
+            st.description  AS description,
+            st.rating_avg   AS ratingAvg,
+            st.review_count AS reviewCount
+        FROM SPOT_TRAVEL st
+        WHERE COALESCE(st.spot_active, 0) = 0
+          AND (
+          <foreach collection="keywords" item="kw" separator=" OR ">
+                st.name        LIKE CONCAT('%', #{kw}, '%')
+             OR st.region      LIKE CONCAT('%', #{kw}, '%')
+             OR st.address     LIKE CONCAT('%', #{kw}, '%')
+             OR st.description LIKE CONCAT('%', #{kw}, '%')
+          </foreach>
+          )
+        ORDER BY st.review_count DESC, st.rating_avg DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- =============================================
          상세 조회
          ============================================= -->
     <select id="selectSpotDetail" resultMap="SpotResultMap">

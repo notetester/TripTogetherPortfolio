@@ -896,6 +896,25 @@ function buildBlockRows(items) {
     }, '<spring:message code="admin.context.empty.blocks" javaScriptEscape="true"/>');
 }
 
+function buildChatbotLinkClickRows(items) {
+    return buildContextRows(items, function(item) {
+        const url = item.url || '';
+        return ''
+            + '<div class="adm-context-record">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div style="font-size:13px;"><strong>' + escapeHtml(item.label || '-') + '</strong></div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.clickedAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;"><a href="' + ctx + escapeHtml(url) + '" target="_blank" style="color:#60a5fa;font-family:monospace;text-decoration:none;">' + escapeHtml(url) + '</a></div>'
+            + '<div style="margin-top:4px;font-size:11px;color:#94a3b8;">'
+            + 'conv #' + escapeHtml(item.conversationId || '-')
+            + ' · msg #' + escapeHtml(item.messageId || '-')
+            + ' · IP: ' + escapeHtml(item.ipAddress || '-')
+            + '</div>'
+            + '</div>';
+    }, '기록된 챗봇 링크 클릭이 없습니다.');
+}
+
 function buildActionTab(m) {
     return ''
         + '<div class="adm-context-actions-grid">'
@@ -966,7 +985,8 @@ async function openDetail(userIdx, defaultTab, focusSection) {
     const emailTokens = Array.isArray(data.emailTokens) ? data.emailTokens : [];
     const activityLogs = Array.isArray(data.activityLogs) ? data.activityLogs : [];
     const recentBlocks = Array.isArray(data.recentBlocks) ? data.recentBlocks : [];
-    const activeTab = ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'actions'].includes(defaultTab) ? defaultTab : 'info';
+    const chatbotLinkClicks = Array.isArray(data.chatbotLinkClicks) ? data.chatbotLinkClicks : [];
+    const activeTab = ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'chatbot', 'actions'].includes(defaultTab) ? defaultTab : 'info';
 
     document.getElementById('modalTitle').textContent = (m.nickname || ADMIN_MEMBER_MSG.memberDetailsTitle) + ' ' + ADMIN_MEMBER_MSG.memberDetailsSuffix;
 
@@ -978,6 +998,7 @@ async function openDetail(userIdx, defaultTab, focusSection) {
         + '<button class="adm-tab ' + (activeTab === 'emails' ? 'active' : '') + '" onclick="switchTab(\'emails\', this)">' + ADMIN_MEMBER_MSG.emailHistoryTab + '</button>'
         + '<button class="adm-tab ' + (activeTab === 'activity' ? 'active' : '') + '" onclick="switchTab(\'activity\', this)">' + ADMIN_MEMBER_MSG.activityTab + ' (' + activityLogs.length + ')</button>'
         + '<button class="adm-tab ' + (activeTab === 'blocks' ? 'active' : '') + '" onclick="switchTab(\'blocks\', this)">' + ADMIN_MEMBER_MSG.blockTab + ' (' + recentBlocks.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'chatbot' ? 'active' : '') + '" onclick="switchTab(\'chatbot\', this)">챗봇 링크 (' + chatbotLinkClicks.length + ')</button>'
         + '<button class="adm-tab ' + (activeTab === 'actions' ? 'active' : '') + '" onclick="switchTab(\'actions\', this)">' + ADMIN_MEMBER_MSG.actionsTab + '</button>'
         + '</div>'
         + '<div id="tab-info" style="display:' + (activeTab === 'info' ? '' : 'none') + ';"></div>'
@@ -986,6 +1007,7 @@ async function openDetail(userIdx, defaultTab, focusSection) {
         + '<div id="tab-emails" style="display:' + (activeTab === 'emails' ? '' : 'none') + ';"></div>'
         + '<div id="tab-activity" style="display:' + (activeTab === 'activity' ? '' : 'none') + ';"></div>'
         + '<div id="tab-blocks" style="display:' + (activeTab === 'blocks' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-chatbot" style="display:' + (activeTab === 'chatbot' ? '' : 'none') + ';"></div>'
         + '<div id="tab-actions" style="display:' + (activeTab === 'actions' ? '' : 'none') + ';"></div>';
 
     document.getElementById('tab-info').innerHTML = buildInfoTab(m);
@@ -998,6 +1020,7 @@ async function openDetail(userIdx, defaultTab, focusSection) {
         + '</div>';
     document.getElementById('tab-activity').innerHTML = buildActivityRows(activityLogs);
     document.getElementById('tab-blocks').innerHTML = buildBlockRows(recentBlocks);
+    document.getElementById('tab-chatbot').innerHTML = buildChatbotLinkClickRows(chatbotLinkClicks);
     document.getElementById('tab-actions').innerHTML = buildActionTab(m);
     const statusSelect = document.getElementById('memberStatusSelect');
     const roleSelect = document.getElementById('memberRoleSelect');
@@ -1226,6 +1249,14 @@ async function submitDetailBlock(userIdx, button) {
 
 function closeDetail() {
     document.getElementById('detailModal').classList.remove('open');
+    // 외부에서 ?detailUserIdx=N 으로 들어와 자동 오픈된 경우, 닫힘 후 파라미터 제거 (리프레시 재오픈 방지)
+    try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('detailUserIdx')) {
+            url.searchParams.delete('detailUserIdx');
+            window.history.replaceState(null, '', url.toString());
+        }
+    } catch (e) {}
 }
 
 document.getElementById('detailModal').addEventListener('click', function (e) {

@@ -29,7 +29,7 @@
 
 /* ===== 레이아웃 ===== */
 .write-container { display:grid; grid-template-columns:1fr 300px; gap:28px; align-items:start; }
-@media (max-width:1024px) { .write-container { grid-template-columns:1fr; } }
+@media (max-width:1023px) { .write-container { grid-template-columns:1fr; } }
 
 .write-main { display:flex; flex-direction:column; gap:24px; }
 .write-section { display:flex; flex-direction:column; gap:8px; }
@@ -272,3 +272,188 @@ html.dark .region-select-btn:hover {
 html.dark .guide-card { background: #151922; }
 html.dark .guide-list li { color: #9ca3af; }
 html.dark .guide-list li::before { color: #60a5fa; }
+
+/* =============================================
+   반응형 — 모바일
+   ============================================= */
+@media (max-width: 767px) {
+    .write-wrap { padding: 16px 16px 48px; }
+    .write-page-title { font-size: 1.15rem; }
+
+    .write-top-actions,
+    .write-bottom-actions { width: 100%; }
+    .write-top-actions .btn-cancel,
+    .write-top-actions .btn-submit,
+    .write-bottom-actions .btn-cancel,
+    .write-bottom-actions .btn-submit { flex: 1; }
+
+    .write-input { padding: 10px 14px; font-size: 14px; }
+    .write-textarea { padding: 12px 14px; font-size: 14px; min-height: 220px; }
+
+    .aside-card { padding: 16px; }
+    .tip-cat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 479px) {
+    .tip-cat-grid { grid-template-columns: 1fr; }
+}
+
+/* =============================================
+   Summernote 오버라이드
+   - 기본 분홍색 primary 버튼을 사이트 블루로 교체
+   - 에디터 컨테이너를 write-input 과 border/radius 통일
+   - 모달 배경/텍스트 색상 사이트 톤 맞춤
+   ============================================= */
+.note-editor.note-frame {
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.note-editor.note-frame.fullscreen { border-radius: 0; }
+.note-editor .note-toolbar {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+}
+.note-editor .note-editable {
+    padding: 14px 16px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--gray-800);
+    line-height: 1.8;
+    background: #fff;
+}
+.note-editor .note-statusbar {
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+}
+.note-editor .note-placeholder {
+    color: var(--gray-400);
+    padding: 14px 16px;
+}
+
+/* Primary 버튼(그림 삽입, 링크 삽입 등) 사이트 블루로 */
+.note-modal .note-btn-primary,
+.note-btn.note-btn-primary {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+}
+.note-modal .note-btn-primary:hover,
+.note-btn.note-btn-primary:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    color: #fff;
+}
+.note-modal .note-btn-primary:disabled,
+.note-btn.note-btn-primary:disabled {
+    background: var(--gray-200);
+    border-color: var(--gray-200);
+    color: var(--gray-500);
+    opacity: 1;
+}
+
+/* 모달 레이아웃 기본 정돈 */
+.note-modal .note-modal-content {
+    border-radius: var(--radius);
+}
+.note-modal .note-modal-header {
+    padding: 26px 32px !important;
+    border-bottom: 1px solid var(--gray-200);
+}
+.note-modal .note-modal-body {
+    padding: 48px 32px !important;
+}
+/* Summernote는 .note-form-group 간격을 padding-bottom 으로 관리함 (margin 아님) */
+.note-modal .note-modal-body .note-form-group {
+    padding-bottom: 40px !important;
+}
+.note-modal .note-modal-body .note-form-group:last-child { padding-bottom: 0 !important; }
+.note-modal .note-modal-footer {
+    height: auto !important;
+    padding: 20px 32px !important;
+    border-top: 1px solid var(--gray-200);
+}
+
+/* ── 다크 모드 ── */
+html.dark .note-editor.note-frame {
+    border-color: #2b3241;
+    background: #1a1f2b;
+}
+html.dark .note-editor .note-toolbar {
+    background: #151922;
+    border-bottom-color: #232935;
+}
+html.dark .note-editor .note-toolbar .note-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #e5e7eb;
+}
+html.dark .note-editor .note-toolbar .note-btn:hover {
+    background: #1e293b;
+    border-color: #3b4556;
+    color: #f1f5f9;
+}
+html.dark .note-editor .note-toolbar .note-btn.active,
+html.dark .note-editor .note-toolbar .note-btn:active {
+    background: #1e293b;
+    color: #93c5fd;
+}
+html.dark .note-editor .note-editable {
+    background: #1a1f2b;
+    color: #f1f5f9;
+}
+html.dark .note-editor .note-placeholder { color: #6b7280; }
+html.dark .note-editor .note-statusbar {
+    background: #151922;
+    border-top-color: #232935;
+}
+html.dark .note-editor .note-codable {
+    background: #0f1115;
+    color: #e5e7eb;
+}
+
+/* 드롭다운 메뉴 */
+html.dark .note-dropdown-menu {
+    background: #151922;
+    border-color: #232935;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+    color: #e5e7eb;
+}
+html.dark .note-dropdown-menu .note-dropdown-item:hover,
+html.dark .note-dropdown-menu a:hover {
+    background: #1e293b;
+    color: #93c5fd;
+}
+
+/* 팝오버 (링크/이미지 등) */
+html.dark .note-popover .popover-content,
+html.dark .note-popover .note-popover-content {
+    background: #151922;
+    border-color: #232935;
+    color: #e5e7eb;
+}
+
+/* 모달 다크 */
+html.dark .note-modal-backdrop { background: rgba(0, 0, 0, .65); }
+html.dark .note-modal .note-modal-content {
+    background: #151922;
+    border-color: #232935;
+    color: #e5e7eb;
+}
+html.dark .note-modal .note-modal-header,
+html.dark .note-modal .note-modal-footer {
+    background: #151922;
+    border-color: #232935;
+}
+html.dark .note-modal .note-modal-title,
+html.dark .note-modal .note-form-label { color: #f1f5f9; }
+html.dark .note-modal .close { color: #cbd5e1; }
+html.dark .note-modal .note-input,
+html.dark .note-modal input[type="text"],
+html.dark .note-modal input[type="url"],
+html.dark .note-modal input[type="file"] {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #f1f5f9;
+}
+html.dark .note-modal .note-input::placeholder { color: #6b7280; }

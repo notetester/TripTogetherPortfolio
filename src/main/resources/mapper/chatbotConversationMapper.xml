@@ -14,6 +14,7 @@
         <result property="createdAt"      column="created_at"/>
         <result property="lastActive"     column="last_active"/>
         <result property="isDeleted"      column="is_deleted"/>
+        <result property="sortOrder"      column="sort_order"/>
         <result property="messageCount"   column="message_count"/>
     </resultMap>
 
@@ -33,7 +34,7 @@
          ============================================= -->
     <select id="selectConversation" resultMap="ConversationResultMap">
         SELECT conversation_id, user_idx, anon_session_id, title, ip_address,
-               created_at, last_active, is_deleted
+               created_at, last_active, is_deleted, sort_order
         FROM CHATBOT_CONVERSATION
         WHERE conversation_id = #{conversationId}
     </select>
@@ -43,12 +44,12 @@
          ============================================= -->
     <select id="selectConversationsByUser" resultMap="ConversationResultMap">
         SELECT c.conversation_id, c.user_idx, c.anon_session_id, c.title, c.ip_address,
-               c.created_at, c.last_active, c.is_deleted,
+               c.created_at, c.last_active, c.is_deleted, c.sort_order,
                (SELECT COUNT(*) FROM CHATBOT_MESSAGE m WHERE m.conversation_id = c.conversation_id) AS message_count
         FROM CHATBOT_CONVERSATION c
         WHERE c.user_idx = #{userIdx}
           AND c.is_deleted = 0
-        ORDER BY c.last_active DESC
+        ORDER BY c.sort_order ASC, c.last_active DESC
     </select>
 
     <!-- =============================================
@@ -56,12 +57,12 @@
          ============================================= -->
     <select id="selectConversationsByAnonSession" resultMap="ConversationResultMap">
         SELECT c.conversation_id, c.user_idx, c.anon_session_id, c.title, c.ip_address,
-               c.created_at, c.last_active, c.is_deleted,
+               c.created_at, c.last_active, c.is_deleted, c.sort_order,
                (SELECT COUNT(*) FROM CHATBOT_MESSAGE m WHERE m.conversation_id = c.conversation_id) AS message_count
         FROM CHATBOT_CONVERSATION c
         WHERE c.anon_session_id = #{anonSessionId}
           AND c.is_deleted = 0
-        ORDER BY c.last_active DESC
+        ORDER BY c.sort_order ASC, c.last_active DESC
     </select>
 
     <!-- =============================================
@@ -88,6 +89,15 @@
     <update id="softDelete">
         UPDATE CHATBOT_CONVERSATION
            SET is_deleted = 1
+         WHERE conversation_id = #{conversationId}
+    </update>
+
+    <!-- =============================================
+         7.5. 정렬 순서 갱신 (드래그앤드롭)
+         ============================================= -->
+    <update id="updateSortOrder">
+        UPDATE CHATBOT_CONVERSATION
+           SET sort_order = #{sortOrder}
          WHERE conversation_id = #{conversationId}
     </update>
 

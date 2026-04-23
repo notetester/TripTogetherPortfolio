@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminAssistantModerationMapper">
+
+    <resultMap id="moderationRM" type="org.triptogether.admin.vo.AdminAssistantModerationVO">
+        <id     property="moderationId"        column="moderation_id"/>
+        <result property="chatCommentIdx"      column="chat_comment_idx"/>
+        <result property="isInappropriate"     column="is_inappropriate"/>
+        <result property="toxicityScore"       column="toxicity_score"/>
+        <result property="checkedAt"           column="checked_at"/>
+        <result property="chatPostIdx"         column="chat_post_idx"/>
+        <result property="userIdx"             column="user_idx"/>
+        <result property="nickname"            column="nickname"/>
+        <result property="content"             column="content"/>
+        <result property="messageCreatedAt"    column="message_created_at"/>
+    </resultMap>
+
+    <!--
+        아직 판정 안 된 user 메시지의 chat_comment_idx 목록.
+        CHAT_COMMENT 에서 comment_role='USER' 이고 MODERATION 에 없는 것.
+    -->
+    <select id="selectPendingUserCommentIds" resultType="long">
+        SELECT c.chat_comment_idx
+        FROM CHAT_COMMENT c
+        LEFT JOIN ADMIN_ASSISTANT_MODERATION m
+            ON m.chat_comment_idx = c.chat_comment_idx
+        WHERE c.comment_role = 'USER'
+          AND m.moderation_id IS NULL
+        ORDER BY c.chat_comment_idx ASC
+        LIMIT #{limit}
+    </select>
+
+    <insert id="insertModeration">
+        INSERT INTO ADMIN_ASSISTANT_MODERATION
+            (chat_comment_idx, is_inappropriate, toxicity_score, checked_at)
+        VALUES
+            (#{chatCommentIdx}, #{isInappropriate}, #{toxicityScore}, NOW())
+        ON DUPLICATE KEY UPDATE
+            is_inappropriate = VALUES(is_inappropriate),
+            toxicity_score   = VALUES(toxicity_score),
+            checked_at       = NOW()
+    </insert>
+
+    <select id="selectInappropriateMessages" resultMap="moderationRM">
+        SELECT
+            m.moderation_id, m.chat_comment_idx, m.is_inappropriate,
+            m.toxicity_score, m.checked_at,
+            c.chat_post_idx, c.user_idx, c.content, c.created_at AS message_created_at,
+            u.nickname
+        FROM ADMIN_ASSISTANT_MODERATION m
+        JOIN CHAT_COMMENT c ON c.chat_comment_idx = m.chat_comment_idx
+        LEFT JOIN USERS u ON u.user_idx = c.user_idx
+        WHERE m.is_inappropriate = 1
+        ORDER BY m.checked_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countInappropriateMessages" resultType="int">
+        SELECT COUNT(*)
+        FROM ADMIN_ASSISTANT_MODERATION
+        WHERE is_inappropriate = 1
+    </select>
+
+</mapper>

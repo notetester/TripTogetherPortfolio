@@ -30,6 +30,10 @@
         <aside id="cb-sidebar" class="cb-sidebar">
             <button type="button" id="cb-new" class="cb-new-btn"><spring:message code="footer.chatbot.newConversation"/></button>
             <div id="cb-conv-list" class="cb-conv-list"></div>
+            <button type="button" id="cb-reset" class="cb-new-btn cb-new-btn--reset"
+                    title="<spring:message code="footer.chatbot.header.reset"/>" hidden>
+                <spring:message code="footer.chatbot.header.reset"/>
+            </button>
         </aside>
     </c:if>
 
@@ -50,6 +54,13 @@
         <div class="cb-body" id="cb-body"></div>
 
         <div class="cb-footer">
+            <%-- 비로그인 유저용 초기화 버튼 (로그인 유저는 사이드바 하단에 있음) --%>
+            <c:if test="${empty sessionScope.loginUser}">
+                <button type="button" id="cb-reset" class="cb-new-btn cb-new-btn--reset cb-reset-inline"
+                        title="<spring:message code="footer.chatbot.header.reset"/>" hidden>
+                    ↻ <spring:message code="footer.chatbot.header.reset"/>
+                </button>
+            </c:if>
             <div class="cb-suggestions" id="cb-suggestions"></div>
             <div class="cb-input-row">
                 <textarea id="cb-input" placeholder="<spring:message code="footer.chatbot.placeholder"/>" rows="1"></textarea>
@@ -79,10 +90,14 @@
             welcomeBody1:         '<spring:message code="footer.chatbot.welcome.body1" javaScriptEscape="true"/>',
             welcomeBody2:         '<spring:message code="footer.chatbot.welcome.body2" javaScriptEscape="true"/>',
             error:                '<spring:message code="footer.chatbot.error" javaScriptEscape="true"/>',
-            untitledConversation: '<spring:message code="footer.chatbot.untitledConversation" javaScriptEscape="true"/>',
-            menuPrompt:           '<spring:message code="footer.chatbot.menu.prompt" javaScriptEscape="true"/>',
-            renamePrompt:         '<spring:message code="footer.chatbot.menu.renamePrompt" javaScriptEscape="true"/>',
-            deleteConfirm:        '<spring:message code="footer.chatbot.menu.deleteConfirm" javaScriptEscape="true"/>'
+            menuRename:           '<spring:message code="footer.chatbot.menu.rename" javaScriptEscape="true"/>',
+            menuDelete:           '<spring:message code="footer.chatbot.menu.delete" javaScriptEscape="true"/>',
+            confirmDelete:        '<spring:message code="footer.chatbot.confirm.delete" javaScriptEscape="true"/>',
+            confirmReset:         '<spring:message code="footer.chatbot.confirm.reset" javaScriptEscape="true"/>',
+            confirmYes:           '<spring:message code="footer.chatbot.confirm.yes" javaScriptEscape="true"/>',
+            confirmNo:            '<spring:message code="footer.chatbot.confirm.no" javaScriptEscape="true"/>',
+            editPlaceholder:      '<spring:message code="footer.chatbot.edit.placeholder" javaScriptEscape="true"/>',
+            openNewTab:           '<spring:message code="footer.chatbot.link.newtab" javaScriptEscape="true"/>'
         }
     };
 </script>

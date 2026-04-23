@@ -6,10 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.*;
 import org.triptogether.auth.vo.UserRole;
 import org.triptogether.perspective.PerspectiveService;
+
+import org.jsoup.Jsoup;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -229,8 +232,9 @@ public class CommunityController {
             communityService.savePostIp(postId, getClientIp(request));
 
             // AI 욕설 감지 비동기 실행: 응답 지연 없이 백그라운드에서 처리됨
-            String text = (writeDto.getTitle() != null ? writeDto.getTitle() : "") + " "
-                        + (writeDto.getContent() != null ? writeDto.getContent() : "");
+            // Summernote가 HTML을 저장하므로 Perspective에는 plain text로 넘김
+            String contentText = stripHtml(writeDto.getContent());
+            String text = (writeDto.getTitle() != null ? writeDto.getTitle() : "") + " " + contentText;
             perspectiveService.checkAndFlagPostAsync(postId, text);
 
             result.put("success", true);
@@ -243,6 +247,57 @@ public class CommunityController {
             log.error("글쓰기 오류", e);
             result.put("success", false);
             result.put("message", "등록 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /community/inline-image - Summernote 에디터 인라인 이미지 업로드
+       ============================================= */
+    /**
+     * Summernote 에디터 내부(본문)에 삽입할 이미지 1개를 Cloudinary에 업로드하고 URL을 반환한다.
+     * - 비로그인 시 401, 차단된 계정 시 403 반환
+     * - 업로드 폴더: community/inline (대표이미지용 community/ 와 분리)
+     */
+    @PostMapping("/inline-image")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> uploadInlineImage(
+            @RequestParam("file") MultipartFile file,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (session.getAttribute("loginUser") == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(401).body(result);
+        }
+        if (isBlocked(session)) {
+            result.put("success", false);
+            result.put("message", "차단된 계정은 이미지를 업로드할 수 없습니다.");
+            return ResponseEntity.status(403).body(result);
+        }
+        if (file == null || file.isEmpty()) {
+            result.put("success", false);
+            result.put("message", "파일이 비어있습니다.");
+            return ResponseEntity.badRequest().body(result);
+        }
+
+        try {
+            String url = communityService.uploadInlineImage(file);
+            if (url == null || url.isBlank()) {
+                result.put("success", false);
+                result.put("message", "이미지 업로드에 실패했습니다. 허용되지 않는 파일 형식일 수 있습니다.");
+                return ResponseEntity.status(500).body(result);
+            }
+            result.put("success", true);
+            result.put("url", url);
+        } catch (Exception e) {
+            log.error("인라인 이미지 업로드 오류", e);
+            result.put("success", false);
+            result.put("message", "업로드 중 오류가 발생했습니다.");
             return ResponseEntity.status(500).body(result);
         }
 
@@ -304,9 +359,10 @@ public class CommunityController {
             Long loginUserIdx = getLoginUserIdx(session);
             communityService.editPost(postId, writeDto, existingImages, loginUserIdx);
 
+            // Summernote HTML → plain text (Perspective 정확도 보장)
             perspectiveService.checkAndFlagPostAsync(postId,
                     (writeDto.getTitle() != null ? writeDto.getTitle() : "") + " "
-                  + (writeDto.getContent() != null ? writeDto.getContent() : ""));
+                  + stripHtml(writeDto.getContent()));
 
             result.put("success", true);
             result.put("postId", postId);
@@ -1021,5 +1077,14 @@ public class CommunityController {
     private void bulkBlockIps(List<String> ips, String reason) {
         if (ips == null || ips.isEmpty()) return;
         ipBlockMapper.insertBlockedIps(ips, reason);
+    }
+
+    /**
+     * Summernote가 저장한 HTML 본문에서 태그를 제거해 plain text로 변환한다.
+     * Perspective API는 HTML 태그를 인용문으로 오인할 수 있어 정확도 확보를 위해 필수.
+     */
+    private String stripHtml(String html) {
+        if (html == null || html.isBlank()) return "";
+        return Jsoup.parse(html).text();
     }
 }

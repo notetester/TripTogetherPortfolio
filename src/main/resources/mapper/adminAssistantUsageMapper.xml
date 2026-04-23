@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminAssistantUsageMapper">
+
+    <resultMap id="usageRM" type="org.triptogether.admin.vo.AdminAssistantUsageVO">
+        <id     property="usageId"       column="usage_id"/>
+        <result property="userIdx"       column="user_idx"/>
+        <result property="ipAddress"     column="ip_address"/>
+        <result property="periodStart"   column="period_start"/>
+        <result property="sessionCount"  column="session_count"/>
+        <result property="messageCount"  column="message_count"/>
+    </resultMap>
+
+    <select id="selectUsage" resultMap="usageRM">
+        SELECT usage_id, user_idx, ip_address, period_start, session_count, message_count
+        FROM ADMIN_ASSISTANT_DAILY_USAGE
+        WHERE period_start = #{periodStart}
+          <choose>
+              <when test="userIdx != null">AND user_idx = #{userIdx}</when>
+              <otherwise>AND ip_address = #{ipAddress}</otherwise>
+          </choose>
+        LIMIT 1
+    </select>
+
+    <!--
+        메시지 카운트 upsert (+1)
+        - UNIQUE KEY (user_idx, period_start) / (ip_address, period_start) 둘 중 하나 매치
+        - 매치되면 UPDATE, 없으면 INSERT
+    -->
+    <insert id="upsertMessageIncrement">
+        INSERT INTO ADMIN_ASSISTANT_DAILY_USAGE
+            (user_idx, ip_address, period_start, session_count, message_count)
+        VALUES
+            (#{userIdx}, #{ipAddress}, #{periodStart}, 0, 1)
+        ON DUPLICATE KEY UPDATE
+            message_count = message_count + 1
+    </insert>
+
+    <insert id="upsertSessionIncrement">
+        INSERT INTO ADMIN_ASSISTANT_DAILY_USAGE
+            (user_idx, ip_address, period_start, session_count, message_count)
+        VALUES
+            (#{userIdx}, #{ipAddress}, #{periodStart}, 1, 0)
+        ON DUPLICATE KEY UPDATE
+            session_count = session_count + 1
+    </insert>
+
+    <!--
+        메시지 카운트 -amount (세션 삭제 환급용)
+        - 레코드 없으면 no-op (UPDATE 0건)
+        - GREATEST 로 음수 방지
+    -->
+    <update id="decreaseMessageCount">
+        UPDATE ADMIN_ASSISTANT_DAILY_USAGE
+           SET message_count = GREATEST(0, message_count - #{amount})
+         WHERE period_start = #{periodStart}
+        <choose>
+            <when test="userIdx != null">AND user_idx = #{userIdx}</when>
+            <otherwise>AND ip_address = #{ipAddress}</otherwise>
+        </choose>
+    </update>
+
+</mapper>

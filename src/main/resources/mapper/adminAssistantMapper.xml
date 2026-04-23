@@ -163,4 +163,25 @@
         DELETE FROM CHAT_POST WHERE chat_post_idx = #{chatPostIdx}
     </delete>
 
+    <!-- ══════════════════════════════════════════
+         한도/모더레이션 enforcement 지원
+    ══════════════════════════════════════════ -->
+    <select id="countChatPostsByUser" resultType="int">
+        SELECT COUNT(*) FROM CHAT_POST WHERE user_idx = #{userIdx}
+    </select>
+
+    <select id="selectCommentContent" resultType="string">
+        SELECT content FROM CHAT_COMMENT WHERE chat_comment_idx = #{chatCommentIdx}
+    </select>
+
+    <!-- 세션 삭제 환급용 -->
+    <select id="countUserMessagesInSession" resultType="int">
+        SELECT COUNT(*) FROM CHAT_COMMENT
+        WHERE chat_post_idx = #{chatPostIdx} AND comment_role = 'USER'
+    </select>
+
+    <select id="selectUserGrade" resultType="string">
+        SELECT member_grade FROM USERS WHERE user_idx = #{userIdx}
+    </select>
+
 </mapper>
