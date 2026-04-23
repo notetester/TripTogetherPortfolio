@@ -11,6 +11,8 @@ import org.triptogether.community.vo.*;
 import org.triptogether.auth.vo.UserRole;
 import org.triptogether.perspective.PerspectiveService;
 
+import org.jsoup.Jsoup;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.triptogether.config.IpBlockMapper;
@@ -229,8 +231,9 @@ public class CommunityController {
             communityService.savePostIp(postId, getClientIp(request));
 
             // AI 욕설 감지 비동기 실행: 응답 지연 없이 백그라운드에서 처리됨
-            String text = (writeDto.getTitle() != null ? writeDto.getTitle() : "") + " "
-                        + (writeDto.getContent() != null ? writeDto.getContent() : "");
+            // Summernote가 HTML을 저장하므로 Perspective에는 plain text로 넘김
+            String contentText = stripHtml(writeDto.getContent());
+            String text = (writeDto.getTitle() != null ? writeDto.getTitle() : "") + " " + contentText;
             perspectiveService.checkAndFlagPostAsync(postId, text);
 
             result.put("success", true);
@@ -304,9 +307,10 @@ public class CommunityController {
             Long loginUserIdx = getLoginUserIdx(session);
             communityService.editPost(postId, writeDto, existingImages, loginUserIdx);
 
+            // Summernote HTML → plain text (Perspective 정확도 보장)
             perspectiveService.checkAndFlagPostAsync(postId,
                     (writeDto.getTitle() != null ? writeDto.getTitle() : "") + " "
-                  + (writeDto.getContent() != null ? writeDto.getContent() : ""));
+                  + stripHtml(writeDto.getContent()));
 
             result.put("success", true);
             result.put("postId", postId);
@@ -1021,5 +1025,14 @@ public class CommunityController {
     private void bulkBlockIps(List<String> ips, String reason) {
         if (ips == null || ips.isEmpty()) return;
         ipBlockMapper.insertBlockedIps(ips, reason);
+    }
+
+    /**
+     * Summernote가 저장한 HTML 본문에서 태그를 제거해 plain text로 변환한다.
+     * Perspective API는 HTML 태그를 인용문으로 오인할 수 있어 정확도 확보를 위해 필수.
+     */
+    private String stripHtml(String html) {
+        if (html == null || html.isBlank()) return "";
+        return Jsoup.parse(html).text();
     }
 }

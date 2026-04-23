@@ -31,6 +31,12 @@
 <spring:message code="community.write.tag.placeholder" var="communityWriteTagPlaceholder"/>
 <spring:message code="community.write.title.placeholder" var="communityWriteTitlePlaceholder"/>
 
+<%-- Summernote CDN (WYSIWYG 에디터) --%>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.9.1/dist/summernote-lite.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.1/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.1/dist/lang/summernote-ko-KR.min.js"></script>
+
 <%-- 비로그인 체크 --%>
 <c:if test="${empty sessionScope.loginUser}">
   <c:redirect url="/auth/login"/>
@@ -131,11 +137,9 @@
             <spring:message code="community.write.content.label"/> <span class="required">*</span>
           </label>
           <textarea id="writeContent" name="content" class="write-textarea"
-                    placeholder="${communityWriteContentPlaceholder}"
-                    rows="12" maxlength="3000"
-                    oninput="document.getElementById('contentCount').textContent=this.value.length"><c:if test="${isEdit}">${post.content}</c:if></textarea>
+                    placeholder="${communityWriteContentPlaceholder}"><c:if test="${isEdit}">${fn:escapeXml(post.content)}</c:if></textarea>
           <div class="input-counter">
-            <span id="contentCount">${isEdit ? fn:length(post.content) : 0}</span>/3000
+            <span id="contentCount">0</span>/3000
           </div>
           <div class="write-bottom-actions">
             <button type="button" class="btn-cancel" onclick="cancelWrite()"><spring:message code="community.write.cancel"/></button>
@@ -290,6 +294,13 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+/* Summernote HTML → plain text 변환 (글자수 카운트·빈값 검증용) */
+function htmlToPlainText(html) {
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html || '';
+  return (tmp.textContent || tmp.innerText || '').trim();
 }
 
 var writeMessages = {
@@ -447,22 +458,19 @@ function selectType(type, btn) {
   var cfg = TYPE_CONFIG[type];
   document.getElementById('writePageTitle').textContent = cfg.title;
 
-  /* 사진 유형이면 본문 비활성화 */
+  /* 사진 유형이면 본문 비활성화 (Summernote 제어) */
   var contentArea    = document.getElementById('writeContent');
   var contentSection = contentArea.closest('.write-section');
+  var $editor = (window.jQuery && jQuery('#writeContent').data('summernote')) ? jQuery('#writeContent') : null;
   if (type === 'photo') {
-    contentArea.readOnly = true;
-    contentArea.value       = '';
-    contentArea.placeholder = writeMessages.contentPhotoOnly;
-    contentArea.style.background = '#f3f4f6';
-    contentArea.style.color      = '#9ca3af';
+    if ($editor) {
+      $editor.summernote('code', '');
+      $editor.summernote('disable');
+    }
+    contentArea.value = '';
     contentSection.style.opacity = '0.5';
   } else {
-    contentArea.readOnly    = false;
-    contentArea.disabled    = false;
-    contentArea.placeholder = writeMessages.contentPlaceholder;
-    contentArea.style.background = '';
-    contentArea.style.color      = '';
+    if ($editor) $editor.summernote('enable');
     contentSection.style.opacity = '';
   }
   MAX_IMAGES = cfg.imgMax;
@@ -623,9 +631,16 @@ function renderTags() {
 
 function submitWrite() {
   var title   = document.getElementById('writeTitle').value.trim();
-  var content = document.getElementById('writeContent').value.trim();
   var type    = document.getElementById('postType').value;
   var region  = document.getElementById('regionInput').value;
+
+  /* Summernote HTML을 textarea에 동기화 (FormData가 최신값을 읽도록) */
+  var $editor = (window.jQuery && jQuery('#writeContent').data('summernote')) ? jQuery('#writeContent') : null;
+  if ($editor) {
+    document.getElementById('writeContent').value = $editor.summernote('code');
+  }
+  var contentHtml = document.getElementById('writeContent').value;
+  var contentText = htmlToPlainText(contentHtml);
 
   /* 지역 태그 강제 포함 */
   var regionTag = REGION_TAG_VALUE[region];
@@ -639,9 +654,10 @@ function submitWrite() {
     document.getElementById('writeTitle').focus();
     return;
   }
-  if (!content && type !== 'photo') {
+  if (!contentText && type !== 'photo') {
     alert(writeMessages.errors.contentRequired);
-    document.getElementById('writeContent').focus();
+    if ($editor) $editor.summernote('focus');
+    else document.getElementById('writeContent').focus();
     return;
   }
   if (type === 'photo' && uploadedFiles.length === 0) {
@@ -651,8 +667,8 @@ function submitWrite() {
 
   /* 사진 유형이면 content를 빈 문자열로 강제 설정 */
   if (type === 'photo') {
+    if ($editor) $editor.summernote('code', '');
     document.getElementById('writeContent').value = '';
-    document.getElementById('writeContent').readOnly = false;
   }
 
   var formData = new FormData(document.getElementById('writeForm'));
@@ -699,8 +715,10 @@ function resetWrite() {
 
 function cancelWrite() {
   var title   = document.getElementById('writeTitle').value;
-  var content = document.getElementById('writeContent').value;
-  if (title || content) {
+  var $editor = (window.jQuery && jQuery('#writeContent').data('summernote')) ? jQuery('#writeContent') : null;
+  var contentHtml = $editor ? $editor.summernote('code') : document.getElementById('writeContent').value;
+  var contentText = htmlToPlainText(contentHtml);
+  if (title || contentText) {
     if (!confirm(writeMessages.cancelConfirm)) return;
   }
   if (IS_EDIT) {
@@ -709,6 +727,59 @@ function cancelWrite() {
     location.href = CTX + '/community/list';
   }
 }
+</script>
+
+<script>
+/* =============================================
+   Summernote 에디터 초기화
+   - textarea 초기값(isEdit 시 기존 post.content)은 자동 반영
+   - onChange 콜백에서 plain text 글자수 카운터 갱신
+   - onImageUpload: Phase 1 임시 base64 삽입 (Phase 2에서 Cloudinary 업로드로 교체 예정)
+   ============================================= */
+jQuery(function($) {
+  $('#writeContent').summernote({
+    lang: 'ko-KR',
+    height: 300,
+    minHeight: 240,
+    placeholder: writeMessages.contentPlaceholder,
+    focus: false,
+    disableResizeEditor: false,
+    toolbar: [
+      ['style', ['style']],
+      ['font',  ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+      ['fontsize', ['fontsize']],
+      ['color', ['color']],
+      ['para',  ['ul', 'ol', 'paragraph']],
+      ['insert',['link', 'picture']],
+      ['view',  ['fullscreen', 'codeview']]
+    ],
+    callbacks: {
+      onChange: function(contents) {
+        var plain = htmlToPlainText(contents);
+        document.getElementById('contentCount').textContent = plain.length;
+      },
+      onImageUpload: function(files) {
+        /* Phase 1 임시: base64 inline. Phase 2에서 Cloudinary 업로드로 교체 */
+        for (var i = 0; i < files.length; i++) {
+          (function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+              var img = document.createElement('img');
+              img.src = e.target.result;
+              img.style.maxWidth = '100%';
+              $('#writeContent').summernote('insertNode', img);
+            };
+            reader.readAsDataURL(file);
+          })(files[i]);
+        }
+      }
+    }
+  });
+
+  /* 초기 글자수 카운터 (isEdit 시 기존 본문 기준) */
+  var initialHtml = document.getElementById('writeContent').value;
+  document.getElementById('contentCount').textContent = htmlToPlainText(initialHtml).length;
+});
 </script>
 
 <%@ include file="../common/footer.jsp" %>
