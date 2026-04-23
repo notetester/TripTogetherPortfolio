@@ -3,6 +3,7 @@ package org.triptogether.common.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.triptogether.courses.mapper.TravelPlanMapper;
 import org.triptogether.explore.mapper.ExploreMapper;
 
 import java.util.*;
@@ -25,6 +26,7 @@ public class IntentContextService {
     private static final int MAX_KEYWORDS = 5;        // 너무 많은 토큰은 LIKE 비용 커짐
     private static final int MIN_KEYWORD_LEN = 2;
     private static final int SPOT_CANDIDATE_LIMIT = 5;
+    private static final int PLAN_CANDIDATE_LIMIT = 5;
 
     // 여행 질문에 흔히 섞이는 불용어. 키워드로서 의미 없는 것만 제외.
     // 대소문자 무시 비교를 위해 소문자로 저장.
@@ -60,6 +62,7 @@ public class IntentContextService {
     );
 
     private final ExploreMapper exploreMapper;
+    private final TravelPlanMapper travelPlanMapper;
 
     /**
      * 메시지에서 키워드 추출 후 매칭되는 사이트 콘텐츠를 조회해 프롬프트 섹션 문자열을 만든다.
@@ -69,21 +72,52 @@ public class IntentContextService {
         List<String> keywords = extractKeywords(userMessage);
         if (keywords.isEmpty()) return "";
 
-        List<Map<String, Object>> spots;
-        try {
-            spots = exploreMapper.searchSpotsByKeywords(keywords, SPOT_CANDIDATE_LIMIT);
-        } catch (Exception e) {
-            log.warn("[Chatbot] 여행지 후보 조회 실패 — keywords={}, 원인={}", keywords, e.getMessage());
-            return "";
-        }
+        List<Map<String, Object>> spots = safeSearchSpots(keywords);
+        List<Map<String, Object>> plans = safeSearchPlans(keywords);
 
-        if (spots == null || spots.isEmpty()) return "";
+        if (spots.isEmpty() && plans.isEmpty()) return "";
 
         StringBuilder sb = new StringBuilder();
         sb.append("## 실시간 후보 데이터\n");
-        sb.append("사용자 언급 키워드: ").append(keywords).append("\n\n");
+        sb.append("사용자 언급 키워드: ").append(keywords).append("\n");
 
-        sb.append("### 여행지 후보 (링크 형식: /detail/{spotIdx})\n");
+        if (!spots.isEmpty()) appendSpotsSection(sb, spots);
+        if (!plans.isEmpty()) appendPlansSection(sb, plans);
+
+        sb.append("\n중요 지침:\n");
+        sb.append("- links 의 url 은 반드시 위 후보의 실제 id 를 사용하세요.\n");
+        sb.append("- 여행지 상세: /detail/{spotIdx}, 코스 상세: /courses/detail?planId={planId}\n");
+        sb.append("- 존재하지 않는 id 는 절대 만들지 마세요.\n");
+        sb.append("- 후보가 비어있는 카테고리는 일반 list 페이지(/explore, /courses)만 제시하세요.\n");
+        return sb.toString();
+    }
+
+    // ── 모듈별 조회 (실패 시 빈 리스트) ──
+
+    private List<Map<String, Object>> safeSearchSpots(List<String> keywords) {
+        try {
+            List<Map<String, Object>> rows = exploreMapper.searchSpotsByKeywords(keywords, SPOT_CANDIDATE_LIMIT);
+            return rows != null ? rows : List.of();
+        } catch (Exception e) {
+            log.warn("[Chatbot] 여행지 후보 조회 실패 — keywords={}, 원인={}", keywords, e.getMessage());
+            return List.of();
+        }
+    }
+
+    private List<Map<String, Object>> safeSearchPlans(List<String> keywords) {
+        try {
+            List<Map<String, Object>> rows = travelPlanMapper.searchPlansByKeywords(keywords, PLAN_CANDIDATE_LIMIT);
+            return rows != null ? rows : List.of();
+        } catch (Exception e) {
+            log.warn("[Chatbot] 코스 후보 조회 실패 — keywords={}, 원인={}", keywords, e.getMessage());
+            return List.of();
+        }
+    }
+
+    // ── 섹션 빌더 ──
+
+    private void appendSpotsSection(StringBuilder sb, List<Map<String, Object>> spots) {
+        sb.append("\n### 여행지 후보 (링크 형식: /detail/{spotIdx})\n");
         for (Map<String, Object> row : spots) {
             Object idx = row.get("spotIdx");
             Object name = row.get("name");
@@ -100,12 +134,23 @@ public class IntentContextService {
               .append(desc != null ? " — " + truncate(String.valueOf(desc), 80) : "")
               .append("\n");
         }
+    }
 
-        sb.append("\n중요 지침:\n");
-        sb.append("- links 의 url 은 반드시 위 후보의 실제 spotIdx 를 사용하세요. 예: /detail/2\n");
-        sb.append("- 존재하지 않는 id 는 절대 만들지 마세요.\n");
-        sb.append("- 후보가 비어있으면 일반 list 페이지(/explore)만 제시하세요.\n");
-        return sb.toString();
+    private void appendPlansSection(StringBuilder sb, List<Map<String, Object>> plans) {
+        sb.append("\n### 여행 코스 후보 (링크 형식: /courses/detail?planId={planId})\n");
+        for (Map<String, Object> row : plans) {
+            Object id = row.get("planId");
+            Object title = row.get("title");
+            Object destination = row.get("destination");
+            Object start = row.get("startDate");
+            Object end = row.get("endDate");
+
+            sb.append("- planId=").append(id)
+              .append(", \"").append(title).append("\"")
+              .append(destination != null ? " (목적지: " + destination + ")" : "")
+              .append((start != null && end != null) ? " · " + start + "~" + end : "")
+              .append("\n");
+        }
     }
 
     // ── 내부 유틸 ──

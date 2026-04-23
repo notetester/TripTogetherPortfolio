@@ -138,4 +138,26 @@
         AND is_deleted = 0
     </select>
 
+    <!-- 챗봇 컨텍스트용 공개 코스 다중 키워드 검색 -->
+    <select id="searchPlansByKeywords" resultType="java.util.HashMap">
+        SELECT
+            tp.plan_id     AS planId,
+            tp.title       AS title,
+            tp.destination AS destination,
+            tp.start_date  AS startDate,
+            tp.end_date    AS endDate,
+            tp.created_at  AS createdAt
+        FROM TRAVEL_PLAN tp
+        WHERE tp.is_public = 1
+          AND tp.is_deleted = 0
+          AND (
+          <foreach collection="keywords" item="kw" separator=" OR ">
+                tp.title       LIKE CONCAT('%', #{kw}, '%')
+             OR tp.destination LIKE CONCAT('%', #{kw}, '%')
+          </foreach>
+          )
+        ORDER BY tp.created_at DESC
+        LIMIT #{limit}
+    </select>
+
 </mapper>
