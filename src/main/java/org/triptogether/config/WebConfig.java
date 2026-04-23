@@ -56,6 +56,7 @@ public class WebConfig implements WebMvcConfigurer {
         messageSource.setBasenames(
                 "classpath:messages/admin",
                 "classpath:messages/auth",
+                "classpath:messages/chatbot",
                 "classpath:messages/community",
                 "classpath:messages/detail",
                 "classpath:messages/explore",

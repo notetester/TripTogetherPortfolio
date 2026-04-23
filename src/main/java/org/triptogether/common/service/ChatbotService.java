@@ -4,6 +4,8 @@ import com.google.gson.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -44,6 +46,7 @@ public class ChatbotService {
     private final ConversationService conversationService;
     private final IntentContextService intentContextService;
     private final ChatbotFastPathService fastPathService;
+    private final MessageSource messageSource;
 
     @Value("${gemini.api.key}")
     private String geminiApiKey;
@@ -132,6 +135,12 @@ public class ChatbotService {
             - 사이트와 무관한 질문 (날씨, 주식, 정치, 연예인 등 순수 잡담)
             - 개인정보 요구 또는 제공
             - 스팸성 반복 메시지
+
+            ## 다국어 응답 규칙
+            - 사용자 메시지 언어를 자동 감지해 message / quickReplies / links.label / links.icon 뒤 텍스트를 **사용자 언어와 동일 언어로** 작성하세요.
+              예: 사용자가 영어로 물어보면 영어로, 일본어면 일본어로, 중국어면 중국어로 답하세요.
+            - 시스템 프롬프트와 실시간 후보 데이터가 한국어여도 응답 언어에 맞춰 자연스럽게 번역해 활용하세요.
+            - url 값은 언어와 무관하게 원본 경로를 그대로 사용하세요.
             """;
 
     // ══════════════════════════════════════════════════════════
@@ -268,7 +277,7 @@ public class ChatbotService {
 
         List<ChatbotResponseVO.SiteLink> mutable = links != null ? new ArrayList<>(links) : new ArrayList<>();
         mutable.add(ChatbotResponseVO.SiteLink.builder()
-                .label(kw + " 관련 패키지 둘러보기")
+                .label(msg("chatbot.related.packages", kw))
                 .url("/packages")
                 .icon("🎁")
                 .build());
@@ -560,23 +569,24 @@ public class ChatbotService {
     }
 
     // ══════════════════════════════════════════════════════════
-    // 특수 응답
+    // 특수 응답 (메시지는 messages/chatbot_*.properties 에서 로드)
     // ══════════════════════════════════════════════════════════
     private ChatbotResponseVO safetyBlockedResponse() {
         return ChatbotResponseVO.builder()
-                .message("해당 질문에는 답변하기 어려워요. 여행 관련 질문으로 다시 물어봐 주세요.")
+                .message(msg("chatbot.resp.safetyBlocked"))
                 .links(List.of())
-                .quickReplies(List.of("인기 여행지 추천", "여행 코스 보기"))
+                .quickReplies(List.of(msg("chatbot.quick.popularSpots"),
+                                      msg("chatbot.quick.courseRecommend")))
                 .inappropriate(true)
                 .build();
     }
 
     private ChatbotResponseVO blockedResponse() {
         return ChatbotResponseVO.builder()
-                .message("죄송합니다. 현재 챗봇 이용이 제한된 상태입니다. 문의사항은 고객센터로 연락해 주세요.")
+                .message(msg("chatbot.resp.blocked"))
                 .links(List.of(
                         ChatbotResponseVO.SiteLink.builder()
-                                .label("문의하기").url("/inquiry/list").icon("📩").build()
+                                .label(msg("chatbot.link.inquiry")).url("/inquiry/list").icon("📩").build()
                 ))
                 .quickReplies(List.of())
                 .inappropriate(false)
@@ -585,7 +595,7 @@ public class ChatbotService {
 
     private ChatbotResponseVO quotaExceededResponse(int limit) {
         return ChatbotResponseVO.builder()
-                .message("오늘의 채팅 한도(" + limit + "건)를 모두 사용했어요. 내일 다시 만나요!")
+                .message(msg("chatbot.resp.quotaExceeded", limit))
                 .links(List.of())
                 .quickReplies(List.of())
                 .inappropriate(false)
@@ -594,7 +604,7 @@ public class ChatbotService {
 
     private ChatbotResponseVO conversationLimitResponse(int limit) {
         return ChatbotResponseVO.builder()
-                .message("대화 수 한도(" + limit + "개)에 도달했어요. 기존 대화를 삭제하거나 이어서 진행해 주세요.")
+                .message(msg("chatbot.resp.conversationLimit", limit))
                 .links(List.of())
                 .quickReplies(List.of())
                 .inappropriate(false)
@@ -603,14 +613,19 @@ public class ChatbotService {
 
     private ChatbotResponseVO fallbackResponse() {
         return ChatbotResponseVO.builder()
-                .message("죄송해요, 잠시 문제가 생겼어요. 아래 링크를 이용해보세요! 🙏")
+                .message(msg("chatbot.resp.fallback"))
                 .links(List.of(
-                        ChatbotResponseVO.SiteLink.builder().label("여행지 탐색").url("/explore").icon("📍").build(),
-                        ChatbotResponseVO.SiteLink.builder().label("AI 도우미").url("/assistant").icon("✨").build(),
-                        ChatbotResponseVO.SiteLink.builder().label("커뮤니티").url("/community/list").icon("💬").build()
+                        ChatbotResponseVO.SiteLink.builder().label(msg("chatbot.link.explore")).url("/explore").icon("📍").build(),
+                        ChatbotResponseVO.SiteLink.builder().label(msg("chatbot.link.assistant")).url("/assistant").icon("✨").build(),
+                        ChatbotResponseVO.SiteLink.builder().label(msg("chatbot.link.community")).url("/community/list").icon("💬").build()
                 ))
-                .quickReplies(List.of("인기 여행지 추천", "여행 코스 보기"))
+                .quickReplies(List.of(msg("chatbot.quick.popularSpots"),
+                                      msg("chatbot.quick.courseRecommend")))
                 .inappropriate(false)
                 .build();
+    }
+
+    private String msg(String code, Object... args) {
+        return messageSource.getMessage(code, args, code, LocaleContextHolder.getLocale());
     }
 }
