@@ -329,16 +329,76 @@
                 const role = m.role === 'user' ? '유저' : 'AI';
                 const color = m.role === 'user' ? '#1d4ed8' : '#0f766e';
                 const flag = m.isInappropriate ? ' ⚠️' : '';
-                const content = (m.content || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const body = m.role === 'assistant'
+                    ? renderAssistantContent(m.content)
+                    : '<div style="font-size:13px;margin-top:4px;white-space:pre-wrap;">' + escHtml(m.content || '') + '</div>';
                 return '<div style="margin-bottom:12px;padding:10px;border-left:3px solid ' + color + ';background:#f8fafc;">' +
                        '<div style="font-size:11px;color:' + color + ';font-weight:600;">' + role + flag + '</div>' +
-                       '<div style="font-size:13px;margin-top:4px;white-space:pre-wrap;">' + content + '</div>' +
+                       body +
                        '</div>';
             }).join('');
             document.getElementById('msgModalBody').innerHTML = html || '<div>메시지가 없습니다.</div>';
             document.getElementById('msgModal').style.display = 'flex';
         } catch (e) { alert('조회 중 오류'); }
     };
+
+    // assistant 메시지 content 렌더링
+    //   - JSON 파싱 성공: message 텍스트 + links + quickReplies + inappropriate 를 블록으로 분리 표시
+    //   - 파싱 실패 (구버전 단순 텍스트): 원문 그대로
+    function renderAssistantContent(raw) {
+        if (raw == null) return '';
+        let parsed = null;
+        try {
+            const maybe = JSON.parse(raw);
+            if (maybe && typeof maybe === 'object' && typeof maybe.message === 'string') parsed = maybe;
+        } catch (e) {}
+
+        if (!parsed) {
+            return '<div style="font-size:13px;margin-top:4px;white-space:pre-wrap;">' + escHtml(raw) + '</div>';
+        }
+
+        let out = '<div style="font-size:13px;margin-top:4px;white-space:pre-wrap;">' + escHtml(parsed.message) + '</div>';
+
+        if (parsed.inappropriate === true) {
+            out += '<div style="margin-top:6px;display:inline-block;font-size:11px;font-weight:700;color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:2px 8px;border-radius:10px;">⚠️ inappropriate</div>';
+        }
+
+        if (Array.isArray(parsed.links) && parsed.links.length > 0) {
+            out += '<div style="margin-top:8px;font-size:11px;color:#64748b;font-weight:600;">🔗 제시된 링크</div>';
+            out += '<div style="margin-top:4px;display:flex;flex-direction:column;gap:3px;">';
+            parsed.links.forEach(function (l) {
+                const label = escHtml(l.label || '');
+                const url = escHtml(l.url || '');
+                const icon = escHtml(l.icon || '→');
+                out += '<div style="font-size:12px;">' +
+                       '<span style="margin-right:4px;">' + icon + '</span>' +
+                       '<span style="color:#1e293b;font-weight:500;">' + label + '</span>' +
+                       '<span style="margin-left:6px;color:#94a3b8;font-family:monospace;font-size:11px;">' + url + '</span>' +
+                       '</div>';
+            });
+            out += '</div>';
+        }
+
+        if (Array.isArray(parsed.quickReplies) && parsed.quickReplies.length > 0) {
+            out += '<div style="margin-top:8px;font-size:11px;color:#64748b;font-weight:600;">💬 빠른 답변</div>';
+            out += '<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;">';
+            parsed.quickReplies.forEach(function (q) {
+                out += '<span style="font-size:11px;background:#eff6ff;color:#1d4ed8;border:1px solid #dbeafe;padding:2px 8px;border-radius:10px;">' +
+                       escHtml(q) + '</span>';
+            });
+            out += '</div>';
+        }
+
+        return out;
+    }
+
+    function escHtml(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
 
     window.createBlock = async function () {
         const type   = document.getElementById('newBlockType').value;
