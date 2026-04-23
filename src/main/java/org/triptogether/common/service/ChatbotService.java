@@ -16,6 +16,7 @@ import org.triptogether.common.vo.ChatbotResponseVO;
 import org.triptogether.common.vo.ConversationVO;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * TripTogether 챗봇 서비스 (Gemini 기반).
@@ -46,6 +47,33 @@ public class ChatbotService {
 
     private static final String GEMINI_URL =
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
+
+    // ══════════════════════════════════════════════════════════
+    // 허용 내부 경로 화이트리스트 (Gemini 응답의 링크 검증용)
+    //   - 신규 라우트 추가 시 이 배열에 추가할 것
+    //   - 외부 URL / 위험 스킴 / 경로 순회는 별도 검사로 차단
+    // ══════════════════════════════════════════════════════════
+    private static final List<Pattern> ALLOWED_URL_PATTERNS = List.of(
+            Pattern.compile("^/$"),
+            Pattern.compile("^/explore(/\\d+)?(\\?.*)?$"),
+            Pattern.compile("^/courses(/\\d+)?(\\?.*)?$"),
+            Pattern.compile("^/community/list(\\?.*)?$"),
+            Pattern.compile("^/community/detail/\\d+(\\?.*)?$"),
+            Pattern.compile("^/community/write(\\?.*)?$"),
+            Pattern.compile("^/assistant(\\?.*)?$"),
+            Pattern.compile("^/packages(/\\d+)?(\\?.*)?$"),
+            Pattern.compile("^/packages/manage(/.*)?(\\?.*)?$"),
+            Pattern.compile("^/wallet(/.*)?(\\?.*)?$"),
+            Pattern.compile("^/shop(/.*)?(\\?.*)?$"),
+            Pattern.compile("^/mypage(/.*)?(\\?.*)?$"),
+            Pattern.compile("^/inquiry/list(\\?.*)?$"),
+            Pattern.compile("^/inquiry/detail/\\d+(\\?.*)?$"),
+            Pattern.compile("^/inquiry/write(\\?.*)?$"),
+            Pattern.compile("^/auth/(login|register|find-password)(\\?.*)?$")
+    );
+
+    private static final Pattern DANGEROUS_SCHEME_PATTERN =
+            Pattern.compile("^\\s*(?:javascript|data|file|vbscript):", Pattern.CASE_INSENSITIVE);
 
     // ══════════════════════════════════════════════════════════
     // 시스템 프롬프트
@@ -331,6 +359,10 @@ public class ChatbotService {
                 for (JsonElement el : json.getAsJsonArray("links")) {
                     JsonObject l = el.getAsJsonObject();
                     String url = l.get("url").getAsString();
+                    if (!isAllowedInternalUrl(url)) {
+                        log.warn("[Chatbot] 허용되지 않은 URL drop: {}", url);
+                        continue;
+                    }
                     if (!loggedIn && url.startsWith("/mypage")) continue;
                     links.add(ChatbotResponseVO.SiteLink.builder()
                             .label(l.get("label").getAsString())
@@ -374,6 +406,21 @@ public class ChatbotService {
         } catch (Exception e) {
             return content;
         }
+    }
+
+    // Gemini가 생성한 내부 URL 검증 — 화이트리스트 + 위험 스킴/경로 차단
+    private boolean isAllowedInternalUrl(String url) {
+        if (url == null) return false;
+        String trimmed = url.trim();
+        if (trimmed.isEmpty()) return false;
+        if (DANGEROUS_SCHEME_PATTERN.matcher(trimmed).find()) return false;
+        if (!trimmed.startsWith("/")) return false;
+        if (trimmed.startsWith("//")) return false;          // protocol-relative 차단
+        if (trimmed.contains("..")) return false;            // 경로 순회 차단
+        for (Pattern p : ALLOWED_URL_PATTERNS) {
+            if (p.matcher(trimmed).matches()) return true;
+        }
+        return false;
     }
 
     private String getCurrentPageName(String path) {
