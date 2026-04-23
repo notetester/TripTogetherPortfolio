@@ -203,28 +203,71 @@
         }, 300);
     }
 
+    // sourceType별 아이콘 이모지
+    const TYPE_ICONS = {
+        community:     '💬',
+        inquiry:       '📮',
+        report:        '⚠️',
+        levelup:       '🎉',
+        grade:         '🏅',
+        account_block: '🔒'
+    };
+    function typeIcon(sourceType) {
+        return TYPE_ICONS[sourceType] || '🔔';
+    }
+
+    // "[커뮤니티]" → "커뮤니티"
+    function stripBrackets(label) {
+        if (!label) return '';
+        return String(label).replace(/^[\[\(【［]+|[\]\)】］]+$/g, '').trim();
+    }
+
+    function goToTarget(noti) {
+        const targetUrl = noti.targetUrl || '/mypage';
+        fetch(ctx + '/api/notifications/' + noti.notificationId + '/read', {
+            method: 'POST',
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        }).catch(function () {});
+        location.href = ctx + targetUrl;
+    }
+
     function showToast(noti) {
         const stack = ensureToastStack();
 
         const toast = document.createElement('div');
         toast.className = 'noti-toast';
 
-        const bar = document.createElement('div');
-        bar.className = 'noti-toast-bar';
+        const iconEl = document.createElement('div');
+        iconEl.className = 'noti-toast-icon';
+        iconEl.textContent = typeIcon(noti.sourceType);
 
         const bodyEl = document.createElement('div');
         bodyEl.className = 'noti-toast-body';
 
         const type = document.createElement('span');
         type.className = 'noti-toast-type';
-        type.textContent = typeLabel(noti.sourceType);
+        type.textContent = stripBrackets(typeLabel(noti.sourceType));
 
-        const msg = document.createElement('span');
+        const msg = document.createElement('div');
         msg.className = 'noti-toast-msg';
         msg.textContent = noti.message || '';
 
+        const meta = document.createElement('div');
+        meta.className = 'noti-toast-meta';
+        meta.textContent = labels.justNow || 'Just now';
+
         bodyEl.appendChild(type);
         bodyEl.appendChild(msg);
+        bodyEl.appendChild(meta);
+
+        const actionBtn = document.createElement('button');
+        actionBtn.type = 'button';
+        actionBtn.className = 'noti-toast-action';
+        actionBtn.textContent = labels.view || 'View';
+        actionBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            goToTarget(noti);
+        });
 
         const closeBtn = document.createElement('button');
         closeBtn.type = 'button';
@@ -236,17 +279,13 @@
             removeToast(toast);
         });
 
-        toast.appendChild(bar);
+        toast.appendChild(iconEl);
         toast.appendChild(bodyEl);
+        toast.appendChild(actionBtn);
         toast.appendChild(closeBtn);
 
         toast.addEventListener('click', function () {
-            const targetUrl = noti.targetUrl || '/mypage';
-            fetch(ctx + '/api/notifications/' + noti.notificationId + '/read', {
-                method: 'POST',
-                headers: {'X-Requested-With': 'XMLHttpRequest'}
-            }).catch(function () {});
-            location.href = ctx + targetUrl;
+            goToTarget(noti);
         });
 
         stack.insertBefore(toast, stack.firstChild);

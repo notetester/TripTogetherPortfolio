@@ -193,7 +193,9 @@ window.__notificationConfig = {
         typeGrade: '<spring:message code="header.notification.type.grade" javaScriptEscape="true"/>',
         typeAccountBlock: '<spring:message code="header.notification.type.accountBlock" javaScriptEscape="true"/>',
         typeDefault: '<spring:message code="header.notification.type.default" javaScriptEscape="true"/>',
-        close: '<spring:message code="header.notification.close" javaScriptEscape="true"/>'
+        close: '<spring:message code="header.notification.close" javaScriptEscape="true"/>',
+        justNow: '<spring:message code="header.notification.justNow" javaScriptEscape="true"/>',
+        view: '<spring:message code="header.notification.view" javaScriptEscape="true"/>'
     }
 };
 
