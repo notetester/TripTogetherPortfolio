@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setLocale value="ko_KR"/>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ include file="../common/header.jsp" %>
 
@@ -343,13 +343,13 @@
 <div class="page-wrap">
     <div class="page-header">
         <div>
-            <h1 class="page-title">공개 일정</h1>
-            <p class="page-desc">다른 사용자가 공개한 여행일정을 둘러보고 여행 코스를 참고할 수 있어요.</p>
+            <h1 class="page-title"><spring:message code="course.public.title"/></h1>
+            <p class="page-desc"><spring:message code="course.public.desc"/></p>
         </div>
 
         <div class="top-btn-group">
-            <a href="${pageContext.request.contextPath}/courses/my" class="top-btn secondary">내 여행일정</a>
-            <a href="${pageContext.request.contextPath}/courses/write" class="top-btn primary">직접 일정 생성</a>
+            <a href="${pageContext.request.contextPath}/courses/my" class="top-btn secondary"><spring:message code="course.action.myPlans"/></a>
+            <a href="${pageContext.request.contextPath}/courses/write" class="top-btn primary"><spring:message code="course.action.manualCreate"/></a>
         </div>
     </div>
 
@@ -369,56 +369,63 @@
                         <div class="plan-top">
                             <div>
                                 <h2 class="plan-name">${plan.title}</h2>
-                                <p class="plan-destination">${empty plan.destination ? '여행지 미입력' : plan.destination}</p>
+                                <c:choose>
+                                    <c:when test="${empty plan.destination}">
+                                        <p class="plan-destination"><spring:message code="course.common.destinationEmpty"/></p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p class="plan-destination">${plan.destination}</p>
+                                    </c:otherwise>
+                                </c:choose>
                                 <p class="plan-writer">
                                     <c:choose>
                                         <c:when test="${not empty plan.nickname}">
-                                            <span class="writer-name">${plan.nickname}</span>님의 여행 코스
+                                            <spring:message code="course.common.travelCourseOf" arguments="${plan.nickname}"/>
                                         </c:when>
                                         <c:otherwise>
-                                            공개 여행 코스
+                                            <spring:message code="course.common.publicTravelCourse"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </p>
                             </div>
 
                             <div class="badge-group">
-                                <span class="badge public">공개</span>
+                                <span class="badge public"><spring:message code="course.badge.public"/></span>
 
                                 <c:choose>
                                     <c:when test="${plan.plan_source eq 'AI'}">
-                                        <span class="badge ai">AI</span>
+                                        <span class="badge ai"><spring:message code="course.badge.ai"/></span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge manual">직접작성</span>
+                                        <span class="badge manual"><spring:message code="course.badge.manual"/></span>
                                     </c:otherwise>
                                 </c:choose>
 
                                 <c:if test="${loginUserIdx eq plan.user_idx}">
-                                    <span class="badge mine">내 일정</span>
+                                    <span class="badge mine"><spring:message code="course.badge.mine"/></span>
                                 </c:if>
                             </div>
                         </div>
 
                         <div class="plan-info">
                             <div class="info-row">
-                                <span class="info-label">여행 기간</span>
+                                <span class="info-label"><spring:message code="course.common.travelPeriod"/></span>
                                 <span class="info-value">
-                                    <fmt:formatDate value="${plan.start_date}" pattern="yyyy년 M월 d일"/>
+                                    <fmt:formatDate value="${plan.start_date}" pattern="yyyy-MM-dd"/>
                                     ~
-                                    <fmt:formatDate value="${plan.end_date}" pattern="yyyy년 M월 d일"/>
+                                    <fmt:formatDate value="${plan.end_date}" pattern="yyyy-MM-dd"/>
                                 </span>
                             </div>
                         </div>
 
                         <div class="card-btn-group">
                             <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}" class="card-btn my">
-                                상세보기
+                                <spring:message code="course.action.detail"/>
                             </a>
 
                             <c:if test="${loginUserIdx eq plan.user_idx}">
                                 <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}" class="card-btn detail">
-                                    내 일정 관리
+                                    <spring:message code="course.action.manageMyPlan"/>
                                 </a>
                             </c:if>
                         </div>
@@ -429,12 +436,9 @@
 
         <c:otherwise>
             <div class="empty-box">
-                <h2 class="empty-title">아직 공개된 여행일정이 없어요</h2>
-                <p class="empty-desc">
-                    나중에 다른 사용자의 공개 일정이 등록되면<br>
-                    이곳에서 여행 코스를 둘러볼 수 있어요.
-                </p>
-                <a href="${pageContext.request.contextPath}/courses" class="empty-btn">여행 코스 홈으로</a>
+                <h2 class="empty-title"><spring:message code="course.public.empty.title"/></h2>
+                <p class="empty-desc"><spring:message code="course.public.empty.desc"/></p>
+                <a href="${pageContext.request.contextPath}/courses" class="empty-btn"><spring:message code="course.public.home"/></a>
             </div>
         </c:otherwise>
     </c:choose>
