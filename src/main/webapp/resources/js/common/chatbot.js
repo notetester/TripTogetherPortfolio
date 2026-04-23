@@ -8,6 +8,7 @@
     const cfg = window.__chatbotConfig || {};
     const ctx = cfg.ctx || '';
     const loggedIn = !!cfg.loggedIn;
+    const locale = cfg.locale || undefined;
     const msg = cfg.msg || {};
 
     const STORAGE_KEY = loggedIn ? null : 'chatbot_anon_conv_id';
@@ -344,7 +345,7 @@
             currentConvId = null;
             if (STORAGE_KEY) sessionStorage.removeItem(STORAGE_KEY);
             body.innerHTML = '';
-            if (titleEl) titleEl.textContent = msg.welcomeTitle || '새 대화';
+            if (titleEl) titleEl.textContent = msg.welcomeTitle || msg.untitledConversation || 'New Conversation';
             renderWelcome();
             updateResetBtnVisibility();
             if (loggedIn) loadConversationList();
@@ -368,7 +369,7 @@
             currentConvId = convId;
             updateResetBtnVisibility();
             if (STORAGE_KEY) sessionStorage.setItem(STORAGE_KEY, String(convId));
-            if (titleEl && data.conversation) titleEl.textContent = data.conversation.title || '새 대화';
+            if (titleEl && data.conversation) titleEl.textContent = data.conversation.title || msg.untitledConversation || 'New Conversation';
             body.innerHTML = '';
             suggs.innerHTML = '';
             (data.messages || []).forEach(m => {
@@ -404,7 +405,7 @@
         const wrap = document.createElement('div');
         wrap.className = 'cb-msg-wrap bot';
         wrap.innerHTML = '<div class="cb-welcome">' +
-            '<div class="cb-welcome-title">' + escHtml(msg.welcomeTitle || '안녕하세요!') + '</div>' +
+            '<div class="cb-welcome-title">' + escHtml(msg.welcomeTitle || 'Hello!') + '</div>' +
             escHtml(msg.welcomeBody1 || '') + '<br>' +
             escHtml(msg.welcomeBody2 || '') +
             '</div>';
@@ -569,7 +570,7 @@
             }
         } catch (e) {
             hideTyping();
-            appendBotResponse({ message: msg.error || '오류가 발생했습니다.', links: [], quickReplies: [] });
+            appendBotResponse({ message: msg.error || 'An error occurred.', links: [], quickReplies: [] });
         } finally {
             isTyping = false;
             sendBtn.disabled = false;
@@ -590,7 +591,7 @@
     }
 
     function getTime() {
-        return new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        return new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
     }
 
     function escHtml(str) {

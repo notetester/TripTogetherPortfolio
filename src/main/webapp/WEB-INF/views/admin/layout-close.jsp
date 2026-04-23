@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="common/context-modal.jspf" %>
 <%-- 공통 토스트 + 닫기 스크립트 --%>
 <script>
 /* ── 토스트 ── */
@@ -18,6 +19,16 @@ document.addEventListener('click', e => {
         if (!m.parentElement.contains(e.target)) m.classList.remove('open');
     });
 });
+
+window.admToggleActionMenu = function(btn) {
+    if (!btn) return;
+    const menu = btn.nextElementSibling;
+    if (!menu || !menu.classList.contains('action-menu')) return;
+    document.querySelectorAll('.action-menu.open').forEach(m => {
+        if (m !== menu) m.classList.remove('open');
+    });
+    menu.classList.toggle('open');
+};
 
 /* ── ESC 키 ── */
 document.addEventListener('keydown', e => {

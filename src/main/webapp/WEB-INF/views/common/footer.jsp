@@ -28,7 +28,7 @@
     <%-- 로그인 유저 전용 사이드바 (대화 목록) --%>
     <c:if test="${not empty sessionScope.loginUser}">
         <aside id="cb-sidebar" class="cb-sidebar">
-            <button type="button" id="cb-new" class="cb-new-btn">＋ 새 대화</button>
+            <button type="button" id="cb-new" class="cb-new-btn"><spring:message code="footer.chatbot.newConversation"/></button>
             <div id="cb-conv-list" class="cb-conv-list"></div>
             <button type="button" id="cb-reset" class="cb-new-btn cb-new-btn--reset"
                     title="<spring:message code="footer.chatbot.header.reset"/>" hidden>
@@ -74,6 +74,7 @@
     window.__chatbotConfig = {
         ctx: '${pageContext.request.contextPath}',
         loggedIn: ${not empty sessionScope.loginUser},
+        locale: '${pageContext.response.locale}',
         msg: {
             suggestPopular:       '<spring:message code="footer.chatbot.suggest.popular" javaScriptEscape="true"/>',
             suggestPopularMsg:    '<spring:message code="footer.chatbot.suggest.popular.msg" javaScriptEscape="true"/>',

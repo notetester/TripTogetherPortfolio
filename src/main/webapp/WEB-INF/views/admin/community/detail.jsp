@@ -239,18 +239,35 @@
                                                 </c:if>
                                             </div>
                                             <%-- 댓글 액션 --%>
-                                            <div style="display:flex;gap:4px;flex-shrink:0;">
-                                                <c:if test="${comment.commentStatus != 'BLOCKED'}">
-                                                    <button class="adm-btn adm-btn-ghost"
-                                                            style="font-size:11px;padding:2px 8px;color:#f87171;border-color:#f87171;"
-                                                            data-id="${comment.commentId}"
-                                                            onclick="actionComment(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
-                                                </c:if>
-                                                <button class="adm-btn adm-btn-ghost"
-                                                        style="font-size:11px;padding:2px 8px;color:#64748b;"
-                                                        data-id="${comment.commentId}"
-                                                        onclick="actionComment(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
-                                            </div>
+                                            <c:choose>
+                                                <c:when test="${comment.commentStatus != 'BLOCKED'}">
+                                                    <div class="adm-row-actions" style="flex-shrink:0;">
+                                                        <button class="adm-row-btn danger"
+                                                                type="button"
+                                                                data-id="${comment.commentId}"
+                                                                onclick="actionComment(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
+                                                        <div class="action-menu-wrap">
+                                                            <button class="adm-row-btn detail adm-row-btn-more"
+                                                                    type="button"
+                                                                    onclick="admToggleActionMenu(this)">⋯</button>
+                                                            <div class="action-menu">
+                                                                <button class="action-menu-item danger"
+                                                                        type="button"
+                                                                        data-id="${comment.commentId}"
+                                                                        onclick="actionComment(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <div class="adm-row-actions is-single" style="flex-shrink:0;">
+                                                        <button class="adm-row-btn danger"
+                                                                type="button"
+                                                                data-id="${comment.commentId}"
+                                                                onclick="actionComment(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
+                                                    </div>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                         <%-- 댓글 내용 --%>
                                         <div style="font-size:13px;color:#cbd5e1;line-height:1.6;">${comment.content}</div>

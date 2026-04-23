@@ -186,7 +186,6 @@
         </c:if>
     </div>
 </div>
-<%@ include file="../common/context-modal.jspf" %>
 <script>
 function goPage(page) {
   const params = new URLSearchParams(window.location.search);

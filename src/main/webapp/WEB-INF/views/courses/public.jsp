@@ -1,9 +1,25 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setLocale value="ko_KR"/>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<fmt:setLocale value="${pageContext.response.locale}"/>
 
 <%@ include file="../common/header.jsp" %>
+
+<spring:message code="courses.public.pageTitle" var="coursesPublicPageTitle"/>
+<spring:message code="courses.public.pageDesc" var="coursesPublicPageDesc"/>
+<spring:message code="courses.public.top.my" var="coursesPublicTopMy"/>
+<spring:message code="courses.common.directCreate" var="coursesDirectCreate"/>
+<spring:message code="courses.common.destinationMissing" var="coursesDestinationMissing"/>
+<spring:message code="courses.common.visibility.public" var="coursesVisibilityPublic"/>
+<spring:message code="courses.common.source.ai" var="coursesSourceAi"/>
+<spring:message code="courses.common.source.manual" var="coursesSourceManual"/>
+<spring:message code="courses.common.detail" var="coursesDetailLabel"/>
+<spring:message code="courses.public.action.manageMine" var="coursesManageMine"/>
+<spring:message code="courses.public.writer.default" var="coursesPublicWriterDefault"/>
+<spring:message code="courses.public.empty.title" var="coursesPublicEmptyTitle"/>
+<spring:message code="courses.public.empty.desc" var="coursesPublicEmptyDesc"/>
+<spring:message code="courses.public.empty.action" var="coursesPublicEmptyAction"/>
 
 <style>
     * {
@@ -294,6 +310,68 @@
         font-weight: 800;
     }
 
+    .public-filter {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 24px;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+
+    .filter-input,
+    .filter-select {
+        height: 44px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #0f172a;
+        background: #fff;
+    }
+
+    .filter-input {
+        flex: 1;
+        min-width: 220px;
+    }
+
+    .filter-select {
+        min-width: 140px;
+    }
+
+    .filter-btn {
+        height: 44px;
+        padding: 0 16px;
+        border: none;
+        border-radius: 10px;
+        background: #2563eb;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .filter-btn.reset {
+        background: #e2e8f0;
+        color: #334155;
+    }
+
+    .no-result-box {
+        display: none;
+        margin-top: 20px;
+        padding: 32px 20px;
+        border-radius: 16px;
+        background: #fff;
+        border: 1px dashed #cbd5e1;
+        text-align: center;
+        color: #64748b;
+        font-weight: 600;
+    }
+
     @media (max-width: 900px) {
         .plan-grid {
             grid-template-columns: 1fr;
@@ -337,19 +415,30 @@
         .top-btn {
             width: 100%;
         }
+
+        .public-filter {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-input,
+        .filter-select,
+        .filter-btn {
+            width: 100%;
+        }
     }
 </style>
 
 <div class="page-wrap">
     <div class="page-header">
         <div>
-            <h1 class="page-title">공개 일정</h1>
-            <p class="page-desc">다른 사용자가 공개한 여행일정을 둘러보고 여행 코스를 참고할 수 있어요.</p>
+            <h1 class="page-title"><spring:message code="course.public.title"/></h1>
+            <p class="page-desc"><spring:message code="course.public.desc"/></p>
         </div>
 
         <div class="top-btn-group">
-            <a href="${pageContext.request.contextPath}/courses/my" class="top-btn secondary">내 여행일정</a>
-            <a href="${pageContext.request.contextPath}/courses/write" class="top-btn primary">직접 일정 생성</a>
+            <a href="${pageContext.request.contextPath}/courses/my" class="top-btn secondary"><spring:message code="course.action.myPlans"/></a>
+            <a href="${pageContext.request.contextPath}/courses/write" class="top-btn primary"><spring:message code="course.action.manualCreate"/></a>
         </div>
     </div>
 
@@ -361,83 +450,268 @@
         <div class="message error">${errorMessage}</div>
     </c:if>
 
+    <div class="public-filter">
+        <input type="text" id="searchKeyword" class="filter-input"
+               placeholder="제목, 여행지, 작성자로 검색">
+
+        <select id="sourceFilter" class="filter-select">
+            <option value="all">전체 유형</option>
+            <option value="AI">AI</option>
+            <option value="MANUAL">직접작성</option>
+        </select>
+
+        <select id="mineFilter" class="filter-select">
+            <option value="all">전체 일정</option>
+            <option value="mine">내 일정만</option>
+        </select>
+
+        <select id="yearFilter" class="filter-select">
+            <option value="all">전체 연도</option>
+        </select>
+
+        <button type="button" class="filter-btn" onclick="applyPublicFilter()">검색</button>
+        <button type="button" class="filter-btn reset" onclick="resetPublicFilter()">초기화</button>
+    </div>
+
     <c:choose>
         <c:when test="${not empty travelPlanList}">
             <div class="plan-grid">
                 <c:forEach var="plan" items="${travelPlanList}">
-                    <div class="plan-card">
+                    <div class="plan-card"
+                         data-title="${plan.title}"
+                         data-destination="${empty plan.destination ? '' : plan.destination}"
+                         data-writer="${empty plan.nickname ? '' : plan.nickname}"
+                         data-source="${plan.plan_source}"
+                         data-mine="${loginUserIdx eq plan.user_idx ? 'Y' : 'N'}"
+                         data-start-date="<fmt:formatDate value='${plan.start_date}' pattern='yyyy-MM-dd'/>"
+                         data-end-date="<fmt:formatDate value='${plan.end_date}' pattern='yyyy-MM-dd'/>">
                         <div class="plan-top">
                             <div>
                                 <h2 class="plan-name">${plan.title}</h2>
-                                <p class="plan-destination">${empty plan.destination ? '여행지 미입력' : plan.destination}</p>
+                                <c:choose>
+                                    <c:when test="${empty plan.destination}">
+                                        <p class="plan-destination"><spring:message code="course.common.destinationEmpty"/></p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p class="plan-destination">${plan.destination}</p>
+                                    </c:otherwise>
+                                </c:choose>
                                 <p class="plan-writer">
                                     <c:choose>
                                         <c:when test="${not empty plan.nickname}">
-                                            <span class="writer-name">${plan.nickname}</span>님의 여행 코스
+                                            <spring:message code="course.common.travelCourseOf" arguments="${plan.nickname}"/>
                                         </c:when>
                                         <c:otherwise>
-                                            공개 여행 코스
+                                            <spring:message code="course.common.publicTravelCourse"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </p>
                             </div>
 
                             <div class="badge-group">
-                                <span class="badge public">공개</span>
+                                <span class="badge public"><spring:message code="course.badge.public"/></span>
 
                                 <c:choose>
                                     <c:when test="${plan.plan_source eq 'AI'}">
-                                        <span class="badge ai">AI</span>
+                                        <span class="badge ai"><spring:message code="course.badge.ai"/></span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge manual">직접작성</span>
+                                        <span class="badge manual"><spring:message code="course.badge.manual"/></span>
                                     </c:otherwise>
                                 </c:choose>
 
                                 <c:if test="${loginUserIdx eq plan.user_idx}">
-                                    <span class="badge mine">내 일정</span>
+                                    <span class="badge mine"><spring:message code="course.badge.mine"/></span>
                                 </c:if>
                             </div>
                         </div>
 
                         <div class="plan-info">
                             <div class="info-row">
-                                <span class="info-label">여행 기간</span>
+                                <span class="info-label"><spring:message code="course.common.travelPeriod"/></span>
                                 <span class="info-value">
-                                    <fmt:formatDate value="${plan.start_date}" pattern="yyyy년 M월 d일"/>
+                                    <fmt:formatDate value="${plan.start_date}" pattern="yyyy-MM-dd"/>
                                     ~
-                                    <fmt:formatDate value="${plan.end_date}" pattern="yyyy년 M월 d일"/>
+                                    <fmt:formatDate value="${plan.end_date}" pattern="yyyy-MM-dd"/>
                                 </span>
                             </div>
                         </div>
 
                         <div class="card-btn-group">
                             <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}" class="card-btn my">
-                                상세보기
+                                <spring:message code="course.action.detail"/>
                             </a>
 
                             <c:if test="${loginUserIdx eq plan.user_idx}">
                                 <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}" class="card-btn detail">
-                                    내 일정 관리
+                                    <spring:message code="course.action.manageMyPlan"/>
                                 </a>
                             </c:if>
                         </div>
                     </div>
                 </c:forEach>
             </div>
+            <div id="noResultBox" class="no-result-box">
+                조건에 맞는 공개 일정이 없어요.
+            </div>
         </c:when>
 
         <c:otherwise>
             <div class="empty-box">
-                <h2 class="empty-title">아직 공개된 여행일정이 없어요</h2>
-                <p class="empty-desc">
-                    나중에 다른 사용자의 공개 일정이 등록되면<br>
-                    이곳에서 여행 코스를 둘러볼 수 있어요.
-                </p>
-                <a href="${pageContext.request.contextPath}/courses" class="empty-btn">여행 코스 홈으로</a>
+                <h2 class="empty-title"><spring:message code="course.public.empty.title"/></h2>
+                <p class="empty-desc"><spring:message code="course.public.empty.desc"/></p>
+                <a href="${pageContext.request.contextPath}/courses" class="empty-btn"><spring:message code="course.public.home"/></a>
             </div>
         </c:otherwise>
     </c:choose>
 </div>
+
+<script>
+    function populateYearFilter() {
+        const yearFilter = document.getElementById('yearFilter');
+        const cards = document.querySelectorAll('.plan-card');
+        const yearSet = new Set();
+
+        yearFilter.innerHTML = '<option value="all">전체 연도</option>';
+
+        cards.forEach(card => {
+            const startDate = card.dataset.startDate || '';
+            const endDate = card.dataset.endDate || '';
+
+            const startYear = startDate ? parseInt(startDate.substring(0, 4), 10) : null;
+            const endYear = endDate ? parseInt(endDate.substring(0, 4), 10) : null;
+
+            if (startYear !== null && endYear !== null) {
+                for (let year = startYear; year <= endYear; year++) {
+                    yearSet.add(year);
+                }
+            } else if (startYear !== null) {
+                yearSet.add(startYear);
+            } else if (endYear !== null) {
+                yearSet.add(endYear);
+            }
+        });
+
+        Array.from(yearSet)
+            .sort((a, b) => a - b)
+            .forEach(year => {
+                const option = document.createElement('option');
+                option.value = String(year);
+                option.textContent = year + '년';
+                yearFilter.appendChild(option);
+            });
+    }
+
+    function applyPublicFilter() {
+        const keyword = document.getElementById('searchKeyword').value.trim().toLowerCase();
+        const source = document.getElementById('sourceFilter').value;
+        const mine = document.getElementById('mineFilter').value;
+        const selectedYear = document.getElementById('yearFilter').value;
+
+        const cards = document.querySelectorAll('.plan-card');
+        const noResultBox = document.getElementById('noResultBox');
+
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const title = (card.dataset.title || '').toLowerCase();
+            const destination = (card.dataset.destination || '').toLowerCase();
+            const writer = (card.dataset.writer || '').toLowerCase();
+            const cardSource = card.dataset.source || '';
+            const isMine = card.dataset.mine || 'N';
+
+            const startDate = card.dataset.startDate || '';
+            const endDate = card.dataset.endDate || '';
+            const cardStartYear = startDate ? parseInt(startDate.substring(0, 4), 10) : null;
+            const cardEndYear = endDate ? parseInt(endDate.substring(0, 4), 10) : null;
+
+            let matched = true;
+
+            if (keyword) {
+                const keywordMatched =
+                    title.includes(keyword) ||
+                    destination.includes(keyword) ||
+                    writer.includes(keyword);
+
+                if (!keywordMatched) {
+                    matched = false;
+                }
+            }
+
+            if (source !== 'all' && cardSource !== source) {
+                matched = false;
+            }
+
+            if (mine === 'mine' && isMine !== 'Y') {
+                matched = false;
+            }
+
+            if (selectedYear !== 'all') {
+                const year = parseInt(selectedYear, 10);
+
+                if (cardStartYear !== null && cardEndYear !== null) {
+                    if (year < cardStartYear || year > cardEndYear) {
+                        matched = false;
+                    }
+                } else if (cardStartYear !== null) {
+                    if (year !== cardStartYear) {
+                        matched = false;
+                    }
+                } else if (cardEndYear !== null) {
+                    if (year !== cardEndYear) {
+                        matched = false;
+                    }
+                }
+            }
+
+            card.style.display = matched ? '' : 'none';
+
+            if (matched) {
+                visibleCount++;
+            }
+        });
+
+        if (noResultBox) {
+            noResultBox.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    }
+
+    function resetPublicFilter() {
+        document.getElementById('searchKeyword').value = '';
+        document.getElementById('sourceFilter').value = 'all';
+        document.getElementById('mineFilter').value = 'all';
+        document.getElementById('yearFilter').value = 'all';
+        applyPublicFilter();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        populateYearFilter();
+
+        const searchInput = document.getElementById('searchKeyword');
+        const sourceFilter = document.getElementById('sourceFilter');
+        const mineFilter = document.getElementById('mineFilter');
+        const yearFilter = document.getElementById('yearFilter');
+
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function (e) {
+                if (e.key === 'Enter') {
+                    applyPublicFilter();
+                }
+            });
+        }
+
+        if (sourceFilter) {
+            sourceFilter.addEventListener('change', applyPublicFilter);
+        }
+
+        if (mineFilter) {
+            mineFilter.addEventListener('change', applyPublicFilter);
+        }
+
+        if (yearFilter) {
+            yearFilter.addEventListener('change', applyPublicFilter);
+        }
+    });
+</script>
 
 <%@ include file="../common/footer.jsp" %>

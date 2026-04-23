@@ -30,6 +30,7 @@
         <result property="spotName" column="spot_name"/>
         <result property="spotRegion" column="spot_region"/>
         <result property="sellerNickname" column="seller_nickname"/>
+        <result property="sellerRole" column="seller_role"/>
         <result property="pendingRevisionCount" column="pending_revision_count"/>
     </resultMap>
 
@@ -107,6 +108,7 @@
         st.name AS spot_name,
         st.region AS spot_region,
         u.nickname AS seller_nickname,
+        u.user_role AS seller_role,
         (
             SELECT COUNT(*)
             FROM TRAVEL_PACKAGE_REVISION tpr
@@ -293,6 +295,27 @@
           AND COALESCE(st.spot_active, 0) = 0
           AND (tp.end_date IS NULL OR tp.end_date >= CURDATE())
         ORDER BY tp.approved_at DESC, tp.package_idx DESC
+    </select>
+
+    <select id="selectHomeRecommendedPackages" resultMap="TravelPackageResultMap">
+        SELECT
+            <include refid="TravelPackageColumns"/>
+        FROM TRAVEL_PACKAGE tp
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tp.seller_user_idx
+        WHERE tp.package_status = 'APPROVED'
+          AND COALESCE(st.spot_active, 0) = 0
+          AND COALESCE(u.account_status, 'ACTIVE') = 'ACTIVE'
+          AND u.user_role IN ('PARTNER', 'BUSINESS')
+          AND (tp.end_date IS NULL OR tp.end_date >= CURDATE())
+        ORDER BY
+            CASE WHEN u.user_role = 'PARTNER' THEN 0 ELSE 1 END,
+            COALESCE(tp.booking_count, 0) DESC,
+            COALESCE(tp.like_count, 0) DESC,
+            COALESCE(tp.view_count, 0) DESC,
+            tp.approved_at DESC,
+            tp.package_idx DESC
+        LIMIT 12
     </select>
 
     <select id="selectApprovedPackagesBySpot" resultMap="TravelPackageResultMap">

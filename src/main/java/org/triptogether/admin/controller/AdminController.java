@@ -227,6 +227,22 @@ public class AdminController {
         return result;
     }
 
+    @PostMapping("/members/{userIdx}/email")
+    @ResponseBody
+    public Map<String, Object> updateMemberEmail(@PathVariable Long userIdx,
+                                                 @RequestParam(required = false) String email) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            adminService.updateMemberEmail(userIdx, email);
+            result.put("success", true);
+            result.put("message", msg("admin.members.emailUpdated"));
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", msg(e.getMessage()));
+        }
+        return result;
+    }
+
     @GetMapping("/ips/context")
     @ResponseBody
     public Map<String, Object> ipContext(@RequestParam String ipAddress) {

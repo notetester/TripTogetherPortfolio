@@ -241,20 +241,40 @@
 
                         <%-- 액션 --%>
                         <td>
-                            <div style="display:flex;gap:4px;">
-                                <c:if test="${p.postStatus != 'BLOCKED'}">
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;padding:3px 8px;color:#f87171;border-color:#f87171;"
-                                            data-id="${p.postId}"
-                                            onclick="actionPost(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
-                                </c:if>
-                                <c:if test="${p.postStatus != 'DELETED'}">
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;padding:3px 8px;color:#64748b;"
-                                            data-id="${p.postId}"
-                                            onclick="actionPost(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
-                                </c:if>
-                            </div>
+                            <c:choose>
+                                <c:when test="${p.postStatus != 'BLOCKED'}">
+                                    <div class="adm-row-actions">
+                                        <button class="adm-row-btn danger"
+                                                type="button"
+                                                data-id="${p.postId}"
+                                                onclick="actionPost(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
+                                        <c:if test="${p.postStatus != 'DELETED'}">
+                                            <div class="action-menu-wrap">
+                                                <button class="adm-row-btn detail adm-row-btn-more"
+                                                        type="button"
+                                                        onclick="admToggleActionMenu(this)">⋯</button>
+                                                <div class="action-menu">
+                                                    <button class="action-menu-item danger"
+                                                            type="button"
+                                                            data-id="${p.postId}"
+                                                            onclick="actionPost(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
+                                                </div>
+                                            </div>
+                                        </c:if>
+                                    </div>
+                                </c:when>
+                                <c:when test="${p.postStatus != 'DELETED'}">
+                                    <div class="adm-row-actions is-single">
+                                        <button class="adm-row-btn danger"
+                                                type="button"
+                                                data-id="${p.postId}"
+                                                onclick="actionPost(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="adm-muted-inline">-</span>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </c:forEach>

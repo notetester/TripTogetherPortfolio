@@ -86,7 +86,7 @@
 
         </nav>
         <div class="hr">
-            <button type="button" class="tt-theme-btn" id="ttThemeBtn" aria-label="Toggle theme"
+            <button type="button" class="tt-theme-btn" id="ttThemeBtn" aria-label="<spring:message code='header.theme.toggle'/>"
                     data-light-label="<spring:message code='header.theme.light'/>"
                     data-dark-label="<spring:message code='header.theme.dark'/>">
                 <span class="tt-theme-icon">🌙</span>
@@ -104,7 +104,7 @@
                 <c:when test="${not empty sessionScope.loginUser}">
                     <%-- 알림 벨 --%>
                     <div class="noti-wrap">
-                        <button type="button" class="noti-bell" id="notiBell" aria-label="알림">
+                        <button type="button" class="noti-bell" id="notiBell" aria-label="<spring:message code='header.notification.bell'/>">
                             <span class="noti-bell-icon">🔔</span>
                             <c:if test="${headerUnreadCount > 0}">
                                 <span class="noti-badge">${headerUnreadCount > 99 ? '99+' : headerUnreadCount}</span>
@@ -112,13 +112,13 @@
                         </button>
                         <div class="noti-dropdown" id="notiDropdown" hidden>
                             <div class="noti-dropdown-head">
-                                <span class="noti-dropdown-title">알림</span>
-                                <button type="button" class="noti-mark-all" id="notiMarkAll">모두 읽음</button>
+                                <span class="noti-dropdown-title"><spring:message code="header.notification.title"/></span>
+                                <button type="button" class="noti-mark-all" id="notiMarkAll"><spring:message code="header.notification.markAll"/></button>
                             </div>
                             <div class="noti-dropdown-body">
                                 <c:choose>
                                     <c:when test="${empty headerRecentNotifications}">
-                                        <div class="noti-empty">새로운 알림이 없어요.</div>
+                                        <div class="noti-empty"><spring:message code="header.notification.empty"/></div>
                                     </c:when>
                                     <c:otherwise>
                                         <c:forEach var="n" items="${headerRecentNotifications}">
@@ -131,13 +131,13 @@
                                                  data-target="${n.targetUrl}">
                                                 <span class="noti-type">
                                                     <c:choose>
-                                                        <c:when test="${n.sourceType eq 'community'}">[커뮤니티]</c:when>
-                                                        <c:when test="${n.sourceType eq 'inquiry'}">[문의]</c:when>
-                                                        <c:when test="${n.sourceType eq 'report'}">[신고]</c:when>
-                                                        <c:when test="${n.sourceType eq 'levelup'}">[레벨업]</c:when>
-                                                        <c:when test="${n.sourceType eq 'grade'}">[등급]</c:when>
-                                                        <c:when test="${n.sourceType eq 'account_block'}">[계정]</c:when>
-                                                        <c:otherwise>[알림]</c:otherwise>
+                                                        <c:when test="${n.sourceType eq 'community'}"><spring:message code="header.notification.type.community"/></c:when>
+                                                        <c:when test="${n.sourceType eq 'inquiry'}"><spring:message code="header.notification.type.inquiry"/></c:when>
+                                                        <c:when test="${n.sourceType eq 'report'}"><spring:message code="header.notification.type.report"/></c:when>
+                                                        <c:when test="${n.sourceType eq 'levelup'}"><spring:message code="header.notification.type.levelup"/></c:when>
+                                                        <c:when test="${n.sourceType eq 'grade'}"><spring:message code="header.notification.type.grade"/></c:when>
+                                                        <c:when test="${n.sourceType eq 'account_block'}"><spring:message code="header.notification.type.accountBlock"/></c:when>
+                                                        <c:otherwise><spring:message code="header.notification.type.default"/></c:otherwise>
                                                     </c:choose>
                                                 </span>
                                                 <span class="noti-msg">${n.message}</span>
@@ -150,7 +150,7 @@
                                 </c:choose>
                             </div>
                             <div class="noti-dropdown-foot">
-                                <a href="${pageContext.request.contextPath}/mypage">전체 보기</a>
+                                <a href="${pageContext.request.contextPath}/mypage"><spring:message code="header.notification.viewAll"/></a>
                             </div>
                         </div>
                     </div>
@@ -182,6 +182,21 @@ function toggleViewMode() {
 </c:if>
 
 <script>
+window.__notificationConfig = {
+    ctx: '${pageContext.request.contextPath}',
+    locale: '${pageContext.response.locale}',
+    labels: {
+        typeCommunity: '<spring:message code="header.notification.type.community" javaScriptEscape="true"/>',
+        typeInquiry: '<spring:message code="header.notification.type.inquiry" javaScriptEscape="true"/>',
+        typeReport: '<spring:message code="header.notification.type.report" javaScriptEscape="true"/>',
+        typeLevelup: '<spring:message code="header.notification.type.levelup" javaScriptEscape="true"/>',
+        typeGrade: '<spring:message code="header.notification.type.grade" javaScriptEscape="true"/>',
+        typeAccountBlock: '<spring:message code="header.notification.type.accountBlock" javaScriptEscape="true"/>',
+        typeDefault: '<spring:message code="header.notification.type.default" javaScriptEscape="true"/>',
+        close: '<spring:message code="header.notification.close" javaScriptEscape="true"/>'
+    }
+};
+
 (function () {
     const btn = document.getElementById('ttThemeBtn');
     if (!btn) return;

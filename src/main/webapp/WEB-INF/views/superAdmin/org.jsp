@@ -1,19 +1,20 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="org"/>
-<c:set var="pageTitle"  value="조직도"/>
+<spring:message code="superAdmin.org.pageTitle" var="pageTitle"/>
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">관리자 계층 구조</div>
-            <div style="font-size:13px;color:#94a3b8;">상급자가 지정되지 않은 관리자는 최상위로 표시됩니다.</div>
+            <div class="adm-card-title"><spring:message code="superAdmin.org.cardTitle"/></div>
+            <div style="font-size:13px;color:#94a3b8;"><spring:message code="superAdmin.org.cardDescription"/></div>
         </div>
         <div class="adm-card-body">
             <div id="org-chart"></div>
-            <div id="org-empty" style="display:none;text-align:center;padding:60px;color:#94a3b8;">등록된 관리자가 없습니다.</div>
+            <div id="org-empty" style="display:none;text-align:center;padding:60px;color:#94a3b8;"><spring:message code="superAdmin.org.empty"/></div>
         </div>
     </div>
 </div>
@@ -68,7 +69,7 @@ function renderNode(node) {
         + '<div class="sa-org-name">' + node.nickname + '</div>'
         + title + dept + permBadge
         + '</div>'
-        + '<a href="' + CTX + '/superAdmin/members/' + node.userIdx + '/edit" class="sa-org-edit">편집</a>'
+        + '<a href="' + CTX + '/superAdmin/members/' + node.userIdx + '/edit" class="sa-org-edit"><spring:message code="admin.common.edit" javaScriptEscape="true"/></a>'
         + '</div>'
         + childrenHtml
         + '</div>';

@@ -1,6 +1,8 @@
 package org.triptogether.courses.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.ai.dto.AiDayDTO;
@@ -15,62 +17,49 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
-// 요청값 검증, GPT 서비스 호출, DB 저장
+// 요청값 검증, GPT 서비스 호출, DB 저장을 담당한다.
 @Service
 @RequiredArgsConstructor
 public class AiPlanServiceImpl implements AiPlanService {
 
     private final TravelPlanService travelPlanService;
     private final AiPlanGPTService aiPlanGPTService;
+    private final MessageSource messageSource;
 
-    // AI 일정 생성 후 DB에 저장하는 메인 메서드
-    // 폼에서 받은 여행 조건을 검사 -> GPT한테 일정 제목 같은 걸 받아오고
-    //      -> TRAVEL_PLAN 테이블에 저장 후 -> 생성된 plan_id를 반환
+    // AI 일정 생성 후 DB에 저장하는 메인 메서드.
     @Override
     @Transactional
     public Long generateAndSavePlan(AiPlanRequestDTO requestDTO, Long userIdx) {
-        validateRequest(requestDTO);    // 입력값 검사
+        validateRequest(requestDTO);
 
-        // 진짜 AI 생성 역할을 GPT 서비스에 맡김
         AiPlanResponseDTO responseDTO = aiPlanGPTService.generatePlan(requestDTO);
 
-        // 사용자가 입력한 문자열 날짜를 자바 날짜 객체(LocalDate)로 바꾸는 부분
         LocalDate start = LocalDate.parse(requestDTO.getStartDate());
         LocalDate end = LocalDate.parse(requestDTO.getEndDate());
 
-        // 1. TRAVEL_PLAN 저장
-        // DB에 넣을 여행일정 객체 생성
         TravelPlanVO travelPlanVO = new TravelPlanVO();
-        // 이 일정이 누구 것인지 저장
         travelPlanVO.setUser_idx(userIdx);
-        // 일정 제목은 GPT가 만들어준 걸 사용
         travelPlanVO.setTitle(responseDTO.getTitle());
-        // 여행지는 사용자가 입력한 값 저장
         travelPlanVO.setDestination(requestDTO.getDestination());
-        // LocalDate를 DB용 Date로 바꿔서 저장
         travelPlanVO.setStart_date(Date.valueOf(start));
         travelPlanVO.setEnd_date(Date.valueOf(end));
-        // 공개여부: 비공개, 공유토큰: 아직 없음, 생성방식: AI
         travelPlanVO.setIs_public(0);
         travelPlanVO.setShare_token(null);
         travelPlanVO.setPlan_source("AI");
 
-        // 실제로 TRAVEL_PLAN 테이블에 insert 하는 부분
         travelPlanService.insertTravelPlan(travelPlanVO);
 
         Long planId = travelPlanVO.getPlan_id();
-
-        // 2. PLAN_SPOT 저장
         savePlanSpots(planId, responseDTO);
 
         return planId;
     }
 
-
-    // AI가 만들어준 날짜별 장소 목록을 PLAN_SPOT 테이블에 저장하는 역할
-    // responseDTO 안에 들어있는 day들 -> 각 day 안의 spot들 -> 하나씩 꺼내서 DB에 insert
+    // AI가 만든 날짜별 장소 목록을 PLAN_SPOT 테이블에 저장한다.
     private void savePlanSpots(Long planId, AiPlanResponseDTO responseDTO) {
-        if (responseDTO == null || responseDTO.getDays() == null) return;
+        if (responseDTO == null || responseDTO.getDays() == null) {
+            return;
+        }
 
         for (AiDayDTO day : responseDTO.getDays()) {
             Date visitDate = Date.valueOf(day.getDate());
@@ -83,13 +72,9 @@ public class AiPlanServiceImpl implements AiPlanService {
             for (AiSpotDTO spot : spots) {
                 PlanSpotVO planSpotVO = new PlanSpotVO();
                 planSpotVO.setPlan_id(planId);
-
-                // AI가 만든 자유 장소명은 실제 SPOT_TRAVEL과 매칭하지 않으므로 null
+                // AI 자유 장소명은 실제 SPOT_TRAVEL과 매칭하지 않으므로 spot_id는 비워둔다.
                 planSpotVO.setSpot_id(null);
-
-                // 화면에 보여줄 장소 이름만 저장
                 planSpotVO.setPlace_name(spot.getName());
-
                 planSpotVO.setVisit_date(visitDate);
                 planSpotVO.setVisit_order(spot.getVisitOrder());
 
@@ -100,23 +85,27 @@ public class AiPlanServiceImpl implements AiPlanService {
 
     private void validateRequest(AiPlanRequestDTO requestDTO) {
         if (requestDTO == null) {
-            throw new IllegalArgumentException("요청 정보가 없습니다.");
+            throw new IllegalArgumentException(msg("course.error.requestEmpty"));
         }
 
         if (isBlank(requestDTO.getDestination())) {
-            throw new IllegalArgumentException("여행지를 입력해주세요.");
+            throw new IllegalArgumentException(msg("course.error.destinationRequired"));
         }
 
         if (isBlank(requestDTO.getStartDate()) || isBlank(requestDTO.getEndDate())) {
-            throw new IllegalArgumentException("여행 날짜를 입력해주세요.");
+            throw new IllegalArgumentException(msg("course.error.dateRequired"));
         }
 
         LocalDate start = LocalDate.parse(requestDTO.getStartDate());
         LocalDate end = LocalDate.parse(requestDTO.getEndDate());
 
         if (end.isBefore(start)) {
-            throw new IllegalArgumentException("종료일은 시작일보다 빠를 수 없습니다.");
+            throw new IllegalArgumentException(msg("course.error.endBeforeStart"));
         }
+    }
+
+    private String msg(String code) {
+        return messageSource.getMessage(code, null, LocaleContextHolder.getLocale());
     }
 
     private boolean isBlank(String value) {

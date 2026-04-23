@@ -10,8 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.myPage.service.WalletService;
 import org.triptogether.myPage.vo.WalletChargeResultDto;
+import org.triptogether.myPage.vo.WalletHistoryDto;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,6 +23,7 @@ import org.triptogether.myPage.vo.WalletChargeResultDto;
 public class WalletController {
 
     private final WalletService walletService;
+    private final SpotTextTranslationService translationService;
 
     @GetMapping("")
     public String walletPage(HttpSession session, Model model) {
@@ -34,9 +39,12 @@ public class WalletController {
         }
 
         session.setAttribute("loginUser", freshUser);
+        List<WalletHistoryDto> walletHistory = walletService.getRecentWalletHistory(freshUser.getUserIdx());
+        translationService.translateWalletHistories(walletHistory);
+
         model.addAttribute("user", freshUser);
         model.addAttribute("paymentHistory", walletService.getRecentPaymentHistory(freshUser.getUserIdx()));
-        model.addAttribute("walletHistory", walletService.getRecentWalletHistory(freshUser.getUserIdx()));
+        model.addAttribute("walletHistory", walletHistory);
         model.addAttribute("gradePolicies", walletService.getActiveMemberGradePolicies());
         return "wallet/index";
     }

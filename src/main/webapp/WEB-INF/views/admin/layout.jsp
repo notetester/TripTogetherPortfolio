@@ -285,3 +285,52 @@ function saToggleTheme() {
     }
 }
 </script>
+
+<script>
+window.__CTX__ = '${pageContext.request.contextPath}';
+window.ADMIN_TRANSLATION_UI = {
+    open: '<spring:message code="admin.translation.open" text="번역 보기" javaScriptEscape="true"/>',
+    hide: '<spring:message code="admin.translation.hide" text="숨기기" javaScriptEscape="true"/>',
+    refresh: '<spring:message code="admin.translation.refresh" text="새로고침" javaScriptEscape="true"/>',
+    createNew: '<spring:message code="admin.translation.createNew" text="새로 만들기" javaScriptEscape="true"/>',
+    create: '<spring:message code="admin.translation.create" text="생성" javaScriptEscape="true"/>',
+    none: '<spring:message code="admin.translation.none" text="생성된 번역본 없음" javaScriptEscape="true"/>',
+    noTranslationSelected: '<spring:message code="admin.translation.noTranslationSelected" text="번역안을 선택해줘야 함" javaScriptEscape="true"/>',
+    collapsedHint: '<spring:message code="admin.translation.collapsedHint" text="버튼을 눌러 번역 목록을 확인" javaScriptEscape="true"/>',
+    currentSource: '<spring:message code="admin.translation.currentSource" text="현재 원문" javaScriptEscape="true"/>',
+    basedSource: '<spring:message code="admin.translation.basedSource" text="현재 버전 기준 원문" javaScriptEscape="true"/>',
+    translatedText: '<spring:message code="admin.translation.translatedText" text="번역문" javaScriptEscape="true"/>',
+    title: '<spring:message code="admin.translation.title" text="제목" javaScriptEscape="true"/>',
+    titlePlaceholder: '<spring:message code="admin.translation.titlePlaceholder" text="예: ko→en 번역안" javaScriptEscape="true"/>',
+    sourceLang: '<spring:message code="admin.translation.sourceLang" text="소스 언어" javaScriptEscape="true"/>',
+    targetLang: '<spring:message code="admin.translation.targetLang" text="타겟 언어" javaScriptEscape="true"/>',
+    autoGenerate: '<spring:message code="admin.translation.autoGenerate" text="자동 번역으로 초안 생성" javaScriptEscape="true"/>',
+    initialText: '<spring:message code="admin.translation.initialText" text="초기 번역문" javaScriptEscape="true"/>',
+    note: '<spring:message code="admin.translation.note" text="메모" javaScriptEscape="true"/>',
+    primary: '<spring:message code="admin.translation.primary" text="대표본" javaScriptEscape="true"/>',
+    primaryShort: '<spring:message code="admin.translation.primaryShort" text="대표" javaScriptEscape="true"/>',
+    outdated: '<spring:message code="admin.translation.outdated" text="현재 원문과 기준 스냅샷이 다름" javaScriptEscape="true"/>',
+    outdatedShort: '<spring:message code="admin.translation.outdatedShort" text="구버전" javaScriptEscape="true"/>',
+    upToDate: '<spring:message code="admin.translation.upToDate" text="현재 원문 기준과 일치" javaScriptEscape="true"/>',
+    setPrimary: '<spring:message code="admin.translation.setPrimary" text="이 번역안을 대표본으로 지정" javaScriptEscape="true"/>',
+    saveRevision: '<spring:message code="admin.translation.saveRevision" text="새 버전 저장" javaScriptEscape="true"/>',
+    revisionHistory: '<spring:message code="admin.translation.revisionHistory" text="버전 이력" javaScriptEscape="true"/>',
+    restoreRevision: '<spring:message code="admin.translation.restoreRevision" text="선택 버전으로 되돌리기" javaScriptEscape="true"/>',
+    noRevision: '<spring:message code="admin.translation.noRevision" text="버전 없음" javaScriptEscape="true"/>',
+    untitled: '<spring:message code="admin.translation.untitled" text="제목 없음" javaScriptEscape="true"/>',
+    loading: '<spring:message code="admin.translation.loading" text="불러오는 중..." javaScriptEscape="true"/>',
+    created: '<spring:message code="admin.translation.created" text="번역안을 생성했음" javaScriptEscape="true"/>',
+    saved: '<spring:message code="admin.translation.saved" text="새 번역 버전을 저장했음" javaScriptEscape="true"/>',
+    restored: '<spring:message code="admin.translation.restored" text="선택 버전으로 되돌렸음" javaScriptEscape="true"/>',
+    confirmRestore: '<spring:message code="admin.translation.confirmRestore" text="선택한 버전으로 되돌리겠음?" javaScriptEscape="true"/>',
+    requestFailed: '<spring:message code="admin.translation.requestFailed" text="요청 처리 중 오류가 발생했음" javaScriptEscape="true"/>',
+    enterTranslatedText: '<spring:message code="admin.translation.enterTranslatedText" text="번역문을 입력해야 함" javaScriptEscape="true"/>',
+    languages: {
+        ko: '<spring:message code="header.lang.ko" text="한국어" javaScriptEscape="true"/>',
+        en: '<spring:message code="header.lang.en" text="English" javaScriptEscape="true"/>',
+        ja: '<spring:message code="header.lang.ja" text="日本語" javaScriptEscape="true"/>',
+        zh: '<spring:message code="header.lang.zh" text="中文" javaScriptEscape="true"/>'
+    }
+};
+</script>
+<script src="${pageContext.request.contextPath}/resources/js/admin/admin-translation.js"></script>

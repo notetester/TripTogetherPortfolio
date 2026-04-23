@@ -233,18 +233,35 @@
 
                         <%-- 액션 --%>
                         <td>
-                            <div style="display:flex;gap:4px;">
-                                <c:if test="${comment.commentStatus != 'BLOCKED'}">
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;padding:3px 8px;color:#f87171;border-color:#f87171;"
-                                            data-id="${comment.commentId}"
-                                            onclick="actionComment(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
-                                </c:if>
-                                <button class="adm-btn adm-btn-ghost"
-                                        style="font-size:11px;padding:3px 8px;color:#64748b;"
-                                        data-id="${comment.commentId}"
-                                        onclick="actionComment(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
-                            </div>
+                            <c:choose>
+                                <c:when test="${comment.commentStatus != 'BLOCKED'}">
+                                    <div class="adm-row-actions">
+                                        <button class="adm-row-btn danger"
+                                                type="button"
+                                                data-id="${comment.commentId}"
+                                                onclick="actionComment(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
+                                        <div class="action-menu-wrap">
+                                            <button class="adm-row-btn detail adm-row-btn-more"
+                                                    type="button"
+                                                    onclick="admToggleActionMenu(this)">⋯</button>
+                                            <div class="action-menu">
+                                                <button class="action-menu-item danger"
+                                                        type="button"
+                                                        data-id="${comment.commentId}"
+                                                        onclick="actionComment(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="adm-row-actions is-single">
+                                        <button class="adm-row-btn danger"
+                                                type="button"
+                                                data-id="${comment.commentId}"
+                                                onclick="actionComment(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </c:forEach>
