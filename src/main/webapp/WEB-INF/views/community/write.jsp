@@ -43,7 +43,17 @@
 .note-modal .note-modal-body   { padding: 52px 32px !important; }
 .note-modal .note-modal-body .note-form-group { padding-bottom: 44px !important; }
 .note-modal .note-modal-body .note-form-group:last-child { padding-bottom: 0 !important; }
-.note-modal .note-modal-footer { height: auto !important; padding: 22px 32px !important; }
+/* footer를 flex로 전환: Summernote 기본 float:right 가 height:auto 일 때 컨테이너 밖으로 밀려나는 문제 방지 */
+.note-modal .note-modal-footer {
+    height: auto !important;
+    padding: 22px 32px !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-align: right !important;
+}
+.note-modal .note-modal-footer .note-btn { float: none !important; }
 .note-modal .note-form-label { margin-bottom: 14px !important; }
 </style>
 
