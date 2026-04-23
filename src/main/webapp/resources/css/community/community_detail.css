@@ -645,7 +645,14 @@
 }
 .comm-ad-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; }
 .comm-ad-size  { font-size: 0.7rem; }
-@media (max-width: 1199px) { .comm-ad-banner-inner { width: 100%; border-radius: 0; border-left: none; border-right: none; } }
+.comm-ad-link  { display: block; width: 970px; margin: 0 auto; line-height: 0; }
+.comm-ad-image { display: block; width: 970px; max-width: 100%; height: auto; margin: 0 auto; border-radius: 8px; }
+@media (max-width: 1199px) {
+    .comm-ad-banner-inner,
+    .comm-ad-link { width: 100%; border-radius: 0; }
+    .comm-ad-banner-inner { border-left: none; border-right: none; }
+    .comm-ad-image { width: 100%; border-radius: 0; }
+}
 
 /* =============================================
    반응형 — 모바일

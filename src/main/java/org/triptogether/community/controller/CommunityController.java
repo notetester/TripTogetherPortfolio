@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.triptogether.admin.service.AdCampaignService;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.*;
 import org.triptogether.auth.vo.UserRole;
@@ -56,6 +57,7 @@ public class CommunityController {
     private final PerspectiveService perspectiveService;
     private final IpBlockMapper ipBlockMapper;
     private final ViewHistoryService viewHistoryService;
+    private final AdCampaignService adCampaignService;
 
     /* =============================================
        GET /community, /community/ - 루트 리다이렉트
@@ -103,6 +105,7 @@ public class CommunityController {
         if (showSections) {
             model.addAttribute("popularList", communityService.getPopularList(8));
         }
+        model.addAttribute("currentAd", adCampaignService.pickForSlot(AdCampaignService.SLOT_COMMUNITY_LIST_TOP));
         return "community/list";
     }
 
@@ -158,6 +161,7 @@ public class CommunityController {
         model.addAttribute("latestList",        communityService.getLatestList(excludeIds, latestPage, latestPageSize));
         model.addAttribute("latestPage",        latestPage);
         model.addAttribute("latestTotalPage",   latestTotalPage);
+        model.addAttribute("currentAd",         adCampaignService.pickForSlot(AdCampaignService.SLOT_COMMUNITY_DETAIL_BOTTOM));
 
         return "community/detail";
     }
