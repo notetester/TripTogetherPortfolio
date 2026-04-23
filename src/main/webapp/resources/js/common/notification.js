@@ -222,6 +222,14 @@
         return String(label).replace(/^[\[\(【［]+|[\]\)】］]+$/g, '').trim();
     }
 
+    // i18n 키가 해결되지 않은 경우 (값이 'header.' 등으로 시작) fallback 사용
+    function resolveLabel(key, fallback) {
+        const val = labels[key];
+        if (!val) return fallback;
+        if (/^(header|footer|mypage|common)\./.test(val)) return fallback;
+        return val;
+    }
+
     function goToTarget(noti) {
         const targetUrl = noti.targetUrl || '/mypage';
         fetch(ctx + '/api/notifications/' + noti.notificationId + '/read', {
@@ -254,7 +262,7 @@
 
         const meta = document.createElement('div');
         meta.className = 'noti-toast-meta';
-        meta.textContent = labels.justNow || 'Just now';
+        meta.textContent = resolveLabel('justNow', 'Just now');
 
         bodyEl.appendChild(type);
         bodyEl.appendChild(msg);
@@ -263,7 +271,7 @@
         const actionBtn = document.createElement('button');
         actionBtn.type = 'button';
         actionBtn.className = 'noti-toast-action';
-        actionBtn.textContent = labels.view || 'View';
+        actionBtn.textContent = resolveLabel('view', 'View');
         actionBtn.addEventListener('click', function (e) {
             e.stopPropagation();
             goToTarget(noti);
