@@ -438,6 +438,24 @@ public class IntentContextService {
         }
     }
 
+    /**
+     * EXPLORE 의도일 때 관련 패키지 자동 부착용 — 매칭 패키지가 1건 이상이면 첫 키워드 반환.
+     * 없으면 null (부착 skip).
+     */
+    public String findRelatedPackageKeyword(ChatIntentVO intent) {
+        if (intent == null) return null;
+        List<String> keywords = combineKeywords(intent);
+        if (keywords.isEmpty()) return null;
+        try {
+            List<Map<String, Object>> rows = travelPackageMapper.searchPackagesByKeywords(keywords, 1);
+            if (rows == null || rows.isEmpty()) return null;
+            return keywords.get(0);
+        } catch (Exception e) {
+            log.warn("[Chatbot] 관련 패키지 조회 실패 — 원인={}", e.getMessage());
+            return null;
+        }
+    }
+
     // ══════════════════════════════════════════════════════════
     // 3. Fallback 유틸 (LLM 호출 실패 시 사용)
     // ══════════════════════════════════════════════════════════

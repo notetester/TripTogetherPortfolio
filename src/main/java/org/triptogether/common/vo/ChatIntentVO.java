@@ -35,4 +35,8 @@ public class ChatIntentVO {
     public boolean isInappropriate() {
         return INTENT_INAPPROPRIATE.equals(intent);
     }
+
+    public boolean isExplore() {
+        return INTENT_EXPLORE.equals(intent);
+    }
 }

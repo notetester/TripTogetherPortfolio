@@ -203,6 +203,9 @@ public class ChatbotService {
         // 7. Gemini 본 호출 (분류 의도 주입)
         ChatbotResponseVO response = callGemini(request, history, loggedIn, intent);
 
+        // 7.5. EXPLORE 의도면 관련 패키지 링크 자동 부착 (이미 포함됐으면 skip)
+        appendRelatedPackagesIfNeeded(response, intent);
+
         // 8. 부적절 플래그 처리 (본 호출 결과가 inappropriate 일 때만)
         if (response.isInappropriate()) {
             conversationService.markInappropriate(userMsg.getMessageId());
@@ -230,6 +233,36 @@ public class ChatbotService {
         response.setConversationId(conversation.getConversationId());
         response.setMessageId(botMsg.getMessageId());
         return response;
+    }
+
+    /**
+     * EXPLORE 의도일 때 응답 링크에 /packages 가 없으면 관련 패키지 링크를 자동 부착.
+     * 이미 /packages 관련 링크가 있거나 매칭 패키지가 없으면 아무 것도 하지 않음.
+     */
+    private void appendRelatedPackagesIfNeeded(ChatbotResponseVO response, ChatIntentVO intent) {
+        if (response == null || intent == null) return;
+        if (!intent.isExplore()) return;
+        if (response.isInappropriate()) return;
+
+        List<ChatbotResponseVO.SiteLink> links = response.getLinks();
+        if (links != null) {
+            for (ChatbotResponseVO.SiteLink l : links) {
+                if (l != null && l.getUrl() != null && l.getUrl().startsWith("/packages")) {
+                    return; // 이미 부착됨
+                }
+            }
+        }
+
+        String kw = intentContextService.findRelatedPackageKeyword(intent);
+        if (kw == null) return;
+
+        List<ChatbotResponseVO.SiteLink> mutable = links != null ? new ArrayList<>(links) : new ArrayList<>();
+        mutable.add(ChatbotResponseVO.SiteLink.builder()
+                .label(kw + " 관련 패키지 둘러보기")
+                .url("/packages")
+                .icon("🎁")
+                .build());
+        response.setLinks(mutable);
     }
 
     /**
