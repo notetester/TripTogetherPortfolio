@@ -594,6 +594,15 @@
                 <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.syncedAt"/></div><div class="detail-value"><c:choose><c:when test="${b.syncedAtDate != null}"><fmt:formatDate value="${b.syncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
             </div>
             <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.detailReason"/></div><div class="detail-value">${empty b.reason ? '-' : fn:escapeXml(b.reason)}</div></div>
+            <c:if test="${not empty b.reason}">
+                <div class="adm-tr-inline js-admin-translation-widget"
+                     data-label="회원 차단 사유 번역"
+                     data-source-type="USER_BLOCK"
+                     data-source-idx="${b.blockIdx}"
+                     data-field-name="reason"
+                     data-default-source-lang="ko"
+                     data-source-text="${fn:escapeXml(b.reason)}"></div>
+            </c:if>
             <table class="history-table" style="margin-top:14px;">
                 <thead><tr><th><spring:message code="admin.common.item"/></th><th><spring:message code="admin.common.value"/></th></tr></thead>
                 <tbody>
@@ -833,7 +842,25 @@
                 <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.lastControl"/></div><div class="detail-value">${empty r.lastControlAction ? '-' : r.lastControlAction} <c:if test="${r.lastControlAtDate != null}">/ <fmt:formatDate value="${r.lastControlAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:if></div></div>
             </div>
             <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.policyReason"/></div><div class="detail-value">${empty r.reason ? '-' : fn:escapeXml(r.reason)}</div></div>
+            <c:if test="${not empty r.reason}">
+                <div class="adm-tr-inline js-admin-translation-widget"
+                     data-label="IP 정책 사유 번역"
+                     data-source-type="IP_BLOCK_RULE"
+                     data-source-idx="${r.ipBlocklistIdx}"
+                     data-field-name="reason"
+                     data-default-source-lang="ko"
+                     data-source-text="${fn:escapeXml(r.reason)}"></div>
+            </c:if>
             <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.context.detailMemo"/></div><div class="detail-value">${empty r.detailMessage ? '-' : fn:escapeXml(r.detailMessage)}</div></div>
+            <c:if test="${not empty r.detailMessage}">
+                <div class="adm-tr-inline js-admin-translation-widget"
+                     data-label="IP 상세 메모 번역"
+                     data-source-type="IP_BLOCK_RULE"
+                     data-source-idx="${r.ipBlocklistIdx}"
+                     data-field-name="detail_message"
+                     data-default-source-lang="ko"
+                     data-source-text="${fn:escapeXml(r.detailMessage)}"></div>
+            </c:if>
             <table class="history-table" style="margin-top:14px;">
                 <thead><tr><th><spring:message code="admin.common.item"/></th><th><spring:message code="admin.common.value"/></th></tr></thead>
                 <tbody>
@@ -2234,6 +2261,9 @@ function openBlockDetail(templateId, title) {
     if (!template) return;
     document.getElementById('blockDetailTitle').textContent = title || ADMIN_BLOCK_MSG.blockDetailTitle;
     document.getElementById('blockDetailBody').innerHTML = template.innerHTML;
+    if (window.TripAdminTranslation && typeof window.TripAdminTranslation.scan === 'function') {
+        window.TripAdminTranslation.scan(document.getElementById('blockDetailBody'));
+    }
     document.getElementById('blockDetailModal').classList.add('open');
 }
 

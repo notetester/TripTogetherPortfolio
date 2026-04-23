@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminTranslationMapper">
+
+    <resultMap id="sourceSnapshotMap" type="org.triptogether.admin.vo.AdminTranslationSourceSnapshotVO">
+        <id property="sourceSnapshotIdx" column="source_snapshot_idx"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="sourceIdx" column="source_idx"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="sourceLang" column="source_lang"/>
+        <result property="sourceText" column="source_text"/>
+        <result property="sourceTextHash" column="source_text_hash"/>
+        <result property="sourceUpdatedAt" column="source_updated_at"/>
+        <result property="snapshotSeq" column="snapshot_seq"/>
+        <result property="capturedAt" column="captured_at"/>
+        <result property="capturedByUserIdx" column="captured_by_user_idx"/>
+    </resultMap>
+
+    <resultMap id="translationMap" type="org.triptogether.admin.vo.AdminTranslationVO">
+        <id property="translationIdx" column="translation_idx"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="sourceIdx" column="source_idx"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="sourceLang" column="source_lang"/>
+        <result property="targetLang" column="target_lang"/>
+        <result property="title" column="title"/>
+        <result property="status" column="status"/>
+        <result property="visibilityScope" column="visibility_scope"/>
+        <result property="isPrimary" column="is_primary"/>
+        <result property="forkedFromTranslationIdx" column="forked_from_translation_idx"/>
+        <result property="currentRevisionIdx" column="current_revision_idx"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="deletedAt" column="deleted_at"/>
+        <result property="deletedBy" column="deleted_by"/>
+    </resultMap>
+
+    <resultMap id="translationRevisionMap" type="org.triptogether.admin.vo.AdminTranslationRevisionVO">
+        <id property="translationRevisionIdx" column="translation_revision_idx"/>
+        <result property="translationIdx" column="translation_idx"/>
+        <result property="versionNo" column="version_no"/>
+        <result property="parentRevisionIdx" column="parent_revision_idx"/>
+        <result property="sourceSnapshotIdx" column="source_snapshot_idx"/>
+        <result property="sourceTextSnapshot" column="source_text_snapshot"/>
+        <result property="sourceTextHash" column="source_text_hash"/>
+        <result property="sourceSnapshotSeq" column="source_snapshot_seq"/>
+        <result property="sourceSnapshotAt" column="source_snapshot_at"/>
+        <result property="translatedText" column="translated_text"/>
+        <result property="translationType" column="translation_type"/>
+        <result property="translationEngine" column="translation_engine"/>
+        <result property="translationEngineVersion" column="translation_engine_version"/>
+        <result property="styleType" column="style_type"/>
+        <result property="reviewStatus" column="review_status"/>
+        <result property="reviewedBy" column="reviewed_by"/>
+        <result property="reviewedAt" column="reviewed_at"/>
+        <result property="reviewComment" column="review_comment"/>
+        <result property="note" column="note"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="selectLatestSourceSnapshot" resultMap="sourceSnapshotMap">
+        SELECT
+            source_snapshot_idx,
+            source_type,
+            source_idx,
+            field_name,
+            source_lang,
+            source_text,
+            source_text_hash,
+            source_updated_at,
+            snapshot_seq,
+            captured_at,
+            captured_by_user_idx
+        FROM ADMIN_TRANSLATION_SOURCE_SNAPSHOT
+        WHERE source_type = #{sourceType}
+          AND source_idx = #{sourceIdx}
+          AND field_name = #{fieldName}
+        ORDER BY snapshot_seq DESC, source_snapshot_idx DESC
+        LIMIT 1
+    </select>
+
+    <insert id="insertSourceSnapshot" useGeneratedKeys="true" keyProperty="sourceSnapshotIdx">
+        INSERT INTO ADMIN_TRANSLATION_SOURCE_SNAPSHOT (
+            source_type,
+            source_idx,
+            field_name,
+            source_lang,
+            source_text,
+            source_text_hash,
+            source_updated_at,
+            snapshot_seq,
+            captured_by_user_idx
+        ) VALUES (
+            #{sourceType},
+            #{sourceIdx},
+            #{fieldName},
+            #{sourceLang},
+            #{sourceText},
+            #{sourceTextHash},
+            #{sourceUpdatedAt},
+            #{snapshotSeq},
+            #{capturedByUserIdx}
+        )
+    </insert>
+
+    <select id="selectTranslations" resultMap="translationMap">
+        SELECT
+            translation_idx,
+            source_type,
+            source_idx,
+            field_name,
+            source_lang,
+            target_lang,
+            title,
+            status,
+            visibility_scope,
+            is_primary,
+            forked_from_translation_idx,
+            current_revision_idx,
+            created_by,
+            created_at,
+            updated_by,
+            updated_at,
+            is_deleted,
+            deleted_at,
+            deleted_by
+        FROM ADMIN_TRANSLATION
+        WHERE source_type = #{sourceType}
+          AND source_idx = #{sourceIdx}
+          AND field_name = #{fieldName}
+          AND is_deleted = 0
+        ORDER BY is_primary DESC, updated_at DESC, translation_idx DESC
+    </select>
+
+    <select id="selectTranslation" resultMap="translationMap">
+        SELECT
+            translation_idx,
+            source_type,
+            source_idx,
+            field_name,
+            source_lang,
+            target_lang,
+            title,
+            status,
+            visibility_scope,
+            is_primary,
+            forked_from_translation_idx,
+            current_revision_idx,
+            created_by,
+            created_at,
+            updated_by,
+            updated_at,
+            is_deleted,
+            deleted_at,
+            deleted_by
+        FROM ADMIN_TRANSLATION
+        WHERE translation_idx = #{translationIdx}
+        LIMIT 1
+    </select>
+
+    <select id="countTranslationsByLangPair" resultType="int">
+        SELECT COUNT(*)
+        FROM ADMIN_TRANSLATION
+        WHERE source_type = #{sourceType}
+          AND source_idx = #{sourceIdx}
+          AND field_name = #{fieldName}
+          AND source_lang = #{sourceLang}
+          AND target_lang = #{targetLang}
+          AND is_deleted = 0
+    </select>
+
+    <select id="countPrimaryTranslationsByLangPair" resultType="int">
+        SELECT COUNT(*)
+        FROM ADMIN_TRANSLATION
+        WHERE source_type = #{sourceType}
+          AND source_idx = #{sourceIdx}
+          AND field_name = #{fieldName}
+          AND source_lang = #{sourceLang}
+          AND target_lang = #{targetLang}
+          AND is_primary = 1
+          AND is_deleted = 0
+    </select>
+
+    <update id="clearPrimaryByLangPair">
+        UPDATE ADMIN_TRANSLATION
+        SET is_primary = 0,
+            updated_by = #{updatedBy},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE source_type = #{sourceType}
+          AND source_idx = #{sourceIdx}
+          AND field_name = #{fieldName}
+          AND source_lang = #{sourceLang}
+          AND target_lang = #{targetLang}
+          AND is_deleted = 0
+          <if test="excludeTranslationIdx != null">
+              AND translation_idx != #{excludeTranslationIdx}
+          </if>
+    </update>
+
+    <insert id="insertTranslation" useGeneratedKeys="true" keyProperty="translationIdx">
+        INSERT INTO ADMIN_TRANSLATION (
+            source_type,
+            source_idx,
+            field_name,
+            source_lang,
+            target_lang,
+            title,
+            status,
+            visibility_scope,
+            is_primary,
+            forked_from_translation_idx,
+            current_revision_idx,
+            created_by,
+            updated_by,
+            is_deleted
+        ) VALUES (
+            #{sourceType},
+            #{sourceIdx},
+            #{fieldName},
+            #{sourceLang},
+            #{targetLang},
+            #{title},
+            #{status},
+            #{visibilityScope},
+            #{isPrimary},
+            #{forkedFromTranslationIdx},
+            #{currentRevisionIdx},
+            #{createdBy},
+            #{updatedBy},
+            #{isDeleted}
+        )
+    </insert>
+
+    <update id="updateTranslationCurrentRevision">
+        UPDATE ADMIN_TRANSLATION
+        SET current_revision_idx = #{currentRevisionIdx},
+            updated_by = #{updatedBy},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE translation_idx = #{translationIdx}
+    </update>
+
+    <update id="updateTranslationMeta">
+        UPDATE ADMIN_TRANSLATION
+        SET title = #{title},
+            status = #{status},
+            visibility_scope = #{visibilityScope},
+            is_primary = #{isPrimary},
+            updated_by = #{updatedBy},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE translation_idx = #{translationIdx}
+    </update>
+
+    <select id="selectMaxVersionNo" resultType="int">
+        SELECT IFNULL(MAX(version_no), 0)
+        FROM ADMIN_TRANSLATION_REVISION
+        WHERE translation_idx = #{translationIdx}
+    </select>
+
+    <insert id="insertTranslationRevision" useGeneratedKeys="true" keyProperty="translationRevisionIdx">
+        INSERT INTO ADMIN_TRANSLATION_REVISION (
+            translation_idx,
+            version_no,
+            parent_revision_idx,
+            source_snapshot_idx,
+            translated_text,
+            translation_type,
+            translation_engine,
+            translation_engine_version,
+            style_type,
+            review_status,
+            reviewed_by,
+            reviewed_at,
+            review_comment,
+            note,
+            created_by,
+            updated_by
+        ) VALUES (
+            #{translationIdx},
+            #{versionNo},
+            #{parentRevisionIdx},
+            #{sourceSnapshotIdx},
+            #{translatedText},
+            #{translationType},
+            #{translationEngine},
+            #{translationEngineVersion},
+            #{styleType},
+            #{reviewStatus},
+            #{reviewedBy},
+            #{reviewedAt},
+            #{reviewComment},
+            #{note},
+            #{createdBy},
+            #{updatedBy}
+        )
+    </insert>
+
+    <select id="selectTranslationRevisions" resultMap="translationRevisionMap">
+        SELECT
+            r.translation_revision_idx,
+            r.translation_idx,
+            r.version_no,
+            r.parent_revision_idx,
+            r.source_snapshot_idx,
+            s.source_text AS source_text_snapshot,
+            s.source_text_hash,
+            s.snapshot_seq AS source_snapshot_seq,
+            s.captured_at AS source_snapshot_at,
+            r.translated_text,
+            r.translation_type,
+            r.translation_engine,
+            r.translation_engine_version,
+            r.style_type,
+            r.review_status,
+            r.reviewed_by,
+            r.reviewed_at,
+            r.review_comment,
+            r.note,
+            r.created_by,
+            r.created_at,
+            r.updated_by,
+            r.updated_at
+        FROM ADMIN_TRANSLATION_REVISION r
+        INNER JOIN ADMIN_TRANSLATION_SOURCE_SNAPSHOT s ON s.source_snapshot_idx = r.source_snapshot_idx
+        WHERE r.translation_idx = #{translationIdx}
+        ORDER BY r.version_no DESC, r.translation_revision_idx DESC
+    </select>
+
+    <select id="selectTranslationRevision" resultMap="translationRevisionMap">
+        SELECT
+            r.translation_revision_idx,
+            r.translation_idx,
+            r.version_no,
+            r.parent_revision_idx,
+            r.source_snapshot_idx,
+            s.source_text AS source_text_snapshot,
+            s.source_text_hash,
+            s.snapshot_seq AS source_snapshot_seq,
+            s.captured_at AS source_snapshot_at,
+            r.translated_text,
+            r.translation_type,
+            r.translation_engine,
+            r.translation_engine_version,
+            r.style_type,
+            r.review_status,
+            r.reviewed_by,
+            r.reviewed_at,
+            r.review_comment,
+            r.note,
+            r.created_by,
+            r.created_at,
+            r.updated_by,
+            r.updated_at
+        FROM ADMIN_TRANSLATION_REVISION r
+        INNER JOIN ADMIN_TRANSLATION_SOURCE_SNAPSHOT s ON s.source_snapshot_idx = r.source_snapshot_idx
+        WHERE r.translation_revision_idx = #{translationRevisionIdx}
+        LIMIT 1
+    </select>
+
+</mapper>

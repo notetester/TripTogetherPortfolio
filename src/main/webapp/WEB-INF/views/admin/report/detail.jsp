@@ -135,6 +135,13 @@
                             <div class="adm-meta-row">
                                 <div class="adm-meta-key"><spring:message code="admin.common.title"/></div>
                                 <div class="adm-detail-value" style="font-weight:600;">${fn:escapeXml(report.targetTitle)}</div>
+                                <div class="adm-tr-inline js-admin-translation-widget"
+                                     data-label="신고 대상 제목 번역"
+                                     data-source-type="REPORT_TARGET"
+                                     data-source-idx="${report.targetId}"
+                                     data-field-name="target_title"
+                                     data-default-source-lang="ko"
+                                     data-source-text="${fn:escapeXml(report.targetTitle)}"></div>
                             </div>
                         </c:if>
                         <c:if test="${report.targetType eq 'comment' and not empty report.targetContent}">
@@ -146,6 +153,13 @@
                                         <c:otherwise>${fn:escapeXml(report.targetContent)}</c:otherwise>
                                     </c:choose>
                                 </div>
+                                <div class="adm-tr-inline js-admin-translation-widget"
+                                     data-label="신고 대상 본문 번역"
+                                     data-source-type="REPORT_TARGET"
+                                     data-source-idx="${report.targetId}"
+                                     data-field-name="target_content"
+                                     data-default-source-lang="ko"
+                                     data-source-text="${fn:escapeXml(report.targetContent)}"></div>
                             </div>
                         </c:if>
                         <c:if test="${report.targetType eq 'review'}">
@@ -167,6 +181,13 @@
                                             <c:otherwise>${fn:escapeXml(report.targetContent)}</c:otherwise>
                                         </c:choose>
                                     </div>
+                                    <div class="adm-tr-inline js-admin-translation-widget"
+                                         data-label="리뷰 본문 번역"
+                                         data-source-type="REPORT_TARGET"
+                                         data-source-idx="${report.targetId}"
+                                         data-field-name="target_content"
+                                         data-default-source-lang="ko"
+                                         data-source-text="${fn:escapeXml(report.targetContent)}"></div>
                                 </div>
                             </c:if>
                         </c:if>
@@ -192,6 +213,13 @@
                         <div class="adm-meta-row">
                             <div class="adm-meta-key"><spring:message code="admin.common.description"/></div>
                             <div class="adm-report-desc">${report.description}</div>
+                            <div class="adm-tr-inline js-admin-translation-widget"
+                                 data-label="신고 설명 번역"
+                                 data-source-type="REPORT"
+                                 data-source-idx="${report.reportId}"
+                                 data-field-name="description"
+                                 data-default-source-lang="ko"
+                                 data-source-text="${fn:escapeXml(report.description)}"></div>
                         </div>
                     </c:if>
 
