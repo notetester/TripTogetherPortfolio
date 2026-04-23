@@ -88,7 +88,7 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-chart-body     { height:280px; display:flex; align-items:center; justify-content:center; padding:16px; }
 .sa-chart-body canvas { max-height:248px; }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
     .sa-stats-grid { grid-template-columns:1fr; }
     .sa-stats-exception-grid { grid-template-columns:1fr; }
 }
