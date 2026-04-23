@@ -240,7 +240,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>대화 ID</th>
+                        <th>작성자</th>
                         <th>내용</th>
                         <th>작성 시각</th>
                         <th>액션</th>
@@ -255,7 +255,22 @@
                             <c:forEach var="m" items="${messages}">
                                 <tr>
                                     <td>${m.messageId}</td>
-                                    <td>${m.conversationId}</td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${not empty m.authorUserIdx}">
+                                                <a href="javascript:void(0);"
+                                                   onclick="openDetail('${m.authorUserIdx}'); return false;"
+                                                   style="color:#1d4ed8;text-decoration:none;font-weight:500;cursor:pointer;"
+                                                   title="회원 상세 보기">
+                                                    <c:choose>
+                                                        <c:when test="${not empty m.authorNickname}">${m.authorNickname}</c:when>
+                                                        <c:otherwise>#${m.authorUserIdx}</c:otherwise>
+                                                    </c:choose>
+                                                </a>
+                                            </c:when>
+                                            <c:otherwise><span style="color:#94a3b8;">게스트</span></c:otherwise>
+                                        </c:choose>
+                                    </td>
                                     <td style="max-width:600px;word-break:break-all;">${m.content}</td>
                                     <td>${fn:replace(fn:substring(m.createdAt, 0, 16), 'T', ' ')}</td>
                                     <td>
