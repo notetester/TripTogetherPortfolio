@@ -723,6 +723,8 @@
     };
 </script>
 
+<script>window.AD_TRACKER_CTX = '${pageContext.request.contextPath}';</script>
+<script src="${pageContext.request.contextPath}/resources/js/common/ad-impression.js" defer></script>
 
 <%@ include file="../common/footer.jsp" %>
 </body>
