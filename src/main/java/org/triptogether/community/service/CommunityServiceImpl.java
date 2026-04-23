@@ -2,6 +2,9 @@ package org.triptogether.community.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Safelist;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +35,27 @@ public class CommunityServiceImpl implements CommunityService {
     private final SpotTextTranslationService spotTextTranslationService;
     private final RewardService rewardService;
     private final ModerationPolicyService moderationPolicyService;
+
+    // Summernote 본문 XSS 정화용 화이트리스트
+    // basicWithImages 기반 + 서식/이미지/인라인스타일 허용, img src 프로토콜은 http/https/data 허용
+    // data: 는 Phase 1 base64 인라인 이미지용. Phase 2(Cloudinary) 이후 재검토 예정
+    private static final Safelist COMMUNITY_SAFELIST = Safelist.basicWithImages()
+            .addTags("h1", "h2", "h3", "h4", "h5", "h6", "u", "s", "strike", "font", "span", "div", "hr")
+            .addAttributes("span",  "style")
+            .addAttributes("p",     "style")
+            .addAttributes("div",   "style")
+            .addAttributes("font",  "color", "face", "size")
+            .addAttributes("img",   "src", "alt", "width", "height", "style")
+            .addProtocols("img", "src", "http", "https", "data");
+
+    // Summernote 본문 HTML을 화이트리스트 기준으로 정화함 (XSS 방지)
+    // - <script>, on* 핸들러, javascript: URL 등 실행 가능 요소 제거
+    // - prettyPrint=false: 불필요한 개행 삽입 방지
+    private String sanitizeHtml(String html) {
+        if (html == null || html.isBlank()) return "";
+        return Jsoup.clean(html, "", COMMUNITY_SAFELIST,
+                new Document.OutputSettings().prettyPrint(false));
+    }
 
     // ===== 목록 =====
 
@@ -165,11 +189,11 @@ public class CommunityServiceImpl implements CommunityService {
                     policy.getPostWindowMinutes() + "분 내 게시글을 " + policy.getPostMaxCount() + "개 이상 작성할 수 없습니다.");
         }
 
-        // 1. COMMUNITY_POST INSERT
+        // 1. COMMUNITY_POST INSERT (본문 HTML은 XSS 정화 후 저장)
         CommunityPostDto post = new CommunityPostDto();
         post.setUserIdx(userIdx);
         post.setTitle(writeDto.getTitle());
-        post.setContent(writeDto.getContent());
+        post.setContent(sanitizeHtml(writeDto.getContent()));
         communityMapper.insertPost(post);
         Long postId = post.getPostId(); // useGeneratedKeys로 자동 주입
 
@@ -238,8 +262,8 @@ public class CommunityServiceImpl implements CommunityService {
     public void editPost(Long postId, CommunityWriteDto writeDto,
                          List<String> existingImages, Long userIdx) {
 
-        // 1. COMMUNITY_POST 제목/본문 수정
-        communityMapper.updatePost(postId, writeDto.getTitle(), writeDto.getContent());
+        // 1. COMMUNITY_POST 제목/본문 수정 (본문 HTML은 XSS 정화 후 저장)
+        communityMapper.updatePost(postId, writeDto.getTitle(), sanitizeHtml(writeDto.getContent()));
 
         // 2. 지역/유형 수정
         communityMapper.updatePostRegionType(postId, writeDto.getRegion(), writeDto.getPostType());
