@@ -1447,4 +1447,6 @@ document.getElementById('detailModal').addEventListener('click', function (e) {
 document.getElementById('blockModal').addEventListener('click', function (e) {
     if (e.target === this) closeBlockModal();
 });
+</script>
+
 <%@ include file="../layout-close.jsp" %>
