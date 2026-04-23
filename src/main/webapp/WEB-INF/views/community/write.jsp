@@ -132,6 +132,10 @@
           <label class="section-label" for="writeContent">
             <spring:message code="community.write.content.label"/> <span class="required">*</span>
           </label>
+          <div id="photoCountBadge" class="photo-count-badge is-short" hidden>
+            <span class="photo-count-icon">&#128247;</span>
+            <span id="photoCountText"></span>
+          </div>
           <textarea id="writeContent" name="content" class="write-textarea"
                     placeholder="${communityWriteContentPlaceholder}"><c:if test="${isEdit}">${fn:escapeXml(post.content)}</c:if></textarea>
           <div class="input-counter">
@@ -246,6 +250,8 @@ var PHOTO_MIN_IMAGES = 3;
 <spring:message code="community.write.guide.photo.1" javaScriptEscape="true" var="communityWriteGuidePhoto1Js"/>
 <spring:message code="community.write.guide.photo.2" javaScriptEscape="true" var="communityWriteGuidePhoto2Js"/>
 <spring:message code="community.write.guide.photo.3" javaScriptEscape="true" var="communityWriteGuidePhoto3Js"/>
+<spring:message code="community.write.guide.photo.requirement" javaScriptEscape="true" var="communityWriteGuidePhotoRequirementJs"/>
+<spring:message code="community.write.photoCount.label" javaScriptEscape="true" var="communityWritePhotoCountLabelJs"/>
 <spring:message code="community.write.guide.question.1" javaScriptEscape="true" var="communityWriteGuideQuestion1Js"/>
 <spring:message code="community.write.guide.question.2" javaScriptEscape="true" var="communityWriteGuideQuestion2Js"/>
 <spring:message code="community.write.guide.review.1" javaScriptEscape="true" var="communityWriteGuideReview1Js"/>
@@ -296,6 +302,7 @@ var writeMessages = {
   cancelConfirm: '${communityWriteCancelConfirmJs}',
   contentPhotoOnly: '${communityWriteContentPhotoOnlyJs}',
   contentPlaceholder: '${communityWriteContentPlaceholderJs}',
+  photoCountLabel: '${communityWritePhotoCountLabelJs}',
   errors: {
     contentRequired: '${communityWriteErrorContentRequiredJs}',
     generic: '${communityWriteErrorGenericJs}',
@@ -305,6 +312,7 @@ var writeMessages = {
   },
   guides: {
     photo: [
+      '${communityWriteGuidePhotoRequirementJs}',
       '${communityWriteGuidePhoto1Js}',
       '${communityWriteGuidePhoto2Js}',
       '${communityWriteGuidePhoto3Js}'
@@ -414,6 +422,11 @@ window.onload = function() {
       }, 100);
     }
 
+    /* photo 유형 수정 시: 가이드 리스트 및 카운터 배지 갱신 */
+    if (currentType === 'photo') {
+      selectType('photo', document.querySelector('[data-type="photo"]'));
+    }
+
   } else {
     /* 글쓰기 모드: 기본 지역 태그(아시아) 자동 추가 */
     var defaultTag = REGION_TAG_VALUE['asia'];
@@ -458,6 +471,34 @@ function selectType(type, btn) {
   } else {
     sec.innerHTML = '';
   }
+
+  /* 사진 유형: 이미지 카운터 배지 표시 + 현재 카운트 반영 */
+  var badge = document.getElementById('photoCountBadge');
+  if (badge) {
+    if (type === 'photo') {
+      badge.hidden = false;
+      updatePhotoCount();
+    } else {
+      badge.hidden = true;
+    }
+  }
+}
+
+function updatePhotoCount() {
+  var badge = document.getElementById('photoCountBadge');
+  if (!badge || badge.hidden) return;
+  var $editor = (window.jQuery && jQuery('#writeContent').data('summernote')) ? jQuery('#writeContent') : null;
+  var html = $editor ? $editor.summernote('code') : (document.getElementById('writeContent').value || '');
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  var count = tmp.querySelectorAll('img').length;
+  var textEl = document.getElementById('photoCountText');
+  if (textEl) {
+    var tpl = writeMessages.photoCountLabel || 'Photos {0}/{1}';
+    textEl.textContent = tpl.replace('{0}', count).replace('{1}', PHOTO_MIN_IMAGES);
+  }
+  badge.classList.toggle('is-short', count < PHOTO_MIN_IMAGES);
+  badge.classList.toggle('is-ok', count >= PHOTO_MIN_IMAGES);
 }
 
 function selTipCat(cat, btn) {
@@ -644,6 +685,7 @@ jQuery(function($) {
       onChange: function(contents) {
         var plain = htmlToPlainText(contents);
         document.getElementById('contentCount').textContent = plain.length;
+        updatePhotoCount();
       },
       onImageUpload: function(files) {
         /* Cloudinary 업로드 → 반환된 secure_url 을 <img>로 삽입 */
