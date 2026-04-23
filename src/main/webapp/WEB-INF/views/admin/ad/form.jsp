@@ -61,17 +61,26 @@
                 <div style="font-size:11px;color:#94a3b8;margin-top:4px;">비워두면 클릭해도 이동하지 않음</div>
             </div>
 
+            <c:set var="startAtValue" value=""/>
+            <c:set var="endAtValue"   value=""/>
+            <c:if test="${not empty ad.startAt}">
+                <fmt:formatDate value="${ad.startAt}" pattern="yyyy-MM-dd'T'HH:mm" var="startAtValue"/>
+            </c:if>
+            <c:if test="${not empty ad.endAt}">
+                <fmt:formatDate value="${ad.endAt}" pattern="yyyy-MM-dd'T'HH:mm" var="endAtValue"/>
+            </c:if>
+
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
                 <div>
                     <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;">노출 시작</label>
                     <input type="datetime-local" name="startAtInput" class="adm-input" style="width:100%;padding:10px 12px;font-size:14px;"
-                           value="<c:if test='${not empty ad.startAt}'><fmt:formatDate value='${ad.startAt}' pattern=\"yyyy-MM-dd'T'HH:mm\"/></c:if>"/>
+                           value="${startAtValue}"/>
                     <div style="font-size:11px;color:#94a3b8;margin-top:4px;">비워두면 즉시 노출</div>
                 </div>
                 <div>
                     <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;">노출 종료</label>
                     <input type="datetime-local" name="endAtInput" class="adm-input" style="width:100%;padding:10px 12px;font-size:14px;"
-                           value="<c:if test='${not empty ad.endAt}'><fmt:formatDate value='${ad.endAt}' pattern=\"yyyy-MM-dd'T'HH:mm\"/></c:if>"/>
+                           value="${endAtValue}"/>
                     <div style="font-size:11px;color:#94a3b8;margin-top:4px;">비워두면 무기한</div>
                 </div>
             </div>
