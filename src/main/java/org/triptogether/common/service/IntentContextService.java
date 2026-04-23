@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,6 +19,7 @@ import org.triptogether.common.vo.ChatIntentVO;
 import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.courses.mapper.TravelPlanMapper;
 import org.triptogether.explore.mapper.ExploreMapper;
+import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.travelPackage.mapper.TravelPackageMapper;
 
 import java.util.*;
@@ -102,6 +104,7 @@ public class IntentContextService {
     private final TravelPackageMapper travelPackageMapper;
     private final CommunityMapper communityMapper;
     private final RestTemplate restTemplate;
+    private final SpotTextTranslationService translationService;
 
     @Value("${gemini.api.key}")
     private String geminiApiKey;
@@ -358,18 +361,19 @@ public class IntentContextService {
         sb.append("\n### 여행지 후보 (링크 형식: /detail/{spotIdx})\n");
         for (Map<String, Object> row : spots) {
             Object idx = row.get("spotIdx");
-            Object name = row.get("name");
-            Object region = row.get("region");
+            Long spotIdx = toLong(idx);
+            String name = localized("SPOT", spotIdx, "name", asStr(row.get("name")));
+            String region = localized("SPOT", spotIdx, "region", asStr(row.get("region")));
+            String desc = localized("SPOT", spotIdx, "description", asStr(row.get("description")));
             Object rating = row.get("ratingAvg");
             Object reviewCount = row.get("reviewCount");
-            Object desc = row.get("description");
 
             sb.append("- spotIdx=").append(idx)
               .append(", \"").append(name).append("\"")
-              .append(region != null ? " (" + region + ")" : "")
+              .append(!isBlank(region) ? " (" + region + ")" : "")
               .append(rating != null ? " — ★" + rating : "")
               .append(reviewCount != null ? " · 리뷰 " + reviewCount : "")
-              .append(desc != null ? " — " + truncate(String.valueOf(desc), 80) : "")
+              .append(!isBlank(desc) ? " — " + truncate(desc, 80) : "")
               .append("\n");
         }
     }
@@ -395,7 +399,8 @@ public class IntentContextService {
         sb.append("\n### 커뮤니티 게시글 후보 (링크 형식: /community/{postId})\n");
         for (Map<String, Object> row : posts) {
             Object id = row.get("postId");
-            Object title = row.get("title");
+            Long postId = toLong(id);
+            String title = localized("COMMUNITY_POST", postId, "title", asStr(row.get("title")));
             Object type = row.get("postType");
             Object nickname = row.get("nickname");
             Object likeCount = row.get("likeCount");
@@ -415,13 +420,15 @@ public class IntentContextService {
         sb.append("\n### 여행 패키지 후보 (링크는 반드시 /packages 루트 사용)\n");
         for (Map<String, Object> row : packages) {
             Object idx = row.get("packageIdx");
-            Object title = row.get("packageTitle");
-            Object summary = row.get("packageSummary");
+            Long packageIdx = toLong(idx);
+            Long spotIdx = toLong(row.get("spotIdx"));
+            String title = localized("TRAVEL_PACKAGE", packageIdx, "package_title", asStr(row.get("packageTitle")));
+            String summary = localized("TRAVEL_PACKAGE", packageIdx, "package_summary", asStr(row.get("packageSummary")));
+            String spotName = localized("SPOT", spotIdx, "name", asStr(row.get("spotName")));
+            String spotRegion = localized("SPOT", spotIdx, "region", asStr(row.get("spotRegion")));
             Object price = row.get("packagePrice");
             Object currency = row.get("currencyCode");
             Object bookingCount = row.get("bookingCount");
-            Object spotName = row.get("spotName");
-            Object spotRegion = row.get("spotRegion");
 
             sb.append("- packageIdx=").append(idx)
               .append(", \"").append(title).append("\"");
@@ -429,11 +436,11 @@ public class IntentContextService {
                 sb.append(" · ").append(currency != null ? currency : "KRW").append(" ").append(price);
             }
             if (bookingCount != null) sb.append(" · 예약 ").append(bookingCount).append("건");
-            if (spotName != null) {
+            if (!isBlank(spotName)) {
                 sb.append(" · 연결 여행지: ").append(spotName);
-                if (spotRegion != null) sb.append("(").append(spotRegion).append(")");
+                if (!isBlank(spotRegion)) sb.append("(").append(spotRegion).append(")");
             }
-            if (summary != null) sb.append(" — ").append(truncate(String.valueOf(summary), 60));
+            if (!isBlank(summary)) sb.append(" — ").append(truncate(summary, 60));
             sb.append("\n");
         }
     }
@@ -484,6 +491,37 @@ public class IntentContextService {
         if (s == null) return "";
         String flat = s.replaceAll("\\s+", " ").trim();
         return flat.length() <= max ? flat : flat.substring(0, max) + "…";
+    }
+
+    /**
+     * 현재 사용자 로케일이 ko 외(en/ja/zh) 이면 SpotTextTranslationService 의 번역 캐시를 거쳐 반환.
+     * ko 이거나 텍스트가 비어있으면 원문 그대로.
+     */
+    private String localized(String sourceType, Long pk, String field, String text) {
+        if (text == null || text.isBlank()) return text;
+        String lang = LocaleContextHolder.getLocale().getLanguage();
+        if (!"en".equals(lang) && !"ja".equals(lang) && !"zh".equals(lang)) return text;
+        try {
+            return translationService.translateText(sourceType, pk == null ? 0L : pk, field, text, lang);
+        } catch (Exception e) {
+            log.warn("[Chatbot] 번역 실패 → 원문 사용. sourceType={}, pk={}, field={}, 원인={}",
+                    sourceType, pk, field, e.getMessage());
+            return text;
+        }
+    }
+
+    private Long toLong(Object v) {
+        if (v == null) return 0L;
+        if (v instanceof Number n) return n.longValue();
+        try { return Long.parseLong(String.valueOf(v)); } catch (Exception e) { return 0L; }
+    }
+
+    private String asStr(Object v) {
+        return v == null ? "" : String.valueOf(v);
+    }
+
+    private boolean isBlank(String s) {
+        return s == null || s.isBlank();
     }
 
     // ── 캐시 엔트리 ──
