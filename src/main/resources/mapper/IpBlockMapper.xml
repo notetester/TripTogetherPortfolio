@@ -4,32 +4,211 @@
 
 <mapper namespace="org.triptogether.config.IpBlockMapper">
 
-    <!-- IP 차단 여부 확인 -->
-    <select id="isBlocked" parameterType="string" resultType="boolean">
-        SELECT COUNT(1) > 0
-        FROM IP_BLOCKLIST
-        WHERE ip_address = #{ipAddress}
+    <resultMap id="ipBlockRuleMap" type="org.triptogether.common.vo.IpBlockRuleVO">
+        <id property="ipBlocklistIdx" column="ip_blocklist_idx"/>
+        <result property="sourceHistoryBlockIdx" column="source_history_block_idx"/>
+        <result property="sourceBlocklistIdx" column="source_blocklist_idx"/>
+        <result property="ipBlockBatchIdx" column="ip_block_batch_idx"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="blockRequestId" column="block_request_id"/>
+        <result property="blockTargetKey" column="block_target_key"/>
+        <result property="ruleAction" column="rule_action"/>
+        <result property="controlMode" column="control_mode"/>
+        <result property="matchType" column="match_type"/>
+        <result property="cidrNotation" column="cidr_notation"/>
+        <result property="rangeStartIp" column="range_start_ip"/>
+        <result property="rangeEndIp" column="range_end_ip"/>
+        <result property="countryCode" column="country_code"/>
+        <result property="asn" column="asn"/>
+        <result property="sourceScope" column="source_scope"/>
+        <result property="blockCategory" column="block_category"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="blockType" column="block_type"/>
+        <result property="blockedByUserIdx" column="blocked_by_user_idx"/>
+        <result property="reason" column="reason"/>
+        <result property="riskScore" column="risk_score"/>
+        <result property="autoBlock" column="is_auto_block"/>
+        <result property="autoBlockSource" column="auto_block_source"/>
+        <result property="detailMessage" column="detail_message"/>
+        <result property="priority" column="priority"/>
+        <result property="active" column="is_active"/>
+        <result property="effectiveActive" column="is_effective_active"/>
+        <result property="effectiveStatus" column="effective_status"/>
+        <result property="blockedAt" column="blocked_at"/>
+        <result property="expiresAt" column="expires_at"/>
+        <result property="releasedAt" column="released_at"/>
+        <result property="releasedByUserIdx" column="released_by_user_idx"/>
+        <result property="lastSyncedAt" column="last_synced_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findActiveIpBlockRules" resultMap="ipBlockRuleMap">
+        SELECT ipb.*
+        FROM IP_BLOCKLIST ipb
+        WHERE ipb.is_effective_active = 1
+        ORDER BY ipb.priority DESC,
+                 CASE WHEN ipb.rule_action = 'BLOCK' THEN 0 ELSE 1 END ASC,
+                 ipb.updated_at DESC,
+                 ipb.ip_blocklist_idx DESC
     </select>
 
-    <!-- IP 단건 차단 등록 -->
     <insert id="insertBlockedIp">
-        INSERT IGNORE INTO IP_BLOCKLIST (ip_address, reason)
-        VALUES (#{ipAddress}, #{reason})
+        INSERT INTO IP_BLOCKLIST (
+            ip_address, block_target_key, rule_action, control_mode, rule_origin_type,
+            blocked_at, reason, match_type, source_scope, block_category,
+            is_active, is_effective_active, effective_status, effective_status_reason,
+            effective_synced_at, effective_synced_by_source,
+            last_control_action, last_control_at, last_control_reason,
+            priority, last_synced_at, updated_at
+        ) VALUES (
+            #{ipAddress}, CONCAT('IP:', #{ipAddress}), 'BLOCK', 'MANUAL', 'MANUAL',
+            NOW(), #{reason}, 'SINGLE_IP', 'GLOBAL', 'SPAM',
+            TRUE, TRUE, 'EFFECTIVE', '현재 평가 대상입니다.',
+            NOW(), 'SYSTEM',
+            'CREATE', NOW(), #{reason},
+            1, NOW(), NOW()
+        )
     </insert>
 
-    <!-- IP 다건 차단 등록 -->
     <insert id="insertBlockedIps">
-        INSERT IGNORE INTO IP_BLOCKLIST (ip_address, reason)
-        VALUES
+        INSERT INTO IP_BLOCKLIST (
+            ip_address, block_target_key, rule_action, control_mode, rule_origin_type,
+            blocked_at, reason, match_type, source_scope, block_category,
+            is_active, is_effective_active, effective_status, effective_status_reason,
+            effective_synced_at, effective_synced_by_source,
+            last_control_action, last_control_at, last_control_reason,
+            priority, last_synced_at, updated_at
+        ) VALUES
         <foreach collection="list" item="ip" separator=",">
-            (#{ip}, #{reason})
+            (#{ip}, CONCAT('IP:', #{ip}), 'BLOCK', 'MANUAL', 'MANUAL',
+             NOW(), #{reason}, 'SINGLE_IP', 'GLOBAL', 'SPAM',
+             TRUE, TRUE, 'EFFECTIVE', '현재 평가 대상입니다.',
+             NOW(), 'SYSTEM',
+             'CREATE', NOW(), #{reason},
+             1, NOW(), NOW())
         </foreach>
     </insert>
 
-    <!-- IP 차단 해제 -->
-    <delete id="deleteBlockedIp" parameterType="string">
-        DELETE FROM IP_BLOCKLIST
-        WHERE ip_address = #{ipAddress}
-    </delete>
+    <insert id="upsertBlockedIpWithHistory">
+        INSERT INTO IP_BLOCKLIST (
+            ip_address, block_target_key, block_request_id,
+            rule_action, control_mode, rule_origin_type,
+            source_history_block_idx, source_blocklist_idx,
+            match_type, source_scope, block_category,
+            user_idx, block_type, blocked_by_user_idx,
+            blocked_at, reason, is_active,
+            is_effective_active, effective_status, effective_status_reason,
+            effective_synced_at, effective_synced_by_source,
+            expires_at, released_at, released_by_user_idx,
+            last_control_action, last_control_by_user_idx, last_control_at, last_control_reason,
+            priority, last_synced_at, updated_at
+        ) VALUES (
+            #{ipAddress}, #{blockTargetKey}, #{blockRequestId},
+            'BLOCK', 'MANUAL', 'MANUAL',
+            #{sourceHistoryBlockIdx}, #{sourceBlocklistIdx},
+            'SINGLE_IP', 'USER_ACTION', 'MANUAL',
+            #{userIdx}, #{blockType}, #{blockedByUserIdx},
+            NOW(), #{reason}, TRUE,
+            TRUE, 'EFFECTIVE', '현재 평가 대상입니다.',
+            NOW(), 'SYSTEM',
+            #{expiresAt}, NULL, NULL,
+            'CREATE', #{blockedByUserIdx}, NOW(), #{reason},
+            1, NOW(), NOW()
+        )
+    </insert>
+
+    <select id="findLatestActiveHistoryRuleByIp" resultMap="ipBlockRuleMap">
+        SELECT
+            NULL AS ip_blocklist_idx,
+            h.block_idx AS source_history_block_idx,
+            NULL AS source_blocklist_idx,
+            h.ip_block_batch_idx,
+            h.blocked_ip AS ip_address,
+            h.block_request_id,
+            CONCAT('IP:', h.blocked_ip) AS block_target_key,
+            COALESCE(h.rule_action, 'BLOCK') AS rule_action,
+            COALESCE(h.control_mode, 'MANUAL') AS control_mode,
+            COALESCE(h.ip_match_type, 'SINGLE_IP') AS match_type,
+            h.cidr_notation,
+            h.range_start_ip,
+            h.range_end_ip,
+            NULL AS country_code,
+            NULL AS asn,
+            COALESCE(h.block_scope, 'USER_ACTION') AS source_scope,
+            'MANUAL' AS block_category,
+            h.user_idx,
+            h.block_type,
+            h.blocked_by_user_idx,
+            h.reason,
+            NULL AS risk_score,
+            0 AS is_auto_block,
+            NULL AS auto_block_source,
+            NULL AS detail_message,
+            1 AS priority,
+            h.is_active,
+            CASE WHEN h.after_effective_active IS NULL THEN h.is_active ELSE h.after_effective_active END AS is_effective_active,
+            COALESCE(h.after_effective_status, 'EFFECTIVE') AS effective_status,
+            h.blocked_at,
+            h.expires_at,
+            h.released_at,
+            h.released_by_user_idx,
+            h.list_synced_at AS last_synced_at,
+            h.updated_at
+        FROM USER_BLOCK_HISTORY h
+        WHERE h.blocked_ip = #{ipAddress}
+          AND h.rule_action = 'BLOCK'
+          AND h.is_active = 1
+          AND (h.expires_at IS NULL OR h.expires_at > NOW())
+        ORDER BY h.blocked_at DESC, h.block_idx DESC
+        LIMIT 1
+    </select>
+
+    <update id="deactivateBlockedIpsByUser">
+        UPDATE IP_BLOCKLIST
+        SET is_active = FALSE,
+            is_effective_active = FALSE,
+            effective_status = 'RULE_INACTIVE',
+            effective_status_reason = '현재 규칙이 비활성화되었습니다.',
+            effective_synced_at = NOW(),
+            effective_synced_by_source = 'SYSTEM',
+            released_at = NOW(),
+            released_by_user_idx = #{releasedByUserIdx},
+            last_synced_at = NOW(),
+            updated_at = NOW()
+        WHERE user_idx = #{userIdx}
+          AND is_active = TRUE
+    </update>
+
+    <update id="deactivateBlockedIpByTargetKey">
+        UPDATE IP_BLOCKLIST
+        SET is_active = FALSE,
+            is_effective_active = FALSE,
+            effective_status = 'RULE_INACTIVE',
+            effective_status_reason = '현재 규칙이 비활성화되었습니다.',
+            effective_synced_at = NOW(),
+            effective_synced_by_source = 'SYSTEM',
+            released_at = NOW(),
+            released_by_user_idx = #{releasedByUserIdx},
+            last_synced_at = NOW(),
+            updated_at = NOW()
+        WHERE block_target_key = #{blockTargetKey}
+    </update>
+
+    <update id="deactivateUserActionBlockedIpByTargetKey">
+        UPDATE IP_BLOCKLIST
+        SET is_active = FALSE,
+            is_effective_active = FALSE,
+            effective_status = 'RULE_INACTIVE',
+            effective_status_reason = 'USER_ACTION 동기화 과정에서 현재 규칙을 비활성화했습니다.',
+            effective_synced_at = NOW(),
+            effective_synced_by_source = 'SYSTEM',
+            released_at = NOW(),
+            released_by_user_idx = #{releasedByUserIdx},
+            last_synced_at = NOW(),
+            updated_at = NOW()
+        WHERE block_target_key = #{blockTargetKey}
+          AND source_scope = 'USER_ACTION'
+          AND rule_action = 'BLOCK'
+    </update>
 
 </mapper>

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.triptogether.auth.vo.UserRole;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -78,17 +79,33 @@ public class AdminModeInterceptor implements HandlerInterceptor {
             Set<String> perms = (Set<String>) session.getAttribute("adminPermissions");
             if (perms == null) perms = Set.of();
             boolean isSuperAdmin = perms.contains("SUPER_ADMIN");
+            boolean hasUserBlockAdmin = isSuperAdmin || perms.contains("USER_BLOCK_ADMIN");
+            boolean hasIpBlockAdmin = isSuperAdmin || perms.contains("IP_BLOCK_ADMIN");
+            boolean hasBlockPolicyAdmin = isSuperAdmin || perms.contains("BLOCK_POLICY_ADMIN");
+            boolean hasBlockAuditAdmin = isSuperAdmin || perms.contains("BLOCK_AUDIT_ADMIN");
+
+            modelAndView.addObject("isSuperAdmin", isSuperAdmin);
             modelAndView.addObject("hasCommunityAdmin", isSuperAdmin || perms.contains("COMMUNITY_ADMIN"));
             modelAndView.addObject("hasMemberAdmin",    isSuperAdmin || perms.contains("MEMBER_ADMIN"));
             modelAndView.addObject("hasReportAdmin",    isSuperAdmin || perms.contains("REPORT_ADMIN"));
             modelAndView.addObject("hasInquiryAdmin",   isSuperAdmin || perms.contains("INQUIRY_ADMIN"));
             modelAndView.addObject("hasExploreAdmin",   isSuperAdmin || perms.contains("EXPLORE_ADMIN"));
+            modelAndView.addObject("hasCourseAdmin",    isSuperAdmin || perms.contains("COURSE_ADMIN"));
             modelAndView.addObject("hasAuditAdmin",     isSuperAdmin || perms.contains("AUDIT_ADMIN"));
+            modelAndView.addObject("hasContentModerationAdmin", isSuperAdmin || perms.contains("CONTENT_MODERATION_ADMIN"));
+            modelAndView.addObject("hasAssistantAdmin", isSuperAdmin || perms.contains("ASSISTANT_ADMIN"));
+            modelAndView.addObject("hasAiChatbotAdmin", isSuperAdmin || perms.contains("AI_CHATBOT_ADMIN"));
+            modelAndView.addObject("hasOpsPolicyAdmin", isSuperAdmin || perms.contains("OPS_POLICY_ADMIN"));
+            modelAndView.addObject("hasUserBlockAdmin", hasUserBlockAdmin);
+            modelAndView.addObject("hasIpBlockAdmin", hasIpBlockAdmin);
+            modelAndView.addObject("hasBlockPolicyAdmin", hasBlockPolicyAdmin);
+            modelAndView.addObject("hasBlockAuditAdmin", hasBlockAuditAdmin);
+            modelAndView.addObject("hasAnyBlockAdmin", hasUserBlockAdmin || hasIpBlockAdmin || hasBlockPolicyAdmin || hasBlockAuditAdmin);
         }
     }
 
     /**
-     * 세션의 loginUser 객체에서 getUserRole()을 호출해 ADMIN 여부를 확인한다.
+     * 세션의 loginUser 객체에서 getUserRole()을 호출해 관리자 계열 여부를 확인한다.
      * loginUser VO는 auth 담당자가 관리하므로 리플렉션으로 접근한다.
      */
     private boolean isAdminUser(HttpSession session) {
@@ -96,7 +113,7 @@ public class AdminModeInterceptor implements HandlerInterceptor {
             Object loginUser = session.getAttribute("loginUser");
             if (loginUser == null) return false;
             Method method = loginUser.getClass().getMethod("getUserRole");
-            return "ADMIN".equals(method.invoke(loginUser));
+            return UserRole.from(String.valueOf(method.invoke(loginUser))).isAdminLike();
         } catch (Exception e) {
             return false;
         }

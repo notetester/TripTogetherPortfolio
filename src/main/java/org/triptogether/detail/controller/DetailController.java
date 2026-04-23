@@ -14,6 +14,8 @@ import org.triptogether.explore.service.ExploreService;
 import org.triptogether.explore.vo.ExploreCreateDto;
 import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.explore.vo.ReviewVO;
+import org.triptogether.flight.service.FlightService;
+import org.triptogether.travelPackage.service.TravelPackageService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +28,8 @@ import java.util.Map;
 public class DetailController {
 
     private final ExploreService exploreService;
+    private final FlightService flightService;
+    private final TravelPackageService travelPackageService;
 
     @Value("${google.maps.api-key}")
     private String mapsApiKey;
@@ -52,6 +56,9 @@ public class DetailController {
         model.addAttribute("writeTagList", exploreService.getWriteTagList());
         model.addAttribute("isAdminMode", isAdminMode(session));
         model.addAttribute("canEditSpot", canEditSpot(session, spot));
+        model.addAttribute("flightAvailable", flightService.isFlightAvailable(spotIdx));
+        model.addAttribute("lowestFlightOffer", flightService.getLowestOffer(spotIdx, loginUserIdx).orElse(null));
+        model.addAttribute("approvedPackageList", travelPackageService.getApprovedPackagesBySpot(spotIdx));
 
         if (!model.containsAttribute("adminEditForm")) {
             model.addAttribute("adminEditForm", buildEditForm(spot));
@@ -284,7 +291,7 @@ public class DetailController {
 
     private boolean isAdminMode(HttpSession session) {
         UsersVO loginUser = getLoginUser(session);
-        if (loginUser == null || !"ADMIN".equals(loginUser.getUserRole())) {
+        if (loginUser == null || !loginUser.hasAdminRole()) {
             return false;
         }
         String viewMode = (String) session.getAttribute("viewMode");

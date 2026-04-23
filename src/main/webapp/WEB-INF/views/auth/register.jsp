@@ -4,7 +4,12 @@
 
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
-<html lang="ko">
+<spring:message code="auth.register.email.placeholder" var="authRegisterEmailPlaceholder"/>
+<spring:message code="auth.register.nickname.placeholder" var="authRegisterNicknamePlaceholder"/>
+<spring:message code="auth.register.password.placeholder" var="authRegisterPasswordPlaceholder"/>
+<spring:message code="auth.register.passwordConfirm.placeholder" var="authRegisterPasswordConfirmPlaceholder"/>
+<spring:message code="auth.register.userId.placeholder" var="authRegisterUserIdPlaceholder"/>
+<html lang="${pageContext.response.locale.language}">
 <body>
 <div class="auth-wrap">
   <div class="auth-card wide">
@@ -28,16 +33,16 @@
 
       <!-- 소셜 가입 -->
       <div class="social-btns">
-        <a href="${pageContext.request.contextPath}/auth/kakao" class="social-btn kakao">
+        <a href="${kakaoAuthUrl}" class="social-btn kakao">
           <span class="social-icon kakao-mark">k</span>
           <spring:message code="auth.register.kakao"/>
         </a>
-        <a href="${pageContext.request.contextPath}/auth/naver" class="social-btn naver">
-          <span class="social-icon" style="font-weight:900;font-size:14px;">N</span>
+        <a href="${naverAuthUrl}" class="social-btn naver">
+          <span class="social-icon naver-mark">N</span>
           <spring:message code="auth.register.naver"/>
         </a>
-        <a href="${pageContext.request.contextPath}/auth/google" class="social-btn google">
-          <span class="social-icon">
+        <a href="${googleAuthUrl}" class="social-btn google">
+          <span class="social-icon google-mark">
             <svg width="18" height="18" viewBox="0 0 48 48">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
               <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -54,14 +59,14 @@
       <div class="form-group">
         <label class="form-label" for="userId"><spring:message code="auth.register.userId"/> <span style="color:#ef4444">*</span></label>
         <input class="form-input" type="text" id="userId" name="userId"
-               placeholder="<spring:message code="auth.register.userId.placeholder"/>" maxlength="20" autocomplete="username">
+               placeholder="${authRegisterUserIdPlaceholder}" maxlength="20" autocomplete="username">
         <div class="field-msg" id="userIdMsg"></div>
       </div>
 
       <div class="form-group">
         <label class="form-label" for="userEmail"><spring:message code="auth.register.email"/> <span style="color:var(--gray-400);font-weight:400"><spring:message code="auth.register.optional"/></span></label>
         <input class="form-input" type="email" id="userEmail" name="userEmail"
-               placeholder="example@email.com" autocomplete="email">
+               placeholder="${authRegisterEmailPlaceholder}" autocomplete="email">
         <div class="field-msg" id="emailMsg"></div>
       </div>
 
@@ -69,7 +74,7 @@
         <label class="form-label" for="password"><spring:message code="auth.register.password"/> <span style="color:#ef4444">*</span></label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="password" name="password"
-                 placeholder="<spring:message code="auth.register.password.placeholder"/>" maxlength="64" autocomplete="new-password">
+                 placeholder="${authRegisterPasswordPlaceholder}" maxlength="64" autocomplete="new-password">
           <button type="button" class="pw-toggle" id="pwToggle1">👁</button>
         </div>
         <div class="pw-strength" id="pwStrengthBar">
@@ -84,7 +89,7 @@
         <label class="form-label" for="passwordConfirm"><spring:message code="auth.register.passwordConfirm"/> <span style="color:#ef4444">*</span></label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="passwordConfirm"
-                 placeholder="<spring:message code="auth.register.passwordConfirm.placeholder"/>" maxlength="64" autocomplete="new-password">
+                 placeholder="${authRegisterPasswordConfirmPlaceholder}" maxlength="64" autocomplete="new-password">
           <button type="button" class="pw-toggle" id="pwToggle2">👁</button>
         </div>
         <div class="field-msg" id="pwConfirmMsg"></div>
@@ -103,7 +108,7 @@
       <div class="form-group">
         <label class="form-label" for="nickname"><spring:message code="auth.register.nickname"/> <span style="color:#ef4444">*</span></label>
         <input class="form-input" type="text" id="nickname" name="nickname"
-               placeholder="<spring:message code="auth.register.nickname.placeholder"/>" maxlength="20">
+               placeholder="${authRegisterNicknamePlaceholder}" maxlength="20">
         <div class="field-msg" id="nicknameMsg"></div>
       </div>
 
@@ -111,16 +116,16 @@
         <label class="form-label" for="nationality"><spring:message code="auth.register.nationality"/> <span style="color:#ef4444">*</span></label>
         <select class="form-select" id="nationality" name="nationality">
           <option value=""><spring:message code="auth.register.nationality.placeholder"/></option>
-          <option value="KR">🇰🇷 대한민국</option>
-          <option value="US">🇺🇸 미국</option>
-          <option value="JP">🇯🇵 일본</option>
-          <option value="CN">🇨🇳 중국</option>
-          <option value="GB">🇬🇧 영국</option>
-          <option value="FR">🇫🇷 프랑스</option>
-          <option value="DE">🇩🇪 독일</option>
-          <option value="AU">🇦🇺 호주</option>
-          <option value="CA">🇨🇦 캐나다</option>
-          <option value="OTHER">🌍 기타</option>
+          <option value="KR">🇰🇷 <spring:message code="auth.register.nationality.option.kr"/></option>
+          <option value="US">🇺🇸 <spring:message code="auth.register.nationality.option.us"/></option>
+          <option value="JP">🇯🇵 <spring:message code="auth.register.nationality.option.jp"/></option>
+          <option value="CN">🇨🇳 <spring:message code="auth.register.nationality.option.cn"/></option>
+          <option value="GB">🇬🇧 <spring:message code="auth.register.nationality.option.gb"/></option>
+          <option value="FR">🇫🇷 <spring:message code="auth.register.nationality.option.fr"/></option>
+          <option value="DE">🇩🇪 <spring:message code="auth.register.nationality.option.de"/></option>
+          <option value="AU">🇦🇺 <spring:message code="auth.register.nationality.option.au"/></option>
+          <option value="CA">🇨🇦 <spring:message code="auth.register.nationality.option.ca"/></option>
+          <option value="OTHER">🌍 <spring:message code="auth.register.nationality.option.other"/></option>
         </select>
         <div class="field-msg" id="nationalityMsg"></div>
       </div>
@@ -129,10 +134,10 @@
         <label class="form-label" for="preferredLang"><spring:message code="auth.register.language"/> <span style="color:#ef4444">*</span></label>
         <select class="form-select" id="preferredLang" name="preferredLang">
           <option value=""><spring:message code="auth.register.language.placeholder"/></option>
-          <option value="ko">🇰🇷 한국어</option>
-          <option value="en">🇺🇸 English</option>
-          <option value="ja">🇯🇵 日本語</option>
-          <option value="zh">🇨🇳 中文</option>
+          <option value="ko">🇰🇷 <spring:message code="auth.register.language.option.ko"/></option>
+          <option value="en">🇺🇸 <spring:message code="auth.register.language.option.en"/></option>
+          <option value="ja">🇯🇵 <spring:message code="auth.register.language.option.ja"/></option>
+          <option value="zh">🇨🇳 <spring:message code="auth.register.language.option.zh"/></option>
         </select>
         <div class="field-msg" id="langMsg"></div>
       </div>
@@ -162,6 +167,53 @@
 <script>
 (function () {
   const ctx = '${pageContext.request.contextPath}';
+  <spring:message code="auth.register.email.duplicate" javaScriptEscape="true" var="authRegisterEmailDuplicateJs"/>
+  <spring:message code="auth.register.email.ok" javaScriptEscape="true" var="authRegisterEmailOkJs"/>
+  <spring:message code="auth.register.email.rule" javaScriptEscape="true" var="authRegisterEmailRuleJs"/>
+  <spring:message code="auth.register.fail" javaScriptEscape="true" var="authRegisterFailJs"/>
+  <spring:message code="auth.register.language.required" javaScriptEscape="true" var="authRegisterLanguageRequiredJs"/>
+  <spring:message code="auth.register.nationality.required" javaScriptEscape="true" var="authRegisterNationalityRequiredJs"/>
+  <spring:message code="auth.register.nickname.duplicate" javaScriptEscape="true" var="authRegisterNicknameDuplicateJs"/>
+  <spring:message code="auth.register.nickname.ok" javaScriptEscape="true" var="authRegisterNicknameOkJs"/>
+  <spring:message code="auth.register.nickname.required" javaScriptEscape="true" var="authRegisterNicknameRequiredJs"/>
+  <spring:message code="auth.register.nickname.rule" javaScriptEscape="true" var="authRegisterNicknameRuleJs"/>
+  <spring:message code="auth.register.password.match" javaScriptEscape="true" var="authRegisterPasswordMatchJs"/>
+  <spring:message code="auth.register.password.mismatch" javaScriptEscape="true" var="authRegisterPasswordMismatchJs"/>
+  <spring:message code="auth.register.password.short" javaScriptEscape="true" var="authRegisterPasswordShortJs"/>
+  <spring:message code="auth.register.server" javaScriptEscape="true" var="authRegisterServerJs"/>
+  <spring:message code="auth.register.userId.duplicate" javaScriptEscape="true" var="authRegisterUserIdDuplicateJs"/>
+  <spring:message code="auth.register.userId.invalid" javaScriptEscape="true" var="authRegisterUserIdInvalidJs"/>
+  <spring:message code="auth.register.userId.ok" javaScriptEscape="true" var="authRegisterUserIdOkJs"/>
+  <spring:message code="auth.register.userId.rule" javaScriptEscape="true" var="authRegisterUserIdRuleJs"/>
+
+  const registerMessages = {
+    email: {
+      duplicate: '${authRegisterEmailDuplicateJs}',
+      ok: '${authRegisterEmailOkJs}',
+      rule: '${authRegisterEmailRuleJs}'
+    },
+    fail: '${authRegisterFailJs}',
+    languageRequired: '${authRegisterLanguageRequiredJs}',
+    nationalityRequired: '${authRegisterNationalityRequiredJs}',
+    nickname: {
+      duplicate: '${authRegisterNicknameDuplicateJs}',
+      ok: '${authRegisterNicknameOkJs}',
+      required: '${authRegisterNicknameRequiredJs}',
+      rule: '${authRegisterNicknameRuleJs}'
+    },
+    password: {
+      match: '${authRegisterPasswordMatchJs}',
+      mismatch: '${authRegisterPasswordMismatchJs}',
+      short: '${authRegisterPasswordShortJs}'
+    },
+    server: '${authRegisterServerJs}',
+    userId: {
+      duplicate: '${authRegisterUserIdDuplicateJs}',
+      invalid: '${authRegisterUserIdInvalidJs}',
+      ok: '${authRegisterUserIdOkJs}',
+      rule: '${authRegisterUserIdRuleJs}'
+    }
+  };
 
   // ── 비밀번호 토글 ──
   function makePwToggle(btnId, inputId) {
@@ -220,13 +272,13 @@
     const v = this.value.trim();
     if (!v) { setFieldStatus('userId','userIdMsg','',''); return; }
     if (!/^[a-zA-Z0-9]{4,20}$/.test(v)) {
-      setFieldStatus('userId','userIdMsg','error','영문, 숫자만 4~20자 입력해주세요.'); return;
+      setFieldStatus('userId','userIdMsg','error', registerMessages.userId.rule); return;
     }
     debounce('userId', async () => {
       const dup = await checkDuplicate('userId', v);
       dup
-        ? setFieldStatus('userId','userIdMsg','error','입력하신 아이디는 현재 사용할 수 없습니다. 다른 아이디를 입력해 주세요.')
-        : setFieldStatus('userId','userIdMsg','success','사용 가능한 아이디입니다.');
+        ? setFieldStatus('userId','userIdMsg','error', registerMessages.userId.duplicate)
+        : setFieldStatus('userId','userIdMsg','success', registerMessages.userId.ok);
     });
   });
 
@@ -235,13 +287,13 @@
     const v = this.value.trim();
     if (!v) { setFieldStatus('userEmail','emailMsg','',''); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
-      setFieldStatus('userEmail','emailMsg','error','올바른 이메일 형식이 아닙니다.'); return;
+      setFieldStatus('userEmail','emailMsg','error', registerMessages.email.rule); return;
     }
     debounce('email', async () => {
       const dup = await checkDuplicate('email', v);
       dup
-        ? setFieldStatus('userEmail','emailMsg','error','이미 사용 중인 이메일입니다.')
-        : setFieldStatus('userEmail','emailMsg','success','사용 가능한 이메일입니다.');
+        ? setFieldStatus('userEmail','emailMsg','error', registerMessages.email.duplicate)
+        : setFieldStatus('userEmail','emailMsg','success', registerMessages.email.ok);
     });
   });
 
@@ -251,8 +303,8 @@
     const cfm = this.value;
     if (!cfm) { setFieldStatus('passwordConfirm','pwConfirmMsg','',''); return; }
     pw === cfm
-      ? setFieldStatus('passwordConfirm','pwConfirmMsg','success','비밀번호가 일치합니다.')
-      : setFieldStatus('passwordConfirm','pwConfirmMsg','error','비밀번호가 일치하지 않습니다.');
+      ? setFieldStatus('passwordConfirm','pwConfirmMsg','success', registerMessages.password.match)
+      : setFieldStatus('passwordConfirm','pwConfirmMsg','error', registerMessages.password.mismatch);
   });
 
   // nickname 중복 체크
@@ -260,13 +312,13 @@
     const v = this.value.trim();
     if (!v) { setFieldStatus('nickname','nicknameMsg','',''); return; }
     if (v.length < 2 || v.length > 20) {
-      setFieldStatus('nickname','nicknameMsg','error','2~20자로 입력해주세요.'); return;
+      setFieldStatus('nickname','nicknameMsg','error', registerMessages.nickname.rule); return;
     }
     debounce('nickname', async () => {
       const dup = await checkDuplicate('nickname', v);
       dup
-        ? setFieldStatus('nickname','nicknameMsg','error','이미 사용 중인 닉네임입니다.')
-        : setFieldStatus('nickname','nicknameMsg','success','사용 가능한 닉네임입니다.');
+        ? setFieldStatus('nickname','nicknameMsg','error', registerMessages.nickname.duplicate)
+        : setFieldStatus('nickname','nicknameMsg','success', registerMessages.nickname.ok);
     });
   });
 
@@ -277,13 +329,13 @@
     const pwCfm  = document.getElementById('passwordConfirm').value;
 
     if (!userId || !/^[a-zA-Z0-9]{4,20}$/.test(userId)) {
-      setFieldStatus('userId','userIdMsg','error','아이디를 올바르게 입력해주세요.'); return;
+      setFieldStatus('userId','userIdMsg','error', registerMessages.userId.invalid); return;
     }
     if (pw.length < 8) {
-      setFieldStatus('password','pwMsg','error','비밀번호는 8자 이상이어야 합니다.'); return;
+      setFieldStatus('password','pwMsg','error', registerMessages.password.short); return;
     }
     if (pw !== pwCfm) {
-      setFieldStatus('passwordConfirm','pwConfirmMsg','error','비밀번호가 일치하지 않습니다.'); return;
+      setFieldStatus('passwordConfirm','pwConfirmMsg','error', registerMessages.password.mismatch); return;
     }
 
     document.getElementById('step1').style.display = 'none';
@@ -307,9 +359,9 @@
     const preferredLang= document.getElementById('preferredLang').value;
     const errorBanner  = document.getElementById('registerError');
 
-    if (!nickname) { setFieldStatus('nickname','nicknameMsg','error','닉네임을 입력해주세요.'); return; }
-    if (!nationality) { setFieldStatus('nationality','nationalityMsg','error','국적을 선택해주세요.'); return; }
-    if (!preferredLang) { setFieldStatus('preferredLang','langMsg','error','언어를 선택해주세요.'); return; }
+    if (!nickname) { setFieldStatus('nickname','nicknameMsg','error', registerMessages.nickname.required); return; }
+    if (!nationality) { setFieldStatus('nationality','nationalityMsg','error', registerMessages.nationalityRequired); return; }
+    if (!preferredLang) { setFieldStatus('preferredLang','langMsg','error', registerMessages.languageRequired); return; }
 
     this.classList.add('loading');
     this.disabled = true;
@@ -333,7 +385,7 @@
       if (data.success) {
         location.href = data.redirect;
       } else {
-        errorBanner.textContent = '⚠️ ' + (data.message || '회원가입에 실패했습니다.');
+        errorBanner.textContent = '⚠️ ' + (data.message || registerMessages.fail);
         errorBanner.classList.add('show');
         // 해당 필드로 포커스 이동
         if (data.field) {
@@ -342,7 +394,7 @@
         }
       }
     } catch (e) {
-      errorBanner.textContent = '⚠️ 서버 오류가 발생했습니다.';
+      errorBanner.textContent = '⚠️ ' + registerMessages.server;
       errorBanner.classList.add('show');
     } finally {
       this.classList.remove('loading');

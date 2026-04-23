@@ -1,8 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="stats"/>
-<c:set var="pageTitle"  value="통계 대시보드"/>
+<spring:message code="superAdmin.stats.pageTitle" var="pageTitle"/>
+<spring:message code="superAdmin.stats.recentLogin.none" var="recentLoginNone"/>
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
@@ -11,19 +13,19 @@
     <div class="sa-stats-summary">
         <div class="sa-stats-kpi">
             <div class="sa-stats-kpi-value">${totalAdmins}</div>
-            <div class="sa-stats-kpi-label">총 관리자</div>
+            <div class="sa-stats-kpi-label"><spring:message code="superAdmin.stats.kpi.totalAdmins"/></div>
         </div>
         <div class="sa-stats-kpi">
             <div class="sa-stats-kpi-value">${fn:length(byDepartment)}</div>
-            <div class="sa-stats-kpi-label">부서 수</div>
+            <div class="sa-stats-kpi-label"><spring:message code="superAdmin.stats.kpi.departments"/></div>
         </div>
         <div class="sa-stats-kpi">
             <div class="sa-stats-kpi-value">${fn:length(byPermissionCode)}</div>
-            <div class="sa-stats-kpi-label">권한 종류</div>
+            <div class="sa-stats-kpi-label"><spring:message code="superAdmin.stats.kpi.permissions"/></div>
         </div>
         <div class="sa-stats-kpi">
             <div class="sa-stats-kpi-value">${fn:length(byPosition)}</div>
-            <div class="sa-stats-kpi-label">직책 종류</div>
+            <div class="sa-stats-kpi-label"><spring:message code="superAdmin.stats.kpi.positions"/></div>
         </div>
     </div>
 
@@ -32,7 +34,7 @@
 
         <div class="adm-card sa-stats-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">직책 분포</div>
+                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.positionDistribution"/></div>
             </div>
             <div class="adm-card-body sa-chart-body">
                 <canvas id="chartPosition"></canvas>
@@ -41,7 +43,7 @@
 
         <div class="adm-card sa-stats-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">실효 권한 분포</div>
+                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.permissionDistribution"/></div>
             </div>
             <div class="adm-card-body sa-chart-body">
                 <canvas id="chartPermCode"></canvas>
@@ -50,7 +52,7 @@
 
         <div class="adm-card sa-stats-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">티어 분포</div>
+                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.tierDistribution"/></div>
             </div>
             <div class="adm-card-body sa-chart-body">
                 <canvas id="chartTier"></canvas>
@@ -59,7 +61,7 @@
 
         <div class="adm-card sa-stats-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">부서 분포</div>
+                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.departmentDistribution"/></div>
             </div>
             <div class="adm-card-body sa-chart-body">
                 <canvas id="chartDept"></canvas>
@@ -73,22 +75,22 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">장기 미접속 관리자 <span class="sa-exception-count">(90일+)</span></div>
+                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.dormantAdmins"/> <span class="sa-exception-count">(<spring:message code="superAdmin.stats.suffix.days90"/>)</span></div>
             </div>
             <div class="adm-card-body" style="padding:0;">
                 <c:choose>
                     <c:when test="${empty dormantAdmins}">
-                        <div class="sa-exception-empty">해당 없음</div>
+                        <div class="sa-exception-empty"><spring:message code="superAdmin.stats.empty"/></div>
                     </c:when>
                     <c:otherwise>
                         <table class="sa-exception-table">
-                            <thead><tr><th>닉네임</th><th>부서</th><th>최근로그인</th></tr></thead>
+                            <thead><tr><th><spring:message code="superAdmin.stats.table.nickname"/></th><th><spring:message code="superAdmin.stats.table.department"/></th><th><spring:message code="superAdmin.stats.table.lastLogin"/></th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${dormantAdmins}">
                                 <tr>
                                     <td><a href="${pageContext.request.contextPath}/superAdmin/members/${m.userIdx}/edit">${fn:escapeXml(m.nickname)}</a></td>
                                     <td>${fn:escapeXml(m.adminDepartment)}</td>
-                                    <td>${m.lastLoginAt != null ? m.lastLoginAt : '없음'}</td>
+                                    <td>${m.lastLoginAt != null ? m.lastLoginAt : recentLoginNone}</td>
                                 </tr>
                             </c:forEach>
                             </tbody>
@@ -100,16 +102,16 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">권한 없는 관리자</div>
+                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.noPermissionAdmins"/></div>
             </div>
             <div class="adm-card-body" style="padding:0;">
                 <c:choose>
                     <c:when test="${empty adminsWithoutPermissions}">
-                        <div class="sa-exception-empty">해당 없음</div>
+                        <div class="sa-exception-empty"><spring:message code="superAdmin.stats.empty"/></div>
                     </c:when>
                     <c:otherwise>
                         <table class="sa-exception-table">
-                            <thead><tr><th>닉네임</th><th>부서</th><th>직함</th></tr></thead>
+                            <thead><tr><th><spring:message code="superAdmin.stats.table.nickname"/></th><th><spring:message code="superAdmin.stats.table.department"/></th><th><spring:message code="superAdmin.stats.table.title"/></th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${adminsWithoutPermissions}">
                                 <tr>
@@ -127,16 +129,16 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">상급자 미지정 관리자</div>
+                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.withoutManagerAdmins"/></div>
             </div>
             <div class="adm-card-body" style="padding:0;">
                 <c:choose>
                     <c:when test="${empty adminsWithoutManager}">
-                        <div class="sa-exception-empty">해당 없음</div>
+                        <div class="sa-exception-empty"><spring:message code="superAdmin.stats.empty"/></div>
                     </c:when>
                     <c:otherwise>
                         <table class="sa-exception-table">
-                            <thead><tr><th>닉네임</th><th>부서</th><th>직함</th></tr></thead>
+                            <thead><tr><th><spring:message code="superAdmin.stats.table.nickname"/></th><th><spring:message code="superAdmin.stats.table.department"/></th><th><spring:message code="superAdmin.stats.table.title"/></th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${adminsWithoutManager}">
                                 <tr>

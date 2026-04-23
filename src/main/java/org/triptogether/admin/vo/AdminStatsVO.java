@@ -30,6 +30,11 @@ public class AdminStatsVO {
     private long todayNewMembers;
     private long todayLogins;
     private long todayFailedLogins;
+    private long todayLogouts;
+    private long todayLocalLogouts;
+    private long todayKakaoLogouts;
+    private long todayNaverLogouts;
+    private long todayGoogleLogouts;
 
     private long kakaoLinked;
     private long naverLinked;

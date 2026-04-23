@@ -24,6 +24,7 @@ public class EmailVerificationVO {
     private Long          verifyIdx;
     private Long          emailVerificationRequestIdx;
     private String        requestId;
+    private String        flowTraceId;
     private Long          userIdx;       // 비회원 아이디 찾기는 null 가능
     private String        email;
     private String        token;         // UUID

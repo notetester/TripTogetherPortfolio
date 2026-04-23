@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminAssistantMapper">
+
+    <!-- ══════════════════════════════════════════
+         ResultMap
+    ══════════════════════════════════════════ -->
+
+    <resultMap id="sessionRM" type="org.triptogether.admin.vo.AdminAssistantSessionVO">
+        <id     property="chatPostIdx"   column="chat_post_idx"/>
+        <result property="userIdx"       column="user_idx"/>
+        <result property="userId"        column="user_id"/>
+        <result property="nickname"      column="nickname"/>
+        <result property="title"         column="title"/>
+        <result property="createdAt"     column="created_at"/>
+        <result property="messageCount"  column="message_count"/>
+        <result property="lastMessageAt" column="last_message_at"/>
+    </resultMap>
+
+    <resultMap id="messageRM" type="org.triptogether.admin.vo.AdminAssistantMessageVO">
+        <id     property="chatCommentIdx" column="chat_comment_idx"/>
+        <result property="chatPostIdx"    column="chat_post_idx"/>
+        <result property="userIdx"        column="user_idx"/>
+        <result property="nickname"       column="nickname"/>
+        <result property="sessionTitle"   column="session_title"/>
+        <result property="commentRole"    column="comment_role"/>
+        <result property="content"        column="content"/>
+        <result property="commentOrder"   column="comment_order"/>
+        <result property="createdAt"      column="created_at"/>
+    </resultMap>
+
+    <resultMap id="statsRM" type="org.triptogether.admin.vo.AdminAssistantStatsVO">
+        <result property="totalSessions"     column="total_sessions"/>
+        <result property="totalMessages"     column="total_messages"/>
+        <result property="userMessages"      column="user_messages"/>
+        <result property="assistantMessages" column="assistant_messages"/>
+        <result property="todaySessions"     column="today_sessions"/>
+        <result property="todayMessages"     column="today_messages"/>
+        <result property="uniqueUsers"       column="unique_users"/>
+    </resultMap>
+
+    <!-- ══════════════════════════════════════════
+         대시보드 통계
+    ══════════════════════════════════════════ -->
+    <select id="selectStats" resultMap="statsRM">
+        SELECT
+            (SELECT COUNT(*) FROM CHAT_POST)                                                  AS total_sessions,
+            (SELECT COUNT(*) FROM CHAT_COMMENT)                                               AS total_messages,
+            (SELECT COUNT(*) FROM CHAT_COMMENT WHERE comment_role = 'USER')                   AS user_messages,
+            (SELECT COUNT(*) FROM CHAT_COMMENT WHERE comment_role = 'ASSISTANT')              AS assistant_messages,
+            (SELECT COUNT(*) FROM CHAT_POST    WHERE DATE(created_at) = CURDATE())            AS today_sessions,
+            (SELECT COUNT(*) FROM CHAT_COMMENT WHERE DATE(created_at) = CURDATE())            AS today_messages,
+            (SELECT COUNT(DISTINCT user_idx) FROM CHAT_POST)                                  AS unique_users
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         세션 목록
+    ══════════════════════════════════════════ -->
+    <sql id="sessionSearch">
+        <if test="keyword != null and keyword != ''">
+            AND (
+                cp.title LIKE CONCAT('%', #{keyword}, '%')
+                OR u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                OR CAST(cp.user_idx AS CHAR) = #{keyword}
+                OR CAST(cp.chat_post_idx AS CHAR) = #{keyword}
+            )
+        </if>
+    </sql>
+
+    <select id="selectSessions" resultMap="sessionRM">
+        SELECT
+            cp.chat_post_idx,
+            cp.user_idx,
+            cp.title,
+            cp.created_at,
+            u.user_id,
+            u.nickname,
+            (SELECT COUNT(*) FROM CHAT_COMMENT cc WHERE cc.chat_post_idx = cp.chat_post_idx) AS message_count,
+            (SELECT MAX(cc.created_at) FROM CHAT_COMMENT cc WHERE cc.chat_post_idx = cp.chat_post_idx) AS last_message_at
+        FROM CHAT_POST cp
+        LEFT JOIN USERS u ON u.user_idx = cp.user_idx
+        <where>
+            <include refid="sessionSearch"/>
+        </where>
+        ORDER BY cp.created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countSessions" resultType="int">
+        SELECT COUNT(*)
+        FROM CHAT_POST cp
+        LEFT JOIN USERS u ON u.user_idx = cp.user_idx
+        <where>
+            <include refid="sessionSearch"/>
+        </where>
+    </select>
+
+    <select id="selectSession" resultMap="sessionRM">
+        SELECT
+            cp.chat_post_idx,
+            cp.user_idx,
+            cp.title,
+            cp.created_at,
+            u.user_id,
+            u.nickname,
+            (SELECT COUNT(*) FROM CHAT_COMMENT cc WHERE cc.chat_post_idx = cp.chat_post_idx) AS message_count,
+            (SELECT MAX(cc.created_at) FROM CHAT_COMMENT cc WHERE cc.chat_post_idx = cp.chat_post_idx) AS last_message_at
+        FROM CHAT_POST cp
+        LEFT JOIN USERS u ON u.user_idx = cp.user_idx
+        WHERE cp.chat_post_idx = #{chatPostIdx}
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         메시지
+    ══════════════════════════════════════════ -->
+    <select id="selectMessagesByPost" resultMap="messageRM">
+        SELECT
+            cc.chat_comment_idx,
+            cc.chat_post_idx,
+            cc.user_idx,
+            cc.comment_role,
+            cc.content,
+            cc.comment_order,
+            cc.created_at,
+            u.nickname,
+            cp.title AS session_title
+        FROM CHAT_COMMENT cc
+        LEFT JOIN USERS     u  ON u.user_idx = cc.user_idx
+        LEFT JOIN CHAT_POST cp ON cp.chat_post_idx = cc.chat_post_idx
+        WHERE cc.chat_post_idx = #{chatPostIdx}
+        ORDER BY cc.comment_order ASC
+    </select>
+
+    <select id="selectRecentMessages" resultMap="messageRM">
+        SELECT
+            cc.chat_comment_idx,
+            cc.chat_post_idx,
+            cc.user_idx,
+            cc.comment_role,
+            cc.content,
+            cc.comment_order,
+            cc.created_at,
+            u.nickname,
+            cp.title AS session_title
+        FROM CHAT_COMMENT cc
+        LEFT JOIN USERS     u  ON u.user_idx = cc.user_idx
+        LEFT JOIN CHAT_POST cp ON cp.chat_post_idx = cc.chat_post_idx
+        ORDER BY cc.created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countMessages" resultType="int">
+        SELECT COUNT(*) FROM CHAT_COMMENT
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         관리자 삭제 (FK CASCADE로 CHAT_COMMENT도 삭제됨)
+    ══════════════════════════════════════════ -->
+    <delete id="deleteSession">
+        DELETE FROM CHAT_POST WHERE chat_post_idx = #{chatPostIdx}
+    </delete>
+
+</mapper>

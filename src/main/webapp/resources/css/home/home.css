@@ -210,25 +210,19 @@
 .tc-auth  { font-size: 13px; color: var(--gray-500); }
 .tc-likes { display: flex; align-items: center; gap: 4px; font-size: 14px; color: var(--gray-500); }
 
+/* ===== 홈 카드 그리드 (4/3/2/1 반응형) ===== */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+@media (max-width: 1199px) { .home-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 899px)  { .home-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 599px)  { .home-grid { grid-template-columns: 1fr; } }
+
+.home-grid .cc-wrap { min-width: 0; }
+
 /* ===== 커뮤니티 카드 ===== */
-.comm-g-outer {
-  position: relative; display: flex; align-items: center; gap: 8px;
-}
-.comm-g-vp { overflow: hidden; flex: 1; }
-.comm-g-track {
-  display: flex; gap: 24px;
-  transition: transform 0.4s ease;
-}
-.comm-g-btn {
-  flex-shrink: 0; width: 36px; height: 36px;
-  background: #fff; border: 1px solid var(--gray-200); border-radius: 50%;
-  font-size: 22px; line-height: 1; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--shadow-sm); transition: background .15s, border-color .15s;
-  color: var(--gray-600);
-}
-.comm-g-btn:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
-.comm-g-track .cc-wrap { flex-shrink: 0; min-width: 0; }
 .cc {
   width: 100%;
   background: #fff;
@@ -356,7 +350,6 @@
 @media (max-width: 768px) {
   .hero { height: 420px; }
   .hero-c h1 { font-size: 2rem; }
-  /* cc width는 JS로 제어 */
   .footer-inner { flex-direction: column; text-align: center; }
 }
 
@@ -395,4 +388,66 @@
   white-space: nowrap;
   z-index: 10;
   cursor: pointer;
+}
+
+/* ============================================
+   다크 테마 오버라이드
+   ============================================ */
+html.dark .hero-ov {
+  background: linear-gradient(135deg, rgba(0,0,0,.75), rgba(0,0,0,.55));
+}
+
+html.dark .btn-pri {
+  background: #1e293b;
+  color: #93c5fd;
+  box-shadow: 0 4px 12px rgba(0,0,0,.4);
+}
+html.dark .btn-pri:hover { background: #273449; box-shadow: 0 8px 20px rgba(0,0,0,.5); }
+
+html.dark .btn-sec {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.3);
+}
+html.dark .btn-sec:hover { background: rgba(255,255,255,.16); }
+
+html.dark .feat-sec { background: #151922; }
+html.dark .feat-card {
+  background: #1a1f2b;
+  box-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+html.dark .feat-card:hover { box-shadow: 0 10px 15px -3px rgba(0,0,0,.6); }
+html.dark .feat-card h3 { color: #f1f5f9; }
+html.dark .feat-card p  { color: #cbd5e1; }
+html.dark .fi-b { background: #1e293b; }
+html.dark .fi-p { background: #2a2346; }
+html.dark .fi-g { background: #14331f; }
+
+html.dark .dc,
+html.dark .tc,
+html.dark .cc {
+  background: #1a1f2b;
+  box-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+html.dark .dc:hover,
+html.dark .tc:hover,
+html.dark .cc:hover { box-shadow: 0 10px 15px -3px rgba(0,0,0,.6); }
+
+html.dark .dc-name,
+html.dark .tc-title,
+html.dark .cc-title { color: #f1f5f9; }
+html.dark .dc-ctry,
+html.dark .tc-auth,
+html.dark .tc-dest,
+html.dark .cc-stats,
+html.dark .cc-dt { color: #9ca3af; }
+html.dark .dc-rat { color: #e5e7eb; }
+html.dark .dc-rev { color: #6b7280; }
+html.dark .dc-desc { color: #cbd5e1; }
+html.dark .tc-likes { color: #9ca3af; }
+html.dark .cc-an { color: #e5e7eb; }
+
+html.dark .blocked-badge {
+  color: #fca5a5;
+  background: #3b1d1d;
+  border-color: #7f1d1d;
 }

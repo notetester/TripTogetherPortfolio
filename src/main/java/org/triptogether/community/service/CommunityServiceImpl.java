@@ -10,6 +10,9 @@ import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.community.vo.*;
 import org.triptogether.config.IpBlockMapper;
 import org.triptogether.explore.service.SpotTextTranslationService;
+import org.triptogether.moderation.service.ModerationPolicyService;
+import org.triptogether.moderation.vo.ContentModerationPolicyVO;
+import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.reward.service.RewardService;
@@ -28,6 +31,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final IpBlockMapper ipBlockMapper;
     private final SpotTextTranslationService spotTextTranslationService;
     private final RewardService rewardService;
+    private final ModerationPolicyService moderationPolicyService;
 
     // ===== 목록 =====
 
@@ -155,9 +159,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional
     public Long writePost(CommunityWriteDto writeDto, Long userIdx) {
 
-        // 도배 방지: 5분 내 3개 이상이면 거부
-        if (communityMapper.countRecentPostsByUser(userIdx, 5) >= 3) {
-            throw new IllegalStateException("5분 내 게시글을 3개 이상 작성할 수 없습니다.");
+        ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
+        if (communityMapper.countRecentPostsByUser(userIdx, policy.getPostWindowMinutes()) >= policy.getPostMaxCount()) {
+            throw new IllegalStateException(
+                    policy.getPostWindowMinutes() + "분 내 게시글을 " + policy.getPostMaxCount() + "개 이상 작성할 수 없습니다.");
         }
 
         // 1. COMMUNITY_POST INSERT
@@ -330,6 +335,7 @@ public class CommunityServiceImpl implements CommunityService {
                 notification.setSourceType("community");
                 notification.setSourceId(postId);
                 notification.setMessage("내 글에 좋아요가 달렸어요.");
+                notification.setTargetUrl(NotificationUrlBuilder.community(postId));
                 myPageService.addNotification(notification);
 
                 rewardService.awardAction(
@@ -364,9 +370,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     @Transactional
     public Long addComment(Long postId, Long userIdx, String content) {
-        // 도배 방지: 1분 내 5개 이상이면 거부
-        if (communityMapper.countRecentCommentsByUser(userIdx, 1) >= 5) {
-            throw new IllegalStateException("1분 내 댓글을 5개 이상 작성할 수 없습니다.");
+        ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
+        if (communityMapper.countRecentCommentsByUser(userIdx, policy.getCommentWindowMinutes()) >= policy.getCommentMaxCount()) {
+            throw new IllegalStateException(
+                    policy.getCommentWindowMinutes() + "분 내 댓글을 " + policy.getCommentMaxCount() + "개 이상 작성할 수 없습니다.");
         }
         CommunityCommentDto dto = new CommunityCommentDto();
         dto.setPostId(postId);
@@ -383,6 +390,7 @@ public class CommunityServiceImpl implements CommunityService {
             notification.setSourceType("community");
             notification.setSourceId(postId);
             notification.setMessage("내 글에 새 댓글이 달렸어요.");
+            notification.setTargetUrl(NotificationUrlBuilder.communityComment(postId, dto.getCommentId()));
             myPageService.addNotification(notification);
         }
         rewardService.awardAction(
@@ -414,9 +422,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     @Transactional
     public Long addReply(Long postId, Long userIdx, String content, Long parentCommentId) {
-        // 도배 방지: 댓글+대댓글 합산 1분 내 5개 이상이면 거부
-        if (communityMapper.countRecentCommentsByUser(userIdx, 1) >= 5) {
-            throw new IllegalStateException("1분 내 댓글을 5개 이상 작성할 수 없습니다.");
+        ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
+        if (communityMapper.countRecentCommentsByUser(userIdx, policy.getCommentWindowMinutes()) >= policy.getCommentMaxCount()) {
+            throw new IllegalStateException(
+                    policy.getCommentWindowMinutes() + "분 내 댓글을 " + policy.getCommentMaxCount() + "개 이상 작성할 수 없습니다.");
         }
         CommunityCommentDto dto = new CommunityCommentDto();
         dto.setPostId(postId);
@@ -434,6 +443,7 @@ public class CommunityServiceImpl implements CommunityService {
             notification.setSourceType("community");
             notification.setSourceId(postId);
             notification.setMessage("내 글에 새 대댓글이 달렸어요.");
+            notification.setTargetUrl(NotificationUrlBuilder.communityComment(postId, dto.getCommentId()));
             myPageService.addNotification(notification);
         }
 
@@ -447,6 +457,7 @@ public class CommunityServiceImpl implements CommunityService {
                 notification.setSourceType("community");
                 notification.setSourceId(postId);
                 notification.setMessage("내 댓글에 새 답글이 달렸어요.");
+                notification.setTargetUrl(NotificationUrlBuilder.communityComment(postId, dto.getCommentId()));
                 myPageService.addNotification(notification);
             }
         }
@@ -541,26 +552,104 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 신고 =====
 
-    // 게시글 신고 횟수 캐시 업데이트함. 3회 이상이면 자동 차단함
+    // 게시글 신고 횟수 캐시 업데이트함. 3회 이상이면 리스트/상세에서 BLUR 처리됨 (post_status 는 ACTIVE 유지)
     @Override
+    @Transactional
     public void updatePostReportCache(Long postId) {
+        CommunityPostDto post = communityMapper.selectPost(postId);
+        if (post == null) return;
+        boolean wasBlurred = (post.getReportCount() >= 3) || post.isAiFlagged();
         communityMapper.increasePostReportCount(postId);
-        int reportCount = communityMapper.selectPostReportCount(postId);
-        if (reportCount >= 3) communityMapper.blockPost(postId);
+        boolean nowBlurred = ((post.getReportCount() + 1) >= 3) || post.isAiFlagged();
+        if (!wasBlurred && nowBlurred) {
+            notifyPostBlurred(post, "다수의 신고");
+        }
     }
 
-    // 댓글 신고 횟수 캐시 업데이트함. 3회 이상이면 자동 차단함
+    // 댓글 신고 횟수 캐시 업데이트함. 3회 이상이면 리스트/상세에서 BLUR 처리됨 (comment_status 는 ACTIVE 유지)
     @Override
+    @Transactional
     public void updateCommentReportCache(Long commentId) {
+        CommunityCommentDto comment = communityMapper.selectComment(commentId);
+        if (comment == null) return;
+        boolean wasBlurred = (comment.getReportCount() >= 3) || comment.isAiFlagged();
         communityMapper.increaseCommentReportCount(commentId);
-        int reportCount = communityMapper.selectCommentReportCount(commentId);
-        if (reportCount >= 3) communityMapper.blockComment(commentId);
+        boolean nowBlurred = ((comment.getReportCount() + 1) >= 3) || comment.isAiFlagged();
+        if (!wasBlurred && nowBlurred) {
+            notifyCommentBlurred(comment, "다수의 신고");
+        }
     }
 
     // 게시글 신고 횟수 가져옴
     @Override
     public int getPostReportCount(Long postId) {
         return communityMapper.selectPostReportCount(postId);
+    }
+
+    // ===== AI 욕설 감지 =====
+
+    // 게시글 AI 감지 플래그 세팅 (비동기 Perspective 검사 후 호출됨)
+    @Override
+    @Transactional
+    public void flagPostAsToxic(Long postId) {
+        CommunityPostDto post = communityMapper.selectPost(postId);
+        if (post == null) return;
+        boolean wasBlurred = (post.getReportCount() >= 3) || post.isAiFlagged();
+        communityMapper.setPostAiFlagged(postId);
+        if (!wasBlurred) {
+            notifyPostBlurred(post, "부적절한 표현 감지");
+        }
+    }
+
+    // 댓글 AI 감지 플래그 세팅
+    @Override
+    @Transactional
+    public void flagCommentAsToxic(Long commentId) {
+        CommunityCommentDto comment = communityMapper.selectComment(commentId);
+        if (comment == null) return;
+        boolean wasBlurred = (comment.getReportCount() >= 3) || comment.isAiFlagged();
+        communityMapper.setCommentAiFlagged(commentId);
+        if (!wasBlurred) {
+            notifyCommentBlurred(comment, "부적절한 표현 감지");
+        }
+    }
+
+    // BLUR 전환 시 작성자에게 알림 발송 (글)
+    private void notifyPostBlurred(CommunityPostDto post, String cause) {
+        FeedNotificationDto notification = new FeedNotificationDto();
+        notification.setUserIdx(post.getUserIdx());
+        notification.setSourceType("community");
+        notification.setSourceId(post.getPostId());
+        notification.setMessage("작성하신 글이 " + cause + "으로 가림 처리되었어요.");
+        notification.setTargetUrl(NotificationUrlBuilder.community(post.getPostId()));
+        myPageService.addNotification(notification);
+    }
+
+    // BLUR 전환 시 작성자에게 알림 발송 (댓글)
+    private void notifyCommentBlurred(CommunityCommentDto comment, String cause) {
+        FeedNotificationDto notification = new FeedNotificationDto();
+        notification.setUserIdx(comment.getUserIdx());
+        notification.setSourceType("community");
+        notification.setSourceId(comment.getPostId());
+        notification.setMessage("작성하신 댓글이 " + cause + "으로 가림 처리되었어요.");
+        notification.setTargetUrl(NotificationUrlBuilder.communityComment(comment.getPostId(), comment.getCommentId()));
+        myPageService.addNotification(notification);
+    }
+
+    // 게시글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
+    @Override
+    @Transactional
+    public void clearPostBlur(Long postId) {
+        communityMapper.clearPostBlur(postId);
+        notifyPostAction(postId, "작성하신 글의 가림 처리가 해제되었어요.");
+    }
+
+    // 댓글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
+    @Override
+    @Transactional
+    public void clearCommentBlur(Long commentId) {
+        communityMapper.clearCommentBlur(commentId);
+        notifyCommentAction(commentId, "작성하신 댓글의 가림 처리가 해제되었어요.");
     }
 
     // 댓글 신고 횟수 가져옴
@@ -575,36 +664,93 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public void blockUser(Long userIdx) {
         communityMapper.blockUser(userIdx);
+        notifyAccountAction(userIdx, "계정이 차단되었어요.");
     }
 
     // 유저 차단 해제함 (account_status = 'ACTIVE')
     @Override
     public void unblockUser(Long userIdx) {
         communityMapper.unblockUser(userIdx);
+        notifyAccountAction(userIdx, "계정 차단이 해제되었어요.");
     }
 
     // 게시글 차단함 (post_status = 'BLOCKED')
     @Override
     public void blockPost(Long postId) {
         communityMapper.blockPost(postId);
+        notifyPostAction(postId, "작성하신 글이 운영 정책에 따라 차단되었어요.");
     }
 
     // 게시글 차단 해제함
     @Override
     public void unblockPost(Long postId) {
         communityMapper.unblockPost(postId);
+        notifyPostAction(postId, "차단되었던 글이 복구되었어요.");
     }
 
     // 댓글/대댓글 차단함 (comment_status = 'BLOCKED')
     @Override
     public void blockComment(Long commentId) {
         communityMapper.blockComment(commentId);
+        notifyCommentAction(commentId, "작성하신 댓글이 운영 정책에 따라 차단되었어요.");
     }
 
     // 댓글/대댓글 차단 해제함
     @Override
     public void unblockComment(Long commentId) {
         communityMapper.unblockComment(commentId);
+        notifyCommentAction(commentId, "차단되었던 댓글이 복구되었어요.");
+    }
+
+    // ===== 알림 헬퍼 (차단/해제/BLUR 해제 공용) =====
+
+    // 글 관련 액션 알림 발송 (community sourceType)
+    private void notifyPostAction(Long postId, String message) {
+        try {
+            CommunityPostDto post = communityMapper.selectPost(postId);
+            if (post == null) return;
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(post.getUserIdx());
+            notification.setSourceType("community");
+            notification.setSourceId(postId);
+            notification.setMessage(message);
+            notification.setTargetUrl(NotificationUrlBuilder.community(postId));
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("글 알림 발송 실패: postId={}", postId, e);
+        }
+    }
+
+    // 댓글 관련 액션 알림 발송 (community sourceType, #comment-N 앵커 포함)
+    private void notifyCommentAction(Long commentId, String message) {
+        try {
+            CommunityCommentDto comment = communityMapper.selectComment(commentId);
+            if (comment == null) return;
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(comment.getUserIdx());
+            notification.setSourceType("community");
+            notification.setSourceId(comment.getPostId());
+            notification.setMessage(message);
+            notification.setTargetUrl(NotificationUrlBuilder.communityComment(comment.getPostId(), comment.getCommentId()));
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("댓글 알림 발송 실패: commentId={}", commentId, e);
+        }
+    }
+
+    // 계정 관련 액션 알림 발송 (account_block sourceType)
+    private void notifyAccountAction(Long userIdx, String message) {
+        try {
+            FeedNotificationDto notification = new FeedNotificationDto();
+            notification.setUserIdx(userIdx);
+            notification.setSourceType("account_block");
+            notification.setSourceId(userIdx);
+            notification.setMessage(message);
+            notification.setTargetUrl(NotificationUrlBuilder.mypage());
+            myPageService.addNotification(notification);
+        } catch (Exception e) {
+            log.warn("계정 알림 발송 실패: userIdx={}", userIdx, e);
+        }
     }
 
     // ===== IP 저장 =====

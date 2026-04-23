@@ -2,14 +2,50 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ include file="../common/header.jsp" %>
 
+<spring:message code="courses.list.scope.my.title" var="coursesListMyTitle"/>
+<spring:message code="courses.list.scope.my.desc" var="coursesListMyDesc"/>
+<spring:message code="courses.list.scope.my.tab" var="coursesListMyTab"/>
+<spring:message code="courses.list.scope.public.title" var="coursesListPublicTitle"/>
+<spring:message code="courses.list.scope.public.desc" var="coursesListPublicDesc"/>
+<spring:message code="courses.list.scope.public.tab" var="coursesListPublicTab"/>
+<spring:message code="courses.list.empty.title" var="coursesListEmptyTitle"/>
+<spring:message code="courses.list.empty.desc" var="coursesListEmptyDesc"/>
+<spring:message code="courses.my.createButton" var="coursesMyCreateButton"/>
+<spring:message code="courses.common.all" var="coursesAllLabel"/>
+<spring:message code="courses.common.source.manual" var="coursesSourceManual"/>
+<spring:message code="courses.common.source.ai" var="coursesSourceAi"/>
+<spring:message code="courses.common.period.all" var="coursesPeriodAll"/>
+<spring:message code="courses.common.period.upcoming" var="coursesPeriodUpcoming"/>
+<spring:message code="courses.common.period.now" var="coursesPeriodNow"/>
+<spring:message code="courses.common.period.past" var="coursesPeriodPast"/>
+<spring:message code="courses.common.year.all" var="coursesYearAll"/>
+<spring:message code="courses.common.year.suffix" var="coursesYearSuffix"/>
+<spring:message code="courses.common.visibility.all" var="coursesVisibilityAll"/>
+<spring:message code="courses.common.visibility.public" var="coursesVisibilityPublic"/>
+<spring:message code="courses.common.visibility.private" var="coursesVisibilityPrivate"/>
+<spring:message code="courses.list.filter.searchPlaceholder" var="coursesSearchPlaceholder"/>
+<spring:message code="courses.common.planCount.prefix" var="coursesPlanCountPrefix"/>
+<spring:message code="courses.common.planCount.suffix" var="coursesPlanCountSuffix"/>
+<spring:message code="courses.common.detail" var="coursesDetailLabel"/>
+<spring:message code="courses.common.edit" var="coursesEditLabel"/>
+<spring:message code="courses.common.delete" var="coursesDeleteLabel"/>
+<spring:message code="courses.common.confirmDelete" var="coursesDeleteConfirm"/>
+<spring:message code="courses.common.destinationMissing" var="coursesDestinationMissing"/>
+<spring:message code="courses.common.summary.ai" var="coursesSummaryAi"/>
+<spring:message code="courses.common.summary.manual" var="coursesSummaryManual"/>
+<spring:message code="courses.common.detailArrow" var="coursesDetailArrow"/>
+<spring:message code="courses.common.filter.noResult.title" var="coursesNoResultTitle"/>
+<spring:message code="courses.common.filter.noResult.desc" var="coursesNoResultDesc"/>
+
 <!DOCTYPE html>
-<html>
+<html lang="${pageContext.response.locale.language}">
 <head>
     <meta charset="UTF-8">
-    <title>내 여행일정 목록</title>
+    <title><c:choose><c:when test="${scope eq 'public'}">${coursesListPublicTitle}</c:when><c:otherwise>${coursesListMyTitle}</c:otherwise></c:choose></title>
     <style>
         * {
             box-sizing: border-box;
@@ -466,12 +502,12 @@
             <div>
                 <c:choose>
                     <c:when test="${scope eq 'public'}">
-                        <h1 class="page-title">공개 일정</h1>
-                        <div class="page-desc">다른 사용자가 공개한 여행일정을 확인할 수 있어요.</div>
+                        <h1 class="page-title">${coursesListPublicTitle}</h1>
+                        <div class="page-desc">${coursesListPublicDesc}</div>
                     </c:when>
                     <c:otherwise>
-                        <h1 class="page-title">내 여행일정</h1>
-                        <div class="page-desc">내가 만든 여행일정을 한눈에 확인하고 관리할 수 있어요.</div>
+                        <h1 class="page-title">${coursesListMyTitle}</h1>
+                        <div class="page-desc">${coursesListMyDesc}</div>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -479,12 +515,12 @@
             <div class="scope-tab-group" style="display:flex; gap:10px; margin-bottom:20px;">
                 <a href="${pageContext.request.contextPath}/courses/list?scope=my"
                    class="tab-btn ${scope ne 'public' ? 'active' : ''}">
-                    내 여행 일정
+                    ${coursesListMyTab}
                 </a>
 
                 <a href="${pageContext.request.contextPath}/courses/list?scope=public"
                    class="tab-btn ${scope eq 'public' ? 'active' : ''}">
-                    공개 일정
+                    ${coursesListPublicTab}
                 </a>
             </div>
         </div>
@@ -492,9 +528,9 @@
         <c:choose>
             <c:when test="${empty travelPlanList}">
                 <div class="empty-box">
-                    <h3>아직 만든 여행일정이 없어요.</h3>
-                    <p>직접 일정을 만들거나 AI 추천 일정을 생성해보세요.</p>
-                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-action">+ 일정 만들기</a>
+                    <h3>${coursesListEmptyTitle}</h3>
+                    <p>${coursesListEmptyDesc}</p>
+                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-action">${coursesMyCreateButton}</a>
                 </div>
             </c:when>
 
@@ -502,52 +538,52 @@
                 <div class="filter-panel">
                     <div class="filter-top">
                         <div class="tab-group" id="sourceTabs">
-                            <button type="button" class="tab-btn active" data-source="all">전체</button>
-                            <button type="button" class="tab-btn" data-source="MANUAL">직접 작성</button>
-                            <button type="button" class="tab-btn" data-source="AI">AI 추천</button>
+                            <button type="button" class="tab-btn active" data-source="all">${coursesAllLabel}</button>
+                            <button type="button" class="tab-btn" data-source="MANUAL">${coursesSourceManual}</button>
+                            <button type="button" class="tab-btn" data-source="AI">${coursesSourceAi}</button>
                         </div>
 
                         <div class="plan-count">
-                            총 <span id="visiblePlanCount">0</span>개 일정
+                            ${coursesPlanCountPrefix} <span id="visiblePlanCount">0</span> ${coursesPlanCountSuffix}
                         </div>
                     </div>
 
                     <div class="filter-bottom">
                         <div class="filter-controls">
                             <select id="tripStatusFilter" class="filter-select">
-                                <option value="all">전체 기간</option>
-                                <option value="upcoming">예정된 여행</option>
-                                <option value="now">진행중인 여행</option>
-                                <option value="past">지난 여행</option>
+                                <option value="all">${coursesPeriodAll}</option>
+                                <option value="upcoming">${coursesPeriodUpcoming}</option>
+                                <option value="now">${coursesPeriodNow}</option>
+                                <option value="past">${coursesPeriodPast}</option>
                             </select>
 
                             <select id="yearFilter" class="filter-select">
-                                <option value="all">전체 연도</option>
+                                <option value="all">${coursesYearAll}</option>
                             </select>
 
                             <select id="visibilityFilter" class="filter-select">
-                                <option value="all">공개상태</option>
-                                <option value="public">공개</option>
-                                <option value="private">비공개</option>
+                                <option value="all">${coursesVisibilityAll}</option>
+                                <option value="public">${coursesVisibilityPublic}</option>
+                                <option value="private">${coursesVisibilityPrivate}</option>
                             </select>
                         </div>
 
                         <div class="filter-controls">
-                            <input type="text" id="searchInput" class="search-input" placeholder="제목 또는 목적지 검색"/>
+                            <input type="text" id="searchInput" class="search-input" placeholder="${coursesSearchPlaceholder}"/>
                         </div>
                     </div>
                 </div>
 
                 <div class="plan-grid" id="planGrid">
                     <c:forEach var="plan" items="${travelPlanList}">
-                        <fmt:formatDate value="${plan.start_date}" pattern="yyyy-MM-dd" var="startDateText"/>
-                        <fmt:formatDate value="${plan.end_date}" pattern="yyyy-MM-dd" var="endDateText"/>
+                        <fmt:formatDate value="${plan.start_date}" type="date" dateStyle="medium" var="startDateText"/>
+                        <fmt:formatDate value="${plan.end_date}" type="date" dateStyle="medium" var="endDateText"/>
                         <fmt:formatDate value="${plan.start_date}" pattern="yyyy" var="startYear"/>
                         <fmt:formatDate value="${plan.start_date}" pattern="yyyyMMdd" var="startDateNumber"/>
                         <fmt:formatDate value="${plan.end_date}" pattern="yyyyMMdd" var="endDateNumber"/>
 
-                        <c:set var="sourceValue" value="${empty plan.plan_source ? 'manual' : plan.plan_source}"/>
-                        <c:set var="destinationValue" value="${empty plan.destination ? '미정' : plan.destination}"/>
+                        <c:set var="sourceValue" value="${empty plan.plan_source ? 'MANUAL' : fn:toUpperCase(plan.plan_source)}"/>
+                        <c:set var="destinationValue" value="${empty plan.destination ? coursesDestinationMissing : plan.destination}"/>
                         <c:set var="publicValue" value="${plan.is_public == 1 ? 'public' : 'private'}"/>
 
                         <div class="plan-card plan-item"
@@ -568,15 +604,15 @@
                                 <c:if test="${scope eq 'my' || plan.user_idx == loginUserIdx}">
                                     <div class="quick-action-wrap">
                                         <button type="button" class="quick-action-btn">⋯</button>
-                                        <div class="quick-menu">
-                                            <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">상세보기</a>
-                                            <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}">수정하기</a>
+                                    <div class="quick-menu">
+                                            <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">${coursesDetailLabel}</a>
+                                            <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}">${coursesEditLabel}</a>
                                             <form method="post"
                                                   action="${pageContext.request.contextPath}/courses/delete"
-                                                  onsubmit="return confirm('정말 삭제하시겠습니까?');"
+                                                  onsubmit="return confirm('${fn:escapeXml(coursesDeleteConfirm)}');"
                                                   style="margin: 0;">
                                                 <input type="hidden" name="planId" value="${plan.plan_id}">
-                                                <button type="submit">삭제하기</button>
+                                                <button type="submit">${coursesDeleteLabel}</button>
                                             </form>
                                         </div>
                                     </div>
@@ -588,19 +624,19 @@
 
                                 <c:choose>
                                     <c:when test="${sourceValue eq 'AI'}">
-                                        <span class="badge source-ai">AI 추천</span>
+                                        <span class="badge source-ai">${coursesSourceAi}</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge source-manual">직접 작성</span>
+                                        <span class="badge source-manual">${coursesSourceManual}</span>
                                     </c:otherwise>
                                 </c:choose>
 
                                 <c:choose>
                                     <c:when test="${plan.is_public == 1}">
-                                        <span class="badge public">공개</span>
+                                        <span class="badge public">${coursesVisibilityPublic}</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge private">비공개</span>
+                                        <span class="badge private">${coursesVisibilityPrivate}</span>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -608,11 +644,11 @@
                             <div class="plan-date">${startDateText} - ${endDateText}</div>
                             <div class="plan-meta">
                                 <c:choose>
-                                    <c:when test="${sourceValue eq 'AI'}">
-                                        AI 추천으로 생성된 일정
+                                <c:when test="${sourceValue eq 'AI'}">
+                                        ${coursesSummaryAi}
                                     </c:when>
                                     <c:otherwise>
-                                        직접 작성한 일정
+                                        ${coursesSummaryManual}
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -621,7 +657,7 @@
                                 <span></span>
                                 <a class="detail-link"
                                    href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">
-                                    상세보기 →
+                                    ${coursesDetailArrow}
                                 </a>
                             </div>
                         </div>
@@ -629,9 +665,9 @@
                 </div>
 
                 <div class="empty-box no-result" id="noResultBox">
-                    <h3>조건에 맞는 일정이 없습니다.</h3>
-                    <p>필터를 바꾸거나 새로운 여행 일정을 만들어보세요.</p>
-                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-action">+ 일정 만들기</a>
+                    <h3>${coursesNoResultTitle}</h3>
+                    <p>${coursesNoResultDesc}</p>
+                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-action">${coursesMyCreateButton}</a>
                 </div>
             </c:otherwise>
         </c:choose>
@@ -716,7 +752,7 @@
             sortedYears.forEach(function (year) {
                 const option = document.createElement('option');
                 option.value = year;
-                option.textContent = year + '년';
+                option.textContent = year + '${fn:escapeXml(coursesYearSuffix)}';
                 yearFilter.appendChild(option);
             });
         }

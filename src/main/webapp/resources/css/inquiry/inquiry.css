@@ -876,3 +876,286 @@
     border-radius: 4px;
     padding: 3px 8px;
 }
+
+/* =============================================
+   AI 독성 감지 BLUR 처리
+   - 목록: 제목 blur + 전체 오버레이 (커뮤니티 패턴)
+   - 상세: 본문 blur만 (오버레이 없음, 관리자 해제로만 공개)
+   ============================================= */
+.inq-title-blurred {
+    filter: blur(4px);
+    user-select: none;
+}
+
+.inq-blurred {
+    filter: blur(6px);
+    user-select: none;
+    pointer-events: none;
+}
+
+/* 목록 제목 셀 위에 올라가는 클릭 가능한 오버레이 */
+.inq-title-blur-wrap {
+    position: relative;
+}
+
+.inq-title-blur-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: rgba(255, 255, 255, 0.75);
+    font-size: 13px;
+    font-weight: 600;
+    color: #b91c1c;
+    padding: 0 12px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.inq-ai-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 8px;
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.inq-admin-clear-blur-btn {
+    margin-left: 6px;
+    padding: 3px 10px;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.inq-admin-clear-blur-btn:hover {
+    background: #2563eb;
+}
+
+/* =============================================
+   다크 테마 오버라이드 (html.dark)
+   ============================================= */
+
+/* ── 페이지 헤더 ── */
+html.dark .inq-ph {
+    background: #151922;
+    border-bottom-color: #232935;
+}
+html.dark .inq-ph h1 { color: #f1f5f9; }
+html.dark .inq-ph-sub { color: #9ca3af; }
+
+/* ── 카테고리 탭 ── */
+html.dark .inq-tab { color: #9ca3af; }
+html.dark .inq-tab:hover,
+html.dark .inq-tab.active { color: #93c5fd; }
+html.dark .inq-tab.active { border-bottom-color: #60a5fa; }
+
+/* ── 본문 래퍼 ── */
+html.dark .inq-body-wrap,
+html.dark .inq-write-wrap,
+html.dark .inq-detail-wrap { background: #0f1115; }
+
+/* ── 툴바 ── */
+html.dark .inq-total { color: #9ca3af; }
+html.dark .inq-total strong { color: #f1f5f9; }
+
+html.dark .inq-sf {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .inq-sf:hover,
+html.dark .inq-sf.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+}
+
+/* ── 검색창 ── */
+html.dark .inq-search-wrap {
+    background: #1a1f2b;
+    border-color: #2b3241;
+}
+html.dark .inq-search-wrap:focus-within {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .15);
+}
+html.dark .inq-search-input { color: #f1f5f9; }
+html.dark .inq-search-input::placeholder { color: #6b7280; }
+
+/* 검색어 하이라이트 */
+html.dark .inq-highlight {
+    background: #78350f;
+    color: #fde68a;
+}
+
+/* ── 테이블 ── */
+html.dark .inq-table-wrap {
+    background: #1a1f2b;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .35);
+}
+html.dark .inq-table thead tr {
+    background: #151922;
+    border-bottom-color: #232935;
+}
+html.dark .inq-table th { color: #9ca3af; }
+html.dark .inq-row,
+html.dark .inq-row-blocked { border-bottom-color: #232935; }
+html.dark .inq-row:hover { background: #1f2432; }
+html.dark .inq-table td { color: #e5e7eb; }
+
+html.dark .inq-no { color: #9ca3af; }
+
+html.dark .inq-title { color: #f1f5f9; }
+html.dark .inq-row:hover .inq-title { color: #93c5fd; }
+html.dark .inq-title-blocked { color: #6b7280; }
+
+html.dark .inq-private-tag {
+    background: #232935;
+    color: #9ca3af;
+}
+
+/* 카테고리 태그 */
+html.dark .inq-category-tag {
+    background: #1e293b;
+    color: #93c5fd;
+}
+
+/* 작성자/날짜 */
+html.dark .inq-nick { color: #9ca3af; }
+html.dark .inq-date { color: #6b7280; }
+
+/* 빈 목록 */
+html.dark .inq-empty-msg { color: #cbd5e1; }
+html.dark .inq-empty-sub { color: #9ca3af; }
+
+/* ── 페이지네이션 ── */
+html.dark .inq-page-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .inq-page-btn:hover,
+html.dark .inq-page-btn.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+}
+
+/* ── 작성 페이지 ── */
+html.dark .inq-write-header h1 { color: #f1f5f9; }
+html.dark .inq-write-header p { color: #9ca3af; }
+html.dark .inq-back-btn { color: #cbd5e1; }
+html.dark .inq-back-btn:hover { color: #93c5fd; }
+
+html.dark .inq-write-card {
+    background: #1a1f2b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+
+html.dark .inq-form-label { color: #e5e7eb; }
+
+html.dark .inq-form-input,
+html.dark .inq-form-select,
+html.dark .inq-form-textarea {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #f1f5f9;
+}
+html.dark .inq-form-input::placeholder,
+html.dark .inq-form-textarea::placeholder { color: #6b7280; }
+html.dark .inq-form-input:focus,
+html.dark .inq-form-select:focus,
+html.dark .inq-form-textarea:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .15);
+}
+html.dark .inq-form-textarea:disabled {
+    background: #151922;
+    color: #6b7280;
+}
+
+html.dark .inq-char-count { color: #9ca3af; }
+
+html.dark .inq-field-msg.error { color: #fca5a5; }
+html.dark .inq-field-msg.success { color: #86efac; }
+
+/* 비공개 토글 */
+html.dark .inq-toggle-slider { background: #2b3241; }
+html.dark .inq-toggle-label { color: #e5e7eb; }
+html.dark .inq-private-hint { color: #9ca3af; }
+
+html.dark .inq-write-actions { border-top-color: #232935; }
+
+html.dark .inq-btn-cancel {
+    background: #232935;
+    color: #cbd5e1;
+}
+html.dark .inq-btn-cancel:hover { background: #2b3241; }
+
+/* ── 상세 페이지 ── */
+html.dark .inq-detail-card,
+html.dark .inq-no-answer,
+html.dark .inq-admin-form {
+    background: #1a1f2b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+html.dark .inq-detail-head { border-bottom-color: #232935; }
+html.dark .inq-detail-title { color: #f1f5f9; }
+html.dark .inq-detail-info { color: #9ca3af; }
+html.dark .inq-detail-nick { color: #cbd5e1; }
+html.dark .inq-detail-divider { color: #4b5563; }
+html.dark .inq-detail-views { color: #9ca3af; }
+html.dark .inq-detail-content { color: #e5e7eb; }
+
+/* 답변 카드 */
+html.dark .inq-answer-card {
+    background: #1a1f2b;
+    border-left-color: #60a5fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+html.dark .inq-answer-head {
+    background: #1e293b;
+    border-bottom-color: #232935;
+}
+html.dark .inq-answer-title { color: #93c5fd; }
+html.dark .inq-answer-meta { color: #9ca3af; }
+
+/* 미답변 안내 */
+html.dark .inq-no-answer-msg { color: #cbd5e1; }
+html.dark .inq-no-answer-sub { color: #9ca3af; }
+
+/* 관리자 폼 */
+html.dark .inq-admin-form { border-color: #2b3241; }
+html.dark .inq-admin-form-title { color: #cbd5e1; }
+
+/* ── 첨부파일 ── */
+html.dark .inq-attachment-list { border-top-color: #232935; }
+html.dark .inq-attachment-title { color: #cbd5e1; }
+html.dark .inq-attachment-img { border-color: #2b3241; }
+html.dark .inq-attachment-name { color: #9ca3af; }
+html.dark .inq-attach-preview-item {
+    background: #151922;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+
+/* ── 독성 감지 blur 오버레이 ── */
+html.dark .inq-title-blur-overlay {
+    background: rgba(15, 17, 21, 0.78);
+    color: #fca5a5;
+}
+
+html.dark .inq-ai-badge {
+    background: #2a1d0a;
+    color: #fde68a;
+    border-color: #a16207;
+}

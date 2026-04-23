@@ -1,8 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="security"/>
-<c:set var="pageTitle" value="보안 이력"/>
+<spring:message code="admin.security.pageTitle" var="adminSecurityPageTitle"/>
+<c:set var="pageTitle" value="${adminSecurityPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -11,41 +13,41 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/security">
                 <div class="adm-filter-bar">
                     <div class="adm-search-box" style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label">검색</div>
+                        <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
                         <span class="adm-search-ico">🔍</span>
-                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="아이디, 닉네임, 이메일, 입력값, IP 검색">
+                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="<spring:message code='admin.security.searchPlaceholder'/>">
                     </div>
                     <div>
-                        <div class="adm-filter-label">성공 여부</div>
+                        <div class="adm-filter-label"><spring:message code="admin.logs.success"/></div>
                         <select class="adm-select" name="success">
-                            <option value="ALL" ${search.success=='ALL'?'selected':''}>전체</option>
-                            <option value="SUCCESS" ${search.success=='SUCCESS'?'selected':''}>성공</option>
-                            <option value="FAIL" ${search.success=='FAIL'?'selected':''}>실패</option>
+                            <option value="ALL" ${search.success=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="SUCCESS" ${search.success=='SUCCESS'?'selected':''}><spring:message code="admin.common.success"/></option>
+                            <option value="FAIL" ${search.success=='FAIL'?'selected':''}><spring:message code="admin.common.fail"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">이벤트 유형</div>
+                        <div class="adm-filter-label"><spring:message code="admin.security.eventType"/></div>
                         <select class="adm-select" name="eventType">
-                            <option value="ALL" ${search.eventType=='ALL'?'selected':''}>전체</option>
-                            <option value="FIND_ID" ${search.eventType=='FIND_ID'?'selected':''}>FIND_ID</option>
-                            <option value="FIND_PASSWORD" ${search.eventType=='FIND_PASSWORD'?'selected':''}>FIND_PASSWORD</option>
-                            <option value="RESET_PASSWORD" ${search.eventType=='RESET_PASSWORD'?'selected':''}>RESET_PASSWORD</option>
-                            <option value="PASSWORD_CHANGE" ${search.eventType=='PASSWORD_CHANGE'?'selected':''}>PASSWORD_CHANGE</option>
-                            <option value="EMAIL_VERIFY" ${search.eventType=='EMAIL_VERIFY'?'selected':''}>EMAIL_VERIFY</option>
-                            <option value="EMAIL_LOGIN_TOGGLE" ${search.eventType=='EMAIL_LOGIN_TOGGLE'?'selected':''}>EMAIL_LOGIN_TOGGLE</option>
+                            <option value="ALL" ${search.eventType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="FIND_ID" ${search.eventType=='FIND_ID'?'selected':''}><spring:message code="admin.security.eventType.findId"/></option>
+                            <option value="FIND_PASSWORD" ${search.eventType=='FIND_PASSWORD'?'selected':''}><spring:message code="admin.security.eventType.findPassword"/></option>
+                            <option value="RESET_PASSWORD" ${search.eventType=='RESET_PASSWORD'?'selected':''}><spring:message code="admin.security.eventType.resetPassword"/></option>
+                            <option value="PASSWORD_CHANGE" ${search.eventType=='PASSWORD_CHANGE'?'selected':''}><spring:message code="admin.security.eventType.passwordChange"/></option>
+                            <option value="EMAIL_VERIFY" ${search.eventType=='EMAIL_VERIFY'?'selected':''}><spring:message code="admin.security.eventType.emailVerify"/></option>
+                            <option value="EMAIL_LOGIN_TOGGLE" ${search.eventType=='EMAIL_LOGIN_TOGGLE'?'selected':''}><spring:message code="admin.security.eventType.emailLoginToggle"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">단계</div>
+                        <div class="adm-filter-label"><spring:message code="admin.security.stage"/></div>
                         <select class="adm-select" name="eventStage">
-                            <option value="ALL" ${search.eventStage=='ALL'?'selected':''}>전체</option>
-                            <option value="REQUEST" ${search.eventStage=='REQUEST'?'selected':''}>REQUEST</option>
-                            <option value="ISSUE" ${search.eventStage=='ISSUE'?'selected':''}>ISSUE</option>
-                            <option value="VERIFY" ${search.eventStage=='VERIFY'?'selected':''}>VERIFY</option>
-                            <option value="COMPLETE" ${search.eventStage=='COMPLETE'?'selected':''}>COMPLETE</option>
+                            <option value="ALL" ${search.eventStage=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="REQUEST" ${search.eventStage=='REQUEST'?'selected':''}><spring:message code="admin.security.stage.request"/></option>
+                            <option value="ISSUE" ${search.eventStage=='ISSUE'?'selected':''}><spring:message code="admin.security.stage.issue"/></option>
+                            <option value="VERIFY" ${search.eventStage=='VERIFY'?'selected':''}><spring:message code="admin.security.stage.verify"/></option>
+                            <option value="COMPLETE" ${search.eventStage=='COMPLETE'?'selected':''}><spring:message code="admin.security.stage.complete"/></option>
                         </select>
                     </div>
-                    <button class="adm-btn adm-btn-primary" type="submit">조회</button>
+                    <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
                 </div>
             </form>
         </div>
@@ -53,23 +55,23 @@
 
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">계정 복구 / 인증 / 변경 이력</div>
-            <div style="font-size:12px;color:#64748b;">총 ${total}건</div>
+            <div class="adm-card-title"><spring:message code="admin.security.historyTitle"/></div>
+            <div style="font-size:12px;color:#64748b;"><spring:message code="admin.common.totalCount" arguments="${total}"/></div>
         </div>
         <div class="adm-table-wrap">
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th>시각</th>
-                    <th>대상 회원</th>
-                    <th>실행 주체</th>
-                    <th>이벤트</th>
-                    <th>단계</th>
-                    <th>입력값</th>
-                    <th>대상 이메일</th>
-                    <th>결과</th>
-                    <th>사유</th>
-                    <th>IP</th>
+                    <th><spring:message code="admin.common.time"/></th>
+                    <th><spring:message code="admin.security.targetMember"/></th>
+                    <th><spring:message code="admin.security.actor"/></th>
+                    <th><spring:message code="admin.security.eventType"/></th>
+                    <th><spring:message code="admin.security.stage"/></th>
+                    <th><spring:message code="admin.context.inputValue"/></th>
+                    <th><spring:message code="admin.context.targetEmail"/></th>
+                    <th><spring:message code="admin.common.result"/></th>
+                    <th><spring:message code="admin.common.reason"/></th>
+                    <th><spring:message code="admin.common.ip"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -79,37 +81,126 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.userIdx}">
-                                    <div class="mem-name">${item.nickname}</div>
-                                    <div class="mem-uid">@${item.userId}</div>
+                                    <button type="button"
+                                            class="adm-inline-link js-open-member-context"
+                                            data-user-idx="${item.userIdx}"
+                                            data-default-tab="security"
+                                            style="font-weight:700;color:#93c5fd;">${item.nickname}</button>
+                                    <div class="mem-uid">
+                                        <button type="button"
+                                                class="adm-inline-link js-open-member-context"
+                                                data-user-idx="${item.userIdx}"
+                                                data-default-tab="security"
+                                                style="color:#94a3b8;">@${item.userId}</button>
+                                    </div>
                                 </c:when>
-                                <c:otherwise><span style="color:#64748b;">미식별</span></c:otherwise>
+                                <c:otherwise><span style="color:#64748b;"><spring:message code="admin.common.unidentified"/></span></c:otherwise>
                             </c:choose>
                         </td>
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.actorUserIdx}">
-                                    <div class="mem-name">${item.actorNickname}</div>
-                                    <div class="mem-uid">@${item.actorUserId}</div>
+                                    <button type="button"
+                                            class="adm-inline-link js-open-member-context"
+                                            data-user-idx="${item.actorUserIdx}"
+                                            data-default-tab="security"
+                                            style="font-weight:700;color:#93c5fd;">${item.actorNickname}</button>
+                                    <div class="mem-uid">
+                                        <button type="button"
+                                                class="adm-inline-link js-open-member-context"
+                                                data-user-idx="${item.actorUserIdx}"
+                                                data-default-tab="security"
+                                                style="color:#94a3b8;">@${item.actorUserId}</button>
+                                    </div>
                                 </c:when>
-                                <c:otherwise><span style="color:#64748b;">비로그인/시스템</span></c:otherwise>
+                                <c:otherwise><span style="color:#64748b;"><spring:message code="admin.security.actorSystem"/></span></c:otherwise>
                             </c:choose>
                         </td>
-                        <td>${item.eventType}</td>
-                        <td>${item.eventStage}</td>
-                        <td><c:out value="${empty item.inputIdentifier ? '-' : item.inputIdentifier}"/></td>
-                        <td><c:out value="${empty item.targetEmail ? '-' : item.targetEmail}"/></td>
                         <td>
                             <c:choose>
-                                <c:when test="${item.success}"><span class="status-badge ACTIVE">SUCCESS</span></c:when>
-                                <c:otherwise><span class="status-badge DELETED">FAIL</span></c:otherwise>
+                                <c:when test="${item.eventType eq 'FIND_ID'}"><spring:message code="admin.security.eventType.findId"/></c:when>
+                                <c:when test="${item.eventType eq 'FIND_PASSWORD'}"><spring:message code="admin.security.eventType.findPassword"/></c:when>
+                                <c:when test="${item.eventType eq 'RESET_PASSWORD'}"><spring:message code="admin.security.eventType.resetPassword"/></c:when>
+                                <c:when test="${item.eventType eq 'PASSWORD_CHANGE'}"><spring:message code="admin.security.eventType.passwordChange"/></c:when>
+                                <c:when test="${item.eventType eq 'EMAIL_VERIFY'}"><spring:message code="admin.security.eventType.emailVerify"/></c:when>
+                                <c:when test="${item.eventType eq 'EMAIL_LOGIN_TOGGLE'}"><spring:message code="admin.security.eventType.emailLoginToggle"/></c:when>
+                                <c:otherwise><c:out value="${item.eventType}"/></c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${item.eventStage eq 'REQUEST'}"><spring:message code="admin.security.stage.request"/></c:when>
+                                <c:when test="${item.eventStage eq 'ISSUE'}"><spring:message code="admin.security.stage.issue"/></c:when>
+                                <c:when test="${item.eventStage eq 'VERIFY'}"><spring:message code="admin.security.stage.verify"/></c:when>
+                                <c:when test="${item.eventStage eq 'COMPLETE'}"><spring:message code="admin.security.stage.complete"/></c:when>
+                                <c:otherwise><c:out value="${item.eventStage}"/></c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.inputIdentifier}">
+                                    <div><c:out value="${item.inputIdentifier}"/></div>
+                                    <div class="adm-inline-actions">
+                                        <button type="button"
+                                                class="adm-inline-chip"
+                                                data-keyword="${item.inputIdentifier}"
+                                                onclick="applyKeywordFilter(this)">
+                                            <spring:message code="admin.common.sameValue"/>
+                                        </button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.targetEmail}">
+                                    <div><c:out value="${item.targetEmail}"/></div>
+                                    <div class="adm-inline-actions">
+                                        <button type="button"
+                                                class="adm-inline-chip"
+                                                data-keyword="${item.targetEmail}"
+                                                onclick="applyKeywordFilter(this)">
+                                            <spring:message code="admin.common.sameEmail"/>
+                                        </button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${item.success}"><span class="status-badge ACTIVE"><spring:message code="admin.common.success"/></span></c:when>
+                                <c:otherwise><span class="status-badge DELETED"><spring:message code="admin.common.fail"/></span></c:otherwise>
                             </c:choose>
                         </td>
                         <td><c:out value="${empty item.failReason ? '-' : item.failReason}"/></td>
-                        <td><c:out value="${empty item.ipAddress ? '-' : item.ipAddress}"/></td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.ipAddress}">
+                                    <div>
+                                        <button type="button"
+                                                class="adm-inline-link js-open-ip-context"
+                                                data-ip-address="${item.ipAddress}"
+                                                data-default-tab="security"
+                                                style="color:#93c5fd;">${item.ipAddress}</button>
+                                    </div>
+                                    <div class="adm-inline-actions">
+                                        <button type="button"
+                                                class="adm-inline-chip"
+                                                data-keyword="${item.ipAddress}"
+                                                onclick="applyKeywordFilter(this)">
+                                            <spring:message code="admin.common.sameIp"/>
+                                        </button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;">조회 결과가 없습니다.</td></tr>
+                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -122,13 +213,24 @@
                     <button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>
                 </c:forEach>
                 <c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if>
-                <span class="adm-page-info">${paging.currentPage} / ${paging.totalPage} 페이지</span>
+                <span class="adm-page-info"><spring:message code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/></span>
             </div>
         </c:if>
     </div>
 </div>
 
+<%@ include file="../common/context-modal.jspf" %>
+
 <script>
+function applyKeywordFilter(button) {
+    var keyword = button.getAttribute('data-keyword');
+    if (!keyword) return;
+    const params = new URLSearchParams(window.location.search);
+    params.set('keyword', keyword);
+    params.set('page', '1');
+    location.href = '${pageContext.request.contextPath}/admin/security?' + params.toString();
+}
+
 function goPage(page) {
     const params = new URLSearchParams(window.location.search);
     params.set('page', page);

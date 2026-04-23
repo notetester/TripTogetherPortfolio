@@ -41,7 +41,53 @@
         <result property="reportCount" column="report_count"/>
         <result property="likedByLoginUser" column="liked_by_login_user"/>
         <result property="nickname"   column="nickname"/>
+        <result property="nicknameColorClass"  column="nickname_color_class"/>
+        <result property="nicknameEffectClass" column="nickname_effect_class"/>
+        <result property="profileBadgeClass"   column="profile_badge_class"/>
+        <result property="profileBadgeLabel"   column="profile_badge_label"/>
+        <result property="bubbleClass"         column="bubble_class"/>
     </resultMap>
+
+    <sql id="ReviewDecorationColumns">
+        ,
+        (SELECT JSON_UNQUOTE(JSON_EXTRACT(psi.item_payload_json, '$.cssClass'))
+         FROM USER_POINT_ITEM_EQUIP equip
+         JOIN POINT_SHOP_ITEM psi ON psi.item_code = equip.item_code
+         WHERE equip.user_idx = sr.user_idx
+           AND (equip.equip_slot = 'NICKNAME_COLOR' OR equip.item_code = 'NICK_GLOW_RAINBOW')
+           AND psi.is_active = 1
+         ORDER BY CASE WHEN equip.item_code = 'NICK_GLOW_RAINBOW' THEN 0 ELSE 1 END
+         LIMIT 1) AS nickname_color_class,
+        (SELECT JSON_UNQUOTE(JSON_EXTRACT(psi.item_payload_json, '$.cssClass'))
+         FROM USER_POINT_ITEM_EQUIP equip
+         JOIN POINT_SHOP_ITEM psi ON psi.item_code = equip.item_code
+         WHERE equip.user_idx = sr.user_idx
+           AND equip.equip_slot = 'NICKNAME_EFFECT'
+           AND equip.item_code != 'NICK_GLOW_RAINBOW'
+           AND psi.is_active = 1
+         LIMIT 1) AS nickname_effect_class,
+        (SELECT JSON_UNQUOTE(JSON_EXTRACT(psi.item_payload_json, '$.cssClass'))
+         FROM USER_POINT_ITEM_EQUIP equip
+         JOIN POINT_SHOP_ITEM psi ON psi.item_code = equip.item_code
+         WHERE equip.user_idx = sr.user_idx
+           AND equip.equip_slot = 'PROFILE_BADGE'
+           AND psi.is_active = 1
+         LIMIT 1) AS profile_badge_class,
+        (SELECT JSON_UNQUOTE(JSON_EXTRACT(psi.item_payload_json, '$.label'))
+         FROM USER_POINT_ITEM_EQUIP equip
+         JOIN POINT_SHOP_ITEM psi ON psi.item_code = equip.item_code
+         WHERE equip.user_idx = sr.user_idx
+           AND equip.equip_slot = 'PROFILE_BADGE'
+           AND psi.is_active = 1
+         LIMIT 1) AS profile_badge_label,
+        (SELECT JSON_UNQUOTE(JSON_EXTRACT(psi.item_payload_json, '$.cssClass'))
+         FROM USER_POINT_ITEM_EQUIP equip
+         JOIN POINT_SHOP_ITEM psi ON psi.item_code = equip.item_code
+         WHERE equip.user_idx = sr.user_idx
+           AND equip.equip_slot = 'BUBBLE_STYLE'
+           AND psi.is_active = 1
+         LIMIT 1) AS bubble_class
+    </sql>
 
     <!-- =============================================
          공통 SELECT 컬럼 Fragment
@@ -452,6 +498,7 @@
                 </otherwise>
             </choose>
             u.nickname
+            <include refid="ReviewDecorationColumns"/>
         FROM   SPOT_REVIEW sr
         JOIN   USERS u ON u.user_idx = sr.user_idx
         WHERE  sr.spot_idx = #{spotIdx}
@@ -480,6 +527,7 @@
             COALESCE(sr.report_count, 0) AS report_count,
             0 AS liked_by_login_user,
             u.nickname
+            <include refid="ReviewDecorationColumns"/>
         FROM   SPOT_REVIEW sr
         JOIN   USERS u ON u.user_idx = sr.user_idx
         WHERE  sr.review_idx = #{reviewIdx}

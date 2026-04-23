@@ -21,6 +21,7 @@ public class UserLoginHistoryVO {
 
     /** 로그인 성공 시 연결 유저 (실패 시 null) */
     private Long userIdx;
+    private String eventType;
 
     /**
      * 인증 방식
@@ -28,6 +29,8 @@ public class UserLoginHistoryVO {
      *  - SOCIAL   : 소셜 OAuth
      */
     private String authType;
+    private String authProvider;
+    private String authFlow;
 
     /**
      * 로그인 경로
@@ -37,6 +40,11 @@ public class UserLoginHistoryVO {
 
     /** 입력값 (user_id / email / provider_user_id) */
     private String loginIdentifier;
+    private String sessionId;
+    private String requestUri;
+    private String logoutCallbackUri;
+    private String requestId;
+    private String flowTraceId;
 
     /** 성공 여부 */
     private boolean success;

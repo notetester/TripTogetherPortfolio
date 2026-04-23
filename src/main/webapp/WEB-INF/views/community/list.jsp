@@ -48,8 +48,12 @@
                     <div class="comm-carousel-vp">
                         <div class="comm-carousel-track" id="todayCarouselTrack">
                             <c:forEach var="post" items="${popularList}">
-                                <div class="comm-today-card" data-id="${post.postId}">
-                                    <div class="comm-today-card-iw">
+                                <c:set var="isBlocked"    value="${post.postStatus eq 'BLOCKED' or post.accountStatus eq 'BLOCKED'}"/>
+                                <c:set var="isReportOrAi" value="${post.reportCount >= 3 or post.aiFlagged}"/>
+                                <c:if test="${(not isBlocked) or isReportOrAi or isAdminMode}">
+                                <c:set var="isBlurred" value="${isReportOrAi and !isAdminMode}"/>
+                                <div class="comm-today-card ${isBlurred ? 'report-blurred-wrap' : ''}" data-id="${post.postId}">
+                                    <div class="comm-today-card-iw ${isBlurred ? 'report-blurred' : ''}">
                                         <c:choose>
                                             <c:when test="${not empty post.thumbUrl}">
                                                 <c:choose>
@@ -96,16 +100,28 @@
                                             </c:choose>
                                         </c:if>
                                     </div>
-                                    <div class="comm-today-card-body">
+                                    <div class="comm-today-card-body ${isBlurred ? 'report-blurred' : ''}">
                                         <div class="comm-today-card-title">${post.title}</div>
                                         <div class="comm-today-card-footer">
-                                            <span class="comm-today-card-author">${post.nickname}</span>
+                                            <span class="comm-today-card-author tt-nickname ${post.nicknameColorClass} ${post.nicknameEffectClass}">${post.nickname}</span>
+                                            <c:if test="${not empty post.profileBadgeLabel}">
+                                                <span class="tt-profile-badge ${post.profileBadgeClass}">${post.profileBadgeLabel}</span>
+                                            </c:if>
                                             <span class="comm-today-card-stats">
                                                 &#10084; ${post.likeCount} &nbsp; &#128172; ${post.commentCount}
                                             </span>
                                         </div>
                                     </div>
+                                    <c:if test="${isBlurred}">
+                                        <div class="report-blurred-overlay">
+                                            <c:choose>
+                                                <c:when test="${post.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                                                <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </c:if>
                                 </div>
+                                </c:if>
                             </c:forEach>
                         </div>
                     </div>
@@ -289,8 +305,9 @@
             </c:when>
             <c:otherwise>
                 <c:forEach var="post" items="${postList}">
-                    <c:if test="${!(post.accountStatus eq 'BLOCKED' or (post.postStatus eq 'BLOCKED' and post.reportCount < 3)) or isAdminMode}">
-                        <div class="post-card-wrap ${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred-wrap' : ''}"
+                    <c:if test="${!(post.accountStatus eq 'BLOCKED' or post.postStatus eq 'BLOCKED') or isAdminMode}">
+                        <c:set var="isBlurred" value="${(post.reportCount >= 3 or post.aiFlagged) and !isAdminMode}"/>
+                        <div class="post-card-wrap ${isBlurred ? 'report-blurred-wrap' : ''}"
                              data-id="${post.postId}">
                             <c:if test="${isAdminMode}">
                                 <input type="checkbox" class="comm-admin-chk" data-id="${post.postId}"
@@ -299,7 +316,7 @@
                                     ✕
                                 </button>
                             </c:if>
-                            <div class="post-card ${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode ? 'report-blurred' : ''}">
+                            <div class="post-card ${isBlurred ? 'report-blurred' : ''}">
                                 <div class="post-card-img-wrap">
                                     <c:choose>
                                         <c:when test="${not empty post.thumbUrl}">
@@ -358,7 +375,10 @@
                                                 <c:otherwise>ME</c:otherwise>
                                             </c:choose>
                                         </div>
-                                        <span class="post-author-name">${post.nickname}</span>
+                                        <span class="post-author-name tt-nickname ${post.nicknameColorClass} ${post.nicknameEffectClass}">${post.nickname}</span>
+                                        <c:if test="${not empty post.profileBadgeLabel}">
+                                            <span class="tt-profile-badge ${post.profileBadgeClass}">${post.profileBadgeLabel}</span>
+                                        </c:if>
                                         <span class="post-date">
               <fmt:formatDate value="${post.createdAt}" pattern="yyyy-MM-dd"/>
             </span>
@@ -372,13 +392,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <c:if test="${post.reportCount >= 3 and post.postStatus eq 'BLOCKED' and !isAdminMode}">
-                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)"><spring:message code="community.blocked.report"/>
+                            <c:if test="${isBlurred}">
+                                <div class="report-blurred-overlay" onclick="removeReportBlur(this)">
+                                    <c:choose>
+                                        <c:when test="${post.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
+                                        <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                    </c:choose>
                                 </div>
                             </c:if>
                             <c:if test="${isAdminMode}">
                                 <c:choose>
-                                    <c:when test="${post.postStatus eq 'BLOCKED' and post.reportCount >= 3}">
+                                    <c:when test="${post.aiFlagged}">
+                                        <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                    </c:when>
+                                    <c:when test="${post.postStatus eq 'ACTIVE' and post.reportCount >= 3}">
                                         <span class="blocked-badge"><spring:message code="community.badge.report"/></span>
                                     </c:when>
                                     <c:when test="${post.postStatus eq 'BLOCKED'}">
@@ -388,6 +415,12 @@
                                         <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
                                     </c:when>
                                 </c:choose>
+                                <c:if test="${post.aiFlagged or post.reportCount >= 3}">
+                                    <button class="post-admin-clear-blur-btn" data-id="${post.postId}"
+                                            onclick="adminClearPostBlur(event, ${post.postId})">
+                                        <spring:message code="community.admin.clearBlur"/>
+                                    </button>
+                                </c:if>
                             </c:if>
                         </div>
                     </c:if>
@@ -537,6 +570,13 @@
 
         track.querySelectorAll('.comm-today-card').forEach(function (card) {
             card.addEventListener('click', function () {
+                if (this.classList.contains('report-blurred-wrap')) {
+                    this.classList.remove('report-blurred-wrap');
+                    this.querySelectorAll('.report-blurred').forEach(function (el) { el.classList.remove('report-blurred'); });
+                    var ov = this.querySelector('.report-blurred-overlay');
+                    if (ov) ov.remove();
+                    return;
+                }
                 location.href = '${pageContext.request.contextPath}/community/' + this.getAttribute('data-id');
             });
         });
@@ -574,6 +614,19 @@
         wrap.classList.remove('report-blurred-wrap');
         overlay.closest('.post-card').classList.remove('report-blurred');
         overlay.remove();
+    }
+
+    function adminClearPostBlur(event, postId) {
+        event.stopPropagation();
+        if (!confirm('<spring:message code="community.admin.clearBlur.confirm" javaScriptEscape="true"/>')) return;
+        fetch('${pageContext.request.contextPath}/community/' + postId + '/clear-blur', {
+            method: 'POST',
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+            .then(function (res) {
+                if (res.ok) location.reload();
+                else alert('<spring:message code="community.admin.clearBlur.fail" javaScriptEscape="true"/>');
+            });
     }
 
     /* ===== 어드민 일괄 처리 ===== */

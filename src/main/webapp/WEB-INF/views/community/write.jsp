@@ -1,15 +1,35 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%--
   커뮤니티 글쓰기/수정 페이지
   글쓰기: GET /community/write      → model에 post 없음
   수정:   GET /community/edit/{id}  → model에 post, imageList, tagList, tipCategory 있음
 --%>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="community/community_write.css"/>
 <%@ include file="../common/header.jsp" %>
+
+<spring:message code="community.region.africa" var="communityRegionAfricaLabel"/>
+<spring:message code="community.region.asia" var="communityRegionAsiaLabel"/>
+<spring:message code="community.region.etc" var="communityRegionEtcLabel"/>
+<spring:message code="community.region.europe" var="communityRegionEuropeLabel"/>
+<spring:message code="community.region.northAmerica" var="communityRegionNorthAmericaLabel"/>
+<spring:message code="community.region.oceania" var="communityRegionOceaniaLabel"/>
+<spring:message code="community.region.southAmerica" var="communityRegionSouthAmericaLabel"/>
+<spring:message code="community.type.photo" var="communityTypePhotoLabel"/>
+<spring:message code="community.type.question" var="communityTypeQuestionLabel"/>
+<spring:message code="community.type.review" var="communityTypeReviewLabel"/>
+<spring:message code="community.type.tip" var="communityTypeTipLabel"/>
+<spring:message code="community.write.content.placeholder" var="communityWriteContentPlaceholder"/>
+<spring:message code="community.write.image.add" var="communityWriteImageAddLabel"/>
+<spring:message code="community.write.image.hint" var="communityWriteImageHintLabel"/>
+<spring:message code="community.write.image.max" arguments="5" var="communityWriteImageMaxInitialLabel"/>
+<spring:message code="community.write.tag.hint" var="communityWriteTagHintLabel"/>
+<spring:message code="community.write.tag.placeholder" var="communityWriteTagPlaceholder"/>
+<spring:message code="community.write.title.placeholder" var="communityWriteTitlePlaceholder"/>
 
 <%-- 비로그인 체크 --%>
 <c:if test="${empty sessionScope.loginUser}">
@@ -31,11 +51,11 @@
 <div class="write-wrap">
 
   <div class="write-top-bar">
-    <button class="back-btn" onclick="cancelWrite()">&#8592; 목록으로</button>
+    <button class="back-btn" onclick="cancelWrite()">&#8592; <spring:message code="community.write.back"/></button>
     <h2 class="write-page-title" id="writePageTitle">
       <c:choose>
-        <c:when test="${isEdit}">게시글 수정</c:when>
-        <c:otherwise><span class="write-title-reset" onclick="resetWrite()">여행 이야기 쓰기</span></c:otherwise>
+        <c:when test="${isEdit}"><spring:message code="community.write.title.edit"/></c:when>
+        <c:otherwise><span class="write-title-reset" onclick="resetWrite()"><spring:message code="community.write.title.reset"/></span></c:otherwise>
       </c:choose>
     </h2>
   </div>
@@ -54,10 +74,10 @@
         <%-- 제목 --%>
         <div class="write-section">
           <label class="section-label" for="writeTitle">
-            제목 <span class="required">*</span>
+            <spring:message code="community.write.title.label"/> <span class="required">*</span>
           </label>
           <input type="text" id="writeTitle" name="title" class="write-input"
-                 placeholder="오른쪽 '게시글유형'과 '지역선택'도 하실 수 있어요" maxlength="100"
+                 placeholder="${communityWriteTitlePlaceholder}" maxlength="100"
                  value="${isEdit ? post.title : ''}"
                  oninput="document.getElementById('titleCount').textContent=this.value.length">
           <div class="input-counter">
@@ -68,30 +88,30 @@
         <%-- 해시태그 --%>
         <div class="write-section">
           <label class="section-label">
-            해시태그
-            <span class="section-label-sub">(지역 태그는 자동 추가됩니다)</span>
+            <spring:message code="community.write.tag.label"/>
+            <span class="section-label-sub">(<spring:message code="community.write.tag.autoRegion"/>)</span>
           </label>
           <div class="tag-input-wrap" id="tagInputWrap">
             <div class="tag-list" id="tagList"></div>
             <input type="text" id="tagInput" class="tag-input"
-                   placeholder="국가명, 도시명, 여행 키워드 입력 후 Enter (최대 10개)" maxlength="20"
+                   placeholder="${communityWriteTagPlaceholder}" maxlength="20"
                    onkeydown="addTag(event)">
           </div>
           <input type="hidden" id="tagsHidden" name="tags">
-          <p class="input-hint">예: 도쿄, 일본여행, 맛집 (지역 태그는 자동으로 추가돼요) (지역선택 헷갈리면 오른쪽 아래 챗봇이 잘 알려줘요)</p>
+          <p class="input-hint">${communityWriteTagHintLabel}</p>
         </div>
 
   <%-- 이미지 업로드 --%>
         <div class="write-section">
           <label class="section-label">
-            사진 첨부
-            <span class="section-label-sub" id="imgLimitLabel">(최대 5장)</span>
+            <spring:message code="community.write.image.label"/>
+            <span class="section-label-sub" id="imgLimitLabel">${communityWriteImageMaxInitialLabel}</span>
           </label>
           <div class="img-upload-grid" id="imgUploadGrid">
             <div class="img-add-btn"
                  onclick="document.getElementById('imgInput').click()">
               <div class="img-add-icon">&#128247;</div>
-              <span class="img-add-text">사진 추가</span>
+              <span class="img-add-text">${communityWriteImageAddLabel}</span>
               <span class="img-add-count">
                 <span id="imgCount">0</span>/<span id="imgMax">5</span>
               </span>
@@ -99,7 +119,7 @@
           </div>
           <input type="file" id="imgInput" accept="image/*" multiple
                  style="display:none;" onchange="addImages(event)">
-          <p class="input-hint">JPG, JPEG, GIF, PNG, WEBP · 파일당 최대 10MB · 첫 번째 사진이 대표 이미지</p>
+          <p class="input-hint">${communityWriteImageHintLabel}</p>
         </div>
 
           <%-- 유형별 추가 입력 (JS로 동적 렌더링) --%>
@@ -108,21 +128,21 @@
         <%-- 본문 --%>
         <div class="write-section">
           <label class="section-label" for="writeContent">
-            내용 <span class="required">*</span>
+            <spring:message code="community.write.content.label"/> <span class="required">*</span>
           </label>
           <textarea id="writeContent" name="content" class="write-textarea"
-                    placeholder="우리는 목적지에 닿아야 행복해지는 것이 아니라 여행하는 과정에서 행복을 느낀다."
+                    placeholder="${communityWriteContentPlaceholder}"
                     rows="12" maxlength="3000"
                     oninput="document.getElementById('contentCount').textContent=this.value.length"><c:if test="${isEdit}">${post.content}</c:if></textarea>
           <div class="input-counter">
             <span id="contentCount">${isEdit ? fn:length(post.content) : 0}</span>/3000
           </div>
           <div class="write-bottom-actions">
-            <button type="button" class="btn-cancel" onclick="cancelWrite()">취소</button>
+            <button type="button" class="btn-cancel" onclick="cancelWrite()"><spring:message code="community.write.cancel"/></button>
             <button type="button" class="btn-submit" onclick="submitWrite()">
               <c:choose>
-                <c:when test="${isEdit}">수정하기</c:when>
-                <c:otherwise>등록하기</c:otherwise>
+                <c:when test="${isEdit}"><spring:message code="community.write.submit.edit"/></c:when>
+                <c:otherwise><spring:message code="community.write.submit.create"/></c:otherwise>
               </c:choose>
             </button>
           </div>
@@ -135,64 +155,64 @@
 
         <%-- 게시글 유형 --%>
         <div class="aside-card">
-          <div class="aside-card-title">게시글 유형 <span class="required">*</span></div>
+          <div class="aside-card-title"><spring:message code="community.write.type.label"/> <span class="required">*</span></div>
           <input type="hidden" id="postType" name="postType"
                  value="${isEdit ? post.postType : 'review'}">
           <div class="type-select-grid">
             <button type="button" class="type-select-btn ${(!isEdit || post.postType eq 'review') ? 'active' : ''}"
                     data-type="review" onclick="selectType('review', this)">
               <span class="type-btn-icon">&#128172;</span>
-              <span class="type-btn-label">여행 후기</span>
+              <span class="type-btn-label">${communityTypeReviewLabel}</span>
             </button>
             <button type="button" class="type-select-btn ${(isEdit && post.postType eq 'photo') ? 'active' : ''}"
                     data-type="photo" onclick="selectType('photo', this)">
               <span class="type-btn-icon">&#128247;</span>
-              <span class="type-btn-label">사진</span>
+              <span class="type-btn-label">${communityTypePhotoLabel}</span>
             </button>
             <button type="button" class="type-select-btn ${(isEdit && post.postType eq 'tip') ? 'active' : ''}"
                     data-type="tip" onclick="selectType('tip', this)">
               <span class="type-btn-icon">&#128161;</span>
-              <span class="type-btn-label">여행 팁</span>
+              <span class="type-btn-label">${communityTypeTipLabel}</span>
             </button>
             <button type="button" class="type-select-btn ${(isEdit && post.postType eq 'question') ? 'active' : ''}"
                     data-type="question" onclick="selectType('question', this)">
               <span class="type-btn-icon">&#10067;</span>
-              <span class="type-btn-label">질문</span>
+              <span class="type-btn-label">${communityTypeQuestionLabel}</span>
             </button>
           </div>
         </div>
 
         <%-- 지역 선택 --%>
         <div class="aside-card">
-          <div class="aside-card-title">지역 선택 <span class="required">*</span></div>
+          <div class="aside-card-title"><spring:message code="community.write.region.label"/> <span class="required">*</span></div>
           <input type="hidden" id="regionInput" name="region"
                  value="${isEdit ? post.region : 'asia'}">
           <div class="region-select-list">
             <button type="button" class="region-select-btn ${(!isEdit || post.region eq 'asia') ? 'active' : ''}"
-                    data-region="asia" onclick="selectRegion('asia', this)">&#127759; 아시아</button>
+                    data-region="asia" onclick="selectRegion('asia', this)">&#127759; ${communityRegionAsiaLabel}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'europe') ? 'active' : ''}"
-                    data-region="europe" onclick="selectRegion('europe', this)">&#127957; 유럽</button>
+                    data-region="europe" onclick="selectRegion('europe', this)">&#127957; ${communityRegionEuropeLabel}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'africa') ? 'active' : ''}"
-                    data-region="africa" onclick="selectRegion('africa', this)">&#127758; 아프리카</button>
+                    data-region="africa" onclick="selectRegion('africa', this)">&#127758; ${communityRegionAfricaLabel}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'north_america') ? 'active' : ''}"
-                    data-region="north_america" onclick="selectRegion('north_america', this)">&#127482;&#127480; 북아메리카</button>
+                    data-region="north_america" onclick="selectRegion('north_america', this)">&#127482;&#127480; ${communityRegionNorthAmericaLabel}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'south_america') ? 'active' : ''}"
-                    data-region="south_america" onclick="selectRegion('south_america', this)">&#127475;&#127480; 남아메리카</button>
+                    data-region="south_america" onclick="selectRegion('south_america', this)">&#127475;&#127480; ${communityRegionSouthAmericaLabel}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'oceania') ? 'active' : ''}"
-                    data-region="oceania" onclick="selectRegion('oceania', this)">&#127944; 오세아니아</button>
+                    data-region="oceania" onclick="selectRegion('oceania', this)">&#127944; ${communityRegionOceaniaLabel}</button>
             <button type="button" class="region-select-btn ${(isEdit && post.region eq 'etc') ? 'active' : ''}"
-                    data-region="etc" onclick="selectRegion('etc', this)">&#127760; 기타</button>
+                    data-region="etc" onclick="selectRegion('etc', this)">&#127760; ${communityRegionEtcLabel}</button>
           </div>
         </div>
 
         <%-- 작성 가이드 --%>
         <div class="aside-card guide-card">
-          <div class="aside-card-title">&#128221; 작성 가이드</div>
+          <div class="aside-card-title">&#128221; <spring:message code="community.write.guide.label"/></div>
           <ul class="guide-list" id="guideList">
-            <li>실제 여행 경험을 솔직하게 공유해주세요</li>
-            <li>다른 여행자에게 도움이 될 정보를 담아주세요</li>
-            <li>타인을 비방하거나 광고성 내용은 삭제될 수 있어요</li>
-            <li>저작권이 있는 이미지 사용은 삼가주세요</li>
+            <li><spring:message code="community.write.guide.default.1"/></li>
+            <li><spring:message code="community.write.guide.default.2"/></li>
+            <li><spring:message code="community.write.guide.default.3"/></li>
+            <li><spring:message code="community.write.guide.default.4"/></li>
           </ul>
         </div>
 
@@ -209,33 +229,157 @@ var tags     = [];
 var uploadedFiles = [];
 var MAX_IMAGES = 5;
 
-var TYPE_CONFIG = {
-  review: {
-    title: IS_EDIT ? '여행 후기 수정' : '여행 후기 쓰기', imgMax: 5,
-    guide: ['실제 여행 경험을 솔직하게 공유해주세요',
-            '사진과 함께 올리면 더욱 생동감 있어요',
-            '여행 일정, 경비, 팁을 함께 적어주세요']
+<spring:message code="community.region.africa" javaScriptEscape="true" var="communityRegionAfricaJs"/>
+<spring:message code="community.region.asia" javaScriptEscape="true" var="communityRegionAsiaJs"/>
+<spring:message code="community.region.etc" javaScriptEscape="true" var="communityRegionEtcJs"/>
+<spring:message code="community.region.europe" javaScriptEscape="true" var="communityRegionEuropeJs"/>
+<spring:message code="community.region.northAmerica" javaScriptEscape="true" var="communityRegionNorthAmericaJs"/>
+<spring:message code="community.region.oceania" javaScriptEscape="true" var="communityRegionOceaniaJs"/>
+<spring:message code="community.region.southAmerica" javaScriptEscape="true" var="communityRegionSouthAmericaJs"/>
+<spring:message code="community.write.content.photoOnly" javaScriptEscape="true" var="communityWriteContentPhotoOnlyJs"/>
+<spring:message code="community.write.content.placeholder" javaScriptEscape="true" var="communityWriteContentPlaceholderJs"/>
+<spring:message code="community.write.error.contentRequired" javaScriptEscape="true" var="communityWriteErrorContentRequiredJs"/>
+<spring:message code="community.write.error.generic" javaScriptEscape="true" var="communityWriteErrorGenericJs"/>
+<spring:message code="community.write.error.maxImages" javaScriptEscape="true" var="communityWriteErrorMaxImagesJs"/>
+<spring:message code="community.write.error.photoRequired" javaScriptEscape="true" var="communityWriteErrorPhotoRequiredJs"/>
+<spring:message code="community.write.error.regionTagLocked" javaScriptEscape="true" var="communityWriteErrorRegionTagLockedJs"/>
+<spring:message code="community.write.error.titleRequired" javaScriptEscape="true" var="communityWriteErrorTitleRequiredJs"/>
+<spring:message code="community.write.error.unsupportedType" javaScriptEscape="true" var="communityWriteErrorUnsupportedTypeJs"/>
+<spring:message code="community.write.guide.photo.1" javaScriptEscape="true" var="communityWriteGuidePhoto1Js"/>
+<spring:message code="community.write.guide.photo.2" javaScriptEscape="true" var="communityWriteGuidePhoto2Js"/>
+<spring:message code="community.write.guide.photo.3" javaScriptEscape="true" var="communityWriteGuidePhoto3Js"/>
+<spring:message code="community.write.guide.question.1" javaScriptEscape="true" var="communityWriteGuideQuestion1Js"/>
+<spring:message code="community.write.guide.question.2" javaScriptEscape="true" var="communityWriteGuideQuestion2Js"/>
+<spring:message code="community.write.guide.review.1" javaScriptEscape="true" var="communityWriteGuideReview1Js"/>
+<spring:message code="community.write.guide.review.2" javaScriptEscape="true" var="communityWriteGuideReview2Js"/>
+<spring:message code="community.write.guide.review.3" javaScriptEscape="true" var="communityWriteGuideReview3Js"/>
+<spring:message code="community.write.guide.tip.1" javaScriptEscape="true" var="communityWriteGuideTip1Js"/>
+<spring:message code="community.write.guide.tip.2" javaScriptEscape="true" var="communityWriteGuideTip2Js"/>
+<spring:message code="community.write.guide.tip.3" javaScriptEscape="true" var="communityWriteGuideTip3Js"/>
+<spring:message code="community.write.image.add" javaScriptEscape="true" var="communityWriteImageAddJs"/>
+<spring:message code="community.write.image.existing" javaScriptEscape="true" var="communityWriteImageExistingJs"/>
+<spring:message code="community.write.image.max" javaScriptEscape="true" var="communityWriteImageMaxJs"/>
+<spring:message code="community.write.image.previewAlt" javaScriptEscape="true" var="communityWriteImagePreviewAltJs"/>
+<spring:message code="community.write.image.primary" javaScriptEscape="true" var="communityWriteImagePrimaryJs"/>
+<spring:message code="community.write.resetConfirm" javaScriptEscape="true" var="communityWriteResetConfirmJs"/>
+<spring:message code="community.write.tipCategory.food" javaScriptEscape="true" var="communityWriteTipCategoryFoodJs"/>
+<spring:message code="community.write.tipCategory.label" javaScriptEscape="true" var="communityWriteTipCategoryLabelJs"/>
+<spring:message code="community.write.tipCategory.money" javaScriptEscape="true" var="communityWriteTipCategoryMoneyJs"/>
+<spring:message code="community.write.tipCategory.other" javaScriptEscape="true" var="communityWriteTipCategoryOtherJs"/>
+<spring:message code="community.write.tipCategory.safety" javaScriptEscape="true" var="communityWriteTipCategorySafetyJs"/>
+<spring:message code="community.write.tipCategory.stay" javaScriptEscape="true" var="communityWriteTipCategoryStayJs"/>
+<spring:message code="community.write.tipCategory.transport" javaScriptEscape="true" var="communityWriteTipCategoryTransportJs"/>
+<spring:message code="community.write.title.photo.create" javaScriptEscape="true" var="communityWriteTitlePhotoCreateJs"/>
+<spring:message code="community.write.title.photo.edit" javaScriptEscape="true" var="communityWriteTitlePhotoEditJs"/>
+<spring:message code="community.write.title.question.create" javaScriptEscape="true" var="communityWriteTitleQuestionCreateJs"/>
+<spring:message code="community.write.title.question.edit" javaScriptEscape="true" var="communityWriteTitleQuestionEditJs"/>
+<spring:message code="community.write.title.review.create" javaScriptEscape="true" var="communityWriteTitleReviewCreateJs"/>
+<spring:message code="community.write.title.review.edit" javaScriptEscape="true" var="communityWriteTitleReviewEditJs"/>
+<spring:message code="community.write.title.tip.create" javaScriptEscape="true" var="communityWriteTitleTipCreateJs"/>
+<spring:message code="community.write.title.tip.edit" javaScriptEscape="true" var="communityWriteTitleTipEditJs"/>
+<spring:message code="community.write.cancelConfirm" javaScriptEscape="true" var="communityWriteCancelConfirmJs"/>
+
+function formatMessage(template, value) {
+  return template.replace('{0}', value);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+var writeMessages = {
+  cancelConfirm: '${communityWriteCancelConfirmJs}',
+  contentPhotoOnly: '${communityWriteContentPhotoOnlyJs}',
+  contentPlaceholder: '${communityWriteContentPlaceholderJs}',
+  errors: {
+    contentRequired: '${communityWriteErrorContentRequiredJs}',
+    generic: '${communityWriteErrorGenericJs}',
+    maxImages: '${communityWriteErrorMaxImagesJs}',
+    photoRequired: '${communityWriteErrorPhotoRequiredJs}',
+    regionTagLocked: '${communityWriteErrorRegionTagLockedJs}',
+    titleRequired: '${communityWriteErrorTitleRequiredJs}',
+    unsupportedType: '${communityWriteErrorUnsupportedTypeJs}'
   },
-  photo: {
-    title: IS_EDIT ? '사진 수정' : '사진 올리기', imgMax: 10,
-    guide: ['사진이 주인공이에요! 멋진 사진을 올려주세요',
-            '해시태그를 사용하면 더 좋아요',
-            '여러 장의 사진으로 여행을 기록해보세요']
+  guides: {
+    photo: [
+      '${communityWriteGuidePhoto1Js}',
+      '${communityWriteGuidePhoto2Js}',
+      '${communityWriteGuidePhoto3Js}'
+    ],
+    question: [
+      '${communityWriteGuideQuestion1Js}',
+      '${communityWriteGuideQuestion2Js}'
+    ],
+    review: [
+      '${communityWriteGuideReview1Js}',
+      '${communityWriteGuideReview2Js}',
+      '${communityWriteGuideReview3Js}'
+    ],
+    tip: [
+      '${communityWriteGuideTip1Js}',
+      '${communityWriteGuideTip2Js}',
+      '${communityWriteGuideTip3Js}'
+    ]
   },
-  tip: {
-    title: IS_EDIT ? '여행 팁 수정' : '여행 팁 공유하기', imgMax: 3,
-    guide: ['구체적이고 실용적인 정보를 써주세요',
-            '최신 정보인지 확인 후 작성해주세요',
-            '출처가 있다면 함께 적어주세요']
+  image: {
+    add: '${communityWriteImageAddJs}',
+    existing: '${communityWriteImageExistingJs}',
+    maxTemplate: '${communityWriteImageMaxJs}',
+    previewAlt: '${communityWriteImagePreviewAltJs}',
+    primary: '${communityWriteImagePrimaryJs}'
   },
-  question: {
-    title: IS_EDIT ? '질문 수정' : '질문하기', imgMax: 2,
-    guide: ['질문을 구체적으로 작성해주세요',
-            '여행 일정과 예산을 함께 알려주세요']
+  regionLabels: {
+    africa: '${communityRegionAfricaJs}',
+    asia: '${communityRegionAsiaJs}',
+    etc: '${communityRegionEtcJs}',
+    europe: '${communityRegionEuropeJs}',
+    north_america: '${communityRegionNorthAmericaJs}',
+    oceania: '${communityRegionOceaniaJs}',
+    south_america: '${communityRegionSouthAmericaJs}'
+  },
+  resetConfirm: '${communityWriteResetConfirmJs}',
+  tipCategories: {
+    food: '${communityWriteTipCategoryFoodJs}',
+    label: '${communityWriteTipCategoryLabelJs}',
+    money: '${communityWriteTipCategoryMoneyJs}',
+    other: '${communityWriteTipCategoryOtherJs}',
+    safety: '${communityWriteTipCategorySafetyJs}',
+    stay: '${communityWriteTipCategoryStayJs}',
+    transport: '${communityWriteTipCategoryTransportJs}'
+  },
+  titles: {
+    photo: { create: '${communityWriteTitlePhotoCreateJs}', edit: '${communityWriteTitlePhotoEditJs}' },
+    question: { create: '${communityWriteTitleQuestionCreateJs}', edit: '${communityWriteTitleQuestionEditJs}' },
+    review: { create: '${communityWriteTitleReviewCreateJs}', edit: '${communityWriteTitleReviewEditJs}' },
+    tip: { create: '${communityWriteTitleTipCreateJs}', edit: '${communityWriteTitleTipEditJs}' }
   }
 };
 
-var REGION_TAG = {
+var TYPE_CONFIG = {
+  review: {
+    title: IS_EDIT ? writeMessages.titles.review.edit : writeMessages.titles.review.create, imgMax: 5,
+    guide: writeMessages.guides.review
+  },
+  photo: {
+    title: IS_EDIT ? writeMessages.titles.photo.edit : writeMessages.titles.photo.create, imgMax: 10,
+    guide: writeMessages.guides.photo
+  },
+  tip: {
+    title: IS_EDIT ? writeMessages.titles.tip.edit : writeMessages.titles.tip.create, imgMax: 3,
+    guide: writeMessages.guides.tip
+  },
+  question: {
+    title: IS_EDIT ? writeMessages.titles.question.edit : writeMessages.titles.question.create, imgMax: 2,
+    guide: writeMessages.guides.question
+  }
+};
+
+var REGION_TAG_VALUE = {
   asia:          '아시아',
   europe:        '유럽',
   africa:        '아프리카',
@@ -285,7 +429,7 @@ window.onload = function() {
 
   } else {
     /* 글쓰기 모드: 기본 지역 태그(아시아) 자동 추가 */
-    var defaultTag = REGION_TAG['asia'];
+    var defaultTag = REGION_TAG_VALUE['asia'];
     if (defaultTag && tags.indexOf(defaultTag) === -1) {
       tags.unshift(defaultTag);
       renderTags();
@@ -309,35 +453,36 @@ function selectType(type, btn) {
   if (type === 'photo') {
     contentArea.readOnly = true;
     contentArea.value       = '';
-    contentArea.placeholder = '사진 유형은 해시태그만 가능해요';
+    contentArea.placeholder = writeMessages.contentPhotoOnly;
     contentArea.style.background = '#f3f4f6';
     contentArea.style.color      = '#9ca3af';
     contentSection.style.opacity = '0.5';
   } else {
+    contentArea.readOnly    = false;
     contentArea.disabled    = false;
-    contentArea.placeholder = '우리는 목적지에 닿아야 행복해지는 것이 아니라 여행하는 과정에서 행복을 느낀다.';
+    contentArea.placeholder = writeMessages.contentPlaceholder;
     contentArea.style.background = '';
     contentArea.style.color      = '';
     contentSection.style.opacity = '';
   }
   MAX_IMAGES = cfg.imgMax;
-  document.getElementById('imgLimitLabel').textContent = '(최대 ' + cfg.imgMax + '장)';
+  document.getElementById('imgLimitLabel').textContent = formatMessage(writeMessages.image.maxTemplate, cfg.imgMax);
   document.getElementById('imgMax').textContent = cfg.imgMax;
   document.getElementById('guideList').innerHTML =
-      cfg.guide.map(function(g) { return '<li>' + g + '</li>'; }).join('');
+      cfg.guide.map(function(g) { return '<li>' + escapeHtml(g) + '</li>'; }).join('');
 
   var sec = document.getElementById('typeExtraSection');
   if (type === 'tip') {
     sec.innerHTML = '<div class="write-section">'
-      + '<label class="section-label">팁 카테고리 <span class="required">*</span></label>'
+      + '<label class="section-label">' + escapeHtml(writeMessages.tipCategories.label) + ' <span class="required">*</span></label>'
       + '<input type="hidden" id="tipCategoryInput" name="tipCategory" value="transport">'
       + '<div class="tip-cat-grid">'
-      + '<button type="button" class="tip-cat-btn active" onclick="selTipCat(\'transport\',this)">&#9992; 교통</button>'
-      + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'accom\',this)">&#127968; 숙소</button>'
-      + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'food\',this)">&#127869; 맛집</button>'
-      + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'money\',this)">&#128176; 환전·예산</button>'
-      + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'safety\',this)">&#128737; 안전</button>'
-      + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'other\',this)">&#128161; 기타</button>'
+      + '<button type="button" class="tip-cat-btn active" onclick="selTipCat(\'transport\',this)">&#9992; ' + escapeHtml(writeMessages.tipCategories.transport) + '</button>'
+      + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'accom\',this)">&#127968; ' + escapeHtml(writeMessages.tipCategories.stay) + '</button>'
+      + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'food\',this)">&#127869; ' + escapeHtml(writeMessages.tipCategories.food) + '</button>'
+      + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'money\',this)">&#128176; ' + escapeHtml(writeMessages.tipCategories.money) + '</button>'
+      + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'safety\',this)">&#128737; ' + escapeHtml(writeMessages.tipCategories.safety) + '</button>'
+      + '<button type="button" class="tip-cat-btn" onclick="selTipCat(\'other\',this)">&#128161; ' + escapeHtml(writeMessages.tipCategories.other) + '</button>'
       + '</div></div>';
   } else if (type === 'question') {
     sec.innerHTML = '';
@@ -367,12 +512,12 @@ function selectRegion(region, btn) {
   });
   btn.classList.add('active');
 
-  var prevTag = REGION_TAG[prev];
+  var prevTag = REGION_TAG_VALUE[prev];
   if (prevTag) {
     var idx = tags.indexOf(prevTag);
     if (idx !== -1) tags.splice(idx, 1);
   }
-  var newTag = REGION_TAG[region];
+  var newTag = REGION_TAG_VALUE[region];
   if (newTag && tags.indexOf(newTag) === -1) {
     tags.unshift(newTag);
   }
@@ -387,7 +532,7 @@ function addImages(event) {
   for (var i = 0; i < files.length; i++) {
     var ext = files[i].name.substring(files[i].name.lastIndexOf('.')).toLowerCase();
     if (allowed.indexOf(ext) === -1) {
-      alert(files[i].name + ' 은 지원하지 않는 파일 형식이에요.\nJPG, JPEG, PNG, GIF, WEBP만 가능해요.');
+      alert(formatMessage(writeMessages.errors.unsupportedType, files[i].name));
       event.target.value = '';
       return;
     }
@@ -395,7 +540,7 @@ function addImages(event) {
 
   var remain = MAX_IMAGES - uploadedFiles.length;
   if (remain <= 0) {
-    alert('사진은 최대 ' + MAX_IMAGES + '장까지 첨부할 수 있어요.');
+    alert(formatMessage(writeMessages.errors.maxImages, MAX_IMAGES));
     return;
   }
   files.slice(0, remain).forEach(function(file) {
@@ -419,16 +564,16 @@ function renderImageGrid() {
   var html = '';
   uploadedFiles.forEach(function(img, i) {
     html += '<div class="img-preview-item">'
-      + '<img src="' + img.url + '" alt="미리보기">'
+      + '<img src="' + img.url + '" alt="' + escapeHtml(writeMessages.image.previewAlt) + '">'
       + '<button type="button" class="img-remove-btn" onclick="removeImage(' + i + ')">&#10005;</button>'
-      + (i === 0 ? '<span class="img-rep-badge">대표</span>' : '')
-      + (img.existing ? '<span class="img-rep-badge" style="background:#16a34a;bottom:20px;">기존</span>' : '')
+      + (i === 0 ? '<span class="img-rep-badge">' + escapeHtml(writeMessages.image.primary) + '</span>' : '')
+      + (img.existing ? '<span class="img-rep-badge" style="background:#16a34a;bottom:20px;">' + escapeHtml(writeMessages.image.existing) + '</span>' : '')
       + '</div>';
   });
   if (uploadedFiles.length < MAX_IMAGES) {
     html += '<div class="img-add-btn" onclick="document.getElementById(\'imgInput\').click()">'
       + '<div class="img-add-icon">&#128247;</div>'
-      + '<span class="img-add-text">사진 추가</span>'
+      + '<span class="img-add-text">' + escapeHtml(writeMessages.image.add) + '</span>'
       + '<span class="img-add-count"><span id="imgCount">'
       + uploadedFiles.length + '</span>/<span id="imgMax">' + MAX_IMAGES + '</span></span>'
       + '</div>';
@@ -451,9 +596,9 @@ function addTag(event) {
 
 function removeTag(idx) {
   var region = document.getElementById('regionInput').value;
-  var regionTag = REGION_TAG[region];
+  var regionTag = REGION_TAG_VALUE[region];
   if (tags[idx] === regionTag) {
-    alert('지역 태그는 삭제할 수 없어요. 지역을 변경하면 자동으로 바뀌어요!');
+    alert(writeMessages.errors.regionTagLocked);
     return;
   }
   tags.splice(idx, 1);
@@ -462,11 +607,13 @@ function removeTag(idx) {
 
 function renderTags() {
   var region = document.getElementById('regionInput').value;
-  var regionTag = REGION_TAG[region];
+  var regionTag = REGION_TAG_VALUE[region];
+  var regionLabel = writeMessages.regionLabels[region] || regionTag;
   document.getElementById('tagList').innerHTML = tags.map(function(t, i) {
     var isRegionTag = (t === regionTag);
+    var tagLabel = isRegionTag ? regionLabel : t;
     return '<span class="tag-chip' + (isRegionTag ? ' tag-chip-region' : '') + '">'
-      + '#' + t
+      + '#' + escapeHtml(tagLabel)
       + '<button type="button" class="tag-chip-remove" onclick="removeTag(' + i + ')">'
       + (isRegionTag ? '&#128205;' : '&#10005;')
       + '</button></span>';
@@ -474,34 +621,32 @@ function renderTags() {
   document.getElementById('tagsHidden').value = tags.join(',');
 }
 
-function submitWrite(forceSubmit) {
+function submitWrite() {
   var title   = document.getElementById('writeTitle').value.trim();
   var content = document.getElementById('writeContent').value.trim();
   var type    = document.getElementById('postType').value;
   var region  = document.getElementById('regionInput').value;
 
   /* 지역 태그 강제 포함 */
-  var regionTag = REGION_TAG[region];
+  var regionTag = REGION_TAG_VALUE[region];
   if (regionTag && tags.indexOf(regionTag) === -1) {
     tags.unshift(regionTag);
     renderTags();
   }
 
-  if (!forceSubmit) {
-    if (!title) {
-      alert('제목을 입력해주세요.');
-      document.getElementById('writeTitle').focus();
-      return;
-    }
-    if (!content && type !== 'photo') {
-      alert('내용을 입력해주세요.');
-      document.getElementById('writeContent').focus();
-      return;
-    }
-    if (type === 'photo' && uploadedFiles.length === 0) {
-      alert('사진 유형은 최소 1장의 사진이 필요해요.');
-      return;
-    }
+  if (!title) {
+    alert(writeMessages.errors.titleRequired);
+    document.getElementById('writeTitle').focus();
+    return;
+  }
+  if (!content && type !== 'photo') {
+    alert(writeMessages.errors.contentRequired);
+    document.getElementById('writeContent').focus();
+    return;
+  }
+  if (type === 'photo' && uploadedFiles.length === 0) {
+    alert(writeMessages.errors.photoRequired);
+    return;
   }
 
   /* 사진 유형이면 content를 빈 문자열로 강제 설정 */
@@ -511,7 +656,6 @@ function submitWrite(forceSubmit) {
   }
 
   var formData = new FormData(document.getElementById('writeForm'));
-  if (forceSubmit) formData.append('forceSubmit', 'true');
 
   /* 새로 추가된 이미지만 전송 */
   uploadedFiles.forEach(function(img) {
@@ -540,22 +684,16 @@ function submitWrite(forceSubmit) {
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
-    if (data.toxicityDetected) {
-      if (confirm(data.message || '부적절한 표현이 감지되었습니다. 그래도 등록하시겠습니까?')) {
-        submitWrite(true);
-      }
-      return;
-    }
     if (data.success) {
       location.href = CTX + '/community/' + data.postId;
     } else {
-      alert(data.message || '처리 중 오류가 발생했습니다.');
+      alert(data.message || writeMessages.errors.generic);
     }
   });
 }
 
 function resetWrite() {
-  if (!confirm('작성 중인 내용이 모두 초기화됩니다. 새로 시작하시겠습니까?')) return;
+  if (!confirm(writeMessages.resetConfirm)) return;
   location.href = CTX + '/community/write';
 }
 
@@ -563,7 +701,7 @@ function cancelWrite() {
   var title   = document.getElementById('writeTitle').value;
   var content = document.getElementById('writeContent').value;
   if (title || content) {
-    if (!confirm('작성 중인 내용이 있습니다. 취소하시겠습니까?')) return;
+    if (!confirm(writeMessages.cancelConfirm)) return;
   }
   if (IS_EDIT) {
     location.href = CTX + '/community/' + POST_ID;

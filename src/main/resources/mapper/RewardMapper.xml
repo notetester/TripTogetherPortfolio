@@ -116,6 +116,22 @@
         WHERE user_idx = #{userIdx}
     </update>
 
+    <select id="selectUsersForLevelSync" resultMap="RewardUserMap">
+        SELECT user_idx, member_grade, point_balance, level_no, exp_points
+        FROM USERS
+        <where>
+            <if test="onlyActiveMembers">
+                account_status = 'ACTIVE'
+            </if>
+        </where>
+    </select>
+
+    <update id="updateUserLevelOnly">
+        UPDATE USERS
+        SET level_no = #{levelNo}
+        WHERE user_idx = #{userIdx}
+    </update>
+
     <insert id="insertPointHistory">
         INSERT INTO USER_POINT_HISTORY (
             user_idx, change_type, source_type, source_id, amount, balance_after,

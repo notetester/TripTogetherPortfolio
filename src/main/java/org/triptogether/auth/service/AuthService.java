@@ -2,6 +2,7 @@ package org.triptogether.auth.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.triptogether.auth.vo.LoginRequestContext;
+import org.triptogether.auth.vo.SocialEmailNoticeVO;
 import org.triptogether.auth.vo.SocialTempVO;
 import org.triptogether.auth.vo.UserSocialVO;
 import org.triptogether.auth.vo.UsersVO;
@@ -71,6 +72,7 @@ public interface AuthService {
 
     /** 1년 이상 미접속 회원을 휴면 전환 */
     void processDormantAccounts();
+    void processDormantAccounts(int inactiveDays);
 
     // ─── 소셜 OAuth URL 생성 ────────────────────
     String getKakaoAuthUrl();
@@ -80,6 +82,9 @@ public interface AuthService {
     String getNaverAuthUrl(String state, boolean linkMode);
     String getGoogleAuthUrl(String state);
     String getGoogleAuthUrl(String state, boolean linkMode);
+    boolean revokeNaverAccessToken(String accessToken);
+    boolean revokeGoogleAccessToken(String accessToken);
+    void recordLogoutHistory(UsersVO user, String provider, boolean success, String failReason, LoginRequestContext context);
 
     // ─── 소셜 콜백 처리 ─────────────────────────
     /**
@@ -106,6 +111,7 @@ public interface AuthService {
     UsersVO completeSocialRegister(SocialTempVO temp, String nickname,
                                    String nationality, String preferredLang,
                                    HttpServletRequest request);
+    SocialEmailNoticeVO getSocialEmailNotice(SocialTempVO temp);
 
     // ─── 기존 계정에 소셜 연동 / 해제 ──────────────────
     void linkSocial(Long userIdx, String provider, String providerUserId);

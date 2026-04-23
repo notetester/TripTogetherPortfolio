@@ -13,8 +13,10 @@ import org.triptogether.inquiry.service.InquiryService;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
 import org.triptogether.inquiry.vo.InquiryAttachmentDto;
+import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.auth.vo.UserRole;
 import org.triptogether.perspective.PerspectiveService;
 
 import java.lang.reflect.Method;
@@ -74,7 +76,7 @@ public class InquiryController {
     }
 
     /**
-     * 세션에서 로그인한 유저가 운영진(ADMIN)인지 확인한다.
+     * 세션에서 로그인한 유저가 운영진 계열인지 확인한다.
      * 운영진이면 true, 아니면 false 반환.
      */
     private boolean isAdmin(HttpSession session) {
@@ -82,7 +84,7 @@ public class InquiryController {
             Object loginUser = session.getAttribute("loginUser");
             Method method = loginUser.getClass().getMethod("getUserRole");
             String role = (String) method.invoke(loginUser);
-            return "ADMIN".equals(role);
+            return UserRole.from(role).isAdminLike();
         } catch (Exception e) {
             return false;
         }
@@ -145,7 +147,6 @@ public class InquiryController {
             @RequestParam String category,
             @RequestParam(defaultValue = "0") int isPrivate,
             @RequestParam(value = "images", required = false) List<MultipartFile> images,
-            @RequestParam(defaultValue = "false") boolean forceSubmit,
             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -159,11 +160,6 @@ public class InquiryController {
         try {
             Long loginUserIdx = getLoginUserIdx(session);
 
-            if (!forceSubmit && perspectiveService.isToxic(title + " " + content)) {
-                result.put("toxicityDetected", true);
-                return ResponseEntity.ok(result);
-            }
-
             InquiryPostDto inquiry = new InquiryPostDto();
             inquiry.setUserIdx(loginUserIdx);
             inquiry.setTitle(title);
@@ -172,6 +168,9 @@ public class InquiryController {
             inquiry.setIsPrivate(isPrivate);
 
             Long inquiryId = inquiryService.writeInquiry(inquiry, images);
+
+            perspectiveService.checkAndFlagInquiryAsync(inquiryId, title + " " + content);
+
             result.put("success",   true);
             result.put("inquiryId", inquiryId);
 
@@ -260,6 +259,7 @@ public class InquiryController {
             notification.setSourceType("inquiry");
             notification.setSourceId(inquiryId);
             notification.setMessage("문의에 답변이 등록되었습니다.");
+            notification.setTargetUrl(NotificationUrlBuilder.inquiry(inquiryId));
             myPageService.addNotification(notification);
 
             result.put("success", true);
@@ -321,6 +321,8 @@ public class InquiryController {
         inquiry.setCategory(category);
         inquiry.setIsPrivate(isPrivate);
         inquiryService.updateInquiry(inquiry);
+
+        perspectiveService.checkAndFlagInquiryAsync(inquiryId, title + " " + content);
 
         // 새로 추가된 파일 저장
         if (images != null) {
@@ -540,6 +542,40 @@ public class InquiryController {
     }
 
     /* =============================================
+       POST /inquiry/{inquiryId}/delete-cancel - 유저 삭제 요청 취소
+       ============================================= */
+    /**
+     * 유저가 본인의 삭제 요청을 취소한다.
+     * - 본인만 가능 (403), DELETE_REQUESTED 상태일 때만 가능
+     * - 상태를 COMPLETED 로 복원
+     */
+    @PostMapping("/{inquiryId}/delete-cancel")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteCancel(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Long loginUserIdx = getLoginUserIdx(session);
+        InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
+        if (inquiry == null) {
+            result.put("success", false);
+            return ResponseEntity.status(404).body(result);
+        }
+        if (!loginUserIdx.equals(inquiry.getUserIdx())) {
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
+        }
+        if (!"DELETE_REQUESTED".equals(inquiry.getStatus())) {
+            result.put("success", false);
+            result.put("message", "삭제 요청 상태에서만 취소할 수 있습니다.");
+            return ResponseEntity.status(400).body(result);
+        }
+        inquiryService.updateStatusWithTime(inquiryId, "COMPLETED");
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
        POST /inquiry/{inquiryId}/visibility-request - 유저 비공개/공개 요청
        ============================================= */
     /**
@@ -677,6 +713,32 @@ public class InquiryController {
             result.put("success", true);
         } catch (Exception e) {
             log.error("공개여부 수락 오류", e);
+            result.put("success", false);
+            return ResponseEntity.status(500).body(result);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /inquiry/{inquiryId}/clear-blur - 관리자 BLUR 해제
+       ai_flagged=0 처리 (신고 3회 누적이 아니므로 report_count는 없음)
+       ============================================= */
+    @PostMapping("/{inquiryId}/clear-blur")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> clearBlur(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdmin(session)) {
+            result.put("success", false);
+            result.put("message", "운영진만 해제할 수 있어요.");
+            return ResponseEntity.status(403).body(result);
+        }
+        try {
+            inquiryService.clearInquiryBlur(inquiryId);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("BLUR 해제 오류", e);
             result.put("success", false);
             return ResponseEntity.status(500).body(result);
         }

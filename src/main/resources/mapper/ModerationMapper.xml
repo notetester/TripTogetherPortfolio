@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.moderation.mapper.ModerationMapper">
+
+    <resultMap id="PolicyResultMap" type="org.triptogether.moderation.vo.ContentModerationPolicyVO">
+        <id     property="id"                    column="id"/>
+        <result property="toxicityLevel"         column="toxicity_level"/>
+        <result property="postWindowMinutes"     column="post_window_minutes"/>
+        <result property="postMaxCount"          column="post_max_count"/>
+        <result property="commentWindowMinutes"  column="comment_window_minutes"/>
+        <result property="commentMaxCount"       column="comment_max_count"/>
+        <result property="inquiryWindowMinutes"  column="inquiry_window_minutes"/>
+        <result property="inquiryMaxCount"       column="inquiry_max_count"/>
+        <result property="updatedAt"             column="updated_at"/>
+        <result property="updatedByUserIdx"      column="updated_by_user_idx"/>
+    </resultMap>
+
+    <select id="selectPolicy" resultMap="PolicyResultMap">
+        SELECT id, toxicity_level,
+               post_window_minutes, post_max_count,
+               comment_window_minutes, comment_max_count,
+               inquiry_window_minutes, inquiry_max_count,
+               updated_at, updated_by_user_idx
+          FROM CONTENT_MODERATION_POLICY
+         WHERE id = 1
+    </select>
+
+    <update id="updatePolicy" parameterType="org.triptogether.moderation.vo.ContentModerationPolicyVO">
+        UPDATE CONTENT_MODERATION_POLICY
+           SET toxicity_level         = #{toxicityLevel},
+               post_window_minutes    = #{postWindowMinutes},
+               post_max_count         = #{postMaxCount},
+               comment_window_minutes = #{commentWindowMinutes},
+               comment_max_count      = #{commentMaxCount},
+               inquiry_window_minutes = #{inquiryWindowMinutes},
+               inquiry_max_count      = #{inquiryMaxCount},
+               updated_by_user_idx    = #{updatedByUserIdx}
+         WHERE id = 1
+    </update>
+
+</mapper>

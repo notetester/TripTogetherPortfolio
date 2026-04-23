@@ -432,6 +432,33 @@
     </update>
 
     <!-- ══════════════════════════════════════════
+         이메일로 관리자 조회 (엑셀 업로드 매칭)
+    ══════════════════════════════════════════ -->
+
+    <select id="findMemberByEmailForSalary" resultMap="memberRM">
+        SELECT user_idx, user_email, nickname, user_role,
+               admin_seniority, admin_tier, admin_level,
+               admin_band, admin_grade, admin_step
+        FROM USERS
+        WHERE user_email = #{email}
+    </select>
+
+    <!-- ══════════════════════════════════════════
+         급여/역량 변경 감사 로그 bulk insert
+    ══════════════════════════════════════════ -->
+
+    <insert id="insertSalaryAuditBulk">
+        INSERT INTO SALARY_CHANGE_AUDIT
+            (batch_id, target_user_idx, target_user_email, field_name,
+             old_value, new_value, changed_by_user_idx)
+        VALUES
+        <foreach collection="list" item="a" separator=",">
+            (#{a.batchId}, #{a.targetUserIdx}, #{a.targetUserEmail}, #{a.fieldName},
+             #{a.oldValue}, #{a.newValue}, #{a.changedByUserIdx})
+        </foreach>
+    </insert>
+
+    <!-- ══════════════════════════════════════════
          통계: 분포 집계
     ══════════════════════════════════════════ -->
 

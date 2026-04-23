@@ -15,4 +15,21 @@ public interface RewardService {
      * @param detailMessage 이력에 저장할 상세 메시지
      */
     void awardAction(Long userIdx, String rewardCode, Long sourceId, long amountBasis, String detailMessage);
+
+    /**
+     * 특정 레벨에 도달하기 위해 필요한 누적 경험치를 반환합니다.
+     * (마이페이지 경험치 바 렌더링에 사용)
+     *
+     * @param levelNo 조회 대상 레벨
+     * @return 해당 레벨에 필요한 누적 경험치 (Lv.1이면 0)
+     */
+    long getRequiredExpForLevel(int levelNo);
+
+    /**
+     * 현재 경험치 기준으로 회원 레벨을 일괄 재정산합니다.
+     *
+     * @param onlyActiveMembers ACTIVE 계정만 대상으로 제한할지 여부
+     * @return 실제로 레벨이 변경된 회원 수
+     */
+    int synchronizeUserLevels(boolean onlyActiveMembers);
 }

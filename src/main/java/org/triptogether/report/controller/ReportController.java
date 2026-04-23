@@ -16,6 +16,7 @@ import org.triptogether.report.mapper.ReportMapper;
 import org.triptogether.report.service.ReportService;
 import org.triptogether.report.vo.ReportDto;
 import org.triptogether.report.vo.ReportSearchDto;
+import org.triptogether.auth.vo.UserRole;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -70,14 +71,14 @@ public class ReportController {
     }
 
     /**
-     * 세션에서 로그인한 유저가 관리자(ADMIN)인지 확인한다.
+     * 세션에서 로그인한 유저가 관리자 계열인지 확인한다.
      */
     private boolean isAdmin(HttpSession session) {
         try {
             Object loginUser = session.getAttribute("loginUser");
             Method method = loginUser.getClass().getMethod("getUserRole");
             String role = (String) method.invoke(loginUser);
-            return "ADMIN".equals(role);
+            return UserRole.from(role).isAdminLike();
         } catch (Exception e) {
             return false;
         }
@@ -258,6 +259,13 @@ public class ReportController {
                 result.put("success", false);
                 result.put("message", "이미 신고하셨습니다.");
                 return ResponseEntity.status(409).body(result);
+            }
+
+            // 신고 접수 성공 시 게시글/댓글 report_count 캐시 증가 (3회 이상이면 JSP 에서 BLUR 처리)
+            if ("post".equals(targetType)) {
+                communityService.updatePostReportCache(targetId);
+            } else if ("comment".equals(targetType)) {
+                communityService.updateCommentReportCache(targetId);
             }
 
             result.put("success", true);

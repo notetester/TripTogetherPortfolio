@@ -11,6 +11,8 @@ import org.triptogether.inquiry.vo.InquiryAnswerDto;
 import org.triptogether.inquiry.vo.InquiryAttachmentDto;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
+import org.triptogether.moderation.service.ModerationPolicyService;
+import org.triptogether.moderation.vo.ContentModerationPolicyVO;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class InquiryServiceImpl implements InquiryService {
 
     private final InquiryMapper inquiryMapper;
     private final CloudinaryService cloudinaryService;
+    private final ModerationPolicyService moderationPolicyService;
 
     // ===== 목록 조회 =====
 
@@ -78,9 +81,10 @@ public class InquiryServiceImpl implements InquiryService {
     @Override
     @Transactional
     public Long writeInquiry(InquiryPostDto inquiry, List<MultipartFile> images) {
-        // 도배 방지: 10분 내 3개 이상이면 거부
-        if (inquiryMapper.countRecentInquiriesByUser(inquiry.getUserIdx(), 10) >= 3) {
-            throw new IllegalStateException("10분 내 문의를 3개 이상 작성할 수 없습니다.");
+        ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
+        if (inquiryMapper.countRecentInquiriesByUser(inquiry.getUserIdx(), policy.getInquiryWindowMinutes()) >= policy.getInquiryMaxCount()) {
+            throw new IllegalStateException(
+                    policy.getInquiryWindowMinutes() + "분 내 문의를 " + policy.getInquiryMaxCount() + "개 이상 작성할 수 없습니다.");
         }
         inquiryMapper.insertInquiry(inquiry);
         Long inquiryId = inquiry.getInquiryId(); // useGeneratedKeys로 자동 주입
@@ -219,6 +223,22 @@ public class InquiryServiceImpl implements InquiryService {
     @Transactional
     public void removeAttachment(Long attachmentId) {
         inquiryMapper.deleteAttachment(attachmentId);
+    }
+
+    // ===== AI 독성 감지 BLUR =====
+
+    // AI 독성 감지 플래그 설정
+    @Override
+    @Transactional
+    public void flagInquiryAsToxic(Long inquiryId) {
+        inquiryMapper.setInquiryAiFlagged(inquiryId);
+    }
+
+    // 관리자 BLUR 해제
+    @Override
+    @Transactional
+    public void clearInquiryBlur(Long inquiryId) {
+        inquiryMapper.clearInquiryBlur(inquiryId);
     }
 
     // ===== private 유틸 =====

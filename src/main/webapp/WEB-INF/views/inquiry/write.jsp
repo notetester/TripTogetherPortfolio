@@ -148,26 +148,6 @@
       const res = await fetch(ctx + '/inquiry/write', { method: 'POST', body: formData });
       const data = await res.json();
 
-      if (data.toxicityDetected) {
-        btn.disabled = false;
-        btn.classList.remove('loading');
-        if (confirm(data.message || '<spring:message code="inquiry.write.toxicity" javaScriptEscape="true"/>')) {
-          btn.disabled = true;
-          btn.classList.add('loading');
-          formData.append('forceSubmit', 'true');
-          const res2 = await fetch(ctx + '/inquiry/write', { method: 'POST', body: formData });
-          const data2 = await res2.json();
-          if (data2.success) {
-            location.href = ctx + '/inquiry/' + data2.inquiryId;
-          } else {
-            alert('<spring:message code="inquiry.write.fail" javaScriptEscape="true"/>');
-            btn.disabled = false;
-            btn.classList.remove('loading');
-          }
-        }
-        return;
-      }
-
       if (data.success) {
         location.href = ctx + '/inquiry/' + data.inquiryId;
       } else {

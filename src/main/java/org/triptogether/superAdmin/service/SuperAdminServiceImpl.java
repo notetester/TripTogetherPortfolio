@@ -3,12 +3,21 @@ package org.triptogether.superAdmin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.triptogether.auth.vo.UserRole;
 import org.triptogether.superAdmin.mapper.SuperAdminMapper;
+import org.triptogether.superAdmin.util.SalaryExcelImporter;
 import org.triptogether.superAdmin.vo.*;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +68,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     @Transactional
     public void revokeAdmin(Long userIdx) {
         SuperAdminMemberVO member = superAdminMapper.findAdminDetail(userIdx);
-        if (member != null && "SUPERADMIN".equals(member.getUserRole())) {
+        if (member != null && UserRole.from(member.getUserRole()).isSuperAdmin()) {
             if (superAdminMapper.countSuperAdmins() <= 1) {
                 throw new IllegalStateException("최소 1명의 SUPERADMIN이 유지되어야 합니다.");
             }
@@ -113,6 +122,172 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     @Override
     public int getSalaryTableCount(SuperAdminSearchVO search) {
         return superAdminMapper.countForSalaryTable(search);
+    }
+
+    // ── 급여/역량 엑셀 업로드 ──
+    private static final Set<String> VALID_SENIORITY = Set.of(
+        "어소시에이트", "주니어", "미드레벨", "시니어", "리드", "프린시펄", "스태프", "펠로우");
+    private static final Set<String> VALID_TIER  = Set.of("T1", "T2", "T3", "T4", "T5");
+    private static final Set<String> VALID_LEVEL = Set.of("L1", "L2", "L3", "L4", "L5", "L6", "L7");
+    private static final Set<String> VALID_BAND  = Set.of("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10");
+    private static final Set<String> VALID_GRADE = Set.of("G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9", "G10");
+    private static final Set<String> VALID_STEP  = Set.of(
+        "1호봉","2호봉","3호봉","4호봉","5호봉","6호봉","7호봉","8호봉",
+        "9호봉","10호봉","11호봉","12호봉","13호봉","14호봉","15호봉");
+
+    @Override
+    public SalaryUploadPreviewDto previewSalaryUpload(MultipartFile file) throws Exception {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("파일이 비어 있습니다.");
+        }
+        List<SalaryExcelImporter.ImportedRow> imported;
+        try (InputStream in = file.getInputStream()) {
+            imported = SalaryExcelImporter.parse(in);
+        }
+
+        List<SalaryUploadRowDto> rows = new ArrayList<>();
+        for (SalaryExcelImporter.ImportedRow ir : imported) {
+            SalaryUploadRowDto dto = new SalaryUploadRowDto();
+            dto.setRowNumber(ir.rowNumber);
+            dto.setEmail(ir.email);
+            dto.setNickname(ir.nickname);
+
+            Map<String, String> newValues = new LinkedHashMap<>();
+            newValues.put("Seniority", normalize(ir.seniority));
+            newValues.put("Tier",      normalize(ir.tier));
+            newValues.put("Level",     normalize(ir.level));
+            newValues.put("Band",      normalize(ir.band));
+            newValues.put("Grade",     normalize(ir.grade));
+            newValues.put("Step",      normalize(ir.step));
+            dto.setNewValues(newValues);
+
+            List<String> errors = new ArrayList<>();
+            addIfInvalid(errors, "Seniority", newValues.get("Seniority"), VALID_SENIORITY);
+            addIfInvalid(errors, "Tier",      newValues.get("Tier"),      VALID_TIER);
+            addIfInvalid(errors, "Level",     newValues.get("Level"),     VALID_LEVEL);
+            addIfInvalid(errors, "Band",      newValues.get("Band"),      VALID_BAND);
+            addIfInvalid(errors, "Grade",     newValues.get("Grade"),     VALID_GRADE);
+            addIfInvalid(errors, "Step",      newValues.get("Step"),      VALID_STEP);
+
+            SuperAdminMemberVO cur = superAdminMapper.findMemberByEmailForSalary(ir.email);
+            if (cur == null) {
+                errors.add("해당 이메일의 사용자를 찾을 수 없습니다.");
+            } else if (!UserRole.from(cur.getUserRole()).isAdminLike()) {
+                errors.add("관리자 계정이 아닙니다.");
+            } else {
+                dto.setUserIdx(cur.getUserIdx());
+                Map<String, String> oldValues = new LinkedHashMap<>();
+                oldValues.put("Seniority", cur.getAdminSeniority());
+                oldValues.put("Tier",      cur.getAdminTier());
+                oldValues.put("Level",     cur.getAdminLevel());
+                oldValues.put("Band",      cur.getAdminBand());
+                oldValues.put("Grade",     cur.getAdminGrade());
+                oldValues.put("Step",      cur.getAdminStep());
+                dto.setOldValues(oldValues);
+            }
+
+            if (!errors.isEmpty()) {
+                dto.setStatus("ERROR");
+                dto.setErrorMessage(String.join(" / ", errors));
+            } else {
+                boolean changed = false;
+                for (Map.Entry<String, String> e : newValues.entrySet()) {
+                    if (!Objects.equals(dto.getOldValues().get(e.getKey()), e.getValue())) {
+                        changed = true;
+                        break;
+                    }
+                }
+                dto.setStatus(changed ? "CHANGE" : "UNCHANGED");
+            }
+            rows.add(dto);
+        }
+
+        SalaryUploadPreviewDto preview = new SalaryUploadPreviewDto();
+        preview.setRows(rows);
+        preview.setTotalCount(rows.size());
+        preview.setChangedCount((int) rows.stream().filter(r -> "CHANGE".equals(r.getStatus())).count());
+        preview.setUnchangedCount((int) rows.stream().filter(r -> "UNCHANGED".equals(r.getStatus())).count());
+        preview.setErrorCount((int) rows.stream().filter(r -> "ERROR".equals(r.getStatus())).count());
+        return preview;
+    }
+
+    @Override
+    @Transactional
+    public int applySalaryUpload(List<SalaryUploadApplyVO.ApplyRow> rows, Long changedBy) {
+        if (rows == null || rows.isEmpty()) return 0;
+        String batchId = UUID.randomUUID().toString();
+        List<SalaryAuditVO> allAudits = new ArrayList<>();
+        int applied = 0;
+
+        for (SalaryUploadApplyVO.ApplyRow r : rows) {
+            SuperAdminMemberVO cur = superAdminMapper.findMemberByEmailForSalary(r.getEmail());
+            if (cur == null) continue;
+            if (!UserRole.from(cur.getUserRole()).isAdminLike()) continue;
+            if (r.getUserIdx() != null && !cur.getUserIdx().equals(r.getUserIdx())) continue;
+
+            String nSen  = normalize(r.getSeniority());
+            String nTier = normalize(r.getTier());
+            String nLv   = normalize(r.getLevel());
+            String nBand = normalize(r.getBand());
+            String nGrd  = normalize(r.getGrade());
+            String nStep = normalize(r.getStep());
+
+            List<SalaryAuditVO> rowAudits = new ArrayList<>();
+            addAuditIfChanged(rowAudits, batchId, cur, "adminSeniority", cur.getAdminSeniority(), nSen,  changedBy);
+            addAuditIfChanged(rowAudits, batchId, cur, "adminTier",      cur.getAdminTier(),      nTier, changedBy);
+            addAuditIfChanged(rowAudits, batchId, cur, "adminLevel",     cur.getAdminLevel(),     nLv,   changedBy);
+            addAuditIfChanged(rowAudits, batchId, cur, "adminBand",      cur.getAdminBand(),      nBand, changedBy);
+            addAuditIfChanged(rowAudits, batchId, cur, "adminGrade",     cur.getAdminGrade(),     nGrd,  changedBy);
+            addAuditIfChanged(rowAudits, batchId, cur, "adminStep",      cur.getAdminStep(),      nStep, changedBy);
+
+            if (rowAudits.isEmpty()) continue;
+
+            SuperAdminSalaryEditVO upd = new SuperAdminSalaryEditVO();
+            upd.setUserIdx(cur.getUserIdx());
+            upd.setAdminSeniority(nSen);
+            upd.setAdminTier(nTier);
+            upd.setAdminLevel(nLv);
+            upd.setAdminBand(nBand);
+            upd.setAdminGrade(nGrd);
+            upd.setAdminStep(nStep);
+            superAdminMapper.updateSalary(upd);
+
+            allAudits.addAll(rowAudits);
+            applied++;
+        }
+
+        if (!allAudits.isEmpty()) {
+            superAdminMapper.insertSalaryAuditBulk(allAudits);
+        }
+        return applied;
+    }
+
+    private static String normalize(String v) {
+        return (v == null || v.isBlank()) ? null : v.trim();
+    }
+
+    private static void addIfInvalid(List<String> errors, String fieldName, String value, Set<String> allowed) {
+        if (value == null) return;
+        if (!allowed.contains(value)) {
+            errors.add(fieldName + " 허용되지 않는 값: " + value);
+        }
+    }
+
+    private static void addAuditIfChanged(List<SalaryAuditVO> list, String batchId,
+                                          SuperAdminMemberVO cur, String field,
+                                          String oldV, String newV, Long changedBy) {
+        String o = (oldV == null || oldV.isBlank()) ? null : oldV;
+        String n = (newV == null || newV.isBlank()) ? null : newV;
+        if (Objects.equals(o, n)) return;
+        SalaryAuditVO a = new SalaryAuditVO();
+        a.setBatchId(batchId);
+        a.setTargetUserIdx(cur.getUserIdx());
+        a.setTargetUserEmail(cur.getUserEmail());
+        a.setFieldName(field);
+        a.setOldValue(o);
+        a.setNewValue(n);
+        a.setChangedByUserIdx(changedBy);
+        list.add(a);
     }
 
     @Override

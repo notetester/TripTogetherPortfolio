@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%--
   =============================================
   신고 상세 페이지
@@ -27,12 +28,38 @@
 <%@ include file="../common/header.jsp" %>
 <body>
 
+<spring:message code="report.common.backToList" var="reportBackToList"/>
+<spring:message code="report.common.cancel" var="reportCancel"/>
+<spring:message code="report.common.keepDismiss" var="reportKeepDismiss"/>
+<spring:message code="report.common.none" var="reportNone"/>
+<spring:message code="report.common.save" var="reportSave"/>
+<spring:message code="report.detail.action.cancelEdit" javaScriptEscape="true" var="reportActionCancelEdit"/>
+<spring:message code="report.detail.action.edit" javaScriptEscape="true" var="reportActionEdit"/>
+<spring:message code="report.detail.alert.cancelFail" javaScriptEscape="true" var="reportAlertCancelFail"/>
+<spring:message code="report.detail.alert.deleteFail" javaScriptEscape="true" var="reportAlertDeleteFail"/>
+<spring:message code="report.detail.alert.error" javaScriptEscape="true" var="reportAlertError"/>
+<spring:message code="report.detail.alert.network" javaScriptEscape="true" var="reportAlertNetwork"/>
+<spring:message code="report.detail.alert.processing" javaScriptEscape="true" var="reportAlertProcessing"/>
+<spring:message code="report.detail.alert.updateFail" javaScriptEscape="true" var="reportAlertUpdateFail"/>
+<spring:message code="report.detail.confirm.blockAuthor" javaScriptEscape="true" var="reportConfirmBlockAuthor"/>
+<spring:message code="report.detail.confirm.blockUser" javaScriptEscape="true" var="reportConfirmBlockUser"/>
+<spring:message code="report.detail.confirm.deleteAndBlock.comment" javaScriptEscape="true" var="reportConfirmDeleteAndBlockComment"/>
+<spring:message code="report.detail.confirm.deleteAndBlock.post" javaScriptEscape="true" var="reportConfirmDeleteAndBlockPost"/>
+<spring:message code="report.detail.confirm.deleteAndBlock.review" javaScriptEscape="true" var="reportConfirmDeleteAndBlockReview"/>
+<spring:message code="report.detail.confirm.deleteContent.comment" javaScriptEscape="true" var="reportConfirmDeleteContentComment"/>
+<spring:message code="report.detail.confirm.deleteContent.post" javaScriptEscape="true" var="reportConfirmDeleteContentPost"/>
+<spring:message code="report.detail.confirm.deleteContent.review" javaScriptEscape="true" var="reportConfirmDeleteContentReview"/>
+<spring:message code="report.detail.confirm.deleteReport" javaScriptEscape="true" var="reportConfirmDeleteReport"/>
+<spring:message code="report.detail.confirm.dismiss" javaScriptEscape="true" var="reportConfirmDismiss"/>
+<spring:message code="report.detail.confirm.revert" javaScriptEscape="true" var="reportConfirmRevert"/>
+<spring:message code="report.detail.confirm.userCancel" javaScriptEscape="true" var="reportConfirmUserCancel"/>
+
 <div class="rpt-detail-wrap">
   <div class="rpt-detail-inner">
 
     <%-- 뒤로가기 버튼 --%>
     <button class="rpt-back-btn" onclick="goBackToList()">
-      &#8592; 목록으로
+      &#8592; ${reportBackToList}
     </button>
 
     <%-- =============================================
@@ -44,22 +71,30 @@
       <div class="rpt-detail-head">
         <div class="rpt-detail-meta">
           <%-- 대상 유형 태그 --%>
-          <span class="rpt-type-tag">
-            <c:choose>
-              <c:when test="${report.targetType eq 'post'}">게시글</c:when>
-              <c:when test="${report.targetType eq 'comment'}">댓글</c:when>
-              <c:when test="${report.targetType eq 'user'}">유저</c:when>
-              <c:otherwise>${report.targetType}</c:otherwise>
-            </c:choose>
-            #${report.targetId}
-          </span>
+          <c:choose>
+            <c:when test="${report.targetType eq 'post'}">
+              <span class="rpt-type-tag type-post"><spring:message code="report.common.target.post"/> #${report.targetId}</span>
+            </c:when>
+            <c:when test="${report.targetType eq 'comment'}">
+              <span class="rpt-type-tag type-comment"><spring:message code="report.common.target.comment"/> #${report.targetId}</span>
+            </c:when>
+            <c:when test="${report.targetType eq 'review'}">
+              <span class="rpt-type-tag type-review"><spring:message code="report.common.target.review"/> #${report.targetId}</span>
+            </c:when>
+            <c:when test="${report.targetType eq 'user'}">
+              <span class="rpt-type-tag type-user"><spring:message code="report.common.target.user"/> #${report.targetId}</span>
+            </c:when>
+            <c:otherwise>
+              <span class="rpt-type-tag">${report.targetType} #${report.targetId}</span>
+            </c:otherwise>
+          </c:choose>
 
           <%-- 처리 상태 뱃지 --%>
           <span class="rpt-status-badge ${report.status}">
             <c:choose>
-              <c:when test="${report.status eq 'IN_REVIEW'}">검토중</c:when>
-              <c:when test="${report.status eq 'RESOLVED'}">처리완료</c:when>
-              <c:when test="${report.status eq 'DISMISSED'}">반려</c:when>
+              <c:when test="${report.status eq 'IN_REVIEW'}"><spring:message code="report.common.status.inReview"/></c:when>
+              <c:when test="${report.status eq 'RESOLVED'}"><spring:message code="report.common.status.resolved"/></c:when>
+              <c:when test="${report.status eq 'DISMISSED'}"><spring:message code="report.common.status.dismissed"/></c:when>
               <c:otherwise>${report.status}</c:otherwise>
             </c:choose>
           </span>
@@ -68,16 +103,17 @@
         <%-- 제목 --%>
         <h1 class="rpt-detail-title">
           <c:choose>
-            <c:when test="${report.targetType eq 'post'}">게시글 신고</c:when>
-            <c:when test="${report.targetType eq 'comment'}">댓글 신고</c:when>
-            <c:when test="${report.targetType eq 'user'}">유저 신고</c:when>
-            <c:otherwise>신고</c:otherwise>
+            <c:when test="${report.targetType eq 'post'}"><spring:message code="report.detail.title.post"/></c:when>
+            <c:when test="${report.targetType eq 'comment'}"><spring:message code="report.detail.title.comment"/></c:when>
+            <c:when test="${report.targetType eq 'review'}"><spring:message code="report.detail.title.review"/></c:when>
+            <c:when test="${report.targetType eq 'user'}"><spring:message code="report.detail.title.user"/></c:when>
+            <c:otherwise><spring:message code="report.detail.title.default"/></c:otherwise>
           </c:choose>
         </h1>
 
         <%-- 신고일 --%>
         <div class="rpt-detail-info">
-          신고일: <fmt:formatDate value="${report.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
+          <spring:message code="report.detail.info.reportedAt"/>: <fmt:formatDate value="${report.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
         </div>
       </div>
 
@@ -87,19 +123,19 @@
         <%-- 게시글/댓글 신고: 사유 코드 표시 --%>
         <c:if test="${report.targetType ne 'user'}">
           <div class="rpt-detail-row">
-            <span class="rpt-detail-label">신고 사유</span>
+            <span class="rpt-detail-label"><spring:message code="report.detail.label.reason"/></span>
             <span class="rpt-detail-value">
               <c:choose>
-                <c:when test="${report.reason eq 'spam'}">스팸/광고</c:when>
-                <c:when test="${report.reason eq 'abuse'}">욕설/비방</c:when>
-                <c:when test="${report.reason eq 'privacy'}">개인정보 노출</c:when>
-                <c:when test="${report.reason eq 'adult'}">음란물</c:when>
-                <c:when test="${report.reason eq 'illegal'}">불법 정보</c:when>
-                <c:when test="${report.reason eq 'other'}">기타</c:when>
+                <c:when test="${report.reason eq 'spam'}"><spring:message code="report.common.reason.spam"/></c:when>
+                <c:when test="${report.reason eq 'abuse'}"><spring:message code="report.common.reason.abuse"/></c:when>
+                <c:when test="${report.reason eq 'privacy'}"><spring:message code="report.common.reason.privacy"/></c:when>
+                <c:when test="${report.reason eq 'adult'}"><spring:message code="report.common.reason.adult"/></c:when>
+                <c:when test="${report.reason eq 'illegal'}"><spring:message code="report.common.reason.illegal"/></c:when>
+                <c:when test="${report.reason eq 'other'}"><spring:message code="report.common.reason.other"/></c:when>
                 <c:otherwise>
                   <c:choose>
                     <c:when test="${not empty report.reason}">${report.reason}</c:when>
-                    <c:otherwise>—</c:otherwise>
+                    <c:otherwise>${reportNone}</c:otherwise>
                   </c:choose>
                 </c:otherwise>
               </c:choose>
@@ -112,8 +148,8 @@
           <div class="rpt-detail-row">
             <span class="rpt-detail-label">
               <c:choose>
-                <c:when test="${report.targetType eq 'user'}">신고 내용</c:when>
-                <c:otherwise>상세 사유</c:otherwise>
+                <c:when test="${report.targetType eq 'user'}"><spring:message code="report.detail.label.userDescription"/></c:when>
+                <c:otherwise><spring:message code="report.detail.label.description"/></c:otherwise>
               </c:choose>
             </span>
             <span class="rpt-detail-value rpt-detail-desc">${report.description}</span>
@@ -122,7 +158,7 @@
 
         <%-- 신고 대상 정보 --%>
         <div class="rpt-detail-row">
-          <span class="rpt-detail-label">신고 대상</span>
+          <span class="rpt-detail-label"><spring:message code="report.detail.label.target"/></span>
           <span class="rpt-detail-value">
             <c:choose>
 
@@ -130,7 +166,7 @@
               <c:when test="${report.targetType eq 'post'}">
                 <c:choose>
                   <c:when test="${targetDeleted}">
-                    <span style="color:var(--gray-400)">(삭제된 게시글)</span>
+                    <span style="color:var(--gray-400);"><spring:message code="report.common.deletedPost"/></span>
                   </c:when>
                   <c:otherwise>
                     <a href="${pageContext.request.contextPath}/community/${targetPostId}"
@@ -138,7 +174,7 @@
                       ${targetTitle}
                     </a>
                     <c:if test="${not empty targetNickname}">
-                      <span style="color:var(--gray-500);font-size:13px;"> — 작성자: ${targetNickname}</span>
+                      <span style="color:var(--gray-500);font-size:13px;"> — <spring:message code="report.detail.info.authorPrefix"/> ${targetNickname}</span>
                     </c:if>
                   </c:otherwise>
                 </c:choose>
@@ -148,18 +184,40 @@
               <c:when test="${report.targetType eq 'comment'}">
                 <c:choose>
                   <c:when test="${targetDeleted}">
-                    <span style="color:var(--gray-400)">(삭제된 댓글)</span>
+                    <span style="color:var(--gray-400);"><spring:message code="report.common.deletedComment"/></span>
                   </c:when>
                   <c:otherwise>
                     <a href="${pageContext.request.contextPath}/community/${targetPostId}"
                        style="color:#3b82f6;text-decoration:underline;">
-                      게시글 #${targetPostId}
+                      <spring:message code="report.common.post"/> #${targetPostId}
                     </a>
-                    <span style="color:var(--gray-500);font-size:13px;">의 댓글</span>
+                    <span style="color:var(--gray-500);font-size:13px;"><spring:message code="report.detail.info.commentSuffix"/></span>
                     <c:if test="${not empty targetNickname}">
-                      <span style="color:var(--gray-500);font-size:13px;"> — 작성자: ${targetNickname}</span>
+                      <span style="color:var(--gray-500);font-size:13px;"> — <spring:message code="report.detail.info.authorPrefix"/> ${targetNickname}</span>
                     </c:if>
                     <div style="margin-top:4px;font-size:13px;color:var(--gray-600);background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${targetContent}"</div>
+                  </c:otherwise>
+                </c:choose>
+              </c:when>
+
+              <%-- 여행지 리뷰 신고 --%>
+              <c:when test="${report.targetType eq 'review'}">
+                <c:choose>
+                  <c:when test="${targetDeleted}">
+                    <span style="color:var(--gray-400);"><spring:message code="report.common.deletedReview"/></span>
+                  </c:when>
+                  <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/detail/${targetSpotId}"
+                       style="color:#3b82f6;text-decoration:underline;">
+                      <spring:message code="report.common.spot"/> #${targetSpotId}
+                    </a>
+                    <span style="color:var(--gray-500);font-size:13px;"><spring:message code="report.detail.info.reviewSuffix"/></span>
+                    <c:if test="${not empty targetNickname}">
+                      <span style="color:var(--gray-500);font-size:13px;"> — <spring:message code="report.detail.info.authorPrefix"/> ${targetNickname}</span>
+                    </c:if>
+                    <c:if test="${not empty targetContent}">
+                      <div style="margin-top:4px;font-size:13px;color:var(--gray-600);background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${targetContent}"</div>
+                    </c:if>
                   </c:otherwise>
                 </c:choose>
               </c:when>
@@ -171,18 +229,18 @@
                     <span>${targetNickname}</span>
                   </c:when>
                   <c:otherwise>
-                    <span style="color:var(--gray-400)">(알 수 없는 유저)</span>
+                    <span style="color:var(--gray-400);"><spring:message code="report.common.unknownUser"/></span>
                   </c:otherwise>
                 </c:choose>
                 <%-- 신고 출처 (어떤 게시글/댓글에서 신고했는지) --%>
                 <c:if test="${not empty report.sourceType}">
                   <div style="margin-top:6px;font-size:13px;color:var(--gray-500);">
-                    신고 출처:
+                    <spring:message code="report.detail.info.source"/>:
                     <c:choose>
                       <c:when test="${report.sourceType eq 'post'}">
                         <c:choose>
                           <c:when test="${sourceDeleted}">
-                            <span style="color:var(--gray-400)">(삭제된 게시글)</span>
+                            <span style="color:var(--gray-400);"><spring:message code="report.common.deletedPost"/></span>
                           </c:when>
                           <c:otherwise>
                             <a href="${pageContext.request.contextPath}/community/${sourcePostId}"
@@ -193,15 +251,32 @@
                       <c:when test="${report.sourceType eq 'comment'}">
                         <c:choose>
                           <c:when test="${sourceDeleted}">
-                            <span style="color:var(--gray-400)">(삭제된 댓글)</span>
+                            <span style="color:var(--gray-400);"><spring:message code="report.common.deletedComment"/></span>
                           </c:when>
                           <c:otherwise>
                             <a href="${pageContext.request.contextPath}/community/${sourcePostId}"
                                style="color:#3b82f6;text-decoration:underline;">
-                              게시글 #${sourcePostId}
+                              <spring:message code="report.common.post"/> #${sourcePostId}
                             </a>
-                            <span>의 댓글</span>
+                            <span><spring:message code="report.detail.info.commentSuffix"/></span>
                             <div style="margin-top:4px;background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${sourceContent}"</div>
+                          </c:otherwise>
+                        </c:choose>
+                      </c:when>
+                      <c:when test="${report.sourceType eq 'review'}">
+                        <c:choose>
+                          <c:when test="${sourceDeleted}">
+                            <span style="color:var(--gray-400);"><spring:message code="report.common.deletedReview"/></span>
+                          </c:when>
+                          <c:otherwise>
+                            <a href="${pageContext.request.contextPath}/detail/${sourceSpotId}"
+                               style="color:#3b82f6;text-decoration:underline;">
+                              <spring:message code="report.common.spot"/> #${sourceSpotId}
+                            </a>
+                            <span><spring:message code="report.detail.info.reviewSuffix"/></span>
+                            <c:if test="${not empty sourceContent}">
+                              <div style="margin-top:4px;background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${sourceContent}"</div>
+                            </c:if>
                           </c:otherwise>
                         </c:choose>
                       </c:when>
@@ -217,7 +292,7 @@
         <%-- 어드민 전용: 신고자 정보 (관리자모드일 때만 표시) --%>
         <c:if test="${isAdmin and isAdminMode}">
           <div class="rpt-detail-row">
-            <span class="rpt-detail-label">신고자</span>
+            <span class="rpt-detail-label"><spring:message code="report.detail.info.reporter"/></span>
             <span class="rpt-detail-value">${report.nickname} (#${report.userIdx})</span>
           </div>
         </c:if>
@@ -234,14 +309,14 @@
           <div class="rpt-result-head">
             <span class="rpt-result-icon">&#9989;</span>
             <div>
-              <div class="rpt-result-title">처리 완료</div>
+              <div class="rpt-result-title"><spring:message code="report.detail.result.resolved.title"/></div>
               <c:if test="${not empty report.resolvedAt}">
                 <div class="rpt-result-meta"><fmt:formatDate value="${report.resolvedAt}" pattern="yyyy-MM-dd HH:mm"/></div>
               </c:if>
             </div>
           </div>
           <div class="rpt-result-body">
-            신고가 검토되어 처리되었습니다.<c:if test="${not empty report.resolveAction}"> (${report.resolveAction})</c:if>
+            <spring:message code="report.detail.result.resolved.body"/><c:if test="${not empty report.resolveAction}"> (${report.resolveAction})</c:if>
           </div>
         </div>
       </c:when>
@@ -251,13 +326,13 @@
           <div class="rpt-result-head">
             <span class="rpt-result-icon">&#10060;</span>
             <div>
-              <div class="rpt-result-title">반려</div>
+              <div class="rpt-result-title"><spring:message code="report.detail.result.dismissed.title"/></div>
               <c:if test="${not empty report.resolvedAt}">
                 <div class="rpt-result-meta"><fmt:formatDate value="${report.resolvedAt}" pattern="yyyy-MM-dd HH:mm"/></div>
               </c:if>
             </div>
           </div>
-          <div class="rpt-result-body">신고 내용이 검토되었으나 처리 기준에 해당하지 않아 반려되었습니다.</div>
+          <div class="rpt-result-body"><spring:message code="report.detail.result.dismissed.body"/></div>
         </div>
       </c:when>
 
@@ -266,21 +341,21 @@
           <div class="rpt-result-head">
             <span class="rpt-result-icon">✖</span>
             <div>
-              <div class="rpt-result-title">신고 취소</div>
+              <div class="rpt-result-title"><spring:message code="report.detail.result.cancelled.title"/></div>
               <c:if test="${not empty report.updatedAt}">
                 <div class="rpt-result-meta"><fmt:formatDate value="${report.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></div>
               </c:if>
             </div>
           </div>
-          <div class="rpt-result-body">신고가 취소되었습니다.</div>
+          <div class="rpt-result-body"><spring:message code="report.detail.result.cancelled.body"/></div>
         </div>
       </c:when>
 
       <c:otherwise>
         <div class="rpt-no-result">
           <div class="rpt-no-result-icon">🔍</div>
-          <div class="rpt-no-result-msg">검토 진행 중</div>
-          <div class="rpt-no-result-sub">담당자가 신고 내용을 검토하고 있습니다</div>
+          <div class="rpt-no-result-msg"><spring:message code="report.detail.result.pending.title"/></div>
+          <div class="rpt-no-result-sub"><spring:message code="report.detail.result.pending.subtitle"/></div>
         </div>
       </c:otherwise>
     </c:choose>
@@ -291,7 +366,7 @@
          ============================================= --%>
     <c:if test="${isAdmin and isAdminMode}">
       <div class="rpt-admin-form">
-        <div class="rpt-admin-form-title">🛡️ 관리자 패널</div>
+        <div class="rpt-admin-form-title"><spring:message code="report.detail.admin.title"/></div>
 
         <c:choose>
 
@@ -301,34 +376,46 @@
             <%-- 게시글 신고 --%>
             <c:if test="${report.targetType eq 'post'}">
               <div class="rpt-admin-action-bar">
-                <button class="rpt-btn-danger" id="btnDeleteAndBlock">🗑️🚫 게시글 삭제 + 작성자 차단 후 처리완료</button>
-                <button class="rpt-btn-danger" id="btnDeleteContent">🗑️ 게시글 삭제 후 처리완료</button>
-                <button class="rpt-btn-danger" id="btnBlockAuthor">🚫 작성자 차단 후 처리완료</button>
+                <button class="rpt-btn-danger" id="btnDeleteAndBlock"><spring:message code="report.detail.admin.action.deleteAndBlock.post"/></button>
+                <button class="rpt-btn-danger" id="btnDeleteContent"><spring:message code="report.detail.admin.action.deleteContent.post"/></button>
+                <button class="rpt-btn-danger" id="btnBlockAuthor"><spring:message code="report.detail.admin.action.blockAuthor"/></button>
               </div>
               <div class="rpt-admin-action-bar">
-                <button class="rpt-btn-cancel" id="btnDismiss">✖ 유지 (반려)</button>
+                <button class="rpt-btn-cancel" id="btnDismiss">${reportKeepDismiss}</button>
               </div>
             </c:if>
 
             <%-- 댓글 신고 --%>
             <c:if test="${report.targetType eq 'comment'}">
               <div class="rpt-admin-action-bar">
-                <button class="rpt-btn-danger" id="btnDeleteAndBlock">🗑️🚫 댓글 삭제 + 작성자 차단 후 처리완료</button>
-                <button class="rpt-btn-danger" id="btnDeleteContent">🗑️ 댓글 삭제 후 처리완료</button>
-                <button class="rpt-btn-danger" id="btnBlockAuthor">🚫 작성자 차단 후 처리완료</button>
+                <button class="rpt-btn-danger" id="btnDeleteAndBlock"><spring:message code="report.detail.admin.action.deleteAndBlock.comment"/></button>
+                <button class="rpt-btn-danger" id="btnDeleteContent"><spring:message code="report.detail.admin.action.deleteContent.comment"/></button>
+                <button class="rpt-btn-danger" id="btnBlockAuthor"><spring:message code="report.detail.admin.action.blockAuthor"/></button>
               </div>
               <div class="rpt-admin-action-bar">
-                <button class="rpt-btn-cancel" id="btnDismiss">✖ 유지 (반려)</button>
+                <button class="rpt-btn-cancel" id="btnDismiss">${reportKeepDismiss}</button>
+              </div>
+            </c:if>
+
+            <%-- 여행지 리뷰 신고 --%>
+            <c:if test="${report.targetType eq 'review'}">
+              <div class="rpt-admin-action-bar">
+                <button class="rpt-btn-danger" id="btnDeleteAndBlock"><spring:message code="report.detail.admin.action.deleteAndBlock.review"/></button>
+                <button class="rpt-btn-danger" id="btnDeleteContent"><spring:message code="report.detail.admin.action.deleteContent.review"/></button>
+                <button class="rpt-btn-danger" id="btnBlockAuthor"><spring:message code="report.detail.admin.action.blockAuthor"/></button>
+              </div>
+              <div class="rpt-admin-action-bar">
+                <button class="rpt-btn-cancel" id="btnDismiss">${reportKeepDismiss}</button>
               </div>
             </c:if>
 
             <%-- 유저 신고 --%>
             <c:if test="${report.targetType eq 'user'}">
               <div class="rpt-admin-action-bar">
-                <button class="rpt-btn-danger" id="btnBlockUser">🚫 유저 계정 차단 후 처리완료</button>
+                <button class="rpt-btn-danger" id="btnBlockUser"><spring:message code="report.detail.admin.action.blockUser"/></button>
               </div>
               <div class="rpt-admin-action-bar">
-                <button class="rpt-btn-cancel" id="btnDismiss">✖ 유지 (반려)</button>
+                <button class="rpt-btn-cancel" id="btnDismiss">${reportKeepDismiss}</button>
               </div>
             </c:if>
 
@@ -337,7 +424,7 @@
           <%-- 처리완료/반려 → 반려취소 버튼 --%>
           <c:otherwise>
             <div class="rpt-admin-action-bar">
-              <button class="rpt-btn-warn" id="btnRevertToPending">↩ 검토중으로 변경</button>
+              <button class="rpt-btn-warn" id="btnRevertToPending"><spring:message code="report.detail.admin.action.revert"/></button>
             </div>
           </c:otherwise>
 
@@ -354,14 +441,14 @@
           <%-- post/comment 신고: 사유 선택 --%>
           <c:if test="${report.targetType ne 'user'}">
             <div class="rpt-form-group">
-              <label class="rpt-form-label">신고 사유</label>
+              <label class="rpt-form-label"><spring:message code="report.detail.label.reason"/></label>
               <select class="rpt-form-select" id="editReason">
-                <option value="spam"    ${report.reason eq 'spam'    ? 'selected' : ''}>스팸/광고</option>
-                <option value="abuse"   ${report.reason eq 'abuse'   ? 'selected' : ''}>욕설/비방</option>
-                <option value="privacy" ${report.reason eq 'privacy' ? 'selected' : ''}>개인정보 노출</option>
-                <option value="adult"   ${report.reason eq 'adult'   ? 'selected' : ''}>음란물</option>
-                <option value="illegal" ${report.reason eq 'illegal' ? 'selected' : ''}>불법 정보</option>
-                <option value="other"   ${report.reason eq 'other'   ? 'selected' : ''}>기타</option>
+                <option value="spam"    ${report.reason eq 'spam'    ? 'selected' : ''}><spring:message code="report.common.reason.spam"/></option>
+                <option value="abuse"   ${report.reason eq 'abuse'   ? 'selected' : ''}><spring:message code="report.common.reason.abuse"/></option>
+                <option value="privacy" ${report.reason eq 'privacy' ? 'selected' : ''}><spring:message code="report.common.reason.privacy"/></option>
+                <option value="adult"   ${report.reason eq 'adult'   ? 'selected' : ''}><spring:message code="report.common.reason.adult"/></option>
+                <option value="illegal" ${report.reason eq 'illegal' ? 'selected' : ''}><spring:message code="report.common.reason.illegal"/></option>
+                <option value="other"   ${report.reason eq 'other'   ? 'selected' : ''}><spring:message code="report.common.reason.other"/></option>
               </select>
             </div>
           </c:if>
@@ -369,15 +456,15 @@
           <div class="rpt-form-group">
             <label class="rpt-form-label">
               <c:choose>
-                <c:when test="${report.targetType eq 'user'}">신고 내용</c:when>
-                <c:otherwise>상세 사유</c:otherwise>
+                <c:when test="${report.targetType eq 'user'}"><spring:message code="report.detail.label.userDescription"/></c:when>
+                <c:otherwise><spring:message code="report.detail.label.description"/></c:otherwise>
               </c:choose>
             </label>
             <textarea class="rpt-form-textarea" id="editDescription" rows="6">${report.description}</textarea>
           </div>
           <div class="rpt-write-actions">
-            <button class="rpt-btn-cancel" id="editCancelBtn">취소</button>
-            <button class="rpt-btn-submit" id="editSaveBtn">저장</button>
+            <button class="rpt-btn-cancel" id="editCancelBtn">${reportCancel}</button>
+            <button class="rpt-btn-submit" id="editSaveBtn">${reportSave}</button>
           </div>
         </div>
       </div>
@@ -386,7 +473,7 @@
     <%-- 수정 불가 안내 --%>
     <c:if test="${isOwner and (report.status eq 'RESOLVED' or report.status eq 'DISMISSED')}">
       <div style="font-size:13px; color:var(--gray-400); margin-bottom:8px;">
-        ⚠️ 처리된 신고는 수정할 수 없습니다.
+        <spring:message code="report.detail.edit.cannotAfterProcessed"/>
       </div>
     </c:if>
 
@@ -395,29 +482,29 @@
          ============================================= --%>
     <div class="rpt-detail-actions">
       <button class="rpt-btn-cancel" onclick="goBackToList()">
-        목록으로
+        ${reportBackToList}
       </button>
 
       <%-- IN_REVIEW: 수정 + 삭제 + 신고 취소 --%>
       <c:if test="${isOwner and report.status eq 'IN_REVIEW'}">
-        <button class="rpt-btn-cancel" id="editBtn">✏️ 수정</button>
+        <button class="rpt-btn-cancel" id="editBtn"><spring:message code="report.detail.action.edit"/></button>
         <button class="rpt-btn-submit" id="deleteBtn"
-                style="background:#ef4444;">🗑️ 삭제</button>
+                style="background:#ef4444;"><spring:message code="report.detail.action.delete"/></button>
         <button class="rpt-btn-submit" id="cancelReportBtn"
-                style="background:#f59e0b;">✖ 신고 취소</button>
+                style="background:#f59e0b;"><spring:message code="report.detail.action.cancelReport"/></button>
       </c:if>
 
       <%-- CANCELLED: 삭제만 --%>
       <c:if test="${isOwner and report.status eq 'CANCELLED'}">
         <button class="rpt-btn-submit" id="deleteBtn"
-                style="background:#ef4444;">🗑️ 삭제</button>
+                style="background:#ef4444;"><spring:message code="report.detail.action.delete"/></button>
       </c:if>
 
       <%-- 어드민: 삭제 (상태 무관, 관리자모드 + 소유자가 아닐 때만)
            소유자이면 위 소유자 블록에 삭제 버튼이 이미 있으므로 중복 방지 --%>
       <c:if test="${isAdmin and isAdminMode and not isOwner}">
         <button class="rpt-btn-submit" id="deleteBtn"
-                style="background:#ef4444;">🗑️ 삭제</button>
+                style="background:#ef4444;"><spring:message code="report.detail.action.delete"/></button>
       </c:if>
     </div>
 
@@ -429,6 +516,28 @@
      ============================================= --%>
 <script>
 var ctx = '${pageContext.request.contextPath}';
+var reportMessages = {
+    actionCancelEdit: '${reportActionCancelEdit}',
+    actionEdit: '${reportActionEdit}',
+    alertCancelFail: '${reportAlertCancelFail}',
+    alertDeleteFail: '${reportAlertDeleteFail}',
+    alertError: '${reportAlertError}',
+    alertNetwork: '${reportAlertNetwork}',
+    alertProcessing: '${reportAlertProcessing}',
+    alertUpdateFail: '${reportAlertUpdateFail}',
+    confirmBlockAuthor: '${reportConfirmBlockAuthor}',
+    confirmBlockUser: '${reportConfirmBlockUser}',
+    confirmDeleteAndBlockComment: '${reportConfirmDeleteAndBlockComment}',
+    confirmDeleteAndBlockPost: '${reportConfirmDeleteAndBlockPost}',
+    confirmDeleteAndBlockReview: '${reportConfirmDeleteAndBlockReview}',
+    confirmDeleteContentComment: '${reportConfirmDeleteContentComment}',
+    confirmDeleteContentPost: '${reportConfirmDeleteContentPost}',
+    confirmDeleteContentReview: '${reportConfirmDeleteContentReview}',
+    confirmDeleteReport: '${reportConfirmDeleteReport}',
+    confirmDismiss: '${reportConfirmDismiss}',
+    confirmRevert: '${reportConfirmRevert}',
+    confirmUserCancel: '${reportConfirmUserCancel}'
+};
 function goBackToList() {
     var params = new URLSearchParams(window.location.search);
     var page       = params.get('page')       || '1';
@@ -440,8 +549,9 @@ function goBackToList() {
 <c:if test="${isAdmin and isAdminMode}">
 <script>
 (function () {
-  var ctx      = '${pageContext.request.contextPath}';
-  var reportId = ${report.reportId};
+  var ctx        = '${pageContext.request.contextPath}';
+  var reportId   = ${report.reportId};
+  var targetType = '${report.targetType}';
 
   function resolveReport(action, confirmMsg) {
     if (!confirm(confirmMsg)) return;
@@ -453,50 +563,60 @@ function goBackToList() {
     .then(function (res) { return res.json(); })
     .then(function (data) {
       if (data.success) { location.reload(); }
-      else { alert(data.message || '처리 중 오류가 발생했습니다.'); }
+      else { alert(data.message || reportMessages.alertProcessing); }
     })
-    .catch(function () { alert('네트워크 오류가 발생했습니다.'); });
+    .catch(function () { alert(reportMessages.alertNetwork); });
   }
 
   var btnDeleteContent = document.getElementById('btnDeleteContent');
   if (btnDeleteContent) {
     btnDeleteContent.addEventListener('click', function () {
-      resolveReport('DELETE_CONTENT', '게시물을 삭제하고 신고를 처리완료 하시겠습니까?');
+      var msg = targetType === 'review'
+        ? reportMessages.confirmDeleteContentReview
+        : (targetType === 'comment'
+            ? reportMessages.confirmDeleteContentComment
+            : reportMessages.confirmDeleteContentPost);
+      resolveReport('DELETE_CONTENT', msg);
     });
   }
 
   var btnBlockAuthor = document.getElementById('btnBlockAuthor');
   if (btnBlockAuthor) {
     btnBlockAuthor.addEventListener('click', function () {
-      resolveReport('BLOCK_AUTHOR', '작성자 계정을 차단하고 신고를 처리완료 하시겠습니까?');
+      resolveReport('BLOCK_AUTHOR', reportMessages.confirmBlockAuthor);
     });
   }
 
   var btnDeleteAndBlock = document.getElementById('btnDeleteAndBlock');
   if (btnDeleteAndBlock) {
     btnDeleteAndBlock.addEventListener('click', function () {
-      resolveReport('DELETE_AND_BLOCK', '게시물을 삭제하고 작성자 계정을 차단한 후 처리완료 하시겠습니까?');
+      var msg = targetType === 'review'
+        ? reportMessages.confirmDeleteAndBlockReview
+        : (targetType === 'comment'
+            ? reportMessages.confirmDeleteAndBlockComment
+            : reportMessages.confirmDeleteAndBlockPost);
+      resolveReport('DELETE_AND_BLOCK', msg);
     });
   }
 
   var btnBlockUser = document.getElementById('btnBlockUser');
   if (btnBlockUser) {
     btnBlockUser.addEventListener('click', function () {
-      resolveReport('BLOCK_USER', '해당 유저 계정을 차단하고 신고를 처리완료 하시겠습니까?');
+      resolveReport('BLOCK_USER', reportMessages.confirmBlockUser);
     });
   }
 
   var btnDismiss = document.getElementById('btnDismiss');
   if (btnDismiss) {
     btnDismiss.addEventListener('click', function () {
-      resolveReport('REJECTED', '신고를 반려 처리하시겠습니까?');
+      resolveReport('REJECTED', reportMessages.confirmDismiss);
     });
   }
 
   var btnRevertToPending = document.getElementById('btnRevertToPending');
   if (btnRevertToPending) {
     btnRevertToPending.addEventListener('click', function () {
-      resolveReport('REVERT_TO_PENDING', '처리를 취소하고 검토중으로 되돌리시겠습니까?');
+      resolveReport('REVERT_TO_PENDING', reportMessages.confirmRevert);
     });
   }
 }());
@@ -533,12 +653,12 @@ function goBackToList() {
     editBtn.addEventListener('click', function () {
       var isShown = editForm.style.display !== 'none';
       editForm.style.display = isShown ? 'none' : 'block';
-      editBtn.textContent    = isShown ? '✏️ 수정' : '✏️ 취소';
+      editBtn.textContent    = isShown ? reportMessages.actionEdit : reportMessages.actionCancelEdit;
     });
 
     editCancelBtn.addEventListener('click', function () {
       editForm.style.display = 'none';
-      editBtn.textContent    = '✏️ 수정';
+      editBtn.textContent    = reportMessages.actionEdit;
     });
 
     editSaveBtn.addEventListener('click', async function () {
@@ -550,34 +670,34 @@ function goBackToList() {
       try {
         var data = await postJson('/report/' + reportId + '/edit', params);
         if (data.success) { location.reload(); }
-        else { alert(data.message || '수정에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || reportMessages.alertUpdateFail); this.disabled = false; }
+      } catch (e) { alert(reportMessages.alertError); this.disabled = false; }
     });
   }
 
   /* 삭제 */
   if (deleteBtn) {
     deleteBtn.addEventListener('click', async function () {
-      if (!confirm('신고를 삭제하시겠습니까?')) return;
+      if (!confirm(reportMessages.confirmDeleteReport)) return;
       this.disabled = true;
       try {
         var data = await postJson('/report/' + reportId + '/delete', {});
         if (data.success) { location.href = ctx + '/report/list'; }
-        else { alert(data.message || '삭제에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || reportMessages.alertDeleteFail); this.disabled = false; }
+      } catch (e) { alert(reportMessages.alertError); this.disabled = false; }
     });
   }
 
   /* 신고 취소 */
   if (cancelReportBtn) {
     cancelReportBtn.addEventListener('click', async function () {
-      if (!confirm('신고를 취소하시겠습니까?')) return;
+      if (!confirm(reportMessages.confirmUserCancel)) return;
       this.disabled = true;
       try {
         var data = await postJson('/report/' + reportId + '/cancel', {});
         if (data.success) { location.reload(); }
-        else { alert(data.message || '취소에 실패했습니다.'); this.disabled = false; }
-      } catch (e) { alert('오류가 발생했습니다.'); this.disabled = false; }
+        else { alert(data.message || reportMessages.alertCancelFail); this.disabled = false; }
+      } catch (e) { alert(reportMessages.alertError); this.disabled = false; }
     });
   }
 }());

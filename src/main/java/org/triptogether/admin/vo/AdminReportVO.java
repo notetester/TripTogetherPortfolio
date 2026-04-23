@@ -22,11 +22,21 @@ public class AdminReportVO {
     private String userId;            // 신고자 로그인 ID (USERS JOIN)
     private String nickname;          // 신고자 닉네임 (USERS JOIN)
     private String accountStatus;     // 신고자 계정 상태 (ACTIVE / BLOCKED)
+    private String userRole;          // 신고자 권한 (USER / ADMIN / SYSTEM)
 
-    private String targetType;        // 신고 대상 유형 (post / comment / user)
-    private Long   targetId;          // 신고 대상 ID (post_id / comment_id / user_idx)
-    private String sourceType;        // 댓글 신고 시 원글 유형 (post)
-    private Long   sourceId;          // 댓글 신고 시 원글 ID (post_id) — null이면 원글보기 버튼 미표시
+    private String targetType;        // 신고 대상 유형 (post / comment / review / user)
+    private Long   targetId;          // 신고 대상 ID (post_id / comment_id / review_idx / user_idx)
+    private String targetUserRole;    // 대상(또는 작성자)의 권한 (SYSTEM 계정 보호용)
+    private String targetStatus;      // 대상 상태 (post_status / comment_status / account_status / review_block) — 'DELETED'면 원글 삭제됨
+    private String sourceType;        // 댓글/리뷰 신고 시 원글 유형 (post)
+    private Long   sourceId;          // 댓글/리뷰 신고 시 원글 ID (post_id) — null이면 원글보기 버튼 미표시
+
+    /* ── 컨텍스트 조각 (관리자 화면 표시용) ── */
+    private String targetTitle;       // post 제목
+    private String targetContent;     // comment / review 본문
+    private Long   targetPostId;      // comment 신고 시 원글 post_id
+    private Long   targetSpotIdx;     // review 신고 시 spot_idx
+    private String targetSpotName;    // review 신고 시 스팟 이름
 
     private String reason;            // 신고 사유 (spam / abuse / privacy / adult / illegal / other / user)
     private String description;       // 신고 상세 설명

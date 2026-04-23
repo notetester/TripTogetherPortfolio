@@ -149,6 +149,8 @@
                                  - 비밀글이고 본인 글이 아니고 어드민이 아니면 isBlocked = true --%>
                             <c:set var="isMyPost"  value="${inq.userIdx == loginUserIdx}"/>
                             <c:set var="isBlocked" value="${inq.isPrivate == 1 and !isMyPost and !isAdmin}"/>
+                            <%-- AI 독성 감지 BLUR 여부: ai_flagged=1 이고 관리자 아니면 제목 BLUR --%>
+                            <c:set var="isBlurred" value="${inq.aiFlagged and !isAdmin}"/>
 
                             <%-- isBlocked면 클릭 불가 행, 아니면 클릭 가능 행 --%>
                             <c:choose>
@@ -172,25 +174,39 @@
                                             <span class="inq-title inq-title-blocked"><spring:message code="inquiry.private.post"/></span>
                                         </c:when>
                                         <c:otherwise>
-                                            <span class="inq-title">
-                                                <c:if test="${inq.isPrivate == 1}">
-                                                    <span class="inq-private-tag"><spring:message code="inquiry.private.tag"/></span>
+                                            <div class="${isBlurred ? 'inq-title-blur-wrap' : ''}">
+                                                <span class="inq-title ${isBlurred ? 'inq-title-blurred' : ''}">
+                                                    <c:if test="${inq.isPrivate == 1}">
+                                                        <span class="inq-private-tag"><spring:message code="inquiry.private.tag"/></span>
+                                                    </c:if>
+                                                    ${inq.title}
+                                                </span>
+                                                <%-- 상태 뱃지 --%>
+                                                <span class="inq-status-badge ${inq.status}">
+                                                    <c:choose>
+                                                        <c:when test="${inq.status eq 'PENDING'}"><spring:message code="inquiry.status.pending"/></c:when>
+                                                        <c:when test="${inq.status eq 'IN_PROGRESS'}"><spring:message code="inquiry.status.inProgress"/></c:when>
+                                                        <c:when test="${inq.status eq 'COMPLETED'}"><spring:message code="inquiry.status.answerDone"/></c:when>
+                                                        <c:when test="${inq.status eq 'USER_COMPLETED'}"><spring:message code="inquiry.status.userCompleted"/></c:when>
+                                                        <c:when test="${inq.status eq 'CANCELLED'}"><spring:message code="inquiry.status.cancelled"/></c:when>
+                                                        <c:when test="${inq.status eq 'DELETE_REQUESTED'}"><spring:message code="inquiry.status.deleteRequested"/></c:when>
+                                                        <c:when test="${inq.status eq 'PRIVATE_REQUESTED'}"><spring:message code="inquiry.status.privateRequested"/></c:when>
+                                                        <c:when test="${inq.status eq 'PUBLIC_REQUESTED'}"><spring:message code="inquiry.status.publicRequested"/></c:when>
+                                                    </c:choose>
+                                                </span>
+                                                <%-- 관리자 전용 AI 감지 배지 + BLUR 해제 버튼 --%>
+                                                <c:if test="${isAdmin and inq.aiFlagged}">
+                                                    <span class="inq-ai-badge"><spring:message code="inquiry.badge.ai"/></span>
+                                                    <button type="button" class="inq-admin-clear-blur-btn"
+                                                            data-id="${inq.inquiryId}">
+                                                        <spring:message code="inquiry.admin.clearBlur"/>
+                                                    </button>
                                                 </c:if>
-                                                ${inq.title}
-                                            </span>
-                                            <%-- 상태 뱃지 --%>
-                                            <span class="inq-status-badge ${inq.status}">
-                                                <c:choose>
-                                                    <c:when test="${inq.status eq 'PENDING'}"><spring:message code="inquiry.status.pending"/></c:when>
-                                                    <c:when test="${inq.status eq 'IN_PROGRESS'}"><spring:message code="inquiry.status.inProgress"/></c:when>
-                                                    <c:when test="${inq.status eq 'COMPLETED'}"><spring:message code="inquiry.status.answerDone"/></c:when>
-                                                    <c:when test="${inq.status eq 'USER_COMPLETED'}"><spring:message code="inquiry.status.userCompleted"/></c:when>
-                                                    <c:when test="${inq.status eq 'CANCELLED'}"><spring:message code="inquiry.status.cancelled"/></c:when>
-                                                    <c:when test="${inq.status eq 'DELETE_REQUESTED'}"><spring:message code="inquiry.status.deleteRequested"/></c:when>
-                                                    <c:when test="${inq.status eq 'PRIVATE_REQUESTED'}"><spring:message code="inquiry.status.privateRequested"/></c:when>
-                                                    <c:when test="${inq.status eq 'PUBLIC_REQUESTED'}"><spring:message code="inquiry.status.publicRequested"/></c:when>
-                                                </c:choose>
-                                            </span>
+                                                <%-- 일반 유저: 제목 위에 오버레이로 AI 감지 안내 (클릭 시 블러 해제) --%>
+                                                <c:if test="${isBlurred}">
+                                                    <div class="inq-title-blur-overlay"><spring:message code="inquiry.blocked.ai"/></div>
+                                                </c:if>
+                                            </div>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
@@ -291,6 +307,35 @@
             });
         });
     }
+
+    // 블러 오버레이 클릭 시 제목 블러 해제 (행 클릭 막고 점진적 공개)
+    document.querySelectorAll('.inq-title-blur-overlay').forEach(function (ov) {
+        ov.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var wrap = this.closest('.inq-title-blur-wrap');
+            if (wrap) {
+                wrap.querySelectorAll('.inq-title-blurred').forEach(function (el) {
+                    el.classList.remove('inq-title-blurred');
+                });
+                this.remove();
+            }
+        });
+    });
+
+    // 관리자 BLUR 해제 버튼 (행 클릭 이벤트 전파 막고 API 호출)
+    document.querySelectorAll('.inq-admin-clear-blur-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var inquiryId = this.getAttribute('data-id');
+            if (!confirm('<spring:message code="inquiry.admin.clearBlur.confirm" javaScriptEscape="true"/>')) return;
+            fetch(ctx + '/inquiry/' + inquiryId + '/clear-blur', { method: 'POST' })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (d.success) location.reload();
+                    else alert('<spring:message code="inquiry.admin.clearBlur.fail" javaScriptEscape="true"/>');
+                });
+        });
+    });
 })();
 </script>
 

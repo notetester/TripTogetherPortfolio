@@ -1,9 +1,16 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
 <html lang="ko">
 <body>
+<spring:message code="mypage.common.cancel" var="mypageCancelLabel"/>
+<spring:message code="mypage.common.confirm" var="mypageConfirmLabel"/>
+<spring:message code="mypage.editConfirm.forgotPassword" var="mypageForgotPasswordLabel"/>
+<spring:message code="mypage.editConfirm.invalidPassword" javaScriptEscape="true" var="mypageEditConfirmInvalidPassword"/>
+<spring:message code="mypage.editConfirm.passwordRequired" javaScriptEscape="true" var="mypageEditConfirmPasswordRequired"/>
+
 <div class="auth-wrap">
   <div class="auth-card">
 
@@ -15,29 +22,29 @@
       <div style="width:60px;height:60px;background:var(--blue-light);border-radius:50%;
                   display:flex;align-items:center;justify-content:center;
                   margin:0 auto 16px;font-size:28px;">🛡️</div>
-      <h1 class="auth-title" style="margin-bottom:8px;">본인 확인</h1>
-      <p class="auth-sub" style="margin-bottom:0;">회원정보 수정을 위해<br>현재 비밀번호를 입력해주세요.</p>
+      <h1 class="auth-title" style="margin-bottom:8px;"><spring:message code="mypage.editConfirm.title"/></h1>
+      <p class="auth-sub" style="margin-bottom:0;"><spring:message code="mypage.editConfirm.subtitle"/></p>
     </div>
 
     <div id="errorBanner" class="auth-error-banner"></div>
 
     <div class="form-group">
-      <label class="form-label" for="password">현재 비밀번호</label>
+      <label class="form-label" for="password"><spring:message code="mypage.password.current"/></label>
       <div class="pw-wrap">
         <input class="form-input" type="password" id="password"
-               placeholder="현재 비밀번호 입력" autocomplete="current-password">
+               placeholder="<spring:message code='mypage.password.current.placeholder'/>" autocomplete="current-password">
         <button type="button" class="pw-toggle" id="pwToggle">👁</button>
       </div>
     </div>
 
-    <button type="button" class="btn-submit" id="confirmBtn">확인</button>
+    <button type="button" class="btn-submit" id="confirmBtn">${mypageConfirmLabel}</button>
 
     <div style="display:flex;justify-content:center;gap:16px;margin-top:16px;">
       <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-pw">
-        비밀번호를 잊으셨나요?
+        ${mypageForgotPasswordLabel}
       </a>
       <span style="color:var(--gray-300);">|</span>
-      <a class="auth-link" href="${pageContext.request.contextPath}/">취소</a>
+      <a class="auth-link" href="${pageContext.request.contextPath}/">${mypageCancelLabel}</a>
     </div>
   </div>
 </div>
@@ -51,7 +58,7 @@
   async function doConfirm(){
     const password=document.getElementById('password').value;
     const banner=document.getElementById('errorBanner');
-    if(!password){ banner.textContent='⚠️ 비밀번호를 입력해주세요.'; banner.classList.add('show'); return; }
+    if(!password){ banner.textContent='⚠️ ${mypageEditConfirmPasswordRequired}'; banner.classList.add('show'); return; }
     banner.classList.remove('show');
 
     const btn=document.getElementById('confirmBtn');
@@ -66,7 +73,7 @@
     if(data.success){
       location.href='${pageContext.request.contextPath}/mypage/edit';
     } else {
-      banner.textContent='⚠️ '+(data.message||'비밀번호가 올바르지 않습니다.');
+      banner.textContent='⚠️ '+(data.message||'${mypageEditConfirmInvalidPassword}');
       banner.classList.add('show');
       document.getElementById('password').value='';
       document.getElementById('password').focus();

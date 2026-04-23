@@ -1,0 +1,744 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<div class="adm-modal-overlay" id="adminMemberContextModal">
+    <div class="adm-modal adm-context-modal">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="adminMemberContextTitle"><spring:message code="admin.context.memberTitle"/></div>
+            <button class="adm-modal-close" type="button" onclick="closeAdminContextModal('adminMemberContextModal')">✕</button>
+        </div>
+        <div class="adm-modal-body" id="adminMemberContextBody">
+            <div class="adm-context-empty"><spring:message code="admin.common.loading"/></div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeAdminContextModal('adminMemberContextModal')"><spring:message code="admin.common.close"/></button>
+        </div>
+    </div>
+</div>
+
+<div class="adm-modal-overlay" id="adminIpContextModal">
+    <div class="adm-modal adm-context-modal adm-context-modal-wide">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="adminIpContextTitle"><spring:message code="admin.context.ipTitle"/></div>
+            <button class="adm-modal-close" type="button" onclick="closeAdminContextModal('adminIpContextModal')">✕</button>
+        </div>
+        <div class="adm-modal-body" id="adminIpContextBody">
+            <div class="adm-context-empty"><spring:message code="admin.common.loading"/></div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeAdminContextModal('adminIpContextModal')"><spring:message code="admin.common.close"/></button>
+        </div>
+    </div>
+</div>
+
+<script>
+const ADMIN_CONTEXT_BASE = '${pageContext.request.contextPath}';
+const ADMIN_CONTEXT_LOCALE = '${pageContext.response.locale}'.replace('_', '-');
+const ADMIN_CONTEXT_MSG = {
+    dash: '<spring:message code="admin.common.dash" javaScriptEscape="true"/>',
+    loading: '<spring:message code="admin.common.loading" javaScriptEscape="true"/>',
+    close: '<spring:message code="admin.common.close" javaScriptEscape="true"/>',
+    fetchParseError: '<spring:message code="admin.context.fetchParseError" javaScriptEscape="true"/>',
+    fetchError: '<spring:message code="admin.context.fetchError" javaScriptEscape="true"/>',
+    memberTitle: '<spring:message code="admin.context.memberTitle" javaScriptEscape="true"/>',
+    ipTitle: '<spring:message code="admin.context.ipTitle" javaScriptEscape="true"/>',
+    infoTab: '<spring:message code="admin.context.tab.info" javaScriptEscape="true"/>',
+    loginTab: '<spring:message code="admin.context.tab.logins" javaScriptEscape="true"/>',
+    securityTab: '<spring:message code="admin.context.tab.security" javaScriptEscape="true"/>',
+    emailRequestTab: '<spring:message code="admin.context.tab.emailRequests" javaScriptEscape="true"/>',
+    emailTokenTab: '<spring:message code="admin.context.tab.emailTokens" javaScriptEscape="true"/>',
+    activityTab: '<spring:message code="admin.context.tab.activity" javaScriptEscape="true"/>',
+    blockTab: '<spring:message code="admin.context.tab.blocks" javaScriptEscape="true"/>',
+    actionTab: '<spring:message code="admin.context.tab.actions" javaScriptEscape="true"/>',
+    memberNo: '<spring:message code="admin.context.memberNo" javaScriptEscape="true"/>',
+    userId: '<spring:message code="admin.context.userId" javaScriptEscape="true"/>',
+    socialOnly: '<spring:message code="admin.context.socialOnly" javaScriptEscape="true"/>',
+    nickname: '<spring:message code="admin.context.nickname" javaScriptEscape="true"/>',
+    email: '<spring:message code="admin.context.email" javaScriptEscape="true"/>',
+    status: '<spring:message code="admin.common.status" javaScriptEscape="true"/>',
+    role: '<spring:message code="admin.common.role" javaScriptEscape="true"/>',
+    nationality: '<spring:message code="admin.context.nationality" javaScriptEscape="true"/>',
+    preferredLanguage: '<spring:message code="admin.context.preferredLanguage" javaScriptEscape="true"/>',
+    createdAt: '<spring:message code="admin.context.createdAt" javaScriptEscape="true"/>',
+    lastLogin: '<spring:message code="admin.context.lastLogin" javaScriptEscape="true"/>',
+    inputValue: '<spring:message code="admin.context.inputValue" javaScriptEscape="true"/>',
+    result: '<spring:message code="admin.common.result" javaScriptEscape="true"/>',
+    targetEmail: '<spring:message code="admin.context.targetEmail" javaScriptEscape="true"/>',
+    requestEmail: '<spring:message code="admin.context.requestEmail" javaScriptEscape="true"/>',
+    requestId: '<spring:message code="admin.context.requestId" javaScriptEscape="true"/>',
+    expiresAt: '<spring:message code="admin.context.expiresAt" javaScriptEscape="true"/>',
+    uri: '<spring:message code="admin.context.uri" javaScriptEscape="true"/>',
+    blockedIp: '<spring:message code="admin.context.blockedIp" javaScriptEscape="true"/>',
+    batch: '<spring:message code="admin.context.batch" javaScriptEscape="true"/>',
+    priority: '<spring:message code="admin.context.priority" javaScriptEscape="true"/>',
+    targetIp: '<spring:message code="admin.context.targetIp" javaScriptEscape="true"/>',
+    blockPolicy: '<spring:message code="admin.context.blockPolicy" javaScriptEscape="true"/>',
+    ruleAction: '<spring:message code="admin.context.ruleAction" javaScriptEscape="true"/>',
+    category: '<spring:message code="admin.context.category" javaScriptEscape="true"/>',
+    detailMemo: '<spring:message code="admin.context.detailMemo" javaScriptEscape="true"/>',
+    reason: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>',
+    saveProfileSection: '<spring:message code="admin.context.action.profileTitle" javaScriptEscape="true"/>',
+    statusRoleSection: '<spring:message code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>',
+    quickBlockSection: '<spring:message code="admin.context.action.quickBlockTitle" javaScriptEscape="true"/>',
+    ipActionSection: '<spring:message code="admin.context.action.ipPolicyTitle" javaScriptEscape="true"/>',
+    saveProfileButton: '<spring:message code="admin.context.action.saveProfile" javaScriptEscape="true"/>',
+    applyButton: '<spring:message code="admin.common.apply" javaScriptEscape="true"/>',
+    changeRoleButton: '<spring:message code="admin.context.action.changeRole" javaScriptEscape="true"/>',
+    blockButton: '<spring:message code="admin.context.action.applyBlock" javaScriptEscape="true"/>',
+    createPolicyButton: '<spring:message code="admin.context.action.createPolicy" javaScriptEscape="true"/>',
+    roleReason: '<spring:message code="admin.context.action.roleReason" javaScriptEscape="true"/>',
+    roleReasonPlaceholder: '<spring:message code="admin.context.action.roleReasonPlaceholder" javaScriptEscape="true"/>',
+    blockType: '<spring:message code="admin.context.action.blockType" javaScriptEscape="true"/>',
+    blockIpPlaceholder: '<spring:message code="admin.context.action.blockIpPlaceholder" javaScriptEscape="true"/>',
+    blockExpires: '<spring:message code="admin.context.action.blockExpires" javaScriptEscape="true"/>',
+    actionReasonPlaceholder: '<spring:message code="admin.context.action.reasonPlaceholder" javaScriptEscape="true"/>',
+    detailMemoPlaceholder: '<spring:message code="admin.context.action.detailMemoPlaceholder" javaScriptEscape="true"/>',
+    emptyLoginHistory: '<spring:message code="admin.context.empty.logins" javaScriptEscape="true"/>',
+    emptySecurityHistory: '<spring:message code="admin.context.empty.security" javaScriptEscape="true"/>',
+    emptyEmailRequests: '<spring:message code="admin.context.empty.emailRequests" javaScriptEscape="true"/>',
+    emptyEmailTokens: '<spring:message code="admin.context.empty.emailTokens" javaScriptEscape="true"/>',
+    emptyActivity: '<spring:message code="admin.context.empty.activity" javaScriptEscape="true"/>',
+    emptyBlocks: '<spring:message code="admin.context.empty.blocks" javaScriptEscape="true"/>',
+    emptyIpBlockHistory: '<spring:message code="admin.context.empty.ipBlockHistory" javaScriptEscape="true"/>',
+    emptyIpRules: '<spring:message code="admin.context.empty.ipRules" javaScriptEscape="true"/>',
+    yes: '<spring:message code="admin.common.yes" javaScriptEscape="true"/>',
+    no: '<spring:message code="admin.common.no" javaScriptEscape="true"/>',
+    active: '<spring:message code="admin.common.active" javaScriptEscape="true"/>',
+    inactive: '<spring:message code="admin.common.inactive" javaScriptEscape="true"/>',
+    used: '<spring:message code="admin.context.used" javaScriptEscape="true"/>',
+    unused: '<spring:message code="admin.context.unused" javaScriptEscape="true"/>',
+    success: '<spring:message code="admin.common.success" javaScriptEscape="true"/>',
+    fail: '<spring:message code="admin.common.fail" javaScriptEscape="true"/>',
+    confirmStatusChange: '<spring:message code="admin.context.confirmStatusChange" javaScriptEscape="true"/>',
+    requireRoleReason: '<spring:message code="admin.context.requireRoleReason" javaScriptEscape="true"/>',
+    requirePolicyReason: '<spring:message code="admin.context.requirePolicyReason" javaScriptEscape="true"/>',
+    requireBlockedIp: '<spring:message code="admin.context.requireBlockedIp" javaScriptEscape="true"/>',
+    saveProfileSuccess: '<spring:message code="admin.context.toast.saveProfileSuccess" javaScriptEscape="true"/>',
+    saveProfileFail: '<spring:message code="admin.context.toast.saveProfileFail" javaScriptEscape="true"/>',
+    saveProfileError: '<spring:message code="admin.context.toast.saveProfileError" javaScriptEscape="true"/>',
+    saveStatusSuccess: '<spring:message code="admin.context.toast.saveStatusSuccess" javaScriptEscape="true"/>',
+    saveStatusFail: '<spring:message code="admin.context.toast.saveStatusFail" javaScriptEscape="true"/>',
+    saveStatusError: '<spring:message code="admin.context.toast.saveStatusError" javaScriptEscape="true"/>',
+    saveRoleSuccess: '<spring:message code="admin.context.toast.saveRoleSuccess" javaScriptEscape="true"/>',
+    saveRoleFail: '<spring:message code="admin.context.toast.saveRoleFail" javaScriptEscape="true"/>',
+    saveRoleError: '<spring:message code="admin.context.toast.saveRoleError" javaScriptEscape="true"/>',
+    saveBlockSuccess: '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>',
+    saveBlockFail: '<spring:message code="admin.context.toast.saveBlockFail" javaScriptEscape="true"/>',
+    saveBlockError: '<spring:message code="admin.context.toast.saveBlockError" javaScriptEscape="true"/>',
+    savePolicySuccess: '<spring:message code="admin.context.toast.savePolicySuccess" javaScriptEscape="true"/>',
+    savePolicyFail: '<spring:message code="admin.context.toast.savePolicyFail" javaScriptEscape="true"/>',
+    savePolicyError: '<spring:message code="admin.context.toast.savePolicyError" javaScriptEscape="true"/>',
+    profileSaved: '<spring:message code="admin.context.profileSaved" javaScriptEscape="true"/>',
+    stateChanged: '<spring:message code="admin.context.stateChanged" javaScriptEscape="true"/>',
+    roleChanged: '<spring:message code="admin.context.roleChanged" javaScriptEscape="true"/>',
+    blockApplied: '<spring:message code="admin.context.blockApplied" javaScriptEscape="true"/>',
+    policyCreated: '<spring:message code="admin.context.policyCreated" javaScriptEscape="true"/>',
+    userOnly: '<spring:message code="admin.context.blockType.userOnly" javaScriptEscape="true"/>',
+    ipOnly: '<spring:message code="admin.context.blockType.ipOnly" javaScriptEscape="true"/>',
+    userIp: '<spring:message code="admin.context.blockType.userIp" javaScriptEscape="true"/>',
+    block: '<spring:message code="admin.context.ruleAction.block" javaScriptEscape="true"/>',
+    allow: '<spring:message code="admin.context.ruleAction.allow" javaScriptEscape="true"/>'
+};
+const ADMIN_CONTEXT_STATUS_LABELS = {
+    ACTIVE: '<spring:message code="admin.status.ACTIVE" javaScriptEscape="true"/>',
+    DORMANT: '<spring:message code="admin.status.DORMANT" javaScriptEscape="true"/>',
+    BLOCKED: '<spring:message code="admin.status.BLOCKED" javaScriptEscape="true"/>',
+    DELETED: '<spring:message code="admin.status.DELETED" javaScriptEscape="true"/>'
+};
+const ADMIN_CONTEXT_ROLE_LABELS = {
+    USER: '<spring:message code="admin.role.USER" javaScriptEscape="true"/>',
+    BUSINESS: '<spring:message code="admin.role.BUSINESS" javaScriptEscape="true"/>',
+    PARTNER: '<spring:message code="admin.role.PARTNER" javaScriptEscape="true"/>',
+    BOT: '<spring:message code="admin.role.BOT" javaScriptEscape="true"/>',
+    ADMIN: '<spring:message code="admin.role.ADMIN" javaScriptEscape="true"/>',
+    SUPERADMIN: '<spring:message code="admin.role.SUPERADMIN" javaScriptEscape="true"/>',
+    SYSTEM: '<spring:message code="admin.role.SYSTEM" javaScriptEscape="true"/>'
+};
+
+function adminContextMessage(key) {
+    return Object.prototype.hasOwnProperty.call(ADMIN_CONTEXT_MSG, key) ? ADMIN_CONTEXT_MSG[key] : key;
+}
+
+function formatAdminContextMessage(template, values) {
+    return String(template || '').replace(/\{(\d+)}/g, function(_, index) {
+        return values && values[index] != null ? values[index] : '';
+    });
+}
+
+function escapeAdminContextHtml(value) {
+    if (value == null) return '';
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatAdminContextDate(value) {
+    if (!value) return adminContextMessage('dash');
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return escapeAdminContextHtml(value);
+    return date.toLocaleString(ADMIN_CONTEXT_LOCALE, {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+}
+
+function formatAdminContextShortDate(value) {
+    if (!value) return adminContextMessage('dash');
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return escapeAdminContextHtml(value);
+    return date.toLocaleString(ADMIN_CONTEXT_LOCALE, {
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+}
+
+function adminContextStatusLabel(value) {
+    return ADMIN_CONTEXT_STATUS_LABELS[value] || escapeAdminContextHtml(value || adminContextMessage('dash'));
+}
+
+function adminContextRoleLabel(value) {
+    return ADMIN_CONTEXT_ROLE_LABELS[value] || escapeAdminContextHtml(value || adminContextMessage('dash'));
+}
+
+function adminContextBooleanLabel(value) {
+    return value ? adminContextMessage('yes') : adminContextMessage('no');
+}
+
+function adminContextActiveLabel(value) {
+    return value ? adminContextMessage('active') : adminContextMessage('inactive');
+}
+
+function adminContextActionLabel(value) {
+    if (value === 'ALLOW') return adminContextMessage('allow');
+    if (value === 'BLOCK') return adminContextMessage('block');
+    return escapeAdminContextHtml(value || adminContextMessage('dash'));
+}
+
+function adminContextLoadingHtml() {
+    return '<div class="adm-context-empty">' + adminContextMessage('loading') + '</div>';
+}
+
+function adminContextErrorHtml(message) {
+    return '<div class="adm-context-empty is-error">' + escapeAdminContextHtml(message) + '</div>';
+}
+
+function closeAdminContextModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove('open');
+}
+
+function adminContextFetch(url) {
+    return fetch(url, { headers: { 'Accept': 'application/json' } }).then(async function(response) {
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            throw new Error(adminContextMessage('fetchParseError'));
+        }
+        if (!response.ok || !data.success) {
+            throw new Error((data && data.message) || adminContextMessage('fetchError'));
+        }
+        return data;
+    });
+}
+
+function renderContextTimeline(items, renderItem, emptyMessage) {
+    if (!Array.isArray(items) || !items.length) {
+        return '<div class="adm-context-empty">' + emptyMessage + '</div>';
+    }
+    return '<div class="adm-context-stack">' + items.map(renderItem).join('') + '</div>';
+}
+
+function renderContextRecord(title, meta, lines, dangerText) {
+    const renderedLines = (lines || []).filter(Boolean).map(function(line) {
+        return '<div class="adm-context-record-line">' + line + '</div>';
+    }).join('');
+    return ''
+        + '<div class="adm-context-record">'
+        + '<div class="adm-context-record-head">'
+        + '<div class="adm-context-record-title">' + title + '</div>'
+        + '<div class="adm-context-record-meta">' + meta + '</div>'
+        + '</div>'
+        + renderedLines
+        + (dangerText ? '<div class="adm-context-record-danger">' + dangerText + '</div>' : '')
+        + '</div>';
+}
+
+function renderAdminContextSocialHtml(linkedProviders) {
+    if (!linkedProviders) {
+        return '<span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider" javaScriptEscape="true"/></span>';
+    }
+
+    const providerMap = {
+        KAKAO: {
+            label: '<spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
+            className: 'kakao',
+            icon: '<span class="adm-social-icon kakao-mark">k</span>'
+        },
+        NAVER: {
+            label: '<spring:message code="admin.social.naver" javaScriptEscape="true"/>',
+            className: 'naver',
+            icon: '<span class="adm-social-icon naver-mark">N</span>'
+        },
+        GOOGLE: {
+            label: '<spring:message code="admin.social.google" javaScriptEscape="true"/>',
+            className: 'google',
+            icon: '<span class="adm-social-icon google-mark"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>'
+        }
+    };
+
+    const items = String(linkedProviders)
+        .split(',')
+        .map(function(provider) { return provider.trim(); })
+        .filter(function(provider) { return provider.length > 0; })
+        .map(function(provider) {
+            const info = providerMap[provider];
+            if (!info) {
+                return '<span class="adm-social-pill"><span class="adm-social-label">' + escapeAdminContextHtml(provider) + '</span></span>';
+            }
+            return '<span class="adm-social-pill ' + info.className + '">' + info.icon + '<span class="adm-social-label">' + escapeAdminContextHtml(info.label) + '</span></span>';
+        });
+
+    if (!items.length) {
+        return '<span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider" javaScriptEscape="true"/></span>';
+    }
+
+    return '<div class="adm-social-list">' + items.join('') + '</div>';
+}
+
+function renderMemberInfoCard(member) {
+    return ''
+        + '<div class="detail-grid">'
+        + '<div class="detail-item"><div class="detail-label">' + adminContextMessage('memberNo') + '</div><div class="detail-value">#' + escapeAdminContextHtml(member.userIdx) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + adminContextMessage('userId') + '</div><div class="detail-value">' + (member.userId ? '@' + escapeAdminContextHtml(member.userId) : adminContextMessage('socialOnly')) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + adminContextMessage('nickname') + '</div><div class="detail-value">' + escapeAdminContextHtml(member.nickname || adminContextMessage('dash')) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + adminContextMessage('email') + '</div><div class="detail-value">' + escapeAdminContextHtml(member.userEmail || adminContextMessage('dash')) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + adminContextMessage('status') + '</div><div class="detail-value"><span class="status-badge ' + escapeAdminContextHtml(member.accountStatus || 'ACTIVE') + '">' + adminContextStatusLabel(member.accountStatus || 'ACTIVE') + '</span></div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + adminContextMessage('role') + '</div><div class="detail-value"><span class="role-badge ' + escapeAdminContextHtml(member.userRole || 'USER') + '">' + adminContextRoleLabel(member.userRole || 'USER') + '</span></div></div>'
+        + '<div class="detail-item"><div class="detail-label"><spring:message code="admin.members.social" javaScriptEscape="true"/></div><div class="detail-value">' + renderAdminContextSocialHtml(member.linkedProviders) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + adminContextMessage('nationality') + '</div><div class="detail-value">' + escapeAdminContextHtml(member.nationality || adminContextMessage('dash')) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + adminContextMessage('preferredLanguage') + '</div><div class="detail-value">' + escapeAdminContextHtml(member.preferredLang || adminContextMessage('dash')) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + adminContextMessage('createdAt') + '</div><div class="detail-value">' + formatAdminContextDate(member.createdAt) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + adminContextMessage('lastLogin') + '</div><div class="detail-value">' + formatAdminContextDate(member.lastLoginAt) + '</div></div>'
+        + '</div>';
+}
+
+function renderLoginAuditItem(item) {
+    return renderContextRecord(
+        '<strong>' + escapeAdminContextHtml(item.eventType || 'LOGIN') + '</strong> <span class="adm-context-slash">/</span> ' + escapeAdminContextHtml(item.authProvider || item.authType || adminContextMessage('dash')),
+        formatAdminContextShortDate(item.loginAt),
+        [
+            adminContextMessage('inputValue') + ': ' + escapeAdminContextHtml(item.loginIdentifier || adminContextMessage('dash')),
+            'IP: ' + escapeAdminContextHtml(item.ipAddress || adminContextMessage('dash')) + ' <span class="adm-context-slash">/</span> ' + adminContextMessage('result') + ': ' + escapeAdminContextHtml(item.success ? adminContextMessage('success') : adminContextMessage('fail'))
+        ],
+        item.failReason ? escapeAdminContextHtml(item.failReason) : ''
+    );
+}
+
+function renderSecurityAuditItem(item) {
+    return renderContextRecord(
+        '<strong>' + escapeAdminContextHtml(item.eventType || adminContextMessage('dash')) + '</strong> <span class="adm-context-slash">/</span> ' + escapeAdminContextHtml(item.eventStage || adminContextMessage('dash')),
+        formatAdminContextShortDate(item.occurredAt),
+        [
+            adminContextMessage('inputValue') + ': ' + escapeAdminContextHtml(item.inputIdentifier || adminContextMessage('dash')),
+            adminContextMessage('targetEmail') + ': ' + escapeAdminContextHtml(item.targetEmail || adminContextMessage('dash')) + ' <span class="adm-context-slash">/</span> ' + adminContextMessage('result') + ': ' + escapeAdminContextHtml(item.success ? adminContextMessage('success') : adminContextMessage('fail'))
+        ],
+        item.failReason ? escapeAdminContextHtml(item.failReason) : ''
+    );
+}
+
+function renderEmailRequestItem(item) {
+    return renderContextRecord(
+        '<strong>' + escapeAdminContextHtml(item.purpose || adminContextMessage('dash')) + '</strong> <span class="adm-context-slash">/</span> ' + escapeAdminContextHtml(item.status || adminContextMessage('dash')),
+        formatAdminContextShortDate(item.requestedAt),
+        [
+            adminContextMessage('requestEmail') + ': ' + escapeAdminContextHtml(item.pendingEmail || adminContextMessage('dash')),
+            'IP: ' + escapeAdminContextHtml(item.ipAddress || adminContextMessage('dash')) + ' <span class="adm-context-slash">/</span> ' + adminContextMessage('requestId') + ': ' + escapeAdminContextHtml(item.requestId || adminContextMessage('dash'))
+        ]
+    );
+}
+
+function renderEmailTokenItem(item) {
+    return renderContextRecord(
+        '<strong>' + escapeAdminContextHtml(item.purpose || adminContextMessage('dash')) + '</strong> <span class="adm-context-slash">/</span> ' + escapeAdminContextHtml(item.used ? adminContextMessage('used') : adminContextMessage('unused')),
+        formatAdminContextShortDate(item.createdAt),
+        [
+            adminContextMessage('targetEmail') + ': ' + escapeAdminContextHtml(item.email || adminContextMessage('dash')),
+            adminContextMessage('expiresAt') + ': ' + formatAdminContextDate(item.expiredAt)
+        ]
+    );
+}
+
+function renderActivityItem(item) {
+    return renderContextRecord(
+        '<strong>' + escapeAdminContextHtml(item.activityCode || adminContextMessage('dash')) + '</strong> <span class="adm-context-slash">/</span> ' + escapeAdminContextHtml(item.activityDomain || item.activityType || adminContextMessage('dash')),
+        formatAdminContextShortDate(item.createdAt),
+        [
+            adminContextMessage('uri') + ': ' + escapeAdminContextHtml(item.requestUri || adminContextMessage('dash')),
+            'IP: ' + escapeAdminContextHtml(item.ipAddress || adminContextMessage('dash')) + ' <span class="adm-context-slash">/</span> ' + adminContextMessage('status') + ': ' + escapeAdminContextHtml(item.responseStatus || adminContextMessage('dash'))
+        ]
+    );
+}
+
+function renderUserBlockItem(item) {
+    return renderContextRecord(
+        '<strong>' + escapeAdminContextHtml(item.blockType || adminContextMessage('dash')) + '</strong> <span class="adm-context-slash">/</span> ' + escapeAdminContextHtml(item.active ? adminContextMessage('active') : adminContextMessage('inactive')),
+        formatAdminContextShortDate(item.blockedAt),
+        [
+            adminContextMessage('reason') + ': ' + escapeAdminContextHtml(item.reason || adminContextMessage('dash')),
+            adminContextMessage('blockedIp') + ': ' + escapeAdminContextHtml(item.blockedIp || adminContextMessage('dash'))
+        ]
+    );
+}
+
+function renderBlockHistoryItem(item) {
+    return renderContextRecord(
+        '<strong>' + escapeAdminContextHtml(item.historyKind || adminContextMessage('dash')) + '</strong> <span class="adm-context-slash">/</span> ' + escapeAdminContextHtml(item.blockType || item.ruleAction || adminContextMessage('dash')),
+        formatAdminContextShortDate(item.blockedAt || item.createdAt),
+        [
+            adminContextMessage('reason') + ': ' + escapeAdminContextHtml(item.reason || item.controlReason || adminContextMessage('dash'))
+        ]
+    );
+}
+
+function renderIpRuleItem(item) {
+    return renderContextRecord(
+        '<strong>' + adminContextActionLabel(item.ruleAction) + '</strong> <span class="adm-context-slash">/</span> ' + escapeAdminContextHtml(item.matchType || adminContextMessage('dash')),
+        escapeAdminContextHtml(item.effectiveStatus || adminContextMessage('dash')),
+        [
+            adminContextMessage('reason') + ': ' + escapeAdminContextHtml(item.reason || adminContextMessage('dash')),
+            adminContextMessage('batch') + ': ' + escapeAdminContextHtml(item.batchName || adminContextMessage('dash')) + ' <span class="adm-context-slash">/</span> ' + adminContextMessage('priority') + ': ' + escapeAdminContextHtml(item.priority || adminContextMessage('dash'))
+        ]
+    );
+}
+
+function switchAdminContextTab(modalId, tabId, button) {
+    const modal = document.getElementById(modalId);
+    modal.querySelectorAll('.adm-tab').forEach(function(tab) { tab.classList.remove('active'); });
+    modal.querySelectorAll('.admin-context-tab-pane').forEach(function(pane) { pane.style.display = 'none'; });
+    button.classList.add('active');
+    const pane = modal.querySelector('[data-context-pane="' + tabId + '"]');
+    if (pane) pane.style.display = '';
+}
+
+function buildMemberActions(member) {
+    return ''
+        + '<div class="adm-context-actions-grid">'
+        + '<div class="adm-context-panel">'
+        + '<div class="adm-context-panel-title">' + adminContextMessage('saveProfileSection') + '</div>'
+        + '<div class="adm-filter-label">' + adminContextMessage('nickname') + '</div><input class="adm-input js-member-profile-nickname adm-input-inline" type="text" value="' + escapeAdminContextHtml(member.nickname || '') + '">'
+        + '<div class="adm-filter-label">' + adminContextMessage('nationality') + '</div><input class="adm-input js-member-profile-nationality adm-input-inline" type="text" value="' + escapeAdminContextHtml(member.nationality || '') + '">'
+        + '<div class="adm-filter-label">' + adminContextMessage('preferredLanguage') + '</div><input class="adm-input js-member-profile-language adm-input-inline" type="text" value="' + escapeAdminContextHtml(member.preferredLang || '') + '">'
+        + '<button type="button" class="adm-btn adm-btn-primary adm-context-btn" onclick="saveAdminMemberProfile(' + escapeAdminContextHtml(member.userIdx) + ', this)">' + adminContextMessage('saveProfileButton') + '</button>'
+        + '</div>'
+        + '<div class="adm-context-panel">'
+        + '<div class="adm-context-panel-title">' + adminContextMessage('statusRoleSection') + '</div>'
+        + '<div class="adm-filter-label">' + adminContextMessage('status') + '</div>'
+        + '<div class="adm-context-inline">'
+        + '<select class="adm-select js-member-status adm-select-inline"><option value="ACTIVE">' + adminContextStatusLabel('ACTIVE') + '</option><option value="DORMANT">' + adminContextStatusLabel('DORMANT') + '</option><option value="BLOCKED">' + adminContextStatusLabel('BLOCKED') + '</option><option value="DELETED">' + adminContextStatusLabel('DELETED') + '</option></select>'
+        + '<button type="button" class="adm-btn adm-btn-ghost" onclick="saveAdminMemberStatus(' + escapeAdminContextHtml(member.userIdx) + ', this)">' + adminContextMessage('applyButton') + '</button>'
+        + '</div>'
+        + '<div class="adm-filter-label">' + adminContextMessage('role') + '</div>'
+        + '<select class="adm-select js-member-role adm-select-inline"><option value="USER">' + adminContextRoleLabel('USER') + '</option><option value="BUSINESS">' + adminContextRoleLabel('BUSINESS') + '</option><option value="PARTNER">' + adminContextRoleLabel('PARTNER') + '</option><option value="BOT">' + adminContextRoleLabel('BOT') + '</option><option value="ADMIN">' + adminContextRoleLabel('ADMIN') + '</option></select>'
+        + '<div class="adm-filter-label">' + adminContextMessage('roleReason') + '</div>'
+        + '<input class="adm-input js-member-role-reason adm-input-inline" type="text" maxlength="500" placeholder="' + adminContextMessage('roleReasonPlaceholder') + '">'
+        + '<button type="button" class="adm-btn adm-btn-ghost adm-context-btn" onclick="saveAdminMemberRole(' + escapeAdminContextHtml(member.userIdx) + ', this)">' + adminContextMessage('changeRoleButton') + '</button>'
+        + '</div>'
+        + '<div class="adm-context-panel">'
+        + '<div class="adm-context-panel-title">' + adminContextMessage('quickBlockSection') + '</div>'
+        + '<div class="adm-filter-label">' + adminContextMessage('blockType') + '</div>'
+        + '<select class="adm-select js-member-block-type adm-select-inline"><option value="USER_ONLY">' + adminContextMessage('userOnly') + '</option><option value="IP_ONLY">' + adminContextMessage('ipOnly') + '</option><option value="USER_IP">' + adminContextMessage('userIp') + '</option></select>'
+        + '<div class="adm-filter-label">' + adminContextMessage('blockedIp') + '</div>'
+        + '<input class="adm-input js-member-block-ip adm-input-inline" type="text" placeholder="' + adminContextMessage('blockIpPlaceholder') + '">'
+        + '<div class="adm-filter-label">' + adminContextMessage('blockExpires') + '</div>'
+        + '<input class="adm-input js-member-block-expires adm-input-inline" type="datetime-local">'
+        + '<div class="adm-filter-label">' + adminContextMessage('reason') + '</div>'
+        + '<textarea class="adm-input js-member-block-reason adm-context-textarea" placeholder="' + adminContextMessage('actionReasonPlaceholder') + '"></textarea>'
+        + '<button type="button" class="adm-btn adm-btn-primary adm-context-btn" onclick="saveAdminMemberBlock(' + escapeAdminContextHtml(member.userIdx) + ', this)">' + adminContextMessage('blockButton') + '</button>'
+        + '</div>'
+        + '</div>';
+}
+
+function buildIpActions(ipAddress) {
+    return ''
+        + '<div class="adm-context-panel">'
+        + '<div class="adm-context-panel-title">' + adminContextMessage('ipActionSection') + '</div>'
+        + '<div class="adm-filter-label">' + adminContextMessage('targetIp') + '</div><div class="adm-context-code">' + escapeAdminContextHtml(ipAddress) + '</div>'
+        + '<div class="adm-filter-label">' + adminContextMessage('ruleAction') + '</div>'
+        + '<select class="adm-select js-ip-rule-action adm-select-inline"><option value="BLOCK">' + adminContextMessage('block') + '</option><option value="ALLOW">' + adminContextMessage('allow') + '</option></select>'
+        + '<div class="adm-filter-label">' + adminContextMessage('category') + '</div>'
+        + '<select class="adm-select js-ip-rule-category adm-select-inline"><option value="MANUAL">MANUAL</option><option value="SECURITY">SECURITY</option><option value="ABUSE">ABUSE</option><option value="SPAM">SPAM</option></select>'
+        + '<div class="adm-filter-label">' + adminContextMessage('priority') + '</div>'
+        + '<input class="adm-input js-ip-rule-priority adm-input-inline" type="number" min="1" max="9999" value="100">'
+        + '<div class="adm-filter-label">' + adminContextMessage('expiresAt') + '</div>'
+        + '<input class="adm-input js-ip-rule-expires adm-input-inline" type="datetime-local">'
+        + '<div class="adm-filter-label">' + adminContextMessage('reason') + '</div>'
+        + '<input class="adm-input js-ip-rule-reason adm-input-inline" type="text" maxlength="255" placeholder="' + adminContextMessage('actionReasonPlaceholder') + '">'
+        + '<div class="adm-filter-label">' + adminContextMessage('detailMemo') + '</div>'
+        + '<textarea class="adm-input js-ip-rule-detail adm-context-textarea" placeholder="' + adminContextMessage('detailMemoPlaceholder') + '"></textarea>'
+        + '<button type="button" class="adm-btn adm-btn-primary adm-context-btn" onclick="saveAdminIpRule(\'' + escapeAdminContextHtml(ipAddress) + '\', this)">' + adminContextMessage('createPolicyButton') + '</button>'
+        + '</div>';
+}
+
+function renderMemberContext(context, defaultTab) {
+    const member = context.member || {};
+    const tabs = [
+        { key: 'info', label: adminContextMessage('infoTab'), content: renderMemberInfoCard(member) },
+        { key: 'logins', label: adminContextMessage('loginTab'), content: renderContextTimeline(context.loginAudits || context.history || [], renderLoginAuditItem, adminContextMessage('emptyLoginHistory')) },
+        { key: 'security', label: adminContextMessage('securityTab'), content: renderContextTimeline(context.securityAudits || [], renderSecurityAuditItem, adminContextMessage('emptySecurityHistory')) },
+        { key: 'emailRequests', label: adminContextMessage('emailRequestTab'), content: renderContextTimeline(context.emailRequests || [], renderEmailRequestItem, adminContextMessage('emptyEmailRequests')) },
+        { key: 'emailTokens', label: adminContextMessage('emailTokenTab'), content: renderContextTimeline(context.emailTokens || [], renderEmailTokenItem, adminContextMessage('emptyEmailTokens')) },
+        { key: 'activity', label: adminContextMessage('activityTab'), content: renderContextTimeline(context.activityLogs || [], renderActivityItem, adminContextMessage('emptyActivity')) },
+        { key: 'blocks', label: adminContextMessage('blockTab'), content: renderContextTimeline(context.recentBlocks || [], renderUserBlockItem, adminContextMessage('emptyBlocks')) },
+        { key: 'actions', label: adminContextMessage('actionTab'), content: buildMemberActions(member) }
+    ];
+    const activeKey = tabs.some(function(tab) { return tab.key === defaultTab; }) ? defaultTab : 'info';
+    return ''
+        + '<div class="adm-tabs adm-tabs-scroll">' + tabs.map(function(tab) {
+            return '<button type="button" class="adm-tab ' + (tab.key === activeKey ? 'active' : '') + '" onclick="switchAdminContextTab(\'adminMemberContextModal\', \'' + tab.key + '\', this)">' + tab.label + '</button>';
+        }).join('') + '</div>'
+        + tabs.map(function(tab) {
+            return '<div class="admin-context-tab-pane" data-context-pane="' + tab.key + '" style="display:' + (tab.key === activeKey ? 'block' : 'none') + ';">' + tab.content + '</div>';
+        }).join('');
+}
+
+function renderIpContext(context, defaultTab) {
+    const ipAddress = context.ipAddress || adminContextMessage('dash');
+    const tabs = [
+        { key: 'logins', label: adminContextMessage('loginTab'), content: renderContextTimeline(context.loginAudits || [], renderLoginAuditItem, adminContextMessage('emptyLoginHistory')) },
+        { key: 'security', label: adminContextMessage('securityTab'), content: renderContextTimeline(context.securityAudits || [], renderSecurityAuditItem, adminContextMessage('emptySecurityHistory')) },
+        { key: 'emailRequests', label: adminContextMessage('emailRequestTab'), content: renderContextTimeline(context.emailRequests || [], renderEmailRequestItem, adminContextMessage('emptyEmailRequests')) },
+        { key: 'emailTokens', label: adminContextMessage('emailTokenTab'), content: renderContextTimeline(context.emailTokens || [], renderEmailTokenItem, adminContextMessage('emptyEmailTokens')) },
+        { key: 'activity', label: adminContextMessage('activityTab'), content: renderContextTimeline(context.activityLogs || [], renderActivityItem, adminContextMessage('emptyActivity')) },
+        { key: 'blocks', label: adminContextMessage('blockTab'), content: renderContextTimeline(context.blockHistories || [], renderBlockHistoryItem, adminContextMessage('emptyIpBlockHistory')) + '<div class="adm-context-spacer"></div>' + renderContextTimeline(context.ipRules || [], renderIpRuleItem, adminContextMessage('emptyIpRules')) },
+        { key: 'actions', label: adminContextMessage('actionTab'), content: buildIpActions(ipAddress) }
+    ];
+    const activeKey = tabs.some(function(tab) { return tab.key === defaultTab; }) ? defaultTab : 'logins';
+    return ''
+        + '<div class="adm-context-summary">'
+        + '<div class="adm-context-summary-label">' + adminContextMessage('targetIp') + '</div>'
+        + '<div class="adm-context-summary-value">' + escapeAdminContextHtml(ipAddress) + '</div>'
+        + '</div>'
+        + '<div class="adm-tabs adm-tabs-scroll">' + tabs.map(function(tab) {
+            return '<button type="button" class="adm-tab ' + (tab.key === activeKey ? 'active' : '') + '" onclick="switchAdminContextTab(\'adminIpContextModal\', \'' + tab.key + '\', this)">' + tab.label + '</button>';
+        }).join('') + '</div>'
+        + tabs.map(function(tab) {
+            return '<div class="admin-context-tab-pane" data-context-pane="' + tab.key + '" style="display:' + (tab.key === activeKey ? 'block' : 'none') + ';">' + tab.content + '</div>';
+        }).join('');
+}
+
+async function openAdminMemberContext(userIdx, defaultTab) {
+    if (!userIdx) return;
+    const modal = document.getElementById('adminMemberContextModal');
+    const body = document.getElementById('adminMemberContextBody');
+    modal.classList.add('open');
+    document.getElementById('adminMemberContextTitle').textContent = adminContextMessage('memberTitle');
+    body.innerHTML = adminContextLoadingHtml();
+    try {
+        const data = await adminContextFetch(ADMIN_CONTEXT_BASE + '/admin/members/' + encodeURIComponent(userIdx));
+        body.innerHTML = renderMemberContext(data, defaultTab || 'info');
+        const statusSelect = body.querySelector('.js-member-status');
+        const roleSelect = body.querySelector('.js-member-role');
+        if (statusSelect && data.member) statusSelect.value = data.member.accountStatus || 'ACTIVE';
+        if (roleSelect && data.member) roleSelect.value = data.member.userRole || 'USER';
+    } catch (error) {
+        body.innerHTML = adminContextErrorHtml(error.message || adminContextMessage('fetchError'));
+    }
+}
+
+async function openAdminIpContext(ipAddress, defaultTab) {
+    if (!ipAddress) return;
+    const modal = document.getElementById('adminIpContextModal');
+    const body = document.getElementById('adminIpContextBody');
+    modal.classList.add('open');
+    document.getElementById('adminIpContextTitle').textContent = adminContextMessage('ipTitle');
+    body.innerHTML = adminContextLoadingHtml();
+    try {
+        const data = await adminContextFetch(ADMIN_CONTEXT_BASE + '/admin/ips/context?ipAddress=' + encodeURIComponent(ipAddress));
+        body.innerHTML = renderIpContext(data, defaultTab || 'logins');
+    } catch (error) {
+        body.innerHTML = adminContextErrorHtml(error.message || adminContextMessage('fetchError'));
+    }
+}
+
+async function saveAdminMemberProfile(userIdx, button) {
+    const card = button.closest('.admin-context-tab-pane');
+    const nickname = card.querySelector('.js-member-profile-nickname').value.trim();
+    const nationality = card.querySelector('.js-member-profile-nationality').value.trim();
+    const preferredLang = card.querySelector('.js-member-profile-language').value.trim();
+    button.disabled = true;
+    try {
+        const response = await fetch(ADMIN_CONTEXT_BASE + '/admin/members/' + userIdx + '/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ nickname, nationality, preferredLang })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            adm_toast(adminContextMessage('saveProfileSuccess'));
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            adm_toast(adminContextMessage('saveProfileFail'), 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        adm_toast(adminContextMessage('saveProfileError'), 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+async function saveAdminMemberStatus(userIdx, button) {
+    const card = button.closest('.admin-context-tab-pane');
+    const status = card.querySelector('.js-member-status').value;
+    if (!confirm(formatAdminContextMessage(adminContextMessage('confirmStatusChange'), [adminContextStatusLabel(status)]))) return;
+    button.disabled = true;
+    try {
+        const response = await fetch(ADMIN_CONTEXT_BASE + '/admin/members/' + userIdx + '/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ status })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            adm_toast(adminContextMessage('saveStatusSuccess'));
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            adm_toast(adminContextMessage('saveStatusFail'), 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        adm_toast(adminContextMessage('saveStatusError'), 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+async function saveAdminMemberRole(userIdx, button) {
+    const card = button.closest('.admin-context-tab-pane');
+    const role = card.querySelector('.js-member-role').value;
+    const reason = card.querySelector('.js-member-role-reason').value.trim();
+    if (!reason) {
+        adm_toast(adminContextMessage('requireRoleReason'), 'error');
+        return;
+    }
+    button.disabled = true;
+    try {
+        const response = await fetch(ADMIN_CONTEXT_BASE + '/admin/members/' + userIdx + '/role', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ role, reason })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            adm_toast(adminContextMessage('saveRoleSuccess'));
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            adm_toast(adminContextMessage('saveRoleFail'), 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        adm_toast(adminContextMessage('saveRoleError'), 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+async function saveAdminMemberBlock(userIdx, button) {
+    const card = button.closest('.admin-context-tab-pane');
+    const blockType = card.querySelector('.js-member-block-type').value;
+    const blockedIp = card.querySelector('.js-member-block-ip').value.trim();
+    const expiresAt = card.querySelector('.js-member-block-expires').value;
+    const reason = card.querySelector('.js-member-block-reason').value.trim();
+    if ((blockType === 'IP_ONLY' || blockType === 'USER_IP') && !blockedIp) {
+        adm_toast(adminContextMessage('requireBlockedIp'), 'error');
+        return;
+    }
+    button.disabled = true;
+    try {
+        const response = await fetch(ADMIN_CONTEXT_BASE + '/admin/members/' + userIdx + '/block', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ blockType, blockedIp, expiresAt, reason })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            adm_toast(adminContextMessage('saveBlockSuccess'));
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            adm_toast(adminContextMessage('saveBlockFail'), 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        adm_toast(adminContextMessage('saveBlockError'), 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+async function saveAdminIpRule(ipAddress, button) {
+    const card = button.closest('.admin-context-tab-pane');
+    const ruleAction = card.querySelector('.js-ip-rule-action').value;
+    const blockCategory = card.querySelector('.js-ip-rule-category').value;
+    const priority = card.querySelector('.js-ip-rule-priority').value;
+    const expiresAt = card.querySelector('.js-ip-rule-expires').value;
+    const reason = card.querySelector('.js-ip-rule-reason').value.trim();
+    const detailMessage = card.querySelector('.js-ip-rule-detail').value.trim();
+    if (!reason) {
+        adm_toast(adminContextMessage('requirePolicyReason'), 'error');
+        return;
+    }
+    button.disabled = true;
+    try {
+        const response = await fetch(ADMIN_CONTEXT_BASE + '/admin/blocks/ip-rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({
+                matchType: 'SINGLE_IP',
+                ipAddress: ipAddress,
+                ruleAction: ruleAction,
+                controlMode: 'MANUAL',
+                blockCategory: blockCategory,
+                priority: priority || '100',
+                reason: reason,
+                detailMessage: detailMessage,
+                expiresAt: expiresAt
+            })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            adm_toast(adminContextMessage('savePolicySuccess'));
+            setTimeout(function() { location.reload(); }, 600);
+        } else {
+            adm_toast(adminContextMessage('savePolicyFail'), 'error');
+        }
+    } catch (error) {
+        console.error(error);
+        adm_toast(adminContextMessage('savePolicyError'), 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+document.addEventListener('click', function(event) {
+    const memberTrigger = event.target.closest('.js-open-member-context');
+    if (memberTrigger) {
+        openAdminMemberContext(memberTrigger.dataset.userIdx, memberTrigger.dataset.defaultTab || 'info');
+        return;
+    }
+    const ipTrigger = event.target.closest('.js-open-ip-context');
+    if (ipTrigger) {
+        openAdminIpContext(ipTrigger.dataset.ipAddress, ipTrigger.dataset.defaultTab || 'logins');
+    }
+});
+</script>

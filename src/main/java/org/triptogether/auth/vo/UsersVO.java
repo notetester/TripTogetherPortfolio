@@ -59,4 +59,31 @@ public class UsersVO {
     private String preferredLang;   // 선호 언어 (ko, en, ja, zh)
 
     private LocalDateTime createdAt;
+
+    /**
+     * DB에는 user_role이 문자열로 저장되므로, Java 정책 판단이 필요할 때 enum으로 변환해서 사용한다.
+     */
+    public UserRole role() {
+        return UserRole.from(userRole);
+    }
+
+    public boolean hasAdminRole() {
+        return role().isAdminLike();
+    }
+
+    public boolean hasUserLikeRole() {
+        return role().isUserLike();
+    }
+
+    public boolean canManagePackage() {
+        return role().canManagePackage();
+    }
+
+    public boolean canApprovePackage() {
+        return role().canApprovePackage();
+    }
+
+    public boolean isProtectedRole() {
+        return role().isProtectedRole();
+    }
 }

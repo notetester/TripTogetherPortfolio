@@ -2,15 +2,14 @@ package org.triptogether.community.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.*;
+import org.triptogether.auth.vo.UserRole;
 import org.triptogether.perspective.PerspectiveService;
-import org.triptogether.report.service.ReportService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -50,12 +49,8 @@ import java.util.Map;
 public class CommunityController {
 
     private final CommunityService communityService;
-    private final ReportService reportService;
     private final PerspectiveService perspectiveService;
     private final IpBlockMapper ipBlockMapper;
-
-    @Value("${system.user.idx}")
-    private Long systemUserIdx;
 
     /* =============================================
        GET /community, /community/ - 루트 리다이렉트
@@ -205,8 +200,7 @@ public class CommunityController {
     /**
      * 게시글을 등록한다.
      * - 비로그인 시 401, 차단된 계정 시 403 반환
-     * - Perspective AI 욕설 감지: 감지 시 toxicityDetected=true 반환 (강제 등록 가능)
-     * - 강제 등록 시 시스템 계정으로 toxicity 신고 자동 접수
+     * - Perspective AI 욕설 감지는 비동기로 실행됨. 감지되면 ai_flagged=1 세팅되어 BLUR 처리됨
      */
     @PostMapping("/write")
     @ResponseBody
@@ -228,28 +222,19 @@ public class CommunityController {
             return ResponseEntity.status(403).body(result);
         }
 
-
         try {
             Long loginUserIdx = getLoginUserIdx(session);
 
-            if (!writeDto.isForceSubmit()) {
-                String text = (writeDto.getTitle() != null ? writeDto.getTitle() : "") + " "
-                            + (writeDto.getContent() != null ? writeDto.getContent() : "");
-                if (perspectiveService.isToxic(text)) {
-                    result.put("toxicityDetected", true);
-                    return ResponseEntity.ok(result);
-                }
-            }
-
             Long postId = communityService.writePost(writeDto, loginUserIdx);
             communityService.savePostIp(postId, getClientIp(request));
+
+            // AI 욕설 감지 비동기 실행: 응답 지연 없이 백그라운드에서 처리됨
+            String text = (writeDto.getTitle() != null ? writeDto.getTitle() : "") + " "
+                        + (writeDto.getContent() != null ? writeDto.getContent() : "");
+            perspectiveService.checkAndFlagPostAsync(postId, text);
+
             result.put("success", true);
             result.put("postId",  postId);
-
-            if (writeDto.isForceSubmit()) {
-                reportService.submitReport("post", postId, systemUserIdx,
-                        "toxicity", "AI 욕설 감지 (강제 등록)", null, null);
-            }
         } catch (IllegalStateException e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -318,6 +303,11 @@ public class CommunityController {
         try {
             Long loginUserIdx = getLoginUserIdx(session);
             communityService.editPost(postId, writeDto, existingImages, loginUserIdx);
+
+            perspectiveService.checkAndFlagPostAsync(postId,
+                    (writeDto.getTitle() != null ? writeDto.getTitle() : "") + " "
+                  + (writeDto.getContent() != null ? writeDto.getContent() : ""));
+
             result.put("success", true);
             result.put("postId", postId);
         } catch (Exception e) {
@@ -400,14 +390,13 @@ public class CommunityController {
     /**
      * 댓글을 등록한다.
      * - 비로그인 시 401, 차단된 계정 시 403 반환
-     * - Perspective AI 욕설 감지: 감지 시 toxicityDetected=true 반환 (강제 등록 가능)
+     * - Perspective AI 욕설 감지는 비동기로 실행됨. 감지되면 ai_flagged=1 세팅되어 BLUR 처리됨
      */
     @PostMapping("/{postId}/comment")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> addComment(
             @PathVariable Long postId,
             @RequestParam String content,
-            @RequestParam(defaultValue = "false") boolean forceSubmit,
             HttpServletRequest request,
             HttpSession session) {
 
@@ -426,19 +415,13 @@ public class CommunityController {
         try {
             Long loginUserIdx = getLoginUserIdx(session);
 
-            if (!forceSubmit && perspectiveService.isToxic(content)) {
-                result.put("toxicityDetected", true);
-                return ResponseEntity.ok(result);
-            }
-
             Long commentId = communityService.addComment(postId, loginUserIdx, content);
             communityService.saveCommentIp(commentId, getClientIp(request));
-            result.put("success", true);
 
-            if (forceSubmit) {
-                reportService.submitReport("comment", commentId, systemUserIdx,
-                        "toxicity", "AI 욕설 감지 (강제 등록)", "post", postId);
-            }
+            // AI 욕설 감지 비동기 실행: 응답 지연 없이 백그라운드에서 처리됨
+            perspectiveService.checkAndFlagCommentAsync(commentId, content);
+
+            result.put("success", true);
         } catch (IllegalStateException e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -485,7 +468,7 @@ public class CommunityController {
     /**
      * 대댓글을 등록한다.
      * - 비로그인 시 401, 차단된 계정 시 403 반환
-     * - Perspective AI 욕설 감지: 감지 시 toxicityDetected=true 반환 (강제 등록 가능)
+     * - Perspective AI 욕설 감지는 비동기로 실행됨. 감지되면 ai_flagged=1 세팅되어 BLUR 처리됨
      */
     @PostMapping("/{postId}/comment/{commentId}/reply")
     @ResponseBody
@@ -493,7 +476,6 @@ public class CommunityController {
             @PathVariable Long postId,
             @PathVariable Long commentId,
             @RequestParam String content,
-            @RequestParam(defaultValue = "false") boolean forceSubmit,
             HttpServletRequest request,
             HttpSession session) {
 
@@ -512,19 +494,13 @@ public class CommunityController {
         try {
             Long loginUserIdx = getLoginUserIdx(session);
 
-            if (!forceSubmit && perspectiveService.isToxic(content)) {
-                result.put("toxicityDetected", true);
-                return ResponseEntity.ok(result);
-            }
-
             Long replyId = communityService.addReply(postId, loginUserIdx, content, commentId);
             communityService.saveCommentIp(replyId, getClientIp(request));
-            result.put("success", true);
 
-            if (forceSubmit) {
-                reportService.submitReport("comment", replyId, systemUserIdx,
-                        "toxicity", "AI 욕설 감지 (강제 등록)", "post", postId);
-            }
+            // AI 욕설 감지 비동기 실행
+            perspectiveService.checkAndFlagCommentAsync(replyId, content);
+
+            result.put("success", true);
         } catch (IllegalStateException e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -621,84 +597,6 @@ public class CommunityController {
     }
 
 
-    /* =============================================
-       POST /community/{postId}/report - 신고
-       ============================================= */
-    /**
-     * 게시글을 신고한다.
-     * - 비로그인 시 401 반환
-     * - 중복 신고 방지, 신고 접수 시 report_count 캐시 업데이트
-     */
-    @PostMapping("/{postId}/report")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> report(
-            @PathVariable Long postId,
-            HttpSession session) {
-
-        Map<String, Object> result = new HashMap<>();
-
-        if (session.getAttribute("loginUser") == null) {
-            result.put("success", false);
-            return ResponseEntity.status(401).body(result);
-        }
-
-        try {
-            Long loginUserIdx = getLoginUserIdx(session);
-            boolean reported = reportService.submitReport("post", postId, loginUserIdx, null, null, null, null);
-            if (reported) {
-                communityService.updatePostReportCache(postId);
-            }
-            result.put("success", true);
-            result.put("message", reported ? "신고가 접수되었습니다." : "이미 신고하셨습니다.");
-        } catch (Exception e) {
-            log.error("신고 오류", e);
-            result.put("success", false);
-            return ResponseEntity.status(500).body(result);
-        }
-
-        return ResponseEntity.ok(result);
-    }
-
-    /* =============================================
-   POST /community/comment/{commentId}/report - 댓글 신고
-   ============================================= */
-    /**
-     * 댓글을 신고한다.
-     * - 비로그인 시 401 반환
-     * - 중복 신고 방지, 신고 접수 시 report_count 캐시 업데이트
-     */
-    @PostMapping("/comment/{commentId}/report")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> reportComment(
-            @PathVariable Long commentId,
-            HttpSession session) {
-
-        Map<String, Object> result = new HashMap<>();
-
-        if (session.getAttribute("loginUser") == null) {
-            result.put("success", false);
-            return ResponseEntity.status(401).body(result);
-        }
-
-        try {
-            Long loginUserIdx = getLoginUserIdx(session);
-            // 댓글이 속한 게시글 ID를 sourceId로 전달 (어드민 신고 상세의 원글보기용)
-            CommunityCommentDto comment = communityService.getComment(commentId);
-            Long postId = comment != null ? comment.getPostId() : null;
-            boolean reported = reportService.submitReport("comment", commentId, loginUserIdx, null, null, "post", postId);
-            if (reported) {
-                communityService.updateCommentReportCache(commentId);
-            }
-            result.put("success", true);
-            result.put("message", reported ? "신고가 접수되었습니다." : "이미 신고하셨습니다.");
-        } catch (Exception e) {
-            log.error("댓글 신고 오류", e);
-            result.put("success", false);
-            return ResponseEntity.status(500).body(result);
-        }
-
-        return ResponseEntity.ok(result);
-    }
     /* =============================================
    POST /community/user/{userIdx}/block - 유저 차단
    ============================================= */
@@ -843,6 +741,46 @@ public class CommunityController {
             result.put("success", false); return ResponseEntity.status(403).body(result);
         }
         communityService.unblockComment(commentId);
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /community/{postId}/clear-blur   - 게시글 BLUR 해제 (어드민)
+       POST /community/comment/{commentId}/clear-blur - 댓글 BLUR 해제 (어드민)
+       ============================================= */
+    /**
+     * 게시글 BLUR 해제. (관리자 전용)
+     * - ai_flagged=0, report_count=0 으로 초기화
+     * - 비관리자 시 403 반환
+     */
+    @PostMapping("/{postId}/clear-blur")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> clearPostBlur(
+            @PathVariable Long postId, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdminUser(session)) {
+            result.put("success", false); return ResponseEntity.status(403).body(result);
+        }
+        communityService.clearPostBlur(postId);
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 댓글 BLUR 해제. (관리자 전용)
+     * - ai_flagged=0, report_count=0 으로 초기화
+     * - 비관리자 시 403 반환
+     */
+    @PostMapping("/comment/{commentId}/clear-blur")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> clearCommentBlur(
+            @PathVariable Long commentId, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdminUser(session)) {
+            result.put("success", false); return ResponseEntity.status(403).body(result);
+        }
+        communityService.clearCommentBlur(commentId);
         result.put("success", true);
         return ResponseEntity.ok(result);
     }
@@ -1031,14 +969,14 @@ public class CommunityController {
     }
 
     /**
-     * 세션에서 로그인한 유저가 관리자(ADMIN)인지 확인한다.
+     * 세션에서 로그인한 유저가 관리자 계열인지 확인한다.
      */
     private boolean isAdminUser(HttpSession session) {
         try {
             Object loginUser = session.getAttribute("loginUser");
             if (loginUser == null) return false;
             Method method = loginUser.getClass().getMethod("getUserRole");
-            return "ADMIN".equals(method.invoke(loginUser));
+            return UserRole.from(String.valueOf(method.invoke(loginUser))).isAdminLike();
         } catch (Exception e) {
             return false;
         }

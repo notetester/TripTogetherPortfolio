@@ -28,7 +28,7 @@ public class AdminMemberVO {
     private boolean       emailVerified;
     private boolean       emailLoginEnabled;
     private String        accountStatus;    // ACTIVE / DORMANT / BLOCKED / DELETED
-    private String        userRole;         // USER / ADMIN
+    private String        userRole;         // USER / BUSINESS / PARTNER / BOT / ADMIN / SUPERADMIN / SYSTEM
     private String        memberGrade;
     private boolean       verifiedMember;
     private long          cashBalance;

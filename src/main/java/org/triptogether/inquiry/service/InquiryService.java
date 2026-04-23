@@ -94,4 +94,12 @@ public interface InquiryService {
     // 첨부파일 삭제함
     void removeAttachment(Long attachmentId);
 
+    // ===== AI 독성 감지 BLUR =====
+
+    // AI 독성 감지 플래그 설정 (PerspectiveService가 @Async 쓰레드에서 호출)
+    void flagInquiryAsToxic(Long inquiryId);
+
+    // 관리자 BLUR 해제
+    void clearInquiryBlur(Long inquiryId);
+
 }

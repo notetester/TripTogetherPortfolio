@@ -1,8 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="members"/>
-<c:set var="pageTitle"  value="회원 관리"/>
+<spring:message code="admin.members.pageTitle" var="adminMembersPageTitle"/>
+<spring:message code="admin.status.ACTIVE" var="memberStatusActive"/>
+<spring:message code="admin.status.DORMANT" var="memberStatusDormant"/>
+<spring:message code="admin.status.BLOCKED" var="memberStatusBlocked"/>
+<spring:message code="admin.status.DELETED" var="memberStatusDeleted"/>
+<c:set var="pageTitle"  value="${adminMembersPageTitle}"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -17,59 +24,62 @@
 
                     <%-- 키워드 검색 --%>
                     <div style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label">검색</div>
+                        <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="searchType" style="width:100px;">
-                                <option value="all"      ${search.searchType=='all'      ? 'selected' : ''}>전체</option>
-                                <option value="userId"   ${search.searchType=='userId'   ? 'selected' : ''}>아이디</option>
-                                <option value="nickname" ${search.searchType=='nickname' ? 'selected' : ''}>닉네임</option>
-                                <option value="email"    ${search.searchType=='email'    ? 'selected' : ''}>이메일</option>
+                                <option value="all"      ${search.searchType=='all'      ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
+                                <option value="userId"   ${search.searchType=='userId'   ? 'selected' : ''}><spring:message code="admin.context.userId"/></option>
+                                <option value="nickname" ${search.searchType=='nickname' ? 'selected' : ''}><spring:message code="admin.context.nickname"/></option>
+                                <option value="email"    ${search.searchType=='email'    ? 'selected' : ''}><spring:message code="admin.context.email"/></option>
                             </select>
                             <div class="adm-search-box" style="flex:1;">
                                 <span class="adm-search-ico">🔍</span>
                                 <input class="adm-input" type="text" name="keyword"
-                                       value="${search.keyword}" placeholder="검색어 입력...">
+                                       value="${search.keyword}" placeholder="<spring:message code='admin.members.searchPlaceholder'/>">
                             </div>
                         </div>
                     </div>
 
                     <%-- 상태 필터 --%>
                     <div>
-                        <div class="adm-filter-label">계정 상태</div>
+                        <div class="adm-filter-label"><spring:message code="admin.members.accountStatus"/></div>
                         <select class="adm-select" name="status">
-                            <option value="ALL"     ${search.status=='ALL'     ? 'selected' : ''}>전체</option>
-                            <option value="ACTIVE"  ${search.status=='ACTIVE'  ? 'selected' : ''}>활성</option>
-                            <option value="DORMANT" ${search.status=='DORMANT' ? 'selected' : ''}>휴면</option>
-                            <option value="DELETED" ${search.status=='DELETED' ? 'selected' : ''}>탈퇴</option>
-                            <option value="BLOCKED" ${search.status=='BLOCKED' ? 'selected' : ''}>차단</option>
+                            <option value="ALL"     ${search.status=='ALL'     ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
+                            <option value="ACTIVE"  ${search.status=='ACTIVE'  ? 'selected' : ''}><spring:message code="admin.status.ACTIVE"/></option>
+                            <option value="DORMANT" ${search.status=='DORMANT' ? 'selected' : ''}><spring:message code="admin.status.DORMANT"/></option>
+                            <option value="DELETED" ${search.status=='DELETED' ? 'selected' : ''}><spring:message code="admin.status.DELETED"/></option>
+                            <option value="BLOCKED" ${search.status=='BLOCKED' ? 'selected' : ''}><spring:message code="admin.status.BLOCKED"/></option>
                         </select>
                     </div>
 
                     <%-- 권한 필터 --%>
                     <div>
-                        <div class="adm-filter-label">권한</div>
+                        <div class="adm-filter-label"><spring:message code="admin.common.role"/></div>
                         <select class="adm-select" name="role">
-                            <option value="ALL"   ${search.role=='ALL'   ? 'selected' : ''}>전체</option>
-                            <option value="USER"  ${search.role=='USER'  ? 'selected' : ''}>일반</option>
-                            <option value="ADMIN" ${search.role=='ADMIN' ? 'selected' : ''}>관리자</option>
+                            <option value="ALL"   ${search.role=='ALL'   ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
+                            <option value="USER"  ${search.role=='USER'  ? 'selected' : ''}><spring:message code="admin.role.USER"/></option>
+                            <option value="BUSINESS" ${search.role=='BUSINESS' ? 'selected' : ''}><spring:message code="admin.role.BUSINESS"/></option>
+                            <option value="PARTNER"  ${search.role=='PARTNER'  ? 'selected' : ''}><spring:message code="admin.role.PARTNER"/></option>
+                            <option value="BOT"      ${search.role=='BOT'      ? 'selected' : ''}><spring:message code="admin.role.BOT"/></option>
+                            <option value="ADMIN" ${search.role=='ADMIN' ? 'selected' : ''}><spring:message code="admin.role.ADMIN"/></option>
                         </select>
                     </div>
 
                     <%-- 소셜 필터 --%>
                     <div>
-                        <div class="adm-filter-label">소셜 연동</div>
+                        <div class="adm-filter-label"><spring:message code="admin.members.socialLinked"/></div>
                         <select class="adm-select" name="provider">
-                            <option value="ALL"    ${search.provider=='ALL'    ? 'selected' : ''}>전체</option>
-                            <option value="KAKAO"  ${search.provider=='KAKAO'  ? 'selected' : ''}>카카오</option>
-                            <option value="NAVER"  ${search.provider=='NAVER'  ? 'selected' : ''}>네이버</option>
-                            <option value="GOOGLE" ${search.provider=='GOOGLE' ? 'selected' : ''}>Google</option>
-                            <option value="NONE"   ${search.provider=='NONE'   ? 'selected' : ''}>연동 없음</option>
+                            <option value="ALL"    ${search.provider=='ALL'    ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
+                            <option value="KAKAO"  ${search.provider=='KAKAO'  ? 'selected' : ''}><spring:message code="admin.social.kakao"/></option>
+                            <option value="NAVER"  ${search.provider=='NAVER'  ? 'selected' : ''}><spring:message code="admin.social.naver"/></option>
+                            <option value="GOOGLE" ${search.provider=='GOOGLE' ? 'selected' : ''}><spring:message code="admin.social.google"/></option>
+                            <option value="NONE"   ${search.provider=='NONE'   ? 'selected' : ''}><spring:message code="admin.members.noLinkedProvider"/></option>
                         </select>
                     </div>
 
                     <%-- 가입일 범위 --%>
                     <div>
-                        <div class="adm-filter-label">가입일</div>
+                        <div class="adm-filter-label"><spring:message code="admin.context.createdAt"/></div>
                         <div style="display:flex;gap:4px;align-items:center;">
                             <input class="adm-input" type="date" name="dateFrom"
                                    value="${search.dateFrom}" style="width:130px;">
@@ -81,25 +91,25 @@
 
                     <%-- 정렬 --%>
                     <div>
-                        <div class="adm-filter-label">정렬</div>
+                        <div class="adm-filter-label"><spring:message code="admin.members.sort"/></div>
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="sortBy">
-                                <option value="createdAt"   ${search.sortBy=='createdAt'   ? 'selected' : ''}>가입일</option>
-                                <option value="lastLoginAt" ${search.sortBy=='lastLoginAt' ? 'selected' : ''}>최근 로그인</option>
-                                <option value="nickname"    ${search.sortBy=='nickname'    ? 'selected' : ''}>닉네임</option>
+                                <option value="createdAt"   ${search.sortBy=='createdAt'   ? 'selected' : ''}><spring:message code="admin.context.createdAt"/></option>
+                                <option value="lastLoginAt" ${search.sortBy=='lastLoginAt' ? 'selected' : ''}><spring:message code="admin.context.lastLogin"/></option>
+                                <option value="nickname"    ${search.sortBy=='nickname'    ? 'selected' : ''}><spring:message code="admin.context.nickname"/></option>
                             </select>
                             <select class="adm-select" name="sortDir">
-                                <option value="DESC" ${search.sortDir=='DESC' ? 'selected' : ''}>내림차순</option>
-                                <option value="ASC"  ${search.sortDir=='ASC'  ? 'selected' : ''}>오름차순</option>
+                                <option value="DESC" ${search.sortDir=='DESC' ? 'selected' : ''}><spring:message code="admin.members.sortDesc"/></option>
+                                <option value="ASC"  ${search.sortDir=='ASC'  ? 'selected' : ''}><spring:message code="admin.members.sortAsc"/></option>
                             </select>
                         </div>
                     </div>
 
                     <%-- 버튼 --%>
                     <div style="display:flex;gap:6px;align-items:flex-end;">
-                        <button type="submit" class="adm-btn adm-btn-primary">🔍 검색</button>
+                        <button type="submit" class="adm-btn adm-btn-primary">🔍 <spring:message code="admin.common.searchButton"/></button>
                         <a href="${pageContext.request.contextPath}/admin/members"
-                           class="adm-btn adm-btn-ghost">초기화</a>
+                           class="adm-btn adm-btn-ghost"><spring:message code="admin.members.reset"/></a>
                     </div>
 
                     <input type="hidden" name="page" value="1">
@@ -112,12 +122,12 @@
     <%-- ══════════════════════════════════════════
          회원 목록 테이블
     ══════════════════════════════════════════ --%>
-    <div class="adm-card">
+    <div class="adm-card" style="overflow:visible;">
         <div class="adm-card-head">
             <div class="adm-card-title">
-                👥 회원 목록
+                👥 <spring:message code="admin.members.listTitle"/>
                 <span style="font-size:12px;font-weight:400;color:#475569;">
-                    총 <strong style="color:#93c5fd;">${total}</strong>명
+                    <spring:message code="admin.members.totalMembers" arguments="${total}"/>
                 </span>
             </div>
             <select class="adm-select" style="width:80px;" id="sizeSelect"
@@ -129,17 +139,17 @@
             </select>
         </div>
 
-        <div class="adm-table-wrap">
+        <div class="adm-table-wrap" style="overflow:visible;">
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th>회원</th>
-                    <th>이메일</th>
-                    <th>상태</th>
-                    <th>권한</th>
-                    <th>소셜</th>
-                    <th>로그인</th>
-                    <th>가입일</th>
+                    <th><spring:message code="admin.common.member"/></th>
+                    <th><spring:message code="admin.context.email"/></th>
+                    <th><spring:message code="admin.common.status"/></th>
+                    <th><spring:message code="admin.common.role"/></th>
+                    <th><spring:message code="admin.members.social"/></th>
+                    <th><spring:message code="admin.members.login"/></th>
+                    <th><spring:message code="admin.context.createdAt"/></th>
                     <th></th>
                 </tr>
                 </thead>
@@ -153,12 +163,20 @@
                                     ${m.nickname.substring(0,1)}
                                 </div>
                                 <div>
-                                    <div class="mem-name">${m.nickname}</div>
+                                    <div class="mem-name">
+                                        <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'info')" style="font-weight:700;color:#93c5fd;">
+                                            ${m.nickname}
+                                        </button>
+                                    </div>
                                     <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${m.memberGrade} · Lv.${m.levelNo}</div>
                                     <div class="mem-uid">
                                         <c:choose>
-                                            <c:when test="${not empty m.userId}">@${m.userId}</c:when>
-                                            <c:otherwise><span style="color:#475569;">소셜 전용</span></c:otherwise>
+                                            <c:when test="${not empty m.userId}">
+                                                <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'info')" style="color:#94a3b8;">
+                                                    @${m.userId}
+                                                </button>
+                                            </c:when>
+                                            <c:otherwise><span style="color:#475569;"><spring:message code="admin.context.socialOnly"/></span></c:otherwise>
                                         </c:choose>
                                     </div>
                                 </div>
@@ -177,18 +195,36 @@
                                 <c:otherwise><span style="color:#475569;font-size:12px;">—</span></c:otherwise>
                             </c:choose>
                             <div style="font-size:10px;color:${m.verifiedMember ? '#4ade80' : '#64748b'};margin-top:2px;">
-                                ${m.verifiedMember ? '인증 회원' : '비인증 회원'}
+                                <c:choose>
+                                    <c:when test="${m.verifiedMember}"><spring:message code="admin.members.verifiedMember"/></c:when>
+                                    <c:otherwise><spring:message code="admin.members.unverifiedMember"/></c:otherwise>
+                                </c:choose>
                             </div>
                         </td>
 
                         <%-- 상태 --%>
                         <td>
-                            <span class="status-badge ${m.accountStatus}">${m.accountStatus}</span>
+                            <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'actions')" style="padding:0;">
+                                <span class="status-badge ${m.accountStatus}">${m.accountStatus}</span>
+                            </button>
                         </td>
 
                         <%-- 권한 --%>
                         <td>
-                            <span class="role-badge ${m.userRole}">${m.userRole}</span>
+                            <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'actions')" style="padding:0;">
+                                <span class="role-badge ${m.userRole}">
+                                    <c:choose>
+                                        <c:when test="${m.userRole eq 'USER'}"><spring:message code="admin.role.USER"/></c:when>
+                                        <c:when test="${m.userRole eq 'BUSINESS'}"><spring:message code="admin.role.BUSINESS"/></c:when>
+                                        <c:when test="${m.userRole eq 'PARTNER'}"><spring:message code="admin.role.PARTNER"/></c:when>
+                                        <c:when test="${m.userRole eq 'BOT'}"><spring:message code="admin.role.BOT"/></c:when>
+                                        <c:when test="${m.userRole eq 'ADMIN'}"><spring:message code="admin.role.ADMIN"/></c:when>
+                                        <c:when test="${m.userRole eq 'SUPERADMIN'}"><spring:message code="admin.role.SUPERADMIN"/></c:when>
+                                        <c:when test="${m.userRole eq 'SYSTEM'}"><spring:message code="admin.role.SYSTEM"/></c:when>
+                                        <c:otherwise>${m.userRole}</c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </button>
                             <c:if test="${not empty m.adminPositionCode}">
                                 <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${m.adminPositionCode}</div>
                             </c:if>
@@ -196,18 +232,34 @@
 
                         <%-- 소셜 연동 --%>
                         <td>
-                            <div class="social-icons">
+                            <div class="adm-social-list is-compact">
                                 <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('KAKAO')}">
-                                    <div class="social-icon-sm K" title="카카오">k</div>
+                                    <span class="adm-social-pill kakao" title="<spring:message code='admin.social.kakao'/>">
+                                        <span class="adm-social-icon kakao-mark">k</span>
+                                        <span class="adm-social-label"><spring:message code="admin.social.kakao"/></span>
+                                    </span>
                                 </c:if>
                                 <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('NAVER')}">
-                                    <div class="social-icon-sm N" title="네이버">N</div>
+                                    <span class="adm-social-pill naver" title="<spring:message code='admin.social.naver'/>">
+                                        <span class="adm-social-icon naver-mark">N</span>
+                                        <span class="adm-social-label"><spring:message code="admin.social.naver"/></span>
+                                    </span>
                                 </c:if>
                                 <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('GOOGLE')}">
-                                    <div class="social-icon-sm G" title="Google">G</div>
+                                    <span class="adm-social-pill google" title="<spring:message code='admin.social.google'/>">
+                                        <span class="adm-social-icon google-mark">
+                                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                                            </svg>
+                                        </span>
+                                        <span class="adm-social-label"><spring:message code="admin.social.google"/></span>
+                                    </span>
                                 </c:if>
                                 <c:if test="${empty m.linkedProviders}">
-                                    <span style="color:#475569;font-size:12px;">—</span>
+                                    <span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider"/></span>
                                 </c:if>
                             </div>
                         </td>
@@ -219,7 +271,7 @@
                                     <c:when test="${m.lastLoginAt != null}">
                                         <fmt:formatDate value="${m.lastLoginAt}" pattern="MM.dd HH:mm"/>
                                     </c:when>
-                                    <c:otherwise><span style="color:#475569;">없음</span></c:otherwise>
+                                    <c:otherwise><span style="color:#475569;"><spring:message code="admin.members.none"/></span></c:otherwise>
                                 </c:choose>
                             </div>
                             <div style="font-size:10px;color:#475569;margin-top:1px;">
@@ -236,58 +288,68 @@
                         <td>
                             <div style="display:flex;gap:4px;align-items:center;">
                                 <button class="adm-row-btn detail"
-                                        onclick="openDetail(${m.userIdx})">상세</button>
+                                        onclick="openDetail(${m.userIdx})"><spring:message code="admin.members.detail"/></button>
+                                <c:if test="${m.userRole != 'SYSTEM' and m.userRole != 'SUPERADMIN'}">
                                 <div class="action-menu-wrap">
                                     <button class="adm-row-btn detail"
                                             onclick="toggleMenu(this)">⋯</button>
                                     <div class="action-menu">
                                         <div style="font-size:10px;color:#475569;padding:4px 10px 6px;
                                                     font-weight:700;text-transform:uppercase;letter-spacing:.06em;">
-                                            상태 변경
+                                            <spring:message code="admin.members.action.changeStatus"/>
                                         </div>
                                         <c:if test="${m.accountStatus != 'ACTIVE'}">
                                             <button class="action-menu-item"
                                                     onclick="changeStatus(${m.userIdx}, 'ACTIVE', this)">
-                                                ✅ 활성화
+                                                ✅ ${memberStatusActive}
                                             </button>
                                         </c:if>
                                         <c:if test="${m.accountStatus != 'DORMANT'}">
                                             <button class="action-menu-item"
                                                     onclick="changeStatus(${m.userIdx}, 'DORMANT', this)">
-                                                😴 휴면 처리
+                                                😴 ${memberStatusDormant}
                                             </button>
                                         </c:if>
                                         <c:if test="${m.accountStatus != 'BLOCKED'}">
                                             <button class="action-menu-item"
-                                                    onclick="openBlockModal(${m.userIdx}, '${m.nickname}')">
-                                                ⛔ 차단 처리
+                                                    data-user-idx="${m.userIdx}"
+                                                    data-nickname="${fn:escapeXml(m.nickname)}"
+                                                    onclick="openBlockModal(this)">
+                                                ⛔ ${memberStatusBlocked}
                                             </button>
                                         </c:if>
                                         <c:if test="${m.accountStatus != 'DELETED'}">
                                             <button class="action-menu-item danger"
                                                     onclick="changeStatus(${m.userIdx}, 'DELETED', this)">
-                                                🗑️ 탈퇴 처리
+                                                🗑️ ${memberStatusDeleted}
                                             </button>
                                         </c:if>
                                         <div class="action-menu-sep"></div>
                                         <div style="font-size:10px;color:#475569;padding:4px 10px 6px;
                                                     font-weight:700;text-transform:uppercase;letter-spacing:.06em;">
-                                            권한 변경
+                                            <spring:message code="admin.members.action.changeRole"/>
                                         </div>
-                                        <c:if test="${m.userRole != 'ADMIN'}">
-                                            <button class="action-menu-item"
-                                                    onclick="changeRole(${m.userIdx}, 'ADMIN', this)">
-                                                ⭐ 관리자 권한 부여
+                                        <div class="role-change-box">
+                                            <select class="adm-select role-change-select" data-current-role="${m.userRole}">
+                                                <option value="USER" ${m.userRole == 'USER' ? 'selected' : ''}><spring:message code="admin.role.USER"/></option>
+                                                <option value="BUSINESS" ${m.userRole == 'BUSINESS' ? 'selected' : ''}><spring:message code="admin.role.BUSINESS"/></option>
+                                                <option value="PARTNER" ${m.userRole == 'PARTNER' ? 'selected' : ''}><spring:message code="admin.role.PARTNER"/></option>
+                                                <option value="BOT" ${m.userRole == 'BOT' ? 'selected' : ''}><spring:message code="admin.role.BOT"/></option>
+                                                <option value="ADMIN" ${m.userRole == 'ADMIN' ? 'selected' : ''}><spring:message code="admin.role.ADMIN"/></option>
+                                            </select>
+                                            <input class="adm-input role-change-reason"
+                                                   type="text"
+                                                   maxlength="500"
+                                                   placeholder="<spring:message code='admin.context.action.roleReasonPlaceholder'/>">
+                                            <button class="action-menu-item role-change-submit"
+                                                    data-user-idx="${m.userIdx}"
+                                                    onclick="changeRoleFromMenu(this)">
+                                                <spring:message code="admin.members.action.applyRoleChange"/>
                                             </button>
-                                        </c:if>
-                                        <c:if test="${m.userRole != 'USER'}">
-                                            <button class="action-menu-item danger"
-                                                    onclick="changeRole(${m.userIdx}, 'USER', this)">
-                                                👤 일반 유저로 변경
-                                            </button>
-                                        </c:if>
+                                        </div>
                                     </div>
                                 </div>
+                                </c:if>
                             </div>
                         </td>
                     </tr>
@@ -296,7 +358,7 @@
                 <c:if test="${empty list}">
                     <tr>
                         <td colspan="8" style="text-align:center;padding:40px;color:#475569;">
-                            검색 결과가 없습니다.
+                            <spring:message code="admin.common.noResults"/>
                         </td>
                     </tr>
                 </c:if>
@@ -317,7 +379,7 @@
                 <c:if test="${paging.next}">
                     <button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button>
                 </c:if>
-                <span class="adm-page-info">${paging.currentPage} / ${paging.totalPage} 페이지</span>
+                <span class="adm-page-info"><spring:message code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/></span>
             </div>
         </c:if>
     </div>
@@ -329,14 +391,14 @@
 <div class="adm-modal-overlay" id="detailModal">
     <div class="adm-modal">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="modalTitle">회원 상세</div>
+            <div class="adm-modal-title" id="modalTitle"><spring:message code="admin.context.memberTitle"/></div>
             <button class="adm-modal-close" onclick="closeDetail()">✕</button>
         </div>
         <div class="adm-modal-body" id="modalBody">
-            <div style="text-align:center;padding:40px;color:#475569;">불러오는 중...</div>
+            <div style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.loading"/></div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeDetail()">닫기</button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeDetail()"><spring:message code="admin.common.close"/></button>
         </div>
     </div>
 </div>
@@ -345,41 +407,73 @@
 <div class="adm-modal-overlay" id="blockModal">
     <div class="adm-modal" style="max-width:520px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="blockModalTitle">회원 차단</div>
+            <div class="adm-modal-title" id="blockModalTitle"><spring:message code="admin.members.blockModalTitle"/></div>
             <button class="adm-modal-close" onclick="closeBlockModal()">✕</button>
         </div>
         <div class="adm-modal-body">
             <input type="hidden" id="blockUserIdx">
             <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">차단 유형</label>
-                <select id="blockType" class="adm-select" style="width:100%;">
-                    <option value="USER_ONLY">아이디 차단</option>
-                    <option value="IP_ONLY">IP 차단</option>
-                    <option value="USER_IP">아이디 + IP 차단</option>
+                <label class="form-label"><spring:message code="admin.context.action.blockType"/></label>
+                <select id="blockType" class="adm-select" style="width:100%;" onchange="handleBlockTypeChange()">
+                    <option value="USER_ONLY"><spring:message code="admin.context.blockType.userOnly"/></option>
+                    <option value="IP_ONLY"><spring:message code="admin.context.blockType.ipOnly"/></option>
+                    <option value="USER_IP"><spring:message code="admin.context.blockType.userIp"/></option>
                 </select>
             </div>
             <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">차단 IP (IP 차단 유형일 때 입력)</label>
-                <input id="blockedIp" class="adm-input" type="text" placeholder="예: 203.0.113.10">
+                <label class="form-label"><spring:message code="admin.members.blockedIpLabel"/></label>
+                <input id="blockedIp" class="adm-input" type="text" placeholder="<spring:message code='admin.context.action.blockIpPlaceholder'/>">
             </div>
             <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">차단 만료 시각 (선택)</label>
+                <label class="form-label"><spring:message code="admin.members.blockExpiresLabel"/></label>
                 <input id="blockedUntil" class="adm-input" type="datetime-local">
             </div>
             <div class="form-group">
-                <label class="form-label">차단 사유</label>
-                <textarea id="blockedReason" class="adm-input" style="min-height:90px;resize:vertical;" placeholder="차단 사유를 입력하세요."></textarea>
+                <label class="form-label"><spring:message code="admin.members.blockReasonLabel"/></label>
+                <textarea id="blockedReason" class="adm-input" style="min-height:90px;resize:vertical;" placeholder="<spring:message code='admin.context.action.reasonPlaceholder'/>"></textarea>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeBlockModal()">닫기</button>
-            <button class="adm-btn adm-btn-primary" onclick="submitBlock()">차단 적용</button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeBlockModal()"><spring:message code="admin.common.close"/></button>
+            <button id="blockSubmitBtn" class="adm-btn adm-btn-primary" type="button" onclick="submitBlock()"><spring:message code="admin.context.action.applyBlock"/></button>
         </div>
     </div>
 </div>
 
 <script>
 const ctx = '${pageContext.request.contextPath}';
+const ADMIN_MEMBER_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
+const ADMIN_MEMBER_MSG = {
+    loading: '<spring:message code="admin.common.loading" javaScriptEscape="true"/>',
+    close: '<spring:message code="admin.common.close" javaScriptEscape="true"/>',
+    error: '<spring:message code="admin.common.error" javaScriptEscape="true"/>',
+    yes: '<spring:message code="admin.common.yes" javaScriptEscape="true"/>',
+    no: '<spring:message code="admin.common.no" javaScriptEscape="true"/>',
+    none: '<spring:message code="admin.members.none" javaScriptEscape="true"/>',
+    noLinkedProvider: '<spring:message code="admin.members.noLinkedProvider" javaScriptEscape="true"/>',
+    verifiedMember: '<spring:message code="admin.members.verifiedMember" javaScriptEscape="true"/>',
+    unverifiedMember: '<spring:message code="admin.members.unverifiedMember" javaScriptEscape="true"/>',
+    statusActive: '<spring:message code="admin.status.ACTIVE" javaScriptEscape="true"/>',
+    statusDormant: '<spring:message code="admin.status.DORMANT" javaScriptEscape="true"/>',
+    statusBlocked: '<spring:message code="admin.status.BLOCKED" javaScriptEscape="true"/>',
+    statusDeleted: '<spring:message code="admin.status.DELETED" javaScriptEscape="true"/>',
+    blockModalTitleSuffix: '<spring:message code="admin.members.blockModalTitleSuffix" javaScriptEscape="true"/>',
+    parsingBlockResponse: '<spring:message code="admin.members.blockResponseParseError" javaScriptEscape="true"/>',
+    parsingStatusResponse: '<spring:message code="admin.members.statusResponseParseError" javaScriptEscape="true"/>',
+    parsingRoleResponse: '<spring:message code="admin.members.roleResponseParseError" javaScriptEscape="true"/>',
+    missingBlockTarget: '<spring:message code="admin.members.blockTargetMissing" javaScriptEscape="true"/>',
+    applying: '<spring:message code="admin.common.applying" javaScriptEscape="true"/>',
+    blockApplied: '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>',
+    memberDetailsTitle: '<spring:message code="admin.context.memberTitle" javaScriptEscape="true"/>',
+    memberDetailsSuffix: '<spring:message code="admin.members.detailTitleSuffix" javaScriptEscape="true"/>',
+    infoTab: '<spring:message code="admin.context.tab.info" javaScriptEscape="true"/>',
+    loginTab: '<spring:message code="admin.context.tab.logins" javaScriptEscape="true"/>',
+    securityTab: '<spring:message code="admin.context.tab.security" javaScriptEscape="true"/>',
+    emailHistoryTab: '<spring:message code="admin.members.emailHistoryTab" javaScriptEscape="true"/>',
+    activityTab: '<spring:message code="admin.context.tab.activity" javaScriptEscape="true"/>',
+    blockTab: '<spring:message code="admin.context.tab.blocks" javaScriptEscape="true"/>',
+    actionsTab: '<spring:message code="admin.context.tab.actions" javaScriptEscape="true"/>'
+};
 
 function escapeHtml(value) {
     if (value == null) return '';
@@ -401,7 +495,7 @@ function formatDateTime(value) {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return escapeHtml(value);
 
-    return date.toLocaleString('ko-KR', {
+    return date.toLocaleString(ADMIN_MEMBER_LOCALE || undefined, {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -417,7 +511,7 @@ function formatHistoryDateTime(value) {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return escapeHtml(value);
 
-    return date.toLocaleString('ko-KR', {
+    return date.toLocaleString(ADMIN_MEMBER_LOCALE || undefined, {
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
@@ -428,37 +522,73 @@ function formatHistoryDateTime(value) {
 
 function formatBooleanBadge(value) {
     return value
-        ? '<span style="color:#4ade80">✓ 예</span>'
-        : '<span style="color:#475569">✗ 아니오</span>';
+        ? '<span style="color:#4ade80">✓ ' + escapeHtml(ADMIN_MEMBER_MSG.yes) + '</span>'
+        : '<span style="color:#475569">✗ ' + escapeHtml(ADMIN_MEMBER_MSG.no) + '</span>';
 }
 
 function buildStatusBadge(status) {
     const safe = escapeHtml(status || '');
-    return `<span class="status-badge \${safe}">\${safe || '—'}</span>`;
+    return '<span class="status-badge ' + safe + '">' + (safe || '—') + '</span>';
 }
 
 function buildRoleBadge(role) {
     const safe = escapeHtml(role || '');
-    return `<span class="role-badge \${safe}">\${safe || '—'}</span>`;
+    return '<span class="role-badge ' + safe + '">' + roleLabel(safe) + '</span>';
+}
+
+function roleLabel(role) {
+    const labels = {
+        USER: '<spring:message code="admin.role.USER" javaScriptEscape="true"/>',
+        BUSINESS: '<spring:message code="admin.role.BUSINESS" javaScriptEscape="true"/>',
+        PARTNER: '<spring:message code="admin.role.PARTNER" javaScriptEscape="true"/>',
+        BOT: '<spring:message code="admin.role.BOT" javaScriptEscape="true"/>',
+        ADMIN: '<spring:message code="admin.role.ADMIN" javaScriptEscape="true"/>',
+        SUPERADMIN: '<spring:message code="admin.role.SUPERADMIN" javaScriptEscape="true"/>',
+        SYSTEM: '<spring:message code="admin.role.SYSTEM" javaScriptEscape="true"/>'
+    };
+    return labels[role] || role || '—';
 }
 
 function buildSocialHtml(linkedProviders) {
     if (!linkedProviders) {
-        return '<span style="color:#475569;font-size:12px;">연동 없음</span>';
+        return '<span class="adm-social-empty">' + escapeHtml(ADMIN_MEMBER_MSG.noLinkedProvider) + '</span>';
     }
 
     const providerMap = {
-        KAKAO: 'k 카카오',
-        NAVER: 'N 네이버',
-        GOOGLE: 'G Google'
+        KAKAO: {
+            label: '<spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
+            className: 'kakao',
+            icon: '<span class="adm-social-icon kakao-mark">k</span>'
+        },
+        NAVER: {
+            label: '<spring:message code="admin.social.naver" javaScriptEscape="true"/>',
+            className: 'naver',
+            icon: '<span class="adm-social-icon naver-mark">N</span>'
+        },
+        GOOGLE: {
+            label: '<spring:message code="admin.social.google" javaScriptEscape="true"/>',
+            className: 'google',
+            icon: '<span class="adm-social-icon google-mark"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>'
+        }
     };
 
-    return linkedProviders
+    const items = linkedProviders
         .split(',')
         .map(provider => provider.trim())
         .filter(provider => provider.length > 0)
-        .map(provider => `<span style="margin-right:8px;font-size:12px;color:#94a3b8;">\${escapeHtml(providerMap[provider] || provider)}</span>`)
-        .join('') || '<span style="color:#475569;font-size:12px;">연동 없음</span>';
+        .map(function(provider) {
+            const info = providerMap[provider];
+            if (!info) {
+                return '<span class="adm-social-pill"><span class="adm-social-label">' + escapeHtml(provider) + '</span></span>';
+            }
+            return '<span class="adm-social-pill ' + info.className + '">' + info.icon + '<span class="adm-social-label">' + escapeHtml(info.label) + '</span></span>';
+        });
+
+    if (!items.length) {
+        return '<span class="adm-social-empty">' + escapeHtml(ADMIN_MEMBER_MSG.noLinkedProvider) + '</span>';
+    }
+
+    return '<div class="adm-social-list">' + items.join('') + '</div>';
 }
 
 /* ── 페이지 이동 ── */
@@ -484,13 +614,23 @@ function toggleMenu(btn) {
     menu.classList.toggle('open');
 }
 
-function openBlockModal(userIdx, nickname) {
+function openBlockModal(triggerOrUserIdx, nickname) {
+    const trigger = typeof triggerOrUserIdx === 'object' ? triggerOrUserIdx : null;
+    const userIdx = trigger ? trigger.dataset.userIdx : triggerOrUserIdx;
+    const resolvedNickname = trigger ? (trigger.dataset.nickname || '') : (nickname || '');
+
     document.getElementById('blockUserIdx').value = userIdx;
-    document.getElementById('blockModalTitle').textContent = `${nickname} 회원 차단`;
+    document.getElementById('blockModalTitle').textContent = (resolvedNickname || '') + ' ' + ADMIN_MEMBER_MSG.blockModalTitleSuffix;
     document.getElementById('blockType').value = 'USER_ONLY';
     document.getElementById('blockedIp').value = '';
+    document.getElementById('blockedIp').disabled = true;
     document.getElementById('blockedUntil').value = '';
     document.getElementById('blockedReason').value = '';
+    document.getElementById('blockSubmitBtn').disabled = false;
+
+    const menu = trigger ? trigger.closest('.action-menu') : null;
+    if (menu) menu.classList.remove('open');
+
     document.getElementById('blockModal').classList.add('open');
 }
 
@@ -498,42 +638,83 @@ function closeBlockModal() {
     document.getElementById('blockModal').classList.remove('open');
 }
 
+function handleBlockTypeChange() {
+    const blockType = document.getElementById('blockType').value;
+    const ipInput = document.getElementById('blockedIp');
+    const requiresIp = blockType === 'IP_ONLY' || blockType === 'USER_IP';
+
+    ipInput.disabled = !requiresIp;
+    if (!requiresIp) ipInput.value = '';
+}
+
 async function submitBlock() {
+    const submitBtn = document.getElementById('blockSubmitBtn');
     const userIdx = document.getElementById('blockUserIdx').value;
     const blockType = document.getElementById('blockType').value;
     const blockedIp = document.getElementById('blockedIp').value.trim();
     const blockedUntil = document.getElementById('blockedUntil').value;
     const reason = document.getElementById('blockedReason').value.trim();
 
-    const res = await fetch(`${ctx}/admin/members/${userIdx}/block`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ blockType, blockedIp, expiresAt: blockedUntil, reason })
-    });
-    const data = await res.json();
-    if (res.ok && data.success) {
-        closeBlockModal();
-        adm_toast(data.message || '차단이 적용되었습니다.');
-        setTimeout(() => location.reload(), 800);
-    } else {
-        adm_toast(data.message || '차단 적용 중 오류가 발생했습니다.', 'error');
+    if (!userIdx) {
+        adm_toast(ADMIN_MEMBER_MSG.missingBlockTarget, 'error');
+        return;
+    }
+    if ((blockType === 'IP_ONLY' || blockType === 'USER_IP') && !blockedIp) {
+        adm_toast('<spring:message code="admin.context.requireBlockedIp" javaScriptEscape="true"/>', 'error');
+        document.getElementById('blockedIp').focus();
+        return;
+    }
+
+    submitBtn.disabled = true;
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = ADMIN_MEMBER_MSG.applying;
+
+    try {
+        const res = await fetch(ctx + '/admin/members/' + userIdx + '/block', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ blockType, blockedIp, expiresAt: blockedUntil, reason })
+        });
+
+        let data = null;
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            data = await res.json();
+        } else {
+            const text = await res.text();
+            throw new Error(text || ADMIN_MEMBER_MSG.parsingBlockResponse);
+        }
+
+        if (res.ok && data && data.success) {
+            closeBlockModal();
+            adm_toast(ADMIN_MEMBER_MSG.blockApplied || '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>');
+            setTimeout(() => location.reload(), 800);
+        } else {
+            adm_toast((data && data.message) || '<spring:message code="admin.context.toast.saveBlockFail" javaScriptEscape="true"/>', 'error');
+        }
+    } catch (e) {
+        console.error(e);
+        adm_toast(e.message || '<spring:message code="admin.context.toast.saveBlockError" javaScriptEscape="true"/>', 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
     }
 }
 
 /* ── 상태 변경 ── */
 async function changeStatus(userIdx, status, el) {
     const labels = {
-        ACTIVE: '활성화',
-        DORMANT: '휴면 처리',
-        BLOCKED: '차단 처리',
-        DELETED: '탈퇴 처리'
+        ACTIVE: ADMIN_MEMBER_MSG.statusActive,
+        DORMANT: ADMIN_MEMBER_MSG.statusDormant,
+        BLOCKED: ADMIN_MEMBER_MSG.statusBlocked,
+        DELETED: ADMIN_MEMBER_MSG.statusDeleted
     };
-    if (!confirm(`이 회원을 "\${labels[status] || status}" 하시겠습니까?`)) return;
+    if (!confirm('<spring:message code="admin.members.confirmStatusChangePrefix" javaScriptEscape="true"/>' + ' "' + (labels[status] || status) + '" ' + '<spring:message code="admin.members.confirmStatusChangeSuffix" javaScriptEscape="true"/>')) return;
 
     const menu = el.closest('.action-menu');
     if (menu) menu.classList.remove('open');
 
-    const res = await fetch(`\${ctx}/admin/members/\${userIdx}/status`, {
+    const res = await fetch(ctx + '/admin/members/' + userIdx + '/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ status })
@@ -543,79 +724,246 @@ async function changeStatus(userIdx, status, el) {
     try {
         data = await res.json();
     } catch (e) {
-        adm_toast('회원 상태 변경 응답을 해석하지 못했습니다.', 'error');
+        adm_toast(ADMIN_MEMBER_MSG.parsingStatusResponse, 'error');
         return;
     }
 
     if (res.ok && data.success) {
-        adm_toast(data.message || '상태가 변경되었습니다.');
+        adm_toast(data.message || '<spring:message code="admin.context.toast.saveStatusSuccess" javaScriptEscape="true"/>');
         setTimeout(() => location.reload(), 800);
     } else {
-        adm_toast(data.message || '회원 상태 변경 중 오류가 발생했습니다.', 'error');
+        adm_toast(data.message || '<spring:message code="admin.context.toast.saveStatusFail" javaScriptEscape="true"/>', 'error');
     }
 }
 
 /* ── 권한 변경 ── */
-async function changeRole(userIdx, role, el) {
-    const labels = { ADMIN: '관리자 권한 부여', USER: '일반 유저로 변경' };
-    if (!confirm(`"\${labels[role] || role}" 하시겠습니까?`)) return;
+function changeRoleFromMenu(button) {
+    const box = button.closest('.role-change-box');
+    if (!box) return;
+
+    const select = box.querySelector('.role-change-select');
+    const reasonInput = box.querySelector('.role-change-reason');
+    const userIdx = button.dataset.userIdx;
+    const role = select ? select.value : '';
+    const currentRole = select ? select.dataset.currentRole : '';
+    const reason = reasonInput ? reasonInput.value.trim() : '';
+
+    if (!role || !userIdx) {
+        adm_toast('<spring:message code="admin.members.roleContextMissing" javaScriptEscape="true"/>', 'error');
+        return;
+    }
+    if (role === currentRole) {
+        adm_toast('<spring:message code="admin.members.roleAlreadySelected" javaScriptEscape="true"/>', 'error');
+        return;
+    }
+    if (!reason) {
+        adm_toast('<spring:message code="admin.context.requireRoleReason" javaScriptEscape="true"/>', 'error');
+        if (reasonInput) reasonInput.focus();
+        return;
+    }
+
+    changeRole(userIdx, role, reason, button);
+}
+
+async function changeRole(userIdx, role, reason, el) {
+    if (!confirm('"' + roleLabel(role) + '" ' + '<spring:message code="admin.members.confirmRoleChangeSuffix" javaScriptEscape="true"/>')) return;
 
     const menu = el.closest('.action-menu');
     if (menu) menu.classList.remove('open');
 
-    const res = await fetch(`\${ctx}/admin/members/\${userIdx}/role`, {
+    const res = await fetch(ctx + '/admin/members/' + userIdx + '/role', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ role })
+        body: new URLSearchParams({ role, reason })
     });
 
     let data;
     try {
         data = await res.json();
     } catch (e) {
-        adm_toast('회원 권한 변경 응답을 해석하지 못했습니다.', 'error');
+        adm_toast(ADMIN_MEMBER_MSG.parsingRoleResponse, 'error');
         return;
     }
 
     if (res.ok && data.success) {
-        adm_toast(data.message || '권한이 변경되었습니다.');
+        adm_toast(data.message || '<spring:message code="admin.context.toast.saveRoleSuccess" javaScriptEscape="true"/>');
         setTimeout(() => location.reload(), 800);
     } else {
-        adm_toast(data.message || '회원 권한 변경 중 오류가 발생했습니다.', 'error');
+        adm_toast(data.message || '<spring:message code="admin.context.toast.saveRoleFail" javaScriptEscape="true"/>', 'error');
     }
 }
 
+function buildContextRows(items, renderer, emptyMessage) {
+    if (!Array.isArray(items) || !items.length) {
+        return '<div style="text-align:center;padding:32px;color:#475569;">' + emptyMessage + '</div>';
+    }
+    return '<div style="display:flex;flex-direction:column;gap:10px;">' + items.map(renderer).join('') + '</div>';
+}
+
+function buildSecurityRows(items) {
+    return buildContextRows(items, function(item) {
+        return ''
+            + '<div class="adm-context-record">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div><strong>' + escapeHtml(item.eventType || '-') + '</strong> / ' + escapeHtml(item.eventStage || '-') + '</div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.occurredAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;"><spring:message code="admin.context.inputValue" javaScriptEscape="true"/>: ' + escapeHtml(item.inputIdentifier || '-') + '</div>'
+            + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;"><spring:message code="admin.context.targetEmail" javaScriptEscape="true"/>: ' + escapeHtml(item.targetEmail || '-') + '</div>'
+            + '</div>';
+    }, '<spring:message code="admin.context.empty.security" javaScriptEscape="true"/>');
+}
+
+function buildEmailRequestRows(items) {
+    return buildContextRows(items, function(item) {
+        return ''
+            + '<div class="adm-context-record">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.status || '-') + '</div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.requestedAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;"><spring:message code="admin.context.requestEmail" javaScriptEscape="true"/>: ' + escapeHtml(item.pendingEmail || '-') + '</div>'
+            + '</div>';
+    }, '<spring:message code="admin.context.empty.emailRequests" javaScriptEscape="true"/>');
+}
+
+function buildEmailTokenRows(items) {
+    return buildContextRows(items, function(item) {
+        return ''
+            + '<div class="adm-context-record">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.used ? '<spring:message code="admin.context.used" javaScriptEscape="true"/>' : '<spring:message code="admin.context.unused" javaScriptEscape="true"/>') + '</div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;"><spring:message code="admin.context.targetEmail" javaScriptEscape="true"/>: ' + escapeHtml(item.email || '-') + '</div>'
+            + '</div>';
+    }, '<spring:message code="admin.context.empty.emailTokens" javaScriptEscape="true"/>');
+}
+
+function buildActivityRows(items) {
+    return buildContextRows(items, function(item) {
+        return ''
+            + '<div class="adm-context-record">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div><strong>' + escapeHtml(item.activityCode || '-') + '</strong> / ' + escapeHtml(item.activityDomain || item.activityType || '-') + '</div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;"><spring:message code="admin.context.uri" javaScriptEscape="true"/>: ' + escapeHtml(item.requestUri || '-') + '</div>'
+            + '</div>';
+    }, '<spring:message code="admin.context.empty.activity" javaScriptEscape="true"/>');
+}
+
+function buildBlockRows(items) {
+    return buildContextRows(items, function(item) {
+        return ''
+            + '<div class="adm-context-record">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div><strong>' + escapeHtml(item.blockType || '-') + '</strong> / ' + escapeHtml(item.active ? 'ACTIVE' : 'INACTIVE') + '</div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.blockedAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;"><spring:message code="admin.common.reason" javaScriptEscape="true"/>: ' + escapeHtml(item.reason || '-') + '</div>'
+            + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">IP: ' + escapeHtml(item.blockedIp || '-') + '</div>'
+            + '</div>';
+    }, '<spring:message code="admin.context.empty.blocks" javaScriptEscape="true"/>');
+}
+
+function buildActionTab(m) {
+    return ''
+        + '<div class="adm-context-actions-grid">'
+        + '<div class="adm-context-panel">'
+        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.profileTitle" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="detail-label">' + '<spring:message code="admin.context.nickname" javaScriptEscape="true"/>' + '</div><input id="memberProfileNickname" class="adm-input" type="text" value="' + escapeHtml(m.nickname || '') + '">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.nationality" javaScriptEscape="true"/>' + '</div><input id="memberProfileNationality" class="adm-input" type="text" value="' + escapeHtml(m.nationality || '') + '">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.preferredLanguage" javaScriptEscape="true"/>' + '</div><input id="memberProfileLang" class="adm-input" type="text" value="' + escapeHtml(m.preferredLang || '') + '">'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberProfile(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.saveProfile" javaScriptEscape="true"/>' + '</button>'
+        + '</div>'
+        + '<div class="adm-context-panel">'
+        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="detail-label">' + '<spring:message code="admin.members.accountStatus" javaScriptEscape="true"/>' + '</div>'
+        + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE"><spring:message code="admin.status.ACTIVE" javaScriptEscape="true"/></option><option value="DORMANT"><spring:message code="admin.status.DORMANT" javaScriptEscape="true"/></option><option value="BLOCKED"><spring:message code="admin.status.BLOCKED" javaScriptEscape="true"/></option><option value="DELETED"><spring:message code="admin.status.DELETED" javaScriptEscape="true"/></option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.common.apply" javaScriptEscape="true"/>' + '</button></div>'
+        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.common.role" javaScriptEscape="true"/>' + '</div>'
+        + '<select id="memberRoleSelect" class="adm-select" style="width:100%;"><option value="USER"><spring:message code="admin.role.USER" javaScriptEscape="true"/></option><option value="BUSINESS"><spring:message code="admin.role.BUSINESS" javaScriptEscape="true"/></option><option value="PARTNER"><spring:message code="admin.role.PARTNER" javaScriptEscape="true"/></option><option value="BOT"><spring:message code="admin.role.BOT" javaScriptEscape="true"/></option><option value="ADMIN"><spring:message code="admin.role.ADMIN" javaScriptEscape="true"/></option></select>'
+        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.action.roleReason" javaScriptEscape="true"/>' + '</div>'
+        + '<input id="memberRoleReason" class="adm-input" type="text" maxlength="500" placeholder="' + '<spring:message code="admin.context.action.roleReasonPlaceholder" javaScriptEscape="true"/>' + '">'
+        + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.changeRole" javaScriptEscape="true"/>' + '</button>'
+        + '</div>'
+        + '<div class="adm-context-panel">'
+        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.quickBlockTitle" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="detail-label">' + '<spring:message code="admin.context.action.blockType" javaScriptEscape="true"/>' + '</div><select id="detailBlockType" class="adm-select" style="width:100%;"><option value="USER_ONLY">' + '<spring:message code="admin.context.blockType.userOnly" javaScriptEscape="true"/>' + '</option><option value="IP_ONLY">' + '<spring:message code="admin.context.blockType.ipOnly" javaScriptEscape="true"/>' + '</option><option value="USER_IP">' + '<spring:message code="admin.context.blockType.userIp" javaScriptEscape="true"/>' + '</option></select>'
+        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.blockedIp" javaScriptEscape="true"/>' + '</div><input id="detailBlockedIp" class="adm-input" type="text" placeholder="' + '<spring:message code="admin.context.action.blockIpPlaceholder" javaScriptEscape="true"/>' + '">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.action.blockExpires" javaScriptEscape="true"/>' + '</div><input id="detailBlockedUntil" class="adm-input" type="datetime-local">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.common.reason" javaScriptEscape="true"/>' + '</div><textarea id="detailBlockedReason" class="adm-input" style="min-height:88px;resize:vertical;"></textarea>'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="submitDetailBlock(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.applyBlock" javaScriptEscape="true"/>' + '</button>'
+        + '</div>'
+        + '</div>';
+}
+
 /* ── 회원 상세 모달 ── */
-async function openDetail(userIdx) {
+async function openDetail(userIdx, defaultTab) {
     document.getElementById('detailModal').classList.add('open');
     document.getElementById('modalBody').innerHTML =
-        '<div style="text-align:center;padding:40px;color:#475569;">불러오는 중... ⏳</div>';
+        '<div style="text-align:center;padding:40px;color:#475569;">' + escapeHtml(ADMIN_MEMBER_MSG.loading) + ' ⏳</div>';
 
-    const res = await fetch(`\${ctx}/admin/members/\${userIdx}`);
-    const data = await res.json();
+    let data;
+    try {
+        const res = await fetch(ctx + '/admin/members/' + userIdx);
+        data = await res.json();
+    } catch (error) {
+        document.getElementById('modalBody').innerHTML =
+            '<div style="text-align:center;padding:40px;color:#f87171;">' + escapeHtml(ADMIN_MEMBER_MSG.fetchError) + '</div>';
+        return;
+    }
 
     if (!data.success) {
         document.getElementById('modalBody').innerHTML =
-            `<div style="text-align:center;padding:40px;color:#f87171;">\${escapeHtml(data.message || '오류가 발생했습니다.')}</div>`;
+            '<div style="text-align:center;padding:40px;color:#f87171;">' + escapeHtml(data.message || ADMIN_MEMBER_MSG.error) + '</div>';
         return;
     }
 
     const m = data.member || {};
     const h = Array.isArray(data.history) ? data.history : [];
+    const securityAudits = Array.isArray(data.securityAudits) ? data.securityAudits : [];
+    const emailRequests = Array.isArray(data.emailRequests) ? data.emailRequests : [];
+    const emailTokens = Array.isArray(data.emailTokens) ? data.emailTokens : [];
+    const activityLogs = Array.isArray(data.activityLogs) ? data.activityLogs : [];
+    const recentBlocks = Array.isArray(data.recentBlocks) ? data.recentBlocks : [];
+    const activeTab = ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'actions'].includes(defaultTab) ? defaultTab : 'info';
 
-    document.getElementById('modalTitle').textContent = `\${m.nickname || '회원'} 님 상세 정보`;
+    document.getElementById('modalTitle').textContent = (m.nickname || ADMIN_MEMBER_MSG.memberDetailsTitle) + ' ' + ADMIN_MEMBER_MSG.memberDetailsSuffix;
 
-    document.getElementById('modalBody').innerHTML = `
-        <div class="adm-tabs">
-            <button class="adm-tab active" onclick="switchTab('info', this)">기본 정보</button>
-            <button class="adm-tab" onclick="switchTab('hist', this)">로그인 이력 (\${h.length})</button>
-        </div>
-        <div id="tab-info"></div>
-        <div id="tab-hist" style="display:none;"></div>
-    `;
+    document.getElementById('modalBody').innerHTML = ''
+        + '<div class="adm-tabs">'
+        + '<button class="adm-tab ' + (activeTab === 'info' ? 'active' : '') + '" onclick="switchTab(\'info\', this)">' + ADMIN_MEMBER_MSG.infoTab + '</button>'
+        + '<button class="adm-tab ' + (activeTab === 'hist' ? 'active' : '') + '" onclick="switchTab(\'hist\', this)">' + ADMIN_MEMBER_MSG.loginTab + ' (' + h.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'security' ? 'active' : '') + '" onclick="switchTab(\'security\', this)">' + ADMIN_MEMBER_MSG.securityTab + ' (' + securityAudits.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'emails' ? 'active' : '') + '" onclick="switchTab(\'emails\', this)">' + ADMIN_MEMBER_MSG.emailHistoryTab + '</button>'
+        + '<button class="adm-tab ' + (activeTab === 'activity' ? 'active' : '') + '" onclick="switchTab(\'activity\', this)">' + ADMIN_MEMBER_MSG.activityTab + ' (' + activityLogs.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'blocks' ? 'active' : '') + '" onclick="switchTab(\'blocks\', this)">' + ADMIN_MEMBER_MSG.blockTab + ' (' + recentBlocks.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'actions' ? 'active' : '') + '" onclick="switchTab(\'actions\', this)">' + ADMIN_MEMBER_MSG.actionsTab + '</button>'
+        + '</div>'
+        + '<div id="tab-info" style="display:' + (activeTab === 'info' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-hist" style="display:' + (activeTab === 'hist' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-security" style="display:' + (activeTab === 'security' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-emails" style="display:' + (activeTab === 'emails' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-activity" style="display:' + (activeTab === 'activity' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-blocks" style="display:' + (activeTab === 'blocks' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-actions" style="display:' + (activeTab === 'actions' ? '' : 'none') + ';"></div>';
 
     document.getElementById('tab-info').innerHTML = buildInfoTab(m);
     document.getElementById('tab-hist').innerHTML = buildHistTab(h);
+    document.getElementById('tab-security').innerHTML = buildSecurityRows(securityAudits);
+    document.getElementById('tab-emails').innerHTML = ''
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">'
+        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.tab.emailRequests" javaScriptEscape="true"/>' + '</div>' + buildEmailRequestRows(emailRequests) + '</div>'
+        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.tab.emailTokens" javaScriptEscape="true"/>' + '</div>' + buildEmailTokenRows(emailTokens) + '</div>'
+        + '</div>';
+    document.getElementById('tab-activity').innerHTML = buildActivityRows(activityLogs);
+    document.getElementById('tab-blocks').innerHTML = buildBlockRows(recentBlocks);
+    document.getElementById('tab-actions').innerHTML = buildActionTab(m);
+    const statusSelect = document.getElementById('memberStatusSelect');
+    const roleSelect = document.getElementById('memberRoleSelect');
+    if (statusSelect) statusSelect.value = m.accountStatus || 'ACTIVE';
+    if (roleSelect) roleSelect.value = m.userRole || 'USER';
 }
 
 function buildInfoTab(m) {
@@ -624,89 +972,158 @@ function buildInfoTab(m) {
     const socialHtml = buildSocialHtml(m.linkedProviders);
     const lastLoginText = formatDateTime(m.lastLoginAt);
 
-    return `
-    <div class="detail-grid">
-        <div class="detail-item"><div class="detail-label">회원 번호</div><div class="detail-value">#\${escapeHtml(m.userIdx)}</div></div>
-        <div class="detail-item"><div class="detail-label">아이디</div><div class="detail-value">\${formatNullable(m.userId)}</div></div>
-        <div class="detail-item"><div class="detail-label">닉네임</div><div class="detail-value">\${formatNullable(m.nickname)}</div></div>
-        <div class="detail-item"><div class="detail-label">이메일</div><div class="detail-value" style="font-size:12px;">\${formatNullable(m.userEmail)}</div></div>
-        <div class="detail-item"><div class="detail-label">계정 상태</div><div class="detail-value">\${statusBadge}</div></div>
-        <div class="detail-item"><div class="detail-label">권한</div><div class="detail-value">\${roleBadge}</div></div>
-        <div class="detail-item"><div class="detail-label">국적</div><div class="detail-value">\${formatNullable(m.nationality)}</div></div>
-        <div class="detail-item"><div class="detail-label">선호 언어</div><div class="detail-value">\${formatNullable(m.preferredLang)}</div></div>
-        <div class="detail-item"><div class="detail-label">이메일 인증</div><div class="detail-value">\${formatBooleanBadge(m.emailVerified)}</div></div>
-        <div class="detail-item"><div class="detail-label">이메일 로그인</div><div class="detail-value">\${formatBooleanBadge(m.emailLoginEnabled)}</div></div>
-        <div class="detail-item"><div class="detail-label">비밀번호 로그인</div><div class="detail-value">\${formatBooleanBadge(m.passwordEnabled)}</div></div>
-        <div class="detail-item"><div class="detail-label">가입일</div><div class="detail-value" style="font-size:12px;">\${formatDateTime(m.createdAt)}</div></div>
-    </div>
-    <div class="detail-item" style="margin-top:12px;">
-        <div class="detail-label">소셜 연동</div>
-        <div class="detail-value" style="margin-top:4px;">\${socialHtml}</div>
-    </div>
-    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 성공</div>
-            <div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">\${escapeHtml(m.loginSuccessCount ?? 0)}</div>
-        </div>
-        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">로그인 실패</div>
-            <div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">\${escapeHtml(m.loginFailCount ?? 0)}</div>
-        </div>
-        <div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">
-            <div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">최근 로그인</div>
-            <div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">\${escapeHtml(lastLoginText)}</div>
-        </div>
-    </div>`;
+    return ''
+        + '<div class="detail-grid">'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.memberNo" javaScriptEscape="true"/>' + '</div><div class="detail-value">#' + escapeHtml(m.userIdx) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.userId" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatNullable(m.userId) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.nickname" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatNullable(m.nickname) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.email" javaScriptEscape="true"/>' + '</div><div class="detail-value" style="font-size:12px;">' + formatNullable(m.userEmail) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.members.accountStatus" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + statusBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.common.role" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + roleBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.nationality" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatNullable(m.nationality) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.preferredLanguage" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatNullable(m.preferredLang) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.members.emailVerified" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailVerified) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.members.emailLoginEnabled" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailLoginEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.members.passwordLoginEnabled" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatBooleanBadge(m.passwordEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.createdAt" javaScriptEscape="true"/>' + '</div><div class="detail-value" style="font-size:12px;">' + formatDateTime(m.createdAt) + '</div></div>'
+        + '</div>'
+        + '<div class="detail-item" style="margin-top:12px;">'
+        + '<div class="detail-label">' + '<spring:message code="admin.members.socialLinked" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="detail-value" style="margin-top:4px;">' + socialHtml + '</div>'
+        + '</div>'
+        + '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">'
+        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '<spring:message code="admin.members.loginSuccess" javaScriptEscape="true"/>' + '</div>'
+        + '<div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">' + escapeHtml(m.loginSuccessCount ?? 0) + '</div>'
+        + '</div>'
+        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '<spring:message code="admin.members.loginFailure" javaScriptEscape="true"/>' + '</div>'
+        + '<div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">' + escapeHtml(m.loginFailCount ?? 0) + '</div>'
+        + '</div>'
+        + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '<spring:message code="admin.context.lastLogin" javaScriptEscape="true"/>' + '</div>'
+        + '<div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">' + escapeHtml(lastLoginText) + '</div>'
+        + '</div>'
+        + '</div>';
 }
 
 function buildHistTab(history) {
     if (!history.length) {
-        return '<div style="text-align:center;padding:32px;color:#475569;">로그인 이력이 없습니다.</div>';
+        return '<div style="text-align:center;padding:32px;color:#475569;">' + '<spring:message code="admin.context.empty.logins" javaScriptEscape="true"/>' + '</div>';
     }
 
     const methodMap = {
-        ID: '아이디',
-        EMAIL: '이메일',
-        KAKAO: '카카오',
-        NAVER: '네이버',
-        GOOGLE: 'Google'
+        ID: '<spring:message code="admin.context.userId" javaScriptEscape="true"/>',
+        EMAIL: '<spring:message code="admin.context.email" javaScriptEscape="true"/>',
+        KAKAO: '<spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
+        NAVER: '<spring:message code="admin.social.naver" javaScriptEscape="true"/>',
+        GOOGLE: '<spring:message code="admin.social.google" javaScriptEscape="true"/>'
     };
 
     let rows = '';
-    history.forEach(item => {
+    history.forEach(function(item) {
         const ok = !!item.success;
-        rows += `
-            <tr>
-                <td>\${escapeHtml(formatHistoryDateTime(item.loginAt))}</td>
-                <td>\${escapeHtml(methodMap[item.loginMethod] || item.loginMethod || '—')}</td>
-                <td class="\${ok ? 'h-success' : 'h-fail'}">\${ok ? '✅ 성공' : '❌ 실패'}</td>
-                <td>\${escapeHtml(item.failReason || '—')}</td>
-                <td style="font-size:11px;color:#475569;">\${escapeHtml(item.ipAddress || '—')}</td>
-            </tr>`;
+        rows += ''
+            + '<tr>'
+            + '<td>' + escapeHtml(formatHistoryDateTime(item.loginAt)) + '</td>'
+            + '<td>' + escapeHtml(methodMap[item.loginMethod] || item.loginMethod || '—') + '</td>'
+            + '<td class="' + (ok ? 'h-success' : 'h-fail') + '">' + (ok ? '✅ ' + '<spring:message code="admin.logs.success" javaScriptEscape="true"/>' : '❌ ' + '<spring:message code="admin.logs.failure" javaScriptEscape="true"/>') + '</td>'
+            + '<td>' + escapeHtml(item.failReason || '—') + '</td>'
+            + '<td style="font-size:11px;color:#475569;">' + escapeHtml(item.ipAddress || '—') + '</td>'
+            + '</tr>';
     });
 
-    return `
-    <div style="overflow-x:auto;max-height:340px;overflow-y:auto;">
-        <table class="history-table">
-            <thead>
-                <tr>
-                    <th>시각</th>
-                    <th>방법</th>
-                    <th>결과</th>
-                    <th>실패 사유</th>
-                    <th>IP</th>
-                </tr>
-            </thead>
-            <tbody>\${rows}</tbody>
-        </table>
-    </div>`;
+    return ''
+        + '<div style="overflow-x:auto;max-height:340px;overflow-y:auto;">'
+        + '<table class="history-table">'
+        + '<thead><tr><th>' + '<spring:message code="admin.common.time" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.provider" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.success" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.failReason" javaScriptEscape="true"/>' + '</th><th><spring:message code="admin.common.ip" javaScriptEscape="true"/></th></tr></thead>'
+        + '<tbody>' + rows + '</tbody>'
+        + '</table>'
+        + '</div>';
 }
 
 function switchTab(tab, btn) {
     document.querySelectorAll('#detailModal .adm-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('tab-info').style.display = tab === 'info' ? '' : 'none';
-    document.getElementById('tab-hist').style.display = tab === 'hist' ? '' : 'none';
+    ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'actions'].forEach(function(name) {
+        const el = document.getElementById('tab-' + name);
+        if (el) el.style.display = tab === name ? '' : 'none';
+    });
+}
+
+async function saveMemberProfile(userIdx, button) {
+    const nickname = document.getElementById('memberProfileNickname').value.trim();
+    const nationality = document.getElementById('memberProfileNationality').value.trim();
+    const preferredLang = document.getElementById('memberProfileLang').value.trim();
+
+    button.disabled = true;
+    try {
+        const res = await fetch(ctx + '/admin/members/' + userIdx + '/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ nickname, nationality, preferredLang })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            adm_toast(data.message || '<spring:message code="admin.context.toast.saveProfileSuccess" javaScriptEscape="true"/>');
+            setTimeout(() => location.reload(), 700);
+        } else {
+            adm_toast(data.message || '<spring:message code="admin.context.toast.saveProfileFail" javaScriptEscape="true"/>', 'error');
+        }
+    } catch (e) {
+        console.error(e);
+        adm_toast('<spring:message code="admin.context.toast.saveProfileError" javaScriptEscape="true"/>', 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+function applyStatusFromDetail(userIdx, button) {
+    const status = document.getElementById('memberStatusSelect').value;
+    changeStatus(userIdx, status, button);
+}
+
+function applyRoleFromDetail(userIdx, button) {
+    const role = document.getElementById('memberRoleSelect').value;
+    const reason = document.getElementById('memberRoleReason').value.trim();
+    if (!reason) {
+        adm_toast('<spring:message code="admin.context.requireRoleReason" javaScriptEscape="true"/>', 'error');
+        return;
+    }
+    changeRole(userIdx, role, reason, button);
+}
+
+async function submitDetailBlock(userIdx, button) {
+    const blockType = document.getElementById('detailBlockType').value;
+    const blockedIp = document.getElementById('detailBlockedIp').value.trim();
+    const expiresAt = document.getElementById('detailBlockedUntil').value;
+    const reason = document.getElementById('detailBlockedReason').value.trim();
+
+    if ((blockType === 'IP_ONLY' || blockType === 'USER_IP') && !blockedIp) {
+        adm_toast('<spring:message code="admin.context.requireBlockedIp" javaScriptEscape="true"/>', 'error');
+        return;
+    }
+
+    button.disabled = true;
+    try {
+        const res = await fetch(ctx + '/admin/members/' + userIdx + '/block', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ blockType, blockedIp, expiresAt, reason })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            adm_toast(data.message || '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>');
+            setTimeout(() => location.reload(), 700);
+        } else {
+            adm_toast(data.message || '<spring:message code="admin.context.toast.saveBlockFail" javaScriptEscape="true"/>', 'error');
+        }
+    } catch (e) {
+        console.error(e);
+        adm_toast('<spring:message code="admin.context.toast.saveBlockError" javaScriptEscape="true"/>', 'error');
+    } finally {
+        button.disabled = false;
+    }
 }
 
 function closeDetail() {
@@ -715,6 +1132,17 @@ function closeDetail() {
 
 document.getElementById('detailModal').addEventListener('click', function (e) {
     if (e.target === this) closeDetail();
+});
+
+document.getElementById('blockModal').addEventListener('click', function (e) {
+    if (e.target === this) closeBlockModal();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const detailUserIdx = '${fn:escapeXml(param.detailUserIdx)}';
+    if (detailUserIdx) {
+        openDetail(detailUserIdx);
+    }
 });
 </script>
 

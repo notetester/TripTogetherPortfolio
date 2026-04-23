@@ -6,14 +6,14 @@
 
     <insert id="insertActivityLog">
         INSERT INTO USER_ACTIVITY_LOG (
-            request_id, user_idx, session_id, request_uri, http_method,
-            activity_type, activity_code, target_type, target_id,
+            request_id, flow_trace_id, user_idx, session_id, request_uri, http_method,
+            activity_domain, activity_type, activity_code, activity_provider, auth_event_type, target_type, target_id,
             handler_name, query_string, referer,
             ip_address, user_agent, response_status, response_time_ms,
             is_success, detail_summary
         ) VALUES (
-            #{requestId}, #{userIdx}, #{sessionId}, #{requestUri}, #{httpMethod},
-            #{activityType}, #{activityCode}, #{targetType}, #{targetId},
+            #{requestId}, #{flowTraceId}, #{userIdx}, #{sessionId}, #{requestUri}, #{httpMethod},
+            #{activityDomain}, #{activityType}, #{activityCode}, #{activityProvider}, #{authEventType}, #{targetType}, #{targetId},
             #{handlerName}, #{queryString}, #{referer},
             #{ipAddress}, #{userAgent}, #{responseStatus}, #{responseTimeMs},
             #{success}, #{detailSummary}

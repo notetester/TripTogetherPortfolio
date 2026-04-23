@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.travelPackage.mapper.TravelPackageMapper">
+
+    <resultMap id="TravelPackageResultMap" type="org.triptogether.travelPackage.vo.TravelPackageVO">
+        <id property="packageIdx" column="package_idx"/>
+        <result property="sellerUserIdx" column="seller_user_idx"/>
+        <result property="spotIdx" column="spot_idx"/>
+        <result property="packageTitle" column="package_title"/>
+        <result property="packageSummary" column="package_summary"/>
+        <result property="packageContent" column="package_content"/>
+        <result property="packagePrice" column="package_price"/>
+        <result property="currencyCode" column="currency_code"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="minPeople" column="min_people"/>
+        <result property="maxPeople" column="max_people"/>
+        <result property="packageStatus" column="package_status"/>
+        <result property="rejectReason" column="reject_reason"/>
+        <result property="mainImagePath" column="main_image_path"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="bookingCount" column="booking_count"/>
+        <result property="approvedByUserIdx" column="approved_by_user_idx"/>
+        <result property="approvedAt" column="approved_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="spotName" column="spot_name"/>
+        <result property="spotRegion" column="spot_region"/>
+        <result property="sellerNickname" column="seller_nickname"/>
+        <result property="pendingRevisionCount" column="pending_revision_count"/>
+    </resultMap>
+
+    <resultMap id="TravelPackageRevisionResultMap" type="org.triptogether.travelPackage.vo.TravelPackageRevisionVO">
+        <id property="packageRevisionIdx" column="package_revision_idx"/>
+        <result property="packageIdx" column="package_idx"/>
+        <result property="sellerUserIdx" column="seller_user_idx"/>
+        <result property="packageTitle" column="package_title"/>
+        <result property="packageSummary" column="package_summary"/>
+        <result property="packageContent" column="package_content"/>
+        <result property="packagePrice" column="package_price"/>
+        <result property="currencyCode" column="currency_code"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="minPeople" column="min_people"/>
+        <result property="maxPeople" column="max_people"/>
+        <result property="mainImagePath" column="main_image_path"/>
+        <result property="revisionStatus" column="revision_status"/>
+        <result property="rejectReason" column="reject_reason"/>
+        <result property="requestedAt" column="requested_at"/>
+        <result property="reviewedByUserIdx" column="reviewed_by_user_idx"/>
+        <result property="reviewedAt" column="reviewed_at"/>
+        <result property="currentPackageTitle" column="current_package_title"/>
+        <result property="spotName" column="spot_name"/>
+        <result property="spotRegion" column="spot_region"/>
+        <result property="sellerNickname" column="seller_nickname"/>
+    </resultMap>
+
+    <resultMap id="PackageSpotOptionResultMap" type="org.triptogether.travelPackage.vo.PackageSpotOptionVO">
+        <id property="spotIdx" column="spot_idx"/>
+        <result property="name" column="name"/>
+        <result property="region" column="region"/>
+        <result property="address" column="address"/>
+    </resultMap>
+
+    <resultMap id="PackageBookingResultMap" type="org.triptogether.travelPackage.vo.PackageBookingVO">
+        <id property="packageBookingIdx" column="package_booking_idx"/>
+        <result property="bookingNo" column="booking_no"/>
+        <result property="packageIdx" column="package_idx"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="peopleCount" column="people_count"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="totalPrice" column="total_price"/>
+        <result property="usedCash" column="used_cash"/>
+        <result property="usedMileage" column="used_mileage"/>
+        <result property="bookingStatus" column="booking_status"/>
+        <result property="bookedAt" column="booked_at"/>
+        <result property="cancelledAt" column="cancelled_at"/>
+        <result property="cancelReason" column="cancel_reason"/>
+    </resultMap>
+
+    <sql id="TravelPackageColumns">
+        tp.package_idx,
+        tp.seller_user_idx,
+        tp.spot_idx,
+        tp.package_title,
+        tp.package_summary,
+        tp.package_content,
+        tp.package_price,
+        tp.currency_code,
+        tp.start_date,
+        tp.end_date,
+        tp.min_people,
+        tp.max_people,
+        tp.package_status,
+        tp.reject_reason,
+        tp.main_image_path,
+        tp.view_count,
+        tp.like_count,
+        tp.booking_count,
+        tp.approved_by_user_idx,
+        tp.approved_at,
+        tp.created_at,
+        tp.updated_at,
+        st.name AS spot_name,
+        st.region AS spot_region,
+        u.nickname AS seller_nickname,
+        (
+            SELECT COUNT(*)
+            FROM TRAVEL_PACKAGE_REVISION tpr
+            WHERE tpr.package_idx = tp.package_idx
+              AND tpr.revision_status = 'PENDING'
+        ) AS pending_revision_count
+    </sql>
+
+    <select id="selectSellerPackages" resultMap="TravelPackageResultMap">
+        SELECT
+            <include refid="TravelPackageColumns"/>
+        FROM TRAVEL_PACKAGE tp
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tp.seller_user_idx
+        WHERE tp.seller_user_idx = #{sellerUserIdx}
+          AND tp.package_status != 'DELETED'
+        ORDER BY tp.created_at DESC, tp.package_idx DESC
+    </select>
+
+    <select id="selectSellerPackage" resultMap="TravelPackageResultMap">
+        SELECT
+            <include refid="TravelPackageColumns"/>
+        FROM TRAVEL_PACKAGE tp
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tp.seller_user_idx
+        WHERE tp.package_idx = #{packageIdx}
+          AND tp.seller_user_idx = #{sellerUserIdx}
+          AND tp.package_status != 'DELETED'
+        LIMIT 1
+    </select>
+
+    <insert id="insertPackage" parameterType="org.triptogether.travelPackage.vo.TravelPackageVO"
+            useGeneratedKeys="true" keyProperty="packageIdx">
+        INSERT INTO TRAVEL_PACKAGE (
+            seller_user_idx,
+            spot_idx,
+            package_title,
+            package_summary,
+            package_content,
+            package_price,
+            currency_code,
+            start_date,
+            end_date,
+            min_people,
+            max_people,
+            package_status,
+            main_image_path
+        ) VALUES (
+            #{sellerUserIdx},
+            #{spotIdx},
+            #{packageTitle},
+            #{packageSummary},
+            #{packageContent},
+            #{packagePrice},
+            #{currencyCode},
+            #{startDate},
+            #{endDate},
+            #{minPeople},
+            #{maxPeople},
+            #{packageStatus},
+            #{mainImagePath}
+        )
+    </insert>
+
+    <update id="updatePackage" parameterType="org.triptogether.travelPackage.vo.TravelPackageVO">
+        UPDATE TRAVEL_PACKAGE
+        SET spot_idx = #{spotIdx},
+            package_title = #{packageTitle},
+            package_summary = #{packageSummary},
+            package_content = #{packageContent},
+            package_price = #{packagePrice},
+            currency_code = #{currencyCode},
+            start_date = #{startDate},
+            end_date = #{endDate},
+            min_people = #{minPeople},
+            max_people = #{maxPeople},
+            package_status = #{packageStatus},
+            main_image_path = #{mainImagePath},
+            reject_reason = CASE
+                WHEN #{packageStatus} = 'PENDING' THEN NULL
+                ELSE reject_reason
+            END
+        WHERE package_idx = #{packageIdx}
+          AND seller_user_idx = #{sellerUserIdx}
+          AND package_status IN ('DRAFT', 'REJECTED')
+    </update>
+
+    <update id="submitPackage">
+        UPDATE TRAVEL_PACKAGE
+        SET package_status = 'PENDING',
+            reject_reason = NULL
+        WHERE package_idx = #{packageIdx}
+          AND seller_user_idx = #{sellerUserIdx}
+          AND package_status IN ('DRAFT', 'REJECTED')
+    </update>
+
+    <select id="selectSpotOptions" resultMap="PackageSpotOptionResultMap">
+        SELECT
+            spot_idx,
+            name,
+            region,
+            address
+        FROM SPOT_TRAVEL
+        WHERE COALESCE(spot_active, 0) = 0
+        ORDER BY region ASC, name ASC
+    </select>
+
+    <select id="selectAdminPackages" resultMap="TravelPackageResultMap">
+        SELECT
+            <include refid="TravelPackageColumns"/>
+        FROM TRAVEL_PACKAGE tp
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tp.seller_user_idx
+        WHERE tp.package_status != 'DELETED'
+        <if test="status != null and status != ''">
+            AND tp.package_status = #{status}
+        </if>
+        ORDER BY
+            CASE tp.package_status
+                WHEN 'PENDING' THEN 1
+                WHEN 'REJECTED' THEN 2
+                WHEN 'APPROVED' THEN 3
+                WHEN 'DRAFT' THEN 4
+                ELSE 5
+            END,
+            tp.created_at DESC,
+            tp.package_idx DESC
+    </select>
+
+    <select id="selectPackageForReview" resultMap="TravelPackageResultMap">
+        SELECT
+            <include refid="TravelPackageColumns"/>
+        FROM TRAVEL_PACKAGE tp
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tp.seller_user_idx
+        WHERE tp.package_idx = #{packageIdx}
+          AND tp.package_status != 'DELETED'
+        LIMIT 1
+    </select>
+
+    <update id="approvePackage">
+        UPDATE TRAVEL_PACKAGE
+        SET package_status = 'APPROVED',
+            reject_reason = NULL,
+            approved_by_user_idx = #{approvedByUserIdx},
+            approved_at = NOW()
+        WHERE package_idx = #{packageIdx}
+          AND package_status = 'PENDING'
+    </update>
+
+    <update id="rejectPackage">
+        UPDATE TRAVEL_PACKAGE
+        SET package_status = 'REJECTED',
+            reject_reason = #{rejectReason},
+            approved_by_user_idx = NULL,
+            approved_at = NULL
+        WHERE package_idx = #{packageIdx}
+          AND package_status = 'PENDING'
+    </update>
+
+    <insert id="insertPackageReviewHistory" parameterType="org.triptogether.travelPackage.vo.PackageReviewHistoryCreateVO">
+        INSERT INTO TRAVEL_PACKAGE_REVIEW_HISTORY (
+            package_idx,
+            previous_status,
+            new_status,
+            review_reason,
+            reviewed_by_user_idx
+        ) VALUES (
+            #{packageIdx},
+            #{previousStatus},
+            #{newStatus},
+            #{reviewReason},
+            #{reviewedByUserIdx}
+        )
+    </insert>
+
+    <select id="selectApprovedPackages" resultMap="TravelPackageResultMap">
+        SELECT
+            <include refid="TravelPackageColumns"/>
+        FROM TRAVEL_PACKAGE tp
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tp.seller_user_idx
+        WHERE tp.package_status = 'APPROVED'
+          AND COALESCE(st.spot_active, 0) = 0
+          AND (tp.end_date IS NULL OR tp.end_date >= CURDATE())
+        ORDER BY tp.approved_at DESC, tp.package_idx DESC
+    </select>
+
+    <select id="selectApprovedPackagesBySpot" resultMap="TravelPackageResultMap">
+        SELECT
+            <include refid="TravelPackageColumns"/>
+        FROM TRAVEL_PACKAGE tp
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tp.seller_user_idx
+        WHERE tp.package_status = 'APPROVED'
+          AND tp.spot_idx = #{spotIdx}
+          AND COALESCE(st.spot_active, 0) = 0
+          AND (tp.end_date IS NULL OR tp.end_date >= CURDATE())
+        ORDER BY tp.approved_at DESC, tp.package_idx DESC
+    </select>
+
+    <select id="selectApprovedPackageForUpdate" resultMap="TravelPackageResultMap">
+        SELECT
+            <include refid="TravelPackageColumns"/>
+        FROM TRAVEL_PACKAGE tp
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tp.seller_user_idx
+        WHERE tp.package_idx = #{packageIdx}
+          AND tp.package_status = 'APPROVED'
+          AND COALESCE(st.spot_active, 0) = 0
+          AND (tp.end_date IS NULL OR tp.end_date >= CURDATE())
+        FOR UPDATE
+    </select>
+
+    <insert id="insertPackageBooking"
+            parameterType="org.triptogether.travelPackage.vo.PackageBookingCreateVO"
+            useGeneratedKeys="true"
+            keyProperty="packageBookingIdx"
+            keyColumn="package_booking_idx">
+        INSERT INTO TRAVEL_PACKAGE_BOOKING (
+            booking_no,
+            package_idx,
+            user_idx,
+            people_count,
+            unit_price,
+            total_price,
+            used_cash,
+            used_mileage,
+            booking_status,
+            booked_at
+        ) VALUES (
+            #{bookingNo},
+            #{packageIdx},
+            #{userIdx},
+            #{peopleCount},
+            #{unitPrice},
+            #{totalPrice},
+            #{usedCash},
+            #{usedMileage},
+            #{bookingStatus},
+            NOW()
+        )
+    </insert>
+
+    <update id="increasePackageBookingCount">
+        UPDATE TRAVEL_PACKAGE
+        SET booking_count = COALESCE(booking_count, 0) + 1
+        WHERE package_idx = #{packageIdx}
+    </update>
+
+    <select id="selectPackageBookingForUpdate" resultMap="PackageBookingResultMap">
+        SELECT
+            package_booking_idx,
+            booking_no,
+            package_idx,
+            user_idx,
+            people_count,
+            unit_price,
+            total_price,
+            used_cash,
+            used_mileage,
+            booking_status,
+            booked_at,
+            cancelled_at,
+            cancel_reason
+        FROM TRAVEL_PACKAGE_BOOKING
+        WHERE package_booking_idx = #{packageBookingIdx}
+          AND user_idx = #{userIdx}
+        FOR UPDATE
+    </select>
+
+    <update id="cancelPackageBooking">
+        UPDATE TRAVEL_PACKAGE_BOOKING
+        SET booking_status = 'CANCELLED',
+            cancelled_at = NOW(),
+            cancel_reason = #{cancelReason}
+        WHERE package_booking_idx = #{packageBookingIdx}
+          AND user_idx = #{userIdx}
+          AND booking_status = 'BOOKED'
+    </update>
+
+    <update id="decreasePackageBookingCount">
+        UPDATE TRAVEL_PACKAGE
+        SET booking_count = GREATEST(COALESCE(booking_count, 0) - 1, 0)
+        WHERE package_idx = #{packageIdx}
+    </update>
+
+    <select id="selectPendingRevisionByPackage" resultMap="TravelPackageRevisionResultMap">
+        SELECT
+            tpr.package_revision_idx,
+            tpr.package_idx,
+            tpr.seller_user_idx,
+            tpr.package_title,
+            tpr.package_summary,
+            tpr.package_content,
+            tpr.package_price,
+            tpr.currency_code,
+            tpr.start_date,
+            tpr.end_date,
+            tpr.min_people,
+            tpr.max_people,
+            tpr.main_image_path,
+            tpr.revision_status,
+            tpr.reject_reason,
+            tpr.requested_at,
+            tpr.reviewed_by_user_idx,
+            tpr.reviewed_at,
+            tp.package_title AS current_package_title,
+            st.name AS spot_name,
+            st.region AS spot_region,
+            u.nickname AS seller_nickname
+        FROM TRAVEL_PACKAGE_REVISION tpr
+        JOIN TRAVEL_PACKAGE tp ON tp.package_idx = tpr.package_idx
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tpr.seller_user_idx
+        WHERE tpr.package_idx = #{packageIdx}
+          AND tpr.revision_status = 'PENDING'
+        ORDER BY tpr.requested_at DESC, tpr.package_revision_idx DESC
+        LIMIT 1
+    </select>
+
+    <insert id="insertPackageRevision" parameterType="org.triptogether.travelPackage.vo.TravelPackageRevisionVO"
+            useGeneratedKeys="true" keyProperty="packageRevisionIdx" keyColumn="package_revision_idx">
+        INSERT INTO TRAVEL_PACKAGE_REVISION (
+            package_idx,
+            seller_user_idx,
+            package_title,
+            package_summary,
+            package_content,
+            package_price,
+            currency_code,
+            start_date,
+            end_date,
+            min_people,
+            max_people,
+            main_image_path,
+            revision_status
+        ) VALUES (
+            #{packageIdx},
+            #{sellerUserIdx},
+            #{packageTitle},
+            #{packageSummary},
+            #{packageContent},
+            #{packagePrice},
+            #{currencyCode},
+            #{startDate},
+            #{endDate},
+            #{minPeople},
+            #{maxPeople},
+            #{mainImagePath},
+            #{revisionStatus}
+        )
+    </insert>
+
+    <select id="selectAdminPackageRevisions" resultMap="TravelPackageRevisionResultMap">
+        SELECT
+            tpr.package_revision_idx,
+            tpr.package_idx,
+            tpr.seller_user_idx,
+            tpr.package_title,
+            tpr.package_summary,
+            tpr.package_content,
+            tpr.package_price,
+            tpr.currency_code,
+            tpr.start_date,
+            tpr.end_date,
+            tpr.min_people,
+            tpr.max_people,
+            tpr.main_image_path,
+            tpr.revision_status,
+            tpr.reject_reason,
+            tpr.requested_at,
+            tpr.reviewed_by_user_idx,
+            tpr.reviewed_at,
+            tp.package_title AS current_package_title,
+            st.name AS spot_name,
+            st.region AS spot_region,
+            u.nickname AS seller_nickname
+        FROM TRAVEL_PACKAGE_REVISION tpr
+        JOIN TRAVEL_PACKAGE tp ON tp.package_idx = tpr.package_idx
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tpr.seller_user_idx
+        WHERE 1 = 1
+        <if test="status != null and status != ''">
+            AND tpr.revision_status = #{status}
+        </if>
+        ORDER BY
+            CASE tpr.revision_status
+                WHEN 'PENDING' THEN 1
+                WHEN 'REJECTED' THEN 2
+                WHEN 'APPROVED' THEN 3
+                ELSE 4
+            END,
+            tpr.requested_at DESC,
+            tpr.package_revision_idx DESC
+    </select>
+
+    <select id="selectPackageRevisionForReview" resultMap="TravelPackageRevisionResultMap">
+        SELECT
+            tpr.package_revision_idx,
+            tpr.package_idx,
+            tpr.seller_user_idx,
+            tpr.package_title,
+            tpr.package_summary,
+            tpr.package_content,
+            tpr.package_price,
+            tpr.currency_code,
+            tpr.start_date,
+            tpr.end_date,
+            tpr.min_people,
+            tpr.max_people,
+            tpr.main_image_path,
+            tpr.revision_status,
+            tpr.reject_reason,
+            tpr.requested_at,
+            tpr.reviewed_by_user_idx,
+            tpr.reviewed_at,
+            tp.package_title AS current_package_title,
+            st.name AS spot_name,
+            st.region AS spot_region,
+            u.nickname AS seller_nickname
+        FROM TRAVEL_PACKAGE_REVISION tpr
+        JOIN TRAVEL_PACKAGE tp ON tp.package_idx = tpr.package_idx
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tpr.seller_user_idx
+        WHERE tpr.package_revision_idx = #{packageRevisionIdx}
+        LIMIT 1
+    </select>
+
+    <update id="applyPackageRevision">
+        UPDATE TRAVEL_PACKAGE tp
+        JOIN TRAVEL_PACKAGE_REVISION tpr ON tpr.package_idx = tp.package_idx
+        SET tp.package_title = tpr.package_title,
+            tp.package_summary = tpr.package_summary,
+            tp.package_content = tpr.package_content,
+            tp.package_price = tpr.package_price,
+            tp.currency_code = tpr.currency_code,
+            tp.start_date = tpr.start_date,
+            tp.end_date = tpr.end_date,
+            tp.min_people = tpr.min_people,
+            tp.max_people = tpr.max_people,
+            tp.main_image_path = tpr.main_image_path,
+            tp.updated_at = NOW()
+        WHERE tpr.package_revision_idx = #{packageRevisionIdx}
+          AND tpr.revision_status = 'PENDING'
+          AND tp.package_status = 'APPROVED'
+    </update>
+
+    <update id="approvePackageRevision">
+        UPDATE TRAVEL_PACKAGE_REVISION
+        SET revision_status = 'APPROVED',
+            reject_reason = NULL,
+            reviewed_by_user_idx = #{reviewedByUserIdx},
+            reviewed_at = NOW()
+        WHERE package_revision_idx = #{packageRevisionIdx}
+          AND revision_status = 'PENDING'
+    </update>
+
+    <update id="rejectPackageRevision">
+        UPDATE TRAVEL_PACKAGE_REVISION
+        SET revision_status = 'REJECTED',
+            reject_reason = #{rejectReason},
+            reviewed_by_user_idx = #{reviewedByUserIdx},
+            reviewed_at = NOW()
+        WHERE package_revision_idx = #{packageRevisionIdx}
+          AND revision_status = 'PENDING'
+    </update>
+
+</mapper>

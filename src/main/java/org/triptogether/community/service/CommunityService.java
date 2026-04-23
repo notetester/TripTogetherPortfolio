@@ -92,14 +92,24 @@ public interface CommunityService {
     void updateTagRelation(Long postId);
 
     // ===== 신고 =====
-    // 게시글 신고 횟수 캐시 업데이트. 3회 이상이면 자동 차단함
+    // 게시글 신고 횟수 캐시 업데이트 (신고 3회 이상이면 리스트/상세에서 BLUR 처리됨)
     void updatePostReportCache(Long postId);
-    // 댓글 신고 횟수 캐시 업데이트. 3회 이상이면 자동 차단함
+    // 댓글 신고 횟수 캐시 업데이트 (신고 3회 이상이면 리스트/상세에서 BLUR 처리됨)
     void updateCommentReportCache(Long commentId);
     // 게시글 신고 횟수 가져옴
     int getPostReportCount(Long postId);
     // 댓글 신고 횟수 가져옴
     int getCommentReportCount(Long commentId);
+
+    // ===== AI 욕설 감지 =====
+    // 게시글 AI 감지 플래그 세팅 (비동기 Perspective 검사 후 호출됨)
+    void flagPostAsToxic(Long postId);
+    // 댓글 AI 감지 플래그 세팅
+    void flagCommentAsToxic(Long commentId);
+    // 게시글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
+    void clearPostBlur(Long postId);
+    // 댓글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
+    void clearCommentBlur(Long commentId);
 
     // ===== 차단 (어드민) =====
     // 유저 차단/해제

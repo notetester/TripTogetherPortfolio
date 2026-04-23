@@ -33,6 +33,11 @@ public interface RewardMapper {
                                @Param("expPoints") long expPoints,
                                @Param("levelNo") int levelNo);
 
+    List<UsersVO> selectUsersForLevelSync(@Param("onlyActiveMembers") boolean onlyActiveMembers);
+
+    void updateUserLevelOnly(@Param("userIdx") Long userIdx,
+                             @Param("levelNo") int levelNo);
+
     void insertPointHistory(PointHistoryCreateDto history);
 
     void insertExpHistory(ExpHistoryCreateDto history);

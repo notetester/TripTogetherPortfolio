@@ -146,17 +146,20 @@
     font-weight: 500;
 }
 
-/* 대상 유형 태그 */
+/* 대상 유형 태그 — pill 형태 (처리 상태 뱃지와 동일 톤) */
 .rpt-type-tag {
     display: inline-block;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    background: var(--blue-light);
-    color: var(--blue);
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
     white-space: nowrap;
 }
+
+.rpt-type-tag.type-post      { background: #dbeafe; color: #1e40af; }
+.rpt-type-tag.type-comment   { background: #e0e7ff; color: #3730a3; }
+.rpt-type-tag.type-review    { background: #dcfce7; color: #15803d; }
+.rpt-type-tag.type-user      { background: #f1f5f9; color: #475569; }
 
 /* 사유 */
 .rpt-reason-cell { max-width: 280px; }
@@ -536,3 +539,151 @@
 
     .rpt-tab { padding: 10px 12px; font-size: 13px; }
 }
+
+/* =============================================
+   다크 테마 오버라이드 (html.dark)
+   ============================================= */
+
+/* ── 페이지 헤더 ── */
+html.dark .rpt-ph {
+    background: #0f1115;
+    border-bottom-color: #232935;
+}
+html.dark .rpt-ph h1 { color: #f1f5f9; }
+html.dark .rpt-ph-sub { color: #9ca3af; }
+
+/* ── 탭 ── */
+html.dark .rpt-tab { color: #9ca3af; }
+html.dark .rpt-tab:hover { color: #93c5fd; }
+html.dark .rpt-tab.active {
+    color: #93c5fd;
+    border-bottom-color: #60a5fa;
+}
+
+/* ── 본문 래퍼 ── */
+html.dark .rpt-body-wrap,
+html.dark .rpt-detail-wrap { background: #0f1115; }
+
+/* ── 툴바 ── */
+html.dark .rpt-total { color: #9ca3af; }
+html.dark .rpt-total strong { color: #f1f5f9; }
+
+/* ── 테이블 ── */
+html.dark .rpt-table-wrap {
+    background: #1a1f2b;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .35);
+}
+html.dark .rpt-table thead tr {
+    background: #151922;
+    border-bottom-color: #232935;
+}
+html.dark .rpt-table th { color: #9ca3af; }
+html.dark .rpt-row { border-bottom-color: #232935; }
+html.dark .rpt-row:hover { background: #1e293b; }
+html.dark .rpt-table td { color: #cbd5e1; }
+html.dark .rpt-no { color: #6b7280; }
+
+/* ── 대상 유형 태그 ── */
+html.dark .rpt-type-tag.type-post    { background: #1e293b; color: #93c5fd; }
+html.dark .rpt-type-tag.type-comment { background: #1e1b4b; color: #a5b4fc; }
+html.dark .rpt-type-tag.type-review  { background: #14532d; color: #86efac; }
+html.dark .rpt-type-tag.type-user    { background: #232935; color: #cbd5e1; }
+
+/* ── 사유 / 날짜 ── */
+html.dark .rpt-reason-text { color: #9ca3af; }
+html.dark .rpt-date { color: #6b7280; }
+
+/* ── 상태 뱃지 ── */
+html.dark .rpt-status-badge.PENDING   { background: #3a2a05; color: #fde68a; }
+html.dark .rpt-status-badge.IN_REVIEW { background: #1e293b; color: #93c5fd; }
+html.dark .rpt-status-badge.RESOLVED  { background: #14532d; color: #86efac; }
+html.dark .rpt-status-badge.DISMISSED { background: #232935; color: #9ca3af; }
+html.dark .rpt-status-badge.CANCELLED { background: #4c1d1d; color: #fca5a5; }
+
+/* ── 빈 목록 ── */
+html.dark .rpt-empty-msg { color: #cbd5e1; }
+
+/* ── 페이지네이션 ── */
+html.dark .rpt-page-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .rpt-page-btn:hover,
+html.dark .rpt-page-btn.active {
+    background: #60a5fa;
+    border-color: #60a5fa;
+    color: #0f1115;
+}
+
+/* ── 뒤로가기 ── */
+html.dark .rpt-back-btn { color: #9ca3af; }
+html.dark .rpt-back-btn:hover { color: #93c5fd; }
+
+/* ── 상세 카드 ── */
+html.dark .rpt-detail-card {
+    background: #1a1f2b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+html.dark .rpt-detail-head { border-bottom-color: #232935; }
+html.dark .rpt-detail-title { color: #f1f5f9; }
+html.dark .rpt-detail-info { color: #6b7280; }
+html.dark .rpt-detail-label { color: #9ca3af; }
+html.dark .rpt-detail-value { color: #cbd5e1; }
+
+/* ── 처리 결과 카드 ── */
+html.dark .rpt-result-card {
+    background: #1a1f2b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+html.dark .rpt-result-head { border-bottom-color: #232935; }
+html.dark .rpt-result-title { color: #f1f5f9; }
+html.dark .rpt-result-meta { color: #6b7280; }
+html.dark .rpt-result-body { color: #cbd5e1; }
+
+/* ── 검토중 안내 ── */
+html.dark .rpt-no-result {
+    background: #1a1f2b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+html.dark .rpt-no-result-msg { color: #cbd5e1; }
+html.dark .rpt-no-result-sub { color: #6b7280; }
+
+/* ── 취소 버튼 ── */
+html.dark .rpt-btn-cancel {
+    background: #232935;
+    color: #cbd5e1;
+}
+html.dark .rpt-btn-cancel:hover { background: #2b3241; }
+
+/* ── 수정 폼 ── */
+html.dark .rpt-write-card {
+    background: #1a1f2b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+html.dark .rpt-form-label { color: #cbd5e1; }
+html.dark .rpt-form-select,
+html.dark .rpt-form-textarea {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #f1f5f9;
+}
+html.dark .rpt-form-select:focus,
+html.dark .rpt-form-textarea:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .15);
+}
+html.dark .rpt-form-textarea::placeholder { color: #6b7280; }
+
+/* ── 관리자 패널 ── */
+html.dark .rpt-admin-form {
+    background: #151922;
+    border-color: #2b3241;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+html.dark .rpt-admin-form-title { color: #e5e7eb; }
+html.dark .rpt-admin-action-label { color: #9ca3af; }
+html.dark .rpt-btn-danger { background: #14532d; color: #86efac; }
+html.dark .rpt-btn-warn   { background: #3a2a05; color: #fde68a; }
+html.dark .rpt-admin-done { color: #9ca3af; }
+

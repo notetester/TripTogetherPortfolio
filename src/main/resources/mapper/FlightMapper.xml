@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.flight.mapper.FlightMapper">
+
+    <resultMap id="FlightPurchaseResultMap" type="org.triptogether.flight.vo.FlightPurchaseVO">
+        <id property="flightPurchaseIdx" column="flight_purchase_idx"/>
+        <result property="purchaseNo" column="purchase_no"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="spotIdx" column="spot_idx"/>
+        <result property="offerId" column="offer_id"/>
+        <result property="providerType" column="provider_type"/>
+        <result property="paymentIdx" column="payment_idx"/>
+        <result property="airlineName" column="airline_name"/>
+        <result property="flightNo" column="flight_no"/>
+        <result property="originAirportCode" column="origin_airport_code"/>
+        <result property="destinationAirportCode" column="destination_airport_code"/>
+        <result property="departureTime" column="departure_time"/>
+        <result property="arrivalTime" column="arrival_time"/>
+        <result property="tripType" column="trip_type"/>
+        <result property="returnAirlineName" column="return_airline_name"/>
+        <result property="returnFlightNo" column="return_flight_no"/>
+        <result property="returnOriginAirportCode" column="return_origin_airport_code"/>
+        <result property="returnDestinationAirportCode" column="return_destination_airport_code"/>
+        <result property="returnDepartureTime" column="return_departure_time"/>
+        <result property="returnArrivalTime" column="return_arrival_time"/>
+        <result property="outboundPrice" column="outbound_price"/>
+        <result property="returnPrice" column="return_price"/>
+        <result property="totalPrice" column="total_price"/>
+        <result property="usedCash" column="used_cash"/>
+        <result property="usedMileage" column="used_mileage"/>
+        <result property="status" column="status"/>
+        <result property="cancelReason" column="cancel_reason"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insertFlightPurchase" useGeneratedKeys="true" keyProperty="flightPurchaseIdx" keyColumn="flight_purchase_idx">
+        INSERT INTO FLIGHT_PURCHASE_SIMULATION (
+            purchase_no, user_idx, spot_idx, offer_id, provider_type,
+            payment_idx,
+            airline_name, flight_no, origin_airport_code, destination_airport_code,
+            departure_time, arrival_time, trip_type,
+            return_airline_name, return_flight_no, return_origin_airport_code, return_destination_airport_code,
+            return_departure_time, return_arrival_time,
+            outbound_price, return_price, total_price, used_cash, used_mileage,
+            status, created_at
+        ) VALUES (
+            #{purchaseNo}, #{userIdx}, #{spotIdx}, #{offerId}, #{providerType},
+            #{paymentIdx},
+            #{airlineName}, #{flightNo}, #{originAirportCode}, #{destinationAirportCode},
+            #{departureTime}, #{arrivalTime}, #{tripType},
+            #{returnAirlineName}, #{returnFlightNo}, #{returnOriginAirportCode}, #{returnDestinationAirportCode},
+            #{returnDepartureTime}, #{returnArrivalTime},
+            #{outboundPrice}, #{returnPrice}, #{totalPrice}, #{usedCash}, #{usedMileage},
+            #{status}, NOW()
+        )
+    </insert>
+
+    <select id="selectFlightPurchaseForUpdate" resultMap="FlightPurchaseResultMap">
+        SELECT
+            flight_purchase_idx,
+            purchase_no,
+            user_idx,
+            spot_idx,
+            offer_id,
+            provider_type,
+            payment_idx,
+            airline_name,
+            flight_no,
+            origin_airport_code,
+            destination_airport_code,
+            departure_time,
+            arrival_time,
+            trip_type,
+            return_airline_name,
+            return_flight_no,
+            return_origin_airport_code,
+            return_destination_airport_code,
+            return_departure_time,
+            return_arrival_time,
+            outbound_price,
+            return_price,
+            total_price,
+            used_cash,
+            used_mileage,
+            status,
+            cancel_reason,
+            created_at
+        FROM FLIGHT_PURCHASE_SIMULATION
+        WHERE flight_purchase_idx = #{flightPurchaseIdx}
+          AND user_idx = #{userIdx}
+        FOR UPDATE
+    </select>
+
+    <update id="cancelFlightPurchase">
+        UPDATE FLIGHT_PURCHASE_SIMULATION
+        SET status = 'CANCELLED',
+            cancel_reason = #{cancelReason}
+        WHERE flight_purchase_idx = #{flightPurchaseIdx}
+          AND user_idx = #{userIdx}
+          AND status = 'COMPLETED'
+    </update>
+
+</mapper>

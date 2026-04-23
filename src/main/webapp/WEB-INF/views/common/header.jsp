@@ -1,9 +1,28 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+    (function () {
+        // 구버전 키(sa_theme) → 신규 키(tt_theme) 일회성 마이그레이션
+        try {
+            var legacy = localStorage.getItem('sa_theme');
+            if (legacy !== null) {
+                if (!localStorage.getItem('tt_theme')) {
+                    localStorage.setItem('tt_theme', legacy === 'sa-light' ? 'light' : 'dark');
+                }
+                localStorage.removeItem('sa_theme');
+            }
+            // 일반 사이트 기본은 라이트. tt_theme === 'dark' 일 때만 html.dark 적용
+            if (localStorage.getItem('tt_theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        } catch (e) {}
+    })();
+    </script>
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/TripTogetherFavicon.png"> <%-- 파비콘 --%>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,6 +31,9 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/variables.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/layout.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/header.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/notification.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/item-effects.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/dark-theme.css">
     <c:if test="${not empty pageCSS}">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/${pageCSS}">
     </c:if>
@@ -24,10 +46,29 @@
         </div>
         <nav>
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'"><spring:message code="header.nav.explore"/></button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/courses'"><spring:message code="header.nav.courses"/></button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/assistant'"><spring:message code="header.nav.assistant"/></button>
+
+            <div class="nb-drop">
+                <button type="button" class="nb nb-drop-trigger"><spring:message code="header.nav.planner"/></button>
+                <div class="nb-drop-menu">
+                    <a href="${pageContext.request.contextPath}/courses"><spring:message code="header.nav.courses"/></a>
+                    <a href="${pageContext.request.contextPath}/assistant"><spring:message code="header.nav.assistant"/></a>
+                </div>
+            </div>
+
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/community/list'"><spring:message code="header.nav.community"/></button>
-            <button class="nb" onclick="location.href='${pageContext.request.contextPath}/wallet'"><spring:message code="header.nav.wallet"/></button>
+
+            <div class="nb-drop">
+                <button type="button" class="nb nb-drop-trigger"><spring:message code="header.nav.shopping"/></button>
+                <div class="nb-drop-menu">
+                    <a href="${pageContext.request.contextPath}/wallet"><spring:message code="header.nav.wallet"/></a>
+                    <a href="${pageContext.request.contextPath}/shop"><spring:message code="header.nav.shop"/></a>
+                    <a href="${pageContext.request.contextPath}/packages"><spring:message code="header.nav.packages"/></a>
+                    <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userRole == 'BUSINESS' or sessionScope.loginUser.userRole == 'PARTNER')}">
+                        <a href="${pageContext.request.contextPath}/packages/manage"><spring:message code="header.nav.packagesManage"/></a>
+                    </c:if>
+                </div>
+            </div>
+
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/mypage'"><spring:message code="header.nav.mypage"/></button>
             <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">
     <button class="nb" onclick="location.href='${pageContext.request.contextPath}/admin'"><spring:message code="header.nav.admin"/></button>
@@ -40,6 +81,12 @@
 
         </nav>
         <div class="hr">
+            <button type="button" class="tt-theme-btn" id="ttThemeBtn" aria-label="<spring:message code='header.theme.toggle'/>"
+                    data-light-label="<spring:message code='header.theme.light'/>"
+                    data-dark-label="<spring:message code='header.theme.dark'/>">
+                <span class="tt-theme-icon">🌙</span>
+                <span class="tt-theme-label"><spring:message code="header.theme.dark"/></span>
+            </button>
             <label>
                 <select class="lang-sel" id="langSel">
                     <option value="ko" ${pageContext.response.locale.language == 'ko' ? 'selected' : ''}><spring:message code="header.lang.ko"/></option>
@@ -50,11 +97,63 @@
             </label>
             <c:choose>
                 <c:when test="${not empty sessionScope.loginUser}">
+                    <%-- 알림 벨 --%>
+                    <div class="noti-wrap">
+                        <button type="button" class="noti-bell" id="notiBell" aria-label="<spring:message code='header.notification.bell'/>">
+                            <span class="noti-bell-icon">🔔</span>
+                            <c:if test="${headerUnreadCount > 0}">
+                                <span class="noti-badge">${headerUnreadCount > 99 ? '99+' : headerUnreadCount}</span>
+                            </c:if>
+                        </button>
+                        <div class="noti-dropdown" id="notiDropdown" hidden>
+                            <div class="noti-dropdown-head">
+                                <span class="noti-dropdown-title"><spring:message code="header.notification.title"/></span>
+                                <button type="button" class="noti-mark-all" id="notiMarkAll"><spring:message code="header.notification.markAll"/></button>
+                            </div>
+                            <div class="noti-dropdown-body">
+                                <c:choose>
+                                    <c:when test="${empty headerRecentNotifications}">
+                                        <div class="noti-empty"><spring:message code="header.notification.empty"/></div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach var="n" items="${headerRecentNotifications}">
+                                            <c:set var="readClass" value=""/>
+                                            <c:if test="${n.isRead}">
+                                                <c:set var="readClass" value="is-read"/>
+                                            </c:if>
+                                            <div class="noti-row ${readClass}"
+                                                 data-id="${n.notificationId}"
+                                                 data-target="${n.targetUrl}">
+                                                <span class="noti-type">
+                                                    <c:choose>
+                                                        <c:when test="${n.sourceType eq 'community'}"><spring:message code="header.notification.type.community"/></c:when>
+                                                        <c:when test="${n.sourceType eq 'inquiry'}"><spring:message code="header.notification.type.inquiry"/></c:when>
+                                                        <c:when test="${n.sourceType eq 'report'}"><spring:message code="header.notification.type.report"/></c:when>
+                                                        <c:when test="${n.sourceType eq 'levelup'}"><spring:message code="header.notification.type.levelup"/></c:when>
+                                                        <c:when test="${n.sourceType eq 'grade'}"><spring:message code="header.notification.type.grade"/></c:when>
+                                                        <c:when test="${n.sourceType eq 'account_block'}"><spring:message code="header.notification.type.accountBlock"/></c:when>
+                                                        <c:otherwise><spring:message code="header.notification.type.default"/></c:otherwise>
+                                                    </c:choose>
+                                                </span>
+                                                <span class="noti-msg">${n.message}</span>
+                                                <span class="noti-date">
+                                                    <fmt:formatDate value="${n.createdAt}" pattern="MM-dd HH:mm"/>
+                                                </span>
+                                            </div>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <div class="noti-dropdown-foot">
+                                <a href="${pageContext.request.contextPath}/mypage"><spring:message code="header.notification.viewAll"/></a>
+                            </div>
+                        </div>
+                    </div>
                     <span class="user-nick">${sessionScope.loginUser.nickname}</span>
                     <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/logout'"><spring:message code="header.auth.logout"/></button>
                 </c:when>
                 <c:otherwise>
-                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/login'"><spring:message code="header.auth.login"/></button>
+                    <button class="btn-out" onclick="location.href='${pageContext.request.contextPath}/auth/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search)"><spring:message code="header.auth.login"/></button>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -77,6 +176,50 @@ function toggleViewMode() {
 </c:if>
 
 <script>
+window.__notificationConfig = {
+    ctx: '${pageContext.request.contextPath}',
+    locale: '${pageContext.response.locale}',
+    labels: {
+        typeCommunity: '<spring:message code="header.notification.type.community" javaScriptEscape="true"/>',
+        typeInquiry: '<spring:message code="header.notification.type.inquiry" javaScriptEscape="true"/>',
+        typeReport: '<spring:message code="header.notification.type.report" javaScriptEscape="true"/>',
+        typeLevelup: '<spring:message code="header.notification.type.levelup" javaScriptEscape="true"/>',
+        typeGrade: '<spring:message code="header.notification.type.grade" javaScriptEscape="true"/>',
+        typeAccountBlock: '<spring:message code="header.notification.type.accountBlock" javaScriptEscape="true"/>',
+        typeDefault: '<spring:message code="header.notification.type.default" javaScriptEscape="true"/>',
+        close: '<spring:message code="header.notification.close" javaScriptEscape="true"/>'
+    }
+};
+
+(function () {
+    const btn = document.getElementById('ttThemeBtn');
+    if (!btn) return;
+
+    const iconEl = btn.querySelector('.tt-theme-icon');
+    const labelEl = btn.querySelector('.tt-theme-label');
+    const lightLabel = btn.dataset.lightLabel;
+    const darkLabel = btn.dataset.darkLabel;
+
+    const syncIcon = function () {
+        const isDark = document.documentElement.classList.contains('dark');
+        if (iconEl) iconEl.textContent = isDark ? '☀️' : '🌙';
+        if (labelEl) labelEl.textContent = isDark ? lightLabel : darkLabel;
+    };
+    syncIcon();
+
+    btn.addEventListener('click', function () {
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            localStorage.setItem('tt_theme', 'light');
+        } else {
+            html.classList.add('dark');
+            localStorage.setItem('tt_theme', 'dark');
+        }
+        syncIcon();
+    });
+})();
+
 (function () {
     const langSel = document.getElementById('langSel');
     if (!langSel) return;
@@ -87,4 +230,16 @@ function toggleViewMode() {
         window.location.href = url.toString();
     });
 })();
+
+(function () {
+    const navButtons = document.querySelectorAll('.js-header-nav[data-url]');
+    navButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            window.location.href = button.dataset.url;
+        });
+    });
+})();
 </script>
+<c:if test="${not empty sessionScope.loginUser}">
+<script src="${pageContext.request.contextPath}/resources/js/common/notification.js" defer></script>
+</c:if>

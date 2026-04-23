@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.common.mapper.ChatbotMessageMapper">
+
+    <resultMap id="MessageResultMap" type="ChatMessageVO">
+        <id     property="messageId"        column="message_id"/>
+        <result property="conversationId"   column="conversation_id"/>
+        <result property="role"             column="role"/>
+        <result property="content"          column="content"/>
+        <result property="isInappropriate"  column="is_inappropriate"/>
+        <result property="createdAt"        column="created_at"/>
+    </resultMap>
+
+    <!-- =============================================
+         1. 메시지 저장 (messageId 반환)
+         ============================================= -->
+    <insert id="insertMessage" parameterType="ChatMessageVO"
+            useGeneratedKeys="true" keyProperty="messageId">
+        INSERT INTO CHATBOT_MESSAGE
+            (conversation_id, role, content, is_inappropriate, created_at)
+        VALUES
+            (#{conversationId}, #{role}, #{content}, IFNULL(#{isInappropriate}, 0), NOW())
+    </insert>
+
+    <!-- =============================================
+         2. 부적절 플래그 업데이트 (기존 zip 버그 수정)
+         ============================================= -->
+    <update id="updateMessageInappropriate">
+        UPDATE CHATBOT_MESSAGE
+           SET is_inappropriate = 1
+         WHERE message_id = #{messageId}
+    </update>
+
+    <!-- =============================================
+         3. 대화의 최근 N개 메시지 (시간 오름차순)
+         ============================================= -->
+    <select id="selectRecentMessages" resultMap="MessageResultMap">
+        SELECT *
+        FROM (
+            SELECT message_id, conversation_id, role, content, is_inappropriate, created_at
+            FROM CHATBOT_MESSAGE
+            WHERE conversation_id = #{conversationId}
+            ORDER BY created_at DESC
+            LIMIT #{limit}
+        ) sub
+        ORDER BY created_at ASC
+    </select>
+
+    <!-- =============================================
+         4. 대화의 전체 메시지 (관리자 상세)
+         ============================================= -->
+    <select id="selectAllMessages" resultMap="MessageResultMap">
+        SELECT message_id, conversation_id, role, content, is_inappropriate, created_at
+        FROM CHATBOT_MESSAGE
+        WHERE conversation_id = #{conversationId}
+        ORDER BY created_at ASC
+    </select>
+
+    <!-- =============================================
+         5. 부적절 메시지 목록 (관리자 모니터링)
+         ============================================= -->
+    <select id="selectInappropriateMessages" resultMap="MessageResultMap">
+        SELECT message_id, conversation_id, role, content, is_inappropriate, created_at
+        FROM CHATBOT_MESSAGE
+        WHERE is_inappropriate = 1
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countInappropriateMessages" resultType="int">
+        SELECT COUNT(*)
+        FROM CHATBOT_MESSAGE
+        WHERE is_inappropriate = 1
+    </select>
+
+</mapper>

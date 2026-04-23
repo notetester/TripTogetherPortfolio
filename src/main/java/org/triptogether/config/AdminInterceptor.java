@@ -19,7 +19,7 @@ import java.util.Set;
  * <p>처리 순서:</p>
  * <ol>
  *     <li>비로그인 사용자는 로그인 화면으로 이동</li>
- *     <li>로그인했지만 ADMIN 권한이 아니면 메인으로 이동</li>
+ *     <li>로그인했지만 관리자 계열 권한이 아니면 메인으로 이동</li>
  * </ol>
  */
 @Slf4j
@@ -48,7 +48,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (!"ADMIN".equals(loginUser.getUserRole())) {
+        if (!loginUser.hasAdminRole()) {
             log.warn("[AdminInterceptor] 관리자 권한 없는 접근 - userIdx={}, path={}",
                     loginUser.getUserIdx(), request.getRequestURI());
             response.sendRedirect(request.getContextPath() + "/");
@@ -62,6 +62,21 @@ public class AdminInterceptor implements HandlerInterceptor {
         if (adminPermissions.contains("SUPER_ADMIN")) return true;
 
         String uri = request.getRequestURI().replaceFirst(request.getContextPath(), "");
+
+        if (uri.startsWith("/admin/blocks")) {
+            boolean allowed = adminPermissions.contains("USER_BLOCK_ADMIN")
+                    || adminPermissions.contains("IP_BLOCK_ADMIN")
+                    || adminPermissions.contains("BLOCK_POLICY_ADMIN")
+                    || adminPermissions.contains("BLOCK_AUDIT_ADMIN");
+            if (!allowed) {
+                log.warn("[AdminInterceptor] 차단 관리 권한 부족 - userIdx={}, path={}",
+                        loginUser.getUserIdx(), uri);
+                response.sendRedirect(request.getContextPath() + "/admin");
+                return false;
+            }
+            return true;
+        }
+
         String required = resolveRequiredPermission(uri);
 
         if (required != null && !adminPermissions.contains(required)) {
@@ -75,11 +90,14 @@ public class AdminInterceptor implements HandlerInterceptor {
     }
 
     private static final Map<String, String> URL_PERMISSION_MAP = Map.of(
-        "/admin/community", "COMMUNITY_ADMIN",
-        "/admin/members",   "MEMBER_ADMIN",
-        "/admin/reports",   "REPORT_ADMIN",
-        "/admin/inquiries", "INQUIRY_ADMIN",
-        "/admin/explore",   "EXPLORE_ADMIN"
+        "/admin/community",   "COMMUNITY_ADMIN",
+        "/admin/members",     "MEMBER_ADMIN",
+        "/admin/reports",     "REPORT_ADMIN",
+        "/admin/inquiries",   "INQUIRY_ADMIN",
+        "/admin/explore",     "EXPLORE_ADMIN",
+        "/admin/courses",     "COURSE_ADMIN",
+        "/admin/moderation",  "CONTENT_MODERATION_ADMIN",
+        "/admin/policies",    "OPS_POLICY_ADMIN"
     );
 
     private static final Map<String, String> AUDIT_URLS = Map.of(
@@ -91,6 +109,9 @@ public class AdminInterceptor implements HandlerInterceptor {
     );
 
     private String resolveRequiredPermission(String uri) {
+        if (uri.startsWith("/admin/ai-helper")) {
+            return resolveAiHelperPermission(uri);
+        }
         for (Map.Entry<String, String> entry : URL_PERMISSION_MAP.entrySet()) {
             if (uri.startsWith(entry.getKey())) return entry.getValue();
         }
@@ -98,5 +119,20 @@ public class AdminInterceptor implements HandlerInterceptor {
             if (uri.startsWith(entry.getKey())) return entry.getValue();
         }
         return null;
+    }
+
+    /**
+     * /admin/ai-helper 이하 경로의 필요 권한 해석.
+     * - /admin/ai-helper/chatbot, /conversations, /blocks, /quotas → AI_CHATBOT_ADMIN (Gemini 챗봇)
+     * - 그 외 (/admin/ai-helper 루트, /assistant/**) → ASSISTANT_ADMIN (Claude 도우미)
+     */
+    private String resolveAiHelperPermission(String uri) {
+        if (uri.startsWith("/admin/ai-helper/chatbot")
+                || uri.startsWith("/admin/ai-helper/conversations")
+                || uri.startsWith("/admin/ai-helper/blocks")
+                || uri.startsWith("/admin/ai-helper/quotas")) {
+            return "AI_CHATBOT_ADMIN";
+        }
+        return "ASSISTANT_ADMIN";
     }
 }

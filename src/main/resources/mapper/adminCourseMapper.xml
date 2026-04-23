@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminCourseMapper">
+
+    <resultMap id="courseRM" type="org.triptogether.admin.vo.AdminCourseVO">
+        <id     property="planId"        column="plan_id"/>
+        <result property="userIdx"       column="user_idx"/>
+        <result property="userId"        column="user_id"/>
+        <result property="nickname"      column="nickname"/>
+        <result property="accountStatus" column="account_status"/>
+        <result property="title"         column="title"/>
+        <result property="destination"   column="destination"/>
+        <result property="startDate"     column="start_date"/>
+        <result property="endDate"       column="end_date"/>
+        <result property="isPublic"      column="is_public"/>
+        <result property="planSource"    column="plan_source"/>
+        <result property="isDeleted"     column="is_deleted"/>
+        <result property="spotCount"     column="spot_count"/>
+        <result property="createdAt"     column="created_at"/>
+        <result property="updatedAt"     column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="spotRM" type="org.triptogether.admin.vo.AdminCourseSpotVO">
+        <id     property="planSpotId" column="plan_spot_id"/>
+        <result property="planId"     column="plan_id"/>
+        <result property="spotId"     column="spot_id"/>
+        <result property="placeName"  column="place_name"/>
+        <result property="visitDate"  column="visit_date"/>
+        <result property="visitOrder" column="visit_order"/>
+        <result property="spotName"   column="spot_name"/>
+        <result property="spotRegion" column="spot_region"/>
+        <result property="createdAt"  column="created_at"/>
+    </resultMap>
+
+    <resultMap id="statsRM" type="org.triptogether.admin.vo.AdminCourseStatsVO">
+        <result property="totalPlans"   column="total_plans"/>
+        <result property="activePlans"  column="active_plans"/>
+        <result property="deletedPlans" column="deleted_plans"/>
+        <result property="todayPlans"   column="today_plans"/>
+        <result property="aiPlans"      column="ai_plans"/>
+        <result property="manualPlans"  column="manual_plans"/>
+        <result property="publicPlans"  column="public_plans"/>
+        <result property="privatePlans" column="private_plans"/>
+    </resultMap>
+
+    <!-- ====== 통계 ====== -->
+    <select id="getStats" resultMap="statsRM">
+        SELECT
+            COUNT(*)                                             AS total_plans,
+            SUM(CASE WHEN is_deleted = 0 THEN 1 ELSE 0 END)      AS active_plans,
+            SUM(CASE WHEN is_deleted = 1 THEN 1 ELSE 0 END)      AS deleted_plans,
+            SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) AS today_plans,
+            SUM(CASE WHEN plan_source = 'AI' THEN 1 ELSE 0 END)  AS ai_plans,
+            SUM(CASE WHEN plan_source = 'MANUAL' THEN 1 ELSE 0 END) AS manual_plans,
+            SUM(CASE WHEN is_public = 1 THEN 1 ELSE 0 END)       AS public_plans,
+            SUM(CASE WHEN is_public = 0 THEN 1 ELSE 0 END)       AS private_plans
+        FROM TRAVEL_PLAN
+    </select>
+
+    <!-- ====== 검색 WHERE (목록/카운트 공용) ====== -->
+    <sql id="planSearchWhere">
+        <where>
+            <choose>
+                <when test="status == 'ACTIVE'">AND p.is_deleted = 0</when>
+                <when test="status == 'DELETED'">AND p.is_deleted = 1</when>
+            </choose>
+            <if test="planSource != null and planSource != 'ALL'">
+                AND p.plan_source = #{planSource}
+            </if>
+            <choose>
+                <when test="isPublic == 'PUBLIC'">AND p.is_public = 1</when>
+                <when test="isPublic == 'PRIVATE'">AND p.is_public = 0</when>
+            </choose>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'title'">
+                        AND p.title LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'destination'">
+                        AND p.destination LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'nickname'">
+                        AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'userId'">
+                        AND u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (
+                            p.title        LIKE CONCAT('%', #{keyword}, '%')
+                         OR p.destination  LIKE CONCAT('%', #{keyword}, '%')
+                         OR u.nickname     LIKE CONCAT('%', #{keyword}, '%')
+                         OR u.user_id      LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <!-- ====== 목록 ====== -->
+    <select id="findPlans" parameterType="org.triptogether.admin.vo.AdminCourseSearchVO" resultMap="courseRM">
+        SELECT
+            p.plan_id, p.user_idx, u.user_id, u.nickname, u.account_status,
+            p.title, p.destination, p.start_date, p.end_date,
+            p.is_public, p.plan_source, p.is_deleted,
+            p.created_at, p.updated_at,
+            (SELECT COUNT(*) FROM plan_spot s WHERE s.plan_id = p.plan_id) AS spot_count
+        FROM TRAVEL_PLAN p
+        LEFT JOIN USERS u ON u.user_idx = p.user_idx
+        <include refid="planSearchWhere"/>
+        <choose>
+            <when test="sortBy == 'updatedAt'">ORDER BY p.updated_at DESC</when>
+            <when test="sortBy == 'startDate'">ORDER BY p.start_date DESC</when>
+            <otherwise>ORDER BY p.created_at DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countPlans" parameterType="org.triptogether.admin.vo.AdminCourseSearchVO" resultType="int">
+        SELECT COUNT(*)
+        FROM TRAVEL_PLAN p
+        LEFT JOIN USERS u ON u.user_idx = p.user_idx
+        <include refid="planSearchWhere"/>
+    </select>
+
+    <!-- ====== 상세 ====== -->
+    <select id="findPlanDetail" resultMap="courseRM">
+        SELECT
+            p.plan_id, p.user_idx, u.user_id, u.nickname, u.account_status,
+            p.title, p.destination, p.start_date, p.end_date,
+            p.is_public, p.plan_source, p.is_deleted,
+            p.created_at, p.updated_at,
+            (SELECT COUNT(*) FROM plan_spot s WHERE s.plan_id = p.plan_id) AS spot_count
+        FROM TRAVEL_PLAN p
+        LEFT JOIN USERS u ON u.user_idx = p.user_idx
+        WHERE p.plan_id = #{planId}
+    </select>
+
+    <select id="findSpotsByPlan" resultMap="spotRM">
+        SELECT
+            ps.plan_spot_id, ps.plan_id, ps.spot_id, ps.place_name,
+            ps.visit_date, ps.visit_order, ps.created_at,
+            st.name   AS spot_name,
+            st.region AS spot_region
+        FROM plan_spot ps
+        LEFT JOIN SPOT_TRAVEL st ON st.spot_id = ps.spot_id
+        WHERE ps.plan_id = #{planId}
+        ORDER BY ps.visit_date ASC, ps.visit_order ASC
+    </select>
+
+    <!-- ====== 소프트 삭제 / 복구 ====== -->
+    <update id="updateIsDeleted">
+        UPDATE TRAVEL_PLAN
+           SET is_deleted = #{isDeleted}
+         WHERE plan_id = #{planId}
+    </update>
+
+    <update id="bulkUpdateIsDeleted">
+        UPDATE TRAVEL_PLAN
+           SET is_deleted = #{isDeleted}
+         WHERE plan_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

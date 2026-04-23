@@ -1,0 +1,66 @@
+<%@ page pageEncoding="UTF-8" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message code="mypage.items.preview.food" var="mypageItemPreviewFood"/>
+<spring:message code="mypage.items.preview.mapPinNote" var="mypageItemPreviewMapPinNote"/>
+<spring:message code="mypage.items.preview.night" var="mypageItemPreviewNight"/>
+<spring:message code="mypage.items.preview.pastelReview" var="mypageItemPreviewPastelReview"/>
+<spring:message code="mypage.items.preview.review" var="mypageItemPreviewReview"/>
+<spring:message code="mypage.items.preview.skyCard" var="mypageItemPreviewSkyCard"/>
+<spring:message code="mypage.items.preview.sprout" var="mypageItemPreviewSprout"/>
+<spring:message code="mypage.items.preview.trip" var="mypageItemPreviewTrip"/>
+<article class="mp-item-card ${item.equipped ? 'is-equipped' : ''}">
+    <c:set var="itemPreviewClass" value=""/>
+    <c:set var="itemPreviewText" value="${item.itemName}"/>
+    <c:set var="itemDisplayName" value="${item.itemName}"/>
+    <c:set var="itemDisplayDescription" value="${item.description}"/>
+    <c:choose>
+        <c:when test="${item.itemCode eq 'NICK_COLOR_SKY'}"><c:set var="itemPreviewClass" value="preview-nick-sky"/><c:set var="itemPreviewText" value="${mypageItemPreviewTrip}"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_COLOR_SUNSET'}"><c:set var="itemPreviewClass" value="preview-nick-sunset"/><c:set var="itemPreviewText" value="${mypageItemPreviewTrip}"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_COLOR_MINT'}"><c:set var="itemPreviewClass" value="preview-nick-mint"/><c:set var="itemPreviewText" value="${mypageItemPreviewTrip}"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_COLOR_ROSE'}"><c:set var="itemPreviewClass" value="preview-nick-rose"/><c:set var="itemPreviewText" value="${mypageItemPreviewTrip}"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_GLOW_RAINBOW'}"><c:set var="itemPreviewClass" value="preview-glow-rainbow"/><c:set var="itemPreviewText" value="${mypageItemPreviewTrip}"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_GLOW_GOLD'}"><c:set var="itemPreviewClass" value="preview-glow-gold"/><c:set var="itemPreviewText" value="${mypageItemPreviewTrip}"/></c:when>
+        <c:when test="${item.itemCode eq 'NICK_BORDER_NEON'}"><c:set var="itemPreviewClass" value="preview-border-neon"/><c:set var="itemPreviewText" value="${mypageItemPreviewTrip}"/></c:when>
+        <c:when test="${item.itemCode eq 'BADGE_BEGINNER_TRAVELER'}"><c:set var="itemPreviewClass" value="preview-badge-green"/><c:set var="itemPreviewText" value="${mypageItemPreviewSprout}"/></c:when>
+        <c:when test="${item.itemCode eq 'BADGE_FOOD_EXPLORER'}"><c:set var="itemPreviewClass" value="preview-badge-orange"/><c:set var="itemPreviewText" value="${mypageItemPreviewFood}"/></c:when>
+        <c:when test="${item.itemCode eq 'BADGE_NIGHT_COLLECTOR'}"><c:set var="itemPreviewClass" value="preview-badge-navy"/><c:set var="itemPreviewText" value="${mypageItemPreviewNight}"/></c:when>
+        <c:when test="${item.itemCode eq 'BADGE_REVIEW_MASTER'}"><c:set var="itemPreviewClass" value="preview-badge-purple"/><c:set var="itemPreviewText" value="${mypageItemPreviewReview}"/></c:when>
+        <c:when test="${item.itemCode eq 'BUBBLE_PASTEL'}"><c:set var="itemPreviewClass" value="preview-bubble-pastel"/><c:set var="itemPreviewText" value="${mypageItemPreviewPastelReview}"/></c:when>
+        <c:when test="${item.itemCode eq 'BUBBLE_MAP_PIN'}"><c:set var="itemPreviewClass" value="preview-bubble-map"/><c:set var="itemPreviewText" value="${mypageItemPreviewMapPinNote}"/></c:when>
+        <c:when test="${item.itemCode eq 'BUBBLE_SKY_CARD'}"><c:set var="itemPreviewClass" value="preview-bubble-sky"/><c:set var="itemPreviewText" value="${mypageItemPreviewSkyCard}"/></c:when>
+    </c:choose>
+    <div class="mp-item-preview ${itemPreviewClass}">
+        <span>${itemPreviewText}</span>
+    </div>
+    <div class="mp-item-body">
+        <div class="mp-item-type">
+            <c:choose>
+                <c:when test="${item.itemType eq 'NICKNAME_COLOR'}"><spring:message code="mypage.items.section.nicknameColor"/></c:when>
+                <c:when test="${item.itemType eq 'NICKNAME_EFFECT'}"><spring:message code="mypage.items.section.nicknameEffect.short"/></c:when>
+                <c:when test="${item.itemType eq 'PROFILE_BADGE'}"><spring:message code="mypage.items.section.profileBadge.short"/></c:when>
+                <c:when test="${item.itemType eq 'BUBBLE_STYLE'}"><spring:message code="mypage.items.section.bubbleStyle.short"/></c:when>
+                <c:otherwise>${item.itemType}</c:otherwise>
+            </c:choose>
+        </div>
+        <strong>${itemDisplayName}</strong>
+        <p>${itemDisplayDescription}</p>
+        <div class="mp-item-date"><spring:message code="mypage.items.quantity" arguments="${item.quantity}"/></div>
+    </div>
+    <div class="mp-item-actions">
+        <c:choose>
+            <c:when test="${item.equipped}">
+                <span class="mp-equipped-badge"><spring:message code="mypage.items.equipped"/></span>
+                <form method="post" action="${pageContext.request.contextPath}/mypage/items/unequip">
+                    <input type="hidden" name="equipSlot" value="${item.equipSlot}">
+                    <button type="submit" class="mp-item-btn mp-item-btn--ghost"><spring:message code="mypage.items.unequip"/></button>
+                </form>
+            </c:when>
+            <c:otherwise>
+                <form method="post" action="${pageContext.request.contextPath}/mypage/items/equip">
+                    <input type="hidden" name="itemCode" value="${item.itemCode}">
+                    <button type="submit" class="mp-item-btn"><spring:message code="mypage.items.equip"/></button>
+                </form>
+            </c:otherwise>
+        </c:choose>
+    </div>
+</article>

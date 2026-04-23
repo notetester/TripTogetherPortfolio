@@ -3,15 +3,27 @@ package org.triptogether.admin.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.triptogether.admin.service.AdminExploreService;
+import org.triptogether.admin.service.AdminPolicyService;
 import org.triptogether.admin.service.AdminService;
 import org.triptogether.admin.vo.*;
 import org.triptogether.community.service.CommunityService;
+import org.triptogether.explore.service.ExploreService;
+import org.triptogether.explore.vo.ReviewVO;
 import org.triptogether.report.service.ReportService;
 import org.triptogether.report.vo.ReportSearchDto;
+import org.triptogether.travelPackage.service.TravelPackageService;
+/* ── 패키지의 동적 텍스트(제목, 요약, 여행지명 등)를 번역하기 위한 서비스 ── */
+import org.triptogether.explore.service.SpotTextTranslationService;
+import org.triptogether.travelPackage.vo.TravelPackageVO;
+import org.triptogether.travelPackage.vo.TravelPackageRevisionVO;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -36,12 +48,21 @@ import java.util.Map;
 public class AdminController {
 
     private final AdminService adminService;
+    private final AdminPolicyService adminPolicyService;
     private final ReportService reportService;
     private final CommunityService communityService;
+    private final TravelPackageService travelPackageService;
+    /* ── 다국어 flash message를 위한 MessageSource ── */
+    private final MessageSource messageSource;
+    /* ── 동적 텍스트 번역 서비스 — 관리자 페이지에서도 패키지 제목/여행지명 등을 로케일에 맞게 번역 ── */
+    private final SpotTextTranslationService translationService;
+    private final ExploreService exploreService;
+    private final AdminExploreService adminExploreService;
 
     @GetMapping({"", "/"})
     public String dashboard(Model model) {
         model.addAttribute("stats", adminService.getStats());
+        model.addAttribute("chart", adminService.getDashboardChart(7));
         model.addAttribute("activeMenu", "dashboard");
         return "admin/dashboard";
     }
@@ -53,19 +74,171 @@ public class AdminController {
         return "admin/member/list";
     }
 
+    @GetMapping("/business-applications")
+    public String businessApplicationList(@RequestParam(defaultValue = "PENDING") String status,
+                                          Model model) {
+        model.addAttribute("applicationList", adminService.getBusinessApplications(status));
+        model.addAttribute("status", status == null || status.isBlank() ? "PENDING" : status);
+        model.addAttribute("activeMenu", "businessApplications");
+        return "admin/member/business-applications";
+    }
+
+    @GetMapping("/packages")
+    public String packageList(@RequestParam(defaultValue = "PENDING") String status,
+                              Model model) {
+        // ── 패키지 목록 조회 후, 동적 텍스트(제목/여행지명 등)를 현재 로케일에 맞게 번역 ──
+        java.util.List<TravelPackageVO> packages = travelPackageService.getAdminPackages(status);
+        translationService.translatePackages(packages);
+        model.addAttribute("packageList", packages);
+
+        // ── 수정 요청(리비전) 목록도 동일하게 번역 처리 ──
+        java.util.List<TravelPackageRevisionVO> revisions = travelPackageService.getAdminPackageRevisions("PENDING");
+        translationService.translatePackageRevisions(revisions);
+        model.addAttribute("revisionList", revisions);
+
+        model.addAttribute("status", status == null || status.isBlank() ? "PENDING" : status);
+        model.addAttribute("activeMenu", "packages");
+        return "admin/package/list";
+    }
+
+    @PostMapping("/packages/{packageIdx}/approve")
+    public String approvePackage(@PathVariable Long packageIdx,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            travelPackageService.approvePackage(packageIdx, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("packageReviewMessage", msg("package.admin.message.approved"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
+        }
+        return "redirect:/admin/packages";
+    }
+
+    @PostMapping("/packages/{packageIdx}/reject")
+    public String rejectPackage(@PathVariable Long packageIdx,
+                                @RequestParam String rejectReason,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            travelPackageService.rejectPackage(packageIdx, rejectReason, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("packageReviewMessage", msg("package.admin.message.rejected"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
+        }
+        return "redirect:/admin/packages";
+    }
+
+    @PostMapping("/packages/revisions/{packageRevisionIdx}/approve")
+    public String approvePackageRevision(@PathVariable Long packageRevisionIdx,
+                                         HttpSession session,
+                                         RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            travelPackageService.approvePackageRevision(packageRevisionIdx, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("packageReviewMessage", msg("package.admin.message.revisionApproved"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
+        }
+        return "redirect:/admin/packages";
+    }
+
+    @PostMapping("/packages/revisions/{packageRevisionIdx}/reject")
+    public String rejectPackageRevision(@PathVariable Long packageRevisionIdx,
+                                        @RequestParam String rejectReason,
+                                        HttpSession session,
+                                        RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            travelPackageService.rejectPackageRevision(packageRevisionIdx, rejectReason, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("packageReviewMessage", msg("package.admin.message.revisionRejected"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("packageReviewError", e.getMessage());
+        }
+        return "redirect:/admin/packages";
+    }
+
+    @PostMapping("/business-applications/{applicationIdx}/approve")
+    public String approveBusinessApplication(@PathVariable Long applicationIdx,
+                                             HttpSession session,
+                                             RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            adminService.approveBusinessApplication(applicationIdx, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("businessApplicationMessage", "기업 회원 신청을 승인했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("businessApplicationError", e.getMessage());
+        }
+        return "redirect:/admin/business-applications";
+    }
+
+    @PostMapping("/business-applications/{applicationIdx}/reject")
+    public String rejectBusinessApplication(@PathVariable Long applicationIdx,
+                                            @RequestParam String rejectReason,
+                                            HttpSession session,
+                                            RedirectAttributes redirectAttributes) {
+        var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+        Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        try {
+            adminService.rejectBusinessApplication(applicationIdx, rejectReason, reviewerUserIdx);
+            redirectAttributes.addFlashAttribute("businessApplicationMessage", "기업 회원 신청을 반려했습니다.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("businessApplicationError", e.getMessage());
+        }
+        return "redirect:/admin/business-applications";
+    }
+
     @GetMapping("/members/{userIdx}")
     @ResponseBody
     public Map<String, Object> memberDetail(@PathVariable Long userIdx) {
+        Map<String, Object> context = adminService.getMemberContext(userIdx);
         Map<String, Object> result = new HashMap<>();
-        AdminMemberVO member = adminService.getMemberDetail(userIdx);
-        if (member == null) {
+        if (context == null) {
             result.put("success", false);
             result.put("message", "회원을 찾을 수 없습니다.");
             return result;
         }
         result.put("success", true);
-        result.put("member", member);
-        result.put("history", adminService.getLoginHistory(userIdx));
+        result.putAll(context);
+        return result;
+    }
+
+    @PostMapping("/members/{userIdx}/profile")
+    @ResponseBody
+    public Map<String, Object> updateMemberProfile(@PathVariable Long userIdx,
+                                                   @RequestParam String nickname,
+                                                   @RequestParam(required = false) String nationality,
+                                                   @RequestParam(required = false) String preferredLang) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            adminService.updateMemberProfile(userIdx, nickname, nationality, preferredLang);
+            result.put("success", true);
+            result.put("message", "회원 기본 정보를 저장했습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/ips/context")
+    @ResponseBody
+    public Map<String, Object> ipContext(@RequestParam String ipAddress) {
+        Map<String, Object> context = adminService.getIpContext(ipAddress);
+        Map<String, Object> result = new HashMap<>();
+        if (context == null) {
+            result.put("success", false);
+            result.put("message", "IP 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        result.put("success", true);
+        result.putAll(context);
         return result;
     }
 
@@ -109,7 +282,7 @@ public class AdminController {
                 return result;
             }
             LocalDateTime parsed = (expiresAt != null && !expiresAt.isBlank()) ? LocalDateTime.parse(expiresAt) : null;
-            adminService.blockMember(userIdx, blockType, blockedIp, reason, parsed, loginUser != null ? loginUser.getUserIdx() : null);
+            adminService.blockMember(userIdx, blockType, blockedIp != null ? blockedIp.trim() : null, reason != null ? reason.trim() : null, parsed, loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
             result.put("message", "차단이 적용되었습니다.");
         } catch (Exception e) {
@@ -123,6 +296,7 @@ public class AdminController {
     @ResponseBody
     public Map<String, Object> changeRole(@PathVariable Long userIdx,
                                           @RequestParam String role,
+                                          @RequestParam(required = false) String reason,
                                           HttpSession session) {
         Map<String, Object> result = new HashMap<>();
         try {
@@ -132,7 +306,8 @@ public class AdminController {
                 result.put("message", "자신의 권한은 변경할 수 없습니다.");
                 return result;
             }
-            adminService.changeMemberRole(userIdx, role);
+            Long changedByUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+            adminService.changeMemberRole(userIdx, role, reason, changedByUserIdx);
             result.put("success", true);
             result.put("message", "권한이 변경되었습니다.");
         } catch (Exception e) {
@@ -356,18 +531,23 @@ public class AdminController {
                     break;
 
                 case "DELETE_CONTENT":
-                    // 게시물 또는 댓글 삭제 후 신고 처리완료
+                    // 게시물/댓글/리뷰 차단 후 신고 처리완료
+                    String deleteActionLabel;
                     if ("post".equals(targetType)) {
                         communityService.deletePost(targetId);
+                        deleteActionLabel = "게시글 삭제";
                     } else if ("comment".equals(targetType)) {
                         communityService.deleteComment(targetId);
+                        deleteActionLabel = "댓글 삭제";
+                    } else if ("review".equals(targetType)) {
+                        adminExploreService.blockReview(targetId);
+                        deleteActionLabel = "리뷰 차단";
                     } else {
                         result.put("success", false);
                         result.put("message", "해당 대상 유형에는 콘텐츠 삭제를 사용할 수 없습니다.");
                         return ResponseEntity.status(400).body(result);
                     }
-                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx,
-                            "post".equals(targetType) ? "게시글 삭제" : "댓글 삭제");
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx, deleteActionLabel);
                     break;
 
                 case "BLOCK_AUTHOR":
@@ -377,6 +557,9 @@ public class AdminController {
                         authorIdx = adminService.getPostAuthorIdx(targetId);
                     } else if ("comment".equals(targetType)) {
                         authorIdx = adminService.getCommentAuthorIdx(targetId);
+                    } else if ("review".equals(targetType)) {
+                        ReviewVO review = exploreService.getReview(targetId);
+                        authorIdx = (review != null) ? review.getUserIdx() : null;
                     } else {
                         result.put("success", false);
                         result.put("message", "해당 대상 유형에는 작성자 차단을 사용할 수 없습니다.");
@@ -403,14 +586,22 @@ public class AdminController {
                     break;
 
                 case "DELETE_AND_BLOCK":
-                    // 게시물/댓글 삭제 + 작성자 차단 후 신고 처리완료
+                    // 게시물/댓글/리뷰 차단 + 작성자 차단 후 신고 처리완료
                     Long authorIdxForBlock = null;
+                    String deleteBlockLabel;
                     if ("post".equals(targetType)) {
                         authorIdxForBlock = adminService.getPostAuthorIdx(targetId);
                         communityService.deletePost(targetId);
+                        deleteBlockLabel = "게시글 삭제 + 작성자 차단";
                     } else if ("comment".equals(targetType)) {
                         authorIdxForBlock = adminService.getCommentAuthorIdx(targetId);
                         communityService.deleteComment(targetId);
+                        deleteBlockLabel = "댓글 삭제 + 작성자 차단";
+                    } else if ("review".equals(targetType)) {
+                        ReviewVO review = exploreService.getReview(targetId);
+                        authorIdxForBlock = (review != null) ? review.getUserIdx() : null;
+                        adminExploreService.blockReview(targetId);
+                        deleteBlockLabel = "리뷰 차단 + 작성자 차단";
                     } else {
                         result.put("success", false);
                         result.put("message", "해당 대상 유형에는 이 처리를 사용할 수 없습니다.");
@@ -419,8 +610,7 @@ public class AdminController {
                     if (authorIdxForBlock != null) {
                         adminService.changeMemberStatus(authorIdxForBlock, "BLOCKED");
                     }
-                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx,
-                            "post".equals(targetType) ? "게시글 삭제 + 작성자 차단" : "댓글 삭제 + 작성자 차단");
+                    reportService.updateReportStatus(reportId, "RESOLVED", resolverIdx, deleteBlockLabel);
                     break;
 
                 case "REVERT_TO_PENDING":
@@ -484,6 +674,61 @@ public class AdminController {
         model.addAllAttributes(adminService.getActivityLogList(search));
         model.addAttribute("activeMenu", "activityLogs");
         return "admin/activity-log/list";
+    }
+
+    @GetMapping("/policies")
+    public String policyList(Model model) {
+        model.addAllAttributes(adminPolicyService.getPolicyDashboard());
+        model.addAttribute("activeMenu", "policies");
+        return "admin/policy/list";
+    }
+
+    @PostMapping("/policies/{policyCode}")
+    @ResponseBody
+    public Map<String, Object> updatePolicy(@PathVariable String policyCode,
+                                            @RequestParam String configJson,
+                                            @RequestParam String scheduleType,
+                                            @RequestParam(required = false) Integer scheduleIntervalHours,
+                                            @RequestParam(required = false) Integer scheduleDayOfMonth,
+                                            @RequestParam(required = false) String scheduleTime,
+                                            @RequestParam(defaultValue = "false") boolean active,
+                                            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+            adminPolicyService.updatePolicy(policyCode, configJson, scheduleType, scheduleIntervalHours, scheduleDayOfMonth,
+                    scheduleTime, active, loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", "운영 정책을 저장했습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/policies/{policyCode}/run")
+    @ResponseBody
+    public Map<String, Object> runPolicy(@PathVariable String policyCode, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+            adminPolicyService.runPolicyNow(policyCode, loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", "정책을 즉시 실행했습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 프로퍼티 키에 해당하는 메시지를 현재 로케일에 맞게 반환합니다.
+     * 키가 없으면 키 문자열 자체를 반환합니다 (fallback).
+     */
+    private String msg(String code) {
+        return messageSource.getMessage(code, null, code, LocaleContextHolder.getLocale());
     }
 
 }

@@ -29,8 +29,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ActivityLogInterceptor implements HandlerInterceptor {
 
-    private static final String ATTR_REQUEST_ID = "activityLog.requestId";
-    private static final String ATTR_START_TIME = "activityLog.startTime";
+    public static final String ATTR_REQUEST_ID = "activityLog.requestId";
+    public static final String ATTR_START_TIME = "activityLog.startTime";
+    public static final String ATTR_FORCE_USER_IDX = "activityLog.forceUserIdx";
+    public static final String ATTR_FORCE_SESSION_ID = "activityLog.forceSessionId";
+    public static final String ATTR_FLOW_TRACE_ID_OVERRIDE = "activityLog.flowTraceId";
+    public static final String ATTR_ACTIVITY_CODE_OVERRIDE = "activityLog.activityCode";
+    public static final String ATTR_ACTIVITY_DOMAIN_OVERRIDE = "activityLog.activityDomain";
+    public static final String ATTR_ACTIVITY_PROVIDER_OVERRIDE = "activityLog.activityProvider";
+    public static final String ATTR_AUTH_EVENT_TYPE_OVERRIDE = "activityLog.authEventType";
     private static final Set<String> SENSITIVE_KEYS = new HashSet<>(Arrays.asList(
             "token", "password", "newPassword", "currentPassword", "code", "state"
     ));
@@ -50,7 +57,10 @@ public class ActivityLogInterceptor implements HandlerInterceptor {
             HttpSession session = request.getSession(false);
             UsersVO loginUser = session == null ? null : (UsersVO) session.getAttribute("loginUser");
 
-            String sessionId = session == null ? null : session.getId();
+            Long forcedUserIdx = asLong(request.getAttribute(ATTR_FORCE_USER_IDX));
+            String forcedSessionId = asString(request.getAttribute(ATTR_FORCE_SESSION_ID));
+            String flowTraceId = asString(request.getAttribute(ATTR_FLOW_TRACE_ID_OVERRIDE));
+            String sessionId = forcedSessionId != null ? forcedSessionId : (session == null ? null : session.getId());
             String uri = request.getRequestURI();
             String method = request.getMethod();
             String queryString = sanitizeQueryString(request.getQueryString());
@@ -69,19 +79,26 @@ public class ActivityLogInterceptor implements HandlerInterceptor {
             }
 
             String activityType = resolveActivityType(request);
-            String activityCode = resolveActivityCode(request, handlerName);
+            String activityCode = firstNonBlank(asString(request.getAttribute(ATTR_ACTIVITY_CODE_OVERRIDE)), resolveActivityCode(request, handlerName));
+            String activityDomain = firstNonBlank(asString(request.getAttribute(ATTR_ACTIVITY_DOMAIN_OVERRIDE)), resolveActivityDomain(uri, handlerName));
+            String activityProvider = firstNonBlank(asString(request.getAttribute(ATTR_ACTIVITY_PROVIDER_OVERRIDE)), resolveActivityProvider(uri));
+            String authEventType = firstNonBlank(asString(request.getAttribute(ATTR_AUTH_EVENT_TYPE_OVERRIDE)), resolveAuthEventType(uri, activityCode));
             String targetType = resolveTargetType(uri);
             String targetId = resolveTargetId(uri);
             String detailSummary = buildDetailSummary(request, activityCode, handlerName);
 
             activityLogMapper.insertActivityLog(UserActivityLogVO.builder()
                     .requestId(requestId)
-                    .userIdx(loginUser != null ? loginUser.getUserIdx() : null)
+                    .flowTraceId(firstNonBlank(flowTraceId, requestId))
+                    .userIdx(forcedUserIdx != null ? forcedUserIdx : (loginUser != null ? loginUser.getUserIdx() : null))
                     .sessionId(sessionId)
                     .requestUri(uri)
                     .httpMethod(method)
+                    .activityDomain(activityDomain)
                     .activityType(activityType)
                     .activityCode(activityCode)
+                    .activityProvider(activityProvider)
+                    .authEventType(authEventType)
                     .targetType(targetType)
                     .targetId(targetId)
                     .handlerName(handlerName)
@@ -97,6 +114,25 @@ public class ActivityLogInterceptor implements HandlerInterceptor {
         } catch (Exception loggingEx) {
             log.warn("[ActivityLog] 활동 로그 저장 실패: {}", loggingEx.getMessage());
         }
+    }
+
+    private String resolveActivityDomain(String uri, String handlerName) {
+        if ((uri != null && uri.contains("/auth/")) || (handlerName != null && handlerName.startsWith("AuthController#"))) {
+            return "AUTH";
+        }
+        if ((uri != null && uri.contains("/admin/")) || (handlerName != null && handlerName.startsWith("AdminController#"))) {
+            return "ADMIN";
+        }
+        if ((uri != null && uri.contains("/community/")) || (handlerName != null && handlerName.startsWith("CommunityController#"))) {
+            return "COMMUNITY";
+        }
+        if ((uri != null && uri.contains("/mypage/")) || (handlerName != null && (handlerName.startsWith("ProfileController#") || handlerName.startsWith("MyPageController#")))) {
+            return "MYPAGE";
+        }
+        if ((uri != null && uri.contains("/inquiry/")) || (handlerName != null && handlerName.startsWith("InquiryController#"))) {
+            return "INQUIRY";
+        }
+        return "GENERAL";
     }
 
     private String resolveActivityType(HttpServletRequest request) {
@@ -122,6 +158,13 @@ public class ActivityLogInterceptor implements HandlerInterceptor {
         if (uri == null) return handlerName;
         if ("GET".equalsIgnoreCase(method) && uri.endsWith("/auth/login")) return "VIEW_LOGIN_PAGE";
         if ("POST".equalsIgnoreCase(method) && uri.endsWith("/auth/login")) return "SUBMIT_LOGIN";
+        if ("GET".equalsIgnoreCase(method) && uri.endsWith("/auth/logout")) return "LOGOUT_LOCAL";
+        if ("GET".equalsIgnoreCase(method) && uri.endsWith("/auth/kakao/logout")) return "LOGOUT_KAKAO_REQUEST";
+        if ("GET".equalsIgnoreCase(method) && uri.endsWith("/auth/kakao/logout/callback")) return "LOGOUT_KAKAO_CALLBACK";
+        if ("GET".equalsIgnoreCase(method) && uri.endsWith("/auth/naver/logout")) return "LOGOUT_NAVER_REQUEST";
+        if ("GET".equalsIgnoreCase(method) && uri.endsWith("/auth/naver/logout/callback")) return "LOGOUT_NAVER_CALLBACK";
+        if ("GET".equalsIgnoreCase(method) && uri.endsWith("/auth/google/logout")) return "LOGOUT_GOOGLE_REQUEST";
+        if ("GET".equalsIgnoreCase(method) && uri.endsWith("/auth/google/logout/callback")) return "LOGOUT_GOOGLE_CALLBACK";
         if (uri.contains("/auth/find-id")) return "FIND_ID_FLOW";
         if (uri.contains("/auth/find-pw") || uri.contains("/auth/reset-pw")) return "RESET_PASSWORD_FLOW";
         if (uri.contains("/mypage/edit/email/send")) return "SEND_PROFILE_EMAIL_VERIFY";
@@ -129,6 +172,30 @@ public class ActivityLogInterceptor implements HandlerInterceptor {
         if (uri.contains("/community") && "POST".equalsIgnoreCase(method)) return "COMMUNITY_ACTION";
         if (uri.contains("/admin/")) return "ADMIN_ACCESS";
         return handlerName;
+    }
+
+    private String resolveActivityProvider(String uri) {
+        if (uri == null) return null;
+        if (uri.contains("/auth/kakao")) return "KAKAO";
+        if (uri.contains("/auth/naver")) return "NAVER";
+        if (uri.contains("/auth/google")) return "GOOGLE";
+        if (uri.contains("/auth/")) return "LOCAL";
+        return null;
+    }
+
+    private String resolveAuthEventType(String uri, String activityCode) {
+        if (uri != null && uri.contains("/auth/")) {
+            if ((activityCode != null && activityCode.contains("LOGOUT")) || uri.contains("/logout")) {
+                return "LOGOUT";
+            }
+            if ((activityCode != null && activityCode.contains("LOGIN")) || uri.contains("/login")) {
+                return "LOGIN";
+            }
+            if (uri.contains("/auth/link")) {
+                return uri.contains("/unlink") ? "UNLINK" : "LINK";
+            }
+        }
+        return null;
     }
 
     private String resolveTargetType(String uri) {
@@ -190,6 +257,31 @@ public class ActivityLogInterceptor implements HandlerInterceptor {
         int q = referer.indexOf('?');
         if (q < 0) return referer;
         return referer.substring(0, q) + "?***";
+    }
+
+    private Long asLong(Object value) {
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        if (value instanceof String text && !text.isBlank()) {
+            try {
+                return Long.parseLong(text);
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private String asString(Object value) {
+        return value == null ? null : value.toString();
+    }
+
+    private String firstNonBlank(String primary, String fallback) {
+        if (primary != null && !primary.isBlank()) {
+            return primary;
+        }
+        return fallback;
     }
 
     private String getClientIp(HttpServletRequest request) {

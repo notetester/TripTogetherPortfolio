@@ -19,12 +19,16 @@ import java.time.LocalDateTime;
 public class UserActivityLogVO {
     private Long activityIdx;
     private String requestId;
+    private String flowTraceId;
     private Long userIdx;
     private String sessionId;
     private String requestUri;
     private String httpMethod;
+    private String activityDomain;
     private String activityType;
     private String activityCode;
+    private String activityProvider;
+    private String authEventType;
     private String targetType;
     private String targetId;
     private String handlerName;

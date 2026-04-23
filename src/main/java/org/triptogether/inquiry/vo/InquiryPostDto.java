@@ -59,4 +59,7 @@ public class InquiryPostDto {
 
     /** 공개 전환 요청 일시 */
     private Date visibilityRequestedAt;
+
+    /** AI 독성 감지 플래그 (0: 정상, 1: AI 독성 감지됨 → BLUR 처리) */
+    private boolean aiFlagged;
 }

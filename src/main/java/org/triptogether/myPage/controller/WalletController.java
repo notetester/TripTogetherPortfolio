@@ -42,7 +42,7 @@ public class WalletController {
     }
 
     @PostMapping("/charge")
-    public String simulateCharge(@RequestParam long amount,
+    public String simulateCharge(@RequestParam String amount,
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {
         UsersVO user = loginUser(session);
@@ -51,7 +51,8 @@ public class WalletController {
         }
 
         try {
-            WalletChargeResultDto result = walletService.simulateCashCharge(user.getUserIdx(), amount);
+            long chargeAmount = parseChargeAmount(amount);
+            WalletChargeResultDto result = walletService.simulateCashCharge(user.getUserIdx(), chargeAmount);
             session.setAttribute("loginUser", result.getUser());
             redirectAttributes.addFlashAttribute(
                     "walletMessage",
@@ -64,6 +65,28 @@ public class WalletController {
         }
 
         return "redirect:/wallet";
+    }
+
+    /**
+     * 충전 금액은 브라우저에서 number input으로 받더라도 요청값은 조작될 수 있습니다.
+     * long으로 바로 바인딩하면 Long 범위를 넘는 값에서 컨트롤러 진입 전에 변환 오류가 발생할 수 있으므로,
+     * 문자열로 받은 뒤 직접 검증해서 Whitelabel 대신 지갑 화면 오류 메시지로 돌려줍니다.
+     */
+    private long parseChargeAmount(String rawAmount) {
+        if (rawAmount == null || rawAmount.isBlank()) {
+            throw new IllegalArgumentException("충전 금액을 입력해주세요.");
+        }
+
+        String normalizedAmount = rawAmount.trim();
+        if (!normalizedAmount.matches("\\d+")) {
+            throw new IllegalArgumentException("충전 금액은 숫자로만 입력해주세요.");
+        }
+
+        try {
+            return Long.parseLong(normalizedAmount);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("1회 충전 한도는 1,000,000원입니다.");
+        }
     }
 
     private UsersVO loginUser(HttpSession session) {

@@ -19,6 +19,7 @@ import java.util.Date;
 public class AdminEmailVerificationRequestVO {
     private Long emailVerificationRequestIdx;
     private String requestId;
+    private String flowTraceId;
     private Long userIdx;
     private String userId;
     private String nickname;
