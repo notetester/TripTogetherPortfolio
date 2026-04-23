@@ -159,8 +159,11 @@
         </div>
       </c:if>
 
-      <%-- 이미지 세로 나열 --%>
-      <c:if test="${not empty imageList}">
+      <%-- 이미지 세로 나열
+           - Summernote 본문(inline img)에 이미 포함된 경우 중복 방지 위해 상단 렌더 스킵
+           - Pixabay 자동이미지 / 레거시 글 (본문 plain text) 은 그대로 상단 표시 --%>
+      <c:set var="showTopImages" value="${not empty imageList and not fn:contains(post.content, imageList[0].imageUrl)}"/>
+      <c:if test="${showTopImages}">
         <div class="detail-image-list">
           <c:forEach var="img" items="${imageList}">
             <div class="detail-image-item">
