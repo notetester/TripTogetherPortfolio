@@ -88,7 +88,8 @@
             confirmReset:         '<spring:message code="footer.chatbot.confirm.reset" javaScriptEscape="true"/>',
             confirmYes:           '<spring:message code="footer.chatbot.confirm.yes" javaScriptEscape="true"/>',
             confirmNo:            '<spring:message code="footer.chatbot.confirm.no" javaScriptEscape="true"/>',
-            editPlaceholder:      '<spring:message code="footer.chatbot.edit.placeholder" javaScriptEscape="true"/>'
+            editPlaceholder:      '<spring:message code="footer.chatbot.edit.placeholder" javaScriptEscape="true"/>',
+            openNewTab:           '<spring:message code="footer.chatbot.link.newtab" javaScriptEscape="true"/>'
         }
     };
 </script>

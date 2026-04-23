@@ -469,18 +469,34 @@
             linksWrap.className = 'cb-links';
             const msgId = data.messageId;
             data.links.forEach(link => {
+                const row = document.createElement('div');
+                row.className = 'cb-link-row';
+
                 const a = document.createElement('a');
                 a.className = 'cb-link-btn';
                 a.href = ctx + link.url;
-                a.target = '_blank';
-                a.rel = 'noopener';
                 a.innerHTML = '<span class="cb-link-icon">' + (link.icon || '→') + '</span>' + escHtml(link.label);
                 if (msgId) {
                     a.addEventListener('click', function () {
                         sendLinkClickBeacon(msgId, link.url, link.label);
                     });
                 }
-                linksWrap.appendChild(a);
+                row.appendChild(a);
+
+                const newTabBtn = document.createElement('button');
+                newTabBtn.type = 'button';
+                newTabBtn.className = 'cb-link-newtab';
+                newTabBtn.title = msg.openNewTab || 'Open in new tab';
+                newTabBtn.setAttribute('aria-label', msg.openNewTab || 'Open in new tab');
+                newTabBtn.textContent = '↗';
+                newTabBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    if (msgId) sendLinkClickBeacon(msgId, link.url, link.label);
+                    window.open(ctx + link.url, '_blank', 'noopener');
+                });
+                row.appendChild(newTabBtn);
+
+                linksWrap.appendChild(row);
             });
             body.appendChild(linksWrap);
         }

@@ -161,6 +161,36 @@
     max-width: 82%;
     align-self: flex-start;
 }
+.cb-link-row {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+}
+.cb-link-row .cb-link-btn { flex: 1; min-width: 0; }
+.cb-link-newtab {
+    flex-shrink: 0;
+    width: 32px;
+    background: #fff;
+    border: 1.5px solid var(--blue);
+    border-radius: 10px;
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s, color .15s, box-shadow .15s, transform .1s;
+    font-family: inherit;
+}
+.cb-link-newtab:hover {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(37,99,235,.25);
+}
+.cb-link-newtab:active { transform: scale(.96); }
+
 .cb-link-btn {
     display: flex;
     align-items: center;
