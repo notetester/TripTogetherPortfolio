@@ -110,9 +110,22 @@
                                         </c:choose>
                                     </td>
                                     <td style="text-align:right;">
-                                        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
-                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-session-id="${s.chatPostIdx}" onclick="viewAssistantMessages(this.dataset.sessionId)"><spring:message code="admin.aiHelper.assistant.action.view"/></button>
-                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;color:#ef4444;" data-session-id="${s.chatPostIdx}" onclick="deleteAssistantSession(this.dataset.sessionId)"><spring:message code="admin.aiHelper.assistant.action.delete"/></button>
+                                        <div class="adm-row-actions">
+                                            <button type="button"
+                                                    class="adm-row-btn detail"
+                                                    data-session-id="${s.chatPostIdx}"
+                                                    onclick="viewAssistantMessages(this.dataset.sessionId)"><spring:message code="admin.aiHelper.assistant.action.view"/></button>
+                                            <div class="action-menu-wrap">
+                                                <button type="button"
+                                                        class="adm-row-btn detail adm-row-btn-more"
+                                                        onclick="admToggleActionMenu(this)">⋯</button>
+                                                <div class="action-menu">
+                                                    <button type="button"
+                                                            class="action-menu-item danger"
+                                                            data-session-id="${s.chatPostIdx}"
+                                                            onclick="deleteAssistantSession(this.dataset.sessionId)"><spring:message code="admin.aiHelper.assistant.action.delete"/></button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -202,8 +215,11 @@
                                         <fmt:formatDate value="${m.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
                                     </td>
                                     <td style="text-align:right;">
-                                        <div style="display:flex;gap:4px;justify-content:flex-end;">
-                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-session-id="${m.chatPostIdx}" onclick="viewAssistantMessages(this.dataset.sessionId)"><spring:message code="admin.aiHelper.assistant.action.viewSession"/></button>
+                                        <div class="adm-row-actions is-single">
+                                            <button type="button"
+                                                    class="adm-row-btn detail"
+                                                    data-session-id="${m.chatPostIdx}"
+                                                    onclick="viewAssistantMessages(this.dataset.sessionId)"><spring:message code="admin.aiHelper.assistant.action.viewSession"/></button>
                                         </div>
                                     </td>
                                 </tr>

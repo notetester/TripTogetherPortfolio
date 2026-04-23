@@ -117,12 +117,28 @@
                                         </c:choose>
                                     </td>
                                     <td style="text-align:right;">
-                                        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
-                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-conv-id="${c.conversationId}" onclick="viewMessages(this.dataset.convId)"><spring:message code="admin.aiHelper.chatbot.action.view"/></button>
-                                            <c:if test="${c.userIdx != null}">
-                                                <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-block-value="${c.userIdx}" onclick="blockUser(this.dataset.blockValue)"><spring:message code="admin.aiHelper.chatbot.action.blockUser"/></button>
-                                            </c:if>
-                                            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:11px;padding:3px 8px;" data-block-value="${c.ipAddress}" onclick="blockIp(this.dataset.blockValue)"><spring:message code="admin.aiHelper.chatbot.action.blockIp"/></button>
+                                        <div class="adm-row-actions">
+                                            <button type="button"
+                                                    class="adm-row-btn detail"
+                                                    data-conv-id="${c.conversationId}"
+                                                    onclick="viewMessages(this.dataset.convId)"><spring:message code="admin.aiHelper.chatbot.action.view"/></button>
+                                            <div class="action-menu-wrap">
+                                                <button type="button"
+                                                        class="adm-row-btn detail adm-row-btn-more"
+                                                        onclick="admToggleActionMenu(this)">⋯</button>
+                                                <div class="action-menu">
+                                                    <c:if test="${c.userIdx != null}">
+                                                        <button type="button"
+                                                                class="action-menu-item"
+                                                                data-block-value="${c.userIdx}"
+                                                                onclick="blockUser(this.dataset.blockValue)"><spring:message code="admin.aiHelper.chatbot.action.blockUser"/></button>
+                                                    </c:if>
+                                                    <button type="button"
+                                                            class="action-menu-item"
+                                                            data-block-value="${c.ipAddress}"
+                                                            onclick="blockIp(this.dataset.blockValue)"><spring:message code="admin.aiHelper.chatbot.action.blockIp"/></button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -172,7 +188,12 @@
                                     <td style="max-width:600px;word-break:break-all;">${m.content}</td>
                                     <td>${fn:replace(fn:substring(m.createdAt, 0, 16), 'T', ' ')}</td>
                                     <td>
-                                        <button type="button" class="adm-btn adm-btn-ghost" data-conv-id="${m.conversationId}" onclick="viewMessages(this.dataset.convId)"><spring:message code="admin.aiHelper.chatbot.action.viewConversation"/></button>
+                                        <div class="adm-row-actions is-single">
+                                            <button type="button"
+                                                    class="adm-row-btn detail"
+                                                    data-conv-id="${m.conversationId}"
+                                                    onclick="viewMessages(this.dataset.convId)"><spring:message code="admin.aiHelper.chatbot.action.viewConversation"/></button>
+                                        </div>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -258,7 +279,12 @@
                                     </td>
                                     <td>
                                         <c:if test="${b.isActive}">
-                                            <button type="button" class="adm-btn adm-btn-ghost" data-block-id="${b.blockId}" onclick="deactivateBlock(this.dataset.blockId)"><spring:message code="admin.aiHelper.chatbot.action.release"/></button>
+                                            <div class="adm-row-actions is-single">
+                                                <button type="button"
+                                                        class="adm-row-btn danger"
+                                                        data-block-id="${b.blockId}"
+                                                        onclick="deactivateBlock(this.dataset.blockId)"><spring:message code="admin.aiHelper.chatbot.action.release"/></button>
+                                            </div>
                                         </c:if>
                                     </td>
                                 </tr>

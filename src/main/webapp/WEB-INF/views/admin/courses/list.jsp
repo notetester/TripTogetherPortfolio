@@ -227,17 +227,17 @@
 
                         <%-- 액션 --%>
                         <td>
-                            <div style="display:flex;gap:4px;">
+                            <div class="adm-row-actions is-single">
                                 <c:choose>
                                     <c:when test="${p.isDeleted == 0}">
-                                        <button class="adm-btn adm-btn-ghost"
-                                                style="font-size:11px;padding:3px 8px;color:#f87171;border-color:#f87171;"
+                                        <button class="adm-row-btn danger"
+                                                type="button"
                                                 data-id="${p.planId}"
                                                 onclick="actionPlan(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.common.delete"/></button>
                                     </c:when>
                                     <c:otherwise>
-                                        <button class="adm-btn adm-btn-ghost"
-                                                style="font-size:11px;padding:3px 8px;color:#34d399;border-color:#34d399;"
+                                        <button class="adm-row-btn success"
+                                                type="button"
                                                 data-id="${p.planId}"
                                                 onclick="actionPlan(this.getAttribute('data-id'), 'restore')"><spring:message code="admin.common.restore"/></button>
                                     </c:otherwise>

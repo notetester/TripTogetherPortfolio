@@ -241,8 +241,6 @@
     </div>
 </div>
 
-<%@ include file="../common/context-modal.jspf" %>
-
 <script>
 function applyKeywordFilter(button) {
     var keyword = button.getAttribute('data-keyword');

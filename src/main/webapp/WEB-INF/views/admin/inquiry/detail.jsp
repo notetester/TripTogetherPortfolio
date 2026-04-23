@@ -426,6 +426,4 @@ function hideEditForm() {
     document.getElementById('answerView').style.display = 'block';
 }
 </script>
-
-<%@ include file="../common/context-modal.jspf" %>
 <%@ include file="../layout-close.jsp" %>

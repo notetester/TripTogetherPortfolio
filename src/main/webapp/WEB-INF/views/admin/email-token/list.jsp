@@ -117,7 +117,6 @@
     <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info"><spring:message code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/></span></div></c:if>
   </div>
 </div>
-<%@ include file="../common/context-modal.jspf" %>
 <script>
 function goPage(page){const params=new URLSearchParams(window.location.search);params.set('page',page);location.href='${pageContext.request.contextPath}/admin/email-tokens?'+params.toString();}
 function applyKeywordFilter(button){const keyword=button.dataset.keyword||'';const params=new URLSearchParams(window.location.search);params.set('keyword',keyword);params.set('page','1');location.href='${pageContext.request.contextPath}/admin/email-tokens?'+params.toString();}

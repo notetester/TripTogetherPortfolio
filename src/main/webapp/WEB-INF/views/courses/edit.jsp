@@ -2,10 +2,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ include file="../common/header.jsp" %>
 
 <c:set var="planSourceValue" value="${empty travelPlan.plan_source ? 'manual' : travelPlan.plan_source}" />
+<fmt:setLocale value="${pageContext.response.locale}" />
 <fmt:formatDate value="${travelPlan.start_date}" pattern="yyyy-MM-dd" var="startDateFormatted"/>
 <fmt:formatDate value="${travelPlan.end_date}" pattern="yyyy-MM-dd" var="endDateFormatted"/>
 
@@ -483,15 +485,15 @@
 <main class="course-edit-page">
     <div class="page-inner">
         <a href="${pageContext.request.contextPath}/courses/detail?planId=${travelPlan.plan_id}" class="back-link">
-            ← 상세로 돌아가기
+            ← <spring:message code="courses.common.backToDetail" />
         </a>
 
         <div class="page-header">
             <div>
-                <h1 class="page-title">여행 일정 수정</h1>
-                <p class="page-desc">기본 정보와 방문 여행지를 수정한 뒤 저장할 수 있어요.</p>
+                <h1 class="page-title"><spring:message code="courses.edit.header.title" /></h1>
+                <p class="page-desc"><spring:message code="courses.edit.header.desc" /></p>
             </div>
-            <div class="status-chip">수정 중</div>
+            <div class="status-chip"><spring:message code="courses.common.status.editing" /></div>
         </div>
 
         <form id="travelPlanForm" action="${pageContext.request.contextPath}/courses/edit" method="post">
@@ -503,13 +505,13 @@
                 <div class="edit-main">
                     <section class="card content-card">
                         <div class="card-head">
-                            <h2>기본 정보</h2>
-                            <p>일정 제목, 대표 목적지, 기간을 수정해 주세요.</p>
+                            <h2><spring:message code="courses.edit.section.basic.title" /></h2>
+                            <p><spring:message code="courses.edit.section.basic.desc" /></p>
                         </div>
 
                         <div class="card-body">
                             <div class="form-group">
-                                <label class="form-label" for="title">일정 제목</label>
+                                <label class="form-label" for="title"><spring:message code="courses.common.field.title" /></label>
                                 <input type="text"
                                        id="title"
                                        name="title"
@@ -519,7 +521,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label" for="destination">대표 목적지</label>
+                                <label class="form-label" for="destination"><spring:message code="courses.common.field.destination" /></label>
                                 <input type="text"
                                        id="destination"
                                        name="destination"
@@ -528,13 +530,13 @@
                                        autocomplete="off"
                                        required>
                                 <div class="field-msg">
-                                    대표 목적지는 자유롭게 입력할 수 있어요.
+                                    <spring:message code="courses.common.help.destinationFree" />
                                 </div>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label" for="startDate">시작일</label>
+                                    <label class="form-label" for="startDate"><spring:message code="courses.common.field.startDate" /></label>
                                     <input type="date"
                                            id="startDate"
                                            name="start_date"
@@ -544,7 +546,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label" for="endDate">종료일</label>
+                                    <label class="form-label" for="endDate"><spring:message code="courses.common.field.endDate" /></label>
                                     <input type="date"
                                            id="endDate"
                                            name="end_date"
@@ -558,22 +560,22 @@
 
                     <section class="card content-card">
                         <div class="card-head">
-                            <h2>방문 여행지</h2>
-                            <p>기존 항목을 수정·삭제하고, 새 항목도 추가할 수 있어요.</p>
+                            <h2><spring:message code="courses.edit.section.spots.title" /></h2>
+                            <p><spring:message code="courses.edit.section.spots.desc" /></p>
                         </div>
 
                         <div class="card-body">
                             <div class="field-msg" style="margin-bottom:16px;">
-                                각 여행지는 장소명 + 방문일 + 방문 순서 기준으로 저장돼요.
+                                <spring:message code="courses.edit.section.spots.help" />
                             </div>
 
                             <div class="spot-filter-bar">
                                 <div class="spot-filter-left">
-                                    <label for="spotDateFilter" class="spot-filter-label">날짜 선택</label>
+                                    <label for="spotDateFilter" class="spot-filter-label"><spring:message code="courses.common.field.dateFilter" /></label>
                                     <input type="date" id="spotDateFilter" class="spot-filter-input">
-                                    <button type="button" id="resetSpotFilterBtn" class="spot-filter-reset">전체보기</button>
+                                    <button type="button" id="resetSpotFilterBtn" class="spot-filter-reset"><spring:message code="courses.common.action.showAll" /></button>
                                 </div>
-                                <div class="spot-filter-right" id="spotFilterResultText">전체 여행지 표시 중</div>
+                                <div class="spot-filter-right" id="spotFilterResultText"><spring:message code="courses.common.filter.allSpots" /></div>
                             </div>
 
                             <div id="spotList" class="spot-list">
@@ -584,25 +586,25 @@
                                         <div class="spot-head">
                                             <div class="spot-head-left">
                                                 <span class="spot-badge">${s.index + 1}</span>
-                                                <span>여행지 ${s.index + 1}</span>
+                                                <span><spring:message code="courses.common.spotIndexed" arguments="${s.index + 1}" /></span>
                                             </div>
-                                            <button type="button" class="remove-btn">삭제</button>
+                                            <button type="button" class="remove-btn"><spring:message code="courses.common.delete" /></button>
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="form-label">장소명</label>
+                                            <label class="form-label"><spring:message code="courses.common.field.placeName" /></label>
                                             <input type="text"
                                                    class="form-input"
                                                    data-field="place_name"
                                                    name="spotList[${s.index}].place_name"
                                                    value="${spot.place_name}"
                                                    required>
-                                            <div class="field-msg">사용자가 직접 입력한 실제 방문 장소명이 저장돼요.</div>
+                                            <div class="field-msg"><spring:message code="courses.common.help.placeStored" /></div>
                                         </div>
 
                                         <div class="form-row" style="margin-top:16px;">
                                             <div class="form-group">
-                                                <label class="form-label">방문일</label>
+                                                <label class="form-label"><spring:message code="courses.common.field.visitDate" /></label>
                                                 <input type="date"
                                                        class="form-input"
                                                        data-field="visit_date"
@@ -612,7 +614,7 @@
                                             </div>
 
                                             <div class="form-group">
-                                                <label class="form-label">방문 순서</label>
+                                                <label class="form-label"><spring:message code="courses.common.field.visitOrder" /></label>
                                                 <input type="number"
                                                        class="form-input"
                                                        data-field="visit_order"
@@ -627,7 +629,7 @@
                             </div>
 
                             <button type="button" id="addSpotBtn" class="secondary-btn" style="margin-top:16px;">
-                                + 여행지 추가
+                                <spring:message code="courses.common.action.addSpot" />
                             </button>
                         </div>
                     </section>
@@ -636,15 +638,15 @@
                 <aside class="edit-side">
                     <section class="card content-card">
                         <div class="card-head">
-                            <h2>공개 설정</h2>
-                            <p>일정 공개 여부를 설정할 수 있어요.</p>
+                            <h2><spring:message code="courses.edit.section.visibility.title" /></h2>
+                            <p><spring:message code="courses.edit.section.visibility.desc" /></p>
                         </div>
 
                         <div class="card-body">
                             <div class="toggle-row">
                                 <div>
-                                    <div class="form-label" style="margin-bottom:6px;">일정 공개</div>
-                                    <div class="field-msg">공개로 설정하면 다른 사용자에게 공유할 수 있어요.</div>
+                                    <div class="form-label" style="margin-bottom:6px;"><spring:message code="courses.common.label.publicPlan" /></div>
+                                    <div class="field-msg"><spring:message code="courses.common.visibility.help.share" /></div>
                                 </div>
 
                                 <label class="switch">
@@ -657,38 +659,43 @@
 
                     <section class="card content-card">
                         <div class="card-head">
-                            <h2>입력 요약</h2>
-                            <p>현재 입력 내용을 간단히 확인할 수 있어요.</p>
+                            <h2><spring:message code="courses.edit.section.summary.title" /></h2>
+                            <p><spring:message code="courses.edit.section.summary.desc" /></p>
                         </div>
 
                         <div class="card-body">
                             <div class="summary-box">
                                 <div class="summary-row">
-                                    <span>일정 제목</span>
+                                    <span><spring:message code="courses.common.field.title" /></span>
                                     <strong id="summaryTitle">${travelPlan.title}</strong>
                                 </div>
                                 <div class="summary-row">
-                                    <span>대표 목적지</span>
+                                    <span><spring:message code="courses.common.field.destination" /></span>
                                     <strong id="summaryDestination">${travelPlan.destination}</strong>
                                 </div>
                                 <div class="summary-row">
-                                    <span>여행 기간</span>
+                                    <span><spring:message code="courses.common.field.travelPeriod" /></span>
                                     <strong id="summaryPeriod">${startDateFormatted} ~ ${endDateFormatted}</strong>
                                 </div>
                                 <div class="summary-row">
-                                    <span>여행지 개수</span>
-                                    <strong id="summaryCount"><c:out value="${fn:length(travelPlan.spotList)}"/>개</strong>
+                                    <span><spring:message code="courses.common.field.spotCount" /></span>
+                                    <strong id="summaryCount"><spring:message code="courses.common.countWithUnit" arguments="${fn:length(travelPlan.spotList)}"/></strong>
                                 </div>
                                 <div class="summary-row">
-                                    <span>공개 여부</span>
-                                    <strong id="summaryPublic">${travelPlan.is_public == 1 ? '공개' : '비공개'}</strong>
+                                    <span><spring:message code="courses.common.field.publicVisibility" /></span>
+                                    <strong id="summaryPublic">
+                                        <c:choose>
+                                            <c:when test="${travelPlan.is_public == 1}"><spring:message code="courses.common.visibility.public" /></c:when>
+                                            <c:otherwise><spring:message code="courses.common.visibility.private" /></c:otherwise>
+                                        </c:choose>
+                                    </strong>
                                 </div>
                             </div>
 
                             <div class="form-actions" style="margin-top:24px;">
                                 <a href="${pageContext.request.contextPath}/courses/detail?planId=${travelPlan.plan_id}"
-                                   class="secondary-btn">취소</a>
-                                <button type="submit" class="primary-btn">수정 완료하기</button>
+                                   class="secondary-btn"><spring:message code="courses.common.cancel" /></a>
+                                <button type="submit" class="primary-btn"><spring:message code="courses.common.action.completeEdit" /></button>
                             </div>
                         </div>
                     </section>
@@ -699,6 +706,34 @@
 </main>
 
 <script>
+    const courseEditMessages = {
+        spotIndexed: "<spring:message code='courses.common.spotIndexed' javaScriptEscape='true' />",
+        allSpots: "<spring:message code='courses.common.filter.allSpots' javaScriptEscape='true' />",
+        filterResult: "<spring:message code='courses.common.filter.result' javaScriptEscape='true' />",
+        emptyInput: "<spring:message code='courses.common.value.emptyInput' javaScriptEscape='true' />",
+        publicLabel: "<spring:message code='courses.common.visibility.public' javaScriptEscape='true' />",
+        privateLabel: "<spring:message code='courses.common.visibility.private' javaScriptEscape='true' />",
+        deleteLabel: "<spring:message code='courses.common.delete' javaScriptEscape='true' />",
+        placeNameLabel: "<spring:message code='courses.common.field.placeName' javaScriptEscape='true' />",
+        placePlaceholder: "<spring:message code='courses.common.placeholder.placeExample' javaScriptEscape='true' />",
+        placeHelp: "<spring:message code='courses.common.help.placeStored' javaScriptEscape='true' />",
+        visitDateLabel: "<spring:message code='courses.common.field.visitDate' javaScriptEscape='true' />",
+        visitOrderLabel: "<spring:message code='courses.common.field.visitOrder' javaScriptEscape='true' />",
+        countWithUnit: "<spring:message code='courses.common.countWithUnit' javaScriptEscape='true' />",
+        deleteSpotConfirm: "<spring:message code='courses.common.confirm.deleteSpot' javaScriptEscape='true' />",
+        minSpot: "<spring:message code='courses.common.alert.minSpot' javaScriptEscape='true' />",
+        placeRequired: "<spring:message code='courses.common.alert.placeRequired' javaScriptEscape='true' />",
+        visitDateRequired: "<spring:message code='courses.common.alert.visitDateRequired' javaScriptEscape='true' />",
+        orderRequired: "<spring:message code='courses.common.alert.orderRequired' javaScriptEscape='true' />",
+        duplicateOrder: "<spring:message code='courses.common.alert.duplicateOrder' javaScriptEscape='true' />"
+    };
+
+    function formatCourseMessage(template, ...values) {
+        return template.replace(/\u007B(\d+)\u007D/g, function (_, index) {
+            return values[index] ?? "";
+        });
+    }
+
     const formEl = document.getElementById("travelPlanForm");
     const titleEl = document.getElementById("title");
     const destinationEl = document.getElementById("destination");
@@ -731,7 +766,7 @@
             const visitOrderInput = item.querySelector('[data-field="visit_order"]');
 
             if (badge) badge.textContent = index + 1;
-            if (title) title.textContent = "여행지 " + (index + 1);
+            if (title) title.textContent = formatCourseMessage(courseEditMessages.spotIndexed, index + 1);
 
             if (placeInput) placeInput.name = "spotList[" + index + "].place_name";
             if (visitDateInput) visitDateInput.name = "spotList[" + index + "].visit_date";
@@ -772,36 +807,43 @@
 
         if (spotFilterResultTextEl) {
             if (!selectedDate) {
-                spotFilterResultTextEl.textContent = "전체 여행지 표시 중";
+                spotFilterResultTextEl.textContent = courseEditMessages.allSpots;
             } else {
-                spotFilterResultTextEl.textContent = selectedDate + " · " + visibleCount + "개 표시 중";
+                spotFilterResultTextEl.textContent = formatCourseMessage(
+                    courseEditMessages.filterResult,
+                    selectedDate,
+                    formatCourseMessage(courseEditMessages.countWithUnit, visibleCount)
+                );
             }
         }
     }
 
     function updateSummary() {
         if (summaryTitleEl) {
-            summaryTitleEl.textContent = titleEl.value.trim() || "미입력";
+            summaryTitleEl.textContent = titleEl.value.trim() || courseEditMessages.emptyInput;
         }
 
         if (summaryDestinationEl) {
-            summaryDestinationEl.textContent = destinationEl.value.trim() || "미입력";
+            summaryDestinationEl.textContent = destinationEl.value.trim() || courseEditMessages.emptyInput;
         }
 
         if (summaryPeriodEl) {
             if (startDateEl.value && endDateEl.value) {
                 summaryPeriodEl.textContent = startDateEl.value + " ~ " + endDateEl.value;
             } else {
-                summaryPeriodEl.textContent = "미입력";
+                summaryPeriodEl.textContent = courseEditMessages.emptyInput;
             }
         }
 
         if (summaryCountEl) {
-            summaryCountEl.textContent = spotListEl.querySelectorAll(".spot-item").length + "개";
+            summaryCountEl.textContent = formatCourseMessage(
+                courseEditMessages.countWithUnit,
+                spotListEl.querySelectorAll(".spot-item").length
+            );
         }
 
         if (summaryPublicEl) {
-            summaryPublicEl.textContent = isPublicEl.value === "1" ? "공개" : "비공개";
+            summaryPublicEl.textContent = isPublicEl.value === "1" ? courseEditMessages.publicLabel : courseEditMessages.privateLabel;
         }
     }
 
@@ -813,22 +855,22 @@
             + '<div class="spot-head">'
             + '    <div class="spot-head-left">'
             + '        <span class="spot-badge">' + (index + 1) + '</span>'
-            + '        <span>여행지 ' + (index + 1) + '</span>'
+            + '        <span>' + formatCourseMessage(courseEditMessages.spotIndexed, index + 1) + '</span>'
             + '    </div>'
-            + '    <button type="button" class="remove-btn">삭제</button>'
+            + '    <button type="button" class="remove-btn">' + courseEditMessages.deleteLabel + '</button>'
             + '</div>'
             + '<div class="form-group">'
-            + '    <label class="form-label">장소명</label>'
+            + '    <label class="form-label">' + courseEditMessages.placeNameLabel + '</label>'
             + '    <input type="text"'
             + '           class="form-input"'
             + '           data-field="place_name"'
-            + '           placeholder="예: 동방명주탑"'
+            + '           placeholder="' + courseEditMessages.placePlaceholder + '"'
             + '           required>'
-            + '    <div class="field-msg">사용자가 직접 입력한 실제 방문 장소명이 저장돼요.</div>'
+            + '    <div class="field-msg">' + courseEditMessages.placeHelp + '</div>'
             + '</div>'
             + '<div class="form-row" style="margin-top:16px;">'
             + '    <div class="form-group">'
-            + '        <label class="form-label">방문일</label>'
+            + '        <label class="form-label">' + courseEditMessages.visitDateLabel + '</label>'
             + '        <input type="date"'
             + '               class="form-input"'
             + '               data-field="visit_date"'
@@ -836,7 +878,7 @@
             + '               required>'
             + '    </div>'
             + '    <div class="form-group">'
-            + '        <label class="form-label">방문 순서</label>'
+            + '        <label class="form-label">' + courseEditMessages.visitOrderLabel + '</label>'
             + '        <input type="number"'
             + '               class="form-input"'
             + '               data-field="visit_order"'
@@ -873,7 +915,7 @@
             const item = removeBtn.closest(".spot-item");
             if (!item) return;
 
-            if (!confirm("이 방문 여행지를 삭제할까요?")) return;
+            if (!confirm(courseEditMessages.deleteSpotConfirm)) return;
 
             item.remove();
             refreshSpotIndexes();
@@ -927,7 +969,7 @@
 
         const items = spotListEl.querySelectorAll(".spot-item");
         if (items.length === 0) {
-            alert("최소 1개의 방문 여행지를 입력해 주세요.");
+            alert(courseEditMessages.minSpot);
             e.preventDefault();
             return;
         }
@@ -945,21 +987,21 @@
             const visitOrder = visitOrderInput.value.trim();
 
             if (!placeName) {
-                alert("장소명을 입력해 주세요.");
+                alert(courseEditMessages.placeRequired);
                 placeInput.focus();
                 e.preventDefault();
                 return;
             }
 
             if (!visitDate) {
-                alert("방문일을 입력해 주세요.");
+                alert(courseEditMessages.visitDateRequired);
                 visitDateInput.focus();
                 e.preventDefault();
                 return;
             }
 
             if (!visitOrder || Number(visitOrder) < 1) {
-                alert("방문 순서는 1 이상의 숫자로 입력해 주세요.");
+                alert(courseEditMessages.orderRequired);
                 visitOrderInput.focus();
                 e.preventDefault();
                 return;
@@ -967,7 +1009,7 @@
 
             const duplicateKey = visitDate + "__" + visitOrder;
             if (duplicateCheck.has(duplicateKey)) {
-                alert("같은 날짜에는 동일한 방문 순서를 사용할 수 없어요.");
+                alert(courseEditMessages.duplicateOrder);
                 visitOrderInput.focus();
                 e.preventDefault();
                 return;
