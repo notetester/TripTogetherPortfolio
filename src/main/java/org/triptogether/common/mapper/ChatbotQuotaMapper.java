@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.triptogether.common.vo.ChatbotDailyUsageVO;
 import org.triptogether.common.vo.ChatbotQuotaVO;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -24,19 +24,19 @@ public interface ChatbotQuotaMapper {
 
     // ===== 일일 사용량 =====
 
-    // 사용량 조회 (유저 또는 IP 기준, 날짜 특정)
+    // 사용량 조회 (유저 또는 IP 기준, 주기 시작 시각 특정)
     ChatbotDailyUsageVO selectDailyUsage(@Param("userIdx") Long userIdx,
                                          @Param("ipAddress") String ipAddress,
-                                         @Param("usageDate") LocalDate usageDate);
+                                         @Param("periodStart") LocalDateTime periodStart);
 
     // 사용량 +1 (없으면 INSERT, 있으면 UPDATE)
     void upsertDailyUsageIncrement(@Param("userIdx") Long userIdx,
                                    @Param("ipAddress") String ipAddress,
-                                   @Param("usageDate") LocalDate usageDate);
+                                   @Param("periodStart") LocalDateTime periodStart);
 
     // 사용량 -N (GREATEST(0, ...) 로 음수 방지, 행 없으면 no-op)
     void decreaseDailyUsage(@Param("userIdx") Long userIdx,
                             @Param("ipAddress") String ipAddress,
-                            @Param("usageDate") LocalDate usageDate,
+                            @Param("periodStart") LocalDateTime periodStart,
                             @Param("amount") int amount);
 }

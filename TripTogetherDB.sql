@@ -516,12 +516,12 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_DAILY_USAGE` (
   `usage_id` bigint NOT NULL AUTO_INCREMENT,
   `user_idx` bigint DEFAULT NULL,
   `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '비로그인 식별자 (IP 주소, IPv6 포함)',
-  `usage_date` date NOT NULL,
+  `period_start` datetime NOT NULL COMMENT '현재 주기의 시작 시각(KST)',
   `message_count` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`usage_id`),
-  UNIQUE KEY `uk_user_date` (`user_idx`,`usage_date`),
-  UNIQUE KEY `uk_ip_date` (`ip_address`,`usage_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='일일 사용량 집계';
+  UNIQUE KEY `uk_user_period` (`user_idx`,`period_start`),
+  UNIQUE KEY `uk_ip_period` (`ip_address`,`period_start`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='주기별 사용량 집계';
 
 -- 테이블 데이터 team1_db.CHATBOT_DAILY_USAGE:~0 rows (대략적) 내보내기
 
@@ -530,8 +530,12 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_GRADE_QUOTA` (
   `quota_id` int NOT NULL AUTO_INCREMENT,
   `grade` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'GUEST/BRONZE/SILVER/GOLD/DIAMOND/PLATINUM',
   `max_conversations` int NOT NULL DEFAULT '5' COMMENT '동시 보유 대화 수 한도',
-  `max_messages_per_day` int NOT NULL DEFAULT '50' COMMENT '일일 메시지 발송 한도',
+  `max_messages_per_period` int NOT NULL DEFAULT '50' COMMENT '주기당 메시지 한도',
   `max_context_messages` int NOT NULL DEFAULT '10' COMMENT 'AI에 전달할 최근 메시지 수',
+  `period_days` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '한도 주기 (일: 1/2/3/4/5/7/14/30)',
+  `reset_hour` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '리셋 시각 시 (0-23)',
+  `reset_minute` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '리셋 시각 분 (0-59)',
+  `quota_refund_enabled` tinyint(1) NOT NULL DEFAULT '1' COMMENT '대화 삭제 시 사용량 환급 허용',
   `updated_by` bigint DEFAULT NULL COMMENT '마지막 수정 관리자',
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`quota_id`),

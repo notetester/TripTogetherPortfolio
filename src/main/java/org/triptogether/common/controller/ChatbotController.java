@@ -168,17 +168,18 @@ public class ChatbotController {
         }
 
         // 쿼터 환급 — ADMIN/SUPERADMIN 면제자는 원래 카운트 안 하므로 skip.
-        // 등급별 quota_refund_enabled 플래그가 true 일 때만 실제 환급. 비로그인은 IP 기준으로 차감.
+        // 등급별 quota_refund_enabled 가 true 일 때만 실제 환급. 현재 주기 내 user 메시지 수만큼 차감.
         boolean quotaExempt = quotaService.isQuotaExempt(loginUser);
         if (!quotaExempt) {
             String grade = quotaService.resolveGrade(loginUser);
             ChatbotQuotaVO quota = quotaService.getQuotaByGrade(grade);
             boolean refundEnabled = quota != null && Boolean.TRUE.equals(quota.getQuotaRefundEnabled());
             if (refundEnabled) {
-                int todayUserMsgs = messageMapper.countTodayUserMessagesByConversation(conversationId);
-                if (todayUserMsgs > 0) {
+                java.time.LocalDateTime periodStart = quotaService.calculateCurrentPeriodStart(quota);
+                int periodUserMsgs = messageMapper.countUserMessagesByConversationSince(conversationId, periodStart);
+                if (periodUserMsgs > 0) {
                     String ipAddress = loginUser == null ? extractIp(httpReq) : null;
-                    quotaService.decreaseTodayUsage(userIdx, ipAddress, todayUserMsgs);
+                    quotaService.decreaseUsage(userIdx, ipAddress, quota, periodUserMsgs);
                 }
             }
         }

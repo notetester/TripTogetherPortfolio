@@ -166,11 +166,11 @@ public class ChatbotService {
         ChatbotQuotaVO quota = quotaService.getQuotaByGrade(grade);
         boolean quotaExempt = quotaService.isQuotaExempt(loginUser);
 
-        // 3. 일일 메시지 한도 체크
+        // 3. 주기별 메시지 한도 체크
         if (!quotaExempt && quota != null) {
-            int usage = quotaService.getTodayUsage(userIdx, userIdx == null ? ipAddress : null);
-            if (usage >= quota.getMaxMessagesPerDay()) {
-                return quotaExceededResponse(quota.getMaxMessagesPerDay());
+            int usage = quotaService.getCurrentPeriodUsage(userIdx, userIdx == null ? ipAddress : null, quota);
+            if (usage >= quota.getMaxMessagesPerPeriod()) {
+                return quotaExceededResponse(quota.getMaxMessagesPerPeriod());
             }
         }
 
@@ -195,7 +195,7 @@ public class ChatbotService {
             log.info("[Chatbot] fast-path 히트, LLM 호출 생략 — conversationId={}",
                     conversation.getConversationId());
             return finalizeAndRespond(conversation, userMsg, fast, userIdx, ipAddress,
-                    quotaExempt, /*markInappropriate=*/false);
+                    quota, quotaExempt, /*markInappropriate=*/false);
         }
 
         // 6. 최근 N개 히스토리 로드 (현재 저장한 메시지 제외)
@@ -216,7 +216,7 @@ public class ChatbotService {
             log.warn("[Chatbot] 사전 분류 - 부적절 판정, 본 호출 생략. conversationId={}, messageId={}, ip={}",
                     conversation.getConversationId(), userMsg.getMessageId(), ipAddress);
             return finalizeAndRespond(conversation, userMsg, safetyBlockedResponse(),
-                    userIdx, ipAddress, quotaExempt, /*markInappropriate=*/false);
+                    userIdx, ipAddress, quota, quotaExempt, /*markInappropriate=*/false);
         }
 
         // 7. Gemini 본 호출 (분류 의도 주입)
@@ -243,9 +243,9 @@ public class ChatbotService {
         // 10. 대화 활동 시각 갱신
         conversationService.touch(conversation.getConversationId());
 
-        // 11. 일일 사용량 +1 (면제자 제외). 비로그인은 IP 기준.
+        // 11. 현재 주기 사용량 +1 (면제자 제외). 비로그인은 IP 기준.
         if (!quotaExempt) {
-            quotaService.incrementTodayUsage(userIdx, userIdx == null ? ipAddress : null);
+            quotaService.incrementUsage(userIdx, userIdx == null ? ipAddress : null, quota);
         }
 
         // 12. 응답에 conversationId / messageId 포함
@@ -293,6 +293,7 @@ public class ChatbotService {
                                                   ChatbotResponseVO response,
                                                   Long userIdx,
                                                   String ipAddress,
+                                                  ChatbotQuotaVO quota,
                                                   boolean quotaExempt,
                                                   boolean markInappropriate) {
         if (markInappropriate) {
@@ -306,7 +307,7 @@ public class ChatbotService {
         conversationService.saveMessage(botMsg);
         conversationService.touch(conversation.getConversationId());
         if (!quotaExempt) {
-            quotaService.incrementTodayUsage(userIdx, userIdx == null ? ipAddress : null);
+            quotaService.incrementUsage(userIdx, userIdx == null ? ipAddress : null, quota);
         }
         response.setConversationId(conversation.getConversationId());
         response.setMessageId(botMsg.getMessageId());

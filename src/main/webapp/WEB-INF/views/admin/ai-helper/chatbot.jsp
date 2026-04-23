@@ -378,9 +378,11 @@
                     <tr>
                         <th>등급</th>
                         <th>동시 대화 수</th>
-                        <th>일일 메시지 한도</th>
+                        <th>주기당 메시지 한도</th>
                         <th>AI 컨텍스트 길이</th>
-                        <th title="대화 삭제 시 그 대화에서 쓴 오늘자 메시지 수만큼 한도 환급">환급 허용</th>
+                        <th title="리셋 주기">주기(일)</th>
+                        <th title="주기 시작(리셋) 시각 HH:MM">리셋 시각</th>
+                        <th title="대화 삭제 시 그 대화에서 쓴 현재 주기 내 메시지 수만큼 한도 환급">환급 허용</th>
                         <th>마지막 수정자</th>
                     </tr>
                 </thead>
@@ -389,8 +391,32 @@
                         <tr data-quota-id="${q.quotaId}">
                             <td><strong>${q.grade}</strong></td>
                             <td><input type="number" class="adm-input q-conv" value="${q.maxConversations}" data-original="${q.maxConversations}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
-                            <td><input type="number" class="adm-input q-msg" value="${q.maxMessagesPerDay}" data-original="${q.maxMessagesPerDay}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
+                            <td><input type="number" class="adm-input q-msg" value="${q.maxMessagesPerPeriod}" data-original="${q.maxMessagesPerPeriod}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
                             <td><input type="number" class="adm-input q-ctx" value="${q.maxContextMessages}" data-original="${q.maxContextMessages}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
+                            <td>
+                                <select class="adm-input q-period" data-original="${q.periodDays}" style="width:72px;padding:6px 10px;font-size:13px;">
+                                    <c:forEach var="d" items="1,2,3,4,5,7,14,30">
+                                        <option value="${d}" ${q.periodDays == d ? 'selected' : ''}>${d}일</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="adm-input q-reset-h" data-original="${q.resetHour}" style="width:64px;padding:6px 8px;font-size:13px;">
+                                    <c:forEach var="h" begin="0" end="23">
+                                        <option value="${h}" ${q.resetHour == h ? 'selected' : ''}>
+                                            <fmt:formatNumber value="${h}" minIntegerDigits="2"/>
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                                <span style="padding:0 2px;">:</span>
+                                <select class="adm-input q-reset-m" data-original="${q.resetMinute}" style="width:64px;padding:6px 8px;font-size:13px;">
+                                    <c:forEach var="m" begin="0" end="59">
+                                        <option value="${m}" ${q.resetMinute == m ? 'selected' : ''}>
+                                            <fmt:formatNumber value="${m}" minIntegerDigits="2"/>
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                            </td>
                             <td style="text-align:center;">
                                 <input type="checkbox" class="q-refund" ${q.quotaRefundEnabled ? 'checked' : ''} data-original="${q.quotaRefundEnabled ? 'true' : 'false'}" style="width:18px;height:18px;cursor:pointer;"/>
                             </td>
@@ -655,10 +681,10 @@
         alert(data.success ? '차단 완료' : '차단 실패');
     }
 
-    // 행별 dirty 여부 계산
+    // 행별 dirty 여부 계산 (input + select 모두)
     function isRowDirty(row) {
-        const inputs = row.querySelectorAll('input[data-original]');
-        for (const el of inputs) {
+        const els = row.querySelectorAll('input[data-original], select[data-original]');
+        for (const el of els) {
             if (el.type === 'checkbox') {
                 const original = el.dataset.original === 'true';
                 if (el.checked !== original) return true;
@@ -685,16 +711,16 @@
         hint.textContent = count > 0 ? ('변경된 행 ' + count + '개') : '';
     }
 
-    // 입력 변경 감지 바인딩
-    document.querySelectorAll('tr[data-quota-id] input[data-original]').forEach(function (el) {
+    // 입력 변경 감지 바인딩 (input + select)
+    document.querySelectorAll('tr[data-quota-id] input[data-original], tr[data-quota-id] select[data-original]').forEach(function (el) {
         el.addEventListener('input', updateDirtyHint);
         el.addEventListener('change', updateDirtyHint);
     });
 
-    // 기본값 복원 — 모든 input 을 최초 로드 값으로 되돌림
+    // 기본값 복원 — 모든 필드를 최초 로드 값으로 되돌림
     window.resetQuotasToOriginal = function () {
         let reverted = 0;
-        document.querySelectorAll('tr[data-quota-id] input[data-original]').forEach(function (el) {
+        document.querySelectorAll('tr[data-quota-id] input[data-original], tr[data-quota-id] select[data-original]').forEach(function (el) {
             if (el.type === 'checkbox') {
                 const target = el.dataset.original === 'true';
                 if (el.checked !== target) { el.checked = target; reverted++; }
@@ -717,10 +743,13 @@
         const tasks = dirtyRows.map(function (row) {
             const quotaId = row.dataset.quotaId;
             const payload = {
-                maxConversations:   parseInt(row.querySelector('.q-conv').value, 10),
-                maxMessagesPerDay:  parseInt(row.querySelector('.q-msg').value, 10),
-                maxContextMessages: parseInt(row.querySelector('.q-ctx').value, 10),
-                quotaRefundEnabled: row.querySelector('.q-refund').checked
+                maxConversations:     parseInt(row.querySelector('.q-conv').value, 10),
+                maxMessagesPerPeriod: parseInt(row.querySelector('.q-msg').value, 10),
+                maxContextMessages:   parseInt(row.querySelector('.q-ctx').value, 10),
+                periodDays:           parseInt(row.querySelector('.q-period').value, 10),
+                resetHour:            parseInt(row.querySelector('.q-reset-h').value, 10),
+                resetMinute:          parseInt(row.querySelector('.q-reset-m').value, 10),
+                quotaRefundEnabled:   row.querySelector('.q-refund').checked
             };
             return fetch(ctx + '/admin/ai-helper/quotas/' + quotaId, {
                 method: 'POST',

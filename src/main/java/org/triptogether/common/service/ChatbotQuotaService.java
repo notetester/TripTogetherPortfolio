@@ -10,6 +10,8 @@ import org.triptogether.common.vo.ChatbotDailyUsageVO;
 import org.triptogether.common.vo.ChatbotQuotaVO;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -60,22 +62,45 @@ public class ChatbotQuotaService {
                 quota.getGrade(), quota.getUpdatedBy());
     }
 
-    // 오늘자 사용량 조회 (없으면 0 반환). 비로그인은 IP 기준.
-    public int getTodayUsage(Long userIdx, String ipAddress) {
-        ChatbotDailyUsageVO usage = quotaMapper.selectDailyUsage(userIdx, ipAddress, LocalDate.now());
+    // 현재 주기의 시작 시각 계산.
+    //   앵커(2000-01-01 HH:MM) 기준으로 period_days * 24h 간격으로 floor.
+    //   periodDays/resetHour/resetMinute 가 null 이면 기본(1일/00:00) 적용.
+    public LocalDateTime calculateCurrentPeriodStart(ChatbotQuotaVO quota) {
+        int periodDays  = (quota != null && quota.getPeriodDays() != null)  ? quota.getPeriodDays()  : 1;
+        int resetHour   = (quota != null && quota.getResetHour() != null)   ? quota.getResetHour()   : 0;
+        int resetMinute = (quota != null && quota.getResetMinute() != null) ? quota.getResetMinute() : 0;
+        if (periodDays < 1) periodDays = 1;
+        if (resetHour < 0 || resetHour > 23) resetHour = 0;
+        if (resetMinute < 0 || resetMinute > 59) resetMinute = 0;
+
+        LocalDateTime anchor = LocalDate.of(2000, 1, 1).atTime(resetHour, resetMinute);
+        LocalDateTime now = LocalDateTime.now();
+        long periodHours = periodDays * 24L;
+        long hoursSinceAnchor = ChronoUnit.HOURS.between(anchor, now);
+        if (hoursSinceAnchor < 0) return anchor; // 안전장치
+        long periodIndex = hoursSinceAnchor / periodHours;
+        return anchor.plusHours(periodIndex * periodHours);
+    }
+
+    // 현재 주기 사용량 조회 (없으면 0 반환). 비로그인은 IP 기준.
+    public int getCurrentPeriodUsage(Long userIdx, String ipAddress, ChatbotQuotaVO quota) {
+        LocalDateTime periodStart = calculateCurrentPeriodStart(quota);
+        ChatbotDailyUsageVO usage = quotaMapper.selectDailyUsage(userIdx, ipAddress, periodStart);
         return usage != null && usage.getMessageCount() != null ? usage.getMessageCount() : 0;
     }
 
-    // 사용량 +1 (INSERT or UPDATE). 비로그인은 IP 기준.
+    // 사용량 +1 (INSERT or UPDATE). 비로그인은 IP 기준. 현재 주기로 저장.
     @Transactional
-    public void incrementTodayUsage(Long userIdx, String ipAddress) {
-        quotaMapper.upsertDailyUsageIncrement(userIdx, ipAddress, LocalDate.now());
+    public void incrementUsage(Long userIdx, String ipAddress, ChatbotQuotaVO quota) {
+        LocalDateTime periodStart = calculateCurrentPeriodStart(quota);
+        quotaMapper.upsertDailyUsageIncrement(userIdx, ipAddress, periodStart);
     }
 
-    // 사용량 -N (대화 삭제 시 환급). amount <= 0 이면 무시. 비로그인은 IP 기준.
+    // 사용량 -N (대화 삭제 시 환급). amount <= 0 이면 무시. 현재 주기 row 에서 차감.
     @Transactional
-    public void decreaseTodayUsage(Long userIdx, String ipAddress, int amount) {
+    public void decreaseUsage(Long userIdx, String ipAddress, ChatbotQuotaVO quota, int amount) {
         if (amount <= 0) return;
-        quotaMapper.decreaseDailyUsage(userIdx, ipAddress, LocalDate.now(), amount);
+        LocalDateTime periodStart = calculateCurrentPeriodStart(quota);
+        quotaMapper.decreaseDailyUsage(userIdx, ipAddress, periodStart, amount);
     }
 }
