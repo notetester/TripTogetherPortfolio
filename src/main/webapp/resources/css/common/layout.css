@@ -246,10 +246,6 @@
 
 /* 반응형 */
 @media (max-width: 768px) {
-    nav {
-        display: none;
-    }
-
     .cg {
         grid-template-columns: 1fr;
     }

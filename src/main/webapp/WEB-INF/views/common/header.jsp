@@ -40,11 +40,16 @@
 </head>
 <header>
     <div class="hi">
+        <button type="button" class="nav-toggle" id="navToggle" aria-label="메뉴" aria-expanded="false" aria-controls="primaryNav">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+        </button>
         <div class="logo" onclick="location.href='${pageContext.request.contextPath}/'">
             <div class="logo-icon">🌐</div>
             <span class="logo-text">TripTogether</span>
         </div>
-        <nav>
+        <nav id="primaryNav">
             <button class="nb" onclick="location.href='${pageContext.request.contextPath}/explore'"><spring:message code="header.nav.explore"/></button>
 
             <div class="nb-drop">
@@ -158,6 +163,7 @@
             </c:choose>
         </div>
     </div>
+    <div class="nav-backdrop" id="navBackdrop" hidden></div>
 </header>
 
 <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userRole == 'ADMIN'}">
@@ -223,6 +229,68 @@ function toggleViewMode() {
             window.location.href = button.dataset.url;
         });
     });
+})();
+
+(function () {
+    const toggle   = document.getElementById('navToggle');
+    const nav      = document.getElementById('primaryNav');
+    const backdrop = document.getElementById('navBackdrop');
+    if (!toggle || !nav || !backdrop) return;
+
+    const mqMobile = window.matchMedia('(max-width: 767px)');
+
+    function openNav() {
+        nav.classList.add('is-open');
+        backdrop.hidden = false;
+        requestAnimationFrame(function () { backdrop.classList.add('is-open'); });
+        toggle.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('nav-lock');
+    }
+    function closeNav() {
+        nav.classList.remove('is-open');
+        backdrop.classList.remove('is-open');
+        backdrop.hidden = true;
+        toggle.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('nav-lock');
+        document.querySelectorAll('.nb-drop.is-open').forEach(function (d) { d.classList.remove('is-open'); });
+    }
+    function toggleNav() {
+        if (nav.classList.contains('is-open')) closeNav(); else openNav();
+    }
+
+    toggle.addEventListener('click', toggleNav);
+    backdrop.addEventListener('click', closeNav);
+
+    // 모바일에서 nav 내부 일반 버튼/링크 클릭 시 닫기 (드롭다운 트리거 제외)
+    nav.addEventListener('click', function (e) {
+        if (!mqMobile.matches) return;
+        const trigger = e.target.closest('.nb-drop-trigger');
+        if (trigger) return;
+        const interactive = e.target.closest('a, button');
+        if (interactive) closeNav();
+    });
+
+    // 드롭다운 (플래너·쇼핑) 모바일 클릭 토글
+    document.querySelectorAll('.nb-drop-trigger').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            if (!mqMobile.matches) return;
+            e.preventDefault();
+            const drop = btn.closest('.nb-drop');
+            if (!drop) return;
+            document.querySelectorAll('.nb-drop.is-open').forEach(function (d) {
+                if (d !== drop) d.classList.remove('is-open');
+            });
+            drop.classList.toggle('is-open');
+        });
+    });
+
+    // 데스크탑 폭으로 넓어지면 강제 닫기
+    const mqClose = window.matchMedia('(min-width: 768px)');
+    const handleChange = function (e) { if (e.matches) closeNav(); };
+    if (mqClose.addEventListener) mqClose.addEventListener('change', handleChange);
+    else if (mqClose.addListener) mqClose.addListener(handleChange);
 })();
 </script>
 <c:if test="${not empty sessionScope.loginUser}">

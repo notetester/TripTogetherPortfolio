@@ -177,3 +177,15 @@ html.dark .footer-inquiry-link:hover { color: #f1f5f9; }
 
 /* ----- 사용자 닉네임 ----- */
 html.dark .user-nick { color: #e5e7eb; }
+
+/* ----- 햄버거 / 모바일 드로어 ----- */
+html.dark .nav-toggle:hover { background: #1f2432; }
+html.dark .nav-toggle-bar { background: #e5e7eb; }
+
+@media (max-width: 767px) {
+    html.dark header nav {
+        background: #151922;
+        border-right-color: #232935;
+        box-shadow: 2px 0 12px rgba(0, 0, 0, .5);
+    }
+}
