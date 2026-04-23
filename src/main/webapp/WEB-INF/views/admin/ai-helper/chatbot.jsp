@@ -387,7 +387,19 @@
                             <td><input type="number" class="adm-input q-conv" value="${q.maxConversations}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
                             <td><input type="number" class="adm-input q-msg" value="${q.maxMessagesPerDay}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
                             <td><input type="number" class="adm-input q-ctx" value="${q.maxContextMessages}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
-                            <td>${q.updatedBy}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty q.updatedBy}">
+                                        <span class="quota-updater" data-user-idx="${q.updatedBy}">
+                                            <c:choose>
+                                                <c:when test="${not empty q.updaterNickname}">${q.updaterNickname}</c:when>
+                                                <c:otherwise>#${q.updatedBy}</c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </c:when>
+                                    <c:otherwise><span style="color:#94a3b8;">-</span></c:otherwise>
+                                </c:choose>
+                            </td>
                             <td>
                                 <button type="button" class="adm-btn adm-btn-primary" data-quota-id="${q.quotaId}" onclick="updateQuota(this.dataset.quotaId)">저장</button>
                             </td>

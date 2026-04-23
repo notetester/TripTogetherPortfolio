@@ -16,5 +16,6 @@ public class ChatbotQuotaVO {
     private Integer maxMessagesPerDay;     // 일일 메시지 발송 한도
     private Integer maxContextMessages;    // AI에 전달할 최근 메시지 수
     private Long updatedBy;
+    private String updaterNickname;        // JOIN으로 채움 (DB 컬럼 아님) — 마지막 수정자 표시용
     private LocalDateTime updatedAt;
 }
