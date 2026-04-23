@@ -104,13 +104,17 @@
     0%,100% { opacity:1; transform:scale(1); }
     50%      { opacity:.6; transform:scale(.85); }
 }
-.cb-close {
+.cb-close,
+.cb-header-btn {
     background: none; border: none;
-    color: rgba(255,255,255,.7); cursor: pointer; font-size: 18px;
-    padding: 4px; border-radius: 6px; line-height:1;
+    color: rgba(255,255,255,.7); cursor: pointer; font-size: 16px;
+    padding: 4px 6px; border-radius: 6px; line-height:1;
     transition: color .15s, background .15s;
 }
-.cb-close:hover { color:#fff; background:rgba(255,255,255,.15); }
+.cb-close { font-size: 18px; }
+.cb-close:hover,
+.cb-header-btn:hover { color:#fff; background:rgba(255,255,255,.15); }
+.cb-header-btn[hidden] { display: none; }
 
 /* ── 본문 ── */
 .cb-body {
@@ -558,3 +562,91 @@ html.dark .cb-conv-title-input {
     background: #fef2f2;
     color: #991b1b;
 }
+
+/* ===== 공통 확인 모달 (챗봇 박스 내부 오버레이) ===== */
+.cb-confirm-modal {
+    position: absolute;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .15s ease;
+    pointer-events: none;
+}
+.cb-confirm-modal.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.cb-confirm-modal[hidden] { display: none; }
+
+.cb-confirm-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, .45);
+    cursor: pointer;
+}
+
+.cb-confirm-dialog {
+    position: relative;
+    width: min(280px, calc(100% - 32px));
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+    padding: 18px 18px 14px;
+    transform: scale(.96);
+    transition: transform .15s ease;
+}
+.cb-confirm-modal.is-open .cb-confirm-dialog { transform: scale(1); }
+
+.cb-confirm-msg {
+    font-size: 13px;
+    color: var(--gray-800);
+    line-height: 1.5;
+    margin-bottom: 14px;
+    white-space: pre-wrap;
+}
+
+.cb-confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+.cb-confirm-actions button {
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    border: 1px solid transparent;
+    transition: background .12s, color .12s, border-color .12s;
+}
+.cb-confirm-no {
+    background: #fff;
+    color: var(--gray-700);
+    border-color: var(--gray-200);
+}
+.cb-confirm-no:hover { background: var(--gray-100); color: var(--gray-800); }
+
+.cb-confirm-yes {
+    background: var(--blue);
+    color: #fff;
+}
+.cb-confirm-yes:hover { background: #1d4ed8; }
+.cb-confirm-yes.is-danger { background: #dc2626; }
+.cb-confirm-yes.is-danger:hover { background: #b91c1c; }
+
+/* 다크 테마 */
+html.dark .cb-confirm-dialog {
+    background: #1a1f2b;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .6);
+}
+html.dark .cb-confirm-msg { color: #f1f5f9; }
+html.dark .cb-confirm-no {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .cb-confirm-no:hover { background: #232935; color: #f1f5f9; }

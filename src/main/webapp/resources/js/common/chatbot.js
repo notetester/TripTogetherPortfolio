@@ -24,6 +24,7 @@
     const badge    = document.getElementById('chatbot-badge');
     const suggs    = document.getElementById('cb-suggestions');
     const titleEl  = document.getElementById('cb-header-title');
+    const resetBtn = document.getElementById('cb-reset');
 
     // ===== 상태 =====
     let isOpen = false;
@@ -63,6 +64,37 @@
 
     toggle.addEventListener('click', () => isOpen ? closeChat() : openChat());
     document.getElementById('cb-close').addEventListener('click', closeChat);
+
+    // ===== 현재 대화 초기화 (헤더 버튼) =====
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function () {
+            if (!currentConvId) return;
+            cbConfirm(msg.confirmReset || 'Reset current conversation?', {
+                danger: true,
+                yesLabel: msg.confirmYes,
+                noLabel:  msg.confirmNo
+            }).then(function (ok) {
+                if (!ok) return;
+                const idToDelete = currentConvId;
+                currentConvId = null;
+                if (STORAGE_KEY) sessionStorage.removeItem(STORAGE_KEY);
+                body.innerHTML = '';
+                if (titleEl) titleEl.textContent = msg.welcomeTitle || '';
+                renderWelcome();
+                updateResetBtnVisibility();
+                fetch(ctx + '/chatbot/conversations/' + idToDelete, { method: 'DELETE' })
+                    .catch(function () {})
+                    .finally(function () {
+                        if (loggedIn) loadConversationList();
+                    });
+            });
+        });
+    }
+
+    function updateResetBtnVisibility() {
+        if (!resetBtn) return;
+        resetBtn.hidden = !currentConvId;
+    }
 
     // ===== 초기화 =====
     async function initChat() {
@@ -159,7 +191,14 @@
                 closeConvMenu();
                 startInlineRename(conv, rowEl);
             } else if (act === 'delete') {
-                switchToConfirmDelete(pop, conv, rowEl);
+                closeConvMenu();
+                cbConfirm(msg.confirmDelete || 'Delete this conversation?', {
+                    danger: true,
+                    yesLabel: msg.confirmYes,
+                    noLabel:  msg.confirmNo
+                }).then(function (ok) {
+                    if (ok) deleteConversation(conv.conversationId);
+                });
             }
         });
 
@@ -170,25 +209,6 @@
             };
             document.addEventListener('click', docClickHandler, true);
         }, 0);
-    }
-
-    function switchToConfirmDelete(pop, conv, rowEl) {
-        pop.innerHTML =
-            '<div class="cb-conv-pop-msg">' + escHtml(msg.confirmDelete || 'Delete this conversation?') + '</div>' +
-            '<div class="cb-conv-pop-actions">' +
-                '<button type="button" class="cb-conv-pop-item cb-conv-pop-danger" data-act="confirm">' + escHtml(msg.confirmYes || 'Delete') + '</button>' +
-                '<button type="button" class="cb-conv-pop-item" data-act="cancel">' + escHtml(msg.confirmNo || 'Cancel') + '</button>' +
-            '</div>';
-        pop.addEventListener('click', function handler(e) {
-            const btn = e.target.closest('[data-act]');
-            if (!btn) return;
-            e.stopPropagation();
-            pop.removeEventListener('click', handler);
-            if (btn.dataset.act === 'confirm') {
-                deleteConversation(conv.conversationId);
-            }
-            closeConvMenu();
-        });
     }
 
     function startInlineRename(conv, rowEl) {
@@ -250,6 +270,7 @@
             if (currentConvId === convId) {
                 currentConvId = null;
                 renderWelcome();
+                updateResetBtnVisibility();
             }
             await loadConversationList();
         } catch (e) {}
@@ -263,6 +284,7 @@
             body.innerHTML = '';
             if (titleEl) titleEl.textContent = msg.welcomeTitle || '새 대화';
             renderWelcome();
+            updateResetBtnVisibility();
             if (loggedIn) loadConversationList();
             input.focus();
         });
@@ -277,10 +299,12 @@
                 if (STORAGE_KEY) sessionStorage.removeItem(STORAGE_KEY);
                 currentConvId = null;
                 renderWelcome();
+                updateResetBtnVisibility();
                 return;
             }
             const data = await res.json();
             currentConvId = convId;
+            updateResetBtnVisibility();
             if (STORAGE_KEY) sessionStorage.setItem(STORAGE_KEY, String(convId));
             if (titleEl && data.conversation) titleEl.textContent = data.conversation.title || '새 대화';
             body.innerHTML = '';
@@ -460,6 +484,7 @@
             if (!currentConvId && data.conversationId) {
                 currentConvId = data.conversationId;
                 if (STORAGE_KEY) sessionStorage.setItem(STORAGE_KEY, String(currentConvId));
+                updateResetBtnVisibility();
                 if (loggedIn) loadConversationList();
             }
         } catch (e) {
@@ -498,6 +523,63 @@
 
     function formatBotText(text) {
         return escHtml(text).replace(/\n/g, '<br>');
+    }
+
+    // ===== 공통 확인 모달 =====
+    let confirmModalEl = null;
+    function cbConfirm(messageText, opts) {
+        opts = opts || {};
+        const danger    = !!opts.danger;
+        const yesLabel  = opts.yesLabel || msg.confirmYes || 'Confirm';
+        const noLabel   = opts.noLabel  || msg.confirmNo  || 'Cancel';
+
+        return new Promise(function (resolve) {
+            if (!confirmModalEl) {
+                confirmModalEl = document.createElement('div');
+                confirmModalEl.className = 'cb-confirm-modal';
+                confirmModalEl.hidden = true;
+                confirmModalEl.innerHTML =
+                    '<div class="cb-confirm-backdrop"></div>' +
+                    '<div class="cb-confirm-dialog" role="dialog" aria-modal="true">' +
+                        '<div class="cb-confirm-msg"></div>' +
+                        '<div class="cb-confirm-actions">' +
+                            '<button type="button" class="cb-confirm-no"></button>' +
+                            '<button type="button" class="cb-confirm-yes"></button>' +
+                        '</div>' +
+                    '</div>';
+                box.appendChild(confirmModalEl);
+            }
+            const msgEl = confirmModalEl.querySelector('.cb-confirm-msg');
+            const yesEl = confirmModalEl.querySelector('.cb-confirm-yes');
+            const noEl  = confirmModalEl.querySelector('.cb-confirm-no');
+            const backdrop = confirmModalEl.querySelector('.cb-confirm-backdrop');
+            msgEl.textContent = messageText;
+            yesEl.textContent = yesLabel;
+            noEl.textContent  = noLabel;
+            yesEl.classList.toggle('is-danger', danger);
+
+            confirmModalEl.hidden = false;
+            requestAnimationFrame(function () { confirmModalEl.classList.add('is-open'); });
+
+            function cleanup(result) {
+                confirmModalEl.classList.remove('is-open');
+                confirmModalEl.hidden = true;
+                yesEl.onclick = null;
+                noEl.onclick = null;
+                backdrop.onclick = null;
+                document.removeEventListener('keydown', onKey);
+                resolve(result);
+            }
+            function onKey(e) {
+                if (e.key === 'Escape') { e.preventDefault(); cleanup(false); }
+                else if (e.key === 'Enter') { e.preventDefault(); cleanup(true); }
+            }
+            yesEl.onclick = function () { cleanup(true); };
+            noEl.onclick  = function () { cleanup(false); };
+            backdrop.onclick = function () { cleanup(false); };
+            document.addEventListener('keydown', onKey);
+            setTimeout(function () { yesEl.focus(); }, 0);
+        });
     }
 
     // 링크 클릭 이력을 서버에 비동기 전송 (네비게이션은 그대로 진행)

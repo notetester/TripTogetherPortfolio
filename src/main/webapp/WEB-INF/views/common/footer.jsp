@@ -44,6 +44,9 @@
                     <span><spring:message code="footer.chatbot.status"/></span>
                 </div>
             </div>
+            <button type="button" class="cb-header-btn" id="cb-reset"
+                    aria-label="<spring:message code="footer.chatbot.header.reset"/>"
+                    title="<spring:message code="footer.chatbot.header.reset"/>" hidden>🧹</button>
             <button class="cb-close" id="cb-close" aria-label="<spring:message code="footer.chatbot.close"/>">✕</button>
         </div>
 
@@ -81,6 +84,7 @@
             menuRename:           '<spring:message code="footer.chatbot.menu.rename" javaScriptEscape="true"/>',
             menuDelete:           '<spring:message code="footer.chatbot.menu.delete" javaScriptEscape="true"/>',
             confirmDelete:        '<spring:message code="footer.chatbot.confirm.delete" javaScriptEscape="true"/>',
+            confirmReset:         '<spring:message code="footer.chatbot.confirm.reset" javaScriptEscape="true"/>',
             confirmYes:           '<spring:message code="footer.chatbot.confirm.yes" javaScriptEscape="true"/>',
             confirmNo:            '<spring:message code="footer.chatbot.confirm.no" javaScriptEscape="true"/>',
             editPlaceholder:      '<spring:message code="footer.chatbot.edit.placeholder" javaScriptEscape="true"/>'
