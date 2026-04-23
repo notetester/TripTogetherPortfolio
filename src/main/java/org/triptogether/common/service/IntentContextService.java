@@ -96,7 +96,7 @@ public class IntentContextService {
 
         sb.append("\n중요 지침:\n");
         sb.append("- links 의 url 은 반드시 위 후보의 실제 id 를 사용하세요.\n");
-        sb.append("- 여행지 상세: /detail/{spotIdx}, 코스 상세: /courses/detail?planId={planId}, 커뮤니티 글: /community/detail/{postId}\n");
+        sb.append("- 여행지 상세: /detail/{spotIdx}, 코스 상세: /courses/detail?planId={planId}, 커뮤니티 글: /community/{postId}\n");
         sb.append("- 패키지는 공개 상세 페이지가 없으므로 url 은 항상 /packages (리스트 루트) 만 사용하고,\n");
         sb.append("  메시지 본문에 패키지 제목·가격·연결 여행지를 요약해 언급하세요.\n");
         sb.append("- 존재하지 않는 id 는 절대 만들지 마세요.\n");
@@ -186,7 +186,7 @@ public class IntentContextService {
     }
 
     private void appendPostsSection(StringBuilder sb, List<Map<String, Object>> posts) {
-        sb.append("\n### 커뮤니티 게시글 후보 (링크 형식: /community/detail/{postId})\n");
+        sb.append("\n### 커뮤니티 게시글 후보 (링크 형식: /community/{postId})\n");
         for (Map<String, Object> row : posts) {
             Object id = row.get("postId");
             Object title = row.get("title");

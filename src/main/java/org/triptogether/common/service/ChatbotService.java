@@ -61,7 +61,7 @@ public class ChatbotService {
             Pattern.compile("^/courses(\\?.*)?$"),
             Pattern.compile("^/courses/detail(\\?.*)?$"),         // 코스 상세 (?planId=)
             Pattern.compile("^/community/list(\\?.*)?$"),
-            Pattern.compile("^/community/detail/\\d+(\\?.*)?$"),
+            Pattern.compile("^/community/\\d+(\\?.*)?$"),        // 커뮤니티 상세 (postId)
             Pattern.compile("^/community/write(\\?.*)?$"),
             Pattern.compile("^/assistant(\\?.*)?$"),
             Pattern.compile("^/packages(\\?.*)?$"),
