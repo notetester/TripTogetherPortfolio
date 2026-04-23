@@ -13,7 +13,9 @@ import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.admin.vo.BusinessAccountApplicationVO;
 import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.myPage.service.MyPageService;
+import org.triptogether.myPage.service.ViewHistoryService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.myPage.vo.ViewHistoryItemDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageFlightBookingDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
@@ -46,6 +48,7 @@ public class ProfileController {
     private final RewardService rewardService;
     private final WalletService walletService;
     private final SpotTextTranslationService translationService;
+    private final ViewHistoryService viewHistoryService;
 
     // ── 수정 전 비밀번호 확인 페이지 ──────────────
     @GetMapping("/edit-confirm")
@@ -336,6 +339,8 @@ public class ProfileController {
         model.addAttribute("flightBookingCount", myPageService.getMyFlightBookingCount(freshUser.getUserIdx()));
         model.addAttribute("packageBookingList", packageBookingList);
         model.addAttribute("packageBookingCount", myPageService.getMyPackageBookingCount(freshUser.getUserIdx()));
+        model.addAttribute("viewHistoryList", viewHistoryService.getRecent(freshUser.getUserIdx(), 8));
+        model.addAttribute("viewHistoryCount", viewHistoryService.countRecent(freshUser.getUserIdx()));
         model.addAttribute("notifications", notifications);
         model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(freshUser.getUserIdx()));
         model.addAttribute("inventoryItems", inventoryItems);
@@ -630,5 +635,50 @@ public class ProfileController {
 
     private UsersVO loginUser(HttpSession session) {
         return (UsersVO) session.getAttribute("loginUser");
+    }
+
+    // ── 최근 조회 내역 ─────────────────────────────
+
+    @GetMapping("/history")
+    public String viewHistoryPage(HttpSession session, Model model) {
+        UsersVO user = loginUser(session);
+        if (user == null) return "redirect:/auth/login";
+
+        List<ViewHistoryItemDto> list = viewHistoryService.getRecent(user.getUserIdx(), 50);
+        model.addAttribute("user", user);
+        model.addAttribute("historyList", list);
+        model.addAttribute("historyCount", list.size());
+        return "myPage/history";
+    }
+
+    @PostMapping("/history/{historyIdx}/delete")
+    @ResponseBody
+    public Map<String, Object> deleteHistoryOne(@PathVariable Long historyIdx, HttpSession session) {
+        Map<String, Object> res = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) {
+            res.put("success", false);
+            res.put("message", "login required");
+            return res;
+        }
+        int affected = viewHistoryService.deleteOne(user.getUserIdx(), historyIdx);
+        res.put("success", affected > 0);
+        return res;
+    }
+
+    @PostMapping("/history/clear")
+    @ResponseBody
+    public Map<String, Object> clearHistory(HttpSession session) {
+        Map<String, Object> res = new HashMap<>();
+        UsersVO user = loginUser(session);
+        if (user == null) {
+            res.put("success", false);
+            res.put("message", "login required");
+            return res;
+        }
+        int affected = viewHistoryService.deleteAll(user.getUserIdx());
+        res.put("success", true);
+        res.put("deleted", affected);
+        return res;
     }
 }
