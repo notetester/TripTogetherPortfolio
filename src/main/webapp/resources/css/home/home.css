@@ -572,10 +572,11 @@ html.dark .btn-pri {
 html.dark .btn-pri:hover { background: #273449; box-shadow: 0 8px 20px rgba(0,0,0,.5); }
 
 html.dark .btn-sec {
-  background: rgba(255,255,255,.08);
-  border-color: rgba(255,255,255,.3);
+  background: #2a2346;
+  border-color: rgba(167,139,250,.4);
+  color: #e9d5ff;
 }
-html.dark .btn-sec:hover { background: rgba(255,255,255,.16); }
+html.dark .btn-sec:hover { background: #342a56; }
 
 html.dark .feat-sec { background: #151922; }
 html.dark .feat-card {
