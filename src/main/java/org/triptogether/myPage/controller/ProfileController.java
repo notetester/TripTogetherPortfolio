@@ -648,7 +648,7 @@ public class ProfileController {
         model.addAttribute("user", user);
         model.addAttribute("historyList", list);
         model.addAttribute("historyCount", list.size());
-        return "myPage/history";
+        return "mypage/history";
     }
 
     @PostMapping("/history/{historyIdx}/delete")
