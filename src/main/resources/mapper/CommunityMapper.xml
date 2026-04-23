@@ -1114,4 +1114,16 @@
         LIMIT #{limit}
     </select>
 
+    <!-- =============================================
+         Summernote inline 이미지 orphan 스캔용
+         ACTIVE 상태 게시글의 content 전체 조회
+         ============================================= -->
+    <select id="selectAllActiveContents" resultType="string">
+        SELECT content
+        FROM COMMUNITY_POST
+        WHERE post_status = 'ACTIVE'
+          AND content IS NOT NULL
+          AND content &lt;&gt; ''
+    </select>
+
 </mapper>

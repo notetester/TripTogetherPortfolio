@@ -43,6 +43,10 @@ public interface CommunityMapper {
     // 조회수 1 증가
     void updateViewCount(@Param("postId") Long postId);
 
+    // ===== Summernote inline 이미지 orphan 스캔 =====
+    // ACTIVE 상태 게시글 본문 전체 조회 (orphan 스케줄러가 jsoup으로 <img src> 파싱)
+    List<String> selectAllActiveContents();
+
     // ===== 글쓰기 =====
     // 게시글 INSERT. useGeneratedKeys → post.postId에 자동 주입됨
     void insertPost(CommunityPostDto post);
