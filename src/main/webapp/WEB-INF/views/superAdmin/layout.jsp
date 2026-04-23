@@ -14,8 +14,17 @@
 <body>
 <script>
 (function(){
-    var t = localStorage.getItem('sa_theme');
-    if (t) document.body.classList.add(t);
+    // 구버전 키(sa_theme) → 신규 키(tt_theme) 일회성 마이그레이션
+    var legacy = localStorage.getItem('sa_theme');
+    if (legacy !== null) {
+        if (!localStorage.getItem('tt_theme')) {
+            localStorage.setItem('tt_theme', legacy === 'sa-light' ? 'light' : 'dark');
+        }
+        localStorage.removeItem('sa_theme');
+    }
+    // superAdmin 기본 테마는 다크. tt_theme === 'light' 일 때만 sa-light 적용
+    var t = localStorage.getItem('tt_theme');
+    if (t === 'light') document.body.classList.add('sa-light');
 })();
 </script>
 <div class="adm-shell">
@@ -93,8 +102,8 @@
 <script>
 (function(){
     var btn = document.getElementById('saThemeBtn');
-    var t   = localStorage.getItem('sa_theme') || '';
-    if (btn) btn.textContent = (t === 'sa-light') ? '🌙 어둡게' : '☀️ 밝게';
+    var isLight = document.body.classList.contains('sa-light');
+    if (btn) btn.textContent = isLight ? '🌙 어둡게' : '☀️ 밝게';
 })();
 
 function saToggleTheme() {
@@ -102,11 +111,11 @@ function saToggleTheme() {
     var btn  = document.getElementById('saThemeBtn');
     if (body.classList.contains('sa-light')) {
         body.classList.remove('sa-light');
-        localStorage.setItem('sa_theme', '');
+        localStorage.setItem('tt_theme', 'dark');
         if (btn) btn.textContent = '☀️ 밝게';
     } else {
         body.classList.add('sa-light');
-        localStorage.setItem('sa_theme', 'sa-light');
+        localStorage.setItem('tt_theme', 'light');
         if (btn) btn.textContent = '🌙 어둡게';
     }
 }
