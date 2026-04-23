@@ -472,6 +472,8 @@
                 const a = document.createElement('a');
                 a.className = 'cb-link-btn';
                 a.href = ctx + link.url;
+                a.target = '_blank';
+                a.rel = 'noopener';
                 a.innerHTML = '<span class="cb-link-icon">' + (link.icon || '→') + '</span>' + escHtml(link.label);
                 if (msgId) {
                     a.addEventListener('click', function () {
