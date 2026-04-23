@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.common.mapper.ChatbotMessageMapper;
 import org.triptogether.common.service.ChatbotLinkClickService;
+import org.triptogether.common.service.ChatbotQuotaService;
 import org.triptogether.common.service.ChatbotService;
 import org.triptogether.common.service.ConversationService;
 import org.triptogether.common.vo.ChatMessageVO;
@@ -27,6 +29,8 @@ public class ChatbotController {
     private final ChatbotService chatbotService;
     private final ConversationService conversationService;
     private final ChatbotLinkClickService linkClickService;
+    private final ChatbotQuotaService quotaService;
+    private final ChatbotMessageMapper messageMapper;
 
     /**
      * POST /chatbot/ask
@@ -159,6 +163,15 @@ public class ChatbotController {
         if (conv == null || Boolean.TRUE.equals(conv.getIsDeleted())
                 || !conversationService.isOwner(conv, userIdx, anonSessionId)) {
             return forbidden();
+        }
+
+        // 쿼터 환급 — 이 대화의 오늘자 user 메시지 수만큼 차감 (ADMIN/SUPERADMIN 면제자는 원래 쿼터 카운트 안 하므로 skip)
+        boolean quotaExempt = quotaService.isQuotaExempt(loginUser);
+        if (!quotaExempt) {
+            int todayUserMsgs = messageMapper.countTodayUserMessagesByConversation(conversationId);
+            if (todayUserMsgs > 0) {
+                quotaService.decreaseTodayUsage(userIdx, anonSessionId, todayUserMsgs);
+            }
         }
 
         conversationService.softDelete(conversationId);

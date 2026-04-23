@@ -28,4 +28,7 @@ public interface ChatbotMessageMapper {
                                                     @Param("limit") int limit);
 
     int countInappropriateMessages();
+
+    // 특정 대화의 오늘자 user 메시지 수 (쿼터 차감용)
+    int countTodayUserMessagesByConversation(@Param("conversationId") Long conversationId);
 }

@@ -71,4 +71,11 @@ public class ChatbotQuotaService {
     public void incrementTodayUsage(Long userIdx, String anonSessionId) {
         quotaMapper.upsertDailyUsageIncrement(userIdx, anonSessionId, LocalDate.now());
     }
+
+    // 사용량 -N (대화 삭제 시 환급). amount <= 0 이면 무시.
+    @Transactional
+    public void decreaseTodayUsage(Long userIdx, String anonSessionId, int amount) {
+        if (amount <= 0) return;
+        quotaMapper.decreaseDailyUsage(userIdx, anonSessionId, LocalDate.now(), amount);
+    }
 }

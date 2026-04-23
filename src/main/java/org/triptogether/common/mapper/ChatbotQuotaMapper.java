@@ -33,4 +33,10 @@ public interface ChatbotQuotaMapper {
     void upsertDailyUsageIncrement(@Param("userIdx") Long userIdx,
                                    @Param("anonSessionId") String anonSessionId,
                                    @Param("usageDate") LocalDate usageDate);
+
+    // 사용량 -N (GREATEST(0, ...) 로 음수 방지, 행 없으면 no-op)
+    void decreaseDailyUsage(@Param("userIdx") Long userIdx,
+                            @Param("anonSessionId") String anonSessionId,
+                            @Param("usageDate") LocalDate usageDate,
+                            @Param("amount") int amount);
 }
