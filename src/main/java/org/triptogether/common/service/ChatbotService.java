@@ -198,7 +198,7 @@ public class ChatbotService {
         ChatMessageVO botMsg = new ChatMessageVO();
         botMsg.setConversationId(conversation.getConversationId());
         botMsg.setRole("assistant");
-        botMsg.setContent(response.getMessage());
+        botMsg.setContent(toJsonForStorage(response));
         botMsg.setIsInappropriate(false);
         conversationService.saveMessage(botMsg);
 
@@ -210,9 +210,35 @@ public class ChatbotService {
             quotaService.incrementTodayUsage(userIdx, userIdx == null ? anonSessionId : null);
         }
 
-        // 12. 응답에 conversationId 포함
+        // 12. 응답에 conversationId / messageId 포함
         response.setConversationId(conversation.getConversationId());
+        response.setMessageId(botMsg.getMessageId());
         return response;
+    }
+
+    // assistant 응답을 DB 저장 시 사용할 JSON 문자열로 직렬화
+    // (프론트가 대화 복원 시 동일 구조를 JSON.parse 로 되살림)
+    private String toJsonForStorage(ChatbotResponseVO vo) {
+        JsonObject root = new JsonObject();
+        root.addProperty("message", vo.getMessage());
+        root.addProperty("inappropriate", vo.isInappropriate());
+        JsonArray links = new JsonArray();
+        if (vo.getLinks() != null) {
+            for (ChatbotResponseVO.SiteLink link : vo.getLinks()) {
+                JsonObject l = new JsonObject();
+                l.addProperty("label", link.getLabel());
+                l.addProperty("url", link.getUrl());
+                l.addProperty("icon", link.getIcon());
+                links.add(l);
+            }
+        }
+        root.add("links", links);
+        JsonArray qr = new JsonArray();
+        if (vo.getQuickReplies() != null) {
+            for (String r : vo.getQuickReplies()) qr.add(r);
+        }
+        root.add("quickReplies", qr);
+        return root.toString();
     }
 
     // 대화 조회 or 신규 생성 + 소유권/한도 체크

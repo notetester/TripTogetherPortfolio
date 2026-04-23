@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.common.service.ChatbotLinkClickService;
 import org.triptogether.common.service.ChatbotService;
 import org.triptogether.common.service.ConversationService;
 import org.triptogether.common.vo.ChatMessageVO;
+import org.triptogether.common.vo.ChatbotLinkClickVO;
 import org.triptogether.common.vo.ChatbotRequestVO;
 import org.triptogether.common.vo.ChatbotResponseVO;
 import org.triptogether.common.vo.ConversationVO;
@@ -24,6 +26,7 @@ public class ChatbotController {
 
     private final ChatbotService chatbotService;
     private final ConversationService conversationService;
+    private final ChatbotLinkClickService linkClickService;
 
     /**
      * POST /chatbot/ask
@@ -131,6 +134,50 @@ public class ChatbotController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * POST /chatbot/link-click
+     * 챗봇이 제시한 내부 링크의 클릭 이력을 기록. 대화 소유자만 기록 가능.
+     * 프론트는 navigator.sendBeacon 으로 호출 — 응답은 빠르게 닫아도 무방.
+     */
+    @PostMapping("/link-click")
+    public ResponseEntity<Map<String, Object>> logLinkClick(@RequestBody Map<String, Object> body,
+                                                             HttpSession session,
+                                                             HttpServletRequest httpReq) {
+        Long messageId = toLong(body.get("messageId"));
+        Long conversationId = toLong(body.get("conversationId"));
+        Object urlObj = body.get("url");
+        Object labelObj = body.get("label");
+
+        if (messageId == null || conversationId == null || urlObj == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+        Long userIdx = loginUser != null ? loginUser.getUserIdx() : null;
+        String anonSessionId = loginUser == null ? session.getId() : null;
+
+        // 대화 소유권 검증 — 타 유저/세션이 위조 로그 심는 것 방지
+        ConversationVO conv = conversationService.getConversation(conversationId);
+        if (conv == null || !conversationService.isOwner(conv, userIdx, anonSessionId)) {
+            return forbidden();
+        }
+
+        ChatbotLinkClickVO click = new ChatbotLinkClickVO();
+        click.setMessageId(messageId);
+        click.setConversationId(conversationId);
+        click.setUserIdx(userIdx);
+        click.setAnonSessionId(anonSessionId);
+        click.setUrl(urlObj.toString());
+        click.setLabel(labelObj != null ? labelObj.toString() : null);
+        click.setIpAddress(extractIp(httpReq));
+
+        linkClickService.logClick(click);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        return ResponseEntity.ok(result);
+    }
+
     // ===== helpers =====
     private ResponseEntity<Map<String, Object>> forbidden() {
         Map<String, Object> result = new HashMap<>();
@@ -144,5 +191,11 @@ public class ChatbotController {
         if (ip == null || ip.isBlank() || "unknown".equalsIgnoreCase(ip)) ip = req.getRemoteAddr();
         if (ip != null && ip.contains(",")) ip = ip.split(",")[0].trim();
         return ip;
+    }
+
+    private Long toLong(Object v) {
+        if (v == null) return null;
+        if (v instanceof Number) return ((Number) v).longValue();
+        try { return Long.parseLong(v.toString()); } catch (Exception e) { return null; }
     }
 }

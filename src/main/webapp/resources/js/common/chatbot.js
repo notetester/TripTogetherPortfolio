@@ -199,9 +199,10 @@
                 } else {
                     try {
                         const parsed = JSON.parse(m.content);
+                        parsed.messageId = m.messageId;
                         appendBotResponse(parsed, false);
                     } catch (e) {
-                        appendBotResponse({ message: m.content, links: [], quickReplies: [] }, false);
+                        appendBotResponse({ message: m.content, links: [], quickReplies: [], messageId: m.messageId }, false);
                     }
                 }
             });
@@ -288,11 +289,17 @@
         if (data.links && data.links.length > 0) {
             const linksWrap = document.createElement('div');
             linksWrap.className = 'cb-links';
+            const msgId = data.messageId;
             data.links.forEach(link => {
                 const a = document.createElement('a');
                 a.className = 'cb-link-btn';
                 a.href = ctx + link.url;
                 a.innerHTML = '<span class="cb-link-icon">' + (link.icon || '→') + '</span>' + escHtml(link.label);
+                if (msgId) {
+                    a.addEventListener('click', function () {
+                        sendLinkClickBeacon(msgId, link.url, link.label);
+                    });
+                }
                 linksWrap.appendChild(a);
             });
             body.appendChild(linksWrap);
@@ -399,5 +406,30 @@
 
     function formatBotText(text) {
         return escHtml(text).replace(/\n/g, '<br>');
+    }
+
+    // 링크 클릭 이력을 서버에 비동기 전송 (네비게이션은 그대로 진행)
+    function sendLinkClickBeacon(messageId, url, label) {
+        if (!messageId || !currentConvId) return;
+        try {
+            const payload = JSON.stringify({
+                messageId: messageId,
+                conversationId: currentConvId,
+                url: url,
+                label: label
+            });
+            const endpoint = ctx + '/chatbot/link-click';
+            if (navigator.sendBeacon) {
+                const blob = new Blob([payload], { type: 'application/json' });
+                navigator.sendBeacon(endpoint, blob);
+            } else {
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload,
+                    keepalive: true
+                }).catch(() => {});
+            }
+        } catch (e) {}
     }
 })();

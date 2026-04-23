@@ -562,6 +562,30 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_MESSAGE` (
 
 -- 테이블 데이터 team1_db.CHATBOT_MESSAGE:~0 rows (대략적) 내보내기
 
+-- 테이블 team1_db.CHATBOT_LINK_CLICK 구조 내보내기
+CREATE TABLE IF NOT EXISTS `CHATBOT_LINK_CLICK` (
+  `click_id` bigint NOT NULL AUTO_INCREMENT COMMENT '클릭 로그 PK',
+  `message_id` bigint NOT NULL COMMENT '링크가 포함된 assistant 메시지',
+  `conversation_id` bigint NOT NULL COMMENT '대화 PK (조회 최적화용 denormalize)',
+  `user_idx` bigint DEFAULT NULL COMMENT '로그인 유저 (anon_session_id와 XOR)',
+  `anon_session_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '비로그인 HTTP 세션 ID',
+  `url` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '클릭된 내부 URL',
+  `label` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '버튼 라벨',
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '클릭 시점 IP (IPv6 포함)',
+  `clicked_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`click_id`),
+  KEY `idx_clicked_at` (`clicked_at` DESC),
+  KEY `idx_url` (`url`),
+  KEY `idx_user` (`user_idx`,`clicked_at` DESC),
+  KEY `idx_anon` (`anon_session_id`,`clicked_at` DESC),
+  KEY `idx_conv` (`conversation_id`,`clicked_at` DESC),
+  KEY `idx_msg` (`message_id`),
+  CONSTRAINT `fk_chatbot_click_msg`  FOREIGN KEY (`message_id`)      REFERENCES `CHATBOT_MESSAGE` (`message_id`)           ON DELETE CASCADE,
+  CONSTRAINT `fk_chatbot_click_conv` FOREIGN KEY (`conversation_id`) REFERENCES `CHATBOT_CONVERSATION` (`conversation_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 링크 클릭 이력';
+
+-- 테이블 데이터 team1_db.CHATBOT_LINK_CLICK:~0 rows (대략적) 내보내기
+
 -- 테이블 team1_db.COMMUNITY_COMMENT 구조 내보내기
 CREATE TABLE IF NOT EXISTS `COMMUNITY_COMMENT` (
   `comment_id` bigint NOT NULL AUTO_INCREMENT COMMENT '댓글 ID',
