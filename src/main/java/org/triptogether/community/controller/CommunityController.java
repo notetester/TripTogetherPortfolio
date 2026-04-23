@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.*;
 import org.triptogether.auth.vo.UserRole;
@@ -246,6 +247,57 @@ public class CommunityController {
             log.error("글쓰기 오류", e);
             result.put("success", false);
             result.put("message", "등록 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       POST /community/inline-image - Summernote 에디터 인라인 이미지 업로드
+       ============================================= */
+    /**
+     * Summernote 에디터 내부(본문)에 삽입할 이미지 1개를 Cloudinary에 업로드하고 URL을 반환한다.
+     * - 비로그인 시 401, 차단된 계정 시 403 반환
+     * - 업로드 폴더: community/inline (대표이미지용 community/ 와 분리)
+     */
+    @PostMapping("/inline-image")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> uploadInlineImage(
+            @RequestParam("file") MultipartFile file,
+            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (session.getAttribute("loginUser") == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(401).body(result);
+        }
+        if (isBlocked(session)) {
+            result.put("success", false);
+            result.put("message", "차단된 계정은 이미지를 업로드할 수 없습니다.");
+            return ResponseEntity.status(403).body(result);
+        }
+        if (file == null || file.isEmpty()) {
+            result.put("success", false);
+            result.put("message", "파일이 비어있습니다.");
+            return ResponseEntity.badRequest().body(result);
+        }
+
+        try {
+            String url = communityService.uploadInlineImage(file);
+            if (url == null || url.isBlank()) {
+                result.put("success", false);
+                result.put("message", "이미지 업로드에 실패했습니다. 허용되지 않는 파일 형식일 수 있습니다.");
+                return ResponseEntity.status(500).body(result);
+            }
+            result.put("success", true);
+            result.put("url", url);
+        } catch (Exception e) {
+            log.error("인라인 이미지 업로드 오류", e);
+            result.put("success", false);
+            result.put("message", "업로드 중 오류가 발생했습니다.");
             return ResponseEntity.status(500).body(result);
         }
 

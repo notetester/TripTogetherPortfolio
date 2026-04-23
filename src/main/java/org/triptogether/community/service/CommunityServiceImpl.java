@@ -882,4 +882,12 @@ public class CommunityServiceImpl implements CommunityService {
         return cloudinaryService.uploadImage(file, "community");
     }
 
+    // Summernote 에디터 내부 삽입용 이미지 업로드
+    // 대표이미지용 community/ 와 분리하여 community/inline/ 폴더에 저장
+    // → orphan 정리 스케줄러가 "본문에 없는 inline 이미지"만 선별 삭제하기 위함
+    @Override
+    public String uploadInlineImage(MultipartFile file) {
+        return cloudinaryService.uploadImage(file, "community/inline");
+    }
+
 }

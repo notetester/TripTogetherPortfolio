@@ -759,17 +759,28 @@ jQuery(function($) {
         document.getElementById('contentCount').textContent = plain.length;
       },
       onImageUpload: function(files) {
-        /* Phase 1 임시: base64 inline. Phase 2에서 Cloudinary 업로드로 교체 */
+        /* Cloudinary 업로드 → 반환된 secure_url 을 <img>로 삽입 */
         for (var i = 0; i < files.length; i++) {
           (function(file) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-              var img = document.createElement('img');
-              img.src = e.target.result;
-              img.style.maxWidth = '100%';
-              $('#writeContent').summernote('insertNode', img);
-            };
-            reader.readAsDataURL(file);
+            var form = new FormData();
+            form.append('file', file);
+            fetch(CTX + '/community/inline-image', {
+              method: 'POST',
+              headers: { 'X-Requested-With': 'XMLHttpRequest' },
+              body: form
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data && data.success && data.url) {
+                $('#writeContent').summernote('insertImage', data.url);
+              } else {
+                alert((data && data.message) || '이미지 업로드에 실패했습니다.');
+              }
+            })
+            .catch(function(err) {
+              console.error('inline image upload error', err);
+              alert('이미지 업로드 중 오류가 발생했습니다.');
+            });
           })(files[i]);
         }
       }
