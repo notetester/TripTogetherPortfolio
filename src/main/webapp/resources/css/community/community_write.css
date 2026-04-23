@@ -161,6 +161,49 @@
 }
 .guide-list li::before { content:'·'; position:absolute; left:0; color:var(--blue); font-weight:700; }
 
+/* ===== 사진 유형 전용: 이미지 카운터 배지 ===== */
+.photo-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  font-size: 13px;
+  font-weight: 600;
+  transition: border-color .15s, background .15s, color .15s;
+}
+.photo-count-badge[hidden] { display: none; }
+.photo-count-icon { font-size: 14px; line-height: 1; }
+.photo-count-badge.is-short {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+.photo-count-badge.is-ok {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+html.dark .photo-count-badge {
+  background: #1a1f2b;
+  border-color: #2b3241;
+  color: #e5e7eb;
+}
+html.dark .photo-count-badge.is-short {
+  background: rgba(239, 68, 68, .12);
+  border-color: rgba(239, 68, 68, .4);
+  color: #fca5a5;
+}
+html.dark .photo-count-badge.is-ok {
+  background: rgba(16, 185, 129, .12);
+  border-color: rgba(16, 185, 129, .4);
+  color: #6ee7b7;
+}
+
 /* =============================================
    다크 테마 오버라이드 (html.dark)
    ============================================= */
@@ -257,6 +300,11 @@ html.dark .type-select-btn:hover {
     border-color: #60a5fa;
 }
 html.dark .type-btn-label { color: #cbd5e1; }
+html.dark .type-select-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+}
+html.dark .type-select-btn.active .type-btn-label { color: #fff; }
 
 html.dark .region-select-btn {
     background: #1a1f2b;
@@ -267,6 +315,17 @@ html.dark .region-select-btn:hover {
     background: #1e293b;
     border-color: #60a5fa;
     color: #93c5fd;
+}
+html.dark .region-select-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+}
+
+html.dark .tip-cat-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
 }
 
 html.dark .guide-card { background: #151922; }

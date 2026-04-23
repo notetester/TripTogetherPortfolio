@@ -161,8 +161,16 @@
                             </a>
                         </td>
 
-                        <%-- 신고자 닉네임 --%>
+                        <%-- 신고자 닉네임 (SYSTEM 봇 user_idx=18 은 AI 자동감지 배지 노출) --%>
                         <td>
+                            <c:if test="${r.userIdx == 18}">
+                                <div>
+                                    <span style="display:inline-block;padding:2px 8px;background:#ede9fe;color:#6d28d9;border-radius:999px;font-size:11px;font-weight:600;margin-bottom:4px;"
+                                          title="Perspective API 민감도 분석에 의해 자동 감지된 신고">
+                                        🤖 AI 자동감지
+                                    </span>
+                                </div>
+                            </c:if>
                             <button type="button"
                                     class="adm-cell-link js-open-member-context"
                                     data-user-idx="${r.userIdx}"

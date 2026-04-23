@@ -14,6 +14,28 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+-- 테이블 team1_db.AD_CAMPAIGN 구조 내보내기 (관리자 광고 관리)
+CREATE TABLE IF NOT EXISTS `AD_CAMPAIGN` (
+  `ad_id` bigint NOT NULL AUTO_INCREMENT COMMENT '광고 PK',
+  `slot_code` varchar(40) NOT NULL COMMENT '배치 슬롯 코드 (community_list_top 등)',
+  `title` varchar(200) NOT NULL COMMENT '관리자용 라벨/제목',
+  `image_url` varchar(500) NOT NULL COMMENT '배너 이미지 URL (Cloudinary)',
+  `link_url` varchar(500) DEFAULT NULL COMMENT '클릭 이동 URL',
+  `start_at` datetime DEFAULT NULL COMMENT '노출 시작 시각 (null=즉시)',
+  `end_at` datetime DEFAULT NULL COMMENT '노출 종료 시각 (null=무기한)',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT '활성 여부',
+  `sort_order` int NOT NULL DEFAULT '0' COMMENT '동일 슬롯 내 정렬 가중치',
+  `view_count` bigint NOT NULL DEFAULT '0' COMMENT '노출 카운트',
+  `click_count` bigint NOT NULL DEFAULT '0' COMMENT '클릭 카운트',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_by` bigint DEFAULT NULL COMMENT '등록 관리자 user_idx',
+  PRIMARY KEY (`ad_id`),
+  KEY `idx_ad_slot_active` (`slot_code`, `is_active`),
+  KEY `idx_ad_period` (`start_at`, `end_at`),
+  CONSTRAINT `fk_ad_created_by` FOREIGN KEY (`created_by`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='관리자 광고 캠페인';
+
 -- 뷰 team1_db.ADMIN_EFFECTIVE_PERMISSION_VW 구조 내보내기
 -- VIEW 종속성 오류를 극복하기 위해 임시 테이블을 생성합니다.
 CREATE TABLE `ADMIN_EFFECTIVE_PERMISSION_VW` (

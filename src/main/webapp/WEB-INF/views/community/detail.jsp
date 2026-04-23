@@ -227,12 +227,30 @@
       </div>
 
       <%-- 본문 하단 배너 광고 --%>
-      <div class="comm-ad-banner">
-          <div class="comm-ad-banner-inner">
-              <span class="comm-ad-label">AD</span>
-              <span class="comm-ad-size">970 × 90</span>
-          </div>
-      </div>
+      <c:choose>
+          <c:when test="${not empty currentAd}">
+              <div class="comm-ad-banner" data-ad-id="${currentAd.adId}">
+                  <c:choose>
+                      <c:when test="${not empty currentAd.linkUrl}">
+                          <a href="${pageContext.request.contextPath}/ad/${currentAd.adId}/click" class="comm-ad-link" target="_blank" rel="noopener sponsored">
+                              <img src="${currentAd.imageUrl}" alt="${currentAd.title}" class="comm-ad-image"/>
+                          </a>
+                      </c:when>
+                      <c:otherwise>
+                          <img src="${currentAd.imageUrl}" alt="${currentAd.title}" class="comm-ad-image"/>
+                      </c:otherwise>
+                  </c:choose>
+              </div>
+          </c:when>
+          <c:otherwise>
+              <div class="comm-ad-banner">
+                  <div class="comm-ad-banner-inner">
+                      <span class="comm-ad-label">AD</span>
+                      <span class="comm-ad-size">970 × 90</span>
+                  </div>
+              </div>
+          </c:otherwise>
+      </c:choose>
 
   </main>
 
@@ -1471,6 +1489,9 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
   </div>
 </div>
+
+<script>window.AD_TRACKER_CTX = '${pageContext.request.contextPath}';</script>
+<script src="${pageContext.request.contextPath}/resources/js/common/ad-impression.js" defer></script>
 
 <%@ include file="../common/footer.jsp" %>
 </body>

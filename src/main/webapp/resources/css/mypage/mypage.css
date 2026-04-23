@@ -2407,3 +2407,119 @@ html.dark .mp-tab-btn.is-active {
     html.dark .mp-currency-item,
     html.dark .mp-stats-item { border-bottom-color: #232935; }
 }
+
+/* =============================================
+   최근 조회 내역 (mp-history-*)
+   - 리스트 구조 자체는 .mp-list-item 재활용
+   - 여기선 타입 pill 색상 + 전체 보기 페이지 헤더/삭제 버튼만 정의
+   ============================================= */
+.mp-history-type-community { background: #dbeafe; color: #1d4ed8; }
+.mp-history-type-spot      { background: #d1fae5; color: #047857; }
+.mp-history-type-plan      { background: #ede9fe; color: #6d28d9; }
+.mp-history-type-package   { background: #ffedd5; color: #c2410c; }
+
+.mp-list-item.is-unavailable { opacity: .55; pointer-events: none; }
+
+/* 전체 보기 페이지: 행 + 우측 삭제 X */
+.mp-history-row-wrap {
+    position: relative;
+    display: flex;
+}
+.mp-history-row-wrap .mp-list-item { flex: 1; padding-right: 48px; }
+.mp-history-row-delete {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    color: var(--gray-400);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .15s, background .12s, color .12s;
+    z-index: 2;
+}
+.mp-history-row-wrap:hover .mp-history-row-delete,
+.mp-history-row-delete:focus {
+    opacity: 1;
+}
+.mp-history-row-delete:hover {
+    background: var(--gray-100);
+    color: #dc2626;
+}
+
+/* 전체 보기 페이지 헤더/빈 상태 */
+.mp-history-page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--gray-100);
+}
+.mp-history-page-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gray-800);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.mp-history-clear-btn {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .12s;
+}
+.mp-history-clear-btn:hover {
+    border-color: #dc2626;
+    color: #dc2626;
+}
+
+.mp-history-empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--gray-400);
+}
+.mp-history-empty-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+/* ── 반응형 ── */
+@media (max-width: 767px) {
+    .mp-history-row-delete { opacity: 1; }
+}
+
+/* ── 다크 ── */
+html.dark .mp-history-type-community { background: rgba(59, 130, 246, .2); color: #93c5fd; }
+html.dark .mp-history-type-spot      { background: rgba(16, 185, 129, .2); color: #6ee7b7; }
+html.dark .mp-history-type-plan      { background: rgba(139, 92, 246, .2); color: #c4b5fd; }
+html.dark .mp-history-type-package   { background: rgba(234, 88, 12, .2);  color: #fdba74; }
+
+html.dark .mp-history-page-head { border-bottom-color: #232935; }
+html.dark .mp-history-page-title { color: #f1f5f9; }
+html.dark .mp-history-clear-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .mp-history-clear-btn:hover {
+    border-color: #f87171;
+    color: #f87171;
+}
+html.dark .mp-history-row-delete { color: #9ca3af; }
+html.dark .mp-history-row-delete:hover { background: rgba(248, 113, 113, .15); color: #f87171; }
+html.dark .mp-history-empty { color: #94a3b8; }

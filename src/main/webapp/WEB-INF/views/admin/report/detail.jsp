@@ -262,6 +262,14 @@
                 <div class="adm-card-body">
                     <div class="adm-side-section">
 
+                        <c:if test="${report.userIdx == 18}">
+                            <div>
+                                <span style="display:inline-block;padding:3px 10px;background:#ede9fe;color:#6d28d9;border-radius:999px;font-size:11px;font-weight:600;"
+                                      title="Perspective API 민감도 분석에 의해 자동 감지된 신고">
+                                    🤖 AI 자동감지
+                                </span>
+                            </div>
+                        </c:if>
                         <div>
                             <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.userId"/></div>
                             <div style="font-size:14px;font-weight:600;">${report.userId}</div>

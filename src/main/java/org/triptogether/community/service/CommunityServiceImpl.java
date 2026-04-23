@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.cloudinary.CloudinaryService;
+import org.triptogether.common.vo.SystemUser;
 import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.community.vo.*;
 import org.triptogether.config.IpBlockMapper;
@@ -20,6 +21,7 @@ import org.triptogether.moderation.vo.ContentModerationPolicyVO;
 import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.report.service.ReportService;
 import org.triptogether.reward.service.RewardService;
 
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final SpotTextTranslationService spotTextTranslationService;
     private final RewardService rewardService;
     private final ModerationPolicyService moderationPolicyService;
+    private final ReportService reportService;
 
     // Summernote 본문 XSS 정화용 화이트리스트
     // basicWithImages 기반 + 서식/이미지/인라인스타일 허용, img src 프로토콜은 http/https/data 허용
@@ -689,12 +692,21 @@ public class CommunityServiceImpl implements CommunityService {
     // ===== AI 욕설 감지 =====
 
     // 게시글 AI 감지 플래그 세팅 (비동기 Perspective 검사 후 호출됨)
+    // + SYSTEM 봇 이름으로 REPORT 자동 insert → 관리자 신고 게시판 합류
     @Override
     @Transactional
     public void flagPostAsToxic(Long postId) {
         CommunityPostDto post = communityMapper.selectPost(postId);
         if (post == null) return;
         boolean wasBlurred = (post.getReportCount() >= 3) || post.isAiFlagged();
+
+        try {
+            reportService.submitReport("post", postId, SystemUser.BOT_USER_IDX,
+                    "toxicity", "AI 민감도 분석 감지", null, null);
+        } catch (Exception e) {
+            log.warn("봇 신고 등록 실패 postId={}: {}", postId, e.getMessage());
+        }
+
         communityMapper.setPostAiFlagged(postId);
         if (!wasBlurred) {
             notifyPostBlurred(post, "부적절한 표현 감지");
@@ -702,12 +714,21 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     // 댓글 AI 감지 플래그 세팅
+    // + SYSTEM 봇 이름으로 REPORT 자동 insert
     @Override
     @Transactional
     public void flagCommentAsToxic(Long commentId) {
         CommunityCommentDto comment = communityMapper.selectComment(commentId);
         if (comment == null) return;
         boolean wasBlurred = (comment.getReportCount() >= 3) || comment.isAiFlagged();
+
+        try {
+            reportService.submitReport("comment", commentId, SystemUser.BOT_USER_IDX,
+                    "toxicity", "AI 민감도 분석 감지", null, null);
+        } catch (Exception e) {
+            log.warn("봇 신고 등록 실패 commentId={}: {}", commentId, e.getMessage());
+        }
+
         communityMapper.setCommentAiFlagged(commentId);
         if (!wasBlurred) {
             notifyCommentBlurred(comment, "부적절한 표현 감지");
