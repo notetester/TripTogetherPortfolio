@@ -343,7 +343,7 @@
 }
 
 /* ── 반응형 ── */
-@media (max-width: 480px) {
+@media (max-width: 479px) {
     #chatbot-box { width: calc(100vw - 24px); right: 12px; bottom: 80px; }
     #chatbot-toggle { right: 16px; bottom: 16px; }
 }
@@ -455,7 +455,7 @@
 }
 
 /* 사이드바 있을 때 반응형 */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
     #chatbot-box:has(#cb-sidebar) {
         width: calc(100vw - 24px);
     }
