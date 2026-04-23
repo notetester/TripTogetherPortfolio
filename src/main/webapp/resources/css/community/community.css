@@ -241,6 +241,25 @@
 .post-card:hover .post-card-img { transform:scale(1.05); }
 .post-card-img-placeholder { width:160px; height:180px; background:var(--gray-100); }
 
+/* ===== photo 유형 갤러리 (좌측 큰 1장 + 우측 상/하 2장) ===== */
+.post-card-img-gallery {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+}
+.post-card-img-gallery .gallery-main {
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+  width: 100%; height: 100%;
+}
+.post-card-img-gallery .gallery-sub {
+  grid-column: 2 / 3;
+  width: 100%; height: 100%;
+}
+.post-card-img-gallery .gallery-sub-top    { grid-row: 1 / 2; }
+.post-card-img-gallery .gallery-sub-bottom { grid-row: 2 / 3; }
+
 .post-type-badge {
   position:absolute; top:8px; left:8px; padding:3px 9px;
   border-radius:20px; font-size:11px; font-weight:700; color:#fff;
