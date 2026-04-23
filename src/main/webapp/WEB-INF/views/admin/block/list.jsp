@@ -553,7 +553,7 @@
                                         data-blocked-at="${userBlockBlockedAtText}"
                                         data-last-history-at="${userBlockLastHistoryText}"
                                         data-sync-at="${userBlockSyncText}"><spring:message code="admin.common.settings"/></button>
-                                <button type="button" class="adm-row-btn detail" data-template-id="detail-user-${b.blockIdx}" onclick="openBlockDetail('detail-user-${b.blockIdx}')"><spring:message code="admin.common.history"/></button>
+                                <button type="button" class="adm-row-btn detail js-open-block-detail" data-template-id="detail-user-${b.blockIdx}" data-detail-title="${fn:escapeXml(adminBlocksHistoryLabel)}"><spring:message code="admin.common.history"/></button>
                                 <c:if test="${hasUserBlockAdmin and b.active}">
                                     <button type="button" class="adm-row-btn danger js-release-user-block" data-target-key="${fn:escapeXml(b.blockTargetKey)}"><spring:message code="admin.common.release"/></button>
                                 </c:if>
@@ -793,7 +793,7 @@
                                         data-blocked-at="${ipRuleBlockedAtText}"
                                         data-expires-display="${fn:escapeXml(empty ipRuleExpiresText ? adminBlocksNoneLabel : ipRuleExpiresText)}"
                                         data-active="${r.active ? 'true' : 'false'}">${adminBlocksSettingsLabel}</button>
-                                <button type="button" class="adm-row-btn detail" data-template-id="detail-ip-${r.ipBlocklistIdx}" onclick="openBlockDetail('detail-ip-${r.ipBlocklistIdx}')">${adminBlocksHistoryLabel}</button>
+                                <button type="button" class="adm-row-btn detail js-open-block-detail" data-template-id="detail-ip-${r.ipBlocklistIdx}" data-detail-title="${fn:escapeXml(adminBlocksHistoryLabel)}">${adminBlocksHistoryLabel}</button>
                                 <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
                                     <button type="button" class="adm-row-btn ${r.active ? 'danger' : 'detail'} js-toggle-ip-rule" data-id="${r.ipBlocklistIdx}" data-active="${r.active ? 'false' : 'true'}">${r.active ? adminBlocksRuleOffLabel : adminBlocksRuleOnLabel}</button>
                                     <c:if test="${r.ipBlockBatchIdx != null and r.controlMode == 'MANUAL_OVERRIDE'}">
@@ -993,7 +993,7 @@
                                         data-active-rules="${b.activeRuleCount}"
                                         data-effective-rules="${b.effectiveRuleCount}"
                                         data-expired-rules="${b.expiredRuleCount}"><spring:message code="admin.common.settings"/></button>
-                                <button type="button" class="adm-row-btn detail" data-template-id="detail-batch-${b.ipBlockBatchIdx}" onclick="openBlockDetail('detail-batch-${b.ipBlockBatchIdx}')"><spring:message code="admin.common.detail"/></button>
+                                <button type="button" class="adm-row-btn detail js-open-block-detail" data-template-id="detail-batch-${b.ipBlockBatchIdx}"><spring:message code="admin.common.detail"/></button>
                                 <c:if test="${hasBlockPolicyAdmin}">
                                     <button type="button"
                                             class="adm-row-btn ${b.active ? 'danger' : 'detail'} js-open-batch-toggle"
@@ -1189,7 +1189,7 @@
                                         data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
                                         data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
                                         data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.blocks.currentSetting"/></button>
-                                <button type="button" class="adm-row-btn detail" data-template-id="detail-history-${h.blockIdx}" onclick="openBlockDetail('detail-history-${h.blockIdx}')"><spring:message code="admin.common.detail"/></button>
+                                <button type="button" class="adm-row-btn detail js-open-block-detail" data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.common.detail"/></button>
                             </td>
                         </tr>
                     </c:forEach>
@@ -2707,9 +2707,9 @@ document.addEventListener('click', function (e) {
         return;
     }
 
-    const detailBtn = e.target.closest('.js-detail-open');
+    const detailBtn = e.target.closest('.js-open-block-detail, .js-detail-open');
     if (detailBtn) {
-        openBlockDetail(detailBtn.dataset.templateId, ADMIN_BLOCK_MSG.blockDetailTitle);
+        openBlockDetail(detailBtn.dataset.templateId, detailBtn.dataset.detailTitle || ADMIN_BLOCK_MSG.blockDetailTitle);
         return;
     }
 
