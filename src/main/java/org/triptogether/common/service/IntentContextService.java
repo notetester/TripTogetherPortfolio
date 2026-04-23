@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.triptogether.courses.mapper.TravelPlanMapper;
 import org.triptogether.explore.mapper.ExploreMapper;
+import org.triptogether.travelPackage.mapper.TravelPackageMapper;
 
 import java.util.*;
 
@@ -27,6 +28,7 @@ public class IntentContextService {
     private static final int MIN_KEYWORD_LEN = 2;
     private static final int SPOT_CANDIDATE_LIMIT = 5;
     private static final int PLAN_CANDIDATE_LIMIT = 5;
+    private static final int PACKAGE_CANDIDATE_LIMIT = 5;
 
     // 여행 질문에 흔히 섞이는 불용어. 키워드로서 의미 없는 것만 제외.
     // 대소문자 무시 비교를 위해 소문자로 저장.
@@ -63,6 +65,7 @@ public class IntentContextService {
 
     private final ExploreMapper exploreMapper;
     private final TravelPlanMapper travelPlanMapper;
+    private final TravelPackageMapper travelPackageMapper;
 
     /**
      * 메시지에서 키워드 추출 후 매칭되는 사이트 콘텐츠를 조회해 프롬프트 섹션 문자열을 만든다.
@@ -74,21 +77,25 @@ public class IntentContextService {
 
         List<Map<String, Object>> spots = safeSearchSpots(keywords);
         List<Map<String, Object>> plans = safeSearchPlans(keywords);
+        List<Map<String, Object>> packages = safeSearchPackages(keywords);
 
-        if (spots.isEmpty() && plans.isEmpty()) return "";
+        if (spots.isEmpty() && plans.isEmpty() && packages.isEmpty()) return "";
 
         StringBuilder sb = new StringBuilder();
         sb.append("## 실시간 후보 데이터\n");
         sb.append("사용자 언급 키워드: ").append(keywords).append("\n");
 
-        if (!spots.isEmpty()) appendSpotsSection(sb, spots);
-        if (!plans.isEmpty()) appendPlansSection(sb, plans);
+        if (!spots.isEmpty())    appendSpotsSection(sb, spots);
+        if (!plans.isEmpty())    appendPlansSection(sb, plans);
+        if (!packages.isEmpty()) appendPackagesSection(sb, packages);
 
         sb.append("\n중요 지침:\n");
         sb.append("- links 의 url 은 반드시 위 후보의 실제 id 를 사용하세요.\n");
         sb.append("- 여행지 상세: /detail/{spotIdx}, 코스 상세: /courses/detail?planId={planId}\n");
+        sb.append("- 패키지는 공개 상세 페이지가 없으므로 url 은 항상 /packages (리스트 루트) 만 사용하고,\n");
+        sb.append("  메시지 본문에 패키지 제목·가격·연결 여행지를 요약해 언급하세요.\n");
         sb.append("- 존재하지 않는 id 는 절대 만들지 마세요.\n");
-        sb.append("- 후보가 비어있는 카테고리는 일반 list 페이지(/explore, /courses)만 제시하세요.\n");
+        sb.append("- 후보가 비어있는 카테고리는 일반 list 페이지(/explore, /courses, /packages)만 제시하세요.\n");
         return sb.toString();
     }
 
@@ -110,6 +117,16 @@ public class IntentContextService {
             return rows != null ? rows : List.of();
         } catch (Exception e) {
             log.warn("[Chatbot] 코스 후보 조회 실패 — keywords={}, 원인={}", keywords, e.getMessage());
+            return List.of();
+        }
+    }
+
+    private List<Map<String, Object>> safeSearchPackages(List<String> keywords) {
+        try {
+            List<Map<String, Object>> rows = travelPackageMapper.searchPackagesByKeywords(keywords, PACKAGE_CANDIDATE_LIMIT);
+            return rows != null ? rows : List.of();
+        } catch (Exception e) {
+            log.warn("[Chatbot] 패키지 후보 조회 실패 — keywords={}, 원인={}", keywords, e.getMessage());
             return List.of();
         }
     }
@@ -150,6 +167,33 @@ public class IntentContextService {
               .append(destination != null ? " (목적지: " + destination + ")" : "")
               .append((start != null && end != null) ? " · " + start + "~" + end : "")
               .append("\n");
+        }
+    }
+
+    private void appendPackagesSection(StringBuilder sb, List<Map<String, Object>> packages) {
+        sb.append("\n### 여행 패키지 후보 (링크는 반드시 /packages 루트 사용)\n");
+        for (Map<String, Object> row : packages) {
+            Object idx = row.get("packageIdx");
+            Object title = row.get("packageTitle");
+            Object summary = row.get("packageSummary");
+            Object price = row.get("packagePrice");
+            Object currency = row.get("currencyCode");
+            Object bookingCount = row.get("bookingCount");
+            Object spotName = row.get("spotName");
+            Object spotRegion = row.get("spotRegion");
+
+            sb.append("- packageIdx=").append(idx)
+              .append(", \"").append(title).append("\"");
+            if (price != null) {
+                sb.append(" · ").append(currency != null ? currency : "KRW").append(" ").append(price);
+            }
+            if (bookingCount != null) sb.append(" · 예약 ").append(bookingCount).append("건");
+            if (spotName != null) {
+                sb.append(" · 연결 여행지: ").append(spotName);
+                if (spotRegion != null) sb.append("(").append(spotRegion).append(")");
+            }
+            if (summary != null) sb.append(" — ").append(truncate(String.valueOf(summary), 60));
+            sb.append("\n");
         }
     }
 
