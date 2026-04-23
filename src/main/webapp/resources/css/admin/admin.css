@@ -1190,6 +1190,17 @@ button.adm-inline-chip {
     .adm-filter-bar > * {
         width: 100%;
     }
+    .adm-card-head,
+    .adm-local-toolbar {
+        padding: 14px 16px;
+    }
+    .adm-card-body {
+        padding: 16px;
+    }
+    .adm-local-toolbar-group .adm-input {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
     .adm-card-title {
         font-size: 15px;
         line-height: 1.45;

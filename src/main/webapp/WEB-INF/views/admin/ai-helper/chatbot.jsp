@@ -61,7 +61,7 @@
             <div style="font-size:12px;color:#64748b;margin-top:8px;">총 ${total}건</div>
         </div>
 
-        <div class="adm-card" style="padding:0;overflow:hidden;">
+        <div class="adm-card" style="padding:0;overflow-x:auto;">
             <table class="adm-table" style="width:100%;">
                 <thead>
                     <tr>
@@ -138,7 +138,7 @@
          부적절 메시지 탭
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'inappropriate'}">
-        <div class="adm-card" style="padding:0;overflow:hidden;">
+        <div class="adm-card" style="padding:0;overflow-x:auto;">
             <table class="adm-table" style="width:100%;">
                 <thead>
                     <tr>
@@ -205,7 +205,7 @@
             </div>
         </div>
 
-        <div class="adm-card" style="padding:0;overflow:hidden;">
+        <div class="adm-card" style="padding:0;overflow-x:auto;">
             <table class="adm-table" style="width:100%;">
                 <thead>
                     <tr>
@@ -271,7 +271,7 @@
             </div>
         </div>
 
-        <div class="adm-card" style="padding:0;overflow:hidden;">
+        <div class="adm-card" style="padding:0;overflow-x:auto;">
             <table class="adm-table" style="width:100%;">
                 <thead>
                     <tr>
