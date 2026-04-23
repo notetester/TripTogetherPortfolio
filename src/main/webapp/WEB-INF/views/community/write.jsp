@@ -739,8 +739,8 @@ function cancelWrite() {
 jQuery(function($) {
   $('#writeContent').summernote({
     lang: 'ko-KR',
-    height: 480,
-    minHeight: 360,
+    height: 640,
+    minHeight: 480,
     placeholder: writeMessages.contentPlaceholder,
     focus: false,
     disableResizeEditor: false,
