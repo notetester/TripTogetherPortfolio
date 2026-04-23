@@ -248,8 +248,12 @@
 
     <div class="adm-main">
         <div class="adm-topbar">
-            <button class="adm-btn adm-btn-ghost" style="display:none;padding:6px 8px;" id="sidebar-toggle"
-                    onclick="document.getElementById('adm-sidebar').classList.toggle('open')">☰</button>
+            <button type="button" class="adm-nav-toggle" id="sidebar-toggle"
+                    aria-label="메뉴" aria-expanded="false" aria-controls="adm-sidebar">
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+            </button>
             <div class="adm-topbar-title">${pageTitle}</div>
             <div class="adm-topbar-controls">
                 <label class="adm-topbar-select-wrap" for="admLangSel" title="<spring:message code='admin.layout.languageTitle'/>">

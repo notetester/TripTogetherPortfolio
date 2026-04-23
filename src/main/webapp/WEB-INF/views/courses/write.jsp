@@ -1,7 +1,32 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<spring:message code="course.write.titlePlaceholder" var="courseWriteTitlePlaceholder"/>
+<spring:message code="course.write.destinationPlaceholder" var="courseWriteDestinationPlaceholder"/>
+<spring:message code="course.write.placePlaceholder" var="courseWritePlacePlaceholder"/>
+<spring:message code="course.write.placePlaceholder" javaScriptEscape="true" var="courseWritePlacePlaceholderJs"/>
+<spring:message code="course.write.placeFieldMsg" javaScriptEscape="true" var="courseWritePlaceFieldMsgJs"/>
+<spring:message code="course.write.dateFormatHint" javaScriptEscape="true" var="courseWriteDateFormatHintJs"/>
+<spring:message code="course.write.dateInputPlaceholder" var="courseWriteDateInputPlaceholder"/>
+<spring:message code="course.write.dateInputPlaceholder" javaScriptEscape="true" var="courseWriteDateInputPlaceholderJs"/>
+<spring:message code="course.write.notSelected" javaScriptEscape="true" var="courseWriteNotSelectedJs"/>
+<spring:message code="course.write.notEntered" javaScriptEscape="true" var="courseWriteNotEnteredJs"/>
+<spring:message code="course.write.countSuffix" javaScriptEscape="true" var="courseWriteCountSuffixJs"/>
+<spring:message code="course.badge.public" javaScriptEscape="true" var="coursePublicLabelJs"/>
+<spring:message code="course.badge.private" javaScriptEscape="true" var="coursePrivateLabelJs"/>
+<spring:message code="course.form.spotLabel" javaScriptEscape="true" var="courseSpotLabelJs"/>
+<spring:message code="course.action.delete" javaScriptEscape="true" var="courseDeleteLabelJs"/>
+<spring:message code="course.form.placeName" javaScriptEscape="true" var="coursePlaceNameLabelJs"/>
+<spring:message code="course.write.visitDate" javaScriptEscape="true" var="courseVisitDateLabelJs"/>
+<spring:message code="course.form.visitOrder" javaScriptEscape="true" var="courseVisitOrderLabelJs"/>
+<spring:message code="course.validation.endBeforeStart" javaScriptEscape="true" var="courseValidationEndBeforeStartJs"/>
+<spring:message code="course.validation.spotRequired" javaScriptEscape="true" var="courseValidationSpotRequiredJs"/>
+<spring:message code="course.validation.placeRequired" javaScriptEscape="true" var="courseValidationPlaceRequiredJs"/>
+<spring:message code="course.validation.visitDateRequired" javaScriptEscape="true" var="courseValidationVisitDateRequiredJs"/>
+<spring:message code="course.validation.visitOrderRequired" javaScriptEscape="true" var="courseValidationVisitOrderRequiredJs"/>
+<spring:message code="course.validation.duplicateVisitOrder" javaScriptEscape="true" var="courseValidationDuplicateVisitOrderJs"/>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%@ include file="../common/header.jsp" %>
 <fmt:setLocale value="${pageContext.response.locale}" />
@@ -10,7 +35,7 @@
 <html lang="${pageContext.response.locale.language}">
 <head>
     <meta charset="UTF-8">
-    <title><spring:message code="courses.write.pageTitle" /></title>
+    <title><spring:message code="course.write.windowTitle"/></title>
 
     <style>
         :root {
@@ -200,6 +225,41 @@
         .form-input:focus {
             border-color: var(--blue);
             box-shadow: 0 0 0 4px rgba(37,99,235,.08);
+        }
+
+        .date-input-wrap {
+            position: relative;
+        }
+
+        .date-input-wrap::after {
+            content: attr(data-placeholder);
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-700);
+            font-size: 15px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .date-input-wrap.has-value::after {
+            display: none;
+        }
+
+        .date-input-wrap .localized-date-input {
+            position: relative;
+            z-index: 1;
+        }
+
+        .date-input-wrap:not(.has-value) .localized-date-input,
+        .date-input-wrap:not(.has-value) .localized-date-input:focus,
+        .date-input-wrap:not(.has-value) .localized-date-input::-webkit-datetime-edit,
+        .date-input-wrap:not(.has-value) .localized-date-input::-webkit-datetime-edit-text,
+        .date-input-wrap:not(.has-value) .localized-date-input::-webkit-datetime-edit-year-field,
+        .date-input-wrap:not(.has-value) .localized-date-input::-webkit-datetime-edit-month-field,
+        .date-input-wrap:not(.has-value) .localized-date-input::-webkit-datetime-edit-day-field {
+            color: transparent;
         }
 
         .field-msg {
@@ -492,18 +552,18 @@
 
         <div class="page-header">
             <a href="${pageContext.request.contextPath}/courses/list" class="back-link">
-                ← <spring:message code="courses.common.backToList" />
+                <spring:message code="course.write.backToList"/>
             </a>
 
             <div class="header-row">
                 <div class="header-title">
-                    <h1><spring:message code="courses.write.header.title" /></h1>
+                    <h1><spring:message code="course.write.title"/></h1>
                     <p>
-                        <spring:message code="courses.write.header.desc" />
+                        <spring:message code="course.write.desc"/>
                     </p>
                 </div>
 
-                <div class="status-chip"><spring:message code="courses.common.status.drafting" /></div>
+                <div class="status-chip"><spring:message code="course.write.statusWriting"/></div>
             </div>
         </div>
 
@@ -520,51 +580,59 @@
                         <div class="card-head">
                             <div class="card-icon">📝</div>
                             <div>
-                                <div class="card-title"><spring:message code="courses.write.section.basic.title" /></div>
-                                <div class="card-sub"><spring:message code="courses.write.section.basic.desc" /></div>
+                                <div class="card-title"><spring:message code="course.write.basicInfo"/></div>
+                                <div class="card-sub"><spring:message code="course.write.basicInfoDesc"/></div>
                             </div>
                         </div>
 
                         <div class="card-body">
                             <div class="form-group">
-                                <label class="form-label" for="title"><spring:message code="courses.common.field.title" /></label>
+                                <label class="form-label" for="title"><spring:message code="course.form.title"/></label>
                                 <input type="text"
                                        id="title"
                                        name="title"
                                        class="form-input"
-                                       placeholder="<spring:message code='courses.common.placeholder.titleExample' />"
+                                       placeholder="${courseWriteTitlePlaceholder}"
                                        required>
-                                <div class="field-msg"><spring:message code="courses.common.help.titlePrimary" /></div>
+                                <div class="field-msg"><spring:message code="course.write.titleFieldMsg"/></div>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label" for="destination"><spring:message code="courses.common.field.destination" /></label>
+                                <label class="form-label" for="destination"><spring:message code="course.form.destination"/></label>
                                 <input type="text"
                                        id="destination"
                                        name="destination"
                                        class="form-input"
-                                       placeholder="<spring:message code='courses.common.destinationExample' />"
+                                       placeholder="${courseWriteDestinationPlaceholder}"
                                        required>
-                                <div class="field-msg"><spring:message code="courses.common.help.destinationFree" /></div>
+                                <div class="field-msg"><spring:message code="course.write.destinationFieldMsg"/></div>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label" for="startDate"><spring:message code="courses.common.field.startDate" /></label>
-                                    <input type="date"
-                                           id="startDate"
-                                           name="start_date"
-                                           class="form-input"
-                                           required>
+                                    <label class="form-label" for="startDate"><spring:message code="course.write.startDate"/></label>
+                                    <div class="date-input-wrap" data-placeholder="${courseWriteDateInputPlaceholder}">
+                                        <input type="date"
+                                               id="startDate"
+                                               name="start_date"
+                                               class="form-input localized-date-input"
+                                               aria-describedby="startDateFormatHint"
+                                               required>
+                                    </div>
+                                    <div class="field-msg" id="startDateFormatHint"><spring:message code="course.write.dateFormatHint"/></div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label" for="endDate"><spring:message code="courses.common.field.endDate" /></label>
-                                    <input type="date"
-                                           id="endDate"
-                                           name="end_date"
-                                           class="form-input"
-                                           required>
+                                    <label class="form-label" for="endDate"><spring:message code="course.write.endDate"/></label>
+                                    <div class="date-input-wrap" data-placeholder="${courseWriteDateInputPlaceholder}">
+                                        <input type="date"
+                                               id="endDate"
+                                               name="end_date"
+                                               class="form-input localized-date-input"
+                                               aria-describedby="endDateFormatHint"
+                                               required>
+                                    </div>
+                                    <div class="field-msg" id="endDateFormatHint"><spring:message code="course.write.dateFormatHint"/></div>
                                 </div>
                             </div>
                         </div>
@@ -574,20 +642,20 @@
                         <div class="card-head">
                             <div class="card-icon">📍</div>
                             <div>
-                                <div class="card-title"><spring:message code="courses.write.section.spots.title" /></div>
-                                <div class="card-sub"><spring:message code="courses.write.section.spots.desc" /></div>
+                                <div class="card-title"><spring:message code="course.write.visitSpots"/></div>
+                                <div class="card-sub"><spring:message code="course.write.visitSpotsDesc"/></div>
                             </div>
                         </div>
 
                         <div class="card-body">
                             <p class="helper-text">
-                                <spring:message code="courses.write.section.spots.help" />
+                                <spring:message code="course.write.spotHelper"/>
                             </p>
 
                             <div id="spotList" class="spot-list"></div>
 
                             <div class="spot-actions">
-                                <button type="button" class="btn-outline" id="addSpotBtn"><spring:message code="courses.common.action.addSpot" /></button>
+                                <button type="button" class="btn-outline" id="addSpotBtn">+ <spring:message code="course.action.addSpot"/></button>
                             </div>
                         </div>
                     </section>
@@ -598,17 +666,17 @@
                         <div class="card-head">
                             <div class="card-icon">🌍</div>
                             <div>
-                                <div class="card-title"><spring:message code="courses.write.section.visibility.title" /></div>
-                                <div class="card-sub"><spring:message code="courses.write.section.visibility.desc" /></div>
+                                <div class="card-title"><spring:message code="course.write.publicSetting"/></div>
+                                <div class="card-sub"><spring:message code="course.write.publicSettingDesc"/></div>
                             </div>
                         </div>
 
                         <div class="card-body">
                             <div class="public-toggle-wrap">
                                 <div>
-                                    <div class="public-toggle-label"><spring:message code="courses.common.label.publicPlan" /></div>
+                                    <div class="public-toggle-label"><spring:message code="course.write.publicToggle"/></div>
                                     <div class="public-toggle-sub">
-                                        <spring:message code="courses.common.visibility.help.share" />
+                                        <spring:message code="course.write.publicToggleDesc"/>
                                     </div>
                                 </div>
 
@@ -624,34 +692,34 @@
                         <div class="card-head">
                             <div class="card-icon">📌</div>
                             <div>
-                                <div class="card-title"><spring:message code="courses.write.section.summary.title" /></div>
-                                <div class="card-sub"><spring:message code="courses.write.section.summary.desc" /></div>
+                                <div class="card-title"><spring:message code="course.write.summary"/></div>
+                                <div class="card-sub"><spring:message code="course.write.summaryDesc"/></div>
                             </div>
                         </div>
 
                         <div class="card-body">
                             <div class="summary-box">
-                                <div class="summary-title"><spring:message code="courses.write.section.summary.current" /></div>
+                                <div class="summary-title"><spring:message code="course.write.summaryCurrent"/></div>
                                 <div class="summary-list">
                                     <div class="summary-item">
-                                        <span><spring:message code="courses.common.field.title" /></span>
-                                        <span id="summaryTitle"><spring:message code="courses.common.value.emptyInput" /></span>
+                                        <span><spring:message code="course.form.title"/></span>
+                                        <span id="summaryTitle"><spring:message code="course.write.notEntered"/></span>
                                     </div>
                                     <div class="summary-item">
-                                        <span><spring:message code="courses.common.field.destination" /></span>
-                                        <span id="summaryDestination"><spring:message code="courses.common.value.emptySelection" /></span>
+                                        <span><spring:message code="course.form.destination"/></span>
+                                        <span id="summaryDestination"><spring:message code="course.write.notSelected"/></span>
                                     </div>
                                     <div class="summary-item">
-                                        <span><spring:message code="courses.common.field.travelPeriod" /></span>
-                                        <span id="summaryDate"><spring:message code="courses.common.value.emptySelection" /></span>
+                                        <span><spring:message code="course.common.travelPeriod"/></span>
+                                        <span id="summaryDate"><spring:message code="course.write.notSelected"/></span>
                                     </div>
                                     <div class="summary-item">
-                                        <span><spring:message code="courses.common.field.spotCount" /></span>
-                                        <span id="summarySpotCount"><spring:message code="courses.common.countWithUnit" arguments="0" /></span>
+                                        <span><spring:message code="course.form.spotCount"/></span>
+                                        <span id="summarySpotCount">0<spring:message code="course.write.countSuffix"/></span>
                                     </div>
                                     <div class="summary-item">
-                                        <span><spring:message code="courses.common.field.publicVisibility" /></span>
-                                        <span id="summaryPublic"><spring:message code="courses.common.visibility.private" /></span>
+                                        <span><spring:message code="course.form.publicStatus"/></span>
+                                        <span id="summaryPublic"><spring:message code="course.badge.private"/></span>
                                     </div>
                                 </div>
                             </div>
@@ -659,10 +727,10 @@
                             <div class="submit-area">
                                 <div class="submit-right">
                                     <a href="${pageContext.request.contextPath}/courses/list" class="btn-cancel-link">
-                                        <spring:message code="courses.common.cancel" />
+                                        <spring:message code="course.action.cancel"/>
                                     </a>
                                     <button type="submit" class="btn-save">
-                                        <spring:message code="courses.common.action.save" />
+                                        <spring:message code="course.action.savePlan"/>
                                     </button>
                                 </div>
                             </div>
@@ -714,6 +782,28 @@
     const startDateEl = document.getElementById("startDate");
     const endDateEl = document.getElementById("endDate");
 
+    const COURSE_WRITE_TEXT = {
+        spotLabel: "${courseSpotLabelJs}",
+        deleteLabel: "${courseDeleteLabelJs}",
+        placeNameLabel: "${coursePlaceNameLabelJs}",
+        visitDateLabel: "${courseVisitDateLabelJs}",
+        visitOrderLabel: "${courseVisitOrderLabelJs}",
+        placePlaceholder: "${courseWritePlacePlaceholderJs}",
+        placeFieldMsg: "${courseWritePlaceFieldMsgJs}",
+        dateFormatHint: "${courseWriteDateFormatHintJs}",
+        dateInputPlaceholder: "${courseWriteDateInputPlaceholderJs}",
+        notSelected: "${courseWriteNotSelectedJs}",
+        notEntered: "${courseWriteNotEnteredJs}",
+        countSuffix: "${courseWriteCountSuffixJs}",
+        publicLabel: "${coursePublicLabelJs}",
+        privateLabel: "${coursePrivateLabelJs}",
+        validationEndBeforeStart: "${courseValidationEndBeforeStartJs}",
+        validationSpotRequired: "${courseValidationSpotRequiredJs}",
+        validationPlaceRequired: "${courseValidationPlaceRequiredJs}",
+        validationVisitDateRequired: "${courseValidationVisitDateRequiredJs}",
+        validationVisitOrderRequired: "${courseValidationVisitOrderRequiredJs}",
+        validationDuplicateVisitOrder: "${courseValidationDuplicateVisitOrderJs}"
+    };
 
     function createSpotItem(index) {
         const displayIndex = index + 1;
@@ -724,32 +814,35 @@
             '<div class="spot-head">' +
             '<div class="spot-head-left">' +
             '<span class="spot-badge">' + displayIndex + '</span>' +
-            '<span>' + formatCourseMessage(courseWriteMessages.spotIndexed, displayIndex) + '</span>' +
+            '<span>' + COURSE_WRITE_TEXT.spotLabel + ' ' + displayIndex + '</span>' +
             '</div>' +
-            '<button type="button" class="remove-btn">' + courseWriteMessages.deleteLabel + '</button>' +
+            '<button type="button" class="remove-btn">' + COURSE_WRITE_TEXT.deleteLabel + '</button>' +
             '</div>' +
 
             '<div class="form-group">' +
-            '<label class="form-label">' + courseWriteMessages.placeNameLabel + '</label>' +
+            '<label class="form-label">' + COURSE_WRITE_TEXT.placeNameLabel + '</label>' +
             '<input type="text" ' +
             'class="form-input" ' +
             'data-field="place_name" ' +
-            'placeholder="' + courseWriteMessages.placePlaceholder + '" ' +
+            'placeholder="' + COURSE_WRITE_TEXT.placePlaceholder + '" ' +
             'required>' +
-            '<div class="field-msg">' + courseWriteMessages.placeHelp + '</div>' +
+            '<div class="field-msg">' + COURSE_WRITE_TEXT.placeFieldMsg + '</div>' +
             '</div>' +
 
             '<div class="form-row" style="margin-top:16px;">' +
             '<div class="form-group">' +
-            '<label class="form-label">' + courseWriteMessages.visitDateLabel + '</label>' +
+            '<label class="form-label">' + COURSE_WRITE_TEXT.visitDateLabel + '</label>' +
+            '<div class="date-input-wrap" data-placeholder="' + COURSE_WRITE_TEXT.dateInputPlaceholder + '">' +
             '<input type="date" ' +
-            'class="form-input" ' +
+            'class="form-input localized-date-input" ' +
             'data-field="visit_date" ' +
             'required>' +
             '</div>' +
+            '<div class="field-msg">' + COURSE_WRITE_TEXT.dateFormatHint + '</div>' +
+            '</div>' +
 
             '<div class="form-group">' +
-            '<label class="form-label">' + courseWriteMessages.visitOrderLabel + '</label>' +
+            '<label class="form-label">' + COURSE_WRITE_TEXT.visitOrderLabel + '</label>' +
             '<input type="number" ' +
             'class="form-input" ' +
             'data-field="visit_order" ' +
@@ -780,7 +873,27 @@
             input.addEventListener("change", updateSummary);
         });
 
+        bindLocalizedDateInputs(wrapper);
+
         return wrapper;
+    }
+
+    function syncLocalizedDateInput(input) {
+        const wrapper = input.closest(".date-input-wrap");
+        if (!wrapper) return;
+        wrapper.classList.toggle("has-value", input.value !== "");
+    }
+
+    function bindLocalizedDateInputs(root) {
+        root.querySelectorAll(".localized-date-input").forEach(input => {
+            syncLocalizedDateInput(input);
+            input.addEventListener("input", function () {
+                syncLocalizedDateInput(input);
+            });
+            input.addEventListener("change", function () {
+                syncLocalizedDateInput(input);
+            });
+        });
     }
 
     function refreshSpotIndexes() {
@@ -791,7 +904,7 @@
             const title = item.querySelector(".spot-head-left span:last-child");
 
             badge.textContent = index + 1;
-            title.textContent = formatCourseMessage(courseWriteMessages.spotIndexed, index + 1);
+            title.textContent = COURSE_WRITE_TEXT.spotLabel + " " + (index + 1);
 
             const inputs = item.querySelectorAll("[data-field]");
             inputs.forEach(input => {
@@ -815,7 +928,7 @@
     }
 
     function formatDateRange(start, end) {
-        if (!start && !end) return courseWriteMessages.emptySelection;
+        if (!start && !end) return COURSE_WRITE_TEXT.notSelected;
         if (start && !end) return start + " ~";
         if (!start && end) return "~ " + end;
         return start + " ~ " + end;
@@ -823,10 +936,10 @@
 
     function updateSummary() {
         document.getElementById("summaryTitle").textContent =
-            titleEl.value.trim() || courseWriteMessages.emptyInput;
+            titleEl.value.trim() || COURSE_WRITE_TEXT.notEntered;
 
         document.getElementById("summaryDestination").textContent =
-            destinationEl.value.trim() || courseWriteMessages.emptySelection;
+            destinationEl.value.trim() || COURSE_WRITE_TEXT.notSelected;
 
         document.getElementById("summaryDate").textContent =
             formatDateRange(startDateEl.value, endDateEl.value);
@@ -836,10 +949,10 @@
         ).filter(input => input.value.trim() !== "").length;
 
         document.getElementById("summarySpotCount").textContent =
-            formatCourseMessage(courseWriteMessages.countWithUnit, filledPlaceCount);
+            filledPlaceCount + COURSE_WRITE_TEXT.countSuffix;
 
         document.getElementById("summaryPublic").textContent =
-            isPublicToggle.checked ? courseWriteMessages.publicLabel : courseWriteMessages.privateLabel;
+            isPublicToggle.checked ? COURSE_WRITE_TEXT.publicLabel : COURSE_WRITE_TEXT.privateLabel;
     }
 
     isPublicToggle.addEventListener("change", function () {
@@ -874,7 +987,7 @@
 
     endDateEl.addEventListener("change", function () {
         if (startDateEl.value && endDateEl.value < startDateEl.value) {
-            alert(courseWriteMessages.invalidEndDate);
+            alert(COURSE_WRITE_TEXT.validationEndBeforeStart);
             endDateEl.value = startDateEl.value;
         }
         updateSummary();
@@ -885,7 +998,7 @@
 
         if (spotItems.length === 0) {
             e.preventDefault();
-            alert(courseWriteMessages.minSpot);
+            alert(COURSE_WRITE_TEXT.validationSpotRequired);
             return;
         }
 
@@ -902,21 +1015,21 @@
 
             if (!placeName) {
                 e.preventDefault();
-                alert(courseWriteMessages.placeRequired);
+                alert(COURSE_WRITE_TEXT.validationPlaceRequired);
                 placeInput.focus();
                 return;
             }
 
             if (!visitDate) {
                 e.preventDefault();
-                alert(courseWriteMessages.visitDateRequired);
+                alert(COURSE_WRITE_TEXT.validationVisitDateRequired);
                 visitDateInput.focus();
                 return;
             }
 
             if (!visitOrder || Number(visitOrder) < 1) {
                 e.preventDefault();
-                alert(courseWriteMessages.orderRequired);
+                alert(COURSE_WRITE_TEXT.validationVisitOrderRequired);
                 visitOrderInput.focus();
                 return;
             }
@@ -924,7 +1037,7 @@
             const duplicateKey = visitDate + "__" + visitOrder;
             if (duplicateCheck.has(duplicateKey)) {
                 e.preventDefault();
-                alert(courseWriteMessages.duplicateOrder);
+                alert(COURSE_WRITE_TEXT.validationDuplicateVisitOrder);
                 visitOrderInput.focus();
                 return;
             }
@@ -932,7 +1045,8 @@
         }
     });
 
-    // 기본 2개 생성
+    // Create two empty destination rows by default.
+    bindLocalizedDateInputs(document);
     addSpot();
     addSpot();
 </script>

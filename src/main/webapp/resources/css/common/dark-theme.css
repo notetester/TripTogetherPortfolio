@@ -128,22 +128,86 @@ html.dark .tag {
 html.dark .back-btn { color: #cbd5e1; }
 html.dark .back-btn:hover { color: #93c5fd; }
 
-/* ----- 챗봇 ----- */
-html.dark #chatbot-box { background: #151922; }
-html.dark .chatbot-body { background: #0f1115; }
-html.dark .bot-msg {
+/* ----- 챗봇 (footer 위젯) ----- */
+html.dark #chatbot-box {
+    background: #151922;
+    border-color: #232935;
+}
+
+/* 사이드바 */
+html.dark .cb-sidebar {
+    background: #0f1115;
+    border-right-color: #232935;
+}
+html.dark .cb-new-btn {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .cb-new-btn:hover {
+    border-color: #60a5fa;
+    color: #93c5fd;
+}
+html.dark .cb-new-btn--reset:hover {
+    border-color: #f87171;
+    color: #f87171;
+}
+html.dark .cb-conv-list::-webkit-scrollbar-thumb { background: #2b3241; }
+html.dark .cb-conv-item:hover { background: #1f2432; }
+html.dark .cb-conv-item.active { background: #1e293b; }
+html.dark .cb-conv-title { color: #cbd5e1; }
+html.dark .cb-conv-item.active .cb-conv-title { color: #93c5fd; }
+html.dark .cb-conv-menu { color: #64748b; }
+html.dark .cb-conv-menu:hover { background: #2b3241; color: #cbd5e1; }
+
+/* 본문 */
+html.dark .cb-body {
+    background: #0f1115;
+}
+html.dark .cb-body::-webkit-scrollbar-thumb { background: #2b3241; }
+
+/* 웰컴 박스 */
+html.dark .cb-welcome {
     background: #1a1f2b;
     border-color: #2b3241;
     color: #e5e7eb;
 }
-html.dark .chatbot-input {
+html.dark .cb-welcome-title { color: #f1f5f9; }
+
+/* 봇 메시지 (유저 메시지는 파란색 유지) */
+html.dark .cb-msg.bot {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #e5e7eb;
+}
+html.dark .cb-time { color: #64748b; }
+
+/* 빠른 답변 칩 */
+html.dark .cb-suggest-chip {
+    background: #1a1f2b;
+    border-color: #2b3241;
+    color: #cbd5e1;
+}
+html.dark .cb-suggest-chip:hover {
+    background: #1e293b;
+    border-color: #60a5fa;
+    color: #93c5fd;
+}
+
+/* 푸터 + 입력창 */
+html.dark .cb-footer {
     background: #151922;
     border-top-color: #232935;
 }
-html.dark .chatbot-input input {
+html.dark #cb-input {
     background: #1a1f2b;
     border-color: #2b3241;
     color: #e5e7eb;
+}
+html.dark #cb-input::placeholder { color: #6b7280; }
+html.dark #cb-input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .15);
 }
 
 /* ----- 알림 드롭다운 ----- */
@@ -177,3 +241,15 @@ html.dark .footer-inquiry-link:hover { color: #f1f5f9; }
 
 /* ----- 사용자 닉네임 ----- */
 html.dark .user-nick { color: #e5e7eb; }
+
+/* ----- 햄버거 / 모바일 드로어 ----- */
+html.dark .nav-toggle:hover { background: #1f2432; }
+html.dark .nav-toggle-bar { background: #e5e7eb; }
+
+@media (max-width: 767px) {
+    html.dark header nav {
+        background: #151922;
+        border-right-color: #232935;
+        box-shadow: 2px 0 12px rgba(0, 0, 0, .5);
+    }
+}

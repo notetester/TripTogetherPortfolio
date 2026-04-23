@@ -4,16 +4,18 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="packages"/>
-<spring:message code="admin.packages.pageTitle" var="adminPackagesPageTitle"/>
+<spring:message code="package.admin.title" var="adminPackagesPageTitle"/>
 <c:set var="pageTitle"  value="${adminPackagesPageTitle}"/>
 <spring:message code="package.revision.rejectReason" var="revisionRejectReasonPlaceholder"/>
+<spring:message code="package.admin.approveConfirm" var="packageApproveConfirm"/>
+<spring:message code="package.admin.rejectPlaceholder" var="packageRejectPlaceholder"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1><spring:message code="admin.packages.pageTitle"/></h1>
-            <p><spring:message code="admin.packages.pageSubtitle"/></p>
+            <h1><spring:message code="package.admin.title"/></h1>
+            <p><spring:message code="package.admin.desc"/></p>
         </div>
     </div>
 
@@ -29,20 +31,20 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/packages">
                 <div class="adm-filter-bar">
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.packages.filter.status"/></div>
+                        <div class="adm-filter-label"><spring:message code="package.admin.filterStatus"/></div>
                         <select class="adm-select" name="status">
-                            <option value="ALL" ${status eq 'ALL' ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
-                            <option value="PENDING" ${status eq 'PENDING' ? 'selected' : ''}><spring:message code="admin.packages.status.pending"/></option>
-                            <option value="APPROVED" ${status eq 'APPROVED' ? 'selected' : ''}><spring:message code="admin.packages.status.approved"/></option>
-                            <option value="REJECTED" ${status eq 'REJECTED' ? 'selected' : ''}><spring:message code="admin.packages.status.rejected"/></option>
-                            <option value="DRAFT" ${status eq 'DRAFT' ? 'selected' : ''}><spring:message code="admin.packages.status.draft"/></option>
-                            <option value="BLOCKED" ${status eq 'BLOCKED' ? 'selected' : ''}><spring:message code="admin.packages.status.blocked"/></option>
+                            <option value="ALL" ${status eq 'ALL' ? 'selected' : ''}><spring:message code="package.admin.filterAll"/></option>
+                            <option value="PENDING" ${status eq 'PENDING' ? 'selected' : ''}><spring:message code="package.status.pending"/></option>
+                            <option value="APPROVED" ${status eq 'APPROVED' ? 'selected' : ''}><spring:message code="package.status.approved"/></option>
+                            <option value="REJECTED" ${status eq 'REJECTED' ? 'selected' : ''}><spring:message code="package.status.rejected"/></option>
+                            <option value="DRAFT" ${status eq 'DRAFT' ? 'selected' : ''}><spring:message code="package.status.draft"/></option>
+                            <option value="BLOCKED" ${status eq 'BLOCKED' ? 'selected' : ''}><spring:message code="package.status.blocked"/></option>
                         </select>
                     </div>
                     <div style="display:flex;gap:6px;align-items:flex-end;">
-                        <button type="submit" class="adm-btn adm-btn-primary"><spring:message code="admin.common.searchButton"/></button>
+                        <button type="submit" class="adm-btn adm-btn-primary"><spring:message code="package.admin.search"/></button>
                         <a href="${pageContext.request.contextPath}/admin/packages"
-                           class="adm-btn adm-btn-ghost"><spring:message code="admin.common.reset"/></a>
+                           class="adm-btn adm-btn-ghost"><spring:message code="package.admin.reset"/></a>
                     </div>
                 </div>
             </form>
@@ -184,12 +186,12 @@
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th><spring:message code="admin.packages.column.package"/></th>
-                    <th><spring:message code="admin.packages.column.seller"/></th>
-                    <th><spring:message code="admin.packages.column.spot"/></th>
-                    <th><spring:message code="admin.packages.column.priceSchedule"/></th>
-                    <th><spring:message code="admin.common.status"/></th>
-                    <th><spring:message code="admin.packages.column.review"/></th>
+                    <th><spring:message code="package.admin.thPackage"/></th>
+                    <th><spring:message code="package.admin.thSeller"/></th>
+                    <th><spring:message code="package.admin.thSpot"/></th>
+                    <th><spring:message code="package.admin.thPriceSchedule"/></th>
+                    <th><spring:message code="package.admin.thStatus"/></th>
+                    <th><spring:message code="package.admin.thReview"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -205,7 +207,7 @@
                                                  style="width:100%;height:100%;object-fit:cover;">
                                         </c:when>
                                         <c:otherwise>
-                                            <div style="height:100%;display:grid;place-items:center;color:#94a3b8;font-size:11px;font-weight:800;"><spring:message code="admin.packages.noImage"/></div>
+                                            <div style="height:100%;display:grid;place-items:center;color:#94a3b8;font-size:11px;font-weight:800;"><spring:message code="package.admin.noImage"/></div>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -220,7 +222,7 @@
                                             ${fn:escapeXml(pkg.packageSummary)}
                                         </div>
                                     </c:if>
-                                    <div style="font-size:11px;color:#64748b;margin-top:4px;"><spring:message code="admin.packages.createdAt" arguments="${pkg.createdAt}"/></div>
+                                    <div style="font-size:11px;color:#64748b;margin-top:4px;"><spring:message code="package.admin.registeredAt" arguments="${pkg.createdAt}"/></div>
                                 </div>
                             </div>
                         </td>
@@ -327,7 +329,7 @@
                                     </div>
                                 </c:when>
                                 <c:otherwise>
-                                    <span style="color:#64748b;font-size:12px;"><spring:message code="admin.packages.reviewDone"/></span>
+                                    <span style="color:#64748b;font-size:12px;"><spring:message code="package.admin.notPending"/></span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -337,7 +339,7 @@
                 <c:if test="${empty packageList}">
                     <tr>
                         <td colspan="6" style="text-align:center;padding:40px;color:#64748b;">
-                            <spring:message code="admin.packages.noResults"/>
+                            <spring:message code="package.admin.noResults"/>
                         </td>
                     </tr>
                 </c:if>

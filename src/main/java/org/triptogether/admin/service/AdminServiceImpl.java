@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.admin.mapper.AdminMapper;
+import org.triptogether.common.mapper.ChatbotLinkClickMapper;
 import org.triptogether.config.IpBlockMapper;
 import org.triptogether.admin.vo.*;
 import org.triptogether.auth.vo.UserRole;
@@ -40,6 +41,7 @@ public class AdminServiceImpl implements AdminService {
     private final AdminMapper adminMapper;
     private final IpBlockMapper ipBlockMapper;
     private final MyPageService myPageService;
+    private final ChatbotLinkClickMapper chatbotLinkClickMapper;
 
     // ===== 대시보드 통계 =====
 
@@ -144,6 +146,7 @@ public class AdminServiceImpl implements AdminService {
         result.put("emailTokens", adminMapper.findEmailVerificationsByUser(userIdx, 30));
         result.put("activityLogs", adminMapper.findActivityLogsByUser(userIdx, 40));
         result.put("recentBlocks", adminMapper.findRecentUserBlocksByUser(userIdx, 20));
+        result.put("chatbotLinkClicks", chatbotLinkClickMapper.selectClicksByUser(userIdx, 20));
         return result;
     }
 

@@ -21,7 +21,7 @@
     <section class="pkg-panel">
         <div class="pkg-section-title">
             <div>
-                <span><spring:message code="package.list.sectionEyebrow"/></span>
+                <span><spring:message code="package.list.approvedEyebrow"/></span>
                 <h2><spring:message code="package.list.approvedTitle"/></h2>
             </div>
             <p><spring:message code="package.list.approvedDesc"/></p>
@@ -80,7 +80,9 @@
                                 </dl>
                             </div>
                             <div class="pkg-card__actions">
-                                <a href="${pageContext.request.contextPath}/detail/${pkg.spotIdx}"><spring:message code="package.list.viewAtSpot"/></a>
+                                <a href="${pageContext.request.contextPath}/detail/${pkg.spotIdx}">
+                                    <spring:message code="package.list.viewAtSpot"/>
+                                </a>
                                 <span class="pkg-approved"><spring:message code="package.list.approvedBadge"/></span>
                             </div>
                         </article>

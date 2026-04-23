@@ -317,17 +317,22 @@
                                 </button>
                             </c:if>
                             <div class="post-card ${isBlurred ? 'report-blurred' : ''}">
-                                <div class="post-card-img-wrap">
+                                <%-- 이미지 경로 보정 (http* 이면 그대로, 아니면 contextPath prefix) --%>
+                                <c:set var="thumb1" value="${fn:startsWith(post.thumbUrl,  'http') ? post.thumbUrl  : (empty post.thumbUrl  ? '' : pageContext.request.contextPath.concat(post.thumbUrl))}"/>
+                                <c:set var="thumb2" value="${fn:startsWith(post.thumbUrl2, 'http') ? post.thumbUrl2 : (empty post.thumbUrl2 ? '' : pageContext.request.contextPath.concat(post.thumbUrl2))}"/>
+                                <c:set var="thumb3" value="${fn:startsWith(post.thumbUrl3, 'http') ? post.thumbUrl3 : (empty post.thumbUrl3 ? '' : pageContext.request.contextPath.concat(post.thumbUrl3))}"/>
+                                <c:set var="isPhotoGallery" value="${post.postType eq 'photo' and not empty post.thumbUrl2 and not empty post.thumbUrl3}"/>
+
+                                <div class="post-card-img-wrap ${isPhotoGallery ? 'post-card-img-gallery' : ''}">
                                     <c:choose>
+                                        <c:when test="${isPhotoGallery}">
+                                            <%-- photo 유형 3장 갤러리: 좌측 크게 1장 + 우측 상/하 2장 --%>
+                                            <img class="post-card-img gallery-main" src="${thumb1}" alt="${post.title}" loading="lazy">
+                                            <img class="post-card-img gallery-sub gallery-sub-top"    src="${thumb2}" alt="" loading="lazy">
+                                            <img class="post-card-img gallery-sub gallery-sub-bottom" src="${thumb3}" alt="" loading="lazy">
+                                        </c:when>
                                         <c:when test="${not empty post.thumbUrl}">
-                                            <c:choose>
-                                                <c:when test="${fn:startsWith(post.thumbUrl, 'http')}">
-                                                    <img class="post-card-img" src="${post.thumbUrl}" alt="${post.title}" loading="lazy">
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <img class="post-card-img" src="${pageContext.request.contextPath}${post.thumbUrl}" alt="${post.title}" loading="lazy">
-                                                </c:otherwise>
-                                            </c:choose>
+                                            <img class="post-card-img" src="${thumb1}" alt="${post.title}" loading="lazy">
                                         </c:when>
                                         <c:otherwise>
                                             <div class="post-card-img"

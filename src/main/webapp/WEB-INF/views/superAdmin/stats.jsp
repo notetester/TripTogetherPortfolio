@@ -77,7 +77,7 @@
             <div class="adm-card-head">
                 <div class="adm-card-title"><spring:message code="superAdmin.stats.card.dormantAdmins"/> <span class="sa-exception-count">(<spring:message code="superAdmin.stats.suffix.days90"/>)</span></div>
             </div>
-            <div class="adm-card-body" style="padding:0;">
+            <div class="adm-card-body" style="padding:0;overflow-x:auto;">
                 <c:choose>
                     <c:when test="${empty dormantAdmins}">
                         <div class="sa-exception-empty"><spring:message code="superAdmin.stats.empty"/></div>
@@ -104,7 +104,7 @@
             <div class="adm-card-head">
                 <div class="adm-card-title"><spring:message code="superAdmin.stats.card.noPermissionAdmins"/></div>
             </div>
-            <div class="adm-card-body" style="padding:0;">
+            <div class="adm-card-body" style="padding:0;overflow-x:auto;">
                 <c:choose>
                     <c:when test="${empty adminsWithoutPermissions}">
                         <div class="sa-exception-empty"><spring:message code="superAdmin.stats.empty"/></div>
@@ -131,7 +131,7 @@
             <div class="adm-card-head">
                 <div class="adm-card-title"><spring:message code="superAdmin.stats.card.withoutManagerAdmins"/></div>
             </div>
-            <div class="adm-card-body" style="padding:0;">
+            <div class="adm-card-body" style="padding:0;overflow-x:auto;">
                 <c:choose>
                     <c:when test="${empty adminsWithoutManager}">
                         <div class="sa-exception-empty"><spring:message code="superAdmin.stats.empty"/></div>

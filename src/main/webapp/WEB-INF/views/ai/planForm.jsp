@@ -231,6 +231,7 @@
                id="startDate"
                name="startDate"
                value="${requestDto.startDate}">
+        <div class="hint"><spring:message code="course.write.dateFormatHint"/></div>
       </div>
 
       <div class="form-group">
@@ -239,6 +240,7 @@
                id="endDate"
                name="endDate"
                value="${requestDto.endDate}">
+        <div class="hint"><spring:message code="course.write.dateFormatHint"/></div>
       </div>
 
       <div class="form-group">

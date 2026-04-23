@@ -120,6 +120,89 @@
     </div>
 </section>
 
+<!-- ===== 추천 여행 패키지 섹션 ===== -->
+<c:if test="${not empty recommendedPackages}">
+    <spring:message code="home.packages.prev" var="packagePrevLabel"/>
+    <spring:message code="home.packages.next" var="packageNextLabel"/>
+    <section class="cs home-package-sec">
+        <div class="si">
+            <div class="sh package-sh">
+                <div>
+                    <h2 class="st"><spring:message code="home.packages.title"/></h2>
+                    <p class="package-sub"><spring:message code="home.packages.subtitle"/></p>
+                </div>
+                <div class="package-controls">
+                    <button type="button" class="package-nav-btn" id="packagePrevBtn" aria-label="${packagePrevLabel}">&#8249;</button>
+                    <button type="button" class="package-nav-btn" id="packageNextBtn" aria-label="${packageNextLabel}">&#8250;</button>
+                    <button type="button" class="vm" data-home-package-list-url="${pageContext.request.contextPath}/packages">
+                        <spring:message code="home.more"/> &#8594;
+                    </button>
+                </div>
+            </div>
+
+            <div class="home-package-slider" id="homePackageSlider">
+                <div class="home-package-track" id="homePackageTrack">
+                    <c:forEach var="pkg" items="${recommendedPackages}">
+                        <c:set var="packageImagePath" value="${pkg.mainImagePath}"/>
+                        <c:if test="${not empty pkg.mainImagePath and not (fn:startsWith(pkg.mainImagePath, 'http://') or fn:startsWith(pkg.mainImagePath, 'https://'))}">
+                            <c:set var="packageImagePath" value="${pageContext.request.contextPath}${pkg.mainImagePath}"/>
+                        </c:if>
+
+                        <article class="home-package-card"
+                                 data-spot-id="${pkg.spotIdx}"
+                                 tabindex="0"
+                                 role="button">
+                            <div class="home-package-img-wrap">
+                                <c:choose>
+                                    <c:when test="${not empty packageImagePath}">
+                                        <img class="home-package-img"
+                                             src="${fn:escapeXml(packageImagePath)}"
+                                             alt="${fn:escapeXml(pkg.packageTitle)}">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="home-package-img home-package-img-empty">TripTogether</div>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <c:if test="${pkg.sellerRole eq 'PARTNER'}">
+                                    <span class="home-package-partner"><spring:message code="home.packages.partnerBadge"/></span>
+                                </c:if>
+                            </div>
+
+                            <div class="home-package-body">
+                                <div class="home-package-spot">
+                                    &#128205; ${fn:escapeXml(pkg.spotRegion)} · ${fn:escapeXml(pkg.spotName)}
+                                </div>
+                                <h3>${fn:escapeXml(pkg.packageTitle)}</h3>
+                                <p>
+                                    <c:choose>
+                                        <c:when test="${not empty pkg.packageSummary}">
+                                            ${fn:escapeXml(pkg.packageSummary)}
+                                        </c:when>
+                                        <c:otherwise>
+                                            <spring:message code="home.packages.noSummary"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </p>
+                                <div class="home-package-meta">
+                                    <span>
+                                        <fmt:formatNumber value="${pkg.packagePrice}" pattern="#,###"/>
+                                        ${fn:escapeXml(pkg.currencyCode)}
+                                    </span>
+                                    <span>
+                                        <spring:message code="home.packages.bookingCount"/>
+                                        ${pkg.bookingCount}
+                                    </span>
+                                </div>
+                            </div>
+                        </article>
+                    </c:forEach>
+                </div>
+            </div>
+        </div>
+    </section>
+</c:if>
+
 <!-- ===== 트렌딩 여행 코스 섹션 ===== -->
 <section class="cs bg">
     <div class="si">
@@ -328,6 +411,92 @@
                 location.href = ctx + '/courses/detail?planId=' + this.getAttribute('data-plan-id');
             });
         });
+    }
+
+    /* ===== 추천 여행 패키지 자동 슬라이드 ===== */
+    var packageTrack = document.getElementById('homePackageTrack');
+    var packageSlider = document.getElementById('homePackageSlider');
+    var packagePrevBtn = document.getElementById('packagePrevBtn');
+    var packageNextBtn = document.getElementById('packageNextBtn');
+    var packageAutoTimer = null;
+
+    function getPackageStep() {
+        if (!packageTrack) return 0;
+        var firstCard = packageTrack.querySelector('.home-package-card');
+        if (!firstCard) return 0;
+        var gap = 24;
+        return (firstCard.offsetWidth + gap) * 3;
+    }
+
+    function movePackageSlider(direction) {
+        if (!packageSlider || !packageTrack) return;
+
+        var step = getPackageStep();
+        if (step <= 0) return;
+
+        var maxScroll = packageTrack.scrollWidth - packageSlider.clientWidth;
+        var nextLeft = packageSlider.scrollLeft + (step * direction);
+
+        if (nextLeft > maxScroll - 4) {
+            nextLeft = 0;
+        }
+        if (nextLeft < 0) {
+            nextLeft = maxScroll;
+        }
+
+        packageSlider.scrollTo({
+            left: nextLeft,
+            behavior: 'smooth'
+        });
+    }
+
+    function startPackageAutoSlide() {
+        if (!packageSlider || packageAutoTimer) return;
+        packageAutoTimer = window.setInterval(function () {
+            movePackageSlider(1);
+        }, 4500);
+    }
+
+    function stopPackageAutoSlide() {
+        if (!packageAutoTimer) return;
+        window.clearInterval(packageAutoTimer);
+        packageAutoTimer = null;
+    }
+
+    if (packageSlider) {
+        if (packagePrevBtn) {
+            packagePrevBtn.addEventListener('click', function () {
+                movePackageSlider(-1);
+            });
+        }
+        if (packageNextBtn) {
+            packageNextBtn.addEventListener('click', function () {
+                movePackageSlider(1);
+            });
+        }
+
+        packageSlider.addEventListener('mouseenter', stopPackageAutoSlide);
+        packageSlider.addEventListener('mouseleave', startPackageAutoSlide);
+
+        packageSlider.querySelectorAll('.home-package-card[data-spot-id]').forEach(function (card) {
+            card.addEventListener('click', function () {
+                location.href = ctx + '/detail/' + this.getAttribute('data-spot-id');
+            });
+            card.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    location.href = ctx + '/detail/' + this.getAttribute('data-spot-id');
+                }
+            });
+        });
+
+        document.querySelectorAll('[data-home-package-list-url]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                location.href = this.getAttribute('data-home-package-list-url');
+            });
+        });
+
+        startPackageAutoSlide();
     }
 
     /* ===== 인기 여행 이야기 카드 클릭 ===== */

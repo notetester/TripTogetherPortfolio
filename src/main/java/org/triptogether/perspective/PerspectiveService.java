@@ -42,16 +42,15 @@ public class PerspectiveService {
             "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=";
 
     /**
-     * 텍스트의 독성 여부를 판단한다.
+     * 텍스트의 raw 독성 점수를 반환한다 (0.0 ~ 1.0).
+     * 정책 임계값 판단 없이 원시 점수만 필요할 때 사용 (예: 모더레이션 테이블에 score 저장).
      *
-     * <p>API 호출 실패 시 {@code false}를 반환해 필터링을 건너뛴다 (fail-safe).</p>
-     *
-     * @param text 검사할 텍스트 (null 또는 빈 문자열이면 항상 {@code false})
-     * @return 독성 점수가 정책 임계값 이상이면 {@code true}
+     * @param text 검사할 텍스트
+     * @return 독성 점수 Double, API 호출 실패 또는 빈 텍스트면 null
      */
     @SuppressWarnings("unchecked")
-    public boolean isToxic(String text) {
-        if (text == null || text.trim().isEmpty()) return false;
+    public Double getToxicityScore(String text) {
+        if (text == null || text.trim().isEmpty()) return null;
 
         try {
             Map<String, Object> body = Map.of(
@@ -61,20 +60,32 @@ public class PerspectiveService {
             );
 
             Map<?, ?> response = restTemplate.postForObject(API_URL + apiKey, body, Map.class);
-            if (response == null) return false;
+            if (response == null) return null;
 
             Map<?, ?> attributeScores = (Map<?, ?>) response.get("attributeScores");
             Map<?, ?> toxicity        = (Map<?, ?>) attributeScores.get("TOXICITY");
             Map<?, ?> summaryScore    = (Map<?, ?>) toxicity.get("summaryScore");
-            double score = ((Number) summaryScore.get("value")).doubleValue();
-
-            double threshold = moderationPolicyService.getPolicy().getToxicityThreshold();
-            return score >= threshold;
+            return ((Number) summaryScore.get("value")).doubleValue();
 
         } catch (Exception e) {
-            log.warn("Perspective API 호출 실패 (필터링 건너뜀): {}", e.getMessage());
-            return false;
+            log.warn("Perspective API 호출 실패 (score null 반환): {}", e.getMessage());
+            return null;
         }
+    }
+
+    /**
+     * 텍스트의 독성 여부를 판단한다.
+     *
+     * <p>API 호출 실패 시 {@code false}를 반환해 필터링을 건너뛴다 (fail-safe).</p>
+     *
+     * @param text 검사할 텍스트 (null 또는 빈 문자열이면 항상 {@code false})
+     * @return 독성 점수가 정책 임계값 이상이면 {@code true}
+     */
+    public boolean isToxic(String text) {
+        Double score = getToxicityScore(text);
+        if (score == null) return false;
+        double threshold = moderationPolicyService.getPolicy().getToxicityThreshold();
+        return score >= threshold;
     }
 
     /**

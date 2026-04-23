@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.common.service.ChatbotBlockService;
+import org.triptogether.common.service.ChatbotLinkClickService;
 import org.triptogether.common.service.ChatbotQuotaService;
 import org.triptogether.common.service.ConversationService;
 import org.triptogether.common.vo.ChatMessageVO;
@@ -16,6 +17,7 @@ import org.triptogether.common.vo.ChatbotBlockVO;
 import org.triptogether.common.vo.ChatbotQuotaVO;
 import org.triptogether.common.vo.ConversationVO;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ public class AdminChatbotController {
     private final ConversationService conversationService;
     private final ChatbotBlockService blockService;
     private final ChatbotQuotaService quotaService;
+    private final ChatbotLinkClickService linkClickService;
     private final org.triptogether.common.mapper.ChatbotMessageMapper messageMapper;
 
     /**
@@ -46,6 +49,7 @@ public class AdminChatbotController {
     public String chatbotSection(@RequestParam(defaultValue = "dashboard") String tab,
                                  @RequestParam(defaultValue = "1") int page,
                                  @RequestParam(defaultValue = "") String keyword,
+                                 @RequestParam(defaultValue = "30") int days,
                                  Model model) {
 
         int pageSize = 20;
@@ -66,6 +70,21 @@ public class AdminChatbotController {
             case "quotas" -> {
                 List<ChatbotQuotaVO> quotas = quotaService.getAllQuotas();
                 model.addAttribute("quotas", quotas);
+            }
+            case "links" -> {
+                int rangeDays = Math.max(1, Math.min(days, 365));
+                LocalDate today = LocalDate.now();
+                LocalDateTime from = today.minusDays(rangeDays - 1L).atStartOfDay();
+                LocalDateTime to = today.plusDays(1).atStartOfDay();
+
+                int totalClicks = linkClickService.countClicks(from, to);
+                List<Map<String, Object>> topUrls = linkClickService.getTopUrls(from, to, 20);
+                List<Map<String, Object>> dailyTrend = linkClickService.getDailyTrend(from, to);
+
+                model.addAttribute("totalClicks", totalClicks);
+                model.addAttribute("topUrls", topUrls);
+                model.addAttribute("dailyTrend", dailyTrend);
+                model.addAttribute("rangeDays", rangeDays);
             }
             default -> {
                 model.addAttribute("totalConversations", conversationService.countAllConversations(""));
@@ -107,6 +126,23 @@ public class AdminChatbotController {
         result.put("success", true);
         result.put("conversation", conv);
         result.put("messages", conversationService.getAllMessages(conversationId));
+        result.put("linkClicks", linkClickService.getClicksByConversation(conversationId));
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * GET /admin/ai-helper/chatbot/clicks/by-url
+     * 특정 URL 의 클릭자 이력 (최신순).
+     */
+    @GetMapping("/chatbot/clicks/by-url")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> clicksByUrl(@RequestParam String url,
+                                                            @RequestParam(defaultValue = "100") int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 500));
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("url", url);
+        result.put("clickers", linkClickService.getClickersByUrl(url, safeLimit));
         return ResponseEntity.ok(result);
     }
 

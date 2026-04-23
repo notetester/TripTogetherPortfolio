@@ -4,6 +4,15 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<spring:message code="course.confirm.delete" var="courseDeleteConfirm"/>
+<spring:message code="course.form.spotLabel" javaScriptEscape="true" var="courseSpotLabelJs"/>
+<spring:message code="course.action.delete" javaScriptEscape="true" var="courseDeleteLabelJs"/>
+<spring:message code="course.form.citySelect" javaScriptEscape="true" var="courseCitySelectLabelJs"/>
+<spring:message code="course.form.placeName" javaScriptEscape="true" var="coursePlaceNameLabelJs"/>
+<spring:message code="course.form.visitDate" javaScriptEscape="true" var="courseVisitDateLabelJs"/>
+<spring:message code="course.form.visitOrder" javaScriptEscape="true" var="courseVisitOrderLabelJs"/>
+<spring:message code="course.write.dateFormatHint" javaScriptEscape="true" var="courseDateFormatHintJs"/>
+
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/variables.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/reset.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/layout.css">
@@ -16,7 +25,7 @@
 <html lang="${pageContext.response.locale.language}">
 <head>
     <meta charset="UTF-8">
-    <title><spring:message code="courses.detail.pageTitle" /></title>
+    <title><spring:message code="course.detail.title"/></title>
     <style>
         * {
             box-sizing: border-box;
@@ -602,25 +611,26 @@
 
     <div class="top-bar">
         <div class="title-wrap">
-            <h1><spring:message code="courses.detail.header.title" /></h1>
-            <p><spring:message code="courses.detail.header.desc" /></p>
+            <h1><spring:message code="course.detail.title"/></h1>
+            <p><spring:message code="course.detail.desc"/></p>
         </div>
 
         <div class="top-actions">
-            <a href="${pageContext.request.contextPath}/courses/list" class="btn btn-light"><spring:message code="courses.common.backToList" /></a>
+            <a href="${pageContext.request.contextPath}/courses/list" class="btn btn-light"><spring:message code="course.action.backToList"/></a>
 
             <c:if test="${isOwner}">
                 <div class="detail-btn-group">
                     <a href="${pageContext.request.contextPath}/courses/edit?planId=${travelPlan.plan_id}" class="detail-btn edit">
-                        <spring:message code="courses.common.action.editPlan" />
+                        <spring:message code="course.action.editPlan"/>
                     </a>
 
                     <form method="post"
                           action="${pageContext.request.contextPath}/courses/delete"
-                          onsubmit="return confirm('<spring:message code="courses.common.confirm.deletePlan" javaScriptEscape="true" />');"
+                          class="js-delete-plan-form"
+                          data-confirm="${courseDeleteConfirm}"
                           style="display:inline;">
                         <input type="hidden" name="planId" value="${travelPlan.plan_id}">
-                        <button type="submit" class="detail-btn delete"><spring:message code="courses.common.action.deletePlan" /></button>
+                        <button type="submit" class="detail-btn delete"><spring:message code="course.action.deletePlan"/></button>
                     </form>
                 </div>
             </c:if>
@@ -637,31 +647,31 @@
 
                 <c:choose>
                     <c:when test="${travelPlan.is_public == 1}">
-                        <span class="badge badge-public"><spring:message code="courses.common.visibility.public" /></span>
+                        <span class="badge badge-public"><spring:message code="course.badge.public"/></span>
                     </c:when>
                     <c:otherwise>
-                        <span class="badge badge-private"><spring:message code="courses.common.visibility.private" /></span>
+                        <span class="badge badge-private"><spring:message code="course.badge.private"/></span>
                     </c:otherwise>
                 </c:choose>
             </div>
 
             <div class="info-list">
                 <div class="info-row">
-                    <div class="info-label"><spring:message code="courses.common.field.destination" /></div>
+                    <div class="info-label"><spring:message code="course.form.destination"/></div>
                     <div class="info-value">
                         <c:out value="${travelPlan.destination}" />
                     </div>
                 </div>
 
                 <div class="info-row">
-                    <div class="info-label"><spring:message code="courses.common.field.startDate" /></div>
+                    <div class="info-label"><spring:message code="course.form.startDate"/></div>
                     <div class="info-value">
                         <fmt:formatDate value="${travelPlan.start_date}" type="date" dateStyle="medium"/>
                     </div>
                 </div>
 
                 <div class="info-row">
-                    <div class="info-label"><spring:message code="courses.common.field.endDate" /></div>
+                    <div class="info-label"><spring:message code="course.form.endDate"/></div>
                     <div class="info-value">
                         <fmt:formatDate value="${travelPlan.end_date}" type="date" dateStyle="medium"/>
                     </div>
@@ -675,7 +685,7 @@
 <%--                </div>--%>
 
                 <div class="info-row">
-                    <div class="info-label"><spring:message code="courses.common.field.spotCount" /></div>
+                    <div class="info-label"><spring:message code="course.form.spotCount"/></div>
                     <div class="info-value">
                         <spring:message code="courses.common.countWithUnit" arguments="${travelPlan.spotList.size()}" />
                     </div>
@@ -685,14 +695,14 @@
                 <div class="bottom-actions">
                     <a href="${pageContext.request.contextPath}/courses/edit?planId=${travelPlan.plan_id}"
                        class="btn btn-primary">
-                        <spring:message code="courses.common.action.editPlan" />
+                        <spring:message code="course.action.editPlan"/>
                     </a>
 
                     <form class="inline-form" method="post"
                           action="${pageContext.request.contextPath}/courses/delete"
-                          onsubmit="return confirm('<spring:message code="courses.common.confirm.deletePlanAlt" javaScriptEscape="true" />');">
+                          data-confirm="${courseDeleteConfirm}">
                         <input type="hidden" name="planId" value="${travelPlan.plan_id}">
-                        <button type="submit" class="btn btn-danger"><spring:message code="courses.common.action.deletePlan" /></button>
+                        <button type="submit" class="btn btn-danger"><spring:message code="course.action.deletePlan"/></button>
                     </form>
                 </div>
             </c:if>
@@ -700,7 +710,7 @@
             <c:if test="${not isOwner}">
                 <div class="bottom-actions" style="justify-content:flex-start;">
                     <div style="font-size:14px; color:#6b7280; font-weight:600;">
-                        <spring:message code="courses.common.ownerNotice" />
+                        <spring:message code="course.detail.privateNotice"/>
                     </div>
                 </div>
             </c:if>
@@ -709,25 +719,26 @@
         <!-- 오른쪽 여행지 목록 -->
         <div class="card content-card">
             <div>
-                <h3 class="section-title"><spring:message code="courses.detail.section.spots.title" /></h3>
-                <p class="section-desc"><spring:message code="courses.detail.section.spots.desc" /></p>
+                <h3 class="section-title"><spring:message code="course.detail.includedSpots"/></h3>
+                <p class="section-desc"><spring:message code="course.detail.spotSectionDesc"/></p>
             </div>
 
             <div class="detail-filter-bar">
                 <div class="spot-filter-left">
-                    <label for="dateFilter" class="spot-filter-label"><spring:message code="courses.common.field.dateFilter" /></label>
+                    <label for="dateFilter" class="spot-filter-label"><spring:message code="course.form.visitDate"/></label>
                     <input type="date" id="dateFilter" class="spot-filter-input">
-                    <button type="button" class="spot-filter-reset" onclick="resetDateFilter()"><spring:message code="courses.common.action.showAll" /></button>
+                    <div class="form-sub2"><spring:message code="course.write.dateFormatHint"/></div>
+                    <button type="button" class="spot-filter-reset" onclick="resetDateFilter()"><spring:message code="course.action.resetFilter"/></button>
                 </div>
                 <div class="spot-filter-right">
-                    <spring:message code="courses.common.filter.hint" />
+                    <spring:message code="course.detail.filterGuide"/>
                 </div>
             </div>
 
             <c:choose>
                 <c:when test="${empty travelPlan.spotList}">
                     <div class="empty-box">
-                        <spring:message code="courses.detail.emptySpots" />
+                        <spring:message code="course.detail.emptySpots"/>
                     </div>
                 </c:when>
                 <c:otherwise>
@@ -770,12 +781,12 @@
                                 </div>
 
                                 <div class="spot-meta">
-                                    <div class="spot-meta-label"><spring:message code="courses.common.field.placeName" /></div>
+                                    <div class="spot-meta-label"><spring:message code="course.form.placeName"/></div>
                                     <div class="spot-meta-value">
                                         <c:out value="${spot.place_name}" />
                                     </div>
 
-                                    <div class="spot-meta-label"><spring:message code="courses.common.field.visitDate" /></div>
+                                    <div class="spot-meta-label"><spring:message code="course.form.visitDate"/></div>
                                     <div class="spot-meta-value">
                                         <c:out value="${visitDateStr}" />
                                     </div>
@@ -789,15 +800,15 @@
                         </c:forEach>
                     </div>
                     <div class="filtered-empty" id="filteredEmpty">
-                        <spring:message code="courses.common.filter.empty" />
+                        <spring:message code="course.detail.filteredEmpty"/>
                     </div>
                 </c:otherwise>
             </c:choose>
         </div>
 
         <div class="card content-card" id="editCard" style="display:none; margin-top:24px;">
-            <h3 class="section-title"><spring:message code="courses.detail.section.edit.title" /></h3>
-            <p class="section-desc"><spring:message code="courses.detail.section.edit.desc" /></p>
+            <h3 class="section-title"><spring:message code="course.detail.edit.title"/></h3>
+            <p class="section-desc"><spring:message code="course.detail.edit.desc"/></p>
 
             <form id="editForm"
                   action="${pageContext.request.contextPath}/courses/edit"
@@ -814,13 +825,13 @@
 
                 <div class="form-row-2">
                     <div class="form-group2">
-                        <label class="form-label2"><spring:message code="courses.common.field.title" /></label>
+                        <label class="form-label2"><spring:message code="course.form.title"/></label>
                         <input type="text" name="title" class="form-input2"
                                value="${travelPlan.title}" required>
                     </div>
 
                     <div class="form-group2">
-                        <label class="form-label2"><spring:message code="courses.common.field.destination" /></label>
+                        <label class="form-label2"><spring:message code="course.form.destination"/></label>
                         <input type="text" name="destination" class="form-input2"
                                list="editCityOptionList"
                                value="${travelPlan.destination}" required>
@@ -829,24 +840,26 @@
 
                 <div class="form-row-2">
                     <div class="form-group2">
-                        <label class="form-label2"><spring:message code="courses.common.field.startDate" /></label>
+                        <label class="form-label2"><spring:message code="course.form.startDate"/></label>
                         <fmt:formatDate value="${travelPlan.start_date}" pattern="yyyy-MM-dd" var="startDateStr"/>
                         <input type="date" name="start_date" class="form-input2"
                                value="${startDateStr}" required>
+                        <div class="form-sub2"><spring:message code="course.write.dateFormatHint"/></div>
                     </div>
 
                     <div class="form-group2">
-                        <label class="form-label2"><spring:message code="courses.common.field.endDate" /></label>
+                        <label class="form-label2"><spring:message code="course.form.endDate"/></label>
                         <fmt:formatDate value="${travelPlan.end_date}" pattern="yyyy-MM-dd" var="endDateStr"/>
                         <input type="date" name="end_date" class="form-input2"
                                value="${endDateStr}" required>
+                        <div class="form-sub2"><spring:message code="course.write.dateFormatHint"/></div>
                     </div>
                 </div>
 
                 <div class="toggle-wrap2">
                     <div>
-                        <div class="form-label2" style="margin-bottom:4px;"><spring:message code="courses.common.field.publicVisibility" /></div>
-                        <div class="form-sub2"><spring:message code="courses.detail.edit.visibility.desc" /></div>
+                        <div class="form-label2" style="margin-bottom:4px;"><spring:message code="course.form.publicStatus"/></div>
+                        <div class="form-sub2"><spring:message code="course.form.publicDescription"/></div>
                     </div>
 
                     <label class="toggle-switch">
@@ -856,8 +869,8 @@
                 </div>
 
                 <div class="edit-spot-head">
-                    <h4><spring:message code="courses.detail.edit.spotsTitle" /></h4>
-                    <button type="button" class="btn btn-light" onclick="addEditSpot()"><spring:message code="courses.common.action.addSpot" /></button>
+                    <h4><spring:message code="course.form.spotEditTitle"/></h4>
+                    <button type="button" class="btn btn-light" onclick="addEditSpot()">+ <spring:message code="course.action.addSpot"/></button>
                 </div>
 
                 <div id="editSpotList">
@@ -867,12 +880,12 @@
                             <input type="hidden" data-field="spot_id" name="spotList[${s.index}].spot_id" value="${spot.spot_id}">
 
                             <div class="edit-spot-top">
-                                <strong><spring:message code="courses.common.spotIndexed" arguments="${s.index + 1}" /></strong>
-                                <button type="button" class="remove-mini-btn" onclick="removeEditSpot(this)"><spring:message code="courses.common.delete" /></button>
+                                <strong><spring:message code="course.form.spotLabel"/> ${s.index + 1}</strong>
+                                <button type="button" class="remove-mini-btn" onclick="removeEditSpot(this)"><spring:message code="course.action.delete"/></button>
                             </div>
 
                             <div class="form-group2">
-                                <label class="form-label2"><spring:message code="courses.common.field.citySelect" /></label>
+                                <label class="form-label2"><spring:message code="course.form.citySelect"/></label>
                                 <input type="text"
                                        class="form-input2 city-name-input"
                                        list="editCityOptionList"
@@ -883,7 +896,7 @@
 
                             <div class="form-row-2">
                                 <div class="form-group2">
-                                    <label class="form-label2"><spring:message code="courses.common.field.placeName" /></label>
+                                    <label class="form-label2"><spring:message code="course.form.placeName"/></label>
                                     <input type="text"
                                            class="form-input2"
                                            data-field="place_name"
@@ -893,18 +906,19 @@
                                 </div>
 
                                 <div class="form-group2">
-                                    <label class="form-label2"><spring:message code="courses.common.field.visitDate" /></label>
+                                    <label class="form-label2"><spring:message code="course.form.visitDate"/></label>
                                     <input type="date"
                                            class="form-input2"
                                            data-field="visit_date"
                                            name="spotList[${s.index}].visit_date"
                                            value="${spotDateStr}"
                                            required>
+                                    <div class="form-sub2"><spring:message code="course.write.dateFormatHint"/></div>
                                 </div>
                             </div>
 
                             <div class="form-group2">
-                                <label class="form-label2"><spring:message code="courses.common.field.visitOrder" /></label>
+                                <label class="form-label2"><spring:message code="course.form.visitOrder"/></label>
                                 <input type="number"
                                        class="form-input2"
                                        data-field="visit_order"
@@ -918,8 +932,8 @@
                 </div>
 
                 <div class="edit-submit-row">
-                    <button type="button" class="btn btn-light" onclick="toggleEditForm()"><spring:message code="courses.common.cancel" /></button>
-                    <button type="submit" class="btn btn-primary"><spring:message code="courses.common.action.saveEdit" /></button>
+                    <button type="button" class="btn btn-light" onclick="toggleEditForm()"><spring:message code="course.action.cancel"/></button>
+                    <button type="submit" class="btn btn-primary"><spring:message code="course.action.saveEdit"/></button>
                 </div>
             </form>
         </div>
@@ -928,6 +942,23 @@
 </div>
 
 <script>
+    const COURSE_DETAIL_TEXT = {
+        spotLabel: '${courseSpotLabelJs}',
+        deleteLabel: '${courseDeleteLabelJs}',
+        citySelect: '${courseCitySelectLabelJs}',
+        placeName: '${coursePlaceNameLabelJs}',
+        visitDate: '${courseVisitDateLabelJs}',
+        visitOrder: '${courseVisitOrderLabelJs}',
+        dateFormatHint: '${courseDateFormatHintJs}'
+    };
+
+    document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!confirm(this.dataset.confirm || '')) {
+                event.preventDefault();
+            }
+        });
+    });
     const courseDetailMessages = {
         spotIndexed: "<spring:message code='courses.common.spotIndexed' javaScriptEscape='true' />",
         deleteLabel: "<spring:message code='courses.common.delete' javaScriptEscape='true' />",
@@ -1016,7 +1047,7 @@
         items.forEach((item, index) => {
             const title = item.querySelector(".edit-spot-top strong");
             if (title) {
-                title.textContent = formatCourseMessage(courseDetailMessages.spotIndexed, index + 1);
+                title.textContent = COURSE_DETAIL_TEXT.spotLabel + " " + (index + 1);
             }
 
             item.querySelectorAll("[data-field]").forEach(input => {
@@ -1045,40 +1076,31 @@
         const div = document.createElement("div");
         div.className = "edit-spot-item";
 
-        div.innerHTML = `
-            <input type="hidden" data-field="spot_id" value="">
-
-            <div class="edit-spot-top">
-                <strong>${formatCourseMessage(courseDetailMessages.spotIndexed, "")}</strong>
-                <button type="button" class="remove-mini-btn" onclick="removeEditSpot(this)">${courseDetailMessages.deleteLabel}</button>
-            </div>
-
-            <div class="form-group2">
-                <label class="form-label2">${courseDetailMessages.citySelectLabel}</label>
-                <input type="text"
-                       class="form-input2 city-name-input"
-                       list="editCityOptionList"
-                       autocomplete="off"
-                       required>
-            </div>
-
-            <div class="form-row-2">
-                <div class="form-group2">
-                    <label class="form-label2">${courseDetailMessages.placeNameLabel}</label>
-                    <input type="text" class="form-input2" data-field="place_name" required>
-                </div>
-
-                <div class="form-group2">
-                    <label class="form-label2">${courseDetailMessages.visitDateLabel}</label>
-                    <input type="date" class="form-input2" data-field="visit_date" required>
-                </div>
-            </div>
-
-            <div class="form-group2">
-                <label class="form-label2">${courseDetailMessages.visitOrderLabel}</label>
-                <input type="number" class="form-input2" data-field="visit_order" min="1" required>
-            </div>
-        `;
+        div.innerHTML =
+            '<input type="hidden" data-field="spot_id" value="">' +
+            '<div class="edit-spot-top">' +
+            '<strong>' + COURSE_DETAIL_TEXT.spotLabel + '</strong>' +
+            '<button type="button" class="remove-mini-btn" onclick="removeEditSpot(this)">' + COURSE_DETAIL_TEXT.deleteLabel + '</button>' +
+            '</div>' +
+            '<div class="form-group2">' +
+            '<label class="form-label2">' + COURSE_DETAIL_TEXT.citySelect + '</label>' +
+            '<input type="text" class="form-input2 city-name-input" list="editCityOptionList" autocomplete="off" required>' +
+            '</div>' +
+            '<div class="form-row-2">' +
+            '<div class="form-group2">' +
+            '<label class="form-label2">' + COURSE_DETAIL_TEXT.placeName + '</label>' +
+            '<input type="text" class="form-input2" data-field="place_name" required>' +
+            '</div>' +
+            '<div class="form-group2">' +
+            '<label class="form-label2">' + COURSE_DETAIL_TEXT.visitDate + '</label>' +
+            '<input type="date" class="form-input2" data-field="visit_date" required>' +
+            '<div class="form-sub2">' + COURSE_DETAIL_TEXT.dateFormatHint + '</div>' +
+            '</div>' +
+            '</div>' +
+            '<div class="form-group2">' +
+            '<label class="form-label2">' + COURSE_DETAIL_TEXT.visitOrder + '</label>' +
+            '<input type="number" class="form-input2" data-field="visit_order" min="1" required>' +
+            '</div>';
 
         list.appendChild(div);
         bindCityInput(div);

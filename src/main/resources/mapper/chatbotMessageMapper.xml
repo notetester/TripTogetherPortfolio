@@ -12,6 +12,8 @@
         <result property="content"          column="content"/>
         <result property="isInappropriate"  column="is_inappropriate"/>
         <result property="createdAt"        column="created_at"/>
+        <result property="authorUserIdx"    column="author_user_idx"/>
+        <result property="authorNickname"   column="author_nickname"/>
     </resultMap>
 
     <!-- =============================================
@@ -63,10 +65,14 @@
          5. 부적절 메시지 목록 (관리자 모니터링)
          ============================================= -->
     <select id="selectInappropriateMessages" resultMap="MessageResultMap">
-        SELECT message_id, conversation_id, role, content, is_inappropriate, created_at
-        FROM CHATBOT_MESSAGE
-        WHERE is_inappropriate = 1
-        ORDER BY created_at DESC
+        SELECT m.message_id, m.conversation_id, m.role, m.content, m.is_inappropriate, m.created_at,
+               c.user_idx   AS author_user_idx,
+               u.nickname   AS author_nickname
+        FROM CHATBOT_MESSAGE m
+        LEFT JOIN CHATBOT_CONVERSATION c ON c.conversation_id = m.conversation_id
+        LEFT JOIN USERS u ON u.user_idx = c.user_idx
+        WHERE m.is_inappropriate = 1
+        ORDER BY m.created_at DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
@@ -74,6 +80,15 @@
         SELECT COUNT(*)
         FROM CHATBOT_MESSAGE
         WHERE is_inappropriate = 1
+    </select>
+
+    <!-- 대화의 주기 시작 이후 user 메시지 수 (쿼터 차감용) -->
+    <select id="countUserMessagesByConversationSince" resultType="int">
+        SELECT COUNT(*)
+          FROM CHATBOT_MESSAGE
+         WHERE conversation_id = #{conversationId}
+           AND role = 'user'
+           AND created_at &gt;= #{since}
     </select>
 
 </mapper>
