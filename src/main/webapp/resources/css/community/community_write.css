@@ -356,8 +356,21 @@ html.dark .guide-list li::before { color: #60a5fa; }
 .note-modal .note-modal-content {
     border-radius: var(--radius);
 }
-.note-modal .note-modal-header { border-bottom: 1px solid var(--gray-200); }
-.note-modal .note-modal-footer { border-top: 1px solid var(--gray-200); }
+.note-modal .note-modal-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--gray-200);
+}
+.note-modal .note-modal-body {
+    padding: 28px 24px;
+}
+.note-modal .note-modal-body .note-form-group {
+    margin-bottom: 22px;
+}
+.note-modal .note-modal-body .note-form-group:last-child { margin-bottom: 0; }
+.note-modal .note-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--gray-200);
+}
 
 /* ── 다크 모드 ── */
 html.dark .note-editor.note-frame {
