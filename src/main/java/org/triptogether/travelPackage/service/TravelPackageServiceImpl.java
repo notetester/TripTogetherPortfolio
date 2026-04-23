@@ -235,6 +235,11 @@ public class TravelPackageServiceImpl implements TravelPackageService {
     }
 
     @Override
+    public List<TravelPackageVO> getHomeRecommendedPackages() {
+        return travelPackageMapper.selectHomeRecommendedPackages();
+    }
+
+    @Override
     public List<TravelPackageVO> getApprovedPackagesBySpot(Long spotIdx) {
         if (spotIdx == null) {
             return List.of();

@@ -42,6 +42,8 @@ public interface TravelPackageMapper {
 
     List<TravelPackageVO> selectApprovedPackages();
 
+    List<TravelPackageVO> selectHomeRecommendedPackages();
+
     List<TravelPackageVO> selectApprovedPackagesBySpot(@Param("spotIdx") Long spotIdx);
 
     TravelPackageVO selectApprovedPackageForUpdate(@Param("packageIdx") Long packageIdx);
