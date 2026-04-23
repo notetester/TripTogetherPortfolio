@@ -357,20 +357,20 @@ html.dark .guide-list li::before { color: #60a5fa; }
     border-radius: var(--radius);
 }
 .note-modal .note-modal-header {
-    padding: 20px 28px;
+    padding: 26px 32px !important;
     border-bottom: 1px solid var(--gray-200);
 }
 .note-modal .note-modal-body {
-    padding: 36px 28px;
+    padding: 48px 32px !important;
 }
 /* Summernote는 .note-form-group 간격을 padding-bottom 으로 관리함 (margin 아님) */
 .note-modal .note-modal-body .note-form-group {
-    padding-bottom: 30px;
+    padding-bottom: 40px !important;
 }
-.note-modal .note-modal-body .note-form-group:last-child { padding-bottom: 0; }
+.note-modal .note-modal-body .note-form-group:last-child { padding-bottom: 0 !important; }
 .note-modal .note-modal-footer {
-    height: auto;
-    padding: 18px 28px;
+    height: auto !important;
+    padding: 20px 32px !important;
     border-top: 1px solid var(--gray-200);
 }
 
