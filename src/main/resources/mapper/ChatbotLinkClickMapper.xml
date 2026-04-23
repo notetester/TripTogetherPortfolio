@@ -16,4 +16,41 @@
             (#{messageId}, #{conversationId}, #{userIdx}, #{anonSessionId}, #{url}, #{label}, #{ipAddress})
     </insert>
 
+    <!-- =============================================
+         2. 총 클릭 수 (기간)
+         ============================================= -->
+    <select id="countClicks" resultType="int">
+        SELECT COUNT(*)
+          FROM CHATBOT_LINK_CLICK
+         WHERE clicked_at &gt;= #{from}
+           AND clicked_at &lt;  #{to}
+    </select>
+
+    <!-- =============================================
+         3. URL 별 클릭 상위 N (기간)
+         ============================================= -->
+    <select id="selectTopUrls" resultType="map">
+        SELECT url            AS url,
+               COUNT(*)       AS clickCount
+          FROM CHATBOT_LINK_CLICK
+         WHERE clicked_at &gt;= #{from}
+           AND clicked_at &lt;  #{to}
+         GROUP BY url
+         ORDER BY clickCount DESC, url ASC
+         LIMIT #{limit}
+    </select>
+
+    <!-- =============================================
+         4. 일별 클릭 수 (기간, 오름차순)
+         ============================================= -->
+    <select id="selectDailyTrend" resultType="map">
+        SELECT DATE(clicked_at) AS clickDate,
+               COUNT(*)         AS clickCount
+          FROM CHATBOT_LINK_CLICK
+         WHERE clicked_at &gt;= #{from}
+           AND clicked_at &lt;  #{to}
+         GROUP BY DATE(clicked_at)
+         ORDER BY clickDate ASC
+    </select>
+
 </mapper>

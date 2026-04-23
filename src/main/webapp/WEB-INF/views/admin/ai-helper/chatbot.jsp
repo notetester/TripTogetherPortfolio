@@ -11,8 +11,8 @@
 
     <%-- ── 챗봇 내부 sub-tab ── --%>
     <div class="aih-tabs" style="display:flex;gap:4px;border-bottom:1px solid #e5e7eb;margin:20px 0;">
-        <c:set var="tabs" value="dashboard,inappropriate,blocks,quotas"/>
-        <c:set var="labels" value="대시보드,부적절 메시지,차단 관리,정책"/>
+        <c:set var="tabs" value="dashboard,links,inappropriate,blocks,quotas"/>
+        <c:set var="labels" value="대시보드,링크 클릭,부적절 메시지,차단 관리,정책"/>
         <c:forTokens items="${tabs}" delims="," var="t" varStatus="st">
             <c:set var="label" value="${fn:split(labels, ',')[st.index]}"/>
             <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=${t}"
@@ -132,6 +132,98 @@
             </div>
         </c:if>
 
+    </c:if>
+
+    <%-- ══════════════════════════════════════════
+         링크 클릭 분석 탭
+    ══════════════════════════════════════════ --%>
+    <c:if test="${tab == 'links'}">
+        <%-- 기간 필터 --%>
+        <div class="adm-card" style="padding:14px 16px;margin-bottom:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <div style="font-size:13px;color:#475569;font-weight:600;">기간</div>
+            <c:forEach var="d" items="7,30,90,365">
+                <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot?tab=links&days=${d}"
+                   class="adm-btn ${rangeDays == d ? 'adm-btn-primary' : 'adm-btn-ghost'}"
+                   style="font-size:12px;padding:4px 12px;">
+                    최근 ${d}일
+                </a>
+            </c:forEach>
+            <div style="margin-left:auto;font-size:12px;color:#64748b;">
+                총 <strong style="color:#1d4ed8;">${totalClicks}</strong> 건
+            </div>
+        </div>
+
+        <%-- 일별 추이 (CSS 막대) --%>
+        <div class="adm-card" style="padding:16px;margin-bottom:16px;">
+            <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:12px;">📈 일별 클릭 추이</div>
+            <c:choose>
+                <c:when test="${empty dailyTrend}">
+                    <div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;">데이터가 없습니다.</div>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="maxCount" value="0"/>
+                    <c:forEach var="row" items="${dailyTrend}">
+                        <c:if test="${row.clickCount > maxCount}">
+                            <c:set var="maxCount" value="${row.clickCount}"/>
+                        </c:if>
+                    </c:forEach>
+                    <div style="display:flex;align-items:flex-end;gap:3px;height:140px;overflow-x:auto;padding-bottom:4px;">
+                        <c:forEach var="row" items="${dailyTrend}">
+                            <c:set var="pct" value="${maxCount > 0 ? (row.clickCount * 100 / maxCount) : 0}"/>
+                            <div style="flex:0 0 32px;display:flex;flex-direction:column;align-items:center;gap:4px;" title="${row.clickDate}: ${row.clickCount}">
+                                <div style="font-size:10px;color:#64748b;">${row.clickCount}</div>
+                                <div style="width:22px;height:${pct}%;min-height:2px;background:linear-gradient(180deg,#60a5fa,#2563eb);border-radius:3px 3px 0 0;"></div>
+                                <div style="font-size:9px;color:#94a3b8;font-family:monospace;transform:rotate(-45deg);transform-origin:center;white-space:nowrap;margin-top:6px;">
+                                    ${fn:substring(row.clickDate, 5, 10)}
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+
+        <%-- 상위 URL 랭킹 --%>
+        <div class="adm-card" style="padding:0;overflow-x:auto;">
+            <div style="padding:14px 16px;border-bottom:1px solid #e5e7eb;font-size:13px;font-weight:700;color:#1e293b;">
+                🔝 상위 클릭 URL (최대 20개)
+            </div>
+            <table class="adm-table" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="width:48px;">순위</th>
+                        <th>URL</th>
+                        <th style="width:120px;text-align:right;">클릭 수</th>
+                        <th style="width:240px;">분포</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:choose>
+                        <c:when test="${empty topUrls}">
+                            <tr><td colspan="4" style="text-align:center;padding:40px;color:#94a3b8;">데이터가 없습니다.</td></tr>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="rankTopCount" value="${topUrls[0].clickCount}"/>
+                            <c:forEach var="row" items="${topUrls}" varStatus="st">
+                                <c:set var="pct" value="${rankTopCount > 0 ? (row.clickCount * 100 / rankTopCount) : 0}"/>
+                                <tr>
+                                    <td><strong>${st.index + 1}</strong></td>
+                                    <td style="font-family:monospace;font-size:12px;word-break:break-all;">
+                                        <a href="${pageContext.request.contextPath}${row.url}" target="_blank" style="color:#1d4ed8;text-decoration:none;">${row.url}</a>
+                                    </td>
+                                    <td style="text-align:right;font-weight:600;">${row.clickCount}</td>
+                                    <td>
+                                        <div style="width:100%;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+                                            <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#60a5fa,#2563eb);"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                </tbody>
+            </table>
+        </div>
     </c:if>
 
     <%-- ══════════════════════════════════════════
