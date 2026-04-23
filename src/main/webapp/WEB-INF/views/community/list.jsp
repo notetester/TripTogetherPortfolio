@@ -19,7 +19,7 @@
     - page    : 페이지 번호 (기본값: 1)
 --%>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="community/community.css"/>
 <%@ include file="../common/header.jsp" %>
 <body>
@@ -675,7 +675,10 @@
                 'blockIpAndDelete':    '<spring:message code="community.admin.blockDelete.ip" javaScriptEscape="true"/>',
                 'blockAndDelete':      '<spring:message code="community.admin.blockDelete.both" javaScriptEscape="true"/>'
             };
-        if (!confirm(checked.length + '개 게시글에 대해 [' + labels[action] + '] 을(를) 실행하시겠습니까?')) return;
+        var confirmMessage = '<spring:message code="community.detail.bulk.posts.confirm" arguments="__COUNT__,__ACTION__" javaScriptEscape="true"/>'
+            .replace('__COUNT__', checked.length)
+            .replace('__ACTION__', labels[action]);
+        if (!confirm(confirmMessage)) return;
 
         var postIds = checked.map(function (c) { return c.getAttribute('data-id'); });
         var params  = new URLSearchParams();
@@ -690,13 +693,13 @@
         .then(function (res) { return res.json(); })
         .then(function (data) {
             if (data.success) {
-                alert('처리가 완료되었습니다.');
+                alert('<spring:message code="community.detail.bulk.done" javaScriptEscape="true"/>');
                 location.reload();
             } else {
-                alert('처리 중 오류가 발생했습니다: ' + (data.message || ''));
+                alert('<spring:message code="community.detail.bulk.fail" arguments="__MSG__" javaScriptEscape="true"/>'.replace('__MSG__', data.message || ''));
             }
         })
-        .catch(function () { alert('요청 중 오류가 발생했습니다.'); });
+        .catch(function () { alert('<spring:message code="community.detail.request.fail" javaScriptEscape="true"/>'); });
     };
 </script>
 

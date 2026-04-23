@@ -128,7 +128,10 @@
 
                         <%-- 대상 --%>
                         <td>
-                            <div class="mem-name">
+                            <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}"
+                               class="adm-cell-link"
+                               onclick="event.stopPropagation();">
+                                <span class="mem-name">
                                 <c:choose>
                                     <c:when test="${r.targetType eq 'post'}">
                                         <spring:message code="admin.reports.target.post"/><span class="adm-module-badge adm-module-community"><spring:message code="admin.layout.menu.community"/></span>
@@ -152,104 +155,88 @@
                                         </c:choose>
                                     </span>
                                 </c:if>
-                            </div>
-                            <div class="mem-uid">#${r.targetId}</div>
-                            <div class="adm-inline-actions">
-                                <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}"
-                                   class="adm-inline-chip"><spring:message code="admin.common.viewDetail"/></a>
-                                <a href="${pageContext.request.contextPath}/admin/reports?targetType=${r.targetType}&amp;keyword=${r.targetId}"
-                                   class="adm-inline-chip"><spring:message code="admin.common.sameTarget"/></a>
-                                <c:if test="${r.targetType eq 'user' and not empty r.targetId}">
-                                    <button type="button"
-                                            class="adm-inline-chip js-open-member-context"
-                                            data-user-idx="${r.targetId}">
-                                        <spring:message code="admin.common.member"/>
-                                    </button>
-                                </c:if>
-                                <c:if test="${r.targetType eq 'post' and r.targetStatus ne 'DELETED'}">
-                                    <a href="${pageContext.request.contextPath}/community/${r.targetId}"
-                                       target="_blank"
-                                       class="adm-inline-chip"><spring:message code="admin.reports.detail.viewOriginal"/></a>
-                                </c:if>
-                                <c:if test="${r.targetType eq 'comment' and r.targetStatus ne 'DELETED' and (not empty r.sourceId or not empty r.targetPostId)}">
-                                    <a href="${pageContext.request.contextPath}/community/${empty r.sourceId ? r.targetPostId : r.sourceId}"
-                                       target="_blank"
-                                       class="adm-inline-chip"><spring:message code="admin.reports.detail.viewOriginal"/></a>
-                                </c:if>
-                                <c:if test="${r.targetType eq 'review' and r.targetStatus ne 'DELETED' and not empty r.targetSpotIdx}">
-                                    <a href="${pageContext.request.contextPath}/admin/explore/spots/${r.targetSpotIdx}"
-                                       class="adm-inline-chip"><spring:message code="admin.common.viewSpot"/></a>
-                                </c:if>
-                            </div>
+                            </span>
+                                <span class="mem-uid">#${r.targetId}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.viewDetail"/></span>
+                            </a>
                         </td>
 
                         <%-- 신고자 닉네임 --%>
                         <td>
                             <button type="button"
-                                    class="adm-inline-link js-open-member-context"
+                                    class="adm-cell-link js-open-member-context"
                                     data-user-idx="${r.userIdx}"
-                                    style="font-weight:700;color:#93c5fd;">${r.nickname}</button>
-                            <div class="adm-modal-value">
-                                <button type="button"
-                                        class="adm-inline-link js-open-member-context"
-                                        data-user-idx="${r.userIdx}"
-                                        style="font-size:12px;color:#94a3b8;">${r.userId}</button>
-                            </div>
-                            <c:if test="${r.accountStatus == 'BLOCKED'}">
-                                <span class="adm-inline-danger"><spring:message code="admin.reports.accountBlocked"/></span>
-                            </c:if>
-                            <div class="adm-inline-actions">
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-keyword="${r.userId}"
-                                        onclick="applyReportKeywordFilter(this)">
-                                    <spring:message code="admin.common.sameReporter"/>
-                                </button>
-                            </div>
+                                    onclick="event.stopPropagation();">
+                                <span style="font-weight:700;color:#93c5fd;">${r.nickname}</span>
+                                <span class="adm-cell-link-note">@${r.userId}</span>
+                                <c:if test="${r.accountStatus == 'BLOCKED'}">
+                                    <span class="adm-cell-link-note" style="color:#fca5a5;"><spring:message code="admin.reports.accountBlocked"/></span>
+                                </c:if>
+                            </button>
                         </td>
 
                         <%-- 사유 --%>
                         <td>
-                            <span style="font-size:12px;">
-                                <c:choose>
-                                    <c:when test="${r.reason eq 'spam'}"><spring:message code="admin.reports.reason.spam"/></c:when>
-                                    <c:when test="${r.reason eq 'abuse'}"><spring:message code="admin.reports.reason.abuse"/></c:when>
-                                    <c:when test="${r.reason eq 'privacy'}"><spring:message code="admin.reports.reason.privacy"/></c:when>
-                                    <c:when test="${r.reason eq 'adult'}"><spring:message code="admin.reports.reason.adult"/></c:when>
-                                    <c:when test="${r.reason eq 'illegal'}"><spring:message code="admin.reports.reason.illegal"/></c:when>
-                                    <c:when test="${r.reason eq 'other'}"><spring:message code="admin.reports.reason.other"/></c:when>
-                                    <c:when test="${r.reason eq 'user'}"><spring:message code="admin.reports.reason.user"/></c:when>
-                                    <c:when test="${not empty r.reason}">${r.reason}</c:when>
-                                    <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
-                                </c:choose>
-                            </span>
+                            <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}&jump=report-processing-actions"
+                               class="adm-cell-link"
+                               onclick="event.stopPropagation();">
+                                <span style="font-size:12px;">
+                                    <c:choose>
+                                        <c:when test="${r.reason eq 'spam'}"><spring:message code="admin.reports.reason.spam"/></c:when>
+                                        <c:when test="${r.reason eq 'abuse'}"><spring:message code="admin.reports.reason.abuse"/></c:when>
+                                        <c:when test="${r.reason eq 'privacy'}"><spring:message code="admin.reports.reason.privacy"/></c:when>
+                                        <c:when test="${r.reason eq 'adult'}"><spring:message code="admin.reports.reason.adult"/></c:when>
+                                        <c:when test="${r.reason eq 'illegal'}"><spring:message code="admin.reports.reason.illegal"/></c:when>
+                                        <c:when test="${r.reason eq 'other'}"><spring:message code="admin.reports.reason.other"/></c:when>
+                                        <c:when test="${r.reason eq 'user'}"><spring:message code="admin.reports.reason.user"/></c:when>
+                                        <c:when test="${not empty r.reason}">${r.reason}</c:when>
+                                        <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.viewDetail"/></span>
+                            </a>
                         </td>
 
                         <%-- 신고일 --%>
                         <td>
-                            <fmt:formatDate value="${r.createdAt}" type="both" dateStyle="short" timeStyle="short"/>
+                            <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}"
+                               class="adm-cell-link"
+                               onclick="event.stopPropagation();">
+                                <span><fmt:formatDate value="${r.createdAt}" type="both" dateStyle="short" timeStyle="short"/></span>
+                            </a>
                         </td>
 
                         <%-- 처리일 --%>
                         <td>
-                            <c:choose>
-                                <c:when test="${not empty r.resolvedAt}">
-                                    <fmt:formatDate value="${r.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/>
-                                </c:when>
-                                <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
-                            </c:choose>
+                            <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}&jump=report-processing-actions"
+                               class="adm-cell-link"
+                               onclick="event.stopPropagation();">
+                                <span>
+                                    <c:choose>
+                                        <c:when test="${not empty r.resolvedAt}">
+                                            <fmt:formatDate value="${r.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/>
+                                        </c:when>
+                                        <c:otherwise><span style="color:#64748b;">—</span></c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </a>
                         </td>
 
                         <%-- 상태 배지 --%>
                         <td>
-                            <span class="status-badge ${r.status}">
-                                <c:choose>
-                                    <c:when test="${r.status eq 'IN_REVIEW'}"><spring:message code="admin.reports.status.inReview"/></c:when>
-                                    <c:when test="${r.status eq 'RESOLVED'}"><spring:message code="admin.reports.status.resolved"/></c:when>
-                                    <c:when test="${r.status eq 'DISMISSED'}"><spring:message code="admin.reports.status.dismissed"/></c:when>
-                                    <c:otherwise>${r.status}</c:otherwise>
-                                </c:choose>
-                            </span>
+                            <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}&jump=report-processing-actions"
+                               class="adm-cell-link"
+                               onclick="event.stopPropagation();">
+                                <span class="status-badge ${r.status}">
+                                    <c:choose>
+                                        <c:when test="${r.status eq 'IN_REVIEW'}"><spring:message code="admin.reports.status.inReview"/></c:when>
+                                        <c:when test="${r.status eq 'RESOLVED'}"><spring:message code="admin.reports.status.resolved"/></c:when>
+                                        <c:when test="${r.status eq 'DISMISSED'}"><spring:message code="admin.reports.status.dismissed"/></c:when>
+                                        <c:otherwise>${r.status}</c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.reports.detail.processingTitle"/></span>
+                            </a>
                         </td>
 
                     </tr>

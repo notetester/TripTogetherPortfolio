@@ -4,7 +4,7 @@
     const root = document.getElementById('chatbot-box');
     if (!root) return;
 
-    // ===== 설정 (footer.jsp에서 window.__chatbotConfig로 주입) =====
+    // ===== Config injected by footer.jsp through window.__chatbotConfig =====
     const cfg = window.__chatbotConfig || {};
     const ctx = cfg.ctx || '';
     const loggedIn = !!cfg.loggedIn;
@@ -26,10 +26,10 @@
     const suggs    = document.getElementById('cb-suggestions');
     const titleEl  = document.getElementById('cb-header-title');
 
-    // ===== 상태 =====
+    // ===== State =====
     let isOpen = false;
     let isTyping = false;
-    let currentConvId = null;      // 현재 열려있는 대화 ID (null = 새 대화 시작 상태)
+    let currentConvId = null;      // Active conversation ID. null means a fresh conversation.
 
     const INITIAL_SUGGESTIONS = [
         { label: msg.suggestPopular,   msg: msg.suggestPopularMsg },
@@ -39,7 +39,7 @@
         ...(!loggedIn ? [{ label: msg.suggestAuth, msg: msg.suggestAuthMsg }] : [])
     ];
 
-    // ===== 토글 =====
+    // ===== Toggle =====
     function openChat() {
         isOpen = true;
         box.classList.add('open');
@@ -47,7 +47,7 @@
         document.getElementById('cb-toggle-icon').textContent = '✕';
         if (badge) badge.classList.remove('show');
 
-        // 첫 오픈 시 대화 목록/현재 대화 로드
+        // Load conversations only on the first open.
         if (!box.dataset.initialized) {
             box.dataset.initialized = '1';
             initChat();
@@ -65,11 +65,11 @@
     toggle.addEventListener('click', () => isOpen ? closeChat() : openChat());
     document.getElementById('cb-close').addEventListener('click', closeChat);
 
-    // ===== 초기화 =====
+    // ===== Initialization =====
     async function initChat() {
         if (loggedIn) {
             await loadConversationList();
-            // 가장 최근 대화 자동 열기 (있으면)
+            // Open the most recent conversation when one exists.
             const convs = convList ? convList.querySelectorAll('[data-conv-id]') : [];
             if (convs.length > 0) {
                 openConversation(parseInt(convs[0].dataset.convId, 10));
@@ -77,7 +77,7 @@
                 renderWelcome();
             }
         } else {
-            // 비로그인: sessionStorage에 저장된 conversationId 복원 시도
+            // Anonymous users restore a conversation ID from sessionStorage.
             const savedId = STORAGE_KEY ? sessionStorage.getItem(STORAGE_KEY) : null;
             if (savedId) {
                 await openConversation(parseInt(savedId, 10));
@@ -87,7 +87,7 @@
         }
     }
 
-    // ===== 대화 목록 (로그인 유저 전용) =====
+    // ===== Conversation list for signed-in users =====
     async function loadConversationList() {
         if (!convList) return;
         try {
@@ -164,7 +164,7 @@
         } catch (e) {}
     }
 
-    // ===== 새 대화 시작 =====
+    // ===== Start a new conversation =====
     if (newBtn) {
         newBtn.addEventListener('click', () => {
             currentConvId = null;
@@ -177,12 +177,12 @@
         });
     }
 
-    // ===== 특정 대화 열기 =====
+    // ===== Open a conversation =====
     async function openConversation(convId) {
         try {
             const res = await fetch(ctx + '/chatbot/conversations/' + convId + '/messages');
             if (!res.ok) {
-                // 403/404 등 — 비로그인 세션 만료 가능성
+                // 403/404 can happen when an anonymous session expires.
                 if (STORAGE_KEY) sessionStorage.removeItem(STORAGE_KEY);
                 currentConvId = null;
                 renderWelcome();
@@ -220,7 +220,7 @@
         }
     }
 
-    // ===== 초기 화면 =====
+    // ===== Welcome screen =====
     function renderWelcome() {
         body.innerHTML = '';
         const wrap = document.createElement('div');
@@ -330,7 +330,7 @@
         });
     }
 
-    // ===== 메시지 전송 =====
+    // ===== Send message =====
     async function sendMessage() {
         const text = input.value.trim();
         if (!text || isTyping) return;
@@ -358,7 +358,7 @@
             hideTyping();
             appendBotResponse(data);
 
-            // 신규 대화였으면 conversationId 저장
+            // Store the conversation ID when the server created a new one.
             if (!currentConvId && data.conversationId) {
                 currentConvId = data.conversationId;
                 if (STORAGE_KEY) sessionStorage.setItem(STORAGE_KEY, String(currentConvId));
@@ -381,7 +381,7 @@
         }
     });
 
-    // ===== 유틸 =====
+    // ===== Utilities =====
     function scrollBottom() {
         requestAnimationFrame(() => { body.scrollTop = body.scrollHeight; });
     }

@@ -55,6 +55,7 @@ public class WebConfig implements WebMvcConfigurer {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasenames(
                 "classpath:messages/admin",
+                "classpath:messages/assistant",
                 "classpath:messages/auth",
                 "classpath:messages/community",
                 "classpath:messages/courses",

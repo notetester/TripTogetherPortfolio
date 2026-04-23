@@ -20,6 +20,16 @@
 <spring:message code="courses.public.empty.title" var="coursesPublicEmptyTitle"/>
 <spring:message code="courses.public.empty.desc" var="coursesPublicEmptyDesc"/>
 <spring:message code="courses.public.empty.action" var="coursesPublicEmptyAction"/>
+<spring:message code="courses.public.filter.keyword.placeholder" var="coursesPublicFilterKeywordPlaceholder"/>
+<spring:message code="courses.public.filter.source.all" var="coursesPublicFilterSourceAll"/>
+<spring:message code="courses.public.filter.mine.all" var="coursesPublicFilterMineAll"/>
+<spring:message code="courses.public.filter.mine.only" var="coursesPublicFilterMineOnly"/>
+<spring:message code="courses.public.filter.search" var="coursesPublicFilterSearch"/>
+<spring:message code="courses.public.filter.reset" var="coursesPublicFilterReset"/>
+<spring:message code="courses.public.filter.noResult" var="coursesPublicFilterNoResult"/>
+<spring:message code="courses.common.field.travelPeriod" var="coursesTravelPeriodLabel"/>
+<spring:message code="courses.common.year.all" var="coursesYearAll"/>
+<spring:message code="courses.common.year.suffix" var="coursesYearSuffix"/>
 
 <style>
     * {
@@ -452,25 +462,25 @@
 
     <div class="public-filter">
         <input type="text" id="searchKeyword" class="filter-input"
-               placeholder="제목, 여행지, 작성자로 검색">
+               placeholder="${coursesPublicFilterKeywordPlaceholder}">
 
         <select id="sourceFilter" class="filter-select">
-            <option value="all">전체 유형</option>
+            <option value="all">${coursesPublicFilterSourceAll}</option>
             <option value="AI">AI</option>
-            <option value="MANUAL">직접작성</option>
+            <option value="MANUAL">${coursesSourceManual}</option>
         </select>
 
         <select id="mineFilter" class="filter-select">
-            <option value="all">전체 일정</option>
-            <option value="mine">내 일정만</option>
+            <option value="all">${coursesPublicFilterMineAll}</option>
+            <option value="mine">${coursesPublicFilterMineOnly}</option>
         </select>
 
         <select id="yearFilter" class="filter-select">
-            <option value="all">전체 연도</option>
+            <option value="all">${coursesYearAll}</option>
         </select>
 
-        <button type="button" class="filter-btn" onclick="applyPublicFilter()">검색</button>
-        <button type="button" class="filter-btn reset" onclick="resetPublicFilter()">초기화</button>
+        <button type="button" class="filter-btn" onclick="applyPublicFilter()">${coursesPublicFilterSearch}</button>
+        <button type="button" class="filter-btn reset" onclick="resetPublicFilter()">${coursesPublicFilterReset}</button>
     </div>
 
     <c:choose>
@@ -521,7 +531,7 @@
 
                         <div class="plan-info">
                             <div class="info-row">
-                                <span class="info-label">여행 기간</span>
+                                <span class="info-label">${coursesTravelPeriodLabel}</span>
                                 <span class="info-value">
                                     <fmt:formatDate value="${plan.start_date}" type="date" dateStyle="long"/>
                                     ~
@@ -545,7 +555,7 @@
                 </c:forEach>
             </div>
             <div id="noResultBox" class="no-result-box">
-                조건에 맞는 공개 일정이 없어요.
+                ${coursesPublicFilterNoResult}
             </div>
         </c:when>
 
@@ -565,7 +575,7 @@
         const cards = document.querySelectorAll('.plan-card');
         const yearSet = new Set();
 
-        yearFilter.innerHTML = '<option value="all">전체 연도</option>';
+        yearFilter.innerHTML = '<option value="all">${coursesYearAll}</option>';
 
         cards.forEach(card => {
             const startDate = card.dataset.startDate || '';
@@ -590,7 +600,7 @@
             .forEach(year => {
                 const option = document.createElement('option');
                 option.value = String(year);
-                option.textContent = year + '년';
+                option.textContent = year + '${coursesYearSuffix}';
                 yearFilter.appendChild(option);
             });
     }

@@ -99,21 +99,64 @@
                         <c:otherwise>
                             <c:forEach var="c" items="${conversations}">
                                 <tr>
-                                    <td>${c.conversationId}</td>
-                                    <td>${c.title}</td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-conv-id="${c.conversationId}"
+                                                onclick="viewMessages(this.dataset.convId)">#${c.conversationId}</button>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-conv-id="${c.conversationId}"
+                                                onclick="viewMessages(this.dataset.convId)">${c.title}</button>
+                                    </td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${c.userIdx != null}"><spring:message code="admin.aiHelper.assistant.userPrefix"/> #${c.userIdx}</c:when>
+                                            <c:when test="${c.userIdx != null}">
+                                                <button type="button"
+                                                        class="adm-inline-link js-open-member-context"
+                                                        data-user-idx="${c.userIdx}">
+                                                    <spring:message code="admin.aiHelper.assistant.userPrefix"/> #${c.userIdx}
+                                                </button>
+                                            </c:when>
                                             <c:otherwise><span style="color:#94a3b8;"><spring:message code="admin.aiHelper.chatbot.guest"/></span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td>${c.ipAddress}</td>
-                                    <td>${c.messageCount}</td>
-                                    <td>${fn:replace(fn:substring(c.lastActive, 0, 16), 'T', ' ')}</td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-inline-link js-open-ip-context"
+                                                data-ip-address="${c.ipAddress}"
+                                                data-default-tab="blocks">${c.ipAddress}</button>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-conv-id="${c.conversationId}"
+                                                onclick="viewMessages(this.dataset.convId)">${c.messageCount}</button>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-conv-id="${c.conversationId}"
+                                                onclick="viewMessages(this.dataset.convId)">${fn:replace(fn:substring(c.lastActive, 0, 16), 'T', ' ')}</button>
+                                    </td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${c.isDeleted}"><span style="color:#ef4444;"><spring:message code="admin.aiHelper.chatbot.status.deleted"/></span></c:when>
-                                            <c:otherwise><span style="color:#10b981;"><spring:message code="admin.aiHelper.chatbot.status.active"/></span></c:otherwise>
+                                            <c:when test="${c.isDeleted}">
+                                                <button type="button"
+                                                        class="adm-cell-link adm-cell-link--inline"
+                                                        data-conv-id="${c.conversationId}"
+                                                        onclick="viewMessages(this.dataset.convId)"
+                                                        style="color:#ef4444;"><spring:message code="admin.aiHelper.chatbot.status.deleted"/></button>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <button type="button"
+                                                        class="adm-cell-link adm-cell-link--inline"
+                                                        data-conv-id="${c.conversationId}"
+                                                        onclick="viewMessages(this.dataset.convId)"
+                                                        style="color:#10b981;"><spring:message code="admin.aiHelper.chatbot.status.active"/></button>
+                                            </c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td style="text-align:right;">
@@ -183,10 +226,30 @@
                         <c:otherwise>
                             <c:forEach var="m" items="${messages}">
                                 <tr>
-                                    <td>${m.messageId}</td>
-                                    <td>${m.conversationId}</td>
-                                    <td style="max-width:600px;word-break:break-all;">${m.content}</td>
-                                    <td>${fn:replace(fn:substring(m.createdAt, 0, 16), 'T', ' ')}</td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-conv-id="${m.conversationId}"
+                                                onclick="viewMessages(this.dataset.convId)">#${m.messageId}</button>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-conv-id="${m.conversationId}"
+                                                onclick="viewMessages(this.dataset.convId)">#${m.conversationId}</button>
+                                    </td>
+                                    <td style="max-width:600px;word-break:break-all;">
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-conv-id="${m.conversationId}"
+                                                onclick="viewMessages(this.dataset.convId)">${m.content}</button>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-conv-id="${m.conversationId}"
+                                                onclick="viewMessages(this.dataset.convId)">${fn:replace(fn:substring(m.createdAt, 0, 16), 'T', ' ')}</button>
+                                    </td>
                                     <td>
                                         <div class="adm-row-actions is-single">
                                             <button type="button"
@@ -259,23 +322,63 @@
                         <c:otherwise>
                             <c:forEach var="b" items="${blocks}">
                                 <tr>
-                                    <td>${b.blockId}</td>
-                                    <td>${b.blockType}</td>
-                                    <td>${b.blockValue}</td>
-                                    <td>${b.reason}</td>
-                                    <td>${b.blockedBy}</td>
-                                    <td>${fn:replace(fn:substring(b.blockedAt, 0, 16), 'T', ' ')}</td>
                                     <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-block-id="${b.blockId}"
+                                                onclick="deactivateBlock(this.dataset.blockId)">#${b.blockId}</button>
+                                    </td>
+                                    <td>${b.blockType}</td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${b.blockType eq 'IP'}">
+                                                <button type="button"
+                                                        class="adm-inline-link js-open-ip-context"
+                                                        data-ip-address="${b.blockValue}"
+                                                        data-default-tab="blocks">${b.blockValue}</button>
+                                            </c:when>
+                                            <c:when test="${b.blockType eq 'USER'}">
+                                                <button type="button"
+                                                        class="adm-inline-link js-open-member-context"
+                                                        data-user-idx="${b.blockValue}">${b.blockValue}</button>
+                                            </c:when>
+                                            <c:otherwise>${b.blockValue}</c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-block-id="${b.blockId}"
+                                                onclick="deactivateBlock(this.dataset.blockId)">${b.reason}</button>
+                                    </td>
+                                    <td>${b.blockedBy}</td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-block-id="${b.blockId}"
+                                                onclick="deactivateBlock(this.dataset.blockId)">${fn:replace(fn:substring(b.blockedAt, 0, 16), 'T', ' ')}</button>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-block-id="${b.blockId}"
+                                                onclick="deactivateBlock(this.dataset.blockId)">
                                         <c:choose>
                                             <c:when test="${b.expiresAt != null}">${fn:replace(fn:substring(b.expiresAt, 0, 16), 'T', ' ')}</c:when>
                                             <c:otherwise><spring:message code="admin.aiHelper.chatbot.value.permanent"/></c:otherwise>
                                         </c:choose>
+                                        </button>
                                     </td>
                                     <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-block-id="${b.blockId}"
+                                                onclick="deactivateBlock(this.dataset.blockId)">
                                         <c:choose>
                                             <c:when test="${b.isActive}"><span style="color:#ef4444;"><spring:message code="admin.aiHelper.chatbot.status.active"/></span></c:when>
                                             <c:otherwise><span style="color:#94a3b8;"><spring:message code="admin.aiHelper.chatbot.status.released"/></span></c:otherwise>
                                         </c:choose>
+                                        </button>
                                     </td>
                                     <td>
                                         <c:if test="${b.isActive}">

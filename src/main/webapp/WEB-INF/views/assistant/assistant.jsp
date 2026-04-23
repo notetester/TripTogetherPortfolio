@@ -1,8 +1,16 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:set var="pageCSS" value="assistant/assistant.css"/>
 <%@ include file="../common/header.jsp" %>
+<spring:message code="assistant.quick.tokyo.prompt" javaScriptEscape="true" var="assistantQuickTokyoPrompt"/>
+<spring:message code="assistant.quick.europeBudget.prompt" javaScriptEscape="true" var="assistantQuickEuropeBudgetPrompt"/>
+<spring:message code="assistant.quick.southeastAsia.prompt" javaScriptEscape="true" var="assistantQuickSoutheastAsiaPrompt"/>
+<spring:message code="assistant.quick.jeju.prompt" javaScriptEscape="true" var="assistantQuickJejuPrompt"/>
+<spring:message code="assistant.quick.solo.prompt" javaScriptEscape="true" var="assistantQuickSoloPrompt"/>
+<spring:message code="assistant.quick.checklist.prompt" javaScriptEscape="true" var="assistantQuickChecklistPrompt"/>
+<spring:message code="assistant.chat.placeholder" var="assistantChatPlaceholder"/>
 <body>
 <div class="chat-wrap">
 
@@ -11,41 +19,38 @@
             <div class="ai-avatar">✈️</div>
             <div class="ai-info">
                 <div class="ai-name">Trip AI</div>
-                <div class="ai-status"><span class="dot"></span> 온라인</div>
+                <div class="ai-status"><span class="dot"></span> <spring:message code="assistant.status.online"/></div>
             </div>
         </div>
 
         <div class="side-desc">
-            <p>AI 여행 어시스턴트가 여행 계획부터 현지 정보까지 도와드립니다!</p>
+            <p><spring:message code="assistant.side.description"/></p>
         </div>
 
-        <div class="quick-title">빠른 질문</div>
+        <div class="quick-title"><spring:message code="assistant.quick.title"/></div>
         <div class="quick-btns">
-            <button class="qb" onclick="sendQuick('일본 도쿄 3박 4일 여행 코스 추천해줘')">🗼 도쿄 여행 코스</button>
-            <button class="qb" onclick="sendQuick('유럽 여행 예산은 얼마나 필요해?')">💶 유럽 여행 예산</button>
-            <button class="qb" onclick="sendQuick('동남아 배낭여행 추천 국가는?')">🌴 동남아 배낭여행</button>
-            <button class="qb" onclick="sendQuick('제주도 2박 3일 여행 일정 만들어줘')">🍊 제주도 일정</button>
-            <button class="qb" onclick="sendQuick('혼자 여행하기 좋은 안전한 나라 추천해줘')">🧳 혼자 여행 추천</button>
-            <button class="qb" onclick="sendQuick('여행 준비물 체크리스트 알려줘')">📋 준비물 체크리스트</button>
+            <button class="qb" onclick="sendQuick('${assistantQuickTokyoPrompt}')">🗼 <spring:message code="assistant.quick.tokyo.label"/></button>
+            <button class="qb" onclick="sendQuick('${assistantQuickEuropeBudgetPrompt}')">💶 <spring:message code="assistant.quick.europeBudget.label"/></button>
+            <button class="qb" onclick="sendQuick('${assistantQuickSoutheastAsiaPrompt}')">🌴 <spring:message code="assistant.quick.southeastAsia.label"/></button>
+            <button class="qb" onclick="sendQuick('${assistantQuickJejuPrompt}')">🍊 <spring:message code="assistant.quick.jeju.label"/></button>
+            <button class="qb" onclick="sendQuick('${assistantQuickSoloPrompt}')">🧳 <spring:message code="assistant.quick.solo.label"/></button>
+            <button class="qb" onclick="sendQuick('${assistantQuickChecklistPrompt}')">📋 <spring:message code="assistant.quick.checklist.label"/></button>
         </div>
 
-        <button class="reset-btn" onclick="resetChat()">🗑️ 대화 초기화</button>
+        <button class="reset-btn" onclick="resetChat()">🗑️ <spring:message code="assistant.action.reset"/></button>
     </aside>
 
     <main class="chat-main">
         <div class="chat-header">
-            <h2>✈️ AI 여행 어시스턴트</h2>
-            <span class="chat-sub">여행에 관한 무엇이든 물어보세요</span>
+            <h2>✈️ <spring:message code="assistant.chat.title"/></h2>
+            <span class="chat-sub"><spring:message code="assistant.chat.subtitle"/></span>
         </div>
 
         <div class="chat-body" id="chatBody">
             <div class="msg-row ai">
                 <div class="msg-avatar">✈️</div>
                 <div class="msg-bubble">
-                    안녕하세요! 저는 TripTogether의 AI 여행 어시스턴트입니다. 🌍<br><br>
-                    여행지 추천, 일정 계획, 예산 정보, 현지 맛집, 교통 안내 등<br>
-                    여행에 관한 모든 것을 도와드릴게요!<br><br>
-                    어떤 여행을 꿈꾸고 계신가요? ✨
+                    <spring:message code="assistant.chat.welcomeHtml"/>
                 </div>
             </div>
         </div>
@@ -55,7 +60,7 @@
                 <textarea
                         id="chatInput"
                         class="chat-input"
-                        placeholder="여행에 관해 궁금한 것을 입력하세요... (Enter로 전송, Shift+Enter로 줄바꿈)"
+                        placeholder="${assistantChatPlaceholder}"
                         rows="1"
                         onkeydown="handleKey(event)"
                         oninput="autoResize(this)"
@@ -64,7 +69,7 @@
                     <span id="sendIcon">➤</span>
                 </button>
             </div>
-            <div class="chat-hint">AI 답변은 참고용입니다. 중요한 여행 정보는 공식 채널에서 확인하세요.</div>
+            <div class="chat-hint"><spring:message code="assistant.chat.disclaimer"/></div>
         </div>
     </main>
 </div>
@@ -74,6 +79,24 @@
 <script>
     const CTX = '${pageContext.request.contextPath}';
     let isLoading = false;
+    <spring:message code="assistant.error.parse" javaScriptEscape="true" var="assistantErrorParseJs"/>
+    <spring:message code="assistant.error.request" javaScriptEscape="true" var="assistantErrorRequestJs"/>
+    <spring:message code="assistant.error.network" javaScriptEscape="true" var="assistantErrorNetworkJs"/>
+    <spring:message code="assistant.error.noResponse" javaScriptEscape="true" var="assistantErrorNoResponseJs"/>
+    <spring:message code="assistant.error.server" javaScriptEscape="true" var="assistantErrorServerJs"/>
+    <spring:message code="assistant.reset.confirm" javaScriptEscape="true" var="assistantResetConfirmJs"/>
+    <spring:message code="assistant.reset.done" javaScriptEscape="true" var="assistantResetDoneJs"/>
+    <spring:message code="assistant.loading.answering" javaScriptEscape="true" var="assistantLoadingAnsweringJs"/>
+    const assistantMessages = {
+        errorNetwork: '${assistantErrorNetworkJs}',
+        errorNoResponse: '${assistantErrorNoResponseJs}',
+        errorParse: '${assistantErrorParseJs}',
+        errorRequest: '${assistantErrorRequestJs}',
+        errorServer: '${assistantErrorServerJs}',
+        loadingAnswering: '${assistantLoadingAnsweringJs}',
+        resetConfirm: '${assistantResetConfirmJs}',
+        resetDone: '${assistantResetDoneJs}'
+    };
 
     async function sendMessage() {
         if (isLoading) return;
@@ -104,27 +127,27 @@
                 data = JSON.parse(rawText);
             } catch (parseError) {
                 removeLoadingBubble(loadingId);
-                appendMessage('ai', '❌ 서버 응답을 해석하지 못했습니다.\nHTML 오류 페이지가 반환되었을 가능성이 있습니다.');
+                appendMessage('ai', assistantMessages.errorParse);
                 return;
             }
 
             removeLoadingBubble(loadingId);
 
             if (!res.ok) {
-                appendMessage('ai', data.answer || ('❌ 서버 오류가 발생했습니다. status=' + res.status));
+                appendMessage('ai', data.answer || (assistantMessages.errorServer + ' status=' + res.status));
                 return;
             }
 
             if (!data.success) {
-                appendMessage('ai', data.answer || '❌ 요청 처리 중 오류가 발생했습니다.');
+                appendMessage('ai', data.answer || assistantMessages.errorRequest);
                 return;
             }
 
-            appendMessage('ai', data.answer || '응답을 받지 못했습니다.');
+            appendMessage('ai', data.answer || assistantMessages.errorNoResponse);
         } catch (e) {
             console.error('[assistant] fetch error=', e);
             removeLoadingBubble(loadingId);
-            appendMessage('ai', '❌ 네트워크 오류가 발생했습니다.');
+            appendMessage('ai', assistantMessages.errorNetwork);
         } finally {
             setLoading(false);
         }
@@ -136,7 +159,7 @@
     }
 
     async function resetChat() {
-        if (!confirm('대화 내용을 모두 초기화할까요?')) return;
+        if (!confirm(assistantMessages.resetConfirm)) return;
 
         try {
             const res = await fetch(CTX + '/assistant/reset', {method: 'POST'});
@@ -149,7 +172,7 @@
         body.innerHTML =
             '<div class="msg-row ai">' +
             '<div class="msg-avatar">✈️</div>' +
-            '<div class="msg-bubble">대화가 초기화되었습니다.</div>' +
+            '<div class="msg-bubble">' + escapeHtml(assistantMessages.resetDone) + '</div>' +
             '</div>';
     }
 
@@ -172,7 +195,7 @@
     }
 
     function appendLoadingBubble() {
-        return appendMessage('ai', '답변을 작성하는 중입니다...');
+        return appendMessage('ai', assistantMessages.loadingAnswering);
     }
 
     function removeLoadingBubble(node) {

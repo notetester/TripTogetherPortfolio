@@ -152,7 +152,10 @@
                 <c:forEach items="${list}" var="p">
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${p.postId}"></td>
-                        <td style="color:#64748b;font-size:12px;">#${p.postId}</td>
+                        <td style="color:#64748b;font-size:12px;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}">#${p.postId}</a>
+                        </td>
 
                         <%-- 작성자 --%>
                         <td style="cursor:pointer;"
@@ -173,7 +176,13 @@
                         <%-- IP --%>
                         <td style="font-size:11px;color:#94a3b8;font-family:monospace;">
                             <c:choose>
-                                <c:when test="${not empty p.lastIp}">${p.lastIp}</c:when>
+                                <c:when test="${not empty p.lastIp}">
+                                    <button type="button"
+                                            class="adm-inline-link js-open-ip-context"
+                                            data-ip-address="${p.lastIp}"
+                                            data-default-tab="blocks"
+                                            onclick="event.stopPropagation();">${p.lastIp}</button>
+                                </c:when>
                                 <c:otherwise><span style="color:#475569;">—</span></c:otherwise>
                             </c:choose>
                         </td>
@@ -223,20 +232,24 @@
 
                         <%-- 상태 --%>
                         <td>
-                            <span class="status-badge ${p.postStatus}">
+                            <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
+                               class="adm-cell-link adm-cell-link--inline status-badge ${p.postStatus}">
                                 <c:choose>
                                     <c:when test="${p.postStatus == 'ACTIVE'}"><spring:message code="admin.community.status.active"/></c:when>
                                     <c:when test="${p.postStatus == 'BLOCKED'}"><spring:message code="admin.community.status.blocked"/></c:when>
                                     <c:when test="${p.postStatus == 'DELETED'}"><spring:message code="admin.community.status.deleted"/></c:when>
                                     <c:otherwise>${p.postStatus}</c:otherwise>
                                 </c:choose>
-                            </span>
+                            </a>
                         </td>
 
                         <%-- 등록일 --%>
                         <td style="font-size:11px;color:#64748b;">
+                            <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
+                               class="adm-cell-link adm-cell-link--inline">
                             <fmt:formatDate value="${p.createdAt}" pattern="yyyy.MM.dd"/>
                             <div><fmt:formatDate value="${p.createdAt}" pattern="HH:mm"/></div>
+                            </a>
                         </td>
 
                         <%-- 액션 --%>

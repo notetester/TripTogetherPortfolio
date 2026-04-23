@@ -62,7 +62,7 @@
         <div id="spotsSection">
             <c:choose>
                 <c:when test="${empty popularSpots}">
-                    <div style="padding:40px;text-align:center;color:var(--gray-400);">등록된 여행지가 없습니다</div>
+                    <div style="padding:40px;text-align:center;color:var(--gray-400);"><spring:message code="home.empty.spots"/></div>
                 </c:when>
                 <c:otherwise>
                     <div class="home-grid">
@@ -130,7 +130,7 @@
         <div id="plansSection">
             <c:choose>
                 <c:when test="${empty trendingPlans}">
-                    <div style="padding:40px;text-align:center;color:var(--gray-400);">등록된 여행 코스가 없습니다</div>
+                    <div style="padding:40px;text-align:center;color:var(--gray-400);"><spring:message code="home.empty.courses"/></div>
                 </c:when>
                 <c:otherwise>
                     <div class="home-grid">
@@ -150,13 +150,13 @@
                                                 <c:if test="${not empty plan.nights}">
                                                     <c:choose>
                                                         <c:when test="${plan.nights <= 1}">
-                                                            <span class="tc-badge tc-badge-short">${plan.nights}박 <c:out value="${plan.nights + 1}"/>일</span>
+                                                            <span class="tc-badge tc-badge-short"><spring:message code="home.plan.duration" arguments="${plan.nights},${plan.nights + 1}"/></span>
                                                         </c:when>
                                                         <c:when test="${plan.nights == 2}">
-                                                            <span class="tc-badge tc-badge-standard">${plan.nights}박 <c:out value="${plan.nights + 1}"/>일</span>
+                                                            <span class="tc-badge tc-badge-standard"><spring:message code="home.plan.duration" arguments="${plan.nights},${plan.nights + 1}"/></span>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <span class="tc-badge tc-badge-long">${plan.nights}박 <c:out value="${plan.nights + 1}"/>일</span>
+                                                            <span class="tc-badge tc-badge-long"><spring:message code="home.plan.duration" arguments="${plan.nights},${plan.nights + 1}"/></span>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:if>
@@ -164,7 +164,7 @@
                                             <div class="tc-b">
                                                 <div class="tc-title">${plan.title}</div>
                                                 <div class="tc-foot">
-                                                    <span class="tc-auth">by ${plan.nickname}</span>
+                                                    <span class="tc-auth"><spring:message code="home.plan.author" arguments="${plan.nickname}"/></span>
                                                     <c:if test="${not empty plan.destination}">
                                                         <span class="tc-dest">&#128205; ${plan.destination}</span>
                                                     </c:if>
@@ -191,7 +191,7 @@
         <div id="communitySection">
             <c:choose>
                 <c:when test="${empty popularPosts}">
-                    <div style="padding:40px;text-align:center;color:var(--gray-400);">아직 게시글이 없습니다</div>
+                    <div style="padding:40px;text-align:center;color:var(--gray-400);"><spring:message code="home.empty.posts"/></div>
                 </c:when>
                 <c:otherwise>
                     <div class="home-grid">

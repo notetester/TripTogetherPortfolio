@@ -126,7 +126,7 @@
           <label class="spot-write-label"><spring:message code="explore.form.image"/></label>
           <div class="spot-image-upload-area" id="spotImageDropZone">
             <div class="spot-image-preview" id="spotImagePreview" style="display:none;">
-              <img id="spotPreviewImg" src="" alt="미리보기">
+              <img id="spotPreviewImg" src="" alt="<spring:message code='explore.form.image.preview'/>">
               <button type="button" class="spot-image-remove-btn" id="spotImageRemoveBtn">&#215;</button>
             </div>
             <div class="spot-image-placeholder" id="spotImagePlaceholder">

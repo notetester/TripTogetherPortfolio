@@ -85,47 +85,62 @@
                             <c:forEach var="revision" items="${revisionList}">
                                 <tr>
                                     <td>
-                                        <div style="font-size:12px;color:#94a3b8;"><spring:message code="package.revision.current"/></div>
-                                        <div style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(revision.currentPackageTitle)}</div>
-                                        <div style="font-size:12px;color:#38bdf8;margin-top:6px;"><spring:message code="package.revision.requested"/></div>
-                                        <div style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(revision.packageTitle)}</div>
+                                        <button type="button"
+                                                class="adm-cell-link"
+                                                onclick="focusPackageReviewAction('revision-${revision.packageRevisionIdx}')">
+                                        <span style="font-size:12px;color:#94a3b8;"><spring:message code="package.revision.current"/></span>
+                                        <span style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(revision.currentPackageTitle)}</span>
+                                        <span style="font-size:12px;color:#38bdf8;margin-top:6px;"><spring:message code="package.revision.requested"/></span>
+                                        <span style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(revision.packageTitle)}</span>
                                         <c:if test="${not empty revision.packageSummary}">
-                                            <div style="font-size:12px;color:#94a3b8;margin-top:4px;max-width:420px;">
+                                            <span style="font-size:12px;color:#94a3b8;margin-top:4px;max-width:420px;">
                                                 ${fn:escapeXml(revision.packageSummary)}
-                                            </div>
+                                            </span>
                                         </c:if>
+                                        </button>
                                     </td>
                                     <td>
-                                        <div class="mem-name">${fn:escapeXml(revision.sellerNickname)}</div>
-                                        <div class="mem-uid">user_idx ${revision.sellerUserIdx}</div>
-                                        <div style="font-size:12px;color:#94a3b8;margin-top:8px;">
+                                        <button type="button"
+                                                class="adm-cell-link js-open-member-context"
+                                                data-user-idx="${revision.sellerUserIdx}"
+                                                data-default-tab="profile">
+                                        <span class="mem-name">${fn:escapeXml(revision.sellerNickname)}</span>
+                                        <span class="mem-uid">user_idx ${revision.sellerUserIdx}</span>
+                                        <span style="font-size:12px;color:#94a3b8;margin-top:8px;">
                                             ${fn:escapeXml(revision.spotRegion)} · ${fn:escapeXml(revision.spotName)}
-                                        </div>
+                                        </span>
+                                        </button>
                                     </td>
                                     <td>
-                                        <div style="font-weight:800;color:#e2e8f0;">
+                                        <button type="button"
+                                                class="adm-cell-link"
+                                                onclick="focusPackageReviewAction('revision-${revision.packageRevisionIdx}')">
+                                        <span style="font-weight:800;color:#e2e8f0;">
                                             <fmt:formatNumber value="${revision.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(revision.currencyCode)}
-                                        </div>
-                                        <div style="font-size:12px;color:#94a3b8;margin-top:4px;">
+                                        </span>
+                                        <span style="font-size:12px;color:#94a3b8;margin-top:4px;">
                                             <c:choose>
                                                 <c:when test="${not empty revision.startDate or not empty revision.endDate}">
                                                     ${revision.startDate} ~ ${revision.endDate}
                                                 </c:when>
                                                 <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
                                             </c:choose>
-                                        </div>
-                                        <div style="font-size:12px;color:#94a3b8;">
+                                        </span>
+                                        <span style="font-size:12px;color:#94a3b8;">
                                             <spring:message code="package.common.minPeople" arguments="${revision.minPeople}"/>
                                             <c:if test="${not empty revision.maxPeople}">
                                                 / <spring:message code="package.common.maxPeople" arguments="${revision.maxPeople}"/>
                                             </c:if>
-                                        </div>
+                                        </span>
+                                        </button>
                                     </td>
                                     <td>
-                                        <div style="font-size:12px;color:#94a3b8;">${revision.requestedAt}</div>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                onclick="focusPackageReviewAction('revision-${revision.packageRevisionIdx}')">${revision.requestedAt}</button>
                                     </td>
                                     <td>
-                                        <div class="business-review-actions">
+                                        <div class="business-review-actions" id="package-action-revision-${revision.packageRevisionIdx}">
                                             <form method="post" action="${pageContext.request.contextPath}/admin/packages/revisions/${revision.packageRevisionIdx}/approve">
                                                 <button type="submit" class="adm-row-btn detail">
                                                     <spring:message code="package.revision.approve"/>
@@ -184,7 +199,11 @@
                                     </c:choose>
                                 </div>
                                 <div>
-                                    <div style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(pkg.packageTitle)}</div>
+                                    <button type="button"
+                                            class="adm-cell-link adm-cell-link--inline"
+                                            onclick="focusPackageReviewAction('package-${pkg.packageIdx}')">
+                                        <span style="font-weight:800;">${fn:escapeXml(pkg.packageTitle)}</span>
+                                    </button>
                                     <c:if test="${not empty pkg.packageSummary}">
                                         <div style="font-size:12px;color:#94a3b8;margin-top:4px;max-width:420px;">
                                             ${fn:escapeXml(pkg.packageSummary)}
@@ -195,36 +214,51 @@
                             </div>
                         </td>
                         <td>
-                            <div class="mem-name">${fn:escapeXml(pkg.sellerNickname)}</div>
-                            <div class="mem-uid">user_idx ${pkg.sellerUserIdx}</div>
+                            <button type="button"
+                                    class="adm-cell-link js-open-member-context"
+                                    data-user-idx="${pkg.sellerUserIdx}"
+                                    data-default-tab="profile">
+                                <span class="mem-name">${fn:escapeXml(pkg.sellerNickname)}</span>
+                                <span class="mem-uid">user_idx ${pkg.sellerUserIdx}</span>
+                            </button>
                         </td>
                         <td>
-                            <div style="font-weight:700;color:#e2e8f0;">${fn:escapeXml(pkg.spotName)}</div>
-                            <div style="font-size:12px;color:#94a3b8;">${fn:escapeXml(pkg.spotRegion)}</div>
+                            <button type="button"
+                                    class="adm-cell-link"
+                                    onclick="focusPackageReviewAction('package-${pkg.packageIdx}')">
+                                <span style="font-weight:700;color:#e2e8f0;">${fn:escapeXml(pkg.spotName)}</span>
+                                <span style="font-size:12px;color:#94a3b8;">${fn:escapeXml(pkg.spotRegion)}</span>
+                            </button>
                         </td>
                         <td>
-                            <div style="font-weight:800;color:#e2e8f0;">
+                            <button type="button"
+                                    class="adm-cell-link"
+                                    onclick="focusPackageReviewAction('package-${pkg.packageIdx}')">
+                            <span style="font-weight:800;color:#e2e8f0;">
                                 <fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(pkg.currencyCode)}
-                            </div>
-                            <div style="font-size:12px;color:#94a3b8;margin-top:4px;">
+                            </span>
+                            <span style="font-size:12px;color:#94a3b8;margin-top:4px;">
                                 <c:choose>
                                     <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                                         ${pkg.startDate} ~ ${pkg.endDate}
                                     </c:when>
                                     <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
                                 </c:choose>
-                            </div>
-                            <div style="font-size:12px;color:#94a3b8;">
+                            </span>
+                            <span style="font-size:12px;color:#94a3b8;">
                                 <spring:message code="package.common.minPeople" arguments="${pkg.minPeople}"/>
                                 <c:if test="${not empty pkg.maxPeople}"> / <spring:message code="package.common.maxPeople" arguments="${pkg.maxPeople}"/></c:if>
-                            </div>
+                            </span>
+                            </button>
                         </td>
                         <td>
                             <c:set var="displayStatusClass" value="${pkg.packageStatus}"/>
                             <c:if test="${pkg.packageStatus eq 'APPROVED' and pkg.expired}">
                                 <c:set var="displayStatusClass" value="EXPIRED"/>
                             </c:if>
-                            <span class="status-badge ${displayStatusClass}">
+                            <button type="button"
+                                    class="adm-cell-link adm-cell-link--inline status-badge ${displayStatusClass}"
+                                    onclick="focusPackageReviewAction('package-${pkg.packageIdx}')">
                                 <c:choose>
                                     <c:when test="${displayStatusClass eq 'EXPIRED'}"><spring:message code="package.status.expired"/></c:when>
                                     <c:when test="${displayStatusClass eq 'PENDING'}"><spring:message code="package.status.pending"/></c:when>
@@ -234,7 +268,7 @@
                                     <c:when test="${displayStatusClass eq 'BLOCKED'}"><spring:message code="package.status.blocked"/></c:when>
                                     <c:otherwise>${fn:escapeXml(pkg.packageStatus)}</c:otherwise>
                                 </c:choose>
-                            </span>
+                            </button>
                             <c:if test="${pkg.packageStatus eq 'APPROVED' and pkg.expired}">
                                 <div style="font-size:11px;color:#fbbf24;margin-top:6px;max-width:240px;">
                                     <spring:message code="package.manage.expiredHidden"/>
@@ -249,7 +283,7 @@
                         <td>
                             <c:choose>
                                 <c:when test="${pkg.packageStatus eq 'PENDING'}">
-                                    <div class="business-review-actions">
+                                    <div class="business-review-actions" id="package-action-package-${pkg.packageIdx}">
                                         <form method="post" action="${pageContext.request.contextPath}/admin/packages/${pkg.packageIdx}/approve">
                                             <button type="submit" class="adm-row-btn detail"
                                                     onclick="return confirm('${adminApproveConfirmMsg}');"><spring:message code="package.admin.approve"/></button>
@@ -281,5 +315,18 @@
     </div>
 </div>
 
-</body>
-</html>
+<script>
+function focusPackageReviewAction(key) {
+    var target = document.getElementById('package-action-' + key);
+    if (!target) return;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target.classList.remove('is-focus-flash');
+    void target.offsetWidth;
+    target.classList.add('is-focus-flash');
+    setTimeout(function () {
+        target.classList.remove('is-focus-flash');
+    }, 1300);
+}
+</script>
+
+<%@ include file="../layout-close.jsp" %>

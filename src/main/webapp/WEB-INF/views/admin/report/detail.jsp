@@ -136,7 +136,7 @@
                                 <div class="adm-meta-key"><spring:message code="admin.common.title"/></div>
                                 <div class="adm-detail-value" style="font-weight:600;">${fn:escapeXml(report.targetTitle)}</div>
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="신고 대상 제목 번역"
+                                     data-label="<spring:message code='admin.translation.label.reportTargetTitle'/>"
                                      data-source-type="REPORT_TARGET"
                                      data-source-idx="${report.targetId}"
                                      data-field-name="target_title"
@@ -154,7 +154,7 @@
                                     </c:choose>
                                 </div>
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="신고 대상 본문 번역"
+                                     data-label="<spring:message code='admin.translation.label.reportTargetContent'/>"
                                      data-source-type="REPORT_TARGET"
                                      data-source-idx="${report.targetId}"
                                      data-field-name="target_content"
@@ -182,7 +182,7 @@
                                         </c:choose>
                                     </div>
                                     <div class="adm-tr-inline js-admin-translation-widget"
-                                         data-label="리뷰 본문 번역"
+                                         data-label="<spring:message code='admin.translation.label.reportReviewContent'/>"
                                          data-source-type="REPORT_TARGET"
                                          data-source-idx="${report.targetId}"
                                          data-field-name="target_content"
@@ -214,7 +214,7 @@
                             <div class="adm-meta-key"><spring:message code="admin.common.description"/></div>
                             <div class="adm-report-desc">${report.description}</div>
                             <div class="adm-tr-inline js-admin-translation-widget"
-                                 data-label="신고 설명 번역"
+                                 data-label="<spring:message code='admin.translation.label.reportDescription'/>"
                                  data-source-type="REPORT"
                                  data-source-idx="${report.reportId}"
                                  data-field-name="description"
@@ -301,7 +301,7 @@
                         </div>
 
                         <%-- 처리 버튼: targetType에 따라 조건부 --%>
-                        <div class="adm-meta-actions">
+                        <div class="adm-meta-actions" id="report-processing-actions">
                             <div style="font-size:11px;color:#64748b;margin-bottom:8px;">${adminReportsDetailProcessingTitle}</div>
                             <div style="display:flex;flex-direction:column;gap:6px;">
 
@@ -383,6 +383,21 @@ var REPORT_DETAIL_MSG = {
     revert: '${fn:escapeXml(adminReportsDetailConfirmRevert)}',
     processFailed: '${fn:escapeXml(adminReportsDetailProcessFailed)}'
 };
+
+
+(function () {
+    var jump = new URLSearchParams(window.location.search).get('jump');
+    if (!jump) return;
+    var target = document.getElementById(jump);
+    if (!target) return;
+    target.classList.add('is-focus-flash');
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    var focusable = target.querySelector('textarea, input, select, button, a');
+    if (focusable) {
+        try { focusable.focus({ preventScroll: true }); } catch (e) { focusable.focus(); }
+    }
+    setTimeout(function(){ target.classList.remove('is-focus-flash'); }, 2400);
+})();
 
 function goBackToList() {
     var params = new URLSearchParams(window.location.search);

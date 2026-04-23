@@ -101,15 +101,13 @@
                             </c:choose>
                         </td>
                         <td>
-                            <div><c:out value="${item.pendingEmail}"/></div>
-                            <div class="adm-inline-actions">
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-keyword="${item.pendingEmail}"
-                                        onclick="applyKeywordFilter(this)">
-                                    <spring:message code="admin.common.sameEmail"/>
-                                </button>
-                            </div>
+                            <button type="button"
+                                    class="adm-cell-link"
+                                    data-keyword="${item.pendingEmail}"
+                                    onclick="applyKeywordFilter(this)">
+                                <span><c:out value="${item.pendingEmail}"/></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameEmail"/></span>
+                            </button>
                         </td>
                         <td>
                             <span class="status-badge ACTIVE">
@@ -129,41 +127,27 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.ipAddress}">
-                                    <div>
-                                        <button type="button"
-                                                class="adm-inline-link js-open-ip-context"
-                                                data-ip-address="${item.ipAddress}"
-                                                data-default-tab="emailRequests"
-                                                style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
-                                    </div>
-                                    <div class="adm-inline-actions">
-                                        <button type="button"
-                                                class="adm-inline-chip"
-                                                data-keyword="${item.ipAddress}"
-                                                onclick="applyKeywordFilter(this)">
-                                            <spring:message code="admin.common.sameIp"/>
-                                        </button>
-                                    </div>
+                                    <button type="button"
+                                            class="adm-cell-link js-open-ip-context"
+                                            data-ip-address="${item.ipAddress}"
+                                            data-default-tab="emailRequests">
+                                        <span style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameIp"/></span>
+                                    </button>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
                         </td>
-                        <td style="font-size:12px;color:#64748b;">
-                            <div><c:out value="${item.requestId}"/></div>
-                            <div class="adm-inline-actions">
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-keyword="${item.requestId}"
-                                        onclick="applyKeywordFilter(this)">
-                                    <spring:message code="admin.common.sameRequest"/>
-                                </button>
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
-                                        onclick="openRelatedHistory('email-tokens', this)">
-                                    <spring:message code="admin.common.sameFlow"/>
-                                </button>
-                            </div>
+                        <td>
+                            <button type="button"
+                                    class="adm-cell-link"
+                                    data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
+                                    onclick="openRelatedHistory('email-tokens', this)">
+                                <span style="font-size:12px;color:#64748b;"><c:out value="${item.requestId}"/></span>
+                                <c:if test="${not empty item.flowTraceId}">
+                                    <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
+                                </c:if>
+                            </button>
                         </td>
                     </tr>
                 </c:forEach>

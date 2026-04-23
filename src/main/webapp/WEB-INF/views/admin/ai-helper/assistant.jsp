@@ -87,24 +87,51 @@
                         <c:otherwise>
                             <c:forEach var="s" items="${sessions}">
                                 <tr>
-                                    <td>${s.chatPostIdx}</td>
-                                    <td style="max-width:300px;word-break:break-all;">${s.title}</td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-session-id="${s.chatPostIdx}"
+                                                onclick="viewAssistantMessages(this.dataset.sessionId)">#${s.chatPostIdx}</button>
+                                    </td>
+                                    <td style="max-width:300px;word-break:break-all;">
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-session-id="${s.chatPostIdx}"
+                                                onclick="viewAssistantMessages(this.dataset.sessionId)">${s.title}</button>
+                                    </td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${s.nickname != null}">
-                                                ${s.nickname} <span style="color:#94a3b8;">(#${s.userIdx})</span>
+                                                <button type="button"
+                                                        class="adm-inline-link js-open-member-context"
+                                                        data-user-idx="${s.userIdx}">
+                                                    ${s.nickname} <span style="color:#94a3b8;">(#${s.userIdx})</span>
+                                                </button>
                                             </c:when>
                                             <c:otherwise>
                                                 <span style="color:#94a3b8;"><spring:message code="admin.aiHelper.assistant.userPrefix"/> #${s.userIdx} (<spring:message code="admin.aiHelper.assistant.userDeleted"/>)</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td>${s.messageCount}</td>
-                                    <td><fmt:formatDate value="${s.createdAt}" pattern="yyyy-MM-dd HH:mm"/></td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-session-id="${s.chatPostIdx}"
+                                                onclick="viewAssistantMessages(this.dataset.sessionId)">${s.messageCount}</button>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-session-id="${s.chatPostIdx}"
+                                                onclick="viewAssistantMessages(this.dataset.sessionId)"><fmt:formatDate value="${s.createdAt}" pattern="yyyy-MM-dd HH:mm"/></button>
+                                    </td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${s.lastMessageAt != null}">
-                                                <fmt:formatDate value="${s.lastMessageAt}" pattern="yyyy-MM-dd HH:mm"/>
+                                                <button type="button"
+                                                        class="adm-cell-link adm-cell-link--inline"
+                                                        data-session-id="${s.chatPostIdx}"
+                                                        onclick="viewAssistantMessages(this.dataset.sessionId)"><fmt:formatDate value="${s.lastMessageAt}" pattern="yyyy-MM-dd HH:mm"/></button>
                                             </c:when>
                                             <c:otherwise><span style="color:#94a3b8;">-</span></c:otherwise>
                                         </c:choose>
@@ -183,8 +210,21 @@
                         <c:otherwise>
                             <c:forEach var="m" items="${messages}">
                                 <tr>
-                                    <td>${m.chatCommentIdx}</td>
-                                    <td>#${m.chatPostIdx}<br><span style="font-size:11px;color:#94a3b8;">${fn:escapeXml(m.sessionTitle)}</span></td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-session-id="${m.chatPostIdx}"
+                                                onclick="viewAssistantMessages(this.dataset.sessionId)">#${m.chatCommentIdx}</button>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="adm-cell-link"
+                                                data-session-id="${m.chatPostIdx}"
+                                                onclick="viewAssistantMessages(this.dataset.sessionId)">
+                                            <span>#${m.chatPostIdx}</span>
+                                            <span style="font-size:11px;color:#94a3b8;">${fn:escapeXml(m.sessionTitle)}</span>
+                                        </button>
+                                    </td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${m.commentRole == 'USER'}">
@@ -198,21 +238,33 @@
                                     <td>
                                         <c:choose>
                                             <c:when test="${m.nickname != null}">
-                                                ${m.nickname}
+                                                <button type="button"
+                                                        class="adm-inline-link js-open-member-context"
+                                                        data-user-idx="${m.userIdx}">
+                                                    ${m.nickname}
+                                                </button>
                                             </c:when>
                                             <c:otherwise><span style="color:#94a3b8;"><spring:message code="admin.aiHelper.assistant.userPrefix"/> #${m.userIdx}</span></c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td style="max-width:500px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-session-id="${m.chatPostIdx}"
+                                                onclick="viewAssistantMessages(this.dataset.sessionId)">
                                         <c:choose>
                                             <c:when test="${fn:length(m.content) > 200}">
                                                 ${fn:escapeXml(fn:substring(m.content, 0, 200))}…
                                             </c:when>
                                             <c:otherwise>${fn:escapeXml(m.content)}</c:otherwise>
                                         </c:choose>
+                                        </button>
                                     </td>
                                     <td>
-                                        <fmt:formatDate value="${m.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
+                                        <button type="button"
+                                                class="adm-cell-link adm-cell-link--inline"
+                                                data-session-id="${m.chatPostIdx}"
+                                                onclick="viewAssistantMessages(this.dataset.sessionId)"><fmt:formatDate value="${m.createdAt}" pattern="yyyy-MM-dd HH:mm"/></button>
                                     </td>
                                     <td style="text-align:right;">
                                         <div class="adm-row-actions is-single">
