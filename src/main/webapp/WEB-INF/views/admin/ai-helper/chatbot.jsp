@@ -361,6 +361,10 @@
          정책 (등급별 한도) 탭
     ══════════════════════════════════════════ --%>
     <c:if test="${tab == 'quotas'}">
+        <style>
+            tr[data-quota-id].is-dirty td:first-child { box-shadow: inset 3px 0 0 0 #2563eb; }
+            tr[data-quota-id].is-dirty td { background: rgba(37, 99, 235, .04); }
+        </style>
         <div class="adm-card" style="padding:16px;margin-bottom:16px;">
             <div style="font-size:13px;color:#475569;line-height:1.6;">
                 등급별 챗봇 이용 한도를 설정합니다. GUEST는 비로그인 유저용이며 가장 제한적입니다.<br>
@@ -378,18 +382,17 @@
                         <th>AI 컨텍스트 길이</th>
                         <th title="대화 삭제 시 그 대화에서 쓴 오늘자 메시지 수만큼 한도 환급">환급 허용</th>
                         <th>마지막 수정자</th>
-                        <th>액션</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:forEach var="q" items="${quotas}">
                         <tr data-quota-id="${q.quotaId}">
                             <td><strong>${q.grade}</strong></td>
-                            <td><input type="number" class="adm-input q-conv" value="${q.maxConversations}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
-                            <td><input type="number" class="adm-input q-msg" value="${q.maxMessagesPerDay}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
-                            <td><input type="number" class="adm-input q-ctx" value="${q.maxContextMessages}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
+                            <td><input type="number" class="adm-input q-conv" value="${q.maxConversations}" data-original="${q.maxConversations}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
+                            <td><input type="number" class="adm-input q-msg" value="${q.maxMessagesPerDay}" data-original="${q.maxMessagesPerDay}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
+                            <td><input type="number" class="adm-input q-ctx" value="${q.maxContextMessages}" data-original="${q.maxContextMessages}" style="width:80px;padding:6px 10px;font-size:13px;"/></td>
                             <td style="text-align:center;">
-                                <input type="checkbox" class="q-refund" ${q.quotaRefundEnabled ? 'checked' : ''} style="width:18px;height:18px;cursor:pointer;"/>
+                                <input type="checkbox" class="q-refund" ${q.quotaRefundEnabled ? 'checked' : ''} data-original="${q.quotaRefundEnabled ? 'true' : 'false'}" style="width:18px;height:18px;cursor:pointer;"/>
                             </td>
                             <td>
                                 <c:choose>
@@ -408,13 +411,16 @@
                                     <c:otherwise><span style="color:#94a3b8;">-</span></c:otherwise>
                                 </c:choose>
                             </td>
-                            <td>
-                                <button type="button" class="adm-btn adm-btn-primary" data-quota-id="${q.quotaId}" onclick="updateQuota(this.dataset.quotaId)">저장</button>
-                            </td>
                         </tr>
                     </c:forEach>
                 </tbody>
             </table>
+        </div>
+
+        <%-- 전체 저장 버튼 (변경된 행만 일괄 저장) --%>
+        <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:8px;align-items:center;">
+            <span id="quotaDirtyHint" style="font-size:12px;color:#64748b;"></span>
+            <button type="button" class="adm-btn adm-btn-primary" onclick="saveAllQuotas()">전체 저장</button>
         </div>
     </c:if>
 
@@ -647,22 +653,77 @@
         alert(data.success ? '차단 완료' : '차단 실패');
     }
 
-    window.updateQuota = async function (quotaId) {
-        const row = document.querySelector('tr[data-quota-id="' + quotaId + '"]');
-        if (!row) return;
-        const payload = {
-            maxConversations:   parseInt(row.querySelector('.q-conv').value, 10),
-            maxMessagesPerDay:  parseInt(row.querySelector('.q-msg').value, 10),
-            maxContextMessages: parseInt(row.querySelector('.q-ctx').value, 10),
-            quotaRefundEnabled: row.querySelector('.q-refund').checked
-        };
-        const res = await fetch(ctx + '/admin/ai-helper/quotas/' + quotaId, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+    // 행별 dirty 여부 계산
+    function isRowDirty(row) {
+        const inputs = row.querySelectorAll('input[data-original]');
+        for (const el of inputs) {
+            if (el.type === 'checkbox') {
+                const original = el.dataset.original === 'true';
+                if (el.checked !== original) return true;
+            } else {
+                if (String(el.value) !== String(el.dataset.original)) return true;
+            }
+        }
+        return false;
+    }
+
+    function updateDirtyHint() {
+        const hint = document.getElementById('quotaDirtyHint');
+        if (!hint) return;
+        const dirtyRows = document.querySelectorAll('tr[data-quota-id]');
+        let count = 0;
+        dirtyRows.forEach(function (row) {
+            if (isRowDirty(row)) {
+                row.classList.add('is-dirty');
+                count++;
+            } else {
+                row.classList.remove('is-dirty');
+            }
         });
-        const data = await res.json();
-        alert(data.success ? '저장 완료' : '저장 실패');
+        hint.textContent = count > 0 ? ('변경된 행 ' + count + '개') : '';
+    }
+
+    // 입력 변경 감지 바인딩
+    document.querySelectorAll('tr[data-quota-id] input[data-original]').forEach(function (el) {
+        el.addEventListener('input', updateDirtyHint);
+        el.addEventListener('change', updateDirtyHint);
+    });
+
+    // 전체 저장 — 변경된 행만 순차 저장
+    window.saveAllQuotas = async function () {
+        const rows = Array.from(document.querySelectorAll('tr[data-quota-id]'));
+        const dirtyRows = rows.filter(isRowDirty);
+        if (dirtyRows.length === 0) {
+            alert('변경 사항이 없습니다.');
+            return;
+        }
+        const tasks = dirtyRows.map(function (row) {
+            const quotaId = row.dataset.quotaId;
+            const payload = {
+                maxConversations:   parseInt(row.querySelector('.q-conv').value, 10),
+                maxMessagesPerDay:  parseInt(row.querySelector('.q-msg').value, 10),
+                maxContextMessages: parseInt(row.querySelector('.q-ctx').value, 10),
+                quotaRefundEnabled: row.querySelector('.q-refund').checked
+            };
+            return fetch(ctx + '/admin/ai-helper/quotas/' + quotaId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(function (res) { return res.json(); });
+        });
+
+        try {
+            const results = await Promise.all(tasks);
+            const failed = results.filter(function (r) { return !r.success; }).length;
+            if (failed === 0) {
+                alert('전체 ' + results.length + '건 저장 완료');
+                location.reload();
+            } else {
+                alert('일부 저장 실패 (' + failed + '/' + results.length + '). 새로고침 후 재시도해 주세요.');
+            }
+        } catch (e) {
+            alert('저장 중 오류가 발생했습니다.');
+        }
     };
 })();
 </script>
