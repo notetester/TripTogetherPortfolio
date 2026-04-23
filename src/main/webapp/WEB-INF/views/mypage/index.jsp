@@ -694,6 +694,82 @@
             </div>
         </div>
 
+        <%-- ══════════════════════════════════════════
+             최근 조회 내역
+             - USER_VIEW_HISTORY 상위 8건 미리보기
+             - 전체 목록은 /mypage/history
+        ══════════════════════════════════════════ --%>
+        <div class="mp-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title">
+                    <span class="mp-card-icon">🕒</span>
+                    <spring:message code="mypage.card.history"/>
+                    <span class="mp-card-count">${viewHistoryCount}</span>
+                </div>
+                <a href="${pageContext.request.contextPath}/mypage/history"
+                   class="mp-card-more"><spring:message code="mypage.common.viewAll"/></a>
+            </div>
+            <div class="mp-card-body">
+                <c:choose>
+                    <c:when test="${empty viewHistoryList}">
+                        <div class="mp-empty">
+                            <div class="mp-empty-icon">🕒</div>
+                            <spring:message code="mypage.empty.history"/>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="mp-history-grid">
+                            <c:forEach var="h" items="${viewHistoryList}">
+                                <c:set var="typeKey" value="${h.contentType}"/>
+                                <c:set var="linkHref" value=""/>
+                                <c:choose>
+                                    <c:when test="${typeKey eq 'community'}">
+                                        <c:set var="linkHref" value="${pageContext.request.contextPath}/community/${h.contentId}"/>
+                                    </c:when>
+                                    <c:when test="${typeKey eq 'spot'}">
+                                        <c:set var="linkHref" value="${pageContext.request.contextPath}/detail/${h.contentId}"/>
+                                    </c:when>
+                                    <c:when test="${typeKey eq 'plan'}">
+                                        <c:set var="linkHref" value="${pageContext.request.contextPath}/courses/detail?planId=${h.contentId}"/>
+                                    </c:when>
+                                </c:choose>
+                                <a href="${linkHref}" class="mp-history-item <c:if test='${not h.available}'>is-unavailable</c:if>">
+                                    <div class="mp-history-thumb">
+                                        <c:choose>
+                                            <c:when test="${not empty h.thumbnailUrl}">
+                                                <img src="${h.thumbnailUrl}" alt="" loading="lazy"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="mp-history-thumb-icon">
+                                                    <c:choose>
+                                                        <c:when test="${typeKey eq 'community'}">💬</c:when>
+                                                        <c:when test="${typeKey eq 'spot'}">📍</c:when>
+                                                        <c:when test="${typeKey eq 'plan'}">🗺️</c:when>
+                                                        <c:when test="${typeKey eq 'package'}">🎁</c:when>
+                                                        <c:otherwise>🕒</c:otherwise>
+                                                    </c:choose>
+                                                </span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                    <span class="mp-history-type mp-history-type-${typeKey}">
+                                        <spring:message code="mypage.history.type.${typeKey}"/>
+                                    </span>
+                                    <div class="mp-history-title">
+                                        <c:choose>
+                                            <c:when test="${h.available and not empty h.title}">${h.title}</c:when>
+                                            <c:otherwise><spring:message code="mypage.history.deleted"/></c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                    <div class="mp-history-time" data-mp-history-ts="${h.viewedAt.time}"></div>
+                                </a>
+                            </c:forEach>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+
             </div>
             <div class="mp-tab-panel" data-mp-panel="booking" role="tabpanel" hidden>
 
@@ -1622,6 +1698,32 @@
             }
         });
     })();
+</script>
+
+<script>
+/* 최근 조회 내역: 상대 시간 포맷팅 */
+(function () {
+    var LABELS = {
+        justNow:   '<spring:message code="mypage.history.relative.justNow"   javaScriptEscape="true"/>',
+        minutes:   '<spring:message code="mypage.history.relative.minutes"   javaScriptEscape="true"/>',
+        hours:     '<spring:message code="mypage.history.relative.hours"     javaScriptEscape="true"/>',
+        yesterday: '<spring:message code="mypage.history.relative.yesterday" javaScriptEscape="true"/>',
+        days:      '<spring:message code="mypage.history.relative.days"      javaScriptEscape="true"/>'
+    };
+    function relTime(ts) {
+        var now = Date.now();
+        var diffSec = Math.max(0, Math.floor((now - ts) / 1000));
+        if (diffSec < 60)             return LABELS.justNow;
+        if (diffSec < 60 * 60)        return LABELS.minutes.replace('{0}', Math.floor(diffSec / 60));
+        if (diffSec < 60 * 60 * 24)   return LABELS.hours.replace('{0}', Math.floor(diffSec / 3600));
+        if (diffSec < 60 * 60 * 48)   return LABELS.yesterday;
+        return LABELS.days.replace('{0}', Math.floor(diffSec / 86400));
+    }
+    document.querySelectorAll('[data-mp-history-ts]').forEach(function (el) {
+        var ts = parseInt(el.getAttribute('data-mp-history-ts'), 10);
+        if (!isNaN(ts)) el.textContent = relTime(ts);
+    });
+})();
 </script>
 
 <%@ include file="../common/footer.jsp" %>
