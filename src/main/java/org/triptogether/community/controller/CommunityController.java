@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.*;
 import org.triptogether.auth.vo.UserRole;
+import org.triptogether.myPage.service.ViewHistoryService;
 import org.triptogether.perspective.PerspectiveService;
 
 import org.jsoup.Jsoup;
@@ -54,6 +55,7 @@ public class CommunityController {
     private final CommunityService communityService;
     private final PerspectiveService perspectiveService;
     private final IpBlockMapper ipBlockMapper;
+    private final ViewHistoryService viewHistoryService;
 
     /* =============================================
        GET /community, /community/ - 루트 리다이렉트
@@ -124,6 +126,10 @@ public class CommunityController {
 
         CommunityPostDto post = communityService.getPost(postId);
         if (post == null) return "redirect:/community/list";
+
+        if (loginUserIdx != null) {
+            viewHistoryService.record(loginUserIdx, ViewHistoryService.TYPE_COMMUNITY, postId);
+        }
 
         List<CommunityPostDto> relatedList = communityService.getRelatedList(postId);
 
