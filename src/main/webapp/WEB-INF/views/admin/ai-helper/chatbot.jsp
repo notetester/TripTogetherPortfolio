@@ -417,22 +417,62 @@
             if (!data.success) { alert('조회 실패'); return; }
             document.getElementById('msgModalTitle').textContent =
                 '대화 #' + convId + ' — ' + (data.conversation.title || '');
-            const html = (data.messages || []).map(function (m) {
+
+            // messageId → [click, ...] 매핑
+            const clicksByMsg = {};
+            (data.linkClicks || []).forEach(function (c) {
+                const key = String(c.messageId);
+                if (!clicksByMsg[key]) clicksByMsg[key] = [];
+                clicksByMsg[key].push(c);
+            });
+            const totalClicks = (data.linkClicks || []).length;
+
+            const msgHtml = (data.messages || []).map(function (m) {
                 const role = m.role === 'user' ? '유저' : 'AI';
                 const color = m.role === 'user' ? '#1d4ed8' : '#0f766e';
                 const flag = m.isInappropriate ? ' ⚠️' : '';
                 const body = m.role === 'assistant'
                     ? renderAssistantContent(m.content)
                     : '<div style="font-size:13px;margin-top:4px;white-space:pre-wrap;">' + escHtml(m.content || '') + '</div>';
+                const clicks = m.role === 'assistant' ? (clicksByMsg[String(m.messageId)] || []) : [];
+                const badge = clicks.length > 0
+                    ? '<span style="margin-left:6px;display:inline-block;font-size:10px;font-weight:700;color:#1d4ed8;background:#dbeafe;padding:1px 7px;border-radius:10px;">👆 ' + clicks.length + '</span>'
+                    : '';
+                let perMsgDetail = '';
+                if (clicks.length > 0) {
+                    perMsgDetail = '<div style="margin-top:8px;padding:6px 8px;background:#eff6ff;border-radius:6px;">' +
+                                   '<div style="font-size:10px;color:#1d4ed8;font-weight:700;margin-bottom:4px;">이 메시지의 클릭 이력</div>';
+                    clicks.forEach(function (c) {
+                        perMsgDetail += '<div style="font-size:11px;color:#334155;">• ' +
+                                        escHtml(c.label || '-') +
+                                        ' <span style="color:#64748b;font-family:monospace;">' + escHtml(c.url || '') + '</span>' +
+                                        ' <span style="color:#94a3b8;">(' + escHtml(formatClickTime(c.clickedAt)) + ')</span>' +
+                                        '</div>';
+                    });
+                    perMsgDetail += '</div>';
+                }
                 return '<div style="margin-bottom:12px;padding:10px;border-left:3px solid ' + color + ';background:#f8fafc;">' +
-                       '<div style="font-size:11px;color:' + color + ';font-weight:600;">' + role + flag + '</div>' +
+                       '<div style="font-size:11px;color:' + color + ';font-weight:600;">' + role + flag + badge + '</div>' +
                        body +
+                       perMsgDetail +
                        '</div>';
             }).join('');
-            document.getElementById('msgModalBody').innerHTML = html || '<div>메시지가 없습니다.</div>';
+
+            const summary = '<div style="margin-bottom:12px;font-size:12px;color:#64748b;">' +
+                            '총 메시지 <strong style="color:#1e293b;">' + (data.messages || []).length + '</strong>건 · ' +
+                            '링크 클릭 <strong style="color:#1d4ed8;">' + totalClicks + '</strong>건' +
+                            '</div>';
+
+            document.getElementById('msgModalBody').innerHTML = summary + (msgHtml || '<div>메시지가 없습니다.</div>');
             document.getElementById('msgModal').style.display = 'flex';
         } catch (e) { alert('조회 중 오류'); }
     };
+
+    function formatClickTime(s) {
+        if (!s) return '';
+        const str = String(s);
+        return str.length >= 16 ? str.substring(0, 16).replace('T', ' ') : str;
+    }
 
     // assistant 메시지 content 렌더링
     //   - JSON 파싱 성공: message 텍스트 + links + quickReplies + inappropriate 를 블록으로 분리 표시

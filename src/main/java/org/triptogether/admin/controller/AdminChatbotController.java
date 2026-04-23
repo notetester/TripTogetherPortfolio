@@ -126,6 +126,7 @@ public class AdminChatbotController {
         result.put("success", true);
         result.put("conversation", conv);
         result.put("messages", conversationService.getAllMessages(conversationId));
+        result.put("linkClicks", linkClickService.getClicksByConversation(conversationId));
         return ResponseEntity.ok(result);
     }
 

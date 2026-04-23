@@ -35,4 +35,7 @@ public interface ChatbotLinkClickMapper {
     /** 특정 유저의 최근 클릭 이력 */
     List<ChatbotLinkClickVO> selectClicksByUser(@Param("userIdx") Long userIdx,
                                                  @Param("limit") int limit);
+
+    /** 특정 대화의 전체 클릭 이력 (오름차순) */
+    List<ChatbotLinkClickVO> selectClicksByConversation(@Param("conversationId") Long conversationId);
 }

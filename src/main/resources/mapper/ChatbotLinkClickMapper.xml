@@ -77,4 +77,15 @@
          LIMIT #{limit}
     </select>
 
+    <!-- =============================================
+         6. 대화별 클릭 이력 (오름차순)
+         ============================================= -->
+    <select id="selectClicksByConversation" resultMap="ClickResultMap">
+        SELECT click_id, message_id, conversation_id, user_idx, anon_session_id,
+               url, label, ip_address, clicked_at
+          FROM CHATBOT_LINK_CLICK
+         WHERE conversation_id = #{conversationId}
+         ORDER BY clicked_at ASC
+    </select>
+
 </mapper>

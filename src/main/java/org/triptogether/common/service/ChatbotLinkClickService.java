@@ -42,4 +42,8 @@ public class ChatbotLinkClickService {
     public List<Map<String, Object>> getDailyTrend(LocalDateTime from, LocalDateTime to) {
         return mapper.selectDailyTrend(from, to);
     }
+
+    public List<ChatbotLinkClickVO> getClicksByConversation(Long conversationId) {
+        return mapper.selectClicksByConversation(conversationId);
+    }
 }
