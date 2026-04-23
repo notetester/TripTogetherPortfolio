@@ -55,13 +55,15 @@ public class ChatbotService {
     // ══════════════════════════════════════════════════════════
     private static final List<Pattern> ALLOWED_URL_PATTERNS = List.of(
             Pattern.compile("^/$"),
-            Pattern.compile("^/explore(/\\d+)?(\\?.*)?$"),
-            Pattern.compile("^/courses(/\\d+)?(\\?.*)?$"),
+            Pattern.compile("^/explore(\\?.*)?$"),
+            Pattern.compile("^/detail/\\d+(\\?.*)?$"),           // 여행지 상세 (spotIdx)
+            Pattern.compile("^/courses(\\?.*)?$"),
+            Pattern.compile("^/courses/detail(\\?.*)?$"),         // 코스 상세 (?planId=)
             Pattern.compile("^/community/list(\\?.*)?$"),
             Pattern.compile("^/community/detail/\\d+(\\?.*)?$"),
             Pattern.compile("^/community/write(\\?.*)?$"),
             Pattern.compile("^/assistant(\\?.*)?$"),
-            Pattern.compile("^/packages(/\\d+)?(\\?.*)?$"),
+            Pattern.compile("^/packages(\\?.*)?$"),
             Pattern.compile("^/packages/manage(/.*)?(\\?.*)?$"),
             Pattern.compile("^/wallet(/.*)?(\\?.*)?$"),
             Pattern.compile("^/shop(/.*)?(\\?.*)?$"),
