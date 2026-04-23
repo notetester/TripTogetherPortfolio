@@ -109,7 +109,7 @@
 
             const title = document.createElement('span');
             title.className = 'cb-conv-title';
-            title.textContent = c.title || '새 대화';
+            title.textContent = c.title || (msg.welcomeTitle || '새 대화');
             title.addEventListener('click', () => openConversation(c.conversationId));
 
             const menu = document.createElement('button');
@@ -118,7 +118,7 @@
             menu.textContent = '⋯';
             menu.addEventListener('click', (e) => {
                 e.stopPropagation();
-                showConvMenu(c, row);
+                openConvMenu(c, row, menu);
             });
 
             row.appendChild(title);
@@ -127,18 +127,110 @@
         });
     }
 
-    function showConvMenu(conv, rowEl) {
-        const action = window.prompt(
-            '1: 제목 변경  /  2: 삭제  /  취소: 빈 값',
-            ''
-        );
-        if (!action) return;
-        if (action === '1') {
-            const newTitle = window.prompt('새 제목', conv.title || '');
-            if (newTitle && newTitle.trim()) renameConversation(conv.conversationId, newTitle.trim());
-        } else if (action === '2') {
-            if (window.confirm('이 대화를 삭제할까요?')) deleteConversation(conv.conversationId);
+    // ===== 대화 메뉴 팝오버 =====
+    let openPopover = null;
+    let docClickHandler = null;
+
+    function closeConvMenu() {
+        if (openPopover && openPopover.parentNode) openPopover.parentNode.removeChild(openPopover);
+        openPopover = null;
+        if (docClickHandler) {
+            document.removeEventListener('click', docClickHandler, true);
+            docClickHandler = null;
         }
+    }
+
+    function openConvMenu(conv, rowEl, anchorBtn) {
+        closeConvMenu();
+        const pop = document.createElement('div');
+        pop.className = 'cb-conv-pop';
+        pop.innerHTML =
+            '<button type="button" class="cb-conv-pop-item" data-act="rename">' + escHtml(msg.menuRename || 'Rename') + '</button>' +
+            '<button type="button" class="cb-conv-pop-item cb-conv-pop-danger" data-act="delete">' + escHtml(msg.menuDelete || 'Delete') + '</button>';
+        rowEl.appendChild(pop);
+        openPopover = pop;
+
+        pop.addEventListener('click', function (e) {
+            const btn = e.target.closest('[data-act]');
+            if (!btn) return;
+            e.stopPropagation();
+            const act = btn.dataset.act;
+            if (act === 'rename') {
+                closeConvMenu();
+                startInlineRename(conv, rowEl);
+            } else if (act === 'delete') {
+                switchToConfirmDelete(pop, conv, rowEl);
+            }
+        });
+
+        // 다음 틱에 문서 클릭 감지 설치 (현재 클릭 이벤트 버블링으로 즉시 닫히지 않게)
+        setTimeout(function () {
+            docClickHandler = function (e) {
+                if (!pop.contains(e.target) && e.target !== anchorBtn) closeConvMenu();
+            };
+            document.addEventListener('click', docClickHandler, true);
+        }, 0);
+    }
+
+    function switchToConfirmDelete(pop, conv, rowEl) {
+        pop.innerHTML =
+            '<div class="cb-conv-pop-msg">' + escHtml(msg.confirmDelete || 'Delete this conversation?') + '</div>' +
+            '<div class="cb-conv-pop-actions">' +
+                '<button type="button" class="cb-conv-pop-item cb-conv-pop-danger" data-act="confirm">' + escHtml(msg.confirmYes || 'Delete') + '</button>' +
+                '<button type="button" class="cb-conv-pop-item" data-act="cancel">' + escHtml(msg.confirmNo || 'Cancel') + '</button>' +
+            '</div>';
+        pop.addEventListener('click', function handler(e) {
+            const btn = e.target.closest('[data-act]');
+            if (!btn) return;
+            e.stopPropagation();
+            pop.removeEventListener('click', handler);
+            if (btn.dataset.act === 'confirm') {
+                deleteConversation(conv.conversationId);
+            }
+            closeConvMenu();
+        });
+    }
+
+    function startInlineRename(conv, rowEl) {
+        const titleEl = rowEl.querySelector('.cb-conv-title');
+        if (!titleEl) return;
+        const originalText = titleEl.textContent;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'cb-conv-title-input';
+        input.value = originalText;
+        input.placeholder = msg.editPlaceholder || '';
+
+        titleEl.replaceWith(input);
+        input.focus();
+        input.setSelectionRange(0, input.value.length);
+
+        let done = false;
+        function finish(save) {
+            if (done) return;
+            done = true;
+            const newValue = input.value.trim();
+            // 원래 span 복원
+            const newTitle = document.createElement('span');
+            newTitle.className = 'cb-conv-title';
+            if (save && newValue && newValue !== originalText) {
+                newTitle.textContent = newValue;
+                newTitle.addEventListener('click', () => openConversation(conv.conversationId));
+                input.replaceWith(newTitle);
+                renameConversation(conv.conversationId, newValue);
+            } else {
+                newTitle.textContent = originalText;
+                newTitle.addEventListener('click', () => openConversation(conv.conversationId));
+                input.replaceWith(newTitle);
+            }
+        }
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); finish(true); }
+            else if (e.key === 'Escape') { e.preventDefault(); finish(false); }
+        });
+        input.addEventListener('blur', function () { finish(true); });
     }
 
     async function renameConversation(convId, newTitle) {

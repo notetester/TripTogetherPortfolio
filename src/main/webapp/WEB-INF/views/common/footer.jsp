@@ -77,7 +77,13 @@
             welcomeTitle:         '<spring:message code="footer.chatbot.welcome.title" javaScriptEscape="true"/>',
             welcomeBody1:         '<spring:message code="footer.chatbot.welcome.body1" javaScriptEscape="true"/>',
             welcomeBody2:         '<spring:message code="footer.chatbot.welcome.body2" javaScriptEscape="true"/>',
-            error:                '<spring:message code="footer.chatbot.error" javaScriptEscape="true"/>'
+            error:                '<spring:message code="footer.chatbot.error" javaScriptEscape="true"/>',
+            menuRename:           '<spring:message code="footer.chatbot.menu.rename" javaScriptEscape="true"/>',
+            menuDelete:           '<spring:message code="footer.chatbot.menu.delete" javaScriptEscape="true"/>',
+            confirmDelete:        '<spring:message code="footer.chatbot.confirm.delete" javaScriptEscape="true"/>',
+            confirmYes:           '<spring:message code="footer.chatbot.confirm.yes" javaScriptEscape="true"/>',
+            confirmNo:            '<spring:message code="footer.chatbot.confirm.no" javaScriptEscape="true"/>',
+            editPlaceholder:      '<spring:message code="footer.chatbot.edit.placeholder" javaScriptEscape="true"/>'
         }
     };
 </script>
