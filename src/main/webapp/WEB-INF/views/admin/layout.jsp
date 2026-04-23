@@ -145,6 +145,11 @@
                         <span class="adm-nav-icon">🗺️</span> <spring:message code="admin.layout.menu.courses"/>
                     </a>
                     </c:if>
+                    <c:if test="${hasCommunityAdmin}">
+                    <a class="adm-nav-item ${activeMenu=='ads'?'active':''}" href="${pageContext.request.contextPath}/admin/ads">
+                        <span class="adm-nav-icon">📢</span> 광고 관리
+                    </a>
+                    </c:if>
                 </div>
             </div>
             </c:if>
