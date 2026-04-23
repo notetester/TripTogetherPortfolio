@@ -2,8 +2,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="courses"/>
-<c:set var="pageTitle" value="여행코스 관리"/>
+<spring:message code="admin.courses.list.pageTitle" var="pageTitle"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -11,24 +12,24 @@
     <%-- ── 통계 카드 ── --%>
     <div class="adm-summary-grid">
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label">활성 코스</div>
+            <div class="adm-summary-label"><spring:message code="admin.courses.list.summary.active"/></div>
             <div class="adm-summary-value is-primary">${stats.activePlans}</div>
-            <div class="adm-summary-sub">전체 ${stats.totalPlans}건</div>
+            <div class="adm-summary-sub"><spring:message code="admin.courses.list.summary.total"/> ${stats.totalPlans}<spring:message code="admin.common.countSuffix"/></div>
         </div>
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label">삭제된 코스</div>
+            <div class="adm-summary-label"><spring:message code="admin.courses.list.summary.deleted"/></div>
             <div class="adm-summary-value is-danger">${stats.deletedPlans}</div>
-            <div class="adm-summary-sub">오늘 등록 ${stats.todayPlans}건</div>
+            <div class="adm-summary-sub"><spring:message code="admin.courses.list.summary.today"/> ${stats.todayPlans}<spring:message code="admin.common.countSuffix"/></div>
         </div>
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label">AI 코스</div>
+            <div class="adm-summary-label"><spring:message code="admin.courses.list.summary.ai"/></div>
             <div class="adm-summary-value is-success">${stats.aiPlans}</div>
-            <div class="adm-summary-sub">수동 ${stats.manualPlans}건</div>
+            <div class="adm-summary-sub"><spring:message code="admin.courses.list.summary.manual"/> ${stats.manualPlans}<spring:message code="admin.common.countSuffix"/></div>
         </div>
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label">공개 코스</div>
+            <div class="adm-summary-label"><spring:message code="admin.courses.list.summary.public"/></div>
             <div class="adm-summary-value is-warning">${stats.publicPlans}</div>
-            <div class="adm-summary-sub">비공개 ${stats.privatePlans}건</div>
+            <div class="adm-summary-sub"><spring:message code="admin.courses.list.summary.private"/> ${stats.privatePlans}<spring:message code="admin.common.countSuffix"/></div>
         </div>
     </div>
 
@@ -38,54 +39,54 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/courses" id="searchForm">
                 <div class="adm-filter-bar" style="flex-wrap:wrap;gap:12px;">
                     <div>
-                        <div class="adm-filter-label">상태</div>
+                        <div class="adm-filter-label"><spring:message code="admin.courses.list.filter.status"/></div>
                         <select class="adm-select" name="status">
-                            <option value="ALL"     ${search.status=='ALL'     ?'selected':''}>전체</option>
-                            <option value="ACTIVE"  ${search.status=='ACTIVE'  ?'selected':''}>활성</option>
-                            <option value="DELETED" ${search.status=='DELETED' ?'selected':''}>삭제됨</option>
+                            <option value="ALL"     ${search.status=='ALL'     ?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="ACTIVE"  ${search.status=='ACTIVE'  ?'selected':''}><spring:message code="admin.common.active"/></option>
+                            <option value="DELETED" ${search.status=='DELETED' ?'selected':''}><spring:message code="admin.courses.status.deleted"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">생성유형</div>
+                        <div class="adm-filter-label"><spring:message code="admin.courses.list.filter.source"/></div>
                         <select class="adm-select" name="planSource">
-                            <option value="ALL"    ${search.planSource=='ALL'    ?'selected':''}>전체</option>
-                            <option value="MANUAL" ${search.planSource=='MANUAL' ?'selected':''}>수동</option>
-                            <option value="AI"     ${search.planSource=='AI'     ?'selected':''}>AI</option>
+                            <option value="ALL"    ${search.planSource=='ALL'    ?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="MANUAL" ${search.planSource=='MANUAL' ?'selected':''}><spring:message code="admin.courses.source.manual"/></option>
+                            <option value="AI"     ${search.planSource=='AI'     ?'selected':''}><spring:message code="admin.courses.source.ai"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">공개</div>
+                        <div class="adm-filter-label"><spring:message code="admin.courses.list.filter.visibility"/></div>
                         <select class="adm-select" name="isPublic">
-                            <option value="ALL"     ${search.isPublic=='ALL'     ?'selected':''}>전체</option>
-                            <option value="PUBLIC"  ${search.isPublic=='PUBLIC'  ?'selected':''}>공개</option>
-                            <option value="PRIVATE" ${search.isPublic=='PRIVATE' ?'selected':''}>비공개</option>
+                            <option value="ALL"     ${search.isPublic=='ALL'     ?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="PUBLIC"  ${search.isPublic=='PUBLIC'  ?'selected':''}><spring:message code="admin.courses.visibility.public"/></option>
+                            <option value="PRIVATE" ${search.isPublic=='PRIVATE' ?'selected':''}><spring:message code="admin.courses.visibility.private"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">정렬</div>
+                        <div class="adm-filter-label"><spring:message code="admin.courses.list.filter.sort"/></div>
                         <select class="adm-select" name="sortBy">
-                            <option value="createdAt" ${search.sortBy=='createdAt' ?'selected':''}>등록일</option>
-                            <option value="updatedAt" ${search.sortBy=='updatedAt' ?'selected':''}>수정일</option>
-                            <option value="startDate" ${search.sortBy=='startDate' ?'selected':''}>여행 시작일</option>
+                            <option value="createdAt" ${search.sortBy=='createdAt' ?'selected':''}><spring:message code="admin.courses.list.sort.createdAt"/></option>
+                            <option value="updatedAt" ${search.sortBy=='updatedAt' ?'selected':''}><spring:message code="admin.courses.list.sort.updatedAt"/></option>
+                            <option value="startDate" ${search.sortBy=='startDate' ?'selected':''}><spring:message code="admin.courses.list.sort.startDate"/></option>
                         </select>
                     </div>
                     <div style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label">검색</div>
+                        <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="searchType" style="width:120px;">
-                                <option value="all"         ${search.searchType=='all'         ?'selected':''}>전체</option>
-                                <option value="title"       ${search.searchType=='title'       ?'selected':''}>제목</option>
-                                <option value="destination" ${search.searchType=='destination' ?'selected':''}>여행지</option>
-                                <option value="nickname"    ${search.searchType=='nickname'    ?'selected':''}>닉네임</option>
-                                <option value="userId"      ${search.searchType=='userId'      ?'selected':''}>아이디</option>
+                                <option value="all"         ${search.searchType=='all'         ?'selected':''}><spring:message code="admin.common.all"/></option>
+                                <option value="title"       ${search.searchType=='title'       ?'selected':''}><spring:message code="admin.courses.list.search.title"/></option>
+                                <option value="destination" ${search.searchType=='destination' ?'selected':''}><spring:message code="admin.courses.list.search.destination"/></option>
+                                <option value="nickname"    ${search.searchType=='nickname'    ?'selected':''}><spring:message code="admin.common.nickname"/></option>
+                                <option value="userId"      ${search.searchType=='userId'      ?'selected':''}><spring:message code="admin.common.userId"/></option>
                             </select>
-                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}"
-                                   placeholder="검색어를 입력하세요" style="flex:1;">
+                            <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}"
+                                   placeholder="<spring:message code='admin.courses.list.filter.keywordPlaceholder'/>" style="flex:1;">
                         </div>
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:6px;">
-                        <button class="adm-btn adm-btn-primary" type="submit">검색</button>
-                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/courses">초기화</a>
+                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.search"/></button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/courses"><spring:message code="admin.common.reset"/></a>
                     </div>
                 </div>
             </form>
@@ -96,16 +97,16 @@
     <div class="adm-card">
         <div class="adm-card-head">
             <div style="display:flex;align-items:center;gap:12px;">
-                <div class="adm-card-title">여행코스 목록</div>
-                <div class="adm-muted-note">총 ${total}건</div>
+                <div class="adm-card-title"><spring:message code="admin.courses.list.title"/></div>
+                <div class="adm-muted-note"><spring:message code="admin.courses.list.total"/> ${total}<spring:message code="admin.common.countSuffix"/></div>
             </div>
             <%-- 일괄 처리 버튼 --%>
             <div id="bulkBar" style="display:none;gap:8px;align-items:center;">
                 <span id="bulkCount" style="font-size:12px;color:#94a3b8;"></span>
                 <button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;"
-                        onclick="bulkAction('delete')">일괄 삭제</button>
+                        onclick="bulkAction('delete')"><spring:message code="admin.courses.list.action.bulkDelete"/></button>
                 <button class="adm-btn adm-btn-ghost" style="color:#34d399;border-color:#34d399;"
-                        onclick="bulkAction('restore')">일괄 복구</button>
+                        onclick="bulkAction('restore')"><spring:message code="admin.courses.list.action.bulkRestore"/></button>
             </div>
         </div>
         <div class="adm-table-wrap">
@@ -114,16 +115,16 @@
                 <tr>
                     <th style="width:36px;"><input type="checkbox" id="checkAll"></th>
                     <th style="width:60px;">ID</th>
-                    <th>작성자</th>
-                    <th>제목</th>
-                    <th>여행지</th>
-                    <th style="width:120px;">일정</th>
-                    <th style="width:50px;">스팟</th>
-                    <th style="width:60px;">유형</th>
-                    <th style="width:60px;">공개</th>
-                    <th style="width:70px;">상태</th>
-                    <th style="width:90px;">등록일</th>
-                    <th style="width:120px;">액션</th>
+                    <th><spring:message code="admin.courses.list.table.author"/></th>
+                    <th><spring:message code="admin.courses.list.table.title"/></th>
+                    <th><spring:message code="admin.courses.list.table.destination"/></th>
+                    <th style="width:120px;"><spring:message code="admin.courses.list.table.period"/></th>
+                    <th style="width:50px;"><spring:message code="admin.courses.list.table.spots"/></th>
+                    <th style="width:60px;"><spring:message code="admin.courses.list.table.source"/></th>
+                    <th style="width:60px;"><spring:message code="admin.courses.list.table.visibility"/></th>
+                    <th style="width:70px;"><spring:message code="admin.common.accountStatus"/></th>
+                    <th style="width:90px;"><spring:message code="admin.courses.list.table.createdAt"/></th>
+                    <th style="width:120px;"><spring:message code="admin.common.action"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -137,7 +138,7 @@
                             <div style="font-weight:600;font-size:13px;color:#7dd3fc;">${p.nickname}</div>
                             <div style="font-size:11px;color:#64748b;">${p.userId}</div>
                             <c:if test="${p.accountStatus == 'BLOCKED'}">
-                                <span class="adm-inline-danger">계정 차단됨</span>
+                                <span class="adm-inline-danger"><spring:message code="admin.courses.list.accountBlocked"/></span>
                             </c:if>
                         </td>
 
@@ -156,7 +157,7 @@
                         <td style="font-size:12px;color:#cbd5e1;">
                             <c:choose>
                                 <c:when test="${not empty p.destination}">${p.destination}</c:when>
-                                <c:otherwise><span style="color:#475569;">—</span></c:otherwise>
+                                <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
                             </c:choose>
                         </td>
 
@@ -167,7 +168,7 @@
                                     <fmt:formatDate value="${p.startDate}" pattern="yyyy.MM.dd"/>
                                     <div>~ <fmt:formatDate value="${p.endDate}" pattern="MM.dd"/></div>
                                 </c:when>
-                                <c:otherwise><span style="color:#475569;">—</span></c:otherwise>
+                                <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
                             </c:choose>
                         </td>
 
@@ -185,10 +186,10 @@
                         <td style="font-size:12px;">
                             <c:choose>
                                 <c:when test="${p.planSource == 'AI'}">
-                                    <span style="color:#a78bfa;font-weight:600;">AI</span>
+                                    <span style="color:#a78bfa;font-weight:600;"><spring:message code="admin.courses.source.ai"/></span>
                                 </c:when>
                                 <c:when test="${p.planSource == 'MANUAL'}">
-                                    <span style="color:#94a3b8;">수동</span>
+                                    <span style="color:#94a3b8;"><spring:message code="admin.courses.source.manual"/></span>
                                 </c:when>
                                 <c:otherwise><span style="color:#64748b;">${p.planSource}</span></c:otherwise>
                             </c:choose>
@@ -198,10 +199,10 @@
                         <td style="font-size:12px;">
                             <c:choose>
                                 <c:when test="${p.isPublic == 1}">
-                                    <span style="color:#34d399;">공개</span>
+                                    <span style="color:#34d399;"><spring:message code="admin.courses.visibility.public"/></span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span style="color:#64748b;">비공개</span>
+                                    <span style="color:#64748b;"><spring:message code="admin.courses.visibility.private"/></span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -210,10 +211,10 @@
                         <td>
                             <c:choose>
                                 <c:when test="${p.isDeleted == 0}">
-                                    <span class="status-badge ACTIVE">활성</span>
+                                    <span class="status-badge ACTIVE"><spring:message code="admin.common.active"/></span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="status-badge DELETED">삭제됨</span>
+                                    <span class="status-badge DELETED"><spring:message code="admin.courses.status.deleted"/></span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -226,19 +227,19 @@
 
                         <%-- 액션 --%>
                         <td>
-                            <div style="display:flex;gap:4px;">
+                            <div class="adm-row-actions is-single">
                                 <c:choose>
                                     <c:when test="${p.isDeleted == 0}">
-                                        <button class="adm-btn adm-btn-ghost"
-                                                style="font-size:11px;padding:3px 8px;color:#f87171;border-color:#f87171;"
+                                        <button class="adm-row-btn danger"
+                                                type="button"
                                                 data-id="${p.planId}"
-                                                onclick="actionPlan(this.getAttribute('data-id'), 'delete')">삭제</button>
+                                                onclick="actionPlan(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.common.delete"/></button>
                                     </c:when>
                                     <c:otherwise>
-                                        <button class="adm-btn adm-btn-ghost"
-                                                style="font-size:11px;padding:3px 8px;color:#34d399;border-color:#34d399;"
+                                        <button class="adm-row-btn success"
+                                                type="button"
                                                 data-id="${p.planId}"
-                                                onclick="actionPlan(this.getAttribute('data-id'), 'restore')">복구</button>
+                                                onclick="actionPlan(this.getAttribute('data-id'), 'restore')"><spring:message code="admin.common.restore"/></button>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -246,7 +247,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="12" style="text-align:center;padding:40px;color:#475569;">검색 결과가 없습니다.</td></tr>
+                    <tr><td colspan="12" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.courses.list.empty"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -272,6 +273,22 @@
 
 <script>
 var ctx = '${pageContext.request.contextPath}';
+var COURSE_LIST_MESSAGES = {
+    bulkSelected: '<spring:message code="admin.courses.list.js.bulkSelected" javaScriptEscape="true"/>',
+    actionDelete: '<spring:message code="admin.common.delete" javaScriptEscape="true"/>',
+    actionRestore: '<spring:message code="admin.common.restore" javaScriptEscape="true"/>',
+    confirmSingle: '<spring:message code="admin.courses.list.js.confirmSingle" javaScriptEscape="true"/>',
+    confirmBulk: '<spring:message code="admin.courses.list.js.confirmBulk" javaScriptEscape="true"/>',
+    noSelection: '<spring:message code="admin.courses.list.js.noSelection" javaScriptEscape="true"/>',
+    error: '<spring:message code="admin.common.processError" javaScriptEscape="true"/>'
+};
+
+function formatCourseListMessage(template) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return template.replace(/\{(\d+)\}/g, function (_, idx) {
+        return typeof args[idx] !== 'undefined' ? args[idx] : '';
+    });
+}
 
 // ── 전체 선택 ──
 document.getElementById('checkAll').addEventListener('change', function () {
@@ -287,7 +304,7 @@ function updateBulkBar() {
     var bar = document.getElementById('bulkBar');
     if (checked.length > 0) {
         bar.style.display = 'flex';
-        document.getElementById('bulkCount').textContent = checked.length + '건 선택됨';
+        document.getElementById('bulkCount').textContent = formatCourseListMessage(COURSE_LIST_MESSAGES.bulkSelected, checked.length);
     } else {
         bar.style.display = 'none';
     }
@@ -295,15 +312,15 @@ function updateBulkBar() {
 
 // ── 단건 액션 ──
 function actionPlan(planId, action) {
-    var label = action === 'delete' ? '삭제' : '복구';
-    if (!confirm('#' + planId + ' 코스를 ' + label + '하시겠습니까?')) return;
+    var label = action === 'delete' ? COURSE_LIST_MESSAGES.actionDelete : COURSE_LIST_MESSAGES.actionRestore;
+    if (!confirm(formatCourseListMessage(COURSE_LIST_MESSAGES.confirmSingle, planId, label))) return;
     fetch(ctx + '/admin/courses/' + planId + '/' + action, {
         method: 'POST',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     }).then(function (r) { return r.json(); })
       .then(function (d) {
         if (d.success) { location.reload(); }
-        else { alert(d.message || '처리 중 오류가 발생했습니다.'); }
+        else { alert(d.message || COURSE_LIST_MESSAGES.error); }
     });
 }
 
@@ -311,9 +328,9 @@ function actionPlan(planId, action) {
 function bulkAction(action) {
     var ids = Array.from(document.querySelectorAll('.row-check:checked'))
                    .map(function (cb) { return cb.getAttribute('data-id'); });
-    if (ids.length === 0) { alert('선택된 항목이 없습니다.'); return; }
-    var label = action === 'delete' ? '삭제' : '복구';
-    if (!confirm(ids.length + '건을 ' + label + '하시겠습니까?')) return;
+    if (ids.length === 0) { alert(COURSE_LIST_MESSAGES.noSelection); return; }
+    var label = action === 'delete' ? COURSE_LIST_MESSAGES.actionDelete : COURSE_LIST_MESSAGES.actionRestore;
+    if (!confirm(formatCourseListMessage(COURSE_LIST_MESSAGES.confirmBulk, ids.length, label))) return;
 
     var body = 'action=' + action + '&' + ids.map(function (id) { return 'ids=' + id; }).join('&');
     fetch(ctx + '/admin/courses/bulk-action', {
@@ -326,7 +343,7 @@ function bulkAction(action) {
     }).then(function (r) { return r.json(); })
       .then(function (d) {
         if (d.success) { location.reload(); }
-        else { alert(d.message || '처리 중 오류가 발생했습니다.'); }
+        else { alert(d.message || COURSE_LIST_MESSAGES.error); }
     });
 }
 

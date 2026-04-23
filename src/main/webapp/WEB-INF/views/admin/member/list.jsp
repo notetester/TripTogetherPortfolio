@@ -185,33 +185,48 @@
 
                         <%-- 이메일 --%>
                         <td>
-                            <c:choose>
-                                <c:when test="${not empty m.userEmail}">
-                                    <span style="font-size:12px;">${m.userEmail}</span>
-                                    <c:if test="${m.emailVerified}">
-                                        <span style="color:#4ade80;font-size:10px;"> ✓</span>
-                                    </c:if>
-                                </c:when>
-                                <c:otherwise><span style="color:#475569;font-size:12px;">—</span></c:otherwise>
-                            </c:choose>
-                            <div style="font-size:10px;color:${m.verifiedMember ? '#4ade80' : '#64748b'};margin-top:2px;">
+                            <button type="button"
+                                    class="adm-cell-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="actions"
+                                    data-focus-section="email">
                                 <c:choose>
-                                    <c:when test="${m.verifiedMember}"><spring:message code="admin.members.verifiedMember"/></c:when>
-                                    <c:otherwise><spring:message code="admin.members.unverifiedMember"/></c:otherwise>
+                                    <c:when test="${not empty m.userEmail}">
+                                        <span style="font-size:12px;">${m.userEmail}</span>
+                                        <c:if test="${m.emailVerified}">
+                                            <span style="color:#4ade80;font-size:10px;">✓ <spring:message code="admin.members.emailVerified"/></span>
+                                        </c:if>
+                                    </c:when>
+                                    <c:otherwise><span style="color:#475569;font-size:12px;">—</span></c:otherwise>
                                 </c:choose>
-                            </div>
+                                <span class="adm-cell-link-note">
+                                    <c:choose>
+                                        <c:when test="${m.verifiedMember}"><spring:message code="admin.members.verifiedMember"/></c:when>
+                                        <c:otherwise><spring:message code="admin.members.unverifiedMember"/></c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </button>
                         </td>
 
                         <%-- 상태 --%>
                         <td>
-                            <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'actions')" style="padding:0;">
+                            <button type="button"
+                                    class="adm-inline-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="actions"
+                                    data-focus-section="statusRole"
+                                    style="padding:0;">
                                 <span class="status-badge ${m.accountStatus}">${m.accountStatus}</span>
                             </button>
                         </td>
 
                         <%-- 권한 --%>
                         <td>
-                            <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'actions')" style="padding:0;">
+                            <button type="button"
+                                    class="adm-cell-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="actions"
+                                    data-focus-section="statusRole">
                                 <span class="role-badge ${m.userRole}">
                                     <c:choose>
                                         <c:when test="${m.userRole eq 'USER'}"><spring:message code="admin.role.USER"/></c:when>
@@ -224,78 +239,95 @@
                                         <c:otherwise>${m.userRole}</c:otherwise>
                                     </c:choose>
                                 </span>
+                                <c:if test="${not empty m.adminPositionCode}">
+                                    <span class="adm-cell-link-note">${m.adminPositionCode}</span>
+                                </c:if>
                             </button>
-                            <c:if test="${not empty m.adminPositionCode}">
-                                <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${m.adminPositionCode}</div>
-                            </c:if>
                         </td>
 
                         <%-- 소셜 연동 --%>
                         <td>
-                            <div class="adm-social-list is-compact">
-                                <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('KAKAO')}">
-                                    <span class="adm-social-pill kakao" title="<spring:message code='admin.social.kakao'/>">
-                                        <span class="adm-social-icon kakao-mark">k</span>
-                                        <span class="adm-social-label"><spring:message code="admin.social.kakao"/></span>
-                                    </span>
-                                </c:if>
-                                <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('NAVER')}">
-                                    <span class="adm-social-pill naver" title="<spring:message code='admin.social.naver'/>">
-                                        <span class="adm-social-icon naver-mark">N</span>
-                                        <span class="adm-social-label"><spring:message code="admin.social.naver"/></span>
-                                    </span>
-                                </c:if>
-                                <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('GOOGLE')}">
-                                    <span class="adm-social-pill google" title="<spring:message code='admin.social.google'/>">
-                                        <span class="adm-social-icon google-mark">
-                                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-                                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                                            </svg>
+                            <button type="button"
+                                    class="adm-cell-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="info"
+                                    data-focus-section="social">
+                                <div class="adm-social-list is-compact">
+                                    <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('KAKAO')}">
+                                        <span class="adm-social-pill kakao" title="<spring:message code='admin.social.kakao'/>">
+                                            <span class="adm-social-icon kakao-mark">k</span>
+                                            <span class="adm-social-label"><spring:message code="admin.social.kakao"/></span>
                                         </span>
-                                        <span class="adm-social-label"><spring:message code="admin.social.google"/></span>
-                                    </span>
-                                </c:if>
-                                <c:if test="${empty m.linkedProviders}">
-                                    <span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider"/></span>
-                                </c:if>
-                            </div>
+                                    </c:if>
+                                    <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('NAVER')}">
+                                        <span class="adm-social-pill naver" title="<spring:message code='admin.social.naver'/>">
+                                            <span class="adm-social-icon naver-mark">N</span>
+                                            <span class="adm-social-label"><spring:message code="admin.social.naver"/></span>
+                                        </span>
+                                    </c:if>
+                                    <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('GOOGLE')}">
+                                        <span class="adm-social-pill google" title="<spring:message code='admin.social.google'/>">
+                                            <span class="adm-social-icon google-mark">
+                                                <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                                                </svg>
+                                            </span>
+                                            <span class="adm-social-label"><spring:message code="admin.social.google"/></span>
+                                        </span>
+                                    </c:if>
+                                    <c:if test="${empty m.linkedProviders}">
+                                        <span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider"/></span>
+                                    </c:if>
+                                </div>
+                            </button>
                         </td>
 
                         <%-- 로그인 이력 --%>
                         <td>
-                            <div style="font-size:12px;">
-                                <c:choose>
-                                    <c:when test="${m.lastLoginAt != null}">
-                                        <fmt:formatDate value="${m.lastLoginAt}" pattern="MM.dd HH:mm"/>
-                                    </c:when>
-                                    <c:otherwise><span style="color:#475569;"><spring:message code="admin.members.none"/></span></c:otherwise>
-                                </c:choose>
-                            </div>
-                            <div style="font-size:10px;color:#475569;margin-top:1px;">
-                                ✅${m.loginSuccessCount} / ❌${m.loginFailCount}
-                            </div>
+                            <button type="button"
+                                    class="adm-cell-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="hist"
+                                    data-focus-section="loginHistory">
+                                <span style="font-size:12px;">
+                                    <c:choose>
+                                        <c:when test="${m.lastLoginAt != null}">
+                                            <fmt:formatDate value="${m.lastLoginAt}" pattern="MM.dd HH:mm"/>
+                                        </c:when>
+                                        <c:otherwise><span style="color:#475569;"><spring:message code="admin.members.none"/></span></c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="adm-cell-link-note">✅${m.loginSuccessCount} / ❌${m.loginFailCount}</span>
+                            </button>
                         </td>
 
                         <%-- 가입일 --%>
-                        <td style="font-size:12px;color:#64748b;">
-                            <fmt:formatDate value="${m.createdAt}" pattern="yyyy.MM.dd"/>
+                        <td>
+                            <button type="button"
+                                    class="adm-cell-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="info"
+                                    data-focus-section="createdMeta"
+                                    style="font-size:12px;color:#64748b;">
+                                <fmt:formatDate value="${m.createdAt}" pattern="yyyy.MM.dd"/>
+                            </button>
                         </td>
 
                         <%-- 액션 --%>
                         <td>
-                            <div style="display:flex;gap:4px;align-items:center;">
+                            <div class="adm-row-actions">
                                 <button class="adm-row-btn detail"
                                         onclick="openDetail(${m.userIdx})"><spring:message code="admin.members.detail"/></button>
                                 <c:if test="${m.userRole != 'SYSTEM' and m.userRole != 'SUPERADMIN'}">
                                 <div class="action-menu-wrap">
-                                    <button class="adm-row-btn detail"
-                                            onclick="toggleMenu(this)">⋯</button>
+                                    <button class="adm-row-btn detail adm-row-btn-more"
+                                            type="button"
+                                            onclick="admToggleActionMenu(this)">⋯</button>
                                     <div class="action-menu">
-                                        <div style="font-size:10px;color:#475569;padding:4px 10px 6px;
-                                                    font-weight:700;text-transform:uppercase;letter-spacing:.06em;">
+                                        <div class="action-menu-head">
                                             <spring:message code="admin.members.action.changeStatus"/>
                                         </div>
                                         <c:if test="${m.accountStatus != 'ACTIVE'}">
@@ -325,8 +357,7 @@
                                             </button>
                                         </c:if>
                                         <div class="action-menu-sep"></div>
-                                        <div style="font-size:10px;color:#475569;padding:4px 10px 6px;
-                                                    font-weight:700;text-transform:uppercase;letter-spacing:.06em;">
+                                        <div class="action-menu-head">
                                             <spring:message code="admin.members.action.changeRole"/>
                                         </div>
                                         <div class="role-change-box">
@@ -466,6 +497,12 @@ const ADMIN_MEMBER_MSG = {
     blockApplied: '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>',
     memberDetailsTitle: '<spring:message code="admin.context.memberTitle" javaScriptEscape="true"/>',
     memberDetailsSuffix: '<spring:message code="admin.members.detailTitleSuffix" javaScriptEscape="true"/>',
+    emailSectionTitle: '<spring:message code="admin.members.action.emailTitle" javaScriptEscape="true"/>',
+    emailPlaceholder: '<spring:message code="admin.members.emailPlaceholder" javaScriptEscape="true"/>',
+    saveEmail: '<spring:message code="admin.members.action.saveEmail" javaScriptEscape="true"/>',
+    emailResetNotice: '<spring:message code="admin.members.emailResetNotice" javaScriptEscape="true"/>',
+    emailCellHint: '<spring:message code="admin.members.emailCellHint" javaScriptEscape="true"/>',
+    emailUpdated: '<spring:message code="admin.members.emailUpdated" javaScriptEscape="true"/>',
     infoTab: '<spring:message code="admin.context.tab.info" javaScriptEscape="true"/>',
     loginTab: '<spring:message code="admin.context.tab.logins" javaScriptEscape="true"/>',
     securityTab: '<spring:message code="admin.context.tab.security" javaScriptEscape="true"/>',
@@ -606,14 +643,6 @@ function changeSize(size) {
 }
 
 /* ── 액션 메뉴 토글 ── */
-function toggleMenu(btn) {
-    const menu = btn.nextElementSibling;
-    document.querySelectorAll('.action-menu.open').forEach(m => {
-        if (m !== menu) m.classList.remove('open');
-    });
-    menu.classList.toggle('open');
-}
-
 function openBlockModal(triggerOrUserIdx, nickname) {
     const trigger = typeof triggerOrUserIdx === 'object' ? triggerOrUserIdx : null;
     const userIdx = trigger ? trigger.dataset.userIdx : triggerOrUserIdx;
@@ -870,15 +899,25 @@ function buildBlockRows(items) {
 function buildActionTab(m) {
     return ''
         + '<div class="adm-context-actions-grid">'
-        + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.profileTitle" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="adm-context-panel" id="memberProfilePanel">'
+        + '<div class="adm-context-panel-title">' + '<spring:message code="admin.context.action.profileTitle" javaScriptEscape="true"/>' + '</div>'
         + '<div class="detail-label">' + '<spring:message code="admin.context.nickname" javaScriptEscape="true"/>' + '</div><input id="memberProfileNickname" class="adm-input" type="text" value="' + escapeHtml(m.nickname || '') + '">'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.nationality" javaScriptEscape="true"/>' + '</div><input id="memberProfileNationality" class="adm-input" type="text" value="' + escapeHtml(m.nationality || '') + '">'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.preferredLanguage" javaScriptEscape="true"/>' + '</div><input id="memberProfileLang" class="adm-input" type="text" value="' + escapeHtml(m.preferredLang || '') + '">'
         + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberProfile(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.saveProfile" javaScriptEscape="true"/>' + '</button>'
         + '</div>'
-        + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="adm-context-panel" id="memberEmailPanel">'
+        + '<div class="adm-context-panel-title">' + ADMIN_MEMBER_MSG.emailSectionTitle + '</div>'
+        + '<div class="detail-label">' + '<spring:message code="admin.context.email" javaScriptEscape="true"/>' + '</div><input id="memberEmailInput" class="adm-input" type="email" placeholder="' + ADMIN_MEMBER_MSG.emailPlaceholder + '" value="' + escapeHtml(m.userEmail || '') + '">'
+        + '<div class="adm-cell-link-note" style="margin-top:10px;">' + escapeHtml(ADMIN_MEMBER_MSG.emailResetNotice) + '</div>'
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">'
+        + '<span class="status-badge ' + (m.emailVerified ? 'ACTIVE' : 'DORMANT') + '">' + '<spring:message code="admin.members.emailVerified" javaScriptEscape="true"/>' + ': ' + (m.emailVerified ? escapeHtml(ADMIN_MEMBER_MSG.yes) : escapeHtml(ADMIN_MEMBER_MSG.no)) + '</span>'
+        + '<span class="status-badge ' + (m.emailLoginEnabled ? 'ACTIVE' : 'DORMANT') + '">' + '<spring:message code="admin.members.emailLoginEnabled" javaScriptEscape="true"/>' + ': ' + (m.emailLoginEnabled ? escapeHtml(ADMIN_MEMBER_MSG.yes) : escapeHtml(ADMIN_MEMBER_MSG.no)) + '</span>'
+        + '</div>'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberEmail(' + escapeHtml(m.userIdx) + ', this)">' + ADMIN_MEMBER_MSG.saveEmail + '</button>'
+        + '</div>'
+        + '<div class="adm-context-panel" id="memberStatusRolePanel">'
+        + '<div class="adm-context-panel-title">' + '<spring:message code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>' + '</div>'
         + '<div class="detail-label">' + '<spring:message code="admin.members.accountStatus" javaScriptEscape="true"/>' + '</div>'
         + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE"><spring:message code="admin.status.ACTIVE" javaScriptEscape="true"/></option><option value="DORMANT"><spring:message code="admin.status.DORMANT" javaScriptEscape="true"/></option><option value="BLOCKED"><spring:message code="admin.status.BLOCKED" javaScriptEscape="true"/></option><option value="DELETED"><spring:message code="admin.status.DELETED" javaScriptEscape="true"/></option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.common.apply" javaScriptEscape="true"/>' + '</button></div>'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.common.role" javaScriptEscape="true"/>' + '</div>'
@@ -887,8 +926,8 @@ function buildActionTab(m) {
         + '<input id="memberRoleReason" class="adm-input" type="text" maxlength="500" placeholder="' + '<spring:message code="admin.context.action.roleReasonPlaceholder" javaScriptEscape="true"/>' + '">'
         + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.changeRole" javaScriptEscape="true"/>' + '</button>'
         + '</div>'
-        + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.quickBlockTitle" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="adm-context-panel" id="memberQuickBlockPanel">'
+        + '<div class="adm-context-panel-title">' + '<spring:message code="admin.context.action.quickBlockTitle" javaScriptEscape="true"/>' + '</div>'
         + '<div class="detail-label">' + '<spring:message code="admin.context.action.blockType" javaScriptEscape="true"/>' + '</div><select id="detailBlockType" class="adm-select" style="width:100%;"><option value="USER_ONLY">' + '<spring:message code="admin.context.blockType.userOnly" javaScriptEscape="true"/>' + '</option><option value="IP_ONLY">' + '<spring:message code="admin.context.blockType.ipOnly" javaScriptEscape="true"/>' + '</option><option value="USER_IP">' + '<spring:message code="admin.context.blockType.userIp" javaScriptEscape="true"/>' + '</option></select>'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.blockedIp" javaScriptEscape="true"/>' + '</div><input id="detailBlockedIp" class="adm-input" type="text" placeholder="' + '<spring:message code="admin.context.action.blockIpPlaceholder" javaScriptEscape="true"/>' + '">'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.action.blockExpires" javaScriptEscape="true"/>' + '</div><input id="detailBlockedUntil" class="adm-input" type="datetime-local">'
@@ -899,7 +938,7 @@ function buildActionTab(m) {
 }
 
 /* ── 회원 상세 모달 ── */
-async function openDetail(userIdx, defaultTab) {
+async function openDetail(userIdx, defaultTab, focusSection) {
     document.getElementById('detailModal').classList.add('open');
     document.getElementById('modalBody').innerHTML =
         '<div style="text-align:center;padding:40px;color:#475569;">' + escapeHtml(ADMIN_MEMBER_MSG.loading) + ' ⏳</div>';
@@ -964,6 +1003,40 @@ async function openDetail(userIdx, defaultTab) {
     const roleSelect = document.getElementById('memberRoleSelect');
     if (statusSelect) statusSelect.value = m.accountStatus || 'ACTIVE';
     if (roleSelect) roleSelect.value = m.userRole || 'USER';
+    if (focusSection) {
+        focusMemberSection(activeTab, focusSection);
+    }
+}
+
+function focusMemberSection(activeTab, focusSection) {
+    if (activeTab === 'actions') {
+        const panelMap = {
+            email: 'memberEmailPanel',
+            statusRole: 'memberStatusRolePanel',
+            quickBlock: 'memberQuickBlockPanel',
+            profile: 'memberProfilePanel'
+        };
+        const targetId = panelMap[focusSection];
+        const panel = targetId ? document.getElementById(targetId) : null;
+        if (panel) {
+            panel.classList.add('is-focus-flash');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            const focusable = panel.querySelector('input, textarea, select, button');
+            if (focusable) {
+                focusable.focus({ preventScroll: true });
+                if (typeof focusable.select === 'function' && focusSection === 'email') {
+                    focusable.select();
+                }
+            }
+            setTimeout(() => panel.classList.remove('is-focus-flash'), 1800);
+        }
+        return;
+    }
+
+    if (activeTab === 'hist') {
+        const table = document.querySelector('#tab-hist table');
+        if (table) table.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 }
 
 function buildInfoTab(m) {
@@ -1078,6 +1151,31 @@ async function saveMemberProfile(userIdx, button) {
     }
 }
 
+async function saveMemberEmail(userIdx, button) {
+    const email = document.getElementById('memberEmailInput').value.trim();
+
+    button.disabled = true;
+    try {
+        const res = await fetch(ctx + '/admin/members/' + userIdx + '/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ email })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            adm_toast(data.message || ADMIN_MEMBER_MSG.emailUpdated);
+            await openDetail(userIdx, 'actions', 'email');
+        } else {
+            adm_toast(data.message || '<spring:message code="admin.common.saveFailed" javaScriptEscape="true"/>', 'error');
+        }
+    } catch (e) {
+        console.error(e);
+        adm_toast('<spring:message code="admin.common.saveFailed" javaScriptEscape="true"/>', 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
 function applyStatusFromDetail(userIdx, button) {
     const status = document.getElementById('memberStatusSelect').value;
     changeStatus(userIdx, status, button);
@@ -1136,6 +1234,12 @@ document.getElementById('detailModal').addEventListener('click', function (e) {
 
 document.getElementById('blockModal').addEventListener('click', function (e) {
     if (e.target === this) closeBlockModal();
+});
+
+document.addEventListener('click', function (e) {
+    const detailTrigger = e.target.closest('.js-member-open-detail');
+    if (!detailTrigger) return;
+    openDetail(detailTrigger.dataset.userIdx, detailTrigger.dataset.defaultTab, detailTrigger.dataset.focusSection);
 });
 
 document.addEventListener('DOMContentLoaded', function () {

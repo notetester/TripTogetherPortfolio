@@ -2,24 +2,25 @@
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="requests"/>
-<c:set var="pageTitle"  value="권한 요청 목록"/>
+<spring:message code="superAdmin.permissions.requests.pageTitle" var="pageTitle"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
 
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">대기 중인 권한 요청</div>
+            <div class="adm-card-title"><spring:message code="superAdmin.permissions.requests.cardTitle"/></div>
             <div style="font-size:13px;color:#94a3b8;">
-                관리자 상세 화면의 '변경 요청'으로 생성된 권한 부여 요청을 승인하거나 거절합니다.
+                <spring:message code="superAdmin.permissions.requests.cardDescription"/>
             </div>
         </div>
         <div class="adm-card-body" style="padding:0;">
             <c:choose>
                 <c:when test="${empty requestList}">
                     <div style="text-align:center;padding:60px;color:#94a3b8;">
-                        대기 중인 권한 요청이 없습니다.
+                        <spring:message code="superAdmin.permissions.requests.empty"/>
                     </div>
                 </c:when>
                 <c:otherwise>
@@ -31,7 +32,7 @@
                             <div class="sa-req-perm-code">${fn:escapeXml(req.permissionCode)}</div>
                         </div>
                         <div class="sa-req-meta">
-                            <div>요청자: ${not empty req.requestedByNickname ? fn:escapeXml(req.requestedByNickname) : '-'}</div>
+                            <div><spring:message code="superAdmin.permissions.requests.requester"/>: ${not empty req.requestedByNickname ? fn:escapeXml(req.requestedByNickname) : '-'}</div>
                             <div><fmt:formatDate value="${req.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
                             <c:if test="${not empty req.description}">
                                 <div style="color:#64748b;margin-top:2px;">${fn:escapeXml(req.description)}</div>
@@ -40,10 +41,10 @@
                         <div style="display:flex;gap:8px;">
                             <button class="adm-btn adm-btn-sm adm-btn-primary"
                                     data-id="${req.adminPermissionIdx}"
-                                    onclick="approveRequest(this.getAttribute('data-id'), this)">승인</button>
+                                    onclick="approveRequest(this.getAttribute('data-id'), this)"><spring:message code="superAdmin.permissions.requests.action.approve"/></button>
                             <button class="adm-btn adm-btn-sm adm-btn-danger"
                                     data-id="${req.adminPermissionIdx}"
-                                    onclick="rejectRequest(this.getAttribute('data-id'), this)">거절</button>
+                                    onclick="rejectRequest(this.getAttribute('data-id'), this)"><spring:message code="superAdmin.permissions.requests.action.reject"/></button>
                         </div>
                     </div>
                     </c:forEach>
@@ -53,15 +54,23 @@
     </div>
 
     <div style="margin-top:12px;font-size:13px;color:#94a3b8;padding:0 4px;">
-        권한 요청은 관리자 목록 → 권한 모달 → "변경 요청" 버튼으로 생성할 수 있습니다.
+        <spring:message code="superAdmin.permissions.requests.createHint"/>
     </div>
 </div>
 
 <script>
 const CTX = '${pageContext.request.contextPath}';
+const REQUEST_MESSAGES = {
+    confirmApprove: '<spring:message code="superAdmin.permissions.requests.confirmApprove" javaScriptEscape="true"/>',
+    confirmReject: '<spring:message code="superAdmin.permissions.requests.confirmReject" javaScriptEscape="true"/>',
+    approved: '<spring:message code="superAdmin.permissions.requests.toastApproved" javaScriptEscape="true"/>',
+    approveFail: '<spring:message code="superAdmin.permissions.requests.toastApproveFail" javaScriptEscape="true"/>',
+    rejected: '<spring:message code="superAdmin.permissions.requests.toastRejected" javaScriptEscape="true"/>',
+    rejectFail: '<spring:message code="superAdmin.permissions.requests.toastRejectFail" javaScriptEscape="true"/>'
+};
 
 function approveRequest(adminPermissionIdx, btn) {
-    if (!confirm('이 권한 요청을 승인하시겠습니까?')) return;
+    if (!confirm(REQUEST_MESSAGES.confirmApprove)) return;
     fetch(CTX + '/superAdmin/permissions/requests/' + adminPermissionIdx + '/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' }
@@ -69,16 +78,16 @@ function approveRequest(adminPermissionIdx, btn) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            adm_toast('승인되었습니다.');
+            adm_toast(REQUEST_MESSAGES.approved);
             btn.closest('.sa-req-row').remove();
         } else {
-            adm_toast(data.message || '승인 실패', 'error');
+            adm_toast(data.message || REQUEST_MESSAGES.approveFail, 'error');
         }
     });
 }
 
 function rejectRequest(adminPermissionIdx, btn) {
-    if (!confirm('이 권한 요청을 거절하시겠습니까?')) return;
+    if (!confirm(REQUEST_MESSAGES.confirmReject)) return;
     fetch(CTX + '/superAdmin/permissions/requests/' + adminPermissionIdx + '/reject', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' }
@@ -86,10 +95,10 @@ function rejectRequest(adminPermissionIdx, btn) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            adm_toast('거절되었습니다.');
+            adm_toast(REQUEST_MESSAGES.rejected);
             btn.closest('.sa-req-row').remove();
         } else {
-            adm_toast(data.message || '거절 실패', 'error');
+            adm_toast(data.message || REQUEST_MESSAGES.rejectFail, 'error');
         }
     });
 }

@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/header.css">
 
 <%@ include file="../common/header.jsp" %>
+<fmt:setLocale value="${pageContext.response.locale}" />
 
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
@@ -665,14 +666,14 @@
                 <div class="info-row">
                     <div class="info-label"><spring:message code="course.form.startDate"/></div>
                     <div class="info-value">
-                        <fmt:formatDate value="${travelPlan.start_date}" pattern="yyyy-MM-dd"/>
+                        <fmt:formatDate value="${travelPlan.start_date}" type="date" dateStyle="medium"/>
                     </div>
                 </div>
 
                 <div class="info-row">
                     <div class="info-label"><spring:message code="course.form.endDate"/></div>
                     <div class="info-value">
-                        <fmt:formatDate value="${travelPlan.end_date}" pattern="yyyy-MM-dd"/>
+                        <fmt:formatDate value="${travelPlan.end_date}" type="date" dateStyle="medium"/>
                     </div>
                 </div>
 
@@ -686,7 +687,7 @@
                 <div class="info-row">
                     <div class="info-label"><spring:message code="course.form.spotCount"/></div>
                     <div class="info-value">
-                        <c:out value="${travelPlan.spotList.size()}" />
+                        <spring:message code="courses.common.countWithUnit" arguments="${travelPlan.spotList.size()}" />
                     </div>
                 </div>
             </div>
@@ -958,6 +959,20 @@
             }
         });
     });
+    const courseDetailMessages = {
+        spotIndexed: "<spring:message code='courses.common.spotIndexed' javaScriptEscape='true' />",
+        deleteLabel: "<spring:message code='courses.common.delete' javaScriptEscape='true' />",
+        citySelectLabel: "<spring:message code='courses.common.field.citySelect' javaScriptEscape='true' />",
+        placeNameLabel: "<spring:message code='courses.common.field.placeName' javaScriptEscape='true' />",
+        visitDateLabel: "<spring:message code='courses.common.field.visitDate' javaScriptEscape='true' />",
+        visitOrderLabel: "<spring:message code='courses.common.field.visitOrder' javaScriptEscape='true' />"
+    };
+
+    function formatCourseMessage(template, ...values) {
+        return template.replace(/\u007B(\d+)\u007D/g, function (_, index) {
+            return values[index] ?? "";
+        });
+    }
 
     const dateFilterEl = document.getElementById("dateFilter");
     const filteredEmptyEl = document.getElementById("filteredEmpty");

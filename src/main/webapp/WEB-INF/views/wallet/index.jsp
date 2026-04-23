@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="wallet/wallet.css"/>
 <spring:message code="wallet.charge.limit" var="walletChargeLimitMessage"/>
 <spring:message code="wallet.charge.limit" javaScriptEscape="true" var="walletChargeLimitMessageJs"/>
@@ -281,6 +281,10 @@
 </div>
 
 <script>
+  const WALLET_MESSAGES = {
+    chargeLimitMessage: '<spring:message code="wallet.charge.limitMessage" javaScriptEscape="true"/>'
+  };
+
   function formatNumber(value) {
     return Number(value || 0).toLocaleString();
   }

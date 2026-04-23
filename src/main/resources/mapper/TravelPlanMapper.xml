@@ -111,20 +111,21 @@
     <!-- 공개 일정 목록 조회 -->
     <select id="getPublicTravelList" resultType="org.triptogether.courses.vo.TravelPlanVO">
         SELECT
-            tp.plan_id,
-            tp.user_idx,
-            tp.title,
-            tp.destination,
-            tp.start_date,
-            tp.end_date,
-            tp.is_public,
-            tp.plan_source,
-            tp.created_at,
-            tp.updated_at,
-            u.nickname AS nickname
+        tp.plan_id,
+        tp.user_idx,
+        tp.title,
+        tp.destination,
+        tp.start_date,
+        tp.end_date,
+        tp.is_public,
+        tp.plan_source,
+        tp.created_at,
+        tp.updated_at,
+        u.nickname AS nickname
         FROM TRAVEL_PLAN tp
         INNER JOIN USERS u ON tp.user_idx = u.user_idx
         WHERE tp.is_public = 1
+        AND tp.is_deleted = 0
         ORDER BY tp.created_at DESC
     </select>
 
