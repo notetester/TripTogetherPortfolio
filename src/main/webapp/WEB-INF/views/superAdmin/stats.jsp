@@ -75,7 +75,7 @@
             <div class="adm-card-head">
                 <div class="adm-card-title">장기 미접속 관리자 <span class="sa-exception-count">(90일+)</span></div>
             </div>
-            <div class="adm-card-body" style="padding:0;">
+            <div class="adm-card-body" style="padding:0;overflow-x:auto;">
                 <c:choose>
                     <c:when test="${empty dormantAdmins}">
                         <div class="sa-exception-empty">해당 없음</div>
@@ -102,7 +102,7 @@
             <div class="adm-card-head">
                 <div class="adm-card-title">권한 없는 관리자</div>
             </div>
-            <div class="adm-card-body" style="padding:0;">
+            <div class="adm-card-body" style="padding:0;overflow-x:auto;">
                 <c:choose>
                     <c:when test="${empty adminsWithoutPermissions}">
                         <div class="sa-exception-empty">해당 없음</div>
@@ -129,7 +129,7 @@
             <div class="adm-card-head">
                 <div class="adm-card-title">상급자 미지정 관리자</div>
             </div>
-            <div class="adm-card-body" style="padding:0;">
+            <div class="adm-card-body" style="padding:0;overflow-x:auto;">
                 <c:choose>
                     <c:when test="${empty adminsWithoutManager}">
                         <div class="sa-exception-empty">해당 없음</div>
