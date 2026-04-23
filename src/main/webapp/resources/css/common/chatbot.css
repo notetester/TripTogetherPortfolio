@@ -436,6 +436,13 @@
 }
 .cb-new-btn--reset[hidden] { display: none; }
 
+/* 비로그인 유저용 — cb-footer 상단 (suggestions 위) 에 배치 */
+.cb-reset-inline {
+    margin: 0 12px 8px;
+    width: calc(100% - 24px);
+    align-self: center;
+}
+
 .cb-conv-list {
     flex: 1;
     overflow-y: auto;

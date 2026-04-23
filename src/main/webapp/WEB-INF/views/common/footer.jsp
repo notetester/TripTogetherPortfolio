@@ -54,6 +54,13 @@
         <div class="cb-body" id="cb-body"></div>
 
         <div class="cb-footer">
+            <%-- 비로그인 유저용 초기화 버튼 (로그인 유저는 사이드바 하단에 있음) --%>
+            <c:if test="${empty sessionScope.loginUser}">
+                <button type="button" id="cb-reset" class="cb-new-btn cb-new-btn--reset cb-reset-inline"
+                        title="<spring:message code="footer.chatbot.header.reset"/>" hidden>
+                    ↻ <spring:message code="footer.chatbot.header.reset"/>
+                </button>
+            </c:if>
             <div class="cb-suggestions" id="cb-suggestions"></div>
             <div class="cb-input-row">
                 <textarea id="cb-input" placeholder="<spring:message code="footer.chatbot.placeholder"/>" rows="1"></textarea>
