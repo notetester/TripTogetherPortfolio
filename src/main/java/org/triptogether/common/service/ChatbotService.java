@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.common.vo.ChatIntentVO;
 import org.triptogether.common.vo.ChatMessageVO;
 import org.triptogether.common.vo.ChatbotQuotaVO;
 import org.triptogether.common.vo.ChatbotRequestVO;
@@ -187,10 +188,22 @@ public class ChatbotService {
             history = history.subList(0, history.size() - 1);
         }
 
-        // 7. Gemini 호출
-        ChatbotResponseVO response = callGemini(request, history, loggedIn);
+        // 6.5. 1차 분류 (LLM 으로 의도·키워드 추출) — 쿼터 미소모, 실패 시 규칙 기반 fallback
+        ChatIntentVO intent = intentContextService.classify(request.getMessage());
 
-        // 8. 부적절 플래그 처리
+        // 6.6. 부적절이면 본 호출 생략하고 안전 응답 반환 (토큰 절감)
+        if (intent.isInappropriate()) {
+            conversationService.markInappropriate(userMsg.getMessageId());
+            log.warn("[Chatbot] 사전 분류 - 부적절 판정, 본 호출 생략. conversationId={}, messageId={}, ip={}",
+                    conversation.getConversationId(), userMsg.getMessageId(), ipAddress);
+            return finalizeAndRespond(conversation, userMsg, safetyBlockedResponse(),
+                    userIdx, anonSessionId, quotaExempt, /*markInappropriate=*/false);
+        }
+
+        // 7. Gemini 본 호출 (분류 의도 주입)
+        ChatbotResponseVO response = callGemini(request, history, loggedIn, intent);
+
+        // 8. 부적절 플래그 처리 (본 호출 결과가 inappropriate 일 때만)
         if (response.isInappropriate()) {
             conversationService.markInappropriate(userMsg.getMessageId());
             log.warn("[Chatbot] 부적절 메시지 - conversationId={}, messageId={}, ip={}",
@@ -214,6 +227,35 @@ public class ChatbotService {
         }
 
         // 12. 응답에 conversationId / messageId 포함
+        response.setConversationId(conversation.getConversationId());
+        response.setMessageId(botMsg.getMessageId());
+        return response;
+    }
+
+    /**
+     * 분류 결과가 INAPPROPRIATE 일 때 본 호출 없이 안전 응답을 DB에 저장하고 반환.
+     * 9~12 단계와 동일한 후처리(저장·touch·쿼터)를 수행.
+     */
+    private ChatbotResponseVO finalizeAndRespond(ConversationVO conversation,
+                                                  ChatMessageVO userMsg,
+                                                  ChatbotResponseVO response,
+                                                  Long userIdx,
+                                                  String anonSessionId,
+                                                  boolean quotaExempt,
+                                                  boolean markInappropriate) {
+        if (markInappropriate) {
+            conversationService.markInappropriate(userMsg.getMessageId());
+        }
+        ChatMessageVO botMsg = new ChatMessageVO();
+        botMsg.setConversationId(conversation.getConversationId());
+        botMsg.setRole("assistant");
+        botMsg.setContent(toJsonForStorage(response));
+        botMsg.setIsInappropriate(false);
+        conversationService.saveMessage(botMsg);
+        conversationService.touch(conversation.getConversationId());
+        if (!quotaExempt) {
+            quotaService.incrementTodayUsage(userIdx, userIdx == null ? anonSessionId : null);
+        }
         response.setConversationId(conversation.getConversationId());
         response.setMessageId(botMsg.getMessageId());
         return response;
@@ -276,12 +318,13 @@ public class ChatbotService {
     // ══════════════════════════════════════════════════════════
     private ChatbotResponseVO callGemini(ChatbotRequestVO request,
                                           List<ChatMessageVO> history,
-                                          boolean loggedIn) {
+                                          boolean loggedIn,
+                                          ChatIntentVO intent) {
         try {
             JsonObject systemInstruction = new JsonObject();
             JsonArray systemParts = new JsonArray();
             JsonObject systemPart = new JsonObject();
-            systemPart.addProperty("text", buildSystemPrompt(request, loggedIn));
+            systemPart.addProperty("text", buildSystemPrompt(request, loggedIn, intent));
             systemParts.add(systemPart);
             systemInstruction.add("parts", systemParts);
 
@@ -418,7 +461,7 @@ public class ChatbotService {
         }
     }
 
-    private String buildSystemPrompt(ChatbotRequestVO request, boolean loggedIn) {
+    private String buildSystemPrompt(ChatbotRequestVO request, boolean loggedIn, ChatIntentVO intent) {
         StringBuilder sb = new StringBuilder(SYSTEM_PROMPT);
         sb.append("\n\n## 현재 사용자 컨텍스트\n");
         sb.append("- 로그인 상태: ").append(loggedIn ? "로그인 중" : "비로그인").append("\n");
@@ -426,8 +469,8 @@ public class ChatbotService {
             sb.append("- 현재 페이지: ").append(getCurrentPageName(request.getCurrentPath())).append("\n");
         }
 
-        // 실시간 사이트 콘텐츠 주입 (여행지 후보 등). 매칭 없으면 빈 문자열.
-        String context = intentContextService.buildContextSection(request.getMessage());
+        // 실시간 사이트 콘텐츠 주입 (여행지/코스/패키지/커뮤니티). 매칭 없으면 빈 문자열.
+        String context = intentContextService.buildContextSection(intent);
         if (!context.isEmpty()) {
             sb.append("\n").append(context);
         }

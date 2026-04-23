@@ -1,93 +1,281 @@
 package org.triptogether.common.service;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.triptogether.common.vo.ChatIntentVO;
 import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.courses.mapper.TravelPlanMapper;
 import org.triptogether.explore.mapper.ExploreMapper;
 import org.triptogether.travelPackage.mapper.TravelPackageMapper;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 챗봇 시스템 프롬프트에 실시간 사이트 콘텐츠를 주입하기 위한 컨텍스트 빌더.
+ * 챗봇 1차 분류(의도·키워드 추출) + 실시간 콘텐츠 컨텍스트 빌더.
  *
  * 흐름:
- *   1. 사용자 메시지에서 키워드 추출 (토큰화 + 불용어 제거)
- *   2. 모듈별 Mapper 로 후보 조회 (현재: Explore)
- *   3. Gemini 프롬프트에 append 할 문자열 섹션 생성
+ *   1. classify(message)  — Gemini 를 짧게 호출해 의도/키워드 JSON 획득
+ *   2. buildContextSection(intent) — 키워드로 DB 조회 후 프롬프트 섹션 생성
  *
- * 후보가 0개이거나 키워드가 0개면 빈 문자열 반환 → 기존 동작과 동일.
+ * Gemini 호출 실패·타임아웃 시 규칙 기반 fallback (기존 불용어·토큰화 로직 유지).
+ * 캐시: 동일 메시지 재분류 방지 (ConcurrentHashMap, TTL 60초, 상한 500).
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class IntentContextService {
 
-    private static final int MAX_KEYWORDS = 5;        // 너무 많은 토큰은 LIKE 비용 커짐
+    private static final int MAX_KEYWORDS = 8;
     private static final int MIN_KEYWORD_LEN = 2;
     private static final int SPOT_CANDIDATE_LIMIT = 5;
     private static final int PLAN_CANDIDATE_LIMIT = 5;
     private static final int PACKAGE_CANDIDATE_LIMIT = 5;
     private static final int POST_CANDIDATE_LIMIT = 5;
 
-    // 여행 질문에 흔히 섞이는 불용어. 키워드로서 의미 없는 것만 제외.
-    // 대소문자 무시 비교를 위해 소문자로 저장.
+    private static final long CACHE_TTL_MILLIS = 60_000L;
+    private static final int CACHE_MAX_SIZE = 500;
+
+    private static final String GEMINI_URL =
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
+
+    // 분류 전용 시스템 프롬프트 (매우 짧고 결정적으로)
+    private static final String CLASSIFY_SYSTEM_PROMPT = """
+            다음 사용자 메시지를 분석해 JSON 으로만 답하세요. 다른 텍스트는 절대 포함하지 마세요.
+
+            출력 형식:
+            {
+              "intent": "EXPLORE" | "COURSES" | "PACKAGES" | "COMMUNITY" | "GENERIC" | "INAPPROPRIATE",
+              "keywords": ["검색용 핵심 명사 (지역명·장소명·테마·시기 등). 없으면 빈 배열"],
+              "relatedTerms": ["유의어·관련어. 예: '신혼여행'→['로맨틱','커플','일몰']. 없으면 빈 배열"]
+            }
+
+            분류 기준:
+            - EXPLORE: 여행지(도쿄·파리 등) 자체 탐색 의도
+            - COURSES: 여행 일정·코스·며칠짜리 루트
+            - PACKAGES: 판매 상품·가격·예약 관련
+            - COMMUNITY: 후기·팁·다른 유저 경험
+            - GENERIC: 위에 해당 없는 여행 관련 일반 질문 (사이트 이용법 포함)
+            - INAPPROPRIATE: 욕설·여행 무관 잡담(주식·정치·연예인 등)·개인정보 요구
+
+            keywords 는 DB LIKE 검색용이므로 짧은 명사만. 조사·동사·형용사 제외.
+            relatedTerms 는 의미 확장용. 한국어 기준으로 최대 5개.
+            """;
+
+    // 규칙 기반 fallback 용 불용어 사전
     private static final Set<String> STOPWORDS = Set.of(
-            // 일반 동사/조사류
             "가고", "가자", "갈래", "갈까", "간다", "가는", "갔다",
             "싶다", "싶어", "싶은데", "싶어요", "싶네",
             "해줘", "해줄래", "해주세요", "알려줘", "알려주세요",
             "있다", "있어", "있는", "있나", "없다", "없어", "없는",
             "하고", "하는", "하면", "한다", "하다", "함",
             "되는", "되나", "된다", "되서",
-            // 질문어
             "어떻게", "어떡해", "어떡하지", "어디", "어느", "어떤", "어쩌지",
             "뭐", "뭔가", "무엇", "무슨",
             "왜", "언제", "누가",
-            // 추천/선호 류
             "추천", "좋은", "좋아", "좋다", "좋을까", "최고", "최악",
             "인기", "유명", "핫한", "요즘", "요새",
-            // 수량/대명사
             "나는", "내가", "저는", "제가", "우리",
-            "그", "저", "이", "그런", "저런", "이런",
             "많은", "적은", "조금", "약간", "많이",
-            // 시간
             "지금", "오늘", "내일", "이번", "다음", "얼른", "당장",
-            // 연결어
             "그리고", "하지만", "또는", "혹은", "그런데", "근데",
-            // 여행 공통 단어 (자체로 구별력 낮음)
             "여행", "여행지", "관광", "관광지", "일정", "계획",
             "정말", "엄청", "매우", "진짜", "아주", "완전",
             "근처", "주변", "어디든",
-            // 단일 종결
-            "요", "네", "음", "좀", "그냥"
+            "그냥"
     );
 
     private final ExploreMapper exploreMapper;
     private final TravelPlanMapper travelPlanMapper;
     private final TravelPackageMapper travelPackageMapper;
     private final CommunityMapper communityMapper;
+    private final RestTemplate restTemplate;
+
+    @Value("${gemini.api.key}")
+    private String geminiApiKey;
+
+    private final Map<String, CachedIntent> cache = new ConcurrentHashMap<>();
+
+    // ══════════════════════════════════════════════════════════
+    // 1. 분류 (LLM 호출 + fallback)
+    // ══════════════════════════════════════════════════════════
 
     /**
-     * 메시지에서 키워드 추출 후 매칭되는 사이트 콘텐츠를 조회해 프롬프트 섹션 문자열을 만든다.
-     * 매칭 없음 → 빈 문자열.
+     * 사용자 메시지를 LLM 으로 분류. 실패 시 규칙 기반으로 대체.
+     * 동일 메시지는 60초간 캐시된다.
      */
-    public String buildContextSection(String userMessage) {
-        List<String> keywords = extractKeywords(userMessage);
-        if (keywords.isEmpty()) return "";
+    public ChatIntentVO classify(String userMessage) {
+        if (userMessage == null || userMessage.isBlank()) {
+            return ChatIntentVO.builder()
+                    .intent(ChatIntentVO.INTENT_GENERIC)
+                    .keywords(List.of())
+                    .relatedTerms(List.of())
+                    .build();
+        }
 
-        List<Map<String, Object>> spots = safeSearchSpots(keywords);
-        List<Map<String, Object>> plans = safeSearchPlans(keywords);
-        List<Map<String, Object>> packages = safeSearchPackages(keywords);
-        List<Map<String, Object>> posts = safeSearchPosts(keywords);
+        String cacheKey = userMessage.trim().toLowerCase();
+        CachedIntent cached = cache.get(cacheKey);
+        long now = System.currentTimeMillis();
+        if (cached != null && now - cached.timestamp < CACHE_TTL_MILLIS) {
+            return cached.intent;
+        }
+
+        ChatIntentVO intent;
+        try {
+            intent = classifyWithGemini(userMessage);
+        } catch (Exception e) {
+            log.warn("[Chatbot] 분류 호출 실패 → 규칙 기반 fallback 사용. 원인={}", e.getMessage());
+            intent = fallbackClassification(userMessage);
+        }
+
+        // 단순 용량 관리 — 상한 초과 시 전체 clear
+        if (cache.size() > CACHE_MAX_SIZE) cache.clear();
+        cache.put(cacheKey, new CachedIntent(intent, now));
+        return intent;
+    }
+
+    private ChatIntentVO classifyWithGemini(String userMessage) {
+        JsonObject systemInstruction = new JsonObject();
+        JsonArray systemParts = new JsonArray();
+        JsonObject systemPart = new JsonObject();
+        systemPart.addProperty("text", CLASSIFY_SYSTEM_PROMPT);
+        systemParts.add(systemPart);
+        systemInstruction.add("parts", systemParts);
+
+        JsonArray contents = new JsonArray();
+        JsonObject msg = new JsonObject();
+        msg.addProperty("role", "user");
+        JsonArray parts = new JsonArray();
+        JsonObject part = new JsonObject();
+        part.addProperty("text", userMessage);
+        parts.add(part);
+        msg.add("parts", parts);
+        contents.add(msg);
+
+        JsonObject generationConfig = new JsonObject();
+        generationConfig.addProperty("responseMimeType", "application/json");
+        generationConfig.addProperty("temperature", 0);
+        generationConfig.addProperty("maxOutputTokens", 256);
+
+        JsonObject payload = new JsonObject();
+        payload.add("systemInstruction", systemInstruction);
+        payload.add("contents", contents);
+        payload.add("generationConfig", generationConfig);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                GEMINI_URL + geminiApiKey,
+                HttpMethod.POST,
+                new HttpEntity<>(payload.toString(), headers),
+                String.class
+        );
+        return parseClassificationResponse(response.getBody());
+    }
+
+    private ChatIntentVO parseClassificationResponse(String body) {
+        JsonObject root = JsonParser.parseString(body).getAsJsonObject();
+        if (!root.has("candidates") || root.getAsJsonArray("candidates").isEmpty()) {
+            throw new IllegalStateException("candidates 없음");
+        }
+        JsonObject candidate = root.getAsJsonArray("candidates").get(0).getAsJsonObject();
+        if (!candidate.has("content")) {
+            throw new IllegalStateException("content 없음 (safety block 가능성)");
+        }
+        JsonObject content = candidate.getAsJsonObject("content");
+        if (!content.has("parts") || content.getAsJsonArray("parts").isEmpty()) {
+            throw new IllegalStateException("parts 없음");
+        }
+        String text = content.getAsJsonArray("parts").get(0).getAsJsonObject()
+                .get("text").getAsString().trim();
+        // 혹시 모를 code fence 제거
+        text = text.replaceAll("(?s)```json\\s*", "").replaceAll("```\\s*", "").trim();
+
+        JsonObject obj = JsonParser.parseString(text).getAsJsonObject();
+
+        String intent = obj.has("intent") ? obj.get("intent").getAsString() : ChatIntentVO.INTENT_GENERIC;
+        if (!isValidIntent(intent)) intent = ChatIntentVO.INTENT_GENERIC;
+
+        List<String> keywords = readStringArray(obj, "keywords");
+        List<String> related  = readStringArray(obj, "relatedTerms");
+
+        return ChatIntentVO.builder()
+                .intent(intent)
+                .keywords(keywords)
+                .relatedTerms(related)
+                .build();
+    }
+
+    private List<String> readStringArray(JsonObject obj, String key) {
+        if (!obj.has(key) || obj.get(key).isJsonNull()) return List.of();
+        JsonElement el = obj.get(key);
+        if (!el.isJsonArray()) return List.of();
+        List<String> out = new ArrayList<>();
+        for (JsonElement e : el.getAsJsonArray()) {
+            if (e == null || e.isJsonNull()) continue;
+            String v = e.getAsString();
+            if (v == null) continue;
+            String cleaned = v.trim();
+            if (!cleaned.isEmpty() && out.size() < MAX_KEYWORDS) out.add(cleaned);
+        }
+        return out;
+    }
+
+    private boolean isValidIntent(String s) {
+        return ChatIntentVO.INTENT_EXPLORE.equals(s)
+                || ChatIntentVO.INTENT_COURSES.equals(s)
+                || ChatIntentVO.INTENT_PACKAGES.equals(s)
+                || ChatIntentVO.INTENT_COMMUNITY.equals(s)
+                || ChatIntentVO.INTENT_GENERIC.equals(s)
+                || ChatIntentVO.INTENT_INAPPROPRIATE.equals(s);
+    }
+
+    /** LLM 호출 실패·파싱 실패 시 규칙 기반으로 최소한의 결과 생성 */
+    private ChatIntentVO fallbackClassification(String message) {
+        return ChatIntentVO.builder()
+                .intent(ChatIntentVO.INTENT_GENERIC)
+                .keywords(extractKeywordsByRule(message))
+                .relatedTerms(List.of())
+                .build();
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // 2. 컨텍스트 섹션 빌드 (intent 기반 DB 조회)
+    // ══════════════════════════════════════════════════════════
+
+    /**
+     * 분류 결과의 키워드+관련어로 DB 조회해 프롬프트 섹션 문자열 생성.
+     * 후보 0개 또는 키워드 0개면 빈 문자열.
+     */
+    public String buildContextSection(ChatIntentVO intent) {
+        if (intent == null) return "";
+        List<String> combined = combineKeywords(intent);
+        if (combined.isEmpty()) return "";
+
+        List<Map<String, Object>> spots    = safeSearchSpots(combined);
+        List<Map<String, Object>> plans    = safeSearchPlans(combined);
+        List<Map<String, Object>> packages = safeSearchPackages(combined);
+        List<Map<String, Object>> posts    = safeSearchPosts(combined);
 
         if (spots.isEmpty() && plans.isEmpty() && packages.isEmpty() && posts.isEmpty()) return "";
 
         StringBuilder sb = new StringBuilder();
         sb.append("## 실시간 후보 데이터\n");
-        sb.append("사용자 언급 키워드: ").append(keywords).append("\n");
+        sb.append("분류 의도: ").append(intent.getIntent()).append("\n");
+        sb.append("사용자 언급 키워드: ").append(combined).append("\n");
 
         if (!spots.isEmpty())    appendSpotsSection(sb, spots);
         if (!plans.isEmpty())    appendPlansSection(sb, plans);
@@ -102,6 +290,24 @@ public class IntentContextService {
         sb.append("- 존재하지 않는 id 는 절대 만들지 마세요.\n");
         sb.append("- 후보가 비어있는 카테고리는 일반 list 페이지(/explore, /courses, /packages, /community/list)만 제시하세요.\n");
         return sb.toString();
+    }
+
+    private List<String> combineKeywords(ChatIntentVO intent) {
+        Set<String> seen = new LinkedHashSet<>();
+        if (intent.getKeywords() != null) {
+            for (String k : intent.getKeywords()) {
+                if (k != null && k.length() >= MIN_KEYWORD_LEN) seen.add(k.trim());
+            }
+        }
+        if (intent.getRelatedTerms() != null) {
+            for (String k : intent.getRelatedTerms()) {
+                if (k != null && k.length() >= MIN_KEYWORD_LEN) seen.add(k.trim());
+                if (seen.size() >= MAX_KEYWORDS) break;
+            }
+        }
+        List<String> out = new ArrayList<>(seen);
+        if (out.size() > MAX_KEYWORDS) return out.subList(0, MAX_KEYWORDS);
+        return out;
     }
 
     // ── 모듈별 조회 (실패 시 빈 리스트) ──
@@ -232,10 +438,11 @@ public class IntentContextService {
         }
     }
 
-    // ── 내부 유틸 ──
+    // ══════════════════════════════════════════════════════════
+    // 3. Fallback 유틸 (LLM 호출 실패 시 사용)
+    // ══════════════════════════════════════════════════════════
 
-    /** 메시지 토큰화 + 불용어 제거 + 길이 필터 */
-    private List<String> extractKeywords(String message) {
+    private List<String> extractKeywordsByRule(String message) {
         if (message == null || message.isBlank()) return List.of();
 
         String[] raw = message.split("\\s+");
@@ -243,10 +450,8 @@ public class IntentContextService {
         Set<String> seen = new HashSet<>();
 
         for (String token : raw) {
-            // 특수문자 제거 (한글/영문/숫자만 남김)
             String cleaned = token.replaceAll("[^가-힣a-zA-Z0-9]", "");
             if (cleaned.length() < MIN_KEYWORD_LEN) continue;
-
             String lower = cleaned.toLowerCase();
             if (STOPWORDS.contains(lower)) continue;
             if (seen.contains(lower)) continue;
@@ -261,5 +466,15 @@ public class IntentContextService {
         if (s == null) return "";
         String flat = s.replaceAll("\\s+", " ").trim();
         return flat.length() <= max ? flat : flat.substring(0, max) + "…";
+    }
+
+    // ── 캐시 엔트리 ──
+    private static class CachedIntent {
+        final ChatIntentVO intent;
+        final long timestamp;
+        CachedIntent(ChatIntentVO intent, long timestamp) {
+            this.intent = intent;
+            this.timestamp = timestamp;
+        }
     }
 }
