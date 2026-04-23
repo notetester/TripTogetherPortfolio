@@ -2410,140 +2410,49 @@ html.dark .mp-tab-btn.is-active {
 
 /* =============================================
    최근 조회 내역 (mp-history-*)
+   - 리스트 구조 자체는 .mp-list-item 재활용
+   - 여기선 타입 pill 색상 + 전체 보기 페이지 헤더/삭제 버튼만 정의
    ============================================= */
-.mp-history-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    padding: 16px 24px;
-}
-
-.mp-history-item {
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    color: inherit;
-    background: #fff;
-    border: 1px solid var(--gray-200);
-    border-radius: 12px;
-    padding: 10px;
-    transition: transform .12s, box-shadow .12s, border-color .12s;
-    min-width: 0;
-}
-.mp-history-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
-    border-color: var(--blue);
-}
-.mp-history-item.is-unavailable {
-    opacity: .55;
-    pointer-events: none;
-}
-
-.mp-history-thumb {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background: var(--gray-50);
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 8px;
-}
-.mp-history-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-.mp-history-thumb-icon {
-    font-size: 32px;
-    line-height: 1;
-}
-
-.mp-history-type {
-    display: inline-block;
-    width: fit-content;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-    line-height: 1.4;
-    margin-bottom: 6px;
-    white-space: nowrap;
-}
 .mp-history-type-community { background: #dbeafe; color: #1d4ed8; }
 .mp-history-type-spot      { background: #d1fae5; color: #047857; }
 .mp-history-type-plan      { background: #ede9fe; color: #6d28d9; }
 .mp-history-type-package   { background: #ffedd5; color: #c2410c; }
 
-.mp-history-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--gray-800);
-    line-height: 1.4;
-    margin-bottom: 6px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    word-break: break-word;
-}
-.mp-history-time {
-    font-size: 11px;
-    color: var(--gray-400);
-    margin-top: auto;
-}
+.mp-list-item.is-unavailable { opacity: .55; pointer-events: none; }
 
-/* 전체 보기 페이지 그리드 (5컬럼) + 삭제 오버레이 */
-.mp-history-grid--full {
-    grid-template-columns: repeat(5, 1fr);
-}
-
-.mp-history-item-wrap {
+/* 전체 보기 페이지: 행 + 우측 삭제 X */
+.mp-history-row-wrap {
     position: relative;
     display: flex;
 }
-.mp-history-item-wrap .mp-history-item { flex: 1; }
-
-.mp-history-delete-overlay {
+.mp-history-row-wrap .mp-list-item { flex: 1; padding-right: 48px; }
+.mp-history-row-delete {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
     width: 28px;
     height: 28px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, .92);
-    border: 1px solid var(--gray-200);
-    color: var(--gray-500);
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    color: var(--gray-400);
     font-size: 13px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: opacity .15s, background .12s, color .12s, border-color .12s;
+    transition: opacity .15s, background .12s, color .12s;
     z-index: 2;
 }
-.mp-history-item-wrap:hover .mp-history-delete-overlay,
-.mp-history-delete-overlay:focus {
+.mp-history-row-wrap:hover .mp-history-row-delete,
+.mp-history-row-delete:focus {
     opacity: 1;
 }
-.mp-history-delete-overlay:hover {
-    background: #fff;
+.mp-history-row-delete:hover {
+    background: var(--gray-100);
     color: #dc2626;
-    border-color: #dc2626;
-}
-
-.mp-history-subtitle {
-    font-size: 11px;
-    color: var(--gray-500);
-    line-height: 1.4;
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 /* 전체 보기 페이지 헤더/빈 상태 */
@@ -2590,34 +2499,15 @@ html.dark .mp-tab-btn.is-active {
 }
 
 /* ── 반응형 ── */
-@media (max-width: 1200px) {
-    .mp-history-grid--full { grid-template-columns: repeat(4, 1fr); }
-}
-@media (max-width: 900px) {
-    .mp-history-grid--full { grid-template-columns: repeat(3, 1fr); }
-}
 @media (max-width: 767px) {
-    .mp-history-grid,
-    .mp-history-grid--full { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 12px 16px; }
-    .mp-history-delete-overlay { opacity: 1; }
+    .mp-history-row-delete { opacity: 1; }
 }
 
 /* ── 다크 ── */
-html.dark .mp-history-item {
-    background: #1a1f2b;
-    border-color: #2b3241;
-}
-html.dark .mp-history-item:hover {
-    border-color: #60a5fa;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, .4);
-}
-html.dark .mp-history-thumb { background: #232935; }
-html.dark .mp-history-title { color: #f1f5f9; }
-html.dark .mp-history-time { color: #9ca3af; }
-html.dark .mp-history-type-community { background: rgba(59, 130, 246, .2);  color: #93c5fd; }
-html.dark .mp-history-type-spot      { background: rgba(16, 185, 129, .2);  color: #6ee7b7; }
-html.dark .mp-history-type-plan      { background: rgba(139, 92, 246, .2);  color: #c4b5fd; }
-html.dark .mp-history-type-package   { background: rgba(234, 88, 12, .2);   color: #fdba74; }
+html.dark .mp-history-type-community { background: rgba(59, 130, 246, .2); color: #93c5fd; }
+html.dark .mp-history-type-spot      { background: rgba(16, 185, 129, .2); color: #6ee7b7; }
+html.dark .mp-history-type-plan      { background: rgba(139, 92, 246, .2); color: #c4b5fd; }
+html.dark .mp-history-type-package   { background: rgba(234, 88, 12, .2);  color: #fdba74; }
 
 html.dark .mp-history-page-head { border-bottom-color: #232935; }
 html.dark .mp-history-page-title { color: #f1f5f9; }
@@ -2630,15 +2520,6 @@ html.dark .mp-history-clear-btn:hover {
     border-color: #f87171;
     color: #f87171;
 }
-html.dark .mp-history-subtitle { color: #94a3b8; }
-html.dark .mp-history-delete-overlay {
-    background: rgba(30, 37, 52, .92);
-    border-color: #2b3241;
-    color: #94a3b8;
-}
-html.dark .mp-history-delete-overlay:hover {
-    background: #1a1f2b;
-    border-color: #f87171;
-    color: #f87171;
-}
+html.dark .mp-history-row-delete { color: #9ca3af; }
+html.dark .mp-history-row-delete:hover { background: rgba(248, 113, 113, .15); color: #f87171; }
 html.dark .mp-history-empty { color: #94a3b8; }

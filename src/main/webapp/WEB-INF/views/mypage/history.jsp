@@ -47,7 +47,7 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <div class="mp-history-grid mp-history-grid--full" id="mpHistoryList">
+                    <div id="mpHistoryList">
                         <c:forEach var="h" items="${historyList}">
                             <c:set var="typeKey" value="${h.contentType}"/>
                             <c:set var="linkHref" value=""/>
@@ -62,41 +62,29 @@
                                     <c:set var="linkHref" value="${pageContext.request.contextPath}/courses/detail?planId=${h.contentId}"/>
                                 </c:when>
                             </c:choose>
-                            <div class="mp-history-item-wrap" data-history-idx="${h.historyIdx}">
-                                <a href="${linkHref}" class="mp-history-item <c:if test='${not h.available}'>is-unavailable</c:if>">
-                                    <div class="mp-history-thumb">
-                                        <c:choose>
-                                            <c:when test="${not empty h.thumbnailUrl}">
-                                                <img src="${h.thumbnailUrl}" alt="" loading="lazy"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="mp-history-thumb-icon">
-                                                    <c:choose>
-                                                        <c:when test="${typeKey eq 'community'}">💬</c:when>
-                                                        <c:when test="${typeKey eq 'spot'}">📍</c:when>
-                                                        <c:when test="${typeKey eq 'plan'}">🗺️</c:when>
-                                                        <c:when test="${typeKey eq 'package'}">🎁</c:when>
-                                                        <c:otherwise>🕒</c:otherwise>
-                                                    </c:choose>
-                                                </span>
-                                            </c:otherwise>
-                                        </c:choose>
+                            <div class="mp-history-row-wrap" data-history-idx="${h.historyIdx}">
+                                <a href="${linkHref}" class="mp-list-item <c:if test='${not h.available}'>is-unavailable</c:if>">
+                                    <div class="mp-list-content">
+                                        <div class="mp-list-title">
+                                            <c:choose>
+                                                <c:when test="${h.available and not empty h.title}">${h.title}</c:when>
+                                                <c:otherwise><spring:message code="mypage.history.deleted"/></c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                        <div class="mp-list-meta">
+                                            <c:if test="${not empty h.subtitle}">
+                                                <span>${h.subtitle}</span>
+                                            </c:if>
+                                            <span data-mp-history-ts="${h.viewedAt.time}"></span>
+                                        </div>
                                     </div>
-                                    <span class="mp-history-type mp-history-type-${typeKey}">
-                                        <spring:message code="mypage.history.type.${typeKey}"/>
-                                    </span>
-                                    <div class="mp-history-title">
-                                        <c:choose>
-                                            <c:when test="${h.available and not empty h.title}">${h.title}</c:when>
-                                            <c:otherwise><spring:message code="mypage.history.deleted"/></c:otherwise>
-                                        </c:choose>
+                                    <div class="mp-list-badges">
+                                        <span class="mp-badge mp-history-type-${typeKey}">
+                                            <spring:message code="mypage.history.type.${typeKey}"/>
+                                        </span>
                                     </div>
-                                    <c:if test="${not empty h.subtitle}">
-                                        <div class="mp-history-subtitle">${h.subtitle}</div>
-                                    </c:if>
-                                    <div class="mp-history-time" data-mp-history-ts="${h.viewedAt.time}"></div>
                                 </a>
-                                <button type="button" class="mp-history-delete-overlay"
+                                <button type="button" class="mp-history-row-delete"
                                         data-history-idx="${h.historyIdx}"
                                         aria-label="delete">✕</button>
                             </div>
@@ -139,7 +127,7 @@
     });
 
     // 개별 삭제
-    document.querySelectorAll('.mp-history-delete-overlay').forEach(function (btn) {
+    document.querySelectorAll('.mp-history-row-delete').forEach(function (btn) {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -152,9 +140,9 @@
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 if (data && data.success) {
-                    var wrap = btn.closest('.mp-history-item-wrap');
+                    var wrap = btn.closest('.mp-history-row-wrap');
                     if (wrap) wrap.remove();
-                    var remaining = document.querySelectorAll('.mp-history-item-wrap').length;
+                    var remaining = document.querySelectorAll('.mp-history-row-wrap').length;
                     if (remaining === 0) location.reload();
                 }
             })

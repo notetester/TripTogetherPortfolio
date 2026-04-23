@@ -718,53 +718,42 @@
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <div class="mp-history-grid">
-                            <c:forEach var="h" items="${viewHistoryList}">
-                                <c:set var="typeKey" value="${h.contentType}"/>
-                                <c:set var="linkHref" value=""/>
-                                <c:choose>
-                                    <c:when test="${typeKey eq 'community'}">
-                                        <c:set var="linkHref" value="${pageContext.request.contextPath}/community/${h.contentId}"/>
-                                    </c:when>
-                                    <c:when test="${typeKey eq 'spot'}">
-                                        <c:set var="linkHref" value="${pageContext.request.contextPath}/detail/${h.contentId}"/>
-                                    </c:when>
-                                    <c:when test="${typeKey eq 'plan'}">
-                                        <c:set var="linkHref" value="${pageContext.request.contextPath}/courses/detail?planId=${h.contentId}"/>
-                                    </c:when>
-                                </c:choose>
-                                <a href="${linkHref}" class="mp-history-item <c:if test='${not h.available}'>is-unavailable</c:if>">
-                                    <div class="mp-history-thumb">
-                                        <c:choose>
-                                            <c:when test="${not empty h.thumbnailUrl}">
-                                                <img src="${h.thumbnailUrl}" alt="" loading="lazy"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="mp-history-thumb-icon">
-                                                    <c:choose>
-                                                        <c:when test="${typeKey eq 'community'}">💬</c:when>
-                                                        <c:when test="${typeKey eq 'spot'}">📍</c:when>
-                                                        <c:when test="${typeKey eq 'plan'}">🗺️</c:when>
-                                                        <c:when test="${typeKey eq 'package'}">🎁</c:when>
-                                                        <c:otherwise>🕒</c:otherwise>
-                                                    </c:choose>
-                                                </span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                    <span class="mp-history-type mp-history-type-${typeKey}">
-                                        <spring:message code="mypage.history.type.${typeKey}"/>
-                                    </span>
-                                    <div class="mp-history-title">
+                        <c:forEach var="h" items="${viewHistoryList}">
+                            <c:set var="typeKey" value="${h.contentType}"/>
+                            <c:set var="linkHref" value=""/>
+                            <c:choose>
+                                <c:when test="${typeKey eq 'community'}">
+                                    <c:set var="linkHref" value="${pageContext.request.contextPath}/community/${h.contentId}"/>
+                                </c:when>
+                                <c:when test="${typeKey eq 'spot'}">
+                                    <c:set var="linkHref" value="${pageContext.request.contextPath}/detail/${h.contentId}"/>
+                                </c:when>
+                                <c:when test="${typeKey eq 'plan'}">
+                                    <c:set var="linkHref" value="${pageContext.request.contextPath}/courses/detail?planId=${h.contentId}"/>
+                                </c:when>
+                            </c:choose>
+                            <a href="${linkHref}" class="mp-list-item <c:if test='${not h.available}'>is-unavailable</c:if>">
+                                <div class="mp-list-content">
+                                    <div class="mp-list-title">
                                         <c:choose>
                                             <c:when test="${h.available and not empty h.title}">${h.title}</c:when>
                                             <c:otherwise><spring:message code="mypage.history.deleted"/></c:otherwise>
                                         </c:choose>
                                     </div>
-                                    <div class="mp-history-time" data-mp-history-ts="${h.viewedAt.time}"></div>
-                                </a>
-                            </c:forEach>
-                        </div>
+                                    <div class="mp-list-meta">
+                                        <c:if test="${not empty h.subtitle}">
+                                            <span>${h.subtitle}</span>
+                                        </c:if>
+                                        <span data-mp-history-ts="${h.viewedAt.time}"></span>
+                                    </div>
+                                </div>
+                                <div class="mp-list-badges">
+                                    <span class="mp-badge mp-history-type-${typeKey}">
+                                        <spring:message code="mypage.history.type.${typeKey}"/>
+                                    </span>
+                                </div>
+                            </a>
+                        </c:forEach>
                     </c:otherwise>
                 </c:choose>
             </div>
