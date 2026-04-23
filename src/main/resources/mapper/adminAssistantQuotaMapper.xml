@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminAssistantQuotaMapper">
+
+    <resultMap id="quotaRM" type="org.triptogether.admin.vo.AdminAssistantQuotaVO">
+        <id     property="quotaId"               column="quota_id"/>
+        <result property="grade"                 column="grade"/>
+        <result property="maxSessions"           column="max_sessions"/>
+        <result property="maxMessagesPerPeriod"  column="max_messages_per_period"/>
+        <result property="periodDays"            column="period_days"/>
+        <result property="resetHour"             column="reset_hour"/>
+        <result property="resetMinute"           column="reset_minute"/>
+        <result property="quotaRefundEnabled"    column="quota_refund_enabled"/>
+        <result property="updatedBy"             column="updated_by"/>
+        <result property="updatedAt"             column="updated_at"/>
+        <result property="updaterNickname"       column="updater_nickname"/>
+    </resultMap>
+
+    <select id="selectAllQuotas" resultMap="quotaRM">
+        SELECT q.quota_id, q.grade, q.max_sessions, q.max_messages_per_period,
+               q.period_days, q.reset_hour, q.reset_minute, q.quota_refund_enabled,
+               q.updated_by, q.updated_at,
+               u.nickname AS updater_nickname
+        FROM ADMIN_ASSISTANT_GRADE_QUOTA q
+        LEFT JOIN USERS u ON u.user_idx = q.updated_by
+        ORDER BY q.quota_id
+    </select>
+
+    <select id="selectQuotaByGrade" resultMap="quotaRM">
+        SELECT quota_id, grade, max_sessions, max_messages_per_period,
+               period_days, reset_hour, reset_minute, quota_refund_enabled,
+               updated_by, updated_at
+        FROM ADMIN_ASSISTANT_GRADE_QUOTA
+        WHERE grade = #{grade}
+    </select>
+
+    <update id="updateQuota" parameterType="org.triptogether.admin.vo.AdminAssistantQuotaVO">
+        UPDATE ADMIN_ASSISTANT_GRADE_QUOTA
+           SET max_sessions            = #{maxSessions},
+               max_messages_per_period = #{maxMessagesPerPeriod},
+               period_days             = #{periodDays},
+               reset_hour              = #{resetHour},
+               reset_minute            = #{resetMinute},
+               quota_refund_enabled    = #{quotaRefundEnabled},
+               updated_by              = #{updatedBy}
+         WHERE quota_id = #{quotaId}
+    </update>
+
+</mapper>

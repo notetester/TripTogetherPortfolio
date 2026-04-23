@@ -391,6 +391,79 @@ INSERT INTO `ADMIN_POSITION_POLICY` (`admin_position_policy_idx`, `admin_positio
 	(3, 'INSPECTOR', 'Inspector', '검수/감사 담당 직책', 3, 1, NULL, '2026-04-16 08:32:25', NULL, '2026-04-16 08:32:25', 1),
 	(4, 'ENGINEER', 'Engineer', '기술 운영 담당 직책', 4, 1, NULL, '2026-04-16 08:32:25', NULL, '2026-04-16 08:32:25', 1);
 
+-- ═════════════════════════════════════════════════════════════════════
+-- ADMIN_ASSISTANT_* 계열 : AI 도우미(assistant 모듈, Claude) 관리 전용
+-- assistant 모듈(CHAT_POST/CHAT_COMMENT)은 SJ 담당이며 무수정
+-- 차단/한도 enforcement는 별도 Spring Interceptor에서 수행
+-- 부적절 메시지 감지는 스케줄러에서 Perspective API 호출 후 결과 저장
+-- ═════════════════════════════════════════════════════════════════════
+
+-- 테이블 team1_db.ADMIN_ASSISTANT_BLOCK 구조 내보내기
+CREATE TABLE IF NOT EXISTS `ADMIN_ASSISTANT_BLOCK` (
+  `block_id` bigint NOT NULL AUTO_INCREMENT,
+  `block_type` enum('USER','IP') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `block_value` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'user_idx(문자) 또는 IP',
+  `reason` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `blocked_by` bigint DEFAULT NULL COMMENT '처리 관리자 user_idx',
+  `blocked_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `expires_at` datetime DEFAULT NULL COMMENT 'NULL=영구',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`block_id`),
+  UNIQUE KEY `uk_aa_active_type_value` (`is_active`,`block_type`,`block_value`),
+  KEY `idx_aa_active` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI 도우미 전용 차단 목록';
+
+-- 테이블 team1_db.ADMIN_ASSISTANT_GRADE_QUOTA 구조 내보내기
+CREATE TABLE IF NOT EXISTS `ADMIN_ASSISTANT_GRADE_QUOTA` (
+  `quota_id` int NOT NULL AUTO_INCREMENT,
+  `grade` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'GUEST/BRONZE/SILVER/GOLD/DIAMOND/PLATINUM',
+  `max_sessions` int NOT NULL DEFAULT '10' COMMENT '동시 보유 세션(CHAT_POST) 수 한도',
+  `max_messages_per_period` int NOT NULL DEFAULT '100' COMMENT '주기당 유저 메시지 한도',
+  `period_days` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '한도 주기 (일: 1/2/3/4/5/7/14/30)',
+  `reset_hour` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '리셋 시각 시 (0-23)',
+  `reset_minute` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '리셋 시각 분 (0-59)',
+  `quota_refund_enabled` tinyint(1) NOT NULL DEFAULT '1' COMMENT '세션 삭제 시 사용량 환급 허용',
+  `updated_by` bigint DEFAULT NULL COMMENT '마지막 수정 관리자',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`quota_id`),
+  UNIQUE KEY `grade` (`grade`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI 도우미 등급별 한도';
+
+-- 테이블 데이터 team1_db.ADMIN_ASSISTANT_GRADE_QUOTA:~6 rows 기본값
+INSERT INTO `ADMIN_ASSISTANT_GRADE_QUOTA` (`grade`, `max_sessions`, `max_messages_per_period`, `period_days`, `reset_hour`, `reset_minute`, `quota_refund_enabled`) VALUES
+	('GUEST',    0,  0, 1, 0, 0, 1),
+	('BRONZE',   3, 30, 1, 0, 0, 1),
+	('SILVER',   5, 60, 1, 0, 0, 1),
+	('GOLD',    10,120, 1, 0, 0, 1),
+	('DIAMOND', 20,300, 1, 0, 0, 1),
+	('PLATINUM',30,600, 1, 0, 0, 1);
+
+-- 테이블 team1_db.ADMIN_ASSISTANT_DAILY_USAGE 구조 내보내기
+CREATE TABLE IF NOT EXISTS `ADMIN_ASSISTANT_DAILY_USAGE` (
+  `usage_id` bigint NOT NULL AUTO_INCREMENT,
+  `user_idx` bigint DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '비로그인 식별자 (assistant 는 기본 로그인 필수, 통계용)',
+  `period_start` datetime NOT NULL COMMENT '현재 주기 시작 시각(KST)',
+  `session_count` int NOT NULL DEFAULT '0' COMMENT '해당 주기 내 신규 세션 수 (참고용)',
+  `message_count` int NOT NULL DEFAULT '0' COMMENT '해당 주기 내 유저 메시지 수 (enforce 대상)',
+  PRIMARY KEY (`usage_id`),
+  UNIQUE KEY `uk_aa_user_period` (`user_idx`,`period_start`),
+  UNIQUE KEY `uk_aa_ip_period` (`ip_address`,`period_start`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI 도우미 주기별 사용량 집계';
+
+-- 테이블 team1_db.ADMIN_ASSISTANT_MODERATION 구조 내보내기
+CREATE TABLE IF NOT EXISTS `ADMIN_ASSISTANT_MODERATION` (
+  `moderation_id` bigint NOT NULL AUTO_INCREMENT,
+  `chat_comment_idx` bigint NOT NULL COMMENT 'CHAT_COMMENT FK (user 메시지 전용)',
+  `is_inappropriate` tinyint(1) NOT NULL DEFAULT '0',
+  `toxicity_score` decimal(4,3) DEFAULT NULL COMMENT 'Perspective API TOXICITY 점수 0.000~1.000',
+  `checked_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`moderation_id`),
+  UNIQUE KEY `uk_aa_comment` (`chat_comment_idx`),
+  KEY `idx_aa_inappropriate` (`is_inappropriate`,`checked_at` DESC),
+  CONSTRAINT `fk_aa_mod_comment` FOREIGN KEY (`chat_comment_idx`) REFERENCES `CHAT_COMMENT` (`chat_comment_idx`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI 도우미 user 메시지 독성 감지 결과';
+
 -- 테이블 team1_db.BUSINESS_ACCOUNT_APPLICATION 구조 내보내기
 CREATE TABLE IF NOT EXISTS `BUSINESS_ACCOUNT_APPLICATION` (
   `application_idx` bigint NOT NULL AUTO_INCREMENT,
