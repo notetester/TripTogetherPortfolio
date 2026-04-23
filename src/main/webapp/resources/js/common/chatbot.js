@@ -8,6 +8,7 @@
     const cfg = window.__chatbotConfig || {};
     const ctx = cfg.ctx || '';
     const loggedIn = !!cfg.loggedIn;
+    const locale = cfg.locale || undefined;
     const msg = cfg.msg || {};
 
     const STORAGE_KEY = loggedIn ? null : 'chatbot_anon_conv_id';
@@ -109,7 +110,7 @@
 
             const title = document.createElement('span');
             title.className = 'cb-conv-title';
-            title.textContent = c.title || '새 대화';
+            title.textContent = c.title || msg.untitledConversation || 'New Conversation';
             title.addEventListener('click', () => openConversation(c.conversationId));
 
             const menu = document.createElement('button');
@@ -129,15 +130,15 @@
 
     function showConvMenu(conv, rowEl) {
         const action = window.prompt(
-            '1: 제목 변경  /  2: 삭제  /  취소: 빈 값',
+            msg.menuPrompt || '1: Rename title / 2: Delete / Cancel: empty',
             ''
         );
         if (!action) return;
         if (action === '1') {
-            const newTitle = window.prompt('새 제목', conv.title || '');
+            const newTitle = window.prompt(msg.renamePrompt || 'New title', conv.title || '');
             if (newTitle && newTitle.trim()) renameConversation(conv.conversationId, newTitle.trim());
         } else if (action === '2') {
-            if (window.confirm('이 대화를 삭제할까요?')) deleteConversation(conv.conversationId);
+            if (window.confirm(msg.deleteConfirm || 'Delete this conversation?')) deleteConversation(conv.conversationId);
         }
     }
 
@@ -169,7 +170,7 @@
             currentConvId = null;
             if (STORAGE_KEY) sessionStorage.removeItem(STORAGE_KEY);
             body.innerHTML = '';
-            if (titleEl) titleEl.textContent = msg.welcomeTitle || '새 대화';
+            if (titleEl) titleEl.textContent = msg.welcomeTitle || msg.untitledConversation || 'New Conversation';
             renderWelcome();
             if (loggedIn) loadConversationList();
             input.focus();
@@ -190,7 +191,7 @@
             const data = await res.json();
             currentConvId = convId;
             if (STORAGE_KEY) sessionStorage.setItem(STORAGE_KEY, String(convId));
-            if (titleEl && data.conversation) titleEl.textContent = data.conversation.title || '새 대화';
+            if (titleEl && data.conversation) titleEl.textContent = data.conversation.title || msg.untitledConversation || 'New Conversation';
             body.innerHTML = '';
             suggs.innerHTML = '';
             (data.messages || []).forEach(m => {
@@ -225,7 +226,7 @@
         const wrap = document.createElement('div');
         wrap.className = 'cb-msg-wrap bot';
         wrap.innerHTML = '<div class="cb-welcome">' +
-            '<div class="cb-welcome-title">' + escHtml(msg.welcomeTitle || '안녕하세요!') + '</div>' +
+            '<div class="cb-welcome-title">' + escHtml(msg.welcomeTitle || 'Hello!') + '</div>' +
             escHtml(msg.welcomeBody1 || '') + '<br>' +
             escHtml(msg.welcomeBody2 || '') +
             '</div>';
@@ -365,7 +366,7 @@
             }
         } catch (e) {
             hideTyping();
-            appendBotResponse({ message: msg.error || '오류가 발생했습니다.', links: [], quickReplies: [] });
+            appendBotResponse({ message: msg.error || 'An error occurred.', links: [], quickReplies: [] });
         } finally {
             isTyping = false;
             sendBtn.disabled = false;
@@ -386,7 +387,7 @@
     }
 
     function getTime() {
-        return new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        return new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
     }
 
     function escHtml(str) {

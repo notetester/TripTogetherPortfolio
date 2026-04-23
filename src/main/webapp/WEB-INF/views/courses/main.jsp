@@ -1,13 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ include file="../common/header.jsp" %>
 
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <head>
   <meta charset="UTF-8">
-  <title>여행 코스</title>
+  <title><spring:message code="courses.main.pageTitle"/></title>
   <style>
     * {
       box-sizing: border-box;
@@ -51,6 +52,7 @@
       line-height: 1.3;
       margin: 0 0 14px;
       color: #0f172a;
+      white-space: pre-line;
     }
 
     .hero-desc {
@@ -197,43 +199,31 @@
 
 <div class="courses-main-wrap">
   <section class="hero-section">
-    <div class="hero-badge">TripTogether 여행 코스</div>
-    <h1 class="hero-title">
-      여행 일정을 만들고,<br>
-      내 일정과 공개 일정을 한눈에 확인해보세요
-    </h1>
-    <p class="hero-desc">
-      직접 여행 일정을 작성하거나 AI의 도움을 받아 일정을 만들 수 있어요.
-      내가 만든 일정은 따로 관리하고, 다른 사용자가 공개한 일정도 둘러볼 수 있습니다.
-    </p>
+    <div class="hero-badge"><spring:message code="courses.main.hero.badge"/></div>
+    <h1 class="hero-title"><spring:message code="courses.main.hero.title"/></h1>
+    <p class="hero-desc"><spring:message code="courses.main.hero.desc"/></p>
 
     <div class="hero-btn-group">
       <a href="${pageContext.request.contextPath}/courses/write" class="hero-btn primary">
-        직접 일정 생성
+        <spring:message code="courses.common.directCreate"/>
       </a>
       <a href="${pageContext.request.contextPath}/courses/ai/form" class="hero-btn secondary">
-        AI 일정 생성
+        <spring:message code="courses.common.aiCreate"/>
       </a>
     </div>
   </section>
 
   <section class="menu-grid">
     <a href="${pageContext.request.contextPath}/courses/my" class="menu-card">
-      <div class="menu-label">MY PLAN</div>
-      <h2 class="menu-title">내 여행일정</h2>
-      <p class="menu-desc">
-        내가 직접 작성했거나 생성한 여행일정을 모아 보고,
-        수정·삭제·상세 조회까지 편하게 관리할 수 있어요.
-      </p>
+      <div class="menu-label"><spring:message code="courses.main.menu.my.label"/></div>
+      <h2 class="menu-title"><spring:message code="courses.main.menu.my.title"/></h2>
+      <p class="menu-desc"><spring:message code="courses.main.menu.my.desc"/></p>
     </a>
 
     <a href="${pageContext.request.contextPath}/courses/public" class="menu-card">
-      <div class="menu-label">PUBLIC PLAN</div>
-      <h2 class="menu-title">공개 일정</h2>
-      <p class="menu-desc">
-        다른 사용자가 공개한 여행일정을 둘러보고
-        여행 코스 아이디어를 참고할 수 있어요.
-      </p>
+      <div class="menu-label"><spring:message code="courses.main.menu.public.label"/></div>
+      <h2 class="menu-title"><spring:message code="courses.main.menu.public.title"/></h2>
+      <p class="menu-desc"><spring:message code="courses.main.menu.public.desc"/></p>
     </a>
   </section>
 </div>

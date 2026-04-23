@@ -28,7 +28,7 @@
     <%-- 로그인 유저 전용 사이드바 (대화 목록) --%>
     <c:if test="${not empty sessionScope.loginUser}">
         <aside id="cb-sidebar" class="cb-sidebar">
-            <button type="button" id="cb-new" class="cb-new-btn">＋ 새 대화</button>
+            <button type="button" id="cb-new" class="cb-new-btn"><spring:message code="footer.chatbot.newConversation"/></button>
             <div id="cb-conv-list" class="cb-conv-list"></div>
         </aside>
     </c:if>
@@ -63,6 +63,7 @@
     window.__chatbotConfig = {
         ctx: '${pageContext.request.contextPath}',
         loggedIn: ${not empty sessionScope.loginUser},
+        locale: '${pageContext.response.locale}',
         msg: {
             suggestPopular:       '<spring:message code="footer.chatbot.suggest.popular" javaScriptEscape="true"/>',
             suggestPopularMsg:    '<spring:message code="footer.chatbot.suggest.popular.msg" javaScriptEscape="true"/>',
@@ -77,7 +78,11 @@
             welcomeTitle:         '<spring:message code="footer.chatbot.welcome.title" javaScriptEscape="true"/>',
             welcomeBody1:         '<spring:message code="footer.chatbot.welcome.body1" javaScriptEscape="true"/>',
             welcomeBody2:         '<spring:message code="footer.chatbot.welcome.body2" javaScriptEscape="true"/>',
-            error:                '<spring:message code="footer.chatbot.error" javaScriptEscape="true"/>'
+            error:                '<spring:message code="footer.chatbot.error" javaScriptEscape="true"/>',
+            untitledConversation: '<spring:message code="footer.chatbot.untitledConversation" javaScriptEscape="true"/>',
+            menuPrompt:           '<spring:message code="footer.chatbot.menu.prompt" javaScriptEscape="true"/>',
+            renamePrompt:         '<spring:message code="footer.chatbot.menu.renamePrompt" javaScriptEscape="true"/>',
+            deleteConfirm:        '<spring:message code="footer.chatbot.menu.deleteConfirm" javaScriptEscape="true"/>'
         }
     };
 </script>

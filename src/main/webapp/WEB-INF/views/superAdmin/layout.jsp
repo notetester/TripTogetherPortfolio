@@ -1,12 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/TripTogetherFavicon.png">
-    <title>${pageTitle} — TripTogether SuperAdmin</title>
+    <title>${pageTitle} — <spring:message code="superAdmin.layout.titleSuffix"/></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/admin/admin.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/superAdmin/superadmin.css">
@@ -23,45 +24,45 @@
         <a class="adm-brand" href="${pageContext.request.contextPath}/superAdmin">
             <div class="adm-brand-icon">🔑</div>
             <div>
-                <div class="adm-brand-text">TripTogether</div>
-                <div class="adm-brand-sub">Super Admin</div>
+                <div class="adm-brand-text"><spring:message code="superAdmin.layout.brandName"/></div>
+                <div class="adm-brand-sub"><spring:message code="superAdmin.layout.brandSub"/></div>
             </div>
         </a>
 
         <nav class="adm-nav">
-            <div class="adm-nav-section">관리자 관리</div>
+            <div class="adm-nav-section"><spring:message code="superAdmin.layout.section.admin"/></div>
             <a class="adm-nav-item ${activeMenu=='members'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/members">
-                <span class="adm-nav-icon">👤</span> 관리자 목록
+                <span class="adm-nav-icon">👤</span> <spring:message code="superAdmin.layout.menu.adminMembers"/>
             </a>
             <a class="adm-nav-item ${activeMenu=='org'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/org">
-                <span class="adm-nav-icon">🏢</span> 조직도
+                <span class="adm-nav-icon">🏢</span> <spring:message code="superAdmin.layout.menu.org"/>
             </a>
 
-            <div class="adm-nav-section" style="margin-top:16px;">권한 관리</div>
+            <div class="adm-nav-section" style="margin-top:16px;"><spring:message code="superAdmin.layout.section.permissions"/></div>
             <a class="adm-nav-item ${activeMenu=='permissions'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/permissions">
-                <span class="adm-nav-icon">🔑</span> 권한 항목
+                <span class="adm-nav-icon">🔑</span> <spring:message code="superAdmin.layout.menu.permissionItems"/>
             </a>
             <a class="adm-nav-item ${activeMenu=='groups'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/groups">
-                <span class="adm-nav-icon">🔐</span> 권한 그룹
+                <span class="adm-nav-icon">🔐</span> <spring:message code="superAdmin.layout.menu.permissionGroups"/>
             </a>
             <a class="adm-nav-item ${activeMenu=='permissionCodes'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/permission-codes">
-                <span class="adm-nav-icon">🗂️</span> 권한 템플릿
+                <span class="adm-nav-icon">🗂️</span> <spring:message code="superAdmin.layout.menu.permissionTemplates"/>
             </a>
 
-            <div class="adm-nav-section" style="margin-top:16px;">현황 분석</div>
+            <div class="adm-nav-section" style="margin-top:16px;"><spring:message code="superAdmin.layout.section.analytics"/></div>
             <a class="adm-nav-item ${activeMenu=='salary'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/salary">
-                <span class="adm-nav-icon">💰</span> 급여/역량 현황
+                <span class="adm-nav-icon">💰</span> <spring:message code="superAdmin.layout.menu.salary"/>
             </a>
             <a class="adm-nav-item ${activeMenu=='stats'?'active':''}" href="${pageContext.request.contextPath}/superAdmin/stats">
-                <span class="adm-nav-icon">📊</span> 통계 대시보드
+                <span class="adm-nav-icon">📊</span> <spring:message code="superAdmin.layout.menu.stats"/>
             </a>
 
             <div style="margin-top:16px; padding: 0 10px;">
                 <a class="adm-nav-item sa-nav-aux" href="${pageContext.request.contextPath}/admin">
-                    <span class="adm-nav-icon">↩️</span> 관리자 패널
+                    <span class="adm-nav-icon">↩️</span> <spring:message code="superAdmin.layout.menu.adminPanel"/>
                 </a>
                 <a class="adm-nav-item sa-nav-aux" href="${pageContext.request.contextPath}/" target="_blank" style="margin-top:4px;">
-                    <span class="adm-nav-icon">↗️</span> 사이트 보기
+                    <span class="adm-nav-icon">↗️</span> <spring:message code="superAdmin.layout.menu.viewSite"/>
                 </a>
             </div>
         </nav>
@@ -71,9 +72,9 @@
                 <div class="adm-user-av">${sessionScope.loginUser.nickname.substring(0,1)}</div>
                 <div>
                     <div class="adm-user-name">${sessionScope.loginUser.nickname}</div>
-                    <div class="adm-user-role">최고관리자</div>
+                    <div class="adm-user-role"><spring:message code="superAdmin.layout.role"/></div>
                 </div>
-                <a href="${pageContext.request.contextPath}/auth/logout" class="adm-logout" title="로그아웃">⏏</a>
+                <a href="${pageContext.request.contextPath}/auth/logout" class="adm-logout" title="<spring:message code='superAdmin.layout.logout'/>">⏏</a>
             </div>
         </div>
     </aside>
@@ -83,9 +84,9 @@
             <button class="adm-btn adm-btn-ghost" style="display:none;padding:6px 8px;" id="sidebar-toggle"
                     onclick="document.getElementById('adm-sidebar').classList.toggle('open')">☰</button>
             <div class="adm-topbar-title">${pageTitle}</div>
-            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="테마 변경">☀️ 밝게</button>
+            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="<spring:message code='superAdmin.layout.themeToggle'/>"><spring:message code="superAdmin.layout.theme.light"/></button>
             <div class="adm-topbar-path">
-                <span>SuperAdmin</span>
+                <span><spring:message code="superAdmin.layout.pathRoot"/></span>
                 <c:if test="${not empty pageTitle}"><span>${pageTitle}</span></c:if>
             </div>
         </div>
@@ -94,7 +95,9 @@
 (function(){
     var btn = document.getElementById('saThemeBtn');
     var t   = localStorage.getItem('sa_theme') || '';
-    if (btn) btn.textContent = (t === 'sa-light') ? '🌙 어둡게' : '☀️ 밝게';
+    if (btn) btn.textContent = (t === 'sa-light')
+        ? '<spring:message code="superAdmin.layout.theme.dark" javaScriptEscape="true"/>'
+        : '<spring:message code="superAdmin.layout.theme.light" javaScriptEscape="true"/>';
 })();
 
 function saToggleTheme() {
@@ -103,11 +106,11 @@ function saToggleTheme() {
     if (body.classList.contains('sa-light')) {
         body.classList.remove('sa-light');
         localStorage.setItem('sa_theme', '');
-        if (btn) btn.textContent = '☀️ 밝게';
+        if (btn) btn.textContent = '<spring:message code="superAdmin.layout.theme.light" javaScriptEscape="true"/>';
     } else {
         body.classList.add('sa-light');
         localStorage.setItem('sa_theme', 'sa-light');
-        if (btn) btn.textContent = '🌙 어둡게';
+        if (btn) btn.textContent = '<spring:message code="superAdmin.layout.theme.dark" javaScriptEscape="true"/>';
     }
 }
 </script>
