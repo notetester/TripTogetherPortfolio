@@ -394,12 +394,15 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${not empty q.updatedBy}">
-                                        <span class="quota-updater" data-user-idx="${q.updatedBy}">
+                                        <a class="quota-updater"
+                                           href="${pageContext.request.contextPath}/admin/members?detailUserIdx=${q.updatedBy}"
+                                           style="color:#1d4ed8;text-decoration:none;font-weight:500;cursor:pointer;"
+                                           title="회원 상세 보기">
                                             <c:choose>
                                                 <c:when test="${not empty q.updaterNickname}">${q.updaterNickname}</c:when>
                                                 <c:otherwise>#${q.updatedBy}</c:otherwise>
                                             </c:choose>
-                                        </span>
+                                        </a>
                                     </c:when>
                                     <c:otherwise><span style="color:#94a3b8;">-</span></c:otherwise>
                                 </c:choose>

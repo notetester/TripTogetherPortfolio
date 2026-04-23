@@ -1151,6 +1151,14 @@ async function submitDetailBlock(userIdx, button) {
 
 function closeDetail() {
     document.getElementById('detailModal').classList.remove('open');
+    // 외부에서 ?detailUserIdx=N 으로 들어와 자동 오픈된 경우, 닫힘 후 파라미터 제거 (리프레시 재오픈 방지)
+    try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('detailUserIdx')) {
+            url.searchParams.delete('detailUserIdx');
+            window.history.replaceState(null, '', url.toString());
+        }
+    } catch (e) {}
 }
 
 document.getElementById('detailModal').addEventListener('click', function (e) {
