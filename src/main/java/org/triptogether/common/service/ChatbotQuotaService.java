@@ -60,22 +60,22 @@ public class ChatbotQuotaService {
                 quota.getGrade(), quota.getUpdatedBy());
     }
 
-    // 오늘자 사용량 조회 (없으면 0 반환)
-    public int getTodayUsage(Long userIdx, String anonSessionId) {
-        ChatbotDailyUsageVO usage = quotaMapper.selectDailyUsage(userIdx, anonSessionId, LocalDate.now());
+    // 오늘자 사용량 조회 (없으면 0 반환). 비로그인은 IP 기준.
+    public int getTodayUsage(Long userIdx, String ipAddress) {
+        ChatbotDailyUsageVO usage = quotaMapper.selectDailyUsage(userIdx, ipAddress, LocalDate.now());
         return usage != null && usage.getMessageCount() != null ? usage.getMessageCount() : 0;
     }
 
-    // 사용량 +1 (INSERT or UPDATE)
+    // 사용량 +1 (INSERT or UPDATE). 비로그인은 IP 기준.
     @Transactional
-    public void incrementTodayUsage(Long userIdx, String anonSessionId) {
-        quotaMapper.upsertDailyUsageIncrement(userIdx, anonSessionId, LocalDate.now());
+    public void incrementTodayUsage(Long userIdx, String ipAddress) {
+        quotaMapper.upsertDailyUsageIncrement(userIdx, ipAddress, LocalDate.now());
     }
 
-    // 사용량 -N (대화 삭제 시 환급). amount <= 0 이면 무시.
+    // 사용량 -N (대화 삭제 시 환급). amount <= 0 이면 무시. 비로그인은 IP 기준.
     @Transactional
-    public void decreaseTodayUsage(Long userIdx, String anonSessionId, int amount) {
+    public void decreaseTodayUsage(Long userIdx, String ipAddress, int amount) {
         if (amount <= 0) return;
-        quotaMapper.decreaseDailyUsage(userIdx, anonSessionId, LocalDate.now(), amount);
+        quotaMapper.decreaseDailyUsage(userIdx, ipAddress, LocalDate.now(), amount);
     }
 }

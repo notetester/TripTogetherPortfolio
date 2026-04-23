@@ -155,7 +155,8 @@ public class ChatbotController {
      */
     @DeleteMapping("/conversations/{id}")
     public ResponseEntity<Map<String, Object>> deleteConversation(@PathVariable("id") Long conversationId,
-                                                                  HttpSession session) {
+                                                                  HttpSession session,
+                                                                  HttpServletRequest httpReq) {
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
         Long userIdx = loginUser != null ? loginUser.getUserIdx() : null;
         String anonSessionId = loginUser == null ? session.getId() : null;
@@ -167,7 +168,7 @@ public class ChatbotController {
         }
 
         // 쿼터 환급 — ADMIN/SUPERADMIN 면제자는 원래 카운트 안 하므로 skip.
-        // 등급별 quota_refund_enabled 플래그가 true 일 때만 실제 환급.
+        // 등급별 quota_refund_enabled 플래그가 true 일 때만 실제 환급. 비로그인은 IP 기준으로 차감.
         boolean quotaExempt = quotaService.isQuotaExempt(loginUser);
         if (!quotaExempt) {
             String grade = quotaService.resolveGrade(loginUser);
@@ -176,7 +177,8 @@ public class ChatbotController {
             if (refundEnabled) {
                 int todayUserMsgs = messageMapper.countTodayUserMessagesByConversation(conversationId);
                 if (todayUserMsgs > 0) {
-                    quotaService.decreaseTodayUsage(userIdx, anonSessionId, todayUserMsgs);
+                    String ipAddress = loginUser == null ? extractIp(httpReq) : null;
+                    quotaService.decreaseTodayUsage(userIdx, ipAddress, todayUserMsgs);
                 }
             }
         }

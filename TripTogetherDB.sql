@@ -515,12 +515,12 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_CONVERSATION` (
 CREATE TABLE IF NOT EXISTS `CHATBOT_DAILY_USAGE` (
   `usage_id` bigint NOT NULL AUTO_INCREMENT,
   `user_idx` bigint DEFAULT NULL,
-  `anon_session_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '비로그인 식별자 (IP 주소, IPv6 포함)',
   `usage_date` date NOT NULL,
   `message_count` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`usage_id`),
   UNIQUE KEY `uk_user_date` (`user_idx`,`usage_date`),
-  UNIQUE KEY `uk_anon_date` (`anon_session_id`,`usage_date`)
+  UNIQUE KEY `uk_ip_date` (`ip_address`,`usage_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='일일 사용량 집계';
 
 -- 테이블 데이터 team1_db.CHATBOT_DAILY_USAGE:~0 rows (대략적) 내보내기

@@ -168,7 +168,7 @@ public class ChatbotService {
 
         // 3. 일일 메시지 한도 체크
         if (!quotaExempt && quota != null) {
-            int usage = quotaService.getTodayUsage(userIdx, userIdx == null ? anonSessionId : null);
+            int usage = quotaService.getTodayUsage(userIdx, userIdx == null ? ipAddress : null);
             if (usage >= quota.getMaxMessagesPerDay()) {
                 return quotaExceededResponse(quota.getMaxMessagesPerDay());
             }
@@ -194,7 +194,7 @@ public class ChatbotService {
         if (fast != null) {
             log.info("[Chatbot] fast-path 히트, LLM 호출 생략 — conversationId={}",
                     conversation.getConversationId());
-            return finalizeAndRespond(conversation, userMsg, fast, userIdx, anonSessionId,
+            return finalizeAndRespond(conversation, userMsg, fast, userIdx, ipAddress,
                     quotaExempt, /*markInappropriate=*/false);
         }
 
@@ -216,7 +216,7 @@ public class ChatbotService {
             log.warn("[Chatbot] 사전 분류 - 부적절 판정, 본 호출 생략. conversationId={}, messageId={}, ip={}",
                     conversation.getConversationId(), userMsg.getMessageId(), ipAddress);
             return finalizeAndRespond(conversation, userMsg, safetyBlockedResponse(),
-                    userIdx, anonSessionId, quotaExempt, /*markInappropriate=*/false);
+                    userIdx, ipAddress, quotaExempt, /*markInappropriate=*/false);
         }
 
         // 7. Gemini 본 호출 (분류 의도 주입)
@@ -243,9 +243,9 @@ public class ChatbotService {
         // 10. 대화 활동 시각 갱신
         conversationService.touch(conversation.getConversationId());
 
-        // 11. 일일 사용량 +1 (면제자 제외)
+        // 11. 일일 사용량 +1 (면제자 제외). 비로그인은 IP 기준.
         if (!quotaExempt) {
-            quotaService.incrementTodayUsage(userIdx, userIdx == null ? anonSessionId : null);
+            quotaService.incrementTodayUsage(userIdx, userIdx == null ? ipAddress : null);
         }
 
         // 12. 응답에 conversationId / messageId 포함
@@ -292,7 +292,7 @@ public class ChatbotService {
                                                   ChatMessageVO userMsg,
                                                   ChatbotResponseVO response,
                                                   Long userIdx,
-                                                  String anonSessionId,
+                                                  String ipAddress,
                                                   boolean quotaExempt,
                                                   boolean markInappropriate) {
         if (markInappropriate) {
@@ -306,7 +306,7 @@ public class ChatbotService {
         conversationService.saveMessage(botMsg);
         conversationService.touch(conversation.getConversationId());
         if (!quotaExempt) {
-            quotaService.incrementTodayUsage(userIdx, userIdx == null ? anonSessionId : null);
+            quotaService.incrementTodayUsage(userIdx, userIdx == null ? ipAddress : null);
         }
         response.setConversationId(conversation.getConversationId());
         response.setMessageId(botMsg.getMessageId());

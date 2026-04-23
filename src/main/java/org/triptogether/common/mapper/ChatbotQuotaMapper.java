@@ -24,19 +24,19 @@ public interface ChatbotQuotaMapper {
 
     // ===== 일일 사용량 =====
 
-    // 사용량 조회 (유저 또는 anonSession 기준, 날짜 특정)
+    // 사용량 조회 (유저 또는 IP 기준, 날짜 특정)
     ChatbotDailyUsageVO selectDailyUsage(@Param("userIdx") Long userIdx,
-                                         @Param("anonSessionId") String anonSessionId,
+                                         @Param("ipAddress") String ipAddress,
                                          @Param("usageDate") LocalDate usageDate);
 
     // 사용량 +1 (없으면 INSERT, 있으면 UPDATE)
     void upsertDailyUsageIncrement(@Param("userIdx") Long userIdx,
-                                   @Param("anonSessionId") String anonSessionId,
+                                   @Param("ipAddress") String ipAddress,
                                    @Param("usageDate") LocalDate usageDate);
 
     // 사용량 -N (GREATEST(0, ...) 로 음수 방지, 행 없으면 no-op)
     void decreaseDailyUsage(@Param("userIdx") Long userIdx,
-                            @Param("anonSessionId") String anonSessionId,
+                            @Param("ipAddress") String ipAddress,
                             @Param("usageDate") LocalDate usageDate,
                             @Param("amount") int amount);
 }
