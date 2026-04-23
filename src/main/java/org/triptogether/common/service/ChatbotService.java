@@ -63,7 +63,9 @@ public class ChatbotService {
             | 여행 코스 | /courses | 다른 여행자의 코스 탐색 및 공유 |
             | AI 도우미 | /assistant | AI가 여행 일정 자동 생성 |
             | 커뮤니티 | /community/list | 여행 후기·팁 공유 게시판 |
-            | 여행 상품 | /travelPackage | 전문 가이드 패키지 상품 |
+            | 지갑·포인트 | /wallet | 포인트 잔액·충전·사용 내역 |
+            | 쇼핑몰 | /shop | 여행 용품 쇼핑 |
+            | 여행 패키지 | /packages | 전문 가이드 패키지 상품 |
             | 마이페이지 | /mypage | 내 활동·예약·포인트 |
             | 문의하기 | /inquiry/list | 고객센터 문의 |
             | 로그인 | /auth/login | 일반·소셜 로그인 |
@@ -89,7 +91,7 @@ public class ChatbotService {
             - `quickReplies`: 자연스러운 후속 질문 0~3개.
             - `inappropriate`: 아래 기준에 해당하면 true.
             - 여행·사이트 관련 질문에만 답하세요.
-            - 상품 관련 질문은 /travelPackage 링크 제공.
+            - 쇼핑·결제 관련 질문은 /shop, /packages, /wallet 중 해당하는 링크 제공.
             - 비로그인 사용자에게는 로그인·회원가입 링크를 적극 추천.
 
             ### 부적절 채팅 기준 (inappropriate: true)
@@ -382,7 +384,9 @@ public class ChatbotService {
         if (path.startsWith("/community"))         return "커뮤니티";
         if (path.startsWith("/mypage"))            return "마이페이지";
         if (path.startsWith("/auth"))              return "인증 페이지";
-        if (path.startsWith("/travelPackage"))     return "여행 상품";
+        if (path.startsWith("/wallet"))            return "지갑·포인트";
+        if (path.startsWith("/shop"))              return "쇼핑몰";
+        if (path.startsWith("/packages"))          return "여행 패키지";
         if (path.startsWith("/inquiry"))           return "문의하기";
         return path;
     }
