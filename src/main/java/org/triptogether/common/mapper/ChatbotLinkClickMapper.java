@@ -31,4 +31,8 @@ public interface ChatbotLinkClickMapper {
     /** 지정 기간 일별 클릭 수 (날짜 오름차순) */
     List<Map<String, Object>> selectDailyTrend(@Param("from") LocalDateTime from,
                                                 @Param("to") LocalDateTime to);
+
+    /** 특정 유저의 최근 클릭 이력 */
+    List<ChatbotLinkClickVO> selectClicksByUser(@Param("userIdx") Long userIdx,
+                                                 @Param("limit") int limit);
 }

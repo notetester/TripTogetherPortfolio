@@ -53,4 +53,28 @@
          ORDER BY clickDate ASC
     </select>
 
+    <!-- =============================================
+         5. 유저의 최근 클릭 이력
+         ============================================= -->
+    <resultMap id="ClickResultMap" type="ChatbotLinkClickVO">
+        <id     property="clickId"         column="click_id"/>
+        <result property="messageId"       column="message_id"/>
+        <result property="conversationId"  column="conversation_id"/>
+        <result property="userIdx"         column="user_idx"/>
+        <result property="anonSessionId"   column="anon_session_id"/>
+        <result property="url"             column="url"/>
+        <result property="label"           column="label"/>
+        <result property="ipAddress"       column="ip_address"/>
+        <result property="clickedAt"       column="clicked_at"/>
+    </resultMap>
+
+    <select id="selectClicksByUser" resultMap="ClickResultMap">
+        SELECT click_id, message_id, conversation_id, user_idx, anon_session_id,
+               url, label, ip_address, clicked_at
+          FROM CHATBOT_LINK_CLICK
+         WHERE user_idx = #{userIdx}
+         ORDER BY clicked_at DESC
+         LIMIT #{limit}
+    </select>
+
 </mapper>
