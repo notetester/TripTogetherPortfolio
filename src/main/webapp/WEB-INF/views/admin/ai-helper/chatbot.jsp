@@ -417,9 +417,11 @@
             </table>
         </div>
 
-        <%-- 전체 저장 버튼 (변경된 행만 일괄 저장) --%>
+        <%-- 전체 저장 / 기본값 복원 (원본으로 되돌리기) --%>
         <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:8px;align-items:center;">
             <span id="quotaDirtyHint" style="font-size:12px;color:#64748b;"></span>
+            <button type="button" class="adm-btn adm-btn-ghost" onclick="resetQuotasToOriginal()"
+                    title="불러온 DB 값으로 모두 되돌립니다">기본값 복원</button>
             <button type="button" class="adm-btn adm-btn-primary" onclick="saveAllQuotas()">전체 저장</button>
         </div>
     </c:if>
@@ -688,6 +690,21 @@
         el.addEventListener('input', updateDirtyHint);
         el.addEventListener('change', updateDirtyHint);
     });
+
+    // 기본값 복원 — 모든 input 을 최초 로드 값으로 되돌림
+    window.resetQuotasToOriginal = function () {
+        let reverted = 0;
+        document.querySelectorAll('tr[data-quota-id] input[data-original]').forEach(function (el) {
+            if (el.type === 'checkbox') {
+                const target = el.dataset.original === 'true';
+                if (el.checked !== target) { el.checked = target; reverted++; }
+            } else {
+                if (String(el.value) !== String(el.dataset.original)) { el.value = el.dataset.original; reverted++; }
+            }
+        });
+        updateDirtyHint();
+        if (reverted === 0) alert('되돌릴 변경 사항이 없습니다.');
+    };
 
     // 전체 저장 — 변경된 행만 순차 저장
     window.saveAllQuotas = async function () {
