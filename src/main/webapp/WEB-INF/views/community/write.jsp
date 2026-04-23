@@ -37,6 +37,16 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.1/dist/summernote-lite.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.1/dist/lang/summernote-ko-KR.min.js"></script>
 
+<%-- Summernote 모달 여백 강제 override (CSS 파일 로드 순서/캐시 회피) --%>
+<style>
+.note-modal .note-modal-header { padding: 28px 32px !important; }
+.note-modal .note-modal-body   { padding: 52px 32px !important; }
+.note-modal .note-modal-body .note-form-group { padding-bottom: 44px !important; }
+.note-modal .note-modal-body .note-form-group:last-child { padding-bottom: 0 !important; }
+.note-modal .note-modal-footer { height: auto !important; padding: 22px 32px !important; }
+.note-modal .note-form-label { margin-bottom: 14px !important; }
+</style>
+
 <%-- 비로그인 체크 --%>
 <c:if test="${empty sessionScope.loginUser}">
   <c:redirect url="/auth/login"/>
