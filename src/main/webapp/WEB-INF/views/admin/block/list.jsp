@@ -553,7 +553,7 @@
                                         data-blocked-at="${userBlockBlockedAtText}"
                                         data-last-history-at="${userBlockLastHistoryText}"
                                         data-sync-at="${userBlockSyncText}"><spring:message code="admin.common.settings"/></button>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-user-${b.blockIdx}"><spring:message code="admin.common.history"/></button>
+                                <button type="button" class="adm-row-btn detail" data-template-id="detail-user-${b.blockIdx}" onclick="openBlockDetail('detail-user-${b.blockIdx}')"><spring:message code="admin.common.history"/></button>
                                 <c:if test="${hasUserBlockAdmin and b.active}">
                                     <button type="button" class="adm-row-btn danger js-release-user-block" data-target-key="${fn:escapeXml(b.blockTargetKey)}"><spring:message code="admin.common.release"/></button>
                                 </c:if>
@@ -793,7 +793,7 @@
                                         data-blocked-at="${ipRuleBlockedAtText}"
                                         data-expires-display="${fn:escapeXml(empty ipRuleExpiresText ? adminBlocksNoneLabel : ipRuleExpiresText)}"
                                         data-active="${r.active ? 'true' : 'false'}">${adminBlocksSettingsLabel}</button>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-ip-${r.ipBlocklistIdx}">${adminBlocksHistoryLabel}</button>
+                                <button type="button" class="adm-row-btn detail" data-template-id="detail-ip-${r.ipBlocklistIdx}" onclick="openBlockDetail('detail-ip-${r.ipBlocklistIdx}')">${adminBlocksHistoryLabel}</button>
                                 <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
                                     <button type="button" class="adm-row-btn ${r.active ? 'danger' : 'detail'} js-toggle-ip-rule" data-id="${r.ipBlocklistIdx}" data-active="${r.active ? 'false' : 'true'}">${r.active ? adminBlocksRuleOffLabel : adminBlocksRuleOnLabel}</button>
                                     <c:if test="${r.ipBlockBatchIdx != null and r.controlMode == 'MANUAL_OVERRIDE'}">
@@ -993,7 +993,7 @@
                                         data-active-rules="${b.activeRuleCount}"
                                         data-effective-rules="${b.effectiveRuleCount}"
                                         data-expired-rules="${b.expiredRuleCount}"><spring:message code="admin.common.settings"/></button>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-batch-${b.ipBlockBatchIdx}"><spring:message code="admin.common.detail"/></button>
+                                <button type="button" class="adm-row-btn detail" data-template-id="detail-batch-${b.ipBlockBatchIdx}" onclick="openBlockDetail('detail-batch-${b.ipBlockBatchIdx}')"><spring:message code="admin.common.detail"/></button>
                                 <c:if test="${hasBlockPolicyAdmin}">
                                     <button type="button"
                                             class="adm-row-btn ${b.active ? 'danger' : 'detail'} js-open-batch-toggle"
@@ -1189,7 +1189,7 @@
                                         data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
                                         data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
                                         data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.blocks.currentSetting"/></button>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.common.detail"/></button>
+                                <button type="button" class="adm-row-btn detail" data-template-id="detail-history-${h.blockIdx}" onclick="openBlockDetail('detail-history-${h.blockIdx}')"><spring:message code="admin.common.detail"/></button>
                             </td>
                         </tr>
                     </c:forEach>
@@ -2258,13 +2258,30 @@ function handleIpBatchChange() {
 
 function openBlockDetail(templateId, title) {
     const template = document.getElementById(templateId);
-    if (!template) return;
-    document.getElementById('blockDetailTitle').textContent = title || ADMIN_BLOCK_MSG.blockDetailTitle;
-    document.getElementById('blockDetailBody').innerHTML = template.innerHTML;
-    if (window.TripAdminTranslation && typeof window.TripAdminTranslation.scan === 'function') {
-        window.TripAdminTranslation.scan(document.getElementById('blockDetailBody'));
+    if (!template) {
+        adm_toast(ADMIN_BLOCK_MSG.fetchError, 'error');
+        return;
     }
-    document.getElementById('blockDetailModal').classList.add('open');
+
+    const modal = document.getElementById('blockDetailModal');
+    const body = document.getElementById('blockDetailBody');
+    document.getElementById('blockDetailTitle').textContent = title || ADMIN_BLOCK_MSG.blockDetailTitle;
+
+    body.innerHTML = '';
+    if (template.content) {
+        body.appendChild(document.importNode(template.content, true));
+    } else {
+        body.innerHTML = template.innerHTML;
+    }
+    modal.classList.add('open');
+
+    if (window.TripAdminTranslation && typeof window.TripAdminTranslation.scan === 'function') {
+        try {
+            window.TripAdminTranslation.scan(body);
+        } catch (error) {
+            console.error('block detail translation scan failed', error);
+        }
+    }
 }
 
 function applyExpiryPreset(targetId, days) {

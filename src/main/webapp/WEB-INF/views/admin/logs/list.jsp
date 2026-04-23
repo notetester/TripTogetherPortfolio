@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="logins"/>
 <spring:message code="admin.logs.pageTitle" var="adminLogsPageTitle"/>
@@ -189,7 +190,18 @@
                                 <c:otherwise><span class="status-badge DELETED"><spring:message code="admin.common.fail"/></span></c:otherwise>
                             </c:choose>
                         </td>
-                        <td><c:out value="${empty item.failReason ? '-' : item.failReason}"/></td>
+                        <td style="max-width:280px;white-space:normal;">
+                            <div><c:out value="${empty item.failReason ? '-' : item.failReason}"/></div>
+                            <c:if test="${not empty item.failReason}">
+                                <div class="adm-tr-inline js-admin-translation-widget"
+                                     data-label="로그인 이력 사유 번역"
+                                     data-source-type="LOGIN_AUDIT"
+                                     data-source-idx="${item.loginIdx}"
+                                     data-field-name="fail_reason"
+                                     data-default-source-lang="ko"
+                                     data-source-text="${fn:escapeXml(item.failReason)}"></div>
+                            </c:if>
+                        </td>
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.ipAddress}">

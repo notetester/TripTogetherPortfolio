@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="activityLogs"/>
 <spring:message code="admin.activity.pageTitle" var="adminActivityPageTitle"/>
@@ -124,7 +125,19 @@
             </c:if>
           </div>
         </td>
-        <td style="max-width:300px;word-break:break-all;"><c:out value="${item.requestUri}"/></td>
+        <td style="max-width:300px;word-break:break-all;white-space:normal;">
+          <div><c:out value="${item.requestUri}"/></div>
+          <c:if test="${not empty item.detailSummary}">
+            <div style="margin-top:8px;color:#94a3b8;"><c:out value="${item.detailSummary}"/></div>
+            <div class="adm-tr-inline js-admin-translation-widget"
+                 data-label="활동 로그 상세 요약 번역"
+                 data-source-type="ACTIVITY_LOG"
+                 data-source-idx="${item.activityIdx}"
+                 data-field-name="detail_summary"
+                 data-default-source-lang="ko"
+                 data-source-text="${fn:escapeXml(item.detailSummary)}"></div>
+          </c:if>
+        </td>
         <td>
           <c:choose>
             <c:when test="${item.httpMethod eq 'GET'}"><spring:message code="admin.activity.method.get"/></c:when>
