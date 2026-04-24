@@ -83,7 +83,6 @@
                                 <a href="${pageContext.request.contextPath}/detail/${pkg.spotIdx}">
                                     <spring:message code="package.list.viewAtSpot"/>
                                 </a>
-                                <span class="pkg-approved"><spring:message code="package.list.approvedBadge"/></span>
                             </div>
                         </article>
                     </c:forEach>
@@ -92,6 +91,8 @@
         </c:choose>
     </section>
 </main>
+
+<%@ include file="../common/footer.jsp" %>
 
 </body>
 </html>

@@ -4,12 +4,10 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="dashboard"/>
 <spring:message code="admin.dashboard.pageTitle" var="adminDashboardPageTitle"/>
-<spring:message code="admin.dashboard.chart.newMembers" var="adminDashboardChartNewMembers"/>
-<spring:message code="admin.dashboard.chart.logins" var="adminDashboardChartLogins"/>
-<spring:message code="admin.dashboard.chart.dataset.newMembers" var="adminDashboardChartDatasetNewMembers"/>
-<spring:message code="admin.dashboard.chart.dataset.success" var="adminDashboardChartDatasetSuccess"/>
-<spring:message code="admin.dashboard.chart.dataset.fail" var="adminDashboardChartDatasetFail"/>
 <c:set var="pageTitle" value="${adminDashboardPageTitle}"/>
+<spring:message code="admin.dashboard.chart.newMembersDataset" var="adminDashboardNewMembersDataset"/>
+<spring:message code="admin.dashboard.chart.loginSuccessDataset" var="adminDashboardLoginSuccessDataset"/>
+<spring:message code="admin.dashboard.chart.loginFailDataset" var="adminDashboardLoginFailDataset"/>
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
@@ -67,7 +65,7 @@
     <div class="adm-chart-grid">
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">${adminDashboardChartNewMembers}</div>
+                <div class="adm-card-title">최근 7일 신규 가입자</div>
             </div>
             <div class="adm-card-body">
                 <div class="adm-chart-box"><canvas id="chartNewMembers"></canvas></div>
@@ -75,7 +73,7 @@
         </div>
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">${adminDashboardChartLogins}</div>
+                <div class="adm-card-title">최근 7일 로그인 추이</div>
             </div>
             <div class="adm-card-body">
                 <div class="adm-chart-box"><canvas id="chartLogin"></canvas></div>
@@ -650,7 +648,7 @@
             data: {
                 labels: DASH_CHART.labels,
                 datasets: [{
-                    label: '${adminDashboardChartDatasetNewMembers}',
+                    label: '${adminDashboardNewMembersDataset}',
                     data: DASH_CHART.newMembers,
                     backgroundColor: c.bar1,
                     borderColor: c.bar1b,
@@ -668,8 +666,8 @@
             data: {
                 labels: DASH_CHART.labels,
                 datasets: [
-                    { label: '${adminDashboardChartDatasetSuccess}', data: DASH_CHART.loginSuccess, backgroundColor: c.bar2, borderColor: c.bar2b, borderWidth: 1, borderRadius: 4 },
-                    { label: '${adminDashboardChartDatasetFail}', data: DASH_CHART.loginFail,    backgroundColor: c.bar3, borderColor: c.bar3b, borderWidth: 1, borderRadius: 4 }
+                    { label: '${adminDashboardLoginSuccessDataset}', data: DASH_CHART.loginSuccess, backgroundColor: c.bar2, borderColor: c.bar2b, borderWidth: 1, borderRadius: 4 },
+                    { label: '${adminDashboardLoginFailDataset}', data: DASH_CHART.loginFail,    backgroundColor: c.bar3, borderColor: c.bar3b, borderWidth: 1, borderRadius: 4 }
                 ]
             },
             options: Object.assign({}, common, {
