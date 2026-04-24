@@ -61,14 +61,10 @@ public class AssistantController {
 
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
 
-<<<<<<< PARK-SEO-JIN
         Long userIdx = null;
         if (loginUser != null) {
             userIdx = loginUser.getUserIdx();
         }
-=======
-        Long userIdx = loginUser.getUserIdx();
->>>>>>> dev
 
         @SuppressWarnings("unchecked")
         List<Map<String, String>> history =
@@ -76,25 +72,12 @@ public class AssistantController {
 
         Long chatPostIdx = (Long) session.getAttribute("currentChatPostIdx");
 
-<<<<<<< PARK-SEO-JIN
         Object payloadChatPostIdx = payload.get("chatPostIdx");
         if (payloadChatPostIdx != null && !payloadChatPostIdx.toString().isBlank()) {
             chatPostIdx = Long.valueOf(payloadChatPostIdx.toString());
         }
-=======
-        /* ──────────────────────────────────────────────────────────────
-         * [다국어] 현재 사용자의 세션 locale에서 언어 코드를 꺼낸다.
-         *
-         * LocaleContextHolder는 WebConfig에서 설정한 SessionLocaleResolver와
-         * LocaleChangeInterceptor가 관리하는 값을 읽어온다.
-         * 사용자가 헤더에서 ?lang=en 으로 언어를 바꾸면
-         * 이 값도 자동으로 "en"으로 변경된다.
-         *
-         * 이 lang 값을 Service에 넘기면, GPT 시스템 프롬프트에서
-         * "항상 English로 답변하세요" 같은 지시로 변환된다.
-         * ────────────────────────────────────────────────────────────── */
+      
         String lang = LocaleContextHolder.getLocale().getLanguage();
->>>>>>> dev
 
         Map<String, Object> result =
                 assistantService.chat(userMessage, history, userIdx, chatPostIdx, lang);
@@ -204,4 +187,5 @@ public class AssistantController {
         session.removeAttribute("currentChatPostIdx");
         return Map.of("success", true);
     }
+//    git 충돌 해결
 }
