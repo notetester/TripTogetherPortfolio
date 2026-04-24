@@ -139,7 +139,8 @@ const ADMIN_CONTEXT_MSG = {
     block: '<spring:message code="admin.context.ruleAction.block" javaScriptEscape="true"/>',
     allow: '<spring:message code="admin.context.ruleAction.allow" javaScriptEscape="true"/>',
     chatbotTab: '<spring:message code="admin.context.tab.chatbot" javaScriptEscape="true"/>',
-    emptyChatbotClicks: '<spring:message code="admin.context.empty.chatbotClicks" javaScriptEscape="true"/>'
+    emptyChatbotClicks: '<spring:message code="admin.context.empty.chatbotClicks" javaScriptEscape="true"/>',
+    anonymous: '<spring:message code="admin.common.anonymous" javaScriptEscape="true"/>'
 };
 const ADMIN_CONTEXT_STATUS_LABELS = {
     ACTIVE: '<spring:message code="admin.status.ACTIVE" javaScriptEscape="true"/>',
@@ -428,7 +429,7 @@ function renderChatbotLinkItem(item) {
     const url = item.url || adminContextMessage('dash');
     const userLabel = item.userIdx
         ? ('#' + escapeAdminContextHtml(item.userIdx))
-        : '<span style="color:#fbbf24;">익명</span>';
+        : '<span style="color:#fbbf24;">' + escapeAdminContextHtml(adminContextMessage('anonymous')) + '</span>';
     return renderContextRecord(
         '<strong>' + escapeAdminContextHtml(item.label || adminContextMessage('dash')) + '</strong>',
         formatAdminContextShortDate(item.clickedAt),
