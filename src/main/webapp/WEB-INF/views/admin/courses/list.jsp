@@ -502,11 +502,16 @@ function goPage(page) {
         toolbar.className = 'adm-local-toolbar';
         toolbar.style.margin = '0 0 12px';
         toolbar.innerHTML =
-            '<div class="adm-local-toolbar-group">'
-            + '<select class="adm-select js-op-export-format" style="width:86px;"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-op-export" data-scope="all">전체 내보내기</button>'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-op-export" data-scope="search">현재 검색 내보내기</button>'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-op-export-selected" data-scope="selected" disabled>선택 내보내기 (0)</button>'
+            '<div class="adm-local-toolbar-group adm-unified-export">'
+            + '<div class="adm-export-control">'
+            + '<select class="adm-select js-op-export-format"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
+            + '<div class="adm-export-menu">'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ 내보내기 ▾</button>'
+            + '<div class="adm-export-dropdown">'
+            + '<button type="button" class="js-op-export" data-scope="all">📋 전체 내보내기</button>'
+            + '<button type="button" class="js-op-export" data-scope="search">🔍 현재 검색 내보내기</button>'
+            + '<button type="button" class="js-op-export-selected" data-scope="selected" disabled>☑ 선택 내보내기 (0)</button>'
+            + '</div></div></div>'
             + '<button type="button" class="adm-btn adm-btn-ghost js-op-clear-selection" style="display:none;">선택 해제</button>'
             + '</div>';
         wrap.parentElement.insertBefore(toolbar, wrap);
@@ -516,7 +521,7 @@ function goPage(page) {
             const th = document.createElement('th');
             th.style.width = '42px';
             th.style.textAlign = 'center';
-            th.innerHTML = '<input type="checkbox" class="js-op-check-all" style="cursor:pointer;">';
+            th.innerHTML = '<input type="checkbox" class="js-op-check-all adm-check">';
             headRow.insertBefore(th, headRow.firstElementChild);
         }
 
@@ -525,7 +530,7 @@ function goPage(page) {
             if (row.querySelector('.js-op-row-check')) return;
             const td = document.createElement('td');
             td.style.textAlign = 'center';
-            td.innerHTML = '<input type="checkbox" class="js-op-row-check" style="cursor:pointer;">';
+            td.innerHTML = '<input type="checkbox" class="js-op-row-check adm-check">';
             row.insertBefore(td, row.firstElementChild);
         });
 

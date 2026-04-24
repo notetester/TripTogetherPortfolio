@@ -11,7 +11,7 @@ public class AdminEmailVerificationRequestSearchVO {
     private String status;   // ALL / REQUESTED / VERIFIED / APPLIED / EXPIRED / CANCELLED
     private String purpose;  // ALL / PROFILE_EMAIL
     private String dateFilter;  // yyyy-MM-dd (requested_at)
-    private String sortField;   // time / purpose / status / verifiedAt / appliedAt / expiresAt / ip
+    private String sortField;   // time / member / requestEmail / requestId / purpose / status / verifiedAt / appliedAt / expiresAt / ip
     private String sortDir;     // ASC / DESC
     private int page = 1;
     private int size = 30;
