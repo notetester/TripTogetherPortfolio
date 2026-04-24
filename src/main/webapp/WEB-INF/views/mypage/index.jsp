@@ -4,9 +4,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%--
-  마이페이지 메인
-  Controller : GET /mypage
-  Model 필요 :
+  My Page main dashboard view.
+  Controller: GET /mypage
+  Main model data:
     - user           : UsersVO
     - communityList  : List<MyPageCommunityDto>
     - communityCount : int
@@ -53,40 +53,40 @@
 <spring:message code="mypage.items.icon" var="mypageItemsIconLabel"/>
 <spring:message code="mypage.items.packageIcon" var="mypageItemsPackageIconLabel"/>
 
-<%-- ── 레벨 바 · 등급 바 공통 추가 스타일 ── --%>
+<%-- Grade / level common styles used in the summary card --%>
 <style>
-    /* ── 공통: 뱃지 + 바 가로 한 줄 레이아웃 ── */
+    /* Grade badge row layout */
     .mp-grade-row {
         display: flex;
         align-items: center;
         gap: 24px;
     }
-    /* 뱃지 크기 통일: LEVEL과 BRONZE 등 모든 뱃지가 동일한 너비를 차지하도록 고정 */
+    /* Keep grade badges aligned even when text length differs */
     .mp-grade-row .mp-grade-badge {
         flex-shrink: 0;
-        min-width: 120px;        /* 가장 긴 뱃지(PLATINUM)에 맞춘 고정 너비 */
-        text-align: center;      /* 텍스트 가운데 정렬 */
+        min-width: 120px;        /* ???ル봿??????????(PLATINUM)???轅붽틓?????????숈?????????됲룈 */
+        text-align: center;      /* ????筌뤾쑬已?????ル봿?????????꿔꺂???影??*/
         box-sizing: border-box;
     }
-    /* 바 영역이 남은 공간을 모두 차지 → 뱃지 너비가 같으면 바 길이도 자동으로 같아짐 */
+    /* Let the level area fill the remaining horizontal space */
     .mp-grade-row .mp-level-wrap {
         flex: 1;
         min-width: 180px;
     }
 
-    /* ── LEVEL 뱃지 (BRONZE 뱃지와 동일한 알약 스타일, 보라색 테마) ── */
+    /* LEVEL badge visual style */
     .mp-badge-level {
         background: #ede9fe;
         color: #5b21b6;
         border: 1.5px solid #c4b5fd;
     }
 
-    /* ── 등급 바 섹션 ── */
+    /* Grade progress section wrapper */
     .mp-grade-bar-section {
         padding: 16px 24px 20px;
     }
 
-    /* ── 등급 바 채움 색상 (금색 그라데이션) ── */
+    /* Grade progress fill bar */
     .mp-grade-fill {
         height: 100%;
         background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
@@ -94,7 +94,7 @@
         transition: width .4s ease;
     }
 
-    /* ── 승급 예정 안내 (할당량 100% 달성 시) ── */
+    /* Promotion notice shown when expected grade is higher */
     .mp-grade-promotion {
         margin-top: 8px;
         padding: 8px 14px;
@@ -111,7 +111,7 @@
         50% { opacity: 0.75; }
     }
 
-    /* ── 다음 등급 힌트 (바 미달성 시) ── */
+    /* Hint for the next grade target */
     .mp-grade-next-hint {
         margin-top: 6px;
         font-size: 11px;
@@ -121,35 +121,35 @@
 
 <div class="mp-wrap">
 
-    <%-- ══════════════════════════════════════════
-         프로필 배너
-    ══════════════════════════════════════════ --%>
+    <%-- Banner section --%>
+
+
     <div class="mp-banner">
         <div class="mp-banner-inner">
-            <div class="mp-avatar">👤</div>
+            <div class="mp-avatar">&#128100;</div>
             <div class="mp-banner-info">
                 <div class="mp-banner-nick">${user.nickname}</div>
                 <div class="mp-banner-meta">
                     <span>
                         <c:choose>
-                            <c:when test="${user.nationality eq 'KR'}">🇰🇷 <spring:message code="mypage.country.kr"/></c:when>
-                            <c:when test="${user.nationality eq 'US'}">🇺🇸 <spring:message code="mypage.country.us"/></c:when>
-                            <c:when test="${user.nationality eq 'JP'}">🇯🇵 <spring:message code="mypage.country.jp"/></c:when>
-                            <c:when test="${user.nationality eq 'CN'}">🇨🇳 <spring:message code="mypage.country.cn"/></c:when>
-                            <c:when test="${user.nationality eq 'GB'}">🇬🇧 <spring:message code="mypage.country.gb"/></c:when>
-                            <c:when test="${user.nationality eq 'FR'}">🇫🇷 <spring:message code="mypage.country.fr"/></c:when>
-                            <c:when test="${user.nationality eq 'DE'}">🇩🇪 <spring:message code="mypage.country.de"/></c:when>
-                            <c:when test="${user.nationality eq 'AU'}">🇦🇺 <spring:message code="mypage.country.au"/></c:when>
-                            <c:when test="${user.nationality eq 'CA'}">🇨🇦 <spring:message code="mypage.country.ca"/></c:when>
-                            <c:otherwise>🌍 ${user.nationality}</c:otherwise>
+                            <c:when test="${user.nationality eq 'KR'}">&#127760; <spring:message code="mypage.country.kr"/></c:when>
+                            <c:when test="${user.nationality eq 'US'}">&#127760; <spring:message code="mypage.country.us"/></c:when>
+                            <c:when test="${user.nationality eq 'JP'}">&#127760; <spring:message code="mypage.country.jp"/></c:when>
+                            <c:when test="${user.nationality eq 'CN'}">&#127760; <spring:message code="mypage.country.cn"/></c:when>
+                            <c:when test="${user.nationality eq 'GB'}">&#127760; <spring:message code="mypage.country.gb"/></c:when>
+                            <c:when test="${user.nationality eq 'FR'}">&#127760; <spring:message code="mypage.country.fr"/></c:when>
+                            <c:when test="${user.nationality eq 'DE'}">&#127760; <spring:message code="mypage.country.de"/></c:when>
+                            <c:when test="${user.nationality eq 'AU'}">&#127760; <spring:message code="mypage.country.au"/></c:when>
+                            <c:when test="${user.nationality eq 'CA'}">&#127760; <spring:message code="mypage.country.ca"/></c:when>
+                            <c:otherwise>&#127760; ${user.nationality}</c:otherwise>
                         </c:choose>
                     </span>
                     <span>
                         <c:choose>
-                            <c:when test="${user.preferredLang eq 'ko'}">🇰🇷 <spring:message code="mypage.lang.ko"/></c:when>
-                            <c:when test="${user.preferredLang eq 'en'}">🇺🇸 ${mypageLangEnLabel}</c:when>
-                            <c:when test="${user.preferredLang eq 'ja'}">🇯🇵 ${mypageLangJaLabel}</c:when>
-                            <c:when test="${user.preferredLang eq 'zh'}">🇨🇳 ${mypageLangZhLabel}</c:when>
+                            <c:when test="${user.preferredLang eq 'ko'}">&#128483;&#65039; <spring:message code="mypage.lang.ko"/></c:when>
+                            <c:when test="${user.preferredLang eq 'en'}">&#128483;&#65039; ${mypageLangEnLabel}</c:when>
+                            <c:when test="${user.preferredLang eq 'ja'}">&#128483;&#65039; ${mypageLangJaLabel}</c:when>
+                            <c:when test="${user.preferredLang eq 'zh'}">&#128483;&#65039; ${mypageLangZhLabel}</c:when>
                             <c:otherwise>${user.preferredLang}</c:otherwise>
                         </c:choose>
                     </span>
@@ -157,7 +157,7 @@
             </div>
             <button class="mp-banner-edit"
                     onclick="location.href='${pageContext.request.contextPath}/mypage/edit-confirm'">
-                ✏️ <spring:message code="mypage.profile.edit"/>
+                &#9998; <spring:message code="mypage.profile.edit"/>
             </button>
         </div>
     </div>
@@ -167,11 +167,11 @@
 
         <div class="mp-card">
             <div class="mp-card-head">
-                <div class="mp-card-title"><span class="mp-card-icon">🏷️</span> <spring:message code="mypage.summary.title"/></div>
+                <div class="mp-card-title"><span class="mp-card-icon">&#128202;</span> <spring:message code="mypage.summary.title"/></div>
             </div>
             <div class="mp-info-grid">
-                <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.memberGrade"/></div><div class="mp-info-value"><c:choose><c:when test="${user.memberGrade eq 'BRONZE'}">${gradeBronzeLabel}</c:when><c:when test="${user.memberGrade eq 'SILVER'}">${gradeSilverLabel}</c:when><c:when test="${user.memberGrade eq 'GOLD'}">${gradeGoldLabel}</c:when><c:when test="${user.memberGrade eq 'DIAMOND'}">${gradeDiamondLabel}</c:when><c:when test="${user.memberGrade eq 'PLATINUM'}">${gradePlatinumLabel}</c:when><c:otherwise>${user.memberGrade}</c:otherwise></c:choose></div></div>
-                <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.verifiedMember"/></div><div class="mp-info-value"><c:choose><c:when test="${user.verifiedMember}"><span style="color:#15803d;">● <spring:message code="mypage.summary.verified"/></span></c:when><c:otherwise><span style="color:#64748b;">○ <spring:message code="mypage.summary.unverified"/></span></c:otherwise></c:choose></div></div>
+                <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.memberGrade"/></div><div class="mp-info-value"><c:choose><c:when test="${user.memberGrade eq 'BRONZE'}">&#x1F949; ${gradeBronzeLabel}</c:when><c:when test="${user.memberGrade eq 'SILVER'}">&#x1F948; ${gradeSilverLabel}</c:when><c:when test="${user.memberGrade eq 'GOLD'}">&#x1F947; ${gradeGoldLabel}</c:when><c:when test="${user.memberGrade eq 'DIAMOND'}">&#x1F48E; ${gradeDiamondLabel}</c:when><c:when test="${user.memberGrade eq 'PLATINUM'}">&#x1F451; ${gradePlatinumLabel}</c:when><c:otherwise>${user.memberGrade}</c:otherwise></c:choose></div></div>
+                <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.summary.verifiedMember"/></div><div class="mp-info-value"><c:choose><c:when test="${user.verifiedMember}"><span style="color:#15803d;">&#10004; <spring:message code="mypage.summary.verified"/></span></c:when><c:otherwise><span style="color:#64748b;">&#10008; <spring:message code="mypage.summary.unverified"/></span></c:otherwise></c:choose></div></div>
                 <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.asset.cash"/></div><div class="mp-info-value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0"/></div></div>
                 <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.asset.mileage"/></div><div class="mp-info-value"><fmt:formatNumber value="${user.mileageBalance}" pattern="#,##0"/></div></div>
                 <div class="mp-info-item"><div class="mp-info-label"><spring:message code="mypage.asset.points"/></div><div class="mp-info-value"><fmt:formatNumber value="${user.pointBalance}" pattern="#,##0"/></div></div>
@@ -181,42 +181,41 @@
             </div>
         </div>
 
-        <%-- ══════════════════════════════════════════
-             내 등급 & 재화
-             TODO: UsersVO 필드 추가 후 EL 교체
-               - 등급: ${user.memberGrade}       (BRONZE/SILVER/GOLD/DIAMOND/PLATINUM)
-               - 인증: ${user.isVerifiedMember}  (boolean)
-               - 레벨: ${user.levelNo}
-               - 경험치: ${user.expPoints}
-               - 포인트: ${user.pointBalance}
-               - 마일리지: ${user.mileageBalance}
-               - 캐시: ${user.cashBalance}
-        ══════════════════════════════════════════ --%>
+        <%-- Grade / asset summary section --%>
+
+
+
+
+
+
+
+
+
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">🏅</span> <spring:message code="mypage.gradeAsset.title"/>
+                    <span class="mp-card-icon">&#128176;</span> <spring:message code="mypage.gradeAsset.title"/>
                 </div>
             </div>
-            <%-- 레벨/경험치 바 (LEVEL 뱃지 + 바 가로 배치) --%>
+            <%-- Level card: level badge + EXP progress --%>
             <div class="mp-grade-bar-section">
-                <%-- LEVEL 뱃지 + 바를 가로 한 줄로 (등급 바와 동일한 구조) --%>
+                <%-- Left badge and right progress area --%>
                 <div class="mp-grade-row">
-                    <%-- 왼쪽: LEVEL 뱃지 (BRONZE 뱃지와 동일한 알약 스타일) --%>
-                    <span class="mp-grade-badge mp-badge-level">⚡ ${mypageLevelBadgeLabel}</span>
-                    <%-- 오른쪽: 레벨 경험치 바 --%>
+                    <%-- LEVEL badge --%>
+                    <span class="mp-grade-badge mp-badge-level">&#9889; ${mypageLevelBadgeLabel}</span>
                     <div class="mp-level-wrap">
                     <%--
-                        경험치 바 계산 로직:
-                        - currentLevelExp : 현재 레벨에 진입하기 위해 필요했던 누적 EXP (시작점)
-                        - nextLevelExp    : 다음 레벨에 진입하기 위해 필요한 누적 EXP (끝점)
-                        - user.expPoints  : 유저의 현재 누적 EXP
-                        - 바 퍼센트 = (현재EXP - 현재레벨시작EXP) / (다음레벨EXP - 현재레벨시작EXP) × 100
+                        EXP progress calculation:
+                        - currentLevelExp : starting EXP of the current level
+                        - nextLevelExp    : required EXP for the next level
+                        - user.expPoints  : user current total EXP
+                        - expPercent      : current progress within this level
                     --%>
                     <c:set var="expInLevel" value="${user.expPoints - currentLevelExp}" />
                     <c:set var="expNeeded" value="${nextLevelExp - currentLevelExp}" />
                     <c:set var="expPercent" value="${expNeeded > 0 ? (expInLevel * 100 / expNeeded) : 100}" />
-                    <%-- 퍼센트가 100을 넘지 않도록 보정 --%>
+                    <%-- Clamp EXP percent to 0~100 --%>
                     <c:if test="${expPercent > 100}"><c:set var="expPercent" value="100" /></c:if>
                     <c:if test="${expPercent < 0}"><c:set var="expPercent" value="0" /></c:if>
 
@@ -236,34 +235,33 @@
                 </div>
             </div>
 
-            <%-- ── 등급 진행 바 ── --%>
+            <%-- Membership grade progress section --%>
             <%--
-                등급 바 계산 로직:
-                - gradePolicies       : 활성 등급 정책 목록 (sort_order ASC: BRONZE→PLATINUM)
-                - currentMonthPayment : 당월 결제 총액 (이번 달 결제 → 다음 달 등급 산정 기준)
-                - 다음 등급의 min_monthly_payment → 바의 끝점
-                - 최고 등급이면 바 100%로 채움
+                Grade progress uses the current month payment amount.
+                gradePolicies are sorted from BRONZE to PLATINUM.
+                nextGradeMin is the target amount for the next grade.
+                When already at max grade, the progress is fixed to 100%.
             --%>
             <c:set var="currentGradeMin" value="0" />
             <c:set var="nextGradeMin" value="0" />
             <c:set var="nextGradeName" value="" />
             <c:set var="nextGradeFound" value="false" />
             <c:set var="isMaxGrade" value="true" />
-            <%-- 당월 결제액 기준으로 예상되는 등급 계산 --%>
+            <%-- Determine the expected grade from this month payment --%>
             <c:set var="expectedGrade" value="BRONZE" />
 
-            <%-- 등급 정책 순회: 현재 등급의 기준값 + 다음 등급 정보 + 예상 등급 --%>
+            <%-- Resolve current / expected / next grade metadata --%>
             <c:forEach var="gp" items="${gradePolicies}">
                 <c:if test="${gp.memberGrade eq user.memberGrade}">
                     <c:set var="currentGradeMin" value="${gp.minMonthlyPayment}" />
                 </c:if>
-                <%-- 당월 결제액이 충족하는 가장 높은 등급 = 예상 등급 --%>
+                <%-- Save the highest grade that current payment satisfies --%>
                 <c:if test="${currentMonthPayment >= gp.minMonthlyPayment}">
                     <c:set var="expectedGrade" value="${gp.memberGrade}" />
                 </c:if>
             </c:forEach>
 
-            <%-- 다음 등급 찾기: 현재 등급보다 기준이 높은 첫 번째 등급 --%>
+            <%-- Find the first grade above the current grade threshold --%>
             <c:forEach var="gp" items="${gradePolicies}">
                 <c:if test="${!nextGradeFound && gp.minMonthlyPayment > currentGradeMin}">
                     <c:set var="nextGradeMin" value="${gp.minMonthlyPayment}" />
@@ -273,7 +271,7 @@
                 </c:if>
             </c:forEach>
 
-            <%-- 등급 바 퍼센트 계산 --%>
+            <%-- Calculate grade progress percent --%>
             <c:choose>
                 <c:when test="${isMaxGrade}">
                     <c:set var="gradePercent" value="100" />
@@ -309,20 +307,20 @@
             <c:if test="${nextGradeName eq 'PLATINUM'}"><c:set var="nextGradeLabel" value="${gradePlatinumLabel}" /></c:if>
 
             <div class="mp-grade-bar-section">
-                <%-- 등급 뱃지 + 바를 가로로 나란히 배치 (레벨 바와 동일한 구조) --%>
+                <%-- Grade badge + grade payment progress bar --%>
                 <div class="mp-grade-row">
-                    <%-- 왼쪽: 등급 뱃지 --%>
+                    <%-- Current member grade badge --%>
                     <span class="mp-grade-badge mp-grade-${user.memberGrade}">
-                        <c:choose>
-                            <c:when test="${user.memberGrade eq 'BRONZE'}">🥉 ${gradeBronzeLabel}</c:when>
-                            <c:when test="${user.memberGrade eq 'SILVER'}">🥈 ${gradeSilverLabel}</c:when>
-                            <c:when test="${user.memberGrade eq 'GOLD'}">🥇 ${gradeGoldLabel}</c:when>
-                            <c:when test="${user.memberGrade eq 'DIAMOND'}">💎 ${gradeDiamondLabel}</c:when>
-                            <c:when test="${user.memberGrade eq 'PLATINUM'}">👑 ${gradePlatinumLabel}</c:when>
-                            <c:otherwise>${user.memberGrade}</c:otherwise>
-                        </c:choose>
-                    </span>
-                    <%-- 오른쪽: 바 영역 (레벨 바와 동일한 mp-level-wrap 구조) --%>
+    <c:choose>
+        <c:when test="${user.memberGrade eq 'BRONZE'}">&#x1F949; <spring:message code="mypage.grade.name.bronze"/></c:when>
+        <c:when test="${user.memberGrade eq 'SILVER'}">&#x1F948; ${gradeSilverLabel}</c:when>
+        <c:when test="${user.memberGrade eq 'GOLD'}">&#x1F947; ${gradeGoldLabel}</c:when>
+        <c:when test="${user.memberGrade eq 'DIAMOND'}">&#x1F48E; ${gradeDiamondLabel}</c:when>
+        <c:when test="${user.memberGrade eq 'PLATINUM'}">&#x1F451; ${gradePlatinumLabel}</c:when>
+        <c:otherwise>${user.memberGrade}</c:otherwise>
+    </c:choose>
+</span>
+                    <%-- Payment progress area for the next grade --%>
                     <div class="mp-level-wrap">
                         <div class="mp-level-header">
                             <span class="mp-level-label"><spring:message code="mypage.summary.memberGrade"/></span>
@@ -344,10 +342,10 @@
                         </div>
                     </div>
                 </div>
-                <%-- 바 아래 승급 예정 / 다음 등급 안내 --%>
+                <%-- Promotion hint or next-grade hint --%>
                 <c:choose>
                     <c:when test="${isMaxGrade}">
-                        <%-- 최고 등급이면 별도 안내 없음 --%>
+                        <%-- ?轅붽틓????彛????μ떜媛?슙??????????ㅼ뒧?????????? ?????쇨덧??--%>
                     </c:when>
                     <c:when test="${expectedGrade ne user.memberGrade}">
                         <div class="mp-grade-promotion">
@@ -363,7 +361,7 @@
                     </c:otherwise>
                 </c:choose>
             </div>
-            <%-- 재화 --%>
+            <%-- ????--%>
             <div class="mp-currency-grid">
                 <div class="mp-currency-item">
                     <div class="mp-currency-icon"><img src="${pageContext.request.contextPath}/resources/data/coin-point.svg" alt="${assetPointsLabel}" width="40" height="40"></div>
@@ -381,12 +379,12 @@
                     <div class="mp-currency-value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0" /></div>
                 </div>
             </div>
-            <%-- 활동 통계
-                 TODO: UsersVO 필드 추가 후 EL 교체
-                   - 작성글:    ${user.totalPostCount}
-                   - 작성댓글:  ${user.totalCommentCount}
-                   - 리뷰:      ${user.totalReviewCount}    (explore 팀 구현 후)
-                   - 여행코스:  ${user.totalCourseCount}    (courses 팀 구현 후)
+            <%-- Activity summary stats --%>
+            <%--
+                 Community post/comment counts are real values.
+                 Explore review count and course count are placeholders here.
+
+
             --%>
             <div class="mp-stats-grid">
                 <div class="mp-stats-item">
@@ -412,13 +410,13 @@
             </div>
         </div>
 
-        <%-- ══════════════════════════════════════════
-             내 정보
-        ══════════════════════════════════════════ --%>
+        <%-- Profile information section --%>
+
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">🪪</span> <spring:message code="mypage.profile.title"/>
+                    <span class="mp-card-icon">&#128100;</span> <spring:message code="mypage.profile.title"/>
                 </div>
             </div>
             <div class="mp-info-grid">
@@ -439,16 +437,16 @@
                     <div class="mp-info-label"><spring:message code="mypage.nationality"/></div>
                     <div class="mp-info-value">
                         <c:choose>
-                            <c:when test="${user.nationality eq 'KR'}">🇰🇷 <spring:message code="mypage.country.kr"/></c:when>
-                            <c:when test="${user.nationality eq 'US'}">🇺🇸 <spring:message code="mypage.country.us"/></c:when>
-                            <c:when test="${user.nationality eq 'JP'}">🇯🇵 <spring:message code="mypage.country.jp"/></c:when>
-                            <c:when test="${user.nationality eq 'CN'}">🇨🇳 <spring:message code="mypage.country.cn"/></c:when>
-                            <c:when test="${user.nationality eq 'GB'}">🇬🇧 <spring:message code="mypage.country.gb"/></c:when>
-                            <c:when test="${user.nationality eq 'FR'}">🇫🇷 <spring:message code="mypage.country.fr"/></c:when>
-                            <c:when test="${user.nationality eq 'DE'}">🇩🇪 <spring:message code="mypage.country.de"/></c:when>
-                            <c:when test="${user.nationality eq 'AU'}">🇦🇺 <spring:message code="mypage.country.au"/></c:when>
-                            <c:when test="${user.nationality eq 'CA'}">🇨🇦 <spring:message code="mypage.country.ca"/></c:when>
-                            <c:otherwise>🌍 ${user.nationality}</c:otherwise>
+                            <c:when test="${user.nationality eq 'KR'}">&#127760; <spring:message code="mypage.country.kr"/></c:when>
+                            <c:when test="${user.nationality eq 'US'}">&#127760; <spring:message code="mypage.country.us"/></c:when>
+                            <c:when test="${user.nationality eq 'JP'}">&#127760; <spring:message code="mypage.country.jp"/></c:when>
+                            <c:when test="${user.nationality eq 'CN'}">&#127760; <spring:message code="mypage.country.cn"/></c:when>
+                            <c:when test="${user.nationality eq 'GB'}">&#127760; <spring:message code="mypage.country.gb"/></c:when>
+                            <c:when test="${user.nationality eq 'FR'}">&#127760; <spring:message code="mypage.country.fr"/></c:when>
+                            <c:when test="${user.nationality eq 'DE'}">&#127760; <spring:message code="mypage.country.de"/></c:when>
+                            <c:when test="${user.nationality eq 'AU'}">&#127760; <spring:message code="mypage.country.au"/></c:when>
+                            <c:when test="${user.nationality eq 'CA'}">&#127760; <spring:message code="mypage.country.ca"/></c:when>
+                            <c:otherwise>&#127760; ${user.nationality}</c:otherwise>
                         </c:choose>
                     </div>
                 </div>
@@ -456,10 +454,10 @@
                     <div class="mp-info-label"><spring:message code="mypage.language"/></div>
                     <div class="mp-info-value">
                         <c:choose>
-                            <c:when test="${user.preferredLang eq 'ko'}">🇰🇷 <spring:message code="mypage.lang.ko"/></c:when>
-                            <c:when test="${user.preferredLang eq 'en'}">🇺🇸 ${mypageLangEnLabel}</c:when>
-                            <c:when test="${user.preferredLang eq 'ja'}">🇯🇵 ${mypageLangJaLabel}</c:when>
-                            <c:when test="${user.preferredLang eq 'zh'}">🇨🇳 ${mypageLangZhLabel}</c:when>
+                            <c:when test="${user.preferredLang eq 'ko'}">&#128483;&#65039; <spring:message code="mypage.lang.ko"/></c:when>
+                            <c:when test="${user.preferredLang eq 'en'}">&#128483;&#65039; ${mypageLangEnLabel}</c:when>
+                            <c:when test="${user.preferredLang eq 'ja'}">&#128483;&#65039; ${mypageLangJaLabel}</c:when>
+                            <c:when test="${user.preferredLang eq 'zh'}">&#128483;&#65039; ${mypageLangZhLabel}</c:when>
                             <c:otherwise>${user.preferredLang}</c:otherwise>
                         </c:choose>
                     </div>
@@ -471,7 +469,7 @@
                             <c:when test="${not empty user.userEmail}">
                                 ${user.userEmail}
                                 <c:if test="${user.emailVerified}">
-                                    <span style="font-size:11px;color:#15803d;margin-left:4px;">✓ <spring:message code="mypage.profile.emailVerified"/></span>
+                                    <span style="font-size:11px;color:#15803d;margin-left:4px;">&#10004; <spring:message code="mypage.profile.emailVerified"/></span>
                                 </c:if>
                             </c:when>
                             <c:otherwise><span style="color:var(--gray-400);"><spring:message code="mypage.profile.notRegistered"/></span></c:otherwise>
@@ -483,7 +481,7 @@
                     <div class="mp-info-value">
                         <c:choose>
                             <c:when test="${user.accountStatus eq 'ACTIVE'}">
-                                <span style="color:#15803d;">● <spring:message code="mypage.profile.active"/></span>
+                                <span style="color:#15803d;">&#10004; <spring:message code="mypage.profile.active"/></span>
                             </c:when>
                             <c:otherwise>${user.accountStatus}</c:otherwise>
                         </c:choose>
@@ -496,24 +494,24 @@
         <section class="mp-dashboard-tabs" aria-label="${mypageTabsAriaLabel}">
             <div class="mp-tab-nav" role="tablist">
                 <button type="button" class="mp-tab-btn is-active" data-mp-tab="activity" role="tab" aria-selected="true">
-                    <span>📬</span>
+                    <span>&#128276;</span>
                     <spring:message code="mypage.tabs.activity"/>
                 </button>
                 <button type="button" class="mp-tab-btn" data-mp-tab="booking" role="tab" aria-selected="false">
-                    <span>✈️</span>
+                    <span>&#127915;</span>
                     <spring:message code="mypage.tabs.booking"/>
                 </button>
                 <button type="button" class="mp-tab-btn" data-mp-tab="community" role="tab" aria-selected="false">
-                    <span>✍️</span>
+                    <span>&#128172;</span>
                     <spring:message code="mypage.tabs.community"/>
                 </button>
                 <button type="button" class="mp-tab-btn" data-mp-tab="support" role="tab" aria-selected="false">
-                    <span>🧾</span>
+                    <span>&#128221;</span>
                     <spring:message code="mypage.tabs.support"/>
                 </button>
                 <c:if test="${user.userRole eq 'USER'}">
                     <button type="button" class="mp-tab-btn" data-mp-tab="business" role="tab" aria-selected="false">
-                        <span>🏢</span>
+                        <span>&#127970;</span>
                         <spring:message code="mypage.tabs.business"/>
                     </button>
                 </c:if>
@@ -525,11 +523,11 @@
 
             <div class="mp-tab-panel is-active" data-mp-panel="activity" role="tabpanel">
 
-        <%-- 알림 카드 --%>
+        <%-- Notification section --%>
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">📬</span> <spring:message code="mypage.card.notifications"/>
+                    <span class="mp-card-icon">&#128276;</span> <spring:message code="mypage.card.notifications"/>
                     <c:if test="${headerUnreadCount > 0}">
                         <span class="mp-notif-count">${headerUnreadCount}</span>
                     </c:if>
@@ -567,7 +565,7 @@
         </span>
         <button type="button"
                 class="mp-notif-delete"
-                aria-label="<spring:message code='mypage.notifications.delete'/>">🗑️</button>
+                aria-label="<spring:message code='mypage.notifications.delete'/>">&#10005;</button>
     </div>
 </c:forEach>
                     </c:otherwise>
@@ -584,13 +582,13 @@
             </div>
         </div>
 
-        <%-- ══════════════════════════════════════════
-             내 리뷰
-        ══════════════════════════════════════════ --%>
+        <%-- Review section --%>
+
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">⭐</span>
+                    <span class="mp-card-icon">&#11088;</span>
                     <spring:message code="mypage.card.reviews"/>
                     <span class="mp-card-count">${reviewCount}</span>
                 </div>
@@ -599,7 +597,7 @@
                 <c:choose>
                     <c:when test="${empty reviewList}">
                         <div class="mp-empty">
-                            <div class="mp-empty-icon">⭐</div>
+                            <div class="mp-empty-icon">&#11088;</div>
                             <spring:message code="mypage.empty.reviews"/>
                         </div>
                     </c:when>
@@ -613,13 +611,13 @@
                                         <span class="mp-review-stars">
                                             <c:forEach begin="1" end="5" var="i">
                                                 <c:choose>
-                                                    <c:when test="${i <= review.rating}">★</c:when>
-                                                    <c:otherwise>☆</c:otherwise>
+                                                    <c:when test="${i <= review.rating}">&#9733;</c:when>
+                                                    <c:otherwise>&#9734;</c:otherwise>
                                                 </c:choose>
                                             </c:forEach>
                                         </span>
                                         <c:if test="${not empty review.content}">
-                                            <span class="mp-review-excerpt">${fn:substring(review.content, 0, 40)}<c:if test="${fn:length(review.content) > 40}">…</c:if></span>
+                                            <span class="mp-review-excerpt">${fn:substring(review.content, 0, 40)}<c:if test="${fn:length(review.content) > 40}">...</c:if></span>
                                         </c:if>
                                         <span><fmt:formatDate value="${review.createdAt}" pattern="yyyy-MM-dd"/></span>
                                     </div>
@@ -635,13 +633,13 @@
         </div>
 
 
-        <%-- ══════════════════════════════════════════
-             내 여행 일정
-        ══════════════════════════════════════════ --%>
+        <%-- Travel plan section --%>
+
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">🗺️</span>
+                    <span class="mp-card-icon">&#128467;</span>
                     <spring:message code="mypage.card.plans"/>
                     <span class="mp-card-count">${planCount}</span>
                 </div>
@@ -652,7 +650,7 @@
                 <c:choose>
                     <c:when test="${empty planList}">
                         <div class="mp-empty">
-                            <div class="mp-empty-icon">🗺️</div>
+                            <div class="mp-empty-icon">&#128467;</div>
                             <spring:message code="mypage.empty.plans"/>
                         </div>
                     </c:when>
@@ -694,15 +692,15 @@
             </div>
         </div>
 
-        <%-- ══════════════════════════════════════════
-             최근 조회 내역
-             - USER_VIEW_HISTORY 상위 8건 미리보기
-             - 전체 목록은 /mypage/history
-        ══════════════════════════════════════════ --%>
+        <%-- Recently viewed section --%>
+        <%-- Recent items are loaded from USER_VIEW_HISTORY. --%>
+
+
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">🕒</span>
+                    <span class="mp-card-icon">&#128340;</span>
                     <spring:message code="mypage.card.history"/>
                     <span class="mp-card-count">${viewHistoryCount}</span>
                 </div>
@@ -713,7 +711,7 @@
                 <c:choose>
                     <c:when test="${empty viewHistoryList}">
                         <div class="mp-empty">
-                            <div class="mp-empty-icon">🕒</div>
+                            <div class="mp-empty-icon">&#128340;</div>
                             <spring:message code="mypage.empty.history"/>
                         </div>
                     </c:when>
@@ -762,14 +760,14 @@
             </div>
             <div class="mp-tab-panel" data-mp-panel="booking" role="tabpanel" hidden>
 
-        <%-- ══════════════════════════════════════════
-             항공권 예매 정보
-             - 항공권 구매 시뮬레이션으로 생성된 FLIGHT_PURCHASE_SIMULATION 이력
-        ══════════════════════════════════════════ --%>
+        <%-- Flight booking section --%>
+        <%-- Flight booking data comes from the mock booking table. --%>
+
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">✈️</span>
+                    <span class="mp-card-icon">&#127915;</span>
                     <spring:message code="mypage.card.flightBookings"/>
                     <span class="mp-card-count">${flightBookingCount}</span>
                 </div>
@@ -780,7 +778,7 @@
                 <c:choose>
                     <c:when test="${empty flightBookingList}">
                         <div class="mp-empty">
-                            <div class="mp-empty-icon">✈️</div>
+                            <div class="mp-empty-icon">&#127915;</div>
                             <spring:message code="mypage.empty.flightBookings"/>
                         </div>
                     </c:when>
@@ -808,18 +806,18 @@
                                 <div class="mp-flight-route-box">
                                     <div class="mp-flight-route-row">
                                         <span class="mp-flight-route-tag"><spring:message code="mypage.booking.outbound"/></span>
-                                        <strong>${booking.originAirportCode} → ${booking.destinationAirportCode}</strong>
+                                        <strong>${booking.originAirportCode} &#8594; ${booking.destinationAirportCode}</strong>
                                         <span><fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/></span>
                                     </div>
                                     <div class="mp-flight-route-row">
                                         <span class="mp-flight-route-tag return"><spring:message code="mypage.booking.return"/></span>
-                                        <strong>${booking.returnOriginAirportCode} → ${booking.returnDestinationAirportCode}</strong>
+                                        <strong>${booking.returnOriginAirportCode} &#8594; ${booking.returnDestinationAirportCode}</strong>
                                         <span><fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/></span>
                                     </div>
                                 </div>
 
                                 <div class="mp-flight-ticket-foot">
-                                    <span>${booking.airlineName} · ${booking.flightNo} / ${booking.returnFlightNo}</span>
+                                    <span>${booking.airlineName} | ${booking.flightNo} / ${booking.returnFlightNo}</span>
                                     <button type="button"
                                             class="mp-flight-detail-link mp-flight-modal-open"
                                             data-modal-id="flight-booking-${booking.flightPurchaseIdx}">
@@ -837,14 +835,14 @@
                                             <h3><spring:message code="mypage.booking.flightDetail"/></h3>
                                             <p>${booking.purchaseNo}</p>
                                         </div>
-                                        <button type="button" class="mp-flight-modal-close mp-flight-modal-x" aria-label="${mypageCloseLabel}">×</button>
+                                        <button type="button" class="mp-flight-modal-close mp-flight-modal-x" aria-label="${mypageCloseLabel}">&#10005;</button>
                                     </div>
 
                                     <div class="mp-flight-itinerary">
                                         <div class="mp-flight-itinerary-item">
                                             <span class="mp-flight-route-tag"><spring:message code="mypage.booking.outbound"/></span>
-                                            <strong>${booking.originAirportCode} → ${booking.destinationAirportCode}</strong>
-                                            <p>${booking.airlineName} · ${booking.flightNo}</p>
+                                            <strong>${booking.originAirportCode} &#8594; ${booking.destinationAirportCode}</strong>
+                                            <p>${booking.airlineName} | ${booking.flightNo}</p>
                                             <dl>
                                                 <dt><spring:message code="mypage.booking.departure"/></dt>
                                                 <dd><fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
@@ -854,8 +852,8 @@
                                         </div>
                                         <div class="mp-flight-itinerary-item">
                                             <span class="mp-flight-route-tag return"><spring:message code="mypage.booking.return"/></span>
-                                            <strong>${booking.returnOriginAirportCode} → ${booking.returnDestinationAirportCode}</strong>
-                                            <p>${booking.returnAirlineName} · ${booking.returnFlightNo}</p>
+                                            <strong>${booking.returnOriginAirportCode} &#8594; ${booking.returnDestinationAirportCode}</strong>
+                                            <p>${booking.returnAirlineName} | ${booking.returnFlightNo}</p>
                                             <dl>
                                                 <dt><spring:message code="mypage.booking.departure"/></dt>
                                                 <dd><fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
@@ -867,7 +865,7 @@
 
                                     <div class="mp-flight-payment">
                                         <div><span><spring:message code="mypage.booking.originalAmount"/></span><strong><fmt:formatNumber value="${booking.originalAmount}" pattern="#,##0"/> C</strong></div>
-                                        <div><span><spring:message code="mypage.booking.gradeDiscount"/></span><strong>${booking.discountRate}% · -<fmt:formatNumber value="${booking.discountAmount}" pattern="#,##0"/> C</strong></div>
+                                        <div><span><spring:message code="mypage.booking.gradeDiscount"/></span><strong>${booking.discountRate}% -<fmt:formatNumber value="${booking.discountAmount}" pattern="#,##0"/> C</strong></div>
                                         <div><span><spring:message code="mypage.booking.usedCash"/></span><strong><fmt:formatNumber value="${booking.usedCash}" pattern="#,##0"/> C</strong></div>
                                         <div><span><spring:message code="mypage.booking.usedMileage"/></span><strong><fmt:formatNumber value="${booking.usedMileage}" pattern="#,##0"/> M</strong></div>
                                         <div class="total"><span><spring:message code="mypage.booking.finalAmount"/></span><strong><fmt:formatNumber value="${booking.finalAmount}" pattern="#,##0"/> C</strong></div>
@@ -885,14 +883,14 @@
             </div>
         </div>
 
-        <%-- ══════════════════════════════════════════
-             패키지 예약 정보
-             - 패키지 예약/결제 시뮬레이션으로 생성된 TRAVEL_PACKAGE_BOOKING 이력
-        ══════════════════════════════════════════ --%>
+        <%-- Package booking section --%>
+        <%-- Package booking data comes from TRAVEL_PACKAGE_BOOKING. --%>
+
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">🎒</span>
+                    <span class="mp-card-icon">&#128717;</span>
                     <spring:message code="mypage.card.packageBookings"/>
                     <span class="mp-card-count">${packageBookingCount}</span>
                 </div>
@@ -909,7 +907,7 @@
                 <c:choose>
                     <c:when test="${empty packageBookingList}">
                         <div class="mp-empty">
-                            <div class="mp-empty-icon">🎒</div>
+                            <div class="mp-empty-icon">&#128717;</div>
                             <spring:message code="mypage.empty.packageBookings"/>
                         </div>
                     </c:when>
@@ -929,7 +927,7 @@
                                     <div>
                                         <span class="mp-flight-status mp-package-status">${packageStatusLabel}</span>
                                         <h4>${packageBooking.packageTitle}</h4>
-                                        <p>${packageBooking.spotName} · <spring:message code="mypage.booking.reservationNo" arguments="${packageBooking.bookingNo}"/></p>
+                                        <p>${packageBooking.spotName} 鸚?<spring:message code="mypage.booking.reservationNo" arguments="${packageBooking.bookingNo}"/></p>
                                     </div>
                                     <div class="mp-flight-ticket-price">
                                         <span><spring:message code="mypage.booking.totalPayment"/></span>
@@ -974,7 +972,7 @@
                                             <h3><spring:message code="mypage.booking.packageDetail"/></h3>
                                             <p>${packageBooking.bookingNo}</p>
                                         </div>
-                                        <button type="button" class="mp-flight-modal-close mp-flight-modal-x" aria-label="${mypageCloseLabel}">×</button>
+                                        <button type="button" class="mp-flight-modal-close mp-flight-modal-x" aria-label="${mypageCloseLabel}">&#10005;</button>
                                     </div>
 
                                     <div class="mp-package-modal-summary">
@@ -1039,13 +1037,13 @@
             <div class="mp-tab-panel" data-mp-panel="community" role="tabpanel" hidden>
 
 
-        <%-- ══════════════════════════════════════════
-             내가 작성한 커뮤니티 글
-        ══════════════════════════════════════════ --%>
+        <%-- Community activity section --%>
+
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">✍️</span>
+                    <span class="mp-card-icon">&#128172;</span>
                     <spring:message code="mypage.card.community"/>
                     <span class="mp-card-count">${communityCount}</span>
                 </div>
@@ -1056,7 +1054,7 @@
                 <c:choose>
                     <c:when test="${empty communityList}">
                         <div class="mp-empty">
-                            <div class="mp-empty-icon">📝</div>
+                            <div class="mp-empty-icon">&#9997;</div>
                             <spring:message code="mypage.empty.community"/>
                         </div>
                     </c:when>
@@ -1068,9 +1066,9 @@
                                     <div class="mp-list-title">${post.title}</div>
                                     <div class="mp-list-meta">
                                         <span><fmt:formatDate value="${post.createdAt}" pattern="yyyy-MM-dd"/></span>
-                                        <span>👁 ${post.viewCount}</span>
-                                        <span>❤️ ${post.likeCount}</span>
-                                        <span>💬 ${post.commentCount}</span>
+                                        <span>&#128065; ${post.viewCount}</span>
+                                        <span>&#10084; ${post.likeCount}</span>
+                                        <span>&#128172; ${post.commentCount}</span>
                                     </div>
                                 </div>
                                 <div class="mp-list-badges">
@@ -1094,13 +1092,13 @@
             </div>
             <div class="mp-tab-panel" data-mp-panel="support" role="tabpanel" hidden>
 
-        <%-- ══════════════════════════════════════════
-             내 문의 글
-        ══════════════════════════════════════════ --%>
+        <%-- Inquiry section --%>
+
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">📬</span>
+                    <span class="mp-card-icon">&#128221;</span>
                     <spring:message code="mypage.card.inquiries"/>
                     <span class="mp-card-count">${inquiryCount}</span>
                 </div>
@@ -1111,7 +1109,7 @@
                 <c:choose>
                     <c:when test="${empty inquiryList}">
                         <div class="mp-empty">
-                            <div class="mp-empty-icon">📭</div>
+                            <div class="mp-empty-icon">&#128221;</div>
                             <spring:message code="mypage.empty.inquiries"/>
                         </div>
                     </c:when>
@@ -1139,7 +1137,7 @@
                                         <c:choose>
                                             <c:when test="${inq.status eq 'PENDING'}"><spring:message code="mypage.inquiry.status.pending"/></c:when>
                                             <c:when test="${inq.status eq 'IN_PROGRESS'}"><spring:message code="mypage.inquiry.status.inProgress"/></c:when>
-                                            <c:when test="${inq.status eq 'COMPLETED'}">✓ <spring:message code="mypage.inquiry.status.completed"/></c:when>
+                                            <c:when test="${inq.status eq 'COMPLETED'}">&#10004; <spring:message code="mypage.inquiry.status.completed"/></c:when>
                                         </c:choose>
                                     </span>
                                 </div>
@@ -1151,13 +1149,13 @@
         </div>
 
 
-        <%-- ══════════════════════════════════════════
-             내 신고내역
-        ══════════════════════════════════════════ --%>
+        <%-- Report section --%>
+
+
         <div class="mp-card">
             <div class="mp-card-head">
                 <div class="mp-card-title">
-                    <span class="mp-card-icon">🚨</span>
+                    <span class="mp-card-icon">&#9888;</span>
                     <spring:message code="mypage.card.reports"/>
                     <span class="mp-card-count">${reportCount}</span>
                 </div>
@@ -1168,7 +1166,7 @@
                 <c:choose>
                     <c:when test="${empty reportList}">
                         <div class="mp-empty">
-                            <div class="mp-empty-icon">📭</div>
+                            <div class="mp-empty-icon">&#9888;</div>
                             <spring:message code="mypage.empty.reports"/>
                         </div>
                     </c:when>
@@ -1224,14 +1222,14 @@
             <c:if test="${user.userRole eq 'USER'}">
             <div class="mp-tab-panel" data-mp-panel="business" role="tabpanel" hidden>
 
-            <%-- ══════════════════════════════════════════
-                 기업 회원 신청
-                 - 운영자/봇/시스템 계정은 공급자 신청 대상이 아니므로 USER에게만 노출한다.
-            ══════════════════════════════════════════ --%>
+            <%-- Business application section --%>
+            <%-- Only normal USER accounts can see this tab. --%>
+
+
             <div class="mp-card">
                 <div class="mp-card-head">
                     <div class="mp-card-title">
-                        <span class="mp-card-icon">🏢</span>
+                        <span class="mp-card-icon">&#127970;</span>
                         <spring:message code="mypage.card.businessApplication"/>
                     </div>
                 </div>
@@ -1472,9 +1470,9 @@
     })();
 
     /**
-     * 단일 알림 삭제
+     * Notification area script.
      */
-    /* ===== 뒤로가기 캐시 새로고침 ===== */
+    /* ===== Prevent stale page state when restored from browser cache ===== */
     window.addEventListener('pageshow', function(e) {
         if (e.persisted) location.reload();
     });
@@ -1486,14 +1484,14 @@
         const deleteAllBtn = document.getElementById('mpNotifDeleteAll');
         if (!list) return;
 
-        // 이벤트 위임: 알림 아이템 클릭 or 삭제 버튼 클릭
+        // Event delegation for notification item click and delete button
         list.addEventListener('click', function (e) {
             const deleteBtn = e.target.closest('.mp-notif-delete');
             const item = e.target.closest('.mp-notif-item');
             if (!item) return;
             const id = item.dataset.notificationId;
 
-            // 삭제 버튼 클릭 → 이벤트 전파 차단 + DELETE
+            // Delete a single notification
             if (deleteBtn) {
                 e.stopPropagation();
                 fetch(ctx + '/api/notifications/' + id, {
@@ -1507,7 +1505,7 @@
                 return;
             }
 
-            // 아이템 클릭 → 읽음 처리 + 이동
+            // Mark as read and then move to the target page
             const fallbackUrl = ctx + '/mypage';
             fetch(ctx + '/api/notifications/' + id + '/read', {
                 method: 'POST',
@@ -1521,7 +1519,7 @@
               .catch(function () { location.href = fallbackUrl; });
         });
 
-        // 모두 읽음
+        // Mark all notifications as read
         if (markAllBtn) {
             markAllBtn.addEventListener('click', function () {
                 fetch(ctx + '/api/notifications/read-all', {
@@ -1540,7 +1538,7 @@
             });
         }
 
-        // 전체 삭제
+        // Delete all notifications
         if (deleteAllBtn) {
             deleteAllBtn.addEventListener('click', function () {
                 if (!confirm("${fn:escapeXml(notificationsDeleteAllConfirm)}")) return;
@@ -1557,7 +1555,7 @@
     })();
 
     /**
-     * 날짜 포맷팅 (YYYY-MM-DD)
+     * Format date as YYYY-MM-DD.
      */
     function formatDate(dateString) {
         const date = new Date(dateString);
@@ -1569,14 +1567,14 @@
 
 </script>
 
-<%-- ══════════════════════════════════════════
-     레벨업 축하 팝업
-     Controller에서 levelUpLevel 값이 전달되면 자동으로 표시됩니다.
-══════════════════════════════════════════ --%>
+<%--
+     Level-up popup section.
+     It is shown when the controller provides levelUpLevel.
+--%>
 <c:if test="${not empty levelUpLevel}">
 <div id="levelup-overlay" class="levelup-overlay">
     <div class="levelup-popup">
-        <div class="levelup-icon">🎉</div>
+        <div class="levelup-icon">&#127881;</div>
         <div class="levelup-title">${mypageLevelupTitle}</div>
         <div class="levelup-level">${mypageLevelPrefix} ${levelUpLevel}</div>
         <div class="levelup-msg"><spring:message code="mypage.levelup.message"/></div>
@@ -1584,7 +1582,7 @@
     </div>
 </div>
 <style>
-    /* ── 레벨업 팝업 오버레이 ── */
+    /* Level-up popup overlay */
     .levelup-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.5);
@@ -1592,34 +1590,34 @@
         z-index: 9999;
         animation: levelup-fade-in 0.3s ease;
     }
-    /* ── 팝업 카드 ── */
+    /* Level-up popup card */
     .levelup-popup {
         background: #fff; border-radius: 20px; padding: 40px 48px;
         text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         animation: levelup-scale-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    /* ── 아이콘 ── */
+    /* Celebration icon */
     .levelup-icon {
         font-size: 56px; margin-bottom: 8px;
         animation: levelup-bounce 0.6s ease 0.3s both;
     }
-    /* ── LEVEL UP! 타이틀 ── */
+    /* LEVEL UP title */
     .levelup-title {
         font-size: 14px; font-weight: 700; letter-spacing: 4px;
         color: #6366f1; margin-bottom: 4px;
     }
-    /* ── 레벨 숫자 ── */
+    /* Level number text */
     .levelup-level {
         font-size: 40px; font-weight: 800;
         background: linear-gradient(135deg, #6366f1, #a855f7);
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         background-clip: text; margin-bottom: 8px;
     }
-    /* ── 축하 메시지 ── */
+    /* Sub message */
     .levelup-msg {
         font-size: 15px; color: #64748b; margin-bottom: 24px;
     }
-    /* ── 확인 버튼 ── */
+    /* Confirm button */
     .levelup-close-btn {
         background: linear-gradient(135deg, #6366f1, #a855f7);
         color: #fff; border: none; border-radius: 12px;
@@ -1630,7 +1628,7 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 16px rgba(99,102,241,0.4);
     }
-    /* ── 애니메이션 ── */
+    /* Popup animations */
     @keyframes levelup-fade-in { from { opacity: 0; } to { opacity: 1; } }
     @keyframes levelup-scale-in { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     @keyframes levelup-bounce {
@@ -1641,8 +1639,8 @@
 </style>
 <script>
     /**
-     * 레벨업 팝업 닫기.
-     * 오버레이를 fade-out 시키고 DOM에서 제거합니다.
+     * Close the level-up popup with a short fade-out effect.
+     */
      */
     function closeLevelUpPopup() {
         var overlay = document.getElementById('levelup-overlay');
@@ -1690,7 +1688,7 @@
 </script>
 
 <script>
-/* 최근 조회 내역: 상대 시간 포맷팅 */
+/* Relative time labels for recent-view history */
 (function () {
     var LABELS = {
         justNow:   '<spring:message code="mypage.history.relative.justNow"   javaScriptEscape="true"/>',

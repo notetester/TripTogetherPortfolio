@@ -41,7 +41,11 @@ public interface TravelPackageMapper {
 
     void insertPackageReviewHistory(PackageReviewHistoryCreateVO history);
 
-    List<TravelPackageVO> selectApprovedPackages();
+    List<TravelPackageVO> selectApprovedPackages(@Param("keyword") String keyword,
+                                                 @Param("offset") int offset,
+                                                 @Param("pageSize") int pageSize);
+
+    int countApprovedPackages(@Param("keyword") String keyword);
 
     List<TravelPackageVO> selectHomeRecommendedPackages();
 

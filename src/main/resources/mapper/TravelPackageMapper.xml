@@ -285,16 +285,38 @@
         )
     </insert>
 
+    <sql id="ApprovedPackageSearchCondition">
+        tp.package_status = 'APPROVED'
+        AND COALESCE(st.spot_active, 0) = 0
+        AND (tp.end_date IS NULL OR tp.end_date >= CURDATE())
+        <if test="keyword != null and keyword != ''">
+            AND (
+                tp.package_title LIKE CONCAT('%', #{keyword}, '%')
+                OR COALESCE(tp.package_summary, '') LIKE CONCAT('%', #{keyword}, '%')
+                OR st.name LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+    </sql>
+
     <select id="selectApprovedPackages" resultMap="TravelPackageResultMap">
         SELECT
             <include refid="TravelPackageColumns"/>
         FROM TRAVEL_PACKAGE tp
         JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
         JOIN USERS u ON u.user_idx = tp.seller_user_idx
-        WHERE tp.package_status = 'APPROVED'
-          AND COALESCE(st.spot_active, 0) = 0
-          AND (tp.end_date IS NULL OR tp.end_date >= CURDATE())
+        WHERE
+            <include refid="ApprovedPackageSearchCondition"/>
         ORDER BY tp.approved_at DESC, tp.package_idx DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="countApprovedPackages" resultType="int">
+        SELECT COUNT(*)
+        FROM TRAVEL_PACKAGE tp
+        JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        JOIN USERS u ON u.user_idx = tp.seller_user_idx
+        WHERE
+            <include refid="ApprovedPackageSearchCondition"/>
     </select>
 
     <select id="selectHomeRecommendedPackages" resultMap="TravelPackageResultMap">
@@ -598,7 +620,7 @@
           AND revision_status = 'PENDING'
     </update>
 
-    <!-- 챗봇 컨텍스트용 승인 패키지 다중 키워드 검색 -->
+    <!-- ?? ??? ?? ??? ??? ?? -->
     <select id="searchPackagesByKeywords" resultType="java.util.HashMap">
         SELECT
             tp.package_idx     AS packageIdx,

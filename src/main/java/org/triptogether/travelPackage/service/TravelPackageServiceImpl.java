@@ -230,8 +230,16 @@ public class TravelPackageServiceImpl implements TravelPackageService {
     }
 
     @Override
-    public List<TravelPackageVO> getApprovedPackages() {
-        return travelPackageMapper.selectApprovedPackages();
+    public List<TravelPackageVO> getApprovedPackages(String keyword, int page, int pageSize) {
+        int safePage = Math.max(page, 1);
+        int safePageSize = Math.max(pageSize, 1);
+        int offset = (safePage - 1) * safePageSize;
+        return travelPackageMapper.selectApprovedPackages(normalizeKeyword(keyword), offset, safePageSize);
+    }
+
+    @Override
+    public int countApprovedPackages(String keyword) {
+        return travelPackageMapper.countApprovedPackages(normalizeKeyword(keyword));
     }
 
     @Override
@@ -700,6 +708,10 @@ public class TravelPackageServiceImpl implements TravelPackageService {
             return STATUS_PENDING;
         }
         return STATUS_DRAFT;
+    }
+
+    private String normalizeKeyword(String keyword) {
+        return trimToNull(keyword);
     }
 
     private boolean isBlank(String value) {
