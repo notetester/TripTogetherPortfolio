@@ -156,6 +156,26 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    @Transactional
+    public void bulkChangeMemberStatus(List<Long> userIdxList, String status) {
+        if (userIdxList == null || userIdxList.isEmpty()) return;
+        java.util.Set<String> valid = java.util.Set.of("ACTIVE", "DORMANT", "BLOCKED", "DELETED");
+        if (!valid.contains(status)) throw new IllegalArgumentException("허용되지 않는 상태값입니다.");
+        adminMapper.bulkChangeMemberStatus(userIdxList, status);
+    }
+
+    @Override
+    public List<AdminMemberVO> getMembersForExport(AdminSearchVO search) {
+        return adminMapper.findMembersForExport(search);
+    }
+
+    @Override
+    public List<AdminMemberVO> getMembersByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return java.util.Collections.emptyList();
+        return adminMapper.findMembersByIds(ids);
+    }
+
+    @Override
     public AdminMemberVO getMemberDetail(Long userIdx) {
         return adminMapper.findMemberDetail(userIdx);
     }

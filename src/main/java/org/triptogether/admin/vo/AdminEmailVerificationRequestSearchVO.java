@@ -10,6 +10,9 @@ public class AdminEmailVerificationRequestSearchVO {
     private String keyword;
     private String status;   // ALL / REQUESTED / VERIFIED / APPLIED / EXPIRED / CANCELLED
     private String purpose;  // ALL / PROFILE_EMAIL
+    private String dateFilter;  // yyyy-MM-dd (requested_at)
+    private String sortField;   // time / purpose / status / verifiedAt / appliedAt / expiresAt / ip
+    private String sortDir;     // ASC / DESC
     private int page = 1;
     private int size = 30;
 
@@ -19,4 +22,6 @@ public class AdminEmailVerificationRequestSearchVO {
 
     public String getStatus() { return status != null ? status : "ALL"; }
     public String getPurpose() { return purpose != null ? purpose : "ALL"; }
+    public String getSortField() { return sortField != null ? sortField : ""; }
+    public String getSortDir() { return "ASC".equals(sortDir) ? "ASC" : "DESC"; }
 }

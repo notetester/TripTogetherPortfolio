@@ -89,22 +89,6 @@
                         </div>
                     </div>
 
-                    <%-- 정렬 --%>
-                    <div>
-                        <div class="adm-filter-label"><spring:message code="admin.members.sort"/></div>
-                        <div style="display:flex;gap:6px;">
-                            <select class="adm-select" name="sortBy">
-                                <option value="createdAt"   ${search.sortBy=='createdAt'   ? 'selected' : ''}><spring:message code="admin.context.createdAt"/></option>
-                                <option value="lastLoginAt" ${search.sortBy=='lastLoginAt' ? 'selected' : ''}><spring:message code="admin.context.lastLogin"/></option>
-                                <option value="nickname"    ${search.sortBy=='nickname'    ? 'selected' : ''}><spring:message code="admin.context.nickname"/></option>
-                            </select>
-                            <select class="adm-select" name="sortDir">
-                                <option value="DESC" ${search.sortDir=='DESC' ? 'selected' : ''}><spring:message code="admin.members.sortDesc"/></option>
-                                <option value="ASC"  ${search.sortDir=='ASC'  ? 'selected' : ''}><spring:message code="admin.members.sortAsc"/></option>
-                            </select>
-                        </div>
-                    </div>
-
                     <%-- 버튼 --%>
                     <div style="display:flex;gap:6px;align-items:flex-end;">
                         <button type="submit" class="adm-btn adm-btn-primary">🔍 <spring:message code="admin.common.searchButton"/></button>
@@ -114,6 +98,8 @@
 
                     <input type="hidden" name="page" value="1">
                     <input type="hidden" name="size" value="${search.size}">
+                    <input type="hidden" id="sortByInput" name="sortBy" value="${search.sortBy}">
+                    <input type="hidden" id="sortDirInput" name="sortDir" value="${search.sortDir}">
                 </div>
             </form>
         </div>
@@ -130,32 +116,85 @@
                     <spring:message code="admin.members.totalMembers" arguments="${total}"/>
                 </span>
             </div>
-            <select class="adm-select" style="width:80px;" id="sizeSelect"
-                    onchange="changeSize(this.value)">
-                <option value="10"  ${search.size==10  ? 'selected' : ''}>10</option>
-                <option value="20"  ${search.size==20  ? 'selected' : ''}>20</option>
-                <option value="50"  ${search.size==50  ? 'selected' : ''}>50</option>
-                <option value="100" ${search.size==100 ? 'selected' : ''}>100</option>
-            </select>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <%-- 내보내기 --%>
+                <select class="adm-select" id="exportFormat" style="width:85px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <div style="position:relative;">
+                    <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;"
+                            onclick="document.getElementById('exportDropdown').style.display=document.getElementById('exportDropdown').style.display==='block'?'none':'block'">
+                        ⬇ 내보내기 ▾
+                    </button>
+                    <div id="exportDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#1e2535;border:1px solid #334155;border-radius:6px;z-index:200;min-width:170px;box-shadow:0 4px 12px rgba(0,0,0,.4);">
+                        <button type="button" style="display:block;width:100%;text-align:left;padding:9px 14px;background:none;border:none;color:#e2e8f0;cursor:pointer;font-size:13px;border-bottom:1px solid #334155;" onmouseover="this.style.background='#2d3748'" onmouseout="this.style.background='none'" onclick="exportData('all')">📋 전체 내보내기</button>
+                        <button type="button" style="display:block;width:100%;text-align:left;padding:9px 14px;background:none;border:none;color:#e2e8f0;cursor:pointer;font-size:13px;border-bottom:1px solid #334155;" onmouseover="this.style.background='#2d3748'" onmouseout="this.style.background='none'" onclick="exportData('search')">🔍 검색결과 내보내기</button>
+                        <button type="button" id="exportSelectedBtn" style="display:block;width:100%;text-align:left;padding:9px 14px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:13px;" disabled onclick="exportData('selected')">☑ 선택 내보내기 (0)</button>
+                    </div>
+                </div>
+                <%-- 페이지 크기 --%>
+                <select class="adm-select" style="width:80px;" id="sizeSelect"
+                        onchange="changeSize(this.value)">
+                    <option value="10"  ${search.size==10  ? 'selected' : ''}>10</option>
+                    <option value="20"  ${search.size==20  ? 'selected' : ''}>20</option>
+                    <option value="50"  ${search.size==50  ? 'selected' : ''}>50</option>
+                    <option value="100" ${search.size==100 ? 'selected' : ''}>100</option>
+                </select>
+            </div>
+        </div>
+
+        <%-- 일괄 처리 바 --%>
+        <div id="bulkBar" style="display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 16px;margin:0 0 12px;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><span id="bulkCount">0</span>명 선택됨</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+                <select class="adm-select" id="bulkStatusSelect" style="width:130px;">
+                    <option value="">상태 선택</option>
+                    <option value="ACTIVE"><spring:message code="admin.status.ACTIVE"/></option>
+                    <option value="DORMANT"><spring:message code="admin.status.DORMANT"/></option>
+                    <option value="DELETED"><spring:message code="admin.status.DELETED"/></option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="applyBulkStatus()">적용</button>
+            </div>
+            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;margin-left:auto;" onclick="clearSelection()">선택 해제</button>
         </div>
 
         <div class="adm-table-wrap" style="overflow:visible;">
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th><spring:message code="admin.common.member"/></th>
-                    <th><spring:message code="admin.context.email"/></th>
-                    <th><spring:message code="admin.common.status"/></th>
-                    <th><spring:message code="admin.common.role"/></th>
+                    <th style="width:40px;text-align:center;">
+                        <input type="checkbox" id="checkAll" onchange="toggleAll(this)" style="cursor:pointer;">
+                    </th>
+                    <th data-sort="nickname" onclick="memberSortBy('nickname')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.common.member"/> <span class="sort-ico">▼</span>
+                    </th>
+                    <th data-sort="email" onclick="memberSortBy('email')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.context.email"/> <span class="sort-ico">▼</span>
+                    </th>
+                    <th data-sort="status" onclick="memberSortBy('status')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.common.status"/> <span class="sort-ico">▼</span>
+                    </th>
+                    <th data-sort="role" onclick="memberSortBy('role')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.common.role"/> <span class="sort-ico">▼</span>
+                    </th>
                     <th><spring:message code="admin.members.social"/></th>
-                    <th><spring:message code="admin.members.login"/></th>
-                    <th><spring:message code="admin.context.createdAt"/></th>
+                    <th data-sort="lastLoginAt" onclick="memberSortBy('lastLoginAt')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.members.login"/> <span class="sort-ico">▼</span>
+                    </th>
+                    <th data-sort="createdAt" onclick="memberSortBy('createdAt')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.context.createdAt"/> <span class="sort-ico">▼</span>
+                    </th>
                     <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="m">
                     <tr>
+                        <%-- 체크박스 --%>
+                        <td style="text-align:center;">
+                            <input type="checkbox" class="js-row-check" value="${m.userIdx}" onchange="updateBulkBar()" style="cursor:pointer;">
+                        </td>
                         <%-- 회원 정보 --%>
                         <td>
                             <div class="mem-id-cell">
@@ -388,7 +427,7 @@
 
                 <c:if test="${empty list}">
                     <tr>
-                        <td colspan="8" style="text-align:center;padding:40px;color:#475569;">
+                        <td colspan="9" style="text-align:center;padding:40px;color:#475569;">
                             <spring:message code="admin.common.noResults"/>
                         </td>
                     </tr>
@@ -473,6 +512,85 @@
 
 <script>
 const ctx = '${pageContext.request.contextPath}';
+
+/* ── 정렬 ── */
+function memberSortBy(field) {
+    const curField = document.getElementById('sortByInput').value || 'createdAt';
+    const curDir   = document.getElementById('sortDirInput').value || 'DESC';
+    document.getElementById('sortByInput').value  = field;
+    document.getElementById('sortDirInput').value = (field === curField && curDir === 'DESC') ? 'ASC' : 'DESC';
+    document.getElementById('searchForm').querySelector('[name=page]').value = 1;
+    document.getElementById('searchForm').submit();
+}
+
+/* ── 체크박스 ── */
+function toggleAll(cb) {
+    document.querySelectorAll('.js-row-check').forEach(c => { c.checked = cb.checked; });
+    updateBulkBar();
+}
+function updateBulkBar() {
+    const checked = document.querySelectorAll('.js-row-check:checked');
+    const n = checked.length;
+    document.getElementById('bulkBar').style.display = n > 0 ? 'flex' : 'none';
+    document.getElementById('bulkCount').textContent = n;
+    const selBtn = document.getElementById('exportSelectedBtn');
+    if (selBtn) {
+        selBtn.disabled = n === 0;
+        selBtn.style.color = n > 0 ? '#e2e8f0' : '#94a3b8';
+        selBtn.textContent = '☑ 선택 내보내기 (' + n + ')';
+    }
+}
+function clearSelection() {
+    document.querySelectorAll('.js-row-check, #checkAll').forEach(c => { c.checked = false; });
+    updateBulkBar();
+}
+
+/* ── 일괄 상태 변경 ── */
+async function applyBulkStatus() {
+    const status = document.getElementById('bulkStatusSelect').value;
+    if (!status) { adm_toast('상태를 선택해주세요.', 'error'); return; }
+    const ids = Array.from(document.querySelectorAll('.js-row-check:checked')).map(c => c.value);
+    if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+    if (!confirm(ids.length + '명의 상태를 "' + status + '"(으)로 변경하시겠습니까?')) return;
+    const params = new URLSearchParams();
+    ids.forEach(id => params.append('userIdxList', id));
+    params.append('status', status);
+    const res = await fetch(ctx + '/admin/members/bulk/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params
+    });
+    const data = await res.json();
+    if (res.ok && data.success) { adm_toast(data.message); setTimeout(() => location.reload(), 700); }
+    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+}
+
+/* ── 내보내기 ── */
+function exportData(scope) {
+    const format = document.getElementById('exportFormat').value;
+    const form   = document.getElementById('searchForm');
+    const params = new URLSearchParams();
+    new FormData(form).forEach((val, key) => {
+        if (key !== 'page' && key !== 'sortBy' && key !== 'sortDir') params.append(key, val);
+    });
+    params.set('scope', scope);
+    params.set('format', format);
+    if (scope === 'selected') {
+        const ids = Array.from(document.querySelectorAll('.js-row-check:checked')).map(c => c.value);
+        if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+        params.set('selectedIds', ids.join(','));
+    }
+    document.getElementById('exportDropdown').style.display = 'none';
+    window.location.href = ctx + '/admin/members/export?' + params.toString();
+}
+
+/* ── 드롭다운 외부 클릭 닫기 ── */
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('[onclick*="exportDropdown"]') && !e.target.closest('#exportDropdown')) {
+        const dd = document.getElementById('exportDropdown');
+        if (dd) dd.style.display = 'none';
+    }
+});
 const ADMIN_MEMBER_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
 const ADMIN_MEMBER_MSG = {
     loading: '<spring:message code="admin.common.loading" javaScriptEscape="true"/>',
@@ -1274,6 +1392,17 @@ document.addEventListener('click', function (e) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    // 정렬 아이콘 초기화
+    const curSort = '${search.sortBy}';
+    const curDir  = '${search.sortDir}';
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+        if (th.dataset.sort === curSort) {
+            th.classList.add('sorted');
+            const ico = th.querySelector('.sort-ico');
+            if (ico) ico.textContent = curDir === 'ASC' ? '▲' : '▼';
+        }
+    });
+    // URL 파라미터로 상세 자동 오픈
     const detailUserIdx = '${fn:escapeXml(param.detailUserIdx)}';
     if (detailUserIdx) {
         openDetail(detailUserIdx);

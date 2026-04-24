@@ -25,10 +25,20 @@ import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.travelPackage.vo.TravelPackageVO;
 import org.triptogether.travelPackage.vo.TravelPackageRevisionVO;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.triptogether.admin.vo.AdminMemberVO;
 
 /**
  * 관리자 화면 컨트롤러.
@@ -288,6 +298,131 @@ public class AdminController {
         }
         return result;
     }
+
+    @PostMapping("/members/bulk/status")
+    @ResponseBody
+    public Map<String, Object> bulkMemberStatus(@RequestParam List<Long> userIdxList,
+                                                @RequestParam String status,
+                                                HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+            if (loginUser != null && userIdxList.contains(loginUser.getUserIdx())) {
+                result.put("success", false);
+                result.put("message", "자신의 계정 상태는 변경할 수 없습니다.");
+                return result;
+            }
+            adminService.bulkChangeMemberStatus(userIdxList, status);
+            result.put("success", true);
+            result.put("message", userIdxList.size() + "명의 상태가 변경되었습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/members/export")
+    public ResponseEntity<byte[]> exportMembers(AdminSearchVO search,
+                                                @RequestParam(defaultValue = "search") String scope,
+                                                @RequestParam(required = false) String selectedIds,
+                                                @RequestParam(defaultValue = "csv") String format) {
+        try {
+            List<AdminMemberVO> data;
+            if ("all".equals(scope)) {
+                data = adminService.getMembersForExport(new AdminSearchVO());
+            } else if ("selected".equals(scope)) {
+                List<Long> ids = (selectedIds == null || selectedIds.isBlank())
+                    ? Collections.emptyList()
+                    : Arrays.stream(selectedIds.split(","))
+                        .map(String::trim).filter(s -> !s.isEmpty())
+                        .map(Long::parseLong).collect(Collectors.toList());
+                data = adminService.getMembersByIds(ids);
+            } else {
+                data = adminService.getMembersForExport(search);
+            }
+
+            if ("excel".equals(format)) {
+                byte[] bytes = buildMemberExcel(data);
+                return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"members.xlsx\"")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(bytes);
+            } else {
+                byte[] bytes = buildMemberCsv(data);
+                return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"members.csv\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                    .body(bytes);
+            }
+        } catch (Exception e) {
+            log.error("회원 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private byte[] buildMemberCsv(List<AdminMemberVO> data) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append("번호,닉네임,아이디,이메일,상태,권한,등급,인증회원,이메일인증,가입일,최근로그인,로그인성공,로그인실패,소셜연동\n");
+        for (AdminMemberVO m : data) {
+            sb.append(csvVal(m.getUserIdx())).append(',')
+              .append(csvVal(m.getNickname())).append(',')
+              .append(csvVal(m.getUserId())).append(',')
+              .append(csvVal(m.getUserEmail())).append(',')
+              .append(csvVal(m.getAccountStatus())).append(',')
+              .append(csvVal(m.getUserRole())).append(',')
+              .append(csvVal(m.getMemberGrade())).append(',')
+              .append(m.isVerifiedMember() ? "Y" : "N").append(',')
+              .append(m.isEmailVerified() ? "Y" : "N").append(',')
+              .append(m.getCreatedAt() != null ? sdf.format(m.getCreatedAt()) : "").append(',')
+              .append(m.getLastLoginAt() != null ? sdf.format(m.getLastLoginAt()) : "").append(',')
+              .append(m.getLoginSuccessCount()).append(',')
+              .append(m.getLoginFailCount()).append(',')
+              .append(csvVal(m.getLinkedProviders())).append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] buildMemberExcel(List<AdminMemberVO> data) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("회원목록");
+            String[] headers = {"번호","닉네임","아이디","이메일","상태","권한","등급","인증회원","이메일인증","가입일","최근로그인","로그인성공","로그인실패","소셜연동"};
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) hRow.createCell(i).setCellValue(headers[i]);
+            int r = 1;
+            for (AdminMemberVO m : data) {
+                var row = sheet.createRow(r++);
+                row.createCell(0).setCellValue(m.getUserIdx() != null ? m.getUserIdx() : 0);
+                row.createCell(1).setCellValue(safe(m.getNickname()));
+                row.createCell(2).setCellValue(safe(m.getUserId()));
+                row.createCell(3).setCellValue(safe(m.getUserEmail()));
+                row.createCell(4).setCellValue(safe(m.getAccountStatus()));
+                row.createCell(5).setCellValue(safe(m.getUserRole()));
+                row.createCell(6).setCellValue(safe(m.getMemberGrade()));
+                row.createCell(7).setCellValue(m.isVerifiedMember() ? "Y" : "N");
+                row.createCell(8).setCellValue(m.isEmailVerified() ? "Y" : "N");
+                row.createCell(9).setCellValue(m.getCreatedAt() != null ? sdf.format(m.getCreatedAt()) : "");
+                row.createCell(10).setCellValue(m.getLastLoginAt() != null ? sdf.format(m.getLastLoginAt()) : "");
+                row.createCell(11).setCellValue(m.getLoginSuccessCount());
+                row.createCell(12).setCellValue(m.getLoginFailCount());
+                row.createCell(13).setCellValue(safe(m.getLinkedProviders()));
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private String csvVal(Object v) {
+        if (v == null) return "";
+        String s = v.toString();
+        if (s.contains(",") || s.contains("\"") || s.contains("\n"))
+            s = "\"" + s.replace("\"", "\"\"") + "\"";
+        return s;
+    }
+
+    private String safe(String s) { return s != null ? s : ""; }
 
     @PostMapping("/members/{userIdx}/block")
     @ResponseBody

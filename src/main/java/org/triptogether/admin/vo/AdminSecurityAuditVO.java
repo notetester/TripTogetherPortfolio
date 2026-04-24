@@ -38,6 +38,8 @@ public class AdminSecurityAuditVO {
     private String detailMessage;
     private String ipAddress;
     private String userAgent;
+    private String requestId;
+    private String flowTraceId;
     private LocalDateTime occurredAt;
 
     public Date getOccurredAt() {
