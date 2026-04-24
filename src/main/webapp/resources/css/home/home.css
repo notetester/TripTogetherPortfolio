@@ -216,9 +216,9 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
 }
-@media (max-width: 1199px) { .home-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 899px)  { .home-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 599px)  { .home-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1279px) { .home-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1023px) { .home-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 767px)  { .home-grid { grid-template-columns: 1fr; } }
 
 .home-grid .cc-wrap { min-width: 0; }
 
@@ -515,10 +515,9 @@
 }
 
 /* ===== 반응형 ===== */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .hero { height: 420px; }
   .hero-c h1 { font-size: 2rem; }
-  .footer-inner { flex-direction: column; text-align: center; }
 }
 
 
@@ -573,10 +572,11 @@ html.dark .btn-pri {
 html.dark .btn-pri:hover { background: #273449; box-shadow: 0 8px 20px rgba(0,0,0,.5); }
 
 html.dark .btn-sec {
-  background: rgba(255,255,255,.08);
-  border-color: rgba(255,255,255,.3);
+  background: #1a2e4a;
+  border-color: rgba(96,165,250,.4);
+  color: #dbeafe;
 }
-html.dark .btn-sec:hover { background: rgba(255,255,255,.16); }
+html.dark .btn-sec:hover { background: #223e60; }
 
 html.dark .feat-sec { background: #151922; }
 html.dark .feat-card {

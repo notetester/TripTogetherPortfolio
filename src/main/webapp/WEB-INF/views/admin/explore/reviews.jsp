@@ -96,10 +96,10 @@
                         <td><input type="checkbox" class="row-check" data-id="${review.reviewIdx}"></td>
                         <td class="adm-muted-inline">#${review.reviewIdx}</td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}" class="adm-link-title" style="font-weight:600;">${fn:escapeXml(review.spotName)}</a>
-                            <div class="adm-inline-actions">
-                                <a href="${pageContext.request.contextPath}/detail/${review.spotIdx}" target="_blank" class="adm-inline-chip"><spring:message code="admin.explore.detail.userView"/></a>
-                            </div>
+                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}" class="adm-cell-link">
+                                <span style="font-weight:700;color:#e2e8f0;">${fn:escapeXml(review.spotName)}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.explore.detail.userView"/></span>
+                            </a>
                         </td>
                         <td>
                             <button type="button"
@@ -117,26 +117,64 @@
                                 </button>
                             </div>
                         </td>
-                        <td style="font-size:12px;color:#d97706;">${review.rating}/5</td>
-                        <td class="adm-review-content">
-                            <c:choose>
-                                <c:when test="${fn:length(review.content) > 60}">${fn:escapeXml(fn:substring(review.content, 0, 60))}…</c:when>
-                                <c:otherwise>${fn:escapeXml(review.content)}</c:otherwise>
-                            </c:choose>
+                        <td>
+                            <button type="button"
+                                    class="adm-cell-link js-focus-review-action"
+                                    data-review-idx="${review.reviewIdx}">
+                                <span style="font-size:12px;color:#d97706;">${review.rating}/5</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
+                            </button>
                         </td>
                         <td>
-                            <span class="status-badge ${review.displayStatus}">
-                                <c:choose>
-                                    <c:when test="${review.displayStatus == 'ACTIVE'}"><spring:message code="admin.explore.reviewStatus.active"/></c:when>
-                                    <c:otherwise><spring:message code="admin.explore.reviewStatus.blocked"/></c:otherwise>
-                                </c:choose>
-                            </span>
-                        </td>
-                        <td class="adm-muted-inline"><fmt:formatDate value="${review.createdAt}" type="date" dateStyle="short"/></td>
-                        <td>
-                            <c:if test="${review.displayStatus != 'BLOCKED'}">
-                                <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="actionReview(this, 'block')"><spring:message code="admin.explore.reviews.action.block"/></button>
+                            <button type="button"
+                                    class="adm-cell-link js-focus-review-action"
+                                    data-review-idx="${review.reviewIdx}">
+                                <span class="adm-review-content">
+                                    <c:choose>
+                                        <c:when test="${fn:length(review.content) > 60}">${fn:escapeXml(fn:substring(review.content, 0, 60))}…</c:when>
+                                        <c:otherwise>${fn:escapeXml(review.content)}</c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
+                            </button>
+                            <c:if test="${not empty review.content}">
+                                <div class="adm-tr-inline js-admin-translation-widget"
+                                     data-label="<spring:message code='admin.translation.label.exploreReviewContent'/>"
+                                     data-source-type="EXPLORE_REVIEW"
+                                     data-source-idx="${review.reviewIdx}"
+                                     data-field-name="content"
+                                     data-default-source-lang="ko"
+                                     data-source-text="${fn:escapeXml(review.content)}"></div>
                             </c:if>
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="adm-cell-link js-focus-review-action"
+                                    data-review-idx="${review.reviewIdx}">
+                                <span class="status-badge ${review.displayStatus}">
+                                    <c:choose>
+                                        <c:when test="${review.displayStatus == 'ACTIVE'}"><spring:message code="admin.explore.reviewStatus.active"/></c:when>
+                                        <c:otherwise><spring:message code="admin.explore.reviewStatus.blocked"/></c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="adm-cell-link js-focus-review-action"
+                                    data-review-idx="${review.reviewIdx}">
+                                <span class="adm-muted-inline"><fmt:formatDate value="${review.createdAt}" type="date" dateStyle="short"/></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
+                            </button>
+                        </td>
+                        <td>
+                            <div id="review-action-${review.reviewIdx}" class="adm-row-actions" style="justify-content:flex-start;">
+                                <c:if test="${review.displayStatus != 'BLOCKED'}">
+                                    <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="actionReview(this, 'block')"><spring:message code="admin.explore.reviews.action.block"/></button>
+                                </c:if>
+                                <a class="adm-row-btn more" href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}"><spring:message code="admin.common.viewDetail"/></a>
+                            </div>
                         </td>
                     </tr>
                 </c:forEach>
@@ -188,6 +226,24 @@ function updateBulkBar() {
         bar.style.display = 'none';
     }
 }
+
+
+(function() {
+    document.addEventListener('click', function(event) {
+        var trigger = event.target.closest('.js-focus-review-action');
+        if (!trigger) return;
+        var target = document.getElementById('review-action-' + trigger.getAttribute('data-review-idx'));
+        if (!target) return;
+        target.scrollIntoView({behavior: 'smooth', block: 'center'});
+        target.classList.remove('is-focus-flash');
+        void target.offsetWidth;
+        target.classList.add('is-focus-flash');
+        var focusable = target.querySelector('button, a, input, textarea, select');
+        if (focusable) {
+            try { focusable.focus({preventScroll: true}); } catch (e) { focusable.focus(); }
+        }
+    });
+})();
 
 function actionReview(button, action) {
     var reviewIdx = button.getAttribute('data-id');

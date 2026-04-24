@@ -5,6 +5,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const sendBtn = document.getElementById("chatbot-send");
     const input = document.getElementById("chatbot-input");
     const body = document.getElementById("chatbot-body");
+    const cfg = window.__chatbotConfig || {};
+    const labels = cfg.msg || {};
+
+    if (!toggle || !box || !closeBtn || !sendBtn || !input || !body) return;
 
     toggle.onclick = () => box.classList.toggle("hidden");
     closeBtn.onclick = () => box.classList.add("hidden");
@@ -32,8 +36,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function getBotResponse(msg) {
-        if (msg.includes("여행")) return "여행지 탐색 페이지로 이동하세요: /explore";
-        if (msg.includes("코스")) return "여행 코스 페이지: /courses";
-        return "죄송합니다. 해당 질문은 지원하지 않습니다.";
+        if (/travel|trip|\uC5EC\uD589|旅行|旅游/i.test(msg)) {
+            return labels.suggestPopularMsg || "Open destination search: /explore";
+        }
+        if (/course|plan|\uCF54\uC2A4|日程|路线/i.test(msg)) {
+            return labels.suggestCoursesMsg || "Open travel courses: /courses";
+        }
+        return labels.error || "This question is not supported.";
     }
 });

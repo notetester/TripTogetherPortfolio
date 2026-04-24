@@ -16,4 +16,8 @@ public class ChatMessageVO {
     private String content;
     private Boolean isInappropriate;  // AI가 부적절 판단한 user 메시지
     private LocalDateTime createdAt;
+
+    /** 조회용 (관리자 부적절 메시지 목록에서 JOIN으로 채움). DB 컬럼 아님 */
+    private Long authorUserIdx;
+    private String authorNickname;
 }

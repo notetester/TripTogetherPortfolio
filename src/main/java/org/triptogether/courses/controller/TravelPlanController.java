@@ -15,6 +15,7 @@ import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.courses.service.TravelPlanService;
 import org.triptogether.courses.vo.TravelPlanVO;
 import org.triptogether.explore.service.SpotTextTranslationService;
+import org.triptogether.myPage.service.ViewHistoryService;
 
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class TravelPlanController {
 
     @Autowired
     private MessageSource messageSource;
+
+    @Autowired
+    private ViewHistoryService viewHistoryService;
 
     private Long getLoginUserIdx(HttpSession session) {
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
@@ -165,6 +169,8 @@ public class TravelPlanController {
             }
 
             translationService.translateTravelPlan(travelPlan);
+
+            viewHistoryService.record(userIdx, ViewHistoryService.TYPE_PLAN, planId);
 
             model.addAttribute("travelPlan", travelPlan);
             model.addAttribute("isOwner", isOwner);

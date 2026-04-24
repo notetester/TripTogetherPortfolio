@@ -7,9 +7,6 @@
 
 <%-- ==========================================================================
      [다국어] JavaScript에서 사용할 메시지를 서버 사이드에서 미리 변수로 꺼내 둔다.
-
-     spring:message 의 var 속성을 사용하면 pageScope 변수에 저장되므로
-     ${변수명} 으로 바로 접근할 수 있다.
      ========================================================================== --%>
 
 <%-- 에러 메시지 --%>
@@ -24,7 +21,7 @@
 <spring:message code="assistant.reset.confirm" var="msgResetConfirm" />
 <spring:message code="assistant.reset.done" var="msgResetDone" />
 
-<%-- 퀵버튼에서 GPT에 보내는 질문 텍스트 --%>
+<%-- 퀵버튼에서 보내는 질문 텍스트 --%>
 <spring:message code="assistant.quick.tokyo" var="msgQuickTokyo" />
 <spring:message code="assistant.quick.budget" var="msgQuickBudget" />
 <spring:message code="assistant.quick.backpacking" var="msgQuickBackpacking" />
@@ -136,6 +133,24 @@
     const MSG_RESET_DONE = '${msgResetDone}';
 
     let isLoading = false;
+    <spring:message code="assistant.error.parse" javaScriptEscape="true" var="assistantErrorParseJs"/>
+    <spring:message code="assistant.error.request" javaScriptEscape="true" var="assistantErrorRequestJs"/>
+    <spring:message code="assistant.error.network" javaScriptEscape="true" var="assistantErrorNetworkJs"/>
+    <spring:message code="assistant.error.noResponse" javaScriptEscape="true" var="assistantErrorNoResponseJs"/>
+    <spring:message code="assistant.error.server" javaScriptEscape="true" var="assistantErrorServerJs"/>
+    <spring:message code="assistant.reset.confirm" javaScriptEscape="true" var="assistantResetConfirmJs"/>
+    <spring:message code="assistant.reset.done" javaScriptEscape="true" var="assistantResetDoneJs"/>
+    <spring:message code="assistant.loading.answering" javaScriptEscape="true" var="assistantLoadingAnsweringJs"/>
+    const assistantMessages = {
+        errorNetwork: '${assistantErrorNetworkJs}',
+        errorNoResponse: '${assistantErrorNoResponseJs}',
+        errorParse: '${assistantErrorParseJs}',
+        errorRequest: '${assistantErrorRequestJs}',
+        errorServer: '${assistantErrorServerJs}',
+        loadingAnswering: '${assistantLoadingAnsweringJs}',
+        resetConfirm: '${assistantResetConfirmJs}',
+        resetDone: '${assistantResetDoneJs}'
+    };
 
     async function sendMessage() {
         if (isLoading) return;

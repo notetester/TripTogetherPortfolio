@@ -74,6 +74,32 @@ public class ConversationService {
         conversationMapper.softDelete(conversationId);
     }
 
+    /**
+     * 유저/세션이 소유한 대화들의 정렬 순서를 전달된 순서대로 재할당.
+     * 요청자 소유가 아닌 대화 ID 가 포함되면 전체를 무시하고 false 반환.
+     */
+    @Transactional
+    public boolean reorderConversations(List<Long> orderedIds, Long userIdx, String anonSessionId) {
+        if (orderedIds == null || orderedIds.isEmpty()) return false;
+
+        List<ConversationVO> owned = userIdx != null
+                ? conversationMapper.selectConversationsByUser(userIdx)
+                : conversationMapper.selectConversationsByAnonSession(anonSessionId);
+
+        java.util.Set<Long> ownedSet = new java.util.HashSet<>();
+        for (ConversationVO c : owned) ownedSet.add(c.getConversationId());
+
+        for (Long id : orderedIds) {
+            if (id == null || !ownedSet.contains(id)) return false;
+        }
+
+        int order = 1;
+        for (Long id : orderedIds) {
+            conversationMapper.updateSortOrder(id, order++);
+        }
+        return true;
+    }
+
     // 소유권 검증 — 요청자가 이 대화의 주인인가
     public boolean isOwner(ConversationVO conv, Long userIdx, String anonSessionId) {
         if (conv == null) return false;

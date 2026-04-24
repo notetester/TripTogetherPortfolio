@@ -120,79 +120,84 @@
                         <%-- 작성자 --%>
                         <td>
                             <button type="button"
-                                    class="adm-inline-link js-open-member-context"
+                                    class="adm-cell-link js-open-member-context"
                                     data-user-idx="${item.userIdx}"
-                                    style="font-weight:700;color:#93c5fd;">${item.nickname}</button>
-                            <div class="adm-modal-value">
-                                <button type="button"
-                                        class="adm-inline-link js-open-member-context"
-                                        data-user-idx="${item.userIdx}"
-                                        style="font-size:12px;color:#94a3b8;">${item.userId}</button>
-                            </div>
-                            <c:if test="${item.accountStatus == 'BLOCKED'}">
-                                <span class="adm-inline-danger"><spring:message code="admin.reports.accountBlocked"/></span>
-                            </c:if>
-                            <div class="adm-inline-actions">
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-search-type="userId"
-                                        data-keyword="${item.userId}"
-                                        onclick="applyInquiryFilter(this)">
-                                    <spring:message code="admin.common.sameAuthor"/>
-                                </button>
-                            </div>
+                                    onclick="event.stopPropagation();">
+                                <span style="font-weight:700;color:#93c5fd;">${item.nickname}</span>
+                                <span class="adm-cell-link-note">@${item.userId}</span>
+                                <c:if test="${item.accountStatus == 'BLOCKED'}">
+                                    <span class="adm-cell-link-note" style="color:#fca5a5;"><spring:message code="admin.reports.accountBlocked"/></span>
+                                </c:if>
+                            </button>
                         </td>
                         <td>
-                            <div class="mem-name">${item.title}</div>
-                            <div class="mem-uid">
-                                <c:if test="${item.privateFlag}">🔒 <spring:message code="admin.inquiry.privateFlag"/> · </c:if>
-                                <spring:message code="admin.inquiry.viewCount" arguments="${item.viewCount}"/>
-                            </div>
-                            <div class="adm-inline-actions">
-                                <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}"
-                                   class="adm-inline-chip"><spring:message code="admin.common.viewDetail"/></a>
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-category="${item.category}"
-                                        onclick="applyInquiryFilter(this)">
-                                    <spring:message code="admin.common.sameCategory"/>
-                                </button>
-                            </div>
+                            <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}"
+                               class="adm-cell-link"
+                               onclick="event.stopPropagation();">
+                                <span class="mem-name">${item.title}</span>
+                                <span class="adm-cell-link-note">
+                                    <c:if test="${item.privateFlag}">🔒 <spring:message code="admin.inquiry.privateFlag"/> · </c:if>
+                                    <spring:message code="admin.inquiry.viewCount" arguments="${item.viewCount}"/>
+                                </span>
+                            </a>
                         </td>
                         <td>
-                            <c:choose>
-                                <c:when test="${item.category eq 'service'}"><spring:message code="admin.inquiry.category.service"/></c:when>
-                                <c:when test="${item.category eq 'payment'}"><spring:message code="admin.inquiry.category.payment"/></c:when>
-                                <c:when test="${item.category eq 'account'}"><spring:message code="admin.inquiry.category.account"/></c:when>
-                                <c:when test="${item.category eq 'bug'}"><spring:message code="admin.inquiry.category.bug"/></c:when>
-                                <c:otherwise><spring:message code="admin.inquiry.category.etc"/></c:otherwise>
-                            </c:choose>
+                            <button type="button"
+                                    class="adm-cell-link"
+                                    data-category="${item.category}"
+                                    onclick="event.stopPropagation(); applyInquiryFilter(this);">
+                                <span>
+                                    <c:choose>
+                                        <c:when test="${item.category eq 'service'}"><spring:message code="admin.inquiry.category.service"/></c:when>
+                                        <c:when test="${item.category eq 'payment'}"><spring:message code="admin.inquiry.category.payment"/></c:when>
+                                        <c:when test="${item.category eq 'account'}"><spring:message code="admin.inquiry.category.account"/></c:when>
+                                        <c:when test="${item.category eq 'bug'}"><spring:message code="admin.inquiry.category.bug"/></c:when>
+                                        <c:otherwise><spring:message code="admin.inquiry.category.etc"/></c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameCategory"/></span>
+                            </button>
                         </td>
                         <td>
-                            <span class="status-badge ${item.status}">
+                            <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}&jump=inquiry-status-actions"
+                               class="adm-cell-link"
+                               onclick="event.stopPropagation();">
+                                <span class="status-badge ${item.status}">
+                                    <c:choose>
+                                        <c:when test="${item.status eq 'PENDING'}"><spring:message code="admin.inquiry.status.pending"/></c:when>
+                                        <c:when test="${item.status eq 'IN_PROGRESS'}"><spring:message code="admin.inquiry.status.inProgress"/></c:when>
+                                        <c:when test="${item.status eq 'COMPLETED'}"><spring:message code="admin.inquiry.status.completed"/></c:when>
+                                        <c:when test="${item.status eq 'USER_COMPLETED'}"><spring:message code="admin.inquiry.status.userCompleted"/></c:when>
+                                        <c:when test="${item.status eq 'CANCELLED'}"><spring:message code="admin.inquiry.status.cancelled"/></c:when>
+                                        <c:when test="${item.status eq 'DELETE_REQUESTED'}"><spring:message code="admin.inquiry.status.deleteRequested"/></c:when>
+                                        <c:when test="${item.status eq 'PRIVATE_REQUESTED'}"><spring:message code="admin.inquiry.status.privateRequested"/></c:when>
+                                        <c:when test="${item.status eq 'PUBLIC_REQUESTED'}"><spring:message code="admin.inquiry.status.publicRequested"/></c:when>
+                                        <c:otherwise>${item.status}</c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.inquiry.detail.statusChange"/></span>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}&jump=inquiry-answer-card"
+                               class="adm-cell-link"
+                               onclick="event.stopPropagation();">
                                 <c:choose>
-                                    <c:when test="${item.status eq 'PENDING'}"><spring:message code="admin.inquiry.status.pending"/></c:when>
-                                    <c:when test="${item.status eq 'IN_PROGRESS'}"><spring:message code="admin.inquiry.status.inProgress"/></c:when>
-                                    <c:when test="${item.status eq 'COMPLETED'}"><spring:message code="admin.inquiry.status.completed"/></c:when>
-                                    <c:when test="${item.status eq 'USER_COMPLETED'}"><spring:message code="admin.inquiry.status.userCompleted"/></c:when>
-                                    <c:when test="${item.status eq 'CANCELLED'}"><spring:message code="admin.inquiry.status.cancelled"/></c:when>
-                                    <c:when test="${item.status eq 'DELETE_REQUESTED'}"><spring:message code="admin.inquiry.status.deleteRequested"/></c:when>
-                                    <c:when test="${item.status eq 'PRIVATE_REQUESTED'}"><spring:message code="admin.inquiry.status.privateRequested"/></c:when>
-                                    <c:when test="${item.status eq 'PUBLIC_REQUESTED'}"><spring:message code="admin.inquiry.status.publicRequested"/></c:when>
-                                    <c:otherwise>${item.status}</c:otherwise>
+                                    <c:when test="${not empty item.answerId}">
+                                        <span class="mem-name"><spring:message code="admin.inquiry.answered"/></span>
+                                        <span class="adm-cell-link-note">${item.answerAdminNickname}</span>
+                                    </c:when>
+                                    <c:otherwise><span style="color:#64748b;"><spring:message code="admin.inquiry.unanswered"/></span></c:otherwise>
                                 </c:choose>
-                            </span>
+                            </a>
                         </td>
                         <td>
-                            <c:choose>
-                                <c:when test="${not empty item.answerId}">
-                                    <div class="mem-name"><spring:message code="admin.inquiry.answered"/></div>
-                                    <div class="mem-uid">${item.answerAdminNickname}</div>
-                                </c:when>
-                                <c:otherwise><span style="color:#64748b;"><spring:message code="admin.inquiry.unanswered"/></span></c:otherwise>
-                            </c:choose>
+                            <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}"
+                               class="adm-cell-link"
+                               onclick="event.stopPropagation();">
+                                <span><fmt:formatDate value="${item.createdAt}" type="both" dateStyle="short" timeStyle="short"/></span>
+                            </a>
                         </td>
-                        <td><fmt:formatDate value="${item.createdAt}" type="both" dateStyle="short" timeStyle="short"/></td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">

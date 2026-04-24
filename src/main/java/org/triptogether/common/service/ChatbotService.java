@@ -4,11 +4,14 @@ import com.google.gson.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.common.vo.ChatIntentVO;
 import org.triptogether.common.vo.ChatMessageVO;
 import org.triptogether.common.vo.ChatbotQuotaVO;
 import org.triptogether.common.vo.ChatbotRequestVO;
@@ -16,6 +19,7 @@ import org.triptogether.common.vo.ChatbotResponseVO;
 import org.triptogether.common.vo.ConversationVO;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * TripTogether 챗봇 서비스 (Gemini 기반).
@@ -40,12 +44,44 @@ public class ChatbotService {
     private final ChatbotBlockService blockService;
     private final ChatbotQuotaService quotaService;
     private final ConversationService conversationService;
+    private final IntentContextService intentContextService;
+    private final ChatbotFastPathService fastPathService;
+    private final MessageSource messageSource;
 
     @Value("${gemini.api.key}")
     private String geminiApiKey;
 
     private static final String GEMINI_URL =
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
+
+    // ══════════════════════════════════════════════════════════
+    // 허용 내부 경로 화이트리스트 (Gemini 응답의 링크 검증용)
+    //   - 신규 라우트 추가 시 이 배열에 추가할 것
+    //   - 외부 URL / 위험 스킴 / 경로 순회는 별도 검사로 차단
+    // ══════════════════════════════════════════════════════════
+    private static final List<Pattern> ALLOWED_URL_PATTERNS = List.of(
+            Pattern.compile("^/$"),
+            Pattern.compile("^/explore(\\?.*)?$"),
+            Pattern.compile("^/detail/\\d+(\\?.*)?$"),           // 여행지 상세 (spotIdx)
+            Pattern.compile("^/courses(\\?.*)?$"),
+            Pattern.compile("^/courses/detail(\\?.*)?$"),         // 코스 상세 (?planId=)
+            Pattern.compile("^/community/list(\\?.*)?$"),
+            Pattern.compile("^/community/\\d+(\\?.*)?$"),        // 커뮤니티 상세 (postId)
+            Pattern.compile("^/community/write(\\?.*)?$"),
+            Pattern.compile("^/assistant(\\?.*)?$"),
+            Pattern.compile("^/packages(\\?.*)?$"),
+            Pattern.compile("^/packages/manage(/.*)?(\\?.*)?$"),
+            Pattern.compile("^/wallet(/.*)?(\\?.*)?$"),
+            Pattern.compile("^/shop(/.*)?(\\?.*)?$"),
+            Pattern.compile("^/mypage(/.*)?(\\?.*)?$"),
+            Pattern.compile("^/inquiry/list(\\?.*)?$"),
+            Pattern.compile("^/inquiry/detail/\\d+(\\?.*)?$"),
+            Pattern.compile("^/inquiry/write(\\?.*)?$"),
+            Pattern.compile("^/auth/(login|register|find-password)(\\?.*)?$")
+    );
+
+    private static final Pattern DANGEROUS_SCHEME_PATTERN =
+            Pattern.compile("^\\s*(?:javascript|data|file|vbscript):", Pattern.CASE_INSENSITIVE);
 
     // ══════════════════════════════════════════════════════════
     // 시스템 프롬프트
@@ -63,7 +99,9 @@ public class ChatbotService {
             | 여행 코스 | /courses | 다른 여행자의 코스 탐색 및 공유 |
             | AI 도우미 | /assistant | AI가 여행 일정 자동 생성 |
             | 커뮤니티 | /community/list | 여행 후기·팁 공유 게시판 |
-            | 여행 상품 | /travelPackage | 전문 가이드 패키지 상품 |
+            | 지갑·포인트 | /wallet | 포인트 잔액·충전·사용 내역 |
+            | 쇼핑몰 | /shop | 여행 용품 쇼핑 |
+            | 여행 패키지 | /packages | 전문 가이드 패키지 상품 |
             | 마이페이지 | /mypage | 내 활동·예약·포인트 |
             | 문의하기 | /inquiry/list | 고객센터 문의 |
             | 로그인 | /auth/login | 일반·소셜 로그인 |
@@ -89,7 +127,7 @@ public class ChatbotService {
             - `quickReplies`: 자연스러운 후속 질문 0~3개.
             - `inappropriate`: 아래 기준에 해당하면 true.
             - 여행·사이트 관련 질문에만 답하세요.
-            - 상품 관련 질문은 /travelPackage 링크 제공.
+            - 쇼핑·결제 관련 질문은 /shop, /packages, /wallet 중 해당하는 링크 제공.
             - 비로그인 사용자에게는 로그인·회원가입 링크를 적극 추천.
 
             ### 부적절 채팅 기준 (inappropriate: true)
@@ -97,6 +135,12 @@ public class ChatbotService {
             - 사이트와 무관한 질문 (날씨, 주식, 정치, 연예인 등 순수 잡담)
             - 개인정보 요구 또는 제공
             - 스팸성 반복 메시지
+
+            ## 다국어 응답 규칙
+            - 사용자 메시지 언어를 자동 감지해 message / quickReplies / links.label / links.icon 뒤 텍스트를 **사용자 언어와 동일 언어로** 작성하세요.
+              예: 사용자가 영어로 물어보면 영어로, 일본어면 일본어로, 중국어면 중국어로 답하세요.
+            - 시스템 프롬프트와 실시간 후보 데이터가 한국어여도 응답 언어에 맞춰 자연스럽게 번역해 활용하세요.
+            - url 값은 언어와 무관하게 원본 경로를 그대로 사용하세요.
             """;
 
     // ══════════════════════════════════════════════════════════
@@ -122,11 +166,11 @@ public class ChatbotService {
         ChatbotQuotaVO quota = quotaService.getQuotaByGrade(grade);
         boolean quotaExempt = quotaService.isQuotaExempt(loginUser);
 
-        // 3. 일일 메시지 한도 체크
+        // 3. 주기별 메시지 한도 체크
         if (!quotaExempt && quota != null) {
-            int usage = quotaService.getTodayUsage(userIdx, userIdx == null ? anonSessionId : null);
-            if (usage >= quota.getMaxMessagesPerDay()) {
-                return quotaExceededResponse(quota.getMaxMessagesPerDay());
+            int usage = quotaService.getCurrentPeriodUsage(userIdx, userIdx == null ? ipAddress : null, quota);
+            if (usage >= quota.getMaxMessagesPerPeriod()) {
+                return quotaExceededResponse(quota.getMaxMessagesPerPeriod());
             }
         }
 
@@ -145,6 +189,15 @@ public class ChatbotService {
         userMsg.setIsInappropriate(false);
         conversationService.saveMessage(userMsg);
 
+        // 5.5. 단순 네비게이션 요청이면 LLM 호출 없이 즉답 (fast-path)
+        ChatbotResponseVO fast = fastPathService.resolveOrNull(request.getMessage(), loggedIn);
+        if (fast != null) {
+            log.info("[Chatbot] fast-path 히트, LLM 호출 생략 — conversationId={}",
+                    conversation.getConversationId());
+            return finalizeAndRespond(conversation, userMsg, fast, userIdx, ipAddress,
+                    quota, quotaExempt, /*markInappropriate=*/false);
+        }
+
         // 6. 최근 N개 히스토리 로드 (현재 저장한 메시지 제외)
         int contextLimit = quota != null ? quota.getMaxContextMessages() : 10;
         List<ChatMessageVO> history = conversationService.getRecentMessages(
@@ -154,10 +207,25 @@ public class ChatbotService {
             history = history.subList(0, history.size() - 1);
         }
 
-        // 7. Gemini 호출
-        ChatbotResponseVO response = callGemini(request, history, loggedIn);
+        // 6.5. 1차 분류 (LLM 으로 의도·키워드 추출) — 쿼터 미소모, 실패 시 규칙 기반 fallback
+        ChatIntentVO intent = intentContextService.classify(request.getMessage());
 
-        // 8. 부적절 플래그 처리
+        // 6.6. 부적절이면 본 호출 생략하고 안전 응답 반환 (토큰 절감)
+        if (intent.isInappropriate()) {
+            conversationService.markInappropriate(userMsg.getMessageId());
+            log.warn("[Chatbot] 사전 분류 - 부적절 판정, 본 호출 생략. conversationId={}, messageId={}, ip={}",
+                    conversation.getConversationId(), userMsg.getMessageId(), ipAddress);
+            return finalizeAndRespond(conversation, userMsg, safetyBlockedResponse(),
+                    userIdx, ipAddress, quota, quotaExempt, /*markInappropriate=*/false);
+        }
+
+        // 7. Gemini 본 호출 (분류 의도 주입)
+        ChatbotResponseVO response = callGemini(request, history, loggedIn, intent);
+
+        // 7.5. EXPLORE 의도면 관련 패키지 링크 자동 부착 (이미 포함됐으면 skip)
+        appendRelatedPackagesIfNeeded(response, intent);
+
+        // 8. 부적절 플래그 처리 (본 호출 결과가 inappropriate 일 때만)
         if (response.isInappropriate()) {
             conversationService.markInappropriate(userMsg.getMessageId());
             log.warn("[Chatbot] 부적절 메시지 - conversationId={}, messageId={}, ip={}",
@@ -168,21 +236,107 @@ public class ChatbotService {
         ChatMessageVO botMsg = new ChatMessageVO();
         botMsg.setConversationId(conversation.getConversationId());
         botMsg.setRole("assistant");
-        botMsg.setContent(response.getMessage());
+        botMsg.setContent(toJsonForStorage(response));
         botMsg.setIsInappropriate(false);
         conversationService.saveMessage(botMsg);
 
         // 10. 대화 활동 시각 갱신
         conversationService.touch(conversation.getConversationId());
 
-        // 11. 일일 사용량 +1 (면제자 제외)
+        // 11. 현재 주기 사용량 +1 (면제자 제외). 비로그인은 IP 기준.
         if (!quotaExempt) {
-            quotaService.incrementTodayUsage(userIdx, userIdx == null ? anonSessionId : null);
+            quotaService.incrementUsage(userIdx, userIdx == null ? ipAddress : null, quota);
         }
 
-        // 12. 응답에 conversationId 포함
+        // 12. 응답에 conversationId / messageId 포함
         response.setConversationId(conversation.getConversationId());
+        response.setMessageId(botMsg.getMessageId());
         return response;
+    }
+
+    /**
+     * EXPLORE 의도일 때 응답 링크에 /packages 가 없으면 관련 패키지 링크를 자동 부착.
+     * 이미 /packages 관련 링크가 있거나 매칭 패키지가 없으면 아무 것도 하지 않음.
+     */
+    private void appendRelatedPackagesIfNeeded(ChatbotResponseVO response, ChatIntentVO intent) {
+        if (response == null || intent == null) return;
+        if (!intent.isExplore()) return;
+        if (response.isInappropriate()) return;
+
+        List<ChatbotResponseVO.SiteLink> links = response.getLinks();
+        if (links != null) {
+            for (ChatbotResponseVO.SiteLink l : links) {
+                if (l != null && l.getUrl() != null && l.getUrl().startsWith("/packages")) {
+                    return; // 이미 부착됨
+                }
+            }
+        }
+
+        String kw = intentContextService.findRelatedPackageKeyword(intent);
+        if (kw == null) return;
+
+        List<ChatbotResponseVO.SiteLink> mutable = links != null ? new ArrayList<>(links) : new ArrayList<>();
+        mutable.add(ChatbotResponseVO.SiteLink.builder()
+                .label(msg("chatbot.related.packages", kw))
+                .url("/packages")
+                .icon("🎁")
+                .build());
+        response.setLinks(mutable);
+    }
+
+    /**
+     * 분류 결과가 INAPPROPRIATE 일 때 본 호출 없이 안전 응답을 DB에 저장하고 반환.
+     * 9~12 단계와 동일한 후처리(저장·touch·쿼터)를 수행.
+     */
+    private ChatbotResponseVO finalizeAndRespond(ConversationVO conversation,
+                                                  ChatMessageVO userMsg,
+                                                  ChatbotResponseVO response,
+                                                  Long userIdx,
+                                                  String ipAddress,
+                                                  ChatbotQuotaVO quota,
+                                                  boolean quotaExempt,
+                                                  boolean markInappropriate) {
+        if (markInappropriate) {
+            conversationService.markInappropriate(userMsg.getMessageId());
+        }
+        ChatMessageVO botMsg = new ChatMessageVO();
+        botMsg.setConversationId(conversation.getConversationId());
+        botMsg.setRole("assistant");
+        botMsg.setContent(toJsonForStorage(response));
+        botMsg.setIsInappropriate(false);
+        conversationService.saveMessage(botMsg);
+        conversationService.touch(conversation.getConversationId());
+        if (!quotaExempt) {
+            quotaService.incrementUsage(userIdx, userIdx == null ? ipAddress : null, quota);
+        }
+        response.setConversationId(conversation.getConversationId());
+        response.setMessageId(botMsg.getMessageId());
+        return response;
+    }
+
+    // assistant 응답을 DB 저장 시 사용할 JSON 문자열로 직렬화
+    // (프론트가 대화 복원 시 동일 구조를 JSON.parse 로 되살림)
+    private String toJsonForStorage(ChatbotResponseVO vo) {
+        JsonObject root = new JsonObject();
+        root.addProperty("message", vo.getMessage());
+        root.addProperty("inappropriate", vo.isInappropriate());
+        JsonArray links = new JsonArray();
+        if (vo.getLinks() != null) {
+            for (ChatbotResponseVO.SiteLink link : vo.getLinks()) {
+                JsonObject l = new JsonObject();
+                l.addProperty("label", link.getLabel());
+                l.addProperty("url", link.getUrl());
+                l.addProperty("icon", link.getIcon());
+                links.add(l);
+            }
+        }
+        root.add("links", links);
+        JsonArray qr = new JsonArray();
+        if (vo.getQuickReplies() != null) {
+            for (String r : vo.getQuickReplies()) qr.add(r);
+        }
+        root.add("quickReplies", qr);
+        return root.toString();
     }
 
     // 대화 조회 or 신규 생성 + 소유권/한도 체크
@@ -217,12 +371,13 @@ public class ChatbotService {
     // ══════════════════════════════════════════════════════════
     private ChatbotResponseVO callGemini(ChatbotRequestVO request,
                                           List<ChatMessageVO> history,
-                                          boolean loggedIn) {
+                                          boolean loggedIn,
+                                          ChatIntentVO intent) {
         try {
             JsonObject systemInstruction = new JsonObject();
             JsonArray systemParts = new JsonArray();
             JsonObject systemPart = new JsonObject();
-            systemPart.addProperty("text", buildSystemPrompt(request, loggedIn));
+            systemPart.addProperty("text", buildSystemPrompt(request, loggedIn, intent));
             systemParts.add(systemPart);
             systemInstruction.add("parts", systemParts);
 
@@ -329,6 +484,10 @@ public class ChatbotService {
                 for (JsonElement el : json.getAsJsonArray("links")) {
                     JsonObject l = el.getAsJsonObject();
                     String url = l.get("url").getAsString();
+                    if (!isAllowedInternalUrl(url)) {
+                        log.warn("[Chatbot] 허용되지 않은 URL drop: {}", url);
+                        continue;
+                    }
                     if (!loggedIn && url.startsWith("/mypage")) continue;
                     links.add(ChatbotResponseVO.SiteLink.builder()
                             .label(l.get("label").getAsString())
@@ -355,12 +514,18 @@ public class ChatbotService {
         }
     }
 
-    private String buildSystemPrompt(ChatbotRequestVO request, boolean loggedIn) {
+    private String buildSystemPrompt(ChatbotRequestVO request, boolean loggedIn, ChatIntentVO intent) {
         StringBuilder sb = new StringBuilder(SYSTEM_PROMPT);
         sb.append("\n\n## 현재 사용자 컨텍스트\n");
         sb.append("- 로그인 상태: ").append(loggedIn ? "로그인 중" : "비로그인").append("\n");
         if (request.getCurrentPath() != null && !request.getCurrentPath().isBlank()) {
             sb.append("- 현재 페이지: ").append(getCurrentPageName(request.getCurrentPath())).append("\n");
+        }
+
+        // 실시간 사이트 콘텐츠 주입 (여행지/코스/패키지/커뮤니티). 매칭 없으면 빈 문자열.
+        String context = intentContextService.buildContextSection(intent);
+        if (!context.isEmpty()) {
+            sb.append("\n").append(context);
         }
         return sb.toString();
     }
@@ -374,6 +539,21 @@ public class ChatbotService {
         }
     }
 
+    // Gemini가 생성한 내부 URL 검증 — 화이트리스트 + 위험 스킴/경로 차단
+    private boolean isAllowedInternalUrl(String url) {
+        if (url == null) return false;
+        String trimmed = url.trim();
+        if (trimmed.isEmpty()) return false;
+        if (DANGEROUS_SCHEME_PATTERN.matcher(trimmed).find()) return false;
+        if (!trimmed.startsWith("/")) return false;
+        if (trimmed.startsWith("//")) return false;          // protocol-relative 차단
+        if (trimmed.contains("..")) return false;            // 경로 순회 차단
+        for (Pattern p : ALLOWED_URL_PATTERNS) {
+            if (p.matcher(trimmed).matches()) return true;
+        }
+        return false;
+    }
+
     private String getCurrentPageName(String path) {
         if (path.equals("/") || path.isEmpty())    return "홈";
         if (path.startsWith("/explore"))           return "여행지 탐색";
@@ -382,29 +562,32 @@ public class ChatbotService {
         if (path.startsWith("/community"))         return "커뮤니티";
         if (path.startsWith("/mypage"))            return "마이페이지";
         if (path.startsWith("/auth"))              return "인증 페이지";
-        if (path.startsWith("/travelPackage"))     return "여행 상품";
+        if (path.startsWith("/wallet"))            return "지갑·포인트";
+        if (path.startsWith("/shop"))              return "쇼핑몰";
+        if (path.startsWith("/packages"))          return "여행 패키지";
         if (path.startsWith("/inquiry"))           return "문의하기";
         return path;
     }
 
     // ══════════════════════════════════════════════════════════
-    // 특수 응답
+    // 특수 응답 (메시지는 messages/chatbot_*.properties 에서 로드)
     // ══════════════════════════════════════════════════════════
     private ChatbotResponseVO safetyBlockedResponse() {
         return ChatbotResponseVO.builder()
-                .message("해당 질문에는 답변하기 어려워요. 여행 관련 질문으로 다시 물어봐 주세요.")
+                .message(msg("chatbot.resp.safetyBlocked"))
                 .links(List.of())
-                .quickReplies(List.of("인기 여행지 추천", "여행 코스 보기"))
+                .quickReplies(List.of(msg("chatbot.quick.popularSpots"),
+                                      msg("chatbot.quick.courseRecommend")))
                 .inappropriate(true)
                 .build();
     }
 
     private ChatbotResponseVO blockedResponse() {
         return ChatbotResponseVO.builder()
-                .message("죄송합니다. 현재 챗봇 이용이 제한된 상태입니다. 문의사항은 고객센터로 연락해 주세요.")
+                .message(msg("chatbot.resp.blocked"))
                 .links(List.of(
                         ChatbotResponseVO.SiteLink.builder()
-                                .label("문의하기").url("/inquiry/list").icon("📩").build()
+                                .label(msg("chatbot.link.inquiry")).url("/inquiry/list").icon("📩").build()
                 ))
                 .quickReplies(List.of())
                 .inappropriate(false)
@@ -413,7 +596,7 @@ public class ChatbotService {
 
     private ChatbotResponseVO quotaExceededResponse(int limit) {
         return ChatbotResponseVO.builder()
-                .message("오늘의 채팅 한도(" + limit + "건)를 모두 사용했어요. 내일 다시 만나요!")
+                .message(msg("chatbot.resp.quotaExceeded", limit))
                 .links(List.of())
                 .quickReplies(List.of())
                 .inappropriate(false)
@@ -422,7 +605,7 @@ public class ChatbotService {
 
     private ChatbotResponseVO conversationLimitResponse(int limit) {
         return ChatbotResponseVO.builder()
-                .message("대화 수 한도(" + limit + "개)에 도달했어요. 기존 대화를 삭제하거나 이어서 진행해 주세요.")
+                .message(msg("chatbot.resp.conversationLimit", limit))
                 .links(List.of())
                 .quickReplies(List.of())
                 .inappropriate(false)
@@ -431,14 +614,19 @@ public class ChatbotService {
 
     private ChatbotResponseVO fallbackResponse() {
         return ChatbotResponseVO.builder()
-                .message("죄송해요, 잠시 문제가 생겼어요. 아래 링크를 이용해보세요! 🙏")
+                .message(msg("chatbot.resp.fallback"))
                 .links(List.of(
-                        ChatbotResponseVO.SiteLink.builder().label("여행지 탐색").url("/explore").icon("📍").build(),
-                        ChatbotResponseVO.SiteLink.builder().label("AI 도우미").url("/assistant").icon("✨").build(),
-                        ChatbotResponseVO.SiteLink.builder().label("커뮤니티").url("/community/list").icon("💬").build()
+                        ChatbotResponseVO.SiteLink.builder().label(msg("chatbot.link.explore")).url("/explore").icon("📍").build(),
+                        ChatbotResponseVO.SiteLink.builder().label(msg("chatbot.link.assistant")).url("/assistant").icon("✨").build(),
+                        ChatbotResponseVO.SiteLink.builder().label(msg("chatbot.link.community")).url("/community/list").icon("💬").build()
                 ))
-                .quickReplies(List.of("인기 여행지 추천", "여행 코스 보기"))
+                .quickReplies(List.of(msg("chatbot.quick.popularSpots"),
+                                      msg("chatbot.quick.courseRecommend")))
                 .inappropriate(false)
                 .build();
+    }
+
+    private String msg(String code, Object... args) {
+        return messageSource.getMessage(code, args, code, LocaleContextHolder.getLocale());
     }
 }

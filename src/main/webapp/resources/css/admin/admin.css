@@ -182,6 +182,75 @@ button, input, select, textarea {
 .adm-topbar-path span { color: #64748b; }
 .adm-topbar-path span + span::before { content: ' / '; }
 
+.adm-topbar-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.adm-topbar-select-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #94a3b8;
+}
+.adm-topbar-tool-label {
+    white-space: nowrap;
+}
+.adm-topbar-select {
+    min-width: 112px;
+    height: 34px;
+    padding-block: 6px;
+}
+
+/* ══════════════════════════════════════════
+   햄버거 / 드로어 백드롭 (모바일)
+══════════════════════════════════════════ */
+.adm-nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+}
+.adm-nav-toggle:hover { background: #1e2330; border-color: #2d3748; }
+.adm-nav-toggle-bar {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    transition: transform .2s, opacity .2s;
+}
+.adm-nav-toggle.is-open .adm-nav-toggle-bar:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.adm-nav-toggle.is-open .adm-nav-toggle-bar:nth-child(2) { opacity: 0; }
+.adm-nav-toggle.is-open .adm-nav-toggle-bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.adm-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    z-index: 45;
+    transition: background .2s ease;
+}
+.adm-backdrop.is-open {
+    display: block;
+    background: rgba(0, 0, 0, .5);
+}
+
+body.adm-nav-lock { overflow: hidden; }
+
+
 /* 콘텐츠 영역 */
 .adm-content {
     flex: 1;
@@ -198,6 +267,10 @@ button, input, select, textarea {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 16px 32px rgba(15, 23, 42, 0.16);
+}
+.adm-card.is-focus-flash {
+    border-color: rgba(96,165,250,.65);
+    box-shadow: 0 0 0 3px rgba(59,130,246,.14), 0 16px 32px rgba(15, 23, 42, 0.16);
 }
 .adm-card-head {
     padding: 16px 20px;
@@ -719,6 +792,11 @@ button.adm-inline-chip {
     gap: 6px;
     flex-wrap: nowrap;
 }
+.adm-row-actions.is-focus-flash {
+    border-radius: 8px;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.18);
+    background: rgba(59,130,246,.08);
+}
 .adm-row-actions .action-menu-wrap {
     flex: 0 0 auto;
 }
@@ -1134,6 +1212,9 @@ button.adm-inline-chip {
     box-shadow: 0 8px 24px rgba(0,0,0,.4);
     display: none;
 }
+.action-menu.action-menu-wide {
+    min-width: 260px;
+}
 .action-menu.open { display: block; animation: menuIn .15s ease; }
 @keyframes menuIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
 .action-menu-head {
@@ -1155,6 +1236,19 @@ button.adm-inline-chip {
 .action-menu-item:hover { background: #111827; color: #e2e8f0; }
 .action-menu-item.danger:hover { background: rgba(239,68,68,.1); color: #f87171; }
 .action-menu-sep { height: 1px; background: #1a2030; margin: 4px 0; }
+.action-menu-form {
+    display: grid;
+    gap: 8px;
+    padding: 4px;
+}
+.action-menu-form .adm-input {
+    width: 100%;
+    min-width: 0;
+}
+.action-menu-form .action-menu-item {
+    justify-content: center;
+    width: 100%;
+}
 
 /* ══════════════════════════════════════════
    토스트 알림
@@ -1180,9 +1274,10 @@ button.adm-inline-chip {
 /* ══════════════════════════════════════════
    반응형
 ══════════════════════════════════════════ */
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
+    .adm-nav-toggle { display: flex; }
     .adm-sidebar { transform: translateX(-100%); }
-    .adm-sidebar.open { transform: none; }
+    .adm-sidebar.open { transform: none; box-shadow: 4px 0 24px rgba(0,0,0,.4); }
     .adm-main { margin-left: 0; }
     .detail-grid { grid-template-columns: 1fr; }
     .policy-layout { grid-template-columns: 1fr; }
@@ -1216,7 +1311,7 @@ button.adm-inline-chip {
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
     .adm-content {
         padding: 16px;
     }
@@ -1225,6 +1320,17 @@ button.adm-inline-chip {
     }
     .adm-filter-bar > * {
         width: 100%;
+    }
+    .adm-card-head,
+    .adm-local-toolbar {
+        padding: 14px 16px;
+    }
+    .adm-card-body {
+        padding: 16px;
+    }
+    .adm-local-toolbar-group .adm-input {
+        flex: 1 1 100%;
+        min-width: 0;
     }
     .adm-card-title {
         font-size: 15px;
@@ -1260,6 +1366,7 @@ button.adm-inline-chip {
 .sa-theme-btn:hover { border-color:#475569; color:#e2e8f0; background:#1e2330; }
 body.sa-light .sa-theme-btn { border-color:#e2e8f0; color:#64748b; background:#fff; }
 body.sa-light .sa-theme-btn:hover { border-color:#cbd5e1; color:#334155; background:#f1f5f9; }
+body.sa-light .adm-topbar-select-wrap { color: #64748b; }
 
 /* ══════════════════════════════════════════
    라이트 모드 (body.sa-light)
@@ -1286,6 +1393,10 @@ body.sa-light .adm-user-role        { color:#94a3b8; }
 body.sa-light .adm-topbar           { background:#fff; border-bottom-color:#e2e8f0; }
 body.sa-light .adm-topbar-title     { color:#1e293b; }
 body.sa-light .adm-topbar-path span { color:#94a3b8; }
+
+/* 햄버거 (라이트) */
+body.sa-light .adm-nav-toggle-bar   { background:#374151; }
+body.sa-light .adm-nav-toggle:hover { background:#f1f5f9; border-color:#e2e8f0; }
 
 /* 메인 영역 */
 body.sa-light .adm-main             { background:#f1f5f9; }
@@ -1459,6 +1570,10 @@ body.sa-light .adm-row-btn.danger      { border-color:rgba(239,68,68,.28); color
 body.sa-light .adm-row-btn.danger:hover { border-color:#ef4444; color:#b91c1c; background:rgba(239,68,68,.08); }
 body.sa-light .adm-row-btn.success      { border-color:rgba(16,185,129,.28); color:#059669; }
 body.sa-light .adm-row-btn.success:hover { border-color:#10b981; color:#047857; background:rgba(16,185,129,.08); }
+body.sa-light .adm-row-actions.is-focus-flash {
+    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    background: rgba(37,99,235,.06);
+}
 body.sa-light .action-menu          { background:#fff; border-color:#e2e8f0; box-shadow:0 8px 24px rgba(15,23,42,.08); }
 body.sa-light .action-menu-head     { color:#94a3b8; }
 body.sa-light .action-menu-item     { color:#64748b; }
@@ -1799,7 +1914,7 @@ body.sa-light .adm-warning-box {
     text-decoration: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
     .adm-summary-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -1813,7 +1928,7 @@ body.sa-light .adm-warning-box {
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
     .adm-admin-tabs,
     .adm-summary-grid {
         grid-template-columns: 1fr;
@@ -1874,7 +1989,7 @@ body.sa-light .adm-nav-group-caret      { color: #94a3b8; }
     margin-bottom: 20px;
 }
 .adm-chart-box { position: relative; height: 260px; }
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
     .adm-chart-grid { grid-template-columns: 1fr; }
 }
 

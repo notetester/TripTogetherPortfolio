@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminAssistantBlockMapper">
+
+    <resultMap id="blockRM" type="org.triptogether.admin.vo.AdminAssistantBlockVO">
+        <id     property="blockId"            column="block_id"/>
+        <result property="blockType"          column="block_type"/>
+        <result property="blockValue"         column="block_value"/>
+        <result property="reason"             column="reason"/>
+        <result property="blockedBy"          column="blocked_by"/>
+        <result property="blockedAt"          column="blocked_at"/>
+        <result property="expiresAt"          column="expires_at"/>
+        <result property="isActive"           column="is_active"/>
+        <result property="blockedByNickname"  column="blocked_by_nickname"/>
+        <result property="targetNickname"     column="target_nickname"/>
+    </resultMap>
+
+    <!--
+        차단 목록 조회
+        - activeOnly=true 면 is_active=1 만
+        - USER 차단일 때 대상 유저 닉네임, 처리 관리자 닉네임 JOIN
+    -->
+    <select id="selectBlocks" resultMap="blockRM">
+        SELECT
+            b.block_id, b.block_type, b.block_value, b.reason,
+            b.blocked_by, b.blocked_at, b.expires_at, b.is_active,
+            ua.nickname AS blocked_by_nickname,
+            ut.nickname AS target_nickname
+        FROM ADMIN_ASSISTANT_BLOCK b
+        LEFT JOIN USERS ua ON ua.user_idx = b.blocked_by
+        LEFT JOIN USERS ut
+            ON b.block_type = 'USER'
+           AND ut.user_idx = CAST(b.block_value AS UNSIGNED)
+        <if test="activeOnly">
+            WHERE b.is_active = 1
+        </if>
+        ORDER BY b.blocked_at DESC
+    </select>
+
+    <select id="selectActiveBlock" resultMap="blockRM">
+        SELECT block_id, block_type, block_value, reason,
+               blocked_by, blocked_at, expires_at, is_active
+        FROM ADMIN_ASSISTANT_BLOCK
+        WHERE is_active = 1
+          AND block_type = #{blockType}
+          AND block_value = #{blockValue}
+          AND (expires_at IS NULL OR expires_at &gt; NOW())
+        LIMIT 1
+    </select>
+
+    <insert id="insertBlock" parameterType="org.triptogether.admin.vo.AdminAssistantBlockVO"
+            useGeneratedKeys="true" keyProperty="blockId">
+        INSERT INTO ADMIN_ASSISTANT_BLOCK
+            (block_type, block_value, reason, blocked_by, blocked_at, expires_at, is_active)
+        VALUES
+            (#{blockType}, #{blockValue}, #{reason}, #{blockedBy}, NOW(), #{expiresAt}, 1)
+    </insert>
+
+    <update id="deactivateBlock">
+        UPDATE ADMIN_ASSISTANT_BLOCK
+           SET is_active = 0
+         WHERE block_id = #{blockId}
+    </update>
+
+</mapper>

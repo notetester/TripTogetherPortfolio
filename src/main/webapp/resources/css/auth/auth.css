@@ -428,7 +428,12 @@
 .form-select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.10); }
 
 /* ── 반응형 ── */
-@media (max-width: 480px) {
+@media (max-width: 767px) {
+    .auth-wrap { padding: 24px 12px; }
+    .auth-card { padding: 32px 28px 28px; }
+}
+
+@media (max-width: 479px) {
     .auth-card { padding: 28px 20px 24px; border-radius: 16px; }
     .auth-title { font-size: 1.4rem; }
 }

@@ -57,6 +57,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "classpath:messages/admin",
                 "classpath:messages/assistant",   // ← AI 도우미 다국어 메시지 번들 추가
                 "classpath:messages/auth",
+                "classpath:messages/chatbot",
                 "classpath:messages/community",
                 "classpath:messages/course",
                 "classpath:messages/courses",

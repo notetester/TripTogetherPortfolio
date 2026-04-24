@@ -32,6 +32,9 @@ public class ChatbotResponseVO {
     /** 대화 ID (신규 대화 생성 시 클라이언트가 저장) */
     private Long conversationId;
 
+    /** assistant 메시지 ID (프론트에서 링크 클릭 로깅 시 참조) */
+    private Long messageId;
+
     @Data
     @Builder
     @NoArgsConstructor
