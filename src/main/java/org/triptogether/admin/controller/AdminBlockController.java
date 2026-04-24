@@ -11,6 +11,7 @@ import org.triptogether.auth.vo.UsersVO;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -121,6 +122,24 @@ public class AdminBlockController {
         return result;
     }
 
+    @PostMapping("/ip-rules/bulk-toggle")
+    @ResponseBody
+    public Map<String, Object> bulkToggleIpRules(@RequestParam List<Long> ipBlocklistIdxList,
+                                                 @RequestParam boolean active,
+                                                 HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            adminBlockService.bulkToggleIpRules(ipBlocklistIdxList, active, loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", ipBlocklistIdxList.size() + "개의 IP 규칙이 " + (active ? "활성화" : "비활성화") + "되었습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
     @PostMapping("/ip-rules/{ipBlocklistIdx}/return-to-batch")
     @ResponseBody
     public Map<String, Object> returnIpRuleToBatch(@PathVariable Long ipBlocklistIdx,
@@ -170,6 +189,23 @@ public class AdminBlockController {
             adminBlockService.releaseUserBlock(blockTargetKey, loginUser != null ? loginUser.getUserIdx() : null);
             result.put("success", true);
             result.put("message", "회원 차단이 해제되었습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/user-blocks/bulk-release")
+    @ResponseBody
+    public Map<String, Object> bulkReleaseUserBlocks(@RequestParam List<String> blockTargetKeys,
+                                                     HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            adminBlockService.bulkReleaseUserBlocks(blockTargetKeys, loginUser != null ? loginUser.getUserIdx() : null);
+            result.put("success", true);
+            result.put("message", blockTargetKeys.size() + "개의 회원 차단이 해제되었습니다.");
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());

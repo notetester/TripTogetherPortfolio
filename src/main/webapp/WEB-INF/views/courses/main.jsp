@@ -1,14 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-
-<%@ include file="../common/header.jsp" %>
-
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <head>
   <meta charset="UTF-8">
-  <title><spring:message code="courses.main.pageTitle"/></title>
+  <title><spring:message code="course.main.windowTitle"/></title>
   <style>
     * {
       box-sizing: border-box;
@@ -196,39 +194,39 @@
   </style>
 </head>
 <body>
+<%@ include file="../common/header.jsp" %>
 
 <div class="courses-main-wrap">
   <section class="hero-section">
-    <div class="hero-badge"><spring:message code="courses.main.hero.badge"/></div>
-    <h1 class="hero-title"><spring:message code="courses.main.hero.title"/></h1>
-    <p class="hero-desc"><spring:message code="courses.main.hero.desc"/></p>
+    <div class="hero-badge"><spring:message code="course.main.badge"/></div>
+    <h1 class="hero-title"><spring:message code="course.main.title"/></h1>
+    <p class="hero-desc"><spring:message code="course.main.desc"/></p>
 
     <div class="hero-btn-group">
       <a href="${pageContext.request.contextPath}/courses/write" class="hero-btn primary">
-        <spring:message code="courses.common.directCreate"/>
+        <spring:message code="course.main.manualCreate"/>
       </a>
       <a href="${pageContext.request.contextPath}/courses/ai/form" class="hero-btn secondary">
-        <spring:message code="courses.common.aiCreate"/>
+        <spring:message code="course.main.aiCreate"/>
       </a>
     </div>
   </section>
 
   <section class="menu-grid">
     <a href="${pageContext.request.contextPath}/courses/my" class="menu-card">
-      <div class="menu-label"><spring:message code="courses.main.menu.my.label"/></div>
-      <h2 class="menu-title"><spring:message code="courses.main.menu.my.title"/></h2>
-      <p class="menu-desc"><spring:message code="courses.main.menu.my.desc"/></p>
+      <div class="menu-label"><spring:message code="course.main.my.label"/></div>
+      <h2 class="menu-title"><spring:message code="course.main.my.title"/></h2>
+      <p class="menu-desc"><spring:message code="course.main.my.desc"/></p>
     </a>
 
     <a href="${pageContext.request.contextPath}/courses/public" class="menu-card">
-      <div class="menu-label"><spring:message code="courses.main.menu.public.label"/></div>
-      <h2 class="menu-title"><spring:message code="courses.main.menu.public.title"/></h2>
-      <p class="menu-desc"><spring:message code="courses.main.menu.public.desc"/></p>
+      <div class="menu-label"><spring:message code="course.main.public.label"/></div>
+      <h2 class="menu-title"><spring:message code="course.main.public.title"/></h2>
+      <p class="menu-desc"><spring:message code="course.main.public.desc"/></p>
     </a>
   </section>
 </div>
 
 <%@ include file="../common/footer.jsp" %>
-
 </body>
 </html>

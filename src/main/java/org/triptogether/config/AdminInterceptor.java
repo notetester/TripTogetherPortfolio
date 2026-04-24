@@ -89,15 +89,16 @@ public class AdminInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private static final Map<String, String> URL_PERMISSION_MAP = Map.of(
-        "/admin/community",   "COMMUNITY_ADMIN",
-        "/admin/members",     "MEMBER_ADMIN",
-        "/admin/reports",     "REPORT_ADMIN",
-        "/admin/inquiries",   "INQUIRY_ADMIN",
-        "/admin/explore",     "EXPLORE_ADMIN",
-        "/admin/courses",     "COURSE_ADMIN",
-        "/admin/moderation",  "CONTENT_MODERATION_ADMIN",
-        "/admin/policies",    "OPS_POLICY_ADMIN"
+    private static final Map<String, String> URL_PERMISSION_MAP = Map.ofEntries(
+        Map.entry("/admin/community",   "COMMUNITY_ADMIN"),
+        Map.entry("/admin/ads",         "COMMUNITY_ADMIN"),
+        Map.entry("/admin/members",     "MEMBER_ADMIN"),
+        Map.entry("/admin/reports",     "REPORT_ADMIN"),
+        Map.entry("/admin/inquiries",   "INQUIRY_ADMIN"),
+        Map.entry("/admin/explore",     "EXPLORE_ADMIN"),
+        Map.entry("/admin/courses",     "COURSE_ADMIN"),
+        Map.entry("/admin/moderation",  "CONTENT_MODERATION_ADMIN"),
+        Map.entry("/admin/policies",    "OPS_POLICY_ADMIN")
     );
 
     private static final Map<String, String> AUDIT_URLS = Map.of(

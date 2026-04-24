@@ -186,7 +186,15 @@
                                                 </button>
                                             </div>
                                         </td>
-                                        <td>${b.snapshotStatus}</td>
+                                        <td>
+                                            <button type="button"
+                                                    class="adm-inline-chip js-apply-block-filter"
+                                                    data-section="user-blocks"
+                                                    data-field="snapshotStatus"
+                                                    data-keyword="${fn:escapeXml(b.snapshotStatus)}">
+                                                <span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span>
+                                            </button>
+                                        </td>
                                         <td>
                                             <button type="button"
                                                     class="adm-row-btn detail js-open-user-block-editor"
@@ -482,7 +490,15 @@
                             </c:otherwise>
                         </c:choose>
                             </td>
-                            <td>${b.blockType}</td>
+                            <td>
+                                <button type="button"
+                                        class="adm-inline-chip js-apply-block-filter"
+                                        data-section="user-blocks"
+                                        data-field="blockType"
+                                        data-keyword="${fn:escapeXml(b.blockType)}">
+                                    <c:out value="${b.blockType}"/>
+                                </button>
+                            </td>
                             <td>
                                 <button type="button"
                                         class="adm-link-btn js-open-user-block-editor"
@@ -506,14 +522,6 @@
                                     <span style="display:block;font-size:11px;color:#64748b;">${b.blockTargetKey}</span>
                                 </button>
                                 <div class="adm-inline-actions">
-                                    <c:if test="${not empty b.blockedIp}">
-                                        <button type="button"
-                                                class="adm-inline-chip js-open-ip-context"
-                                                data-ip-address="${b.blockedIp}"
-                                                data-default-tab="blocks">
-                                            <spring:message code="admin.common.viewDetail"/>
-                                        </button>
-                                    </c:if>
                                     <button type="button"
                                             class="adm-inline-chip js-apply-block-filter"
                                             data-section="user-blocks"
@@ -523,40 +531,80 @@
                                     </button>
                                 </div>
                             </td>
-                            <td><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span></td>
-                            <td style="max-width:260px;white-space:normal;">${empty b.reason ? '-' : b.reason}</td>
+                            <td>
+                                <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
+                                    <span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span>
+                                </button>
+                            </td>
+                            <td style="max-width:260px;white-space:normal;">
+                                <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
+                                    <span><c:out value="${empty b.reason ? '-' : b.reason}"/></span>
+                                </button>
+                                <c:if test="${not empty b.reason}">
+                                    <div class="adm-tr-inline js-admin-translation-widget"
+                                         data-label="<spring:message code='admin.common.reason'/>"
+                                         data-source-type="USER_BLOCK"
+                                         data-source-idx="${b.blockIdx}"
+                                         data-field-name="reason"
+                                         data-default-source-lang="ko"
+                                         data-source-text="${fn:escapeXml(b.reason)}"></div>
+                                </c:if>
+                            </td>
                             <td style="font-size:12px;">
-                                <div><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div>
-                                <div style="color:#94a3b8;"><spring:message code="admin.context.expiresAt"/>:
-                                    <c:choose>
-                                        <c:when test="${b.expiresAtDate != null}"><fmt:formatDate value="${b.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when>
-                                        <c:otherwise><spring:message code="admin.members.none"/></c:otherwise>
-                                    </c:choose>
-                                </div>
+                                <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
+                                    <span><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
+                                    <span class="adm-cell-link-note"><spring:message code="admin.context.expiresAt"/>:
+                                        <c:choose>
+                                            <c:when test="${b.expiresAtDate != null}"><fmt:formatDate value="${b.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when>
+                                            <c:otherwise><spring:message code="admin.members.none"/></c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </button>
                             </td>
                             <td>
-                                <button type="button"
-                                        class="adm-row-btn detail js-open-user-block-editor"
-                                        data-block-idx="${b.blockIdx}"
-                                        data-template-id="detail-user-${b.blockIdx}"
-                                        data-user-idx="${empty b.userIdx ? '' : b.userIdx}"
-                                        data-display-name="${fn:escapeXml(empty b.nickname ? b.userId : b.nickname)}"
-                                        data-user-id="${fn:escapeXml(empty b.userId ? '' : b.userId)}"
-                                        data-user-email="${fn:escapeXml(empty b.userEmail ? '' : b.userEmail)}"
-                                        data-block-type="${b.blockType}"
-                                        data-blocked-ip="${fn:escapeXml(empty b.blockedIp ? '' : b.blockedIp)}"
-                                        data-target-key="${fn:escapeXml(b.blockTargetKey)}"
-                                        data-active="${b.active ? 'true' : 'false'}"
-                                        data-snapshot-status="${fn:escapeXml(b.snapshotStatus)}"
-                                        data-reason="${fn:escapeXml(empty b.reason ? '' : b.reason)}"
-                                        data-expires-at="${b.expiresAtInputValue}"
-                                        data-blocked-at="${userBlockBlockedAtText}"
-                                        data-last-history-at="${userBlockLastHistoryText}"
-                                        data-sync-at="${userBlockSyncText}"><spring:message code="admin.common.settings"/></button>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-user-${b.blockIdx}"><spring:message code="admin.common.history"/></button>
-                                <c:if test="${hasUserBlockAdmin and b.active}">
-                                    <button type="button" class="adm-row-btn danger js-release-user-block" data-target-key="${fn:escapeXml(b.blockTargetKey)}"><spring:message code="admin.common.release"/></button>
-                                </c:if>
+                                <div class="adm-row-actions">
+                                    <button type="button"
+                                            class="adm-row-btn detail js-open-user-block-editor"
+                                            data-block-idx="${b.blockIdx}"
+                                            data-template-id="detail-user-${b.blockIdx}"
+                                            data-user-idx="${empty b.userIdx ? '' : b.userIdx}"
+                                            data-display-name="${fn:escapeXml(empty b.nickname ? b.userId : b.nickname)}"
+                                            data-user-id="${fn:escapeXml(empty b.userId ? '' : b.userId)}"
+                                            data-user-email="${fn:escapeXml(empty b.userEmail ? '' : b.userEmail)}"
+                                            data-block-type="${b.blockType}"
+                                            data-blocked-ip="${fn:escapeXml(empty b.blockedIp ? '' : b.blockedIp)}"
+                                            data-target-key="${fn:escapeXml(b.blockTargetKey)}"
+                                            data-active="${b.active ? 'true' : 'false'}"
+                                            data-snapshot-status="${fn:escapeXml(b.snapshotStatus)}"
+                                            data-reason="${fn:escapeXml(empty b.reason ? '' : b.reason)}"
+                                            data-expires-at="${b.expiresAtInputValue}"
+                                            data-blocked-at="${userBlockBlockedAtText}"
+                                            data-last-history-at="${userBlockLastHistoryText}"
+                                            data-sync-at="${userBlockSyncText}"><spring:message code="admin.common.settings"/></button>
+                                    <div class="action-menu-wrap">
+                                        <button type="button"
+                                                class="adm-row-btn detail adm-row-btn-more"
+                                                onclick="admToggleActionMenu(this)">⋯</button>
+                                        <div class="action-menu">
+                                            <c:if test="${not empty b.blockedIp}">
+                                                <button type="button"
+                                                        class="action-menu-item js-open-ip-context"
+                                                        data-ip-address="${b.blockedIp}"
+                                                        data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
+                                            </c:if>
+                                            <button type="button"
+                                                    class="action-menu-item js-open-block-detail"
+                                                    data-template-id="detail-user-${b.blockIdx}"
+                                                    data-detail-title="${fn:escapeXml(adminBlocksHistoryLabel)}"><spring:message code="admin.common.history"/></button>
+                                            <c:if test="${hasUserBlockAdmin and b.active}">
+                                                <div class="action-menu-sep"></div>
+                                                <button type="button"
+                                                        class="action-menu-item danger js-release-user-block"
+                                                        data-target-key="${fn:escapeXml(b.blockTargetKey)}"><spring:message code="admin.common.release"/></button>
+                                            </c:if>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     </c:forEach>
@@ -596,7 +644,7 @@
             <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.detailReason"/></div><div class="detail-value">${empty b.reason ? '-' : fn:escapeXml(b.reason)}</div></div>
             <c:if test="${not empty b.reason}">
                 <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="회원 차단 사유 번역"
+                     data-label="<spring:message code='admin.translation.label.userBlockReason'/>"
                      data-source-type="USER_BLOCK"
                      data-source-idx="${b.blockIdx}"
                      data-field-name="reason"
@@ -720,14 +768,6 @@
                                     <span style="display:block;font-size:11px;color:#64748b;">${r.matchType}</span>
                                 </button>
                                 <div class="adm-inline-actions">
-                                    <c:if test="${not empty r.ipAddress}">
-                                        <button type="button"
-                                                class="adm-inline-chip js-open-ip-context"
-                                                data-ip-address="${r.ipAddress}"
-                                                data-default-tab="blocks">
-                                            <spring:message code="admin.common.viewDetail"/>
-                                        </button>
-                                    </c:if>
                                     <button type="button"
                                             class="adm-inline-chip js-apply-block-filter"
                                             data-section="ip-rules"
@@ -747,59 +787,96 @@
                                 </div>
                             </td>
                             <td>
-                                <div><span class="status-badge ${r.ruleAction == 'ALLOW' ? 'ACTIVE' : 'DORMANT'}">${r.ruleActionLabel}</span></div>
-                                <div style="font-size:12px;color:#94a3b8;">${r.controlModeLabel}</div>
-                                <div style="font-size:11px;color:#64748b;">${r.blockCategory}</div>
-                            </td>
-                            <td>
-                                <div>${empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName}</div>
-                                <div style="font-size:12px;color:#94a3b8;">${empty r.batchCode ? r.batchStatusLabel : fn:escapeXml(r.batchCode)}</div>
-                                <div style="font-size:11px;color:#64748b;">${r.batchStatusLabel}</div>
-                            </td>
-                            <td>
-                                <div><span class="status-badge ${r.effectiveStatusBadgeClass}">${r.finalStateLabel}</span></div>
-                                <div style="font-size:12px;color:#94a3b8;">${r.effectiveStatusLabel}</div>
-                                <div style="font-size:11px;color:#64748b;">${r.ruleStateLabel} / ${r.batchStatusLabel}</div>
-                            </td>
-                            <td>
-                                <div>${r.priority}</div>
-                                <div style="font-size:11px;color:#64748b;">${empty r.ruleOriginType ? '-' : r.ruleOriginType}</div>
-                            </td>
-                            <td style="max-width:280px;white-space:normal;">
-                                <div>${empty r.reason ? '-' : r.reason}</div>
-                                <div style="font-size:11px;color:#64748b;">${empty r.effectiveStatusReason ? '-' : r.effectiveStatusReason}</div>
+                                <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
+                                    <span><span class="status-badge ${r.ruleAction == 'ALLOW' ? 'ACTIVE' : 'DORMANT'}">${r.ruleActionLabel}</span></span>
+                                    <span style="font-size:12px;color:#94a3b8;">${r.controlModeLabel}</span>
+                                    <span class="adm-cell-link-note">${r.blockCategory}</span>
+                                </button>
                             </td>
                             <td>
                                 <button type="button"
-                                        class="adm-row-btn detail js-open-ip-rule-editor"
-                                        data-id="${r.ipBlocklistIdx}"
-                                        data-template-id="detail-ip-${r.ipBlocklistIdx}"
-                                        data-target-display="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}"
-                                        data-target-key="${fn:escapeXml(r.blockTargetKey)}"
-                                        data-rule-action="${r.ruleAction}"
-                                        data-control-mode="${r.controlMode}"
-                                        data-block-category="${r.blockCategory}"
-                                        data-priority="${r.priority}"
-                                        data-reason="${fn:escapeXml(empty r.reason ? '' : r.reason)}"
-                                        data-detail-message="${fn:escapeXml(empty r.detailMessage ? '' : r.detailMessage)}"
-                                        data-expires-at="${r.expiresAtInputValue}"
-                                        data-effective-status-label="${fn:escapeXml(r.effectiveStatusLabel)}"
-                                        data-final-state-label="${fn:escapeXml(r.finalStateLabel)}"
-                                        data-rule-state-label="${fn:escapeXml(r.ruleStateLabel)}"
-                                        data-batch-status-label="${fn:escapeXml(r.batchStatusLabel)}"
-                                        data-batch-name="${fn:escapeXml(empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName)}"
-                                        data-batch-code="${fn:escapeXml(empty r.batchCode ? '' : r.batchCode)}"
+                                        class="adm-cell-link ${not empty r.ipBlockBatchIdx ? 'js-open-batch-editor' : 'js-open-ip-rule-editor'}"
                                         data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
-                                        data-blocked-at="${ipRuleBlockedAtText}"
-                                        data-expires-display="${fn:escapeXml(empty ipRuleExpiresText ? adminBlocksNoneLabel : ipRuleExpiresText)}"
-                                        data-active="${r.active ? 'true' : 'false'}">${adminBlocksSettingsLabel}</button>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-ip-${r.ipBlocklistIdx}">${adminBlocksHistoryLabel}</button>
-                                <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
-                                    <button type="button" class="adm-row-btn ${r.active ? 'danger' : 'detail'} js-toggle-ip-rule" data-id="${r.ipBlocklistIdx}" data-active="${r.active ? 'false' : 'true'}">${r.active ? adminBlocksRuleOffLabel : adminBlocksRuleOnLabel}</button>
-                                    <c:if test="${r.ipBlockBatchIdx != null and r.controlMode == 'MANUAL_OVERRIDE'}">
-                                        <button type="button" class="adm-row-btn detail js-return-to-batch" data-id="${r.ipBlocklistIdx}">${adminBlocksReturnToBatchLabel}</button>
-                                    </c:if>
-                                </c:if>
+                                        data-id="${r.ipBlocklistIdx}">
+                                    <span>${empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName}</span>
+                                    <span style="font-size:12px;color:#94a3b8;">${empty r.batchCode ? r.batchStatusLabel : fn:escapeXml(r.batchCode)}</span>
+                                    <span class="adm-cell-link-note">${r.batchStatusLabel}</span>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
+                                    <span><span class="status-badge ${r.effectiveStatusBadgeClass}">${r.finalStateLabel}</span></span>
+                                    <span style="font-size:12px;color:#94a3b8;">${r.effectiveStatusLabel}</span>
+                                    <span class="adm-cell-link-note">${r.ruleStateLabel} / ${r.batchStatusLabel}</span>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
+                                    <span>${r.priority}</span>
+                                    <span class="adm-cell-link-note">${empty r.ruleOriginType ? '-' : r.ruleOriginType}</span>
+                                </button>
+                            </td>
+                            <td style="max-width:280px;white-space:normal;">
+                                <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
+                                    <span>${empty r.reason ? '-' : r.reason}</span>
+                                    <span class="adm-cell-link-note">${empty r.effectiveStatusReason ? '-' : r.effectiveStatusReason}</span>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="adm-row-actions">
+                                    <button type="button"
+                                            class="adm-row-btn detail js-open-ip-rule-editor"
+                                            data-id="${r.ipBlocklistIdx}"
+                                            data-template-id="detail-ip-${r.ipBlocklistIdx}"
+                                            data-target-display="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}"
+                                            data-target-key="${fn:escapeXml(r.blockTargetKey)}"
+                                            data-rule-action="${r.ruleAction}"
+                                            data-control-mode="${r.controlMode}"
+                                            data-block-category="${r.blockCategory}"
+                                            data-priority="${r.priority}"
+                                            data-reason="${fn:escapeXml(empty r.reason ? '' : r.reason)}"
+                                            data-detail-message="${fn:escapeXml(empty r.detailMessage ? '' : r.detailMessage)}"
+                                            data-expires-at="${r.expiresAtInputValue}"
+                                            data-effective-status-label="${fn:escapeXml(r.effectiveStatusLabel)}"
+                                            data-final-state-label="${fn:escapeXml(r.finalStateLabel)}"
+                                            data-rule-state-label="${fn:escapeXml(r.ruleStateLabel)}"
+                                            data-batch-status-label="${fn:escapeXml(r.batchStatusLabel)}"
+                                            data-batch-name="${fn:escapeXml(empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName)}"
+                                            data-batch-code="${fn:escapeXml(empty r.batchCode ? '' : r.batchCode)}"
+                                            data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
+                                            data-blocked-at="${ipRuleBlockedAtText}"
+                                            data-expires-display="${fn:escapeXml(empty ipRuleExpiresText ? adminBlocksNoneLabel : ipRuleExpiresText)}"
+                                            data-active="${r.active ? 'true' : 'false'}">${adminBlocksSettingsLabel}</button>
+                                    <div class="action-menu-wrap">
+                                        <button type="button"
+                                                class="adm-row-btn detail adm-row-btn-more"
+                                                onclick="admToggleActionMenu(this)">⋯</button>
+                                        <div class="action-menu">
+                                            <c:if test="${not empty r.ipAddress}">
+                                                <button type="button"
+                                                        class="action-menu-item js-open-ip-context"
+                                                        data-ip-address="${r.ipAddress}"
+                                                        data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
+                                            </c:if>
+                                            <button type="button"
+                                                    class="action-menu-item js-open-block-detail"
+                                                    data-template-id="detail-ip-${r.ipBlocklistIdx}"
+                                                    data-detail-title="${fn:escapeXml(adminBlocksHistoryLabel)}">${adminBlocksHistoryLabel}</button>
+                                            <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
+                                                <div class="action-menu-sep"></div>
+                                                <button type="button"
+                                                        class="action-menu-item ${r.active ? 'danger' : ''} js-toggle-ip-rule"
+                                                        data-id="${r.ipBlocklistIdx}"
+                                                        data-active="${r.active ? 'false' : 'true'}">${r.active ? adminBlocksRuleOffLabel : adminBlocksRuleOnLabel}</button>
+                                                <c:if test="${r.ipBlockBatchIdx != null and r.controlMode == 'MANUAL_OVERRIDE'}">
+                                                    <button type="button"
+                                                            class="action-menu-item js-return-to-batch"
+                                                            data-id="${r.ipBlocklistIdx}">${adminBlocksReturnToBatchLabel}</button>
+                                                </c:if>
+                                            </c:if>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     </c:forEach>
@@ -844,7 +921,7 @@
             <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.policyReason"/></div><div class="detail-value">${empty r.reason ? '-' : fn:escapeXml(r.reason)}</div></div>
             <c:if test="${not empty r.reason}">
                 <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="IP 정책 사유 번역"
+                     data-label="<spring:message code='admin.translation.label.ipRuleReason'/>"
                      data-source-type="IP_BLOCK_RULE"
                      data-source-idx="${r.ipBlocklistIdx}"
                      data-field-name="reason"
@@ -854,7 +931,7 @@
             <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.context.detailMemo"/></div><div class="detail-value">${empty r.detailMessage ? '-' : fn:escapeXml(r.detailMessage)}</div></div>
             <c:if test="${not empty r.detailMessage}">
                 <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="IP 상세 메모 번역"
+                     data-label="<spring:message code='admin.translation.label.ipRuleDetailNote'/>"
                      data-source-type="IP_BLOCK_RULE"
                      data-source-idx="${r.ipBlocklistIdx}"
                      data-field-name="detail_message"
@@ -958,58 +1035,80 @@
                                 </button>
                             </td>
                             <td>
-                                <div>${b.batchRuleActionLabel}</div>
-                                <div style="font-size:12px;color:#94a3b8;"><spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</div>
-                                <div style="font-size:11px;color:#64748b;">OFF: ${b.defaultDisableStrategyLabel}</div>
-                                <div style="font-size:11px;color:#64748b;">ON: ${b.defaultEnableStrategyLabel}</div>
+                                <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
+                                    <span>${b.batchRuleActionLabel}</span>
+                                    <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</span>
+                                    <span class="adm-cell-link-note">OFF: ${b.defaultDisableStrategyLabel}</span>
+                                    <span class="adm-cell-link-note">ON: ${b.defaultEnableStrategyLabel}</span>
+                                </button>
                             </td>
                             <td>
-                                <div><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.activeLabel}</span></div>
-                                <div style="font-size:12px;color:#94a3b8;"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</div>
+                                <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
+                                    <span><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.activeLabel}</span></span>
+                                    <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</span>
+                                </button>
                             </td>
                             <td>
-                                <div><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</div>
-                                <div style="font-size:11px;color:#64748b;"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount} / <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</div>
-                                <div style="font-size:11px;color:#64748b;"><spring:message code="admin.blocks.effectiveState"/> ${b.effectiveRuleCount} / <spring:message code="admin.blocks.effective.expired"/> ${b.expiredRuleCount}</div>
+                                <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
+                                    <span><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</span>
+                                    <span class="adm-cell-link-note"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount} / <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</span>
+                                    <span class="adm-cell-link-note"><spring:message code="admin.blocks.effectiveState"/> ${b.effectiveRuleCount} / <spring:message code="admin.blocks.effective.expired"/> ${b.expiredRuleCount}</span>
+                                </button>
                             </td>
-                            <td style="max-width:260px;white-space:normal;">${empty b.description ? '-' : b.description}</td>
+                            <td style="max-width:260px;white-space:normal;">
+                                <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
+                                    <span>${empty b.description ? '-' : b.description}</span>
+                                </button>
+                            </td>
                             <td>
-                                <button type="button"
-                                        class="adm-row-btn detail js-open-batch-editor"
-                                        data-batch-id="${b.ipBlockBatchIdx}"
-                                        data-batch-code="${fn:escapeXml(b.batchCode)}"
-                                        data-batch-name="${fn:escapeXml(b.batchName)}"
-                                        data-source-type="${fn:escapeXml(b.sourceType)}"
-                                        data-source-name="${fn:escapeXml(empty b.sourceName ? '' : b.sourceName)}"
-                                        data-batch-rule-action="${fn:escapeXml(b.batchRuleAction)}"
-                                        data-default-priority="${b.defaultRulePriority}"
-                                        data-default-disable-strategy="${fn:escapeXml(b.defaultDisableStrategy)}"
-                                        data-default-enable-strategy="${fn:escapeXml(b.defaultEnableStrategy)}"
-                                        data-description="${fn:escapeXml(empty b.description ? '' : b.description)}"
-                                        data-status-label="${fn:escapeXml(b.activeLabel)}"
-                                        data-created-at="${batchCreatedAtText}"
-                                        data-updated-at="${batchUpdatedAtText}"
-                                        data-total-rules="${b.totalRuleCount}"
-                                        data-active-rules="${b.activeRuleCount}"
-                                        data-effective-rules="${b.effectiveRuleCount}"
-                                        data-expired-rules="${b.expiredRuleCount}"><spring:message code="admin.common.settings"/></button>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-batch-${b.ipBlockBatchIdx}"><spring:message code="admin.common.detail"/></button>
-                                <c:if test="${hasBlockPolicyAdmin}">
+                                <div class="adm-row-actions">
                                     <button type="button"
-                                            class="adm-row-btn ${b.active ? 'danger' : 'detail'} js-open-batch-toggle"
-                                            data-id="${b.ipBlockBatchIdx}"
-                                            data-active="${b.active ? 'false' : 'true'}"
+                                            class="adm-row-btn detail js-open-batch-editor"
+                                            data-batch-id="${b.ipBlockBatchIdx}"
+                                            data-batch-code="${fn:escapeXml(b.batchCode)}"
                                             data-batch-name="${fn:escapeXml(b.batchName)}"
+                                            data-source-type="${fn:escapeXml(b.sourceType)}"
+                                            data-source-name="${fn:escapeXml(empty b.sourceName ? '' : b.sourceName)}"
+                                            data-batch-rule-action="${fn:escapeXml(b.batchRuleAction)}"
+                                            data-default-priority="${b.defaultRulePriority}"
+                                            data-default-disable-strategy="${fn:escapeXml(b.defaultDisableStrategy)}"
+                                            data-default-enable-strategy="${fn:escapeXml(b.defaultEnableStrategy)}"
+                                            data-description="${fn:escapeXml(empty b.description ? '' : b.description)}"
+                                            data-status-label="${fn:escapeXml(b.activeLabel)}"
+                                            data-created-at="${batchCreatedAtText}"
+                                            data-updated-at="${batchUpdatedAtText}"
+                                            data-total-rules="${b.totalRuleCount}"
                                             data-active-rules="${b.activeRuleCount}"
                                             data-effective-rules="${b.effectiveRuleCount}"
-                                            data-default-disable-strategy="${b.defaultDisableStrategy}"
-                                            data-default-enable-strategy="${b.defaultEnableStrategy}">
-                                        <c:choose>
-                                            <c:when test="${b.active}"><spring:message code="admin.blocks.batchDeactivate"/></c:when>
-                                            <c:otherwise><spring:message code="admin.blocks.batchReactivate"/></c:otherwise>
-                                        </c:choose>
-                                    </button>
-                                </c:if>
+                                            data-expired-rules="${b.expiredRuleCount}"><spring:message code="admin.common.settings"/></button>
+                                    <div class="action-menu-wrap">
+                                        <button type="button"
+                                                class="adm-row-btn detail adm-row-btn-more"
+                                                onclick="admToggleActionMenu(this)">⋯</button>
+                                        <div class="action-menu">
+                                            <button type="button"
+                                                    class="action-menu-item js-open-block-detail"
+                                                    data-template-id="detail-batch-${b.ipBlockBatchIdx}"><spring:message code="admin.common.detail"/></button>
+                                            <c:if test="${hasBlockPolicyAdmin}">
+                                                <div class="action-menu-sep"></div>
+                                                <button type="button"
+                                                        class="action-menu-item ${b.active ? 'danger' : ''} js-open-batch-toggle"
+                                                        data-id="${b.ipBlockBatchIdx}"
+                                                        data-active="${b.active ? 'false' : 'true'}"
+                                                        data-batch-name="${fn:escapeXml(b.batchName)}"
+                                                        data-active-rules="${b.activeRuleCount}"
+                                                        data-effective-rules="${b.effectiveRuleCount}"
+                                                        data-default-disable-strategy="${b.defaultDisableStrategy}"
+                                                        data-default-enable-strategy="${b.defaultEnableStrategy}">
+                                                    <c:choose>
+                                                        <c:when test="${b.active}"><spring:message code="admin.blocks.batchDeactivate"/></c:when>
+                                                        <c:otherwise><spring:message code="admin.blocks.batchReactivate"/></c:otherwise>
+                                                    </c:choose>
+                                                </button>
+                                            </c:if>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     </c:forEach>
@@ -1136,19 +1235,26 @@
                             data-batch="${fn:toLowerCase(empty h.batchName ? '' : h.batchName)} ${fn:toLowerCase(empty h.batchCode ? '' : h.batchCode)}"
                             data-blocked-at="${fn:toLowerCase(historyBlockedAtText)}"
                             data-expires-at="${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}">
-                            <td><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></td>
                             <td>
-                                <div style="font-weight:700;color:#e2e8f0;">${h.blockTargetKey}</div>
-                                <div style="font-size:12px;color:#94a3b8;">${empty h.nickname ? '-' : h.nickname}</div>
+                                <button type="button"
+                                        class="adm-cell-link js-open-block-detail"
+                                        data-template-id="detail-history-${h.blockIdx}">
+                                    <span><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button"
+                                        class="adm-cell-link js-open-history-current"
+                                        data-history-id="${h.blockIdx}"
+                                        data-current-type="${historyCurrentType}"
+                                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                                        data-template-id="detail-history-${h.blockIdx}">
+                                    <span style="font-weight:700;color:#e2e8f0;">${h.blockTargetKey}</span>
+                                    <span style="font-size:12px;color:#94a3b8;">${empty h.nickname ? '-' : h.nickname}</span>
+                                </button>
                                 <div class="adm-inline-actions">
-                                    <c:if test="${not empty h.blockedIp}">
-                                        <button type="button"
-                                                class="adm-inline-chip js-open-ip-context"
-                                                data-ip-address="${h.blockedIp}"
-                                                data-default-tab="blocks">
-                                            <spring:message code="admin.common.viewDetail"/>
-                                        </button>
-                                    </c:if>
                                     <button type="button"
                                             class="adm-inline-chip js-apply-block-filter"
                                             data-section="histories"
@@ -1168,28 +1274,83 @@
                                 </div>
                             </td>
                             <td>
-                                <div>${empty h.ruleAction ? '-' : h.ruleAction}</div>
-                                <div style="font-size:12px;color:#94a3b8;">${empty h.blockType ? '-' : h.blockType}</div>
-                            </td>
-                            <td>
-                                <div>${h.historyKind}</div>
-                                <div style="font-size:12px;color:#94a3b8;">${empty h.controlMode ? '-' : h.controlMode} / ${empty h.operationSource ? '-' : h.operationSource}</div>
-                            </td>
-                            <td>
-                                <div>${empty h.effectiveResult ? '-' : h.effectiveResult}</div>
-                                <div style="font-size:11px;color:#64748b;">${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus} → ${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</div>
-                            </td>
-                            <td style="max-width:320px;white-space:normal;">${empty h.controlReason ? (empty h.reason ? '-' : h.reason) : h.controlReason}</td>
-                            <td>
                                 <button type="button"
-                                        class="adm-row-btn detail js-open-history-current"
+                                        class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
                                         data-current-type="${historyCurrentType}"
                                         data-target-key="${fn:escapeXml(h.blockTargetKey)}"
                                         data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
                                         data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
-                                        data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.blocks.currentSetting"/></button>
-                                <button type="button" class="adm-row-btn detail js-detail-open" data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.common.detail"/></button>
+                                        data-template-id="detail-history-${h.blockIdx}">
+                                    <span>${empty h.ruleAction ? '-' : h.ruleAction}</span>
+                                    <span style="font-size:12px;color:#94a3b8;">${empty h.blockType ? '-' : h.blockType}</span>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button"
+                                        class="adm-cell-link js-open-history-current"
+                                        data-history-id="${h.blockIdx}"
+                                        data-current-type="${historyCurrentType}"
+                                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                                        data-template-id="detail-history-${h.blockIdx}">
+                                    <span>${h.historyKind}</span>
+                                    <span style="font-size:12px;color:#94a3b8;">${empty h.controlMode ? '-' : h.controlMode} / ${empty h.operationSource ? '-' : h.operationSource}</span>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button"
+                                        class="adm-cell-link js-open-history-current"
+                                        data-history-id="${h.blockIdx}"
+                                        data-current-type="${historyCurrentType}"
+                                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                                        data-template-id="detail-history-${h.blockIdx}">
+                                    <span>${empty h.effectiveResult ? '-' : h.effectiveResult}</span>
+                                    <span class="adm-cell-link-note">${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus} → ${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</span>
+                                </button>
+                            </td>
+                            <td style="max-width:320px;white-space:normal;">
+                                <button type="button"
+                                        class="adm-cell-link js-open-history-current"
+                                        data-history-id="${h.blockIdx}"
+                                        data-current-type="${historyCurrentType}"
+                                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                                        data-template-id="detail-history-${h.blockIdx}">
+                                    <span>${empty h.controlReason ? (empty h.reason ? '-' : h.reason) : h.controlReason}</span>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="adm-row-actions">
+                                    <button type="button"
+                                            class="adm-row-btn detail js-open-history-current"
+                                            data-history-id="${h.blockIdx}"
+                                            data-current-type="${historyCurrentType}"
+                                            data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                                            data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                                            data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                                            data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.blocks.currentSetting"/></button>
+                                    <div class="action-menu-wrap">
+                                        <button type="button"
+                                                class="adm-row-btn detail adm-row-btn-more"
+                                                onclick="admToggleActionMenu(this)">⋯</button>
+                                        <div class="action-menu">
+                                            <c:if test="${not empty h.blockedIp}">
+                                                <button type="button"
+                                                        class="action-menu-item js-open-ip-context"
+                                                        data-ip-address="${h.blockedIp}"
+                                                        data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
+                                            </c:if>
+                                            <button type="button"
+                                                    class="action-menu-item js-open-block-detail"
+                                                    data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.common.detail"/></button>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     </c:forEach>
@@ -1245,8 +1406,8 @@
 <div class="adm-modal-overlay" id="blockDetailModal">
     <div class="adm-modal" style="max-width:860px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="blockDetailTitle"><spring:message code="admin.blocks.detailTitle"/></div>
-            <button class="adm-modal-close" onclick="closeModal('blockDetailModal')">✕</button>
+            <div class="adm-modal-title" id="blockDetailTitle" data-default-title='<spring:message code="admin.blocks.detailTitle" htmlEscape="true"/>'><spring:message code="admin.blocks.detailTitle"/></div>
+            <button class="adm-modal-close" onclick="return (window.TripAdminBlockDetailFallback ? window.TripAdminBlockDetailFallback.close() : closeModal('blockDetailModal'))">✕</button>
         </div>
         <div class="adm-modal-body" id="blockDetailBody"></div>
     </div>
@@ -1688,6 +1849,134 @@
     }
 </style>
 
+
+<script>
+window.TripAdminBlockDetailFallback = window.TripAdminBlockDetailFallback || (function () {
+    function notice(message) {
+        if (!message) return;
+        if (typeof window.adm_toast === 'function') {
+            try {
+                window.adm_toast(message, 'error');
+                return;
+            } catch (e) {}
+        }
+        try {
+            window.alert(message);
+        } catch (e) {}
+    }
+
+    function getElement(id) {
+        return document.getElementById(id);
+    }
+
+    function resolveDetailButton(button) {
+        if (!button) {
+            return null;
+        }
+
+        var templateId = button.getAttribute('data-template-id');
+        if (templateId && getElement(templateId)) {
+            return button;
+        }
+
+        if (!templateId) {
+            return button;
+        }
+
+        var fallbackButton = Array.prototype.find.call(
+            document.querySelectorAll('.js-open-block-detail'),
+            function (candidate) {
+                return candidate !== button
+                    && candidate.getAttribute('data-template-id') === templateId
+                    && !!getElement(templateId);
+            }
+        );
+
+        return fallbackButton || button;
+    }
+
+    function open(templateId, title) {
+        var template = getElement(templateId);
+        var modal = getElement('blockDetailModal');
+        var body = getElement('blockDetailBody');
+        var titleEl = getElement('blockDetailTitle');
+
+        if (!template || !modal || !body || !titleEl) {
+            console.error('Block detail fallback open failed', {
+                templateId: templateId,
+                hasTemplate: !!template,
+                hasModal: !!modal,
+                hasBody: !!body,
+                hasTitle: !!titleEl
+            });
+            notice((window.ADMIN_BLOCK_MSG && window.ADMIN_BLOCK_MSG.fetchError) || 'Failed to open detail modal.');
+            return false;
+        }
+
+        titleEl.textContent = title || titleEl.getAttribute('data-default-title') || titleEl.textContent || 'Detail';
+        body.innerHTML = '';
+        if (template.content) {
+            body.appendChild(document.importNode(template.content, true));
+        } else {
+            body.innerHTML = template.innerHTML || '';
+        }
+        modal.classList.add('open');
+
+        if (window.TripAdminTranslation && typeof window.TripAdminTranslation.scan === 'function') {
+            try {
+                window.TripAdminTranslation.scan(body);
+            } catch (error) {
+                console.error('Block detail translation scan failed', error);
+            }
+        }
+        return false;
+    }
+
+    function close() {
+        var modal = getElement('blockDetailModal');
+        if (modal) {
+            modal.classList.remove('open');
+        }
+        return false;
+    }
+
+    function handleButtonClick(button) {
+        var resolvedButton = resolveDetailButton(button);
+        if (!resolvedButton) return false;
+        return open(
+            resolvedButton.getAttribute('data-template-id'),
+            resolvedButton.getAttribute('data-detail-title')
+        );
+    }
+
+    function bindDirect() {
+        document.querySelectorAll('.js-open-block-detail').forEach(function (button) {
+            if (button.dataset.detailBound === 'true') {
+                return;
+            }
+            button.dataset.detailBound = 'true';
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                handleButtonClick(button);
+            });
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindDirect);
+    } else {
+        bindDirect();
+    }
+
+    return {
+        open: open,
+        close: close,
+        handleButtonClick: handleButtonClick,
+        bindDirect: bindDirect
+    };
+})();
+</script>
 <script>
 const CTX = '${pageContext.request.contextPath}';
 const ADMIN_BLOCK_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
@@ -1810,7 +2099,7 @@ function getLocalRows(section) {
 
 function getLocalState(section) {
     if (!blockSectionState[section]) {
-        blockSectionState[section] = {page: 1, pageSize: 20};
+        blockSectionState[section] = {page: 1, pageSize: 20, sortKey: '', sortDir: 'ASC'};
     }
     return blockSectionState[section];
 }
@@ -1887,9 +2176,344 @@ function filterLocalRows(section) {
     });
 }
 
+
+function getSectionCard(section) {
+    return document.querySelector('.js-section-card[data-section="' + section + '"]');
+}
+
+const BLOCK_SECTION_SORT_CONFIG = {
+    'user-blocks': {
+        member: {cell: 0, label: '<spring:message code="admin.common.member" javaScriptEscape="true"/>'},
+        blockType: {cell: 1, label: '<spring:message code="admin.blocks.filter.blockType" javaScriptEscape="true"/>'},
+        target: {cell: 2, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
+        status: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
+        reason: {cell: 4, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'},
+        blockedAt: {cell: 5, label: '<spring:message code="admin.blocks.blockAndExpire" javaScriptEscape="true"/>'}
+    },
+    'ip-rules': {
+        target: {cell: 0, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
+        policy: {cell: 1, label: '<spring:message code="admin.blocks.actionControl" javaScriptEscape="true"/>'},
+        batch: {cell: 2, label: '<spring:message code="admin.context.batch" javaScriptEscape="true"/>'},
+        status: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
+        priority: {cell: 4, label: '<spring:message code="admin.context.priority" javaScriptEscape="true"/>', numeric: true},
+        reason: {cell: 5, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'}
+    },
+    'batches': {
+        batch: {cell: 0, label: '<spring:message code="admin.blocks.batch" javaScriptEscape="true"/>'},
+        policy: {cell: 1, label: '<spring:message code="admin.blocks.basePolicy" javaScriptEscape="true"/>'},
+        status: {cell: 2, label: '<spring:message code="admin.blocks.currentState" javaScriptEscape="true"/>'},
+        stats: {cell: 3, label: '<spring:message code="admin.blocks.ruleStats" javaScriptEscape="true"/>'},
+        description: {cell: 4, label: '<spring:message code="admin.blocks.description" javaScriptEscape="true"/>'}
+    },
+    'histories': {
+        blockedAt: {cell: 0, label: '<spring:message code="admin.common.time" javaScriptEscape="true"/>'},
+        target: {cell: 1, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
+        policy: {cell: 2, label: '<spring:message code="admin.common.actionLabel" javaScriptEscape="true"/>'},
+        change: {cell: 3, label: '<spring:message code="admin.blocks.changeKind" javaScriptEscape="true"/>'},
+        result: {cell: 4, label: '<spring:message code="admin.blocks.result" javaScriptEscape="true"/>'},
+        reason: {cell: 5, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'}
+    }
+};
+
+function getSortableCells(row) {
+    return Array.from(row.children).filter(function (cell) {
+        return !cell.classList.contains('js-block-check-cell');
+    });
+}
+
+function localSortValue(row, section, sortKey) {
+    const config = BLOCK_SECTION_SORT_CONFIG[section] && BLOCK_SECTION_SORT_CONFIG[section][sortKey];
+    if (!config) return '';
+    const dataValue = row.dataset[sortKey] || row.dataset[sortKey.replace(/-([a-z])/g, function (_, c) { return c.toUpperCase(); })];
+    if (dataValue != null && dataValue !== '') return dataValue;
+    const cells = getSortableCells(row);
+    return cells[config.cell] ? cells[config.cell].innerText.trim() : '';
+}
+
+function sortLocalRows(section, rows) {
+    const state = getLocalState(section);
+    const sortKey = state.sortKey;
+    if (!sortKey) return rows;
+    const config = BLOCK_SECTION_SORT_CONFIG[section] && BLOCK_SECTION_SORT_CONFIG[section][sortKey];
+    if (!config) return rows;
+    const dir = state.sortDir === 'DESC' ? -1 : 1;
+    return rows.slice().sort(function (a, b) {
+        let av = localSortValue(a, section, sortKey);
+        let bv = localSortValue(b, section, sortKey);
+        if (config.numeric) {
+            av = Number(String(av).replace(/[^0-9.-]/g, '')) || 0;
+            bv = Number(String(bv).replace(/[^0-9.-]/g, '')) || 0;
+            return (av - bv) * dir;
+        }
+        return String(av).localeCompare(String(bv), ADMIN_BLOCK_LOCALE || undefined, {numeric: true, sensitivity: 'base'}) * dir;
+    });
+}
+
+function updateLocalSortIndicators(section) {
+    const state = getLocalState(section);
+    const card = getSectionCard(section);
+    if (!card) return;
+    card.querySelectorAll('.js-local-sort').forEach(function (th) {
+        const active = th.dataset.sort === state.sortKey;
+        th.classList.toggle('sorted', active);
+        const ico = th.querySelector('.sort-ico');
+        if (ico) ico.textContent = active ? (state.sortDir === 'DESC' ? '▼' : '▲') : '↕';
+    });
+}
+
+function setLocalSort(section, sortKey) {
+    const state = getLocalState(section);
+    if (state.sortKey === sortKey) {
+        state.sortDir = state.sortDir === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+        state.sortKey = sortKey;
+        state.sortDir = 'ASC';
+    }
+    state.page = 1;
+    renderLocalSection(section);
+}
+
+function blockRowKey(row, section) {
+    if (section === 'user-blocks') {
+        const btn = row.querySelector('.js-open-user-block-editor[data-target-key]');
+        return btn ? btn.dataset.targetKey : '';
+    }
+    if (section === 'ip-rules') {
+        const btn = row.querySelector('.js-open-ip-rule-editor[data-id]');
+        return btn ? btn.dataset.id : '';
+    }
+    if (section === 'batches') {
+        const btn = row.querySelector('.js-open-batch-editor[data-batch-id]');
+        return btn ? btn.dataset.batchId : '';
+    }
+    if (section === 'histories') {
+        const btn = row.querySelector('.js-open-history-current[data-history-id]');
+        return btn ? btn.dataset.historyId : '';
+    }
+    return '';
+}
+
+
+function enhanceBlockDashboardTables() {
+    const sections = ['user-blocks', 'ip-rules', 'batches', 'histories'];
+    document.querySelectorAll('.js-dashboard-panel table.adm-table').forEach(function (table, tableIndex) {
+        const targetSection = sections[tableIndex] || 'all';
+        table.querySelectorAll('thead th').forEach(function (th, idx, arr) {
+            if (idx === arr.length - 1 || th.dataset.dashboardEnhanced === 'true') return;
+            th.dataset.dashboardEnhanced = 'true';
+            th.style.cursor = 'pointer';
+            th.style.userSelect = 'none';
+            th.title = '클릭하면 해당 운영 탭으로 이동합니다.';
+            th.insertAdjacentHTML('beforeend', ' <span style="font-size:10px;color:#94a3b8;">↗</span>');
+            th.addEventListener('click', function () {
+                activateBlockTab(targetSection);
+                renderLocalSection(targetSection);
+            });
+        });
+    });
+}
+
+
+function enhanceBlockLocalTables() {
+    Object.keys(BLOCK_SECTION_CONFIG).forEach(function (section) {
+        const card = getSectionCard(section);
+        if (!card || card.dataset.enhanced === 'true') return;
+        card.dataset.enhanced = 'true';
+
+        const toolbar = card.querySelector('.adm-local-toolbar');
+        if (toolbar) {
+            const group = document.createElement('div');
+            group.className = 'adm-local-toolbar-group js-local-export-group';
+            group.innerHTML =
+                '<select class="adm-select js-block-export-format" data-section="' + section + '" style="width:86px;">'
+                + '<option value="csv">CSV</option><option value="excel">Excel</option></select>'
+                + '<button type="button" class="adm-btn adm-btn-ghost js-block-export" data-section="' + section + '" data-scope="all">전체 내보내기</button>'
+                + '<button type="button" class="adm-btn adm-btn-ghost js-block-export" data-section="' + section + '" data-scope="search">검색결과 내보내기</button>'
+                + '<button type="button" class="adm-btn adm-btn-ghost js-block-export js-block-export-selected" data-section="' + section + '" data-scope="selected" disabled>선택 내보내기 (0)</button>';
+            toolbar.appendChild(group);
+        }
+
+        const table = card.querySelector('table.adm-table');
+        if (!table) return;
+        const headRow = table.querySelector('thead tr');
+        if (headRow && !headRow.querySelector('.js-block-check-all')) {
+            const checkTh = document.createElement('th');
+            checkTh.className = 'js-block-check-cell';
+            checkTh.style.width = '42px';
+            checkTh.style.textAlign = 'center';
+            checkTh.innerHTML = '<input type="checkbox" class="js-block-check-all" data-section="' + section + '" style="cursor:pointer;">';
+            headRow.insertBefore(checkTh, headRow.firstElementChild);
+        }
+
+        const sortConfig = BLOCK_SECTION_SORT_CONFIG[section] || {};
+        Object.keys(sortConfig).forEach(function (key) {
+            const cellIndex = sortConfig[key].cell + 1;
+            const th = headRow ? headRow.children[cellIndex] : null;
+            if (!th || th.classList.contains('js-local-sort')) return;
+            th.classList.add('js-local-sort');
+            th.dataset.section = section;
+            th.dataset.sort = key;
+            th.style.cursor = 'pointer';
+            th.style.userSelect = 'none';
+            th.innerHTML = th.innerHTML + ' <span class="sort-ico" style="font-size:10px;color:#94a3b8;">↕</span>';
+        });
+
+        getLocalRows(section).forEach(function (row) {
+            if (row.querySelector('.js-block-row-check')) return;
+            const checkTd = document.createElement('td');
+            checkTd.className = 'js-block-check-cell';
+            checkTd.style.textAlign = 'center';
+            checkTd.innerHTML = '<input type="checkbox" class="js-block-row-check" data-section="' + section + '" value="' + escapeHtml(blockRowKey(row, section)) + '" style="cursor:pointer;">';
+            row.insertBefore(checkTd, row.firstElementChild);
+        });
+
+        if (section === 'user-blocks' || section === 'ip-rules') {
+            const wrap = card.querySelector('.adm-table-wrap');
+            if (wrap && !card.querySelector('.js-block-bulkbar[data-section="' + section + '"]')) {
+                const bar = document.createElement('div');
+                bar.className = 'js-block-bulkbar';
+                bar.dataset.section = section;
+                bar.style.cssText = 'display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 14px;margin:0 16px 12px;align-items:center;gap:10px;flex-wrap:wrap;';
+                if (section === 'user-blocks') {
+                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>개 선택됨</span>'
+                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-release-user-blocks">선택 차단 해제</button>'
+                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">선택 해제</button>';
+                } else {
+                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>개 선택됨</span>'
+                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-toggle-ip-rules" data-active="true">선택 활성화</button>'
+                        + '<button type="button" class="adm-btn adm-btn-danger js-bulk-toggle-ip-rules" data-active="false">선택 비활성화</button>'
+                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">선택 해제</button>';
+                }
+                wrap.parentElement.insertBefore(bar, wrap);
+            }
+        }
+    });
+}
+
+function selectedBlockChecks(section) {
+    return Array.from(document.querySelectorAll('.js-block-row-check[data-section="' + section + '"]:checked'));
+}
+
+function updateBlockBulkBar(section) {
+    const checks = selectedBlockChecks(section);
+    const bar = document.querySelector('.js-block-bulkbar[data-section="' + section + '"]');
+    if (bar) {
+        bar.style.display = checks.length > 0 ? 'flex' : 'none';
+        const count = bar.querySelector('.js-block-bulk-count');
+        if (count) count.textContent = checks.length;
+    }
+    const selectedBtn = document.querySelector('.js-block-export-selected[data-section="' + section + '"]');
+    if (selectedBtn) {
+        selectedBtn.disabled = checks.length === 0;
+        selectedBtn.textContent = '선택 내보내기 (' + checks.length + ')';
+    }
+    const all = document.querySelector('.js-block-check-all[data-section="' + section + '"]');
+    if (all) {
+        const visibleChecks = getLocalRows(section)
+            .filter(row => row.style.display !== 'none')
+            .map(row => row.querySelector('.js-block-row-check'))
+            .filter(Boolean);
+        all.checked = visibleChecks.length > 0 && visibleChecks.every(cb => cb.checked);
+        all.indeterminate = visibleChecks.some(cb => cb.checked) && !all.checked;
+    }
+}
+
+function clearBlockSelection(section) {
+    document.querySelectorAll('.js-block-row-check[data-section="' + section + '"], .js-block-check-all[data-section="' + section + '"]').forEach(function (cb) {
+        cb.checked = false;
+        cb.indeterminate = false;
+    });
+    updateBlockBulkBar(section);
+}
+
+async function bulkReleaseSelectedUserBlocks() {
+    const keys = selectedBlockChecks('user-blocks').map(cb => cb.value).filter(Boolean);
+    if (!keys.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+    if (!confirm(keys.length + '개의 회원 차단을 해제하시겠습니까?')) return;
+    const params = new URLSearchParams();
+    keys.forEach(key => params.append('blockTargetKeys', key));
+    const res = await fetch(CTX + '/admin/blocks/user-blocks/bulk-release', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params
+    });
+    const data = await res.json();
+    if (res.ok && data.success) { adm_toast(data.message || '처리되었습니다.'); location.reload(); }
+    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+}
+
+async function bulkToggleSelectedIpRules(active) {
+    const ids = selectedBlockChecks('ip-rules').map(cb => cb.value).filter(Boolean);
+    if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+    if (!confirm(ids.length + '개의 IP 규칙을 ' + (active ? '활성화' : '비활성화') + '하시겠습니까?')) return;
+    const params = new URLSearchParams();
+    ids.forEach(id => params.append('ipBlocklistIdxList', id));
+    params.append('active', active ? 'true' : 'false');
+    const res = await fetch(CTX + '/admin/blocks/ip-rules/bulk-toggle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params
+    });
+    const data = await res.json();
+    if (res.ok && data.success) { adm_toast(data.message || '처리되었습니다.'); location.reload(); }
+    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+}
+
+function exportBlockSection(section, scope) {
+    const card = getSectionCard(section);
+    if (!card) return;
+    const table = card.querySelector('table.adm-table');
+    const formatSelect = card.querySelector('.js-block-export-format[data-section="' + section + '"]');
+    const format = formatSelect ? formatSelect.value : 'csv';
+    let rows;
+    if (scope === 'selected') {
+        rows = selectedBlockChecks(section).map(cb => cb.closest('tr')).filter(Boolean);
+        if (!rows.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+    } else if (scope === 'search') {
+        rows = sortLocalRows(section, filterLocalRows(section));
+    } else {
+        rows = sortLocalRows(section, getLocalRows(section));
+    }
+    const headers = Array.from(table.querySelectorAll('thead th'))
+        .filter((th, idx, arr) => idx !== 0 && idx !== arr.length - 1)
+        .map(th => th.innerText.replace(/[↕▲▼]/g, '').trim());
+    const body = rows.map(function (row) {
+        const cells = Array.from(row.children).filter((td, idx, arr) => idx !== 0 && idx !== arr.length - 1);
+        return cells.map(td => td.innerText.replace(/\s+/g, ' ').trim());
+    });
+    const filename = 'blocks_' + section + '_' + scope + '_' + new Date().toISOString().slice(0, 10);
+    if (format === 'excel') {
+        const html = '<table><thead><tr>' + headers.map(h => '<th>' + escapeHtml(h) + '</th>').join('') + '</tr></thead><tbody>'
+            + body.map(row => '<tr>' + row.map(v => '<td>' + escapeHtml(v) + '</td>').join('') + '</tr>').join('')
+            + '</tbody></table>';
+        downloadBlob('\ufeff' + html, filename + '.xls', 'application/vnd.ms-excel;charset=utf-8');
+    } else {
+        const csv = [headers].concat(body).map(row => row.map(csvEscape).join(',')).join('\n');
+        downloadBlob('\ufeff' + csv, filename + '.csv', 'text/csv;charset=utf-8');
+    }
+}
+
+function csvEscape(value) {
+    const s = String(value == null ? '' : value);
+    return '"' + s.replace(/"/g, '""') + '"';
+}
+
+function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], {type: type});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+}
+
+
 function renderLocalSection(section) {
     const state = getLocalState(section);
-    const filteredRows = filterLocalRows(section);
+    const filteredRows = sortLocalRows(section, filterLocalRows(section));
     const total = filteredRows.length;
     const pageSize = Math.max(1, Number(state.pageSize || 20));
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -1907,11 +2531,18 @@ function renderLocalSection(section) {
     getLocalRows(section).forEach(function (row) {
         row.style.display = 'none';
     });
-    filteredRows.slice(start, end).forEach(function (row) {
-        row.style.display = '';
-    });
+    const visibleRows = filteredRows.slice(start, end);
+    if (visibleRows.length) {
+        const tbody = visibleRows[0].parentElement;
+        visibleRows.forEach(function (row) {
+            tbody.appendChild(row);
+            row.style.display = '';
+        });
+    }
 
-    ensureLocalEmptyRow(section, filteredRows.slice(start, end).length);
+    ensureLocalEmptyRow(section, visibleRows.length);
+    updateLocalSortIndicators(section);
+    updateBlockBulkBar(section);
 
     const info = document.querySelector('.js-local-page-info[data-section="' + section + '"]');
     const pageState = document.querySelector('.js-local-page-state[data-section="' + section + '"]');
@@ -1983,6 +2614,58 @@ function applyBlockLocalFilter(section, field, keyword) {
 function findFirstButton(selector, predicate) {
     const buttons = Array.from(document.querySelectorAll(selector));
     return buttons.find(predicate) || null;
+}
+
+function hasUsefulDatasetValue(value) {
+    return value !== undefined && value !== null && String(value).trim() !== '';
+}
+
+function resolveButtonByKey(button, selector, key, requiredKeys) {
+    if (!button || !key || !hasUsefulDatasetValue(button.dataset[key])) {
+        return button || null;
+    }
+
+    const currentValue = String(button.dataset[key]);
+    const resolvedButton = findFirstButton(selector, function (candidate) {
+        if (String(candidate.dataset[key] || '') !== currentValue) {
+            return false;
+        }
+        if (!Array.isArray(requiredKeys) || !requiredKeys.length) {
+            return true;
+        }
+        return requiredKeys.every(function (requiredKey) {
+            return hasUsefulDatasetValue(candidate.dataset[requiredKey]);
+        });
+    });
+
+    return resolvedButton || button;
+}
+
+function resolveUserBlockEditorButton(button) {
+    return resolveButtonByKey(button, '.js-open-user-block-editor', 'blockIdx', [
+        'blockIdx',
+        'targetKey',
+        'blockType',
+        'snapshotStatus',
+        'templateId'
+    ]);
+}
+
+function resolveIpRuleEditorButton(button) {
+    return resolveButtonByKey(button, '.js-open-ip-rule-editor', 'id', [
+        'id',
+        'targetKey',
+        'ruleAction',
+        'controlMode',
+        'templateId'
+    ]);
+}
+
+function resolveHistoryCurrentButton(button) {
+    return resolveButtonByKey(button, '.js-open-history-current', 'historyId', [
+        'historyId',
+        'templateId'
+    ]);
 }
 
 function formatDateTime(value) {
@@ -2257,14 +2940,45 @@ function handleIpBatchChange() {
 }
 
 function openBlockDetail(templateId, title) {
-    const template = document.getElementById(templateId);
-    if (!template) return;
-    document.getElementById('blockDetailTitle').textContent = title || ADMIN_BLOCK_MSG.blockDetailTitle;
-    document.getElementById('blockDetailBody').innerHTML = template.innerHTML;
-    if (window.TripAdminTranslation && typeof window.TripAdminTranslation.scan === 'function') {
-        window.TripAdminTranslation.scan(document.getElementById('blockDetailBody'));
+    if (window.TripAdminBlockDetailFallback && typeof window.TripAdminBlockDetailFallback.open === 'function') {
+        return window.TripAdminBlockDetailFallback.open(templateId, title);
     }
-    document.getElementById('blockDetailModal').classList.add('open');
+    const template = document.getElementById(templateId);
+    if (!template) {
+        adm_toast(ADMIN_BLOCK_MSG.fetchError, 'error');
+        return;
+    }
+
+    const modal = document.getElementById('blockDetailModal');
+    const body = document.getElementById('blockDetailBody');
+    document.getElementById('blockDetailTitle').textContent = title || ADMIN_BLOCK_MSG.blockDetailTitle;
+
+    body.innerHTML = '';
+    if (template.content) {
+        body.appendChild(document.importNode(template.content, true));
+    } else {
+        body.innerHTML = template.innerHTML;
+    }
+    modal.classList.add('open');
+
+    if (window.TripAdminTranslation && typeof window.TripAdminTranslation.scan === 'function') {
+        try {
+            window.TripAdminTranslation.scan(body);
+        } catch (error) {
+            console.error('block detail translation scan failed', error);
+        }
+    }
+}
+
+function openBlockDetailFromButton(button) {
+    if (window.TripAdminBlockDetailFallback && typeof window.TripAdminBlockDetailFallback.handleButtonClick === 'function') {
+        return window.TripAdminBlockDetailFallback.handleButtonClick(button);
+    }
+    if (!button) {
+        adm_toast(ADMIN_BLOCK_MSG.fetchError, 'error');
+        return;
+    }
+    openBlockDetail(button.dataset.templateId, button.dataset.detailTitle || ADMIN_BLOCK_MSG.blockDetailTitle);
 }
 
 function applyExpiryPreset(targetId, days) {
@@ -2299,13 +3013,19 @@ function fillIpRuleEditControlModes(hasBatch, currentMode) {
 }
 
 function openUserBlockEditor(button) {
-    const userIdx = button.dataset.userIdx || '';
-    const displayName = button.dataset.displayName || '-';
-    const userId = button.dataset.userId || '';
-    const userEmail = button.dataset.userEmail || '';
+    const resolvedButton = resolveUserBlockEditorButton(button);
+    if (!resolvedButton || !resolvedButton.dataset.blockIdx) {
+        adm_toast(ADMIN_BLOCK_MSG.fetchError, 'error');
+        return;
+    }
 
-    document.getElementById('userBlockEditId').value = button.dataset.blockIdx;
-    document.getElementById('userBlockEditTemplateId').value = button.dataset.templateId || '';
+    const userIdx = resolvedButton.dataset.userIdx || '';
+    const displayName = resolvedButton.dataset.displayName || '-';
+    const userId = resolvedButton.dataset.userId || '';
+    const userEmail = resolvedButton.dataset.userEmail || '';
+
+    document.getElementById('userBlockEditId').value = resolvedButton.dataset.blockIdx;
+    document.getElementById('userBlockEditTemplateId').value = resolvedButton.dataset.templateId || '';
     document.getElementById('userBlockEditTitle').textContent = '<spring:message code="admin.blocks.userBlocks.editTitle" javaScriptEscape="true"/>';
 
     let memberHtml = escapeHtml(displayName);
@@ -2320,48 +3040,54 @@ function openUserBlockEditor(button) {
     }
 
     document.getElementById('userBlockEditMember').innerHTML = memberHtml;
-    document.getElementById('userBlockEditTarget').textContent = button.dataset.targetKey || '-';
-    document.getElementById('userBlockEditType').textContent = button.dataset.blockType || '-';
-    document.getElementById('userBlockEditStatus').textContent = (button.dataset.active === 'true' ? ADMIN_BLOCK_MSG.keepBlocked : ADMIN_BLOCK_MSG.releaseBlock) + ' / ' + (button.dataset.snapshotStatus || '-');
-    document.getElementById('userBlockEditBlockedAt').textContent = button.dataset.blockedAt || '-';
-    document.getElementById('userBlockEditSyncAt').textContent = button.dataset.syncAt || '-';
-    document.getElementById('userBlockEditActive').value = button.dataset.active === 'true' ? 'true' : 'false';
-    document.getElementById('userBlockEditExpiresAt').value = button.dataset.expiresAt || '';
-    document.getElementById('userBlockEditReason').value = button.dataset.reason || '';
+    document.getElementById('userBlockEditTarget').textContent = resolvedButton.dataset.targetKey || '-';
+    document.getElementById('userBlockEditType').textContent = resolvedButton.dataset.blockType || '-';
+    document.getElementById('userBlockEditStatus').textContent = (resolvedButton.dataset.active === 'true' ? ADMIN_BLOCK_MSG.keepBlocked : ADMIN_BLOCK_MSG.releaseBlock) + ' / ' + (resolvedButton.dataset.snapshotStatus || '-');
+    document.getElementById('userBlockEditBlockedAt').textContent = resolvedButton.dataset.blockedAt || '-';
+    document.getElementById('userBlockEditSyncAt').textContent = resolvedButton.dataset.syncAt || '-';
+    document.getElementById('userBlockEditActive').value = resolvedButton.dataset.active === 'true' ? 'true' : 'false';
+    document.getElementById('userBlockEditExpiresAt').value = resolvedButton.dataset.expiresAt || '';
+    document.getElementById('userBlockEditReason').value = resolvedButton.dataset.reason || '';
     document.getElementById('userBlockEditHistoryBtn').onclick = function () {
         closeModal('userBlockEditModal');
-        openBlockDetail(button.dataset.templateId, ADMIN_BLOCK_MSG.userBlockHistory);
+        openBlockDetail(resolvedButton.dataset.templateId, ADMIN_BLOCK_MSG.userBlockHistory);
     };
     document.getElementById('userBlockEditModal').classList.add('open');
 }
 
 function openIpRuleEditor(button) {
-    const batchId = button.dataset.batchId || '';
+    const resolvedButton = resolveIpRuleEditorButton(button);
+    if (!resolvedButton || !resolvedButton.dataset.id) {
+        adm_toast(ADMIN_BLOCK_MSG.fetchError, 'error');
+        return;
+    }
+
+    const batchId = resolvedButton.dataset.batchId || '';
     const hasBatch = batchId !== '';
     const batchLabel = hasBatch
-        ? (button.dataset.batchName || '-') + (button.dataset.batchCode ? ' (' + button.dataset.batchCode + ')' : '')
+        ? (resolvedButton.dataset.batchName || '-') + (resolvedButton.dataset.batchCode ? ' (' + resolvedButton.dataset.batchCode + ')' : '')
         : ADMIN_BLOCK_MSG.individualRule;
 
-    document.getElementById('ipRuleEditId').value = button.dataset.id;
-    document.getElementById('ipRuleEditTemplateId').value = button.dataset.templateId || '';
+    document.getElementById('ipRuleEditId').value = resolvedButton.dataset.id;
+    document.getElementById('ipRuleEditTemplateId').value = resolvedButton.dataset.templateId || '';
     document.getElementById('ipRuleEditHasBatch').value = hasBatch ? 'true' : 'false';
     document.getElementById('ipRuleEditTitle').textContent = '<spring:message code="admin.blocks.ipRules.editTitle" javaScriptEscape="true"/>';
-    document.getElementById('ipRuleEditTarget').textContent = (button.dataset.targetDisplay || '-') + ' / ' + (button.dataset.targetKey || '-');
-    document.getElementById('ipRuleEditBatch').textContent = batchLabel + ' / ' + (button.dataset.batchStatusLabel || ADMIN_BLOCK_MSG.individualRule);
-    document.getElementById('ipRuleEditRuleState').textContent = button.dataset.ruleStateLabel || '-';
-    document.getElementById('ipRuleEditFinalState').textContent = (button.dataset.finalStateLabel || '-') + ' / ' + (button.dataset.effectiveStatusLabel || '-');
-    document.getElementById('ipRuleEditBlockedAt').textContent = button.dataset.blockedAt || '-';
-    document.getElementById('ipRuleEditExpiresDisplay').textContent = button.dataset.expiresDisplay || '${fn:escapeXml(adminBlocksNoneLabel)}';
-    document.getElementById('ipRuleEditAction').value = button.dataset.ruleAction || 'BLOCK';
-    document.getElementById('ipRuleEditCategory').value = button.dataset.blockCategory || 'MANUAL';
-    document.getElementById('ipRuleEditPriority').value = button.dataset.priority || '1';
-    document.getElementById('ipRuleEditExpiresAt').value = button.dataset.expiresAt || '';
-    document.getElementById('ipRuleEditReason').value = button.dataset.reason || '';
-    document.getElementById('ipRuleEditDetailMessage').value = button.dataset.detailMessage || '';
-    fillIpRuleEditControlModes(hasBatch, button.dataset.controlMode || 'MANUAL');
+    document.getElementById('ipRuleEditTarget').textContent = (resolvedButton.dataset.targetDisplay || '-') + ' / ' + (resolvedButton.dataset.targetKey || '-');
+    document.getElementById('ipRuleEditBatch').textContent = batchLabel + ' / ' + (resolvedButton.dataset.batchStatusLabel || ADMIN_BLOCK_MSG.individualRule);
+    document.getElementById('ipRuleEditRuleState').textContent = resolvedButton.dataset.ruleStateLabel || '-';
+    document.getElementById('ipRuleEditFinalState').textContent = (resolvedButton.dataset.finalStateLabel || '-') + ' / ' + (resolvedButton.dataset.effectiveStatusLabel || '-');
+    document.getElementById('ipRuleEditBlockedAt').textContent = resolvedButton.dataset.blockedAt || '-';
+    document.getElementById('ipRuleEditExpiresDisplay').textContent = resolvedButton.dataset.expiresDisplay || '${fn:escapeXml(adminBlocksNoneLabel)}';
+    document.getElementById('ipRuleEditAction').value = resolvedButton.dataset.ruleAction || 'BLOCK';
+    document.getElementById('ipRuleEditCategory').value = resolvedButton.dataset.blockCategory || 'MANUAL';
+    document.getElementById('ipRuleEditPriority').value = resolvedButton.dataset.priority || '1';
+    document.getElementById('ipRuleEditExpiresAt').value = resolvedButton.dataset.expiresAt || '';
+    document.getElementById('ipRuleEditReason').value = resolvedButton.dataset.reason || '';
+    document.getElementById('ipRuleEditDetailMessage').value = resolvedButton.dataset.detailMessage || '';
+    fillIpRuleEditControlModes(hasBatch, resolvedButton.dataset.controlMode || 'MANUAL');
     document.getElementById('ipRuleEditHistoryBtn').onclick = function () {
         closeModal('ipRuleEditModal');
-        openBlockDetail(button.dataset.templateId, ADMIN_BLOCK_MSG.ipRuleHistory);
+        openBlockDetail(resolvedButton.dataset.templateId, ADMIN_BLOCK_MSG.ipRuleHistory);
     };
     document.getElementById('ipRuleEditModal').classList.add('open');
 }
@@ -2605,19 +3331,25 @@ function buildHistoryCurrentButton(sourceButton, data) {
 }
 
 async function openHistoryCurrent(button) {
+    const resolvedButton = resolveHistoryCurrentButton(button);
+    if (!resolvedButton || !resolvedButton.dataset.historyId) {
+        adm_toast(ADMIN_BLOCK_MSG.fetchError, 'error');
+        return;
+    }
+
     try {
-        const response = await fetchHistoryCurrentSetting(button);
+        const response = await fetchHistoryCurrentSetting(resolvedButton);
         if (response && response.found && response.data) {
-            const resolvedButton = buildHistoryCurrentButton(button, response.data);
+            const currentButton = buildHistoryCurrentButton(resolvedButton, response.data);
             if (response.currentType === 'BATCH') {
-                openBatchEditor(resolvedButton);
+                openBatchEditor(currentButton);
                 return;
             }
             if (response.currentType === 'USER_BLOCK') {
-                openUserBlockEditor(resolvedButton);
+                openUserBlockEditor(currentButton);
                 return;
             }
-            openIpRuleEditor(resolvedButton);
+            openIpRuleEditor(currentButton);
             return;
         }
     } catch (error) {
@@ -2625,8 +3357,8 @@ async function openHistoryCurrent(button) {
         return;
     }
 
-    if (button.dataset.templateId) {
-        openBlockDetail(button.dataset.templateId, ADMIN_BLOCK_MSG.blockDetailTitle);
+    if (resolvedButton.dataset.templateId) {
+        openBlockDetail(resolvedButton.dataset.templateId, ADMIN_BLOCK_MSG.blockDetailTitle);
     }
     adm_toast(ADMIN_BLOCK_MSG.historyCurrentMissing, 'error');
 }
@@ -2690,9 +3422,9 @@ document.addEventListener('click', function (e) {
         return;
     }
 
-    const detailBtn = e.target.closest('.js-detail-open');
+    const detailBtn = e.target.closest('.js-open-block-detail, .js-detail-open');
     if (detailBtn) {
-        openBlockDetail(detailBtn.dataset.templateId, ADMIN_BLOCK_MSG.blockDetailTitle);
+        openBlockDetailFromButton(detailBtn);
         return;
     }
 
@@ -2744,6 +3476,54 @@ document.addEventListener('click', function (e) {
         return;
     }
 
+    const sortBtn = e.target.closest('.js-local-sort');
+    if (sortBtn) {
+        setLocalSort(sortBtn.dataset.section, sortBtn.dataset.sort);
+        return;
+    }
+
+    const checkAll = e.target.closest('.js-block-check-all');
+    if (checkAll) {
+        const section = checkAll.dataset.section;
+        getLocalRows(section).forEach(function (row) {
+            if (row.style.display === 'none') return;
+            const cb = row.querySelector('.js-block-row-check');
+            if (cb) cb.checked = checkAll.checked;
+        });
+        updateBlockBulkBar(section);
+        return;
+    }
+
+    const rowCheck = e.target.closest('.js-block-row-check');
+    if (rowCheck) {
+        updateBlockBulkBar(rowCheck.dataset.section);
+        return;
+    }
+
+    const clearSelectionBtn = e.target.closest('.js-block-clear-selection');
+    if (clearSelectionBtn) {
+        clearBlockSelection(clearSelectionBtn.dataset.section);
+        return;
+    }
+
+    const blockExportBtn = e.target.closest('.js-block-export');
+    if (blockExportBtn) {
+        exportBlockSection(blockExportBtn.dataset.section, blockExportBtn.dataset.scope);
+        return;
+    }
+
+    const bulkReleaseBtn = e.target.closest('.js-bulk-release-user-blocks');
+    if (bulkReleaseBtn) {
+        bulkReleaseSelectedUserBlocks();
+        return;
+    }
+
+    const bulkToggleIpBtn = e.target.closest('.js-bulk-toggle-ip-rules');
+    if (bulkToggleIpBtn) {
+        bulkToggleSelectedIpRules(bulkToggleIpBtn.dataset.active === 'true');
+        return;
+    }
+
     const prevBtn = e.target.closest('.js-local-prev');
     if (prevBtn) {
         const section = prevBtn.dataset.section;
@@ -2770,6 +3550,8 @@ document.querySelectorAll('.adm-modal-overlay').forEach(function (overlay) {
     });
 });
 
+enhanceBlockLocalTables();
+enhanceBlockDashboardTables();
 initializeLocalSections();
 activateBlockTab(new URLSearchParams(window.location.search).get('tab') || 'dashboard');
 </script>

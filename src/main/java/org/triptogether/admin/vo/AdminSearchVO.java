@@ -21,7 +21,7 @@ public class AdminSearchVO {
     private String dateTo;            // 가입일 종료 (yyyy-MM-dd)
 
     // ── 정렬 ──
-    private String sortBy;            // createdAt / lastLoginAt / nickname
+    private String sortBy;            // createdAt / lastLoginAt / nickname / email / status / role
     private String sortDir;           // ASC / DESC
 
     // ── 페이징 ──
@@ -33,8 +33,13 @@ public class AdminSearchVO {
     }
 
     // 기본값 보정
-    public String getSortBy()   { return sortBy   != null ? sortBy   : "createdAt"; }
-    public String getSortDir()  { return sortDir  != null ? sortDir  : "DESC"; }
+    public String getSortBy() {
+        java.util.Set<String> valid = java.util.Set.of(
+            "createdAt", "lastLoginAt", "nickname", "email", "status", "role"
+        );
+        return sortBy != null && valid.contains(sortBy) ? sortBy : "createdAt";
+    }
+    public String getSortDir()  { return "ASC".equals(sortDir) ? "ASC" : "DESC"; }
     public String getStatus()   { return status   != null ? status   : "ALL"; }
     public String getRole()     { return role     != null ? role     : "ALL"; }
     public String getProvider() { return provider != null ? provider : "ALL"; }

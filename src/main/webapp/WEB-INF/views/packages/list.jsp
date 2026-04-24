@@ -2,35 +2,92 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="packages/packages.css"/>
+<c:set var="localeLanguage" value="${pageContext.response.locale.language}"/>
+<c:choose>
+    <c:when test="${localeLanguage eq 'en'}">
+        <c:set var="packageSearchPlaceholder" value="Search by package title, summary, or destination"/>
+        <c:set var="packageSearchButtonText" value="Search"/>
+        <c:set var="packageResetButtonText" value="Reset"/>
+        <c:set var="packagePrevText" value="Previous"/>
+        <c:set var="packageNextText" value="Next"/>
+        <c:set var="packageResultCountText" value="results"/>
+    </c:when>
+    <c:when test="${localeLanguage eq 'ja'}">
+        <c:set var="packageSearchPlaceholder" value="パッケージ名・概要・旅行先で検索"/>
+        <c:set var="packageSearchButtonText" value="検索"/>
+        <c:set var="packageResetButtonText" value="リセット"/>
+        <c:set var="packagePrevText" value="前へ"/>
+        <c:set var="packageNextText" value="次へ"/>
+        <c:set var="packageResultCountText" value="件"/>
+    </c:when>
+    <c:when test="${localeLanguage eq 'zh'}">
+        <c:set var="packageSearchPlaceholder" value="按套餐名称、简介或目的地搜索"/>
+        <c:set var="packageSearchButtonText" value="搜索"/>
+        <c:set var="packageResetButtonText" value="重置"/>
+        <c:set var="packagePrevText" value="上一页"/>
+        <c:set var="packageNextText" value="下一页"/>
+        <c:set var="packageResultCountText" value="条结果"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="packageSearchPlaceholder" value="패키지명, 요약, 여행지명으로 검색"/>
+        <c:set var="packageSearchButtonText" value="검색"/>
+        <c:set var="packageResetButtonText" value="초기화"/>
+        <c:set var="packagePrevText" value="이전"/>
+        <c:set var="packageNextText" value="다음"/>
+        <c:set var="packageResultCountText" value="개"/>
+    </c:otherwise>
+</c:choose>
 <%@ include file="../common/header.jsp" %>
 <body>
 
 <main class="pkg-wrap">
     <section class="pkg-hero">
         <div>
-            <p class="pkg-eyebrow">TRAVEL PACKAGE</p>
-            <h1>여행 패키지 상품</h1>
-            <p>관리자 검토를 통과한 공식 패키지 상품만 모아서 보여줍니다.</p>
+            <p class="pkg-eyebrow"><spring:message code="package.list.eyebrow"/></p>
+            <h1><spring:message code="package.list.title"/></h1>
         </div>
     </section>
 
     <section class="pkg-panel">
         <div class="pkg-section-title">
             <div>
-                <span>APPROVED PRODUCTS</span>
-                <h2>승인된 패키지</h2>
+                <span><spring:message code="package.list.approvedEyebrow"/></span>
+                <h2>
+                    <c:choose>
+                        <c:when test="${localeLanguage eq 'en'}">Travel Packages</c:when>
+                        <c:when test="${localeLanguage eq 'ja'}">旅行パッケージ</c:when>
+                        <c:when test="${localeLanguage eq 'zh'}">旅行套餐</c:when>
+                        <c:otherwise>여행 패키지</c:otherwise>
+                    </c:choose>
+                </h2>
             </div>
-            <p>여행지와 연결된 패키지만 노출됩니다.</p>
+            <c:if test="${totalCount gt 0}">
+                <p>${totalCount} ${packageResultCountText}</p>
+            </c:if>
+        </div>
+
+        <div class="pkg-toolbar">
+            <form class="pkg-search-form" method="get" action="${pageContext.request.contextPath}/packages">
+                <input type="text"
+                       name="keyword"
+                       value="${fn:escapeXml(keyword)}"
+                       placeholder="${fn:escapeXml(packageSearchPlaceholder)}">
+                <button type="submit">${packageSearchButtonText}</button>
+            </form>
+            <c:if test="${not empty keyword}">
+                <a class="pkg-search-reset" href="${pageContext.request.contextPath}/packages">${packageResetButtonText}</a>
+            </c:if>
         </div>
 
         <c:choose>
             <c:when test="${empty packageList}">
                 <div class="pkg-empty">
-                    <strong>현재 노출 중인 패키지 상품이 없습니다.</strong>
-                    <p>관리자 승인이 완료된 상품이 생기면 이곳에 표시됩니다.</p>
+                    <strong><spring:message code="package.list.empty"/></strong>
+                    <p><spring:message code="package.list.emptyDesc"/></p>
                 </div>
             </c:when>
             <c:otherwise>
@@ -53,42 +110,79 @@
                                 <p class="pkg-summary">
                                     <c:choose>
                                         <c:when test="${not empty pkg.packageSummary}">${fn:escapeXml(pkg.packageSummary)}</c:when>
-                                        <c:otherwise>상세 설명에서 패키지 정보를 확인해보세요.</c:otherwise>
+                                        <c:otherwise><spring:message code="package.list.noSummary"/></c:otherwise>
                                     </c:choose>
                                 </p>
                                 <dl class="pkg-meta">
                                     <div>
-                                        <dt>가격</dt>
+                                        <dt><spring:message code="package.common.priceLabel"/></dt>
                                         <dd><fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(pkg.currencyCode)}</dd>
                                     </div>
                                     <div>
-                                        <dt>여행지</dt>
+                                        <dt><spring:message code="package.common.spotLabel"/></dt>
                                         <dd>${fn:escapeXml(pkg.spotName)}</dd>
                                     </div>
                                     <div>
-                                        <dt>일정</dt>
+                                        <dt><spring:message code="package.common.scheduleLabel"/></dt>
                                         <dd>
                                             <c:choose>
                                                 <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                                                     ${pkg.startDate} ~ ${pkg.endDate}
                                                 </c:when>
-                                                <c:otherwise>상시/미정</c:otherwise>
+                                                <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
                                             </c:choose>
                                         </dd>
                                     </div>
                                 </dl>
                             </div>
                             <div class="pkg-card__actions">
-                                <a href="${pageContext.request.contextPath}/detail/${pkg.spotIdx}">여행지에서 보기</a>
-                                <span class="pkg-approved">승인 상품</span>
+                                <a href="${pageContext.request.contextPath}/detail/${pkg.spotIdx}">
+                                    <spring:message code="package.list.viewAtSpot"/>
+                                </a>
                             </div>
                         </article>
                     </c:forEach>
                 </div>
+
+                <c:if test="${totalPages gt 1}">
+                    <nav class="pkg-pagination" aria-label="Package pagination">
+                        <c:if test="${currentPage gt 1}">
+                            <c:url var="packagePrevUrl" value="/packages">
+                                <c:param name="page" value="${currentPage - 1}"/>
+                                <c:if test="${not empty keyword}">
+                                    <c:param name="keyword" value="${keyword}"/>
+                                </c:if>
+                            </c:url>
+                            <a class="pkg-page-link pkg-page-link--nav" href="${packagePrevUrl}">${packagePrevText}</a>
+                        </c:if>
+
+                        <c:forEach var="pageNo" begin="${startPage}" end="${endPage}">
+                            <c:url var="packagePageUrl" value="/packages">
+                                <c:param name="page" value="${pageNo}"/>
+                                <c:if test="${not empty keyword}">
+                                    <c:param name="keyword" value="${keyword}"/>
+                                </c:if>
+                            </c:url>
+                            <a class="pkg-page-link ${pageNo eq currentPage ? 'is-current' : ''}" href="${packagePageUrl}">${pageNo}</a>
+                        </c:forEach>
+
+                        <c:if test="${currentPage lt totalPages}">
+                            <c:url var="packageNextUrl" value="/packages">
+                                <c:param name="page" value="${currentPage + 1}"/>
+                                <c:if test="${not empty keyword}">
+                                    <c:param name="keyword" value="${keyword}"/>
+                                </c:if>
+                            </c:url>
+                            <a class="pkg-page-link pkg-page-link--nav" href="${packageNextUrl}">${packageNextText}</a>
+                        </c:if>
+                    </nav>
+                </c:if>
             </c:otherwise>
         </c:choose>
     </section>
 </main>
+
+<%@ include file="../common/footer.jsp" %>
 
 </body>
 </html>

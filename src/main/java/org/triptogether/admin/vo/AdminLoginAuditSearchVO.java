@@ -13,6 +13,9 @@ public class AdminLoginAuditSearchVO {
     private String authType;    // ALL / PASSWORD / SOCIAL
     private String authProvider; // ALL / LOCAL / KAKAO / NAVER / GOOGLE
     private String loginMethod; // ALL / ID / EMAIL / KAKAO / NAVER / GOOGLE
+    private String dateFilter;  // yyyy-MM-dd
+    private String sortField;   // time / eventType / authType / provider / loginMethod / success / ip
+    private String sortDir;     // ASC / DESC
     private int page = 1;
     private int size = 30;
 
@@ -25,4 +28,6 @@ public class AdminLoginAuditSearchVO {
     public String getAuthType() { return authType != null ? authType : "ALL"; }
     public String getAuthProvider() { return authProvider != null ? authProvider : "ALL"; }
     public String getLoginMethod() { return loginMethod != null ? loginMethod : "ALL"; }
+    public String getSortField() { return sortField != null ? sortField : ""; }
+    public String getSortDir() { return "ASC".equals(sortDir) ? "ASC" : "DESC"; }
 }

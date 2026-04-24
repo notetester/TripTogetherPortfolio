@@ -3,6 +3,7 @@ package org.triptogether.assistant.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -75,9 +76,11 @@ public class AssistantController {
         if (payloadChatPostIdx != null && !payloadChatPostIdx.toString().isBlank()) {
             chatPostIdx = Long.valueOf(payloadChatPostIdx.toString());
         }
+      
+        String lang = LocaleContextHolder.getLocale().getLanguage();
 
         Map<String, Object> result =
-                assistantService.chat(userMessage, history, userIdx, chatPostIdx);
+                assistantService.chat(userMessage, history, userIdx, chatPostIdx, lang);
 
         session.setAttribute("chatHistory", result.get("history"));
 

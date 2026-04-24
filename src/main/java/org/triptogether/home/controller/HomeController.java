@@ -5,7 +5,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.triptogether.community.service.CommunityService;
+import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.home.service.HomeService;
+import org.triptogether.home.vo.HomeSpotVO;
+import org.triptogether.travelPackage.service.TravelPackageService;
+import org.triptogether.travelPackage.vo.TravelPackageVO;
+
+import java.util.List;
 
 /**
  * =============================================
@@ -24,6 +30,8 @@ public class HomeController {
 
     private final HomeService homeService;
     private final CommunityService communityService;
+    private final TravelPackageService travelPackageService;
+    private final SpotTextTranslationService translationService;
 
     /**
      * 메인 홈 화면을 보여준다.
@@ -34,10 +42,17 @@ public class HomeController {
      */
     @GetMapping("/")
     public String index(Model model) {
-        model.addAttribute("popularSpots", homeService.getPopularSpots());
+        List<HomeSpotVO> popularSpots = homeService.getPopularSpots();
+        translationService.translateHomeSpots(popularSpots);
+        model.addAttribute("popularSpots", popularSpots);
         model.addAttribute("trendingPlans", homeService.getTrendingPlans());
         model.addAttribute("fallbackImageUrl", homeService.getFallbackImageUrl());
         model.addAttribute("popularPosts", communityService.getPopularList(4));
+
+        List<TravelPackageVO> recommendedPackages = travelPackageService.getHomeRecommendedPackages();
+        translationService.translatePackages(recommendedPackages);
+        model.addAttribute("recommendedPackages", recommendedPackages);
+
         return "home/home";
     }
 }

@@ -19,6 +19,7 @@ public class ConversationVO {
     private LocalDateTime createdAt;
     private LocalDateTime lastActive;
     private Boolean isDeleted;
+    private Integer sortOrder;       // 유저 드래그로 조정한 정렬값 (오름차순)
 
     /** 조회용 (JOIN으로 채움, DB 컬럼 아님) */
     private Integer messageCount;

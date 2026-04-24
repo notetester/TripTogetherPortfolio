@@ -36,7 +36,11 @@ public interface TravelPackageService {
 
     void rejectPackageRevision(Long packageRevisionIdx, String rejectReason, Long adminUserIdx);
 
-    List<TravelPackageVO> getApprovedPackages();
+    List<TravelPackageVO> getApprovedPackages(String keyword, int page, int pageSize);
+
+    int countApprovedPackages(String keyword);
+
+    List<TravelPackageVO> getHomeRecommendedPackages();
 
     List<TravelPackageVO> getApprovedPackagesBySpot(Long spotIdx);
 

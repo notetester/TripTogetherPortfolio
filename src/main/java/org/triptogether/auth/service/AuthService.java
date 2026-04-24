@@ -67,6 +67,9 @@ public interface AuthService {
     /** 이메일 로그인 활성화/비활성화 토글 */
     void toggleEmailLogin(Long userIdx, boolean enable, LoginRequestContext context);
 
+    /** 이메일 인증 토큰으로 flowTraceId 조회 (콜백 진입 시 흐름 복원용) */
+    String resolveFlowTraceIdByToken(String token);
+
     /** 휴면 계정 해제 */
     UsersVO releaseDormantUser(Long userIdx, LoginRequestContext context);
 

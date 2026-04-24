@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="emailVerifications"/>
 <spring:message code="admin.emailRequests.pageTitle" var="adminEmailRequestsPageTitle"/>
@@ -38,7 +39,10 @@
                             <option value="CANCELLED" ${search.status=='CANCELLED'?'selected':''}><spring:message code="admin.emailRequests.status.cancelled"/></option>
                         </select>
                     </div>
-                    <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
+                    <div style="display:flex;align-items:flex-end;gap:8px;">
+                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/email-verifications"><spring:message code="admin.common.reset"/></a>
+                    </div>
                 </div>
             </form>
         </div>
@@ -53,22 +57,38 @@
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th><spring:message code="admin.emailRequests.requestedAt"/></th>
+                    <th data-sort="time" onclick="sortBy('time')"><spring:message code="admin.emailRequests.requestedAt"/><span class="sort-ico">▼</span></th>
                     <th><spring:message code="admin.common.member"/></th>
-                    <th><spring:message code="admin.emailRequests.purpose"/></th>
+                    <th data-sort="purpose" onclick="sortBy('purpose')"><spring:message code="admin.emailRequests.purpose"/><span class="sort-ico">▼</span></th>
                     <th><spring:message code="admin.context.requestEmail"/></th>
-                    <th><spring:message code="admin.common.status"/></th>
-                    <th><spring:message code="admin.emailRequests.verifiedAt"/></th>
-                    <th><spring:message code="admin.emailRequests.appliedAt"/></th>
-                    <th><spring:message code="admin.context.expiresAt"/></th>
-                    <th><spring:message code="admin.common.ip"/></th>
+                    <th data-sort="status" onclick="sortBy('status')"><spring:message code="admin.common.status"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="verifiedAt" onclick="sortBy('verifiedAt')"><spring:message code="admin.emailRequests.verifiedAt"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="appliedAt" onclick="sortBy('appliedAt')"><spring:message code="admin.emailRequests.appliedAt"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="expiresAt" onclick="sortBy('expiresAt')"><spring:message code="admin.context.expiresAt"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="ip" onclick="sortBy('ip')"><spring:message code="admin.common.ip"/><span class="sort-ico">▼</span></th>
                     <th><spring:message code="admin.context.requestId"/></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="item">
+                    <fmt:formatDate var="itemDateFilter" value="${item.requestedAtDate}" pattern="yyyy-MM-dd"/>
+                    <fmt:formatDate var="itemTimeDisplay" value="${item.requestedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
+                    <fmt:formatDate var="itemVerifiedAtDisplay" value="${item.verifiedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
+                    <fmt:formatDate var="itemVerifiedAtFilter" value="${item.verifiedAtDate}" pattern="yyyy-MM-dd"/>
+                    <fmt:formatDate var="itemAppliedAtDisplay" value="${item.appliedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
+                    <fmt:formatDate var="itemAppliedAtFilter" value="${item.appliedAtDate}" pattern="yyyy-MM-dd"/>
+                    <fmt:formatDate var="itemExpiredAtDisplay" value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
+                    <fmt:formatDate var="itemExpiredAtFilter" value="${item.expiredAtDate}" pattern="yyyy-MM-dd"/>
                     <tr>
-                        <td><fmt:formatDate value="${item.requestedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></td>
+                        <td>
+                            <button type="button" class="adm-cell-link"
+                                    data-date="${itemDateFilter}"
+                                    onclick="filterByDate(this.dataset.date)">
+                                <span>${itemTimeDisplay}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                            </button>
+                        </td>
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.userIdx}">
@@ -92,83 +112,122 @@
                             </c:choose>
                         </td>
                         <td>
-                            <c:choose>
-                                <c:when test="${item.purpose == 'PROFILE_EMAIL'}"><spring:message code="admin.emailRequests.purpose.profileEmail"/></c:when>
-                                <c:when test="${item.purpose == 'FIND_ID'}"><spring:message code="admin.emailRequests.purpose.findId"/></c:when>
-                                <c:when test="${item.purpose == 'RESET_PW'}"><spring:message code="admin.emailRequests.purpose.resetPw"/></c:when>
-                                <c:when test="${item.purpose == 'VERIFY'}"><spring:message code="admin.emailRequests.purpose.verify"/></c:when>
-                                <c:otherwise><c:out value="${item.purpose}"/></c:otherwise>
-                            </c:choose>
+                            <button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="${item.purpose}" onclick="applySelectFilter(this)">
+                                <span><c:choose>
+                                    <c:when test="${item.purpose == 'PROFILE_EMAIL'}"><spring:message code="admin.emailRequests.purpose.profileEmail"/></c:when>
+                                    <c:when test="${item.purpose == 'FIND_ID'}"><spring:message code="admin.emailRequests.purpose.findId"/></c:when>
+                                    <c:when test="${item.purpose == 'RESET_PW'}"><spring:message code="admin.emailRequests.purpose.resetPw"/></c:when>
+                                    <c:when test="${item.purpose == 'VERIFY'}"><spring:message code="admin.emailRequests.purpose.verify"/></c:when>
+                                    <c:otherwise><c:out value="${item.purpose}"/></c:otherwise>
+                                </c:choose></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                            </button>
                         </td>
                         <td>
-                            <div><c:out value="${item.pendingEmail}"/></div>
-                            <div class="adm-inline-actions">
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-keyword="${item.pendingEmail}"
-                                        onclick="applyKeywordFilter(this)">
-                                    <spring:message code="admin.common.sameEmail"/>
-                                </button>
-                            </div>
+                            <button type="button" class="adm-cell-link" data-keyword="${item.pendingEmail}" onclick="applyKeywordFilter(this)">
+                                <span><c:out value="${item.pendingEmail}"/></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameEmail"/></span>
+                            </button>
                         </td>
                         <td>
-                            <span class="status-badge ACTIVE">
-                                <c:choose>
-                                    <c:when test="${item.status == 'REQUESTED'}"><spring:message code="admin.emailRequests.status.requested"/></c:when>
-                                    <c:when test="${item.status == 'VERIFIED'}"><spring:message code="admin.emailRequests.status.verified"/></c:when>
-                                    <c:when test="${item.status == 'APPLIED'}"><spring:message code="admin.emailRequests.status.applied"/></c:when>
-                                    <c:when test="${item.status == 'EXPIRED'}"><spring:message code="admin.emailRequests.status.expired"/></c:when>
-                                    <c:when test="${item.status == 'CANCELLED'}"><spring:message code="admin.emailRequests.status.cancelled"/></c:when>
-                                    <c:otherwise><c:out value="${item.status}"/></c:otherwise>
-                                </c:choose>
-                            </span>
+                            <button type="button" class="adm-cell-link" data-param-name="status" data-param-value="${item.status}" onclick="applySelectFilter(this)">
+                                <span class="status-badge ${item.status}">
+                                    <c:choose>
+                                        <c:when test="${item.status == 'REQUESTED'}"><spring:message code="admin.emailRequests.status.requested"/></c:when>
+                                        <c:when test="${item.status == 'VERIFIED'}"><spring:message code="admin.emailRequests.status.verified"/></c:when>
+                                        <c:when test="${item.status == 'APPLIED'}"><spring:message code="admin.emailRequests.status.applied"/></c:when>
+                                        <c:when test="${item.status == 'EXPIRED'}"><spring:message code="admin.emailRequests.status.expired"/></c:when>
+                                        <c:when test="${item.status == 'CANCELLED'}"><spring:message code="admin.emailRequests.status.cancelled"/></c:when>
+                                        <c:otherwise><c:out value="${item.status}"/></c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </button>
                         </td>
-                        <td><c:choose><c:when test="${not empty item.verifiedAtDate}"><fmt:formatDate value="${item.verifiedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
-                        <td><c:choose><c:when test="${not empty item.appliedAtDate}"><fmt:formatDate value="${item.appliedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
-                        <td><c:choose><c:when test="${not empty item.expiredAtDate}"><fmt:formatDate value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
                         <td>
                             <c:choose>
-                                <c:when test="${not empty item.ipAddress}">
-                                    <div>
-                                        <button type="button"
-                                                class="adm-inline-link js-open-ip-context"
-                                                data-ip-address="${item.ipAddress}"
-                                                data-default-tab="emailRequests"
-                                                style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
-                                    </div>
-                                    <div class="adm-inline-actions">
-                                        <button type="button"
-                                                class="adm-inline-chip"
-                                                data-keyword="${item.ipAddress}"
-                                                onclick="applyKeywordFilter(this)">
-                                            <spring:message code="admin.common.sameIp"/>
-                                        </button>
-                                    </div>
+                                <c:when test="${not empty item.verifiedAtDate}">
+                                    <button type="button" class="adm-cell-link"
+                                            data-date="${itemVerifiedAtFilter}"
+                                            onclick="filterByDate(this.dataset.date)">
+                                        <span>${itemVerifiedAtDisplay}</span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                                    </button>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
                         </td>
-                        <td style="font-size:12px;color:#64748b;">
-                            <div><c:out value="${item.requestId}"/></div>
-                            <div class="adm-inline-actions">
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-keyword="${item.requestId}"
-                                        onclick="applyKeywordFilter(this)">
-                                    <spring:message code="admin.common.sameRequest"/>
-                                </button>
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
-                                        onclick="openRelatedHistory('email-tokens', this)">
-                                    <spring:message code="admin.common.sameFlow"/>
-                                </button>
-                            </div>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.appliedAtDate}">
+                                    <button type="button" class="adm-cell-link"
+                                            data-date="${itemAppliedAtFilter}"
+                                            onclick="filterByDate(this.dataset.date)">
+                                        <span>${itemAppliedAtDisplay}</span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                                    </button>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.expiredAtDate}">
+                                    <button type="button" class="adm-cell-link"
+                                            data-date="${itemExpiredAtFilter}"
+                                            onclick="filterByDate(this.dataset.date)">
+                                        <span>${itemExpiredAtDisplay}</span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                                    </button>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.ipAddress}">
+                                    <button type="button"
+                                            class="adm-cell-link js-open-ip-context"
+                                            data-ip-address="${item.ipAddress}"
+                                            data-default-tab="emailRequests">
+                                        <span style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameIp"/></span>
+                                    </button>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="adm-cell-link"
+                                    data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
+                                    onclick="openRelatedHistory('email-tokens', this)">
+                                <span style="font-size:12px;color:#64748b;"><c:out value="${item.requestId}"/></span>
+                                <c:if test="${not empty item.flowTraceId}">
+                                    <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
+                                </c:if>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="adm-row-btn detail"
+                                    data-time="${itemTimeDisplay}"
+                                    data-user="${fn:escapeXml(item.nickname)} (@${fn:escapeXml(item.userId)})"
+                                    data-purpose="${fn:escapeXml(item.purpose)}"
+                                    data-email="${fn:escapeXml(item.pendingEmail)}"
+                                    data-status="${fn:escapeXml(item.status)}"
+                                    data-verified-at="${itemVerifiedAtDisplay}"
+                                    data-applied-at="${itemAppliedAtDisplay}"
+                                    data-expires-at="${itemExpiredAtDisplay}"
+                                    data-ip="${fn:escapeXml(item.ipAddress)}"
+                                    data-request-id="${fn:escapeXml(item.requestId)}"
+                                    data-flow-trace="${fn:escapeXml(item.flowTraceId)}"
+                                    onclick="openVerificationDetail(this)">
+                                <spring:message code="admin.common.viewDetail"/>
+                            </button>
                         </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
+                    <tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -186,25 +245,240 @@
         </c:if>
     </div>
 </div>
-<%@ include file="../common/context-modal.jspf" %>
+
+<div id="rowDetailModal" class="adm-modal-overlay" onclick="this.classList.remove('open')">
+    <div class="adm-modal" style="max-width:560px;width:100%;" onclick="event.stopPropagation()">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="rowDetailModalTitle"></div>
+            <button class="adm-modal-close" onclick="document.getElementById('rowDetailModal').classList.remove('open')">✕</button>
+        </div>
+        <div class="adm-modal-body" style="padding:20px 24px;max-height:72vh;overflow-y:auto;">
+            <dl id="rowDetailModalContent" style="margin:0;"></dl>
+        </div>
+    </div>
+</div>
+
 <script>
-function goPage(page) {
-  const params = new URLSearchParams(window.location.search);
-  params.set('page', page);
-  location.href = '${pageContext.request.contextPath}/admin/email-verifications?' + params.toString();
+var BASE_URL = '${pageContext.request.contextPath}/admin/email-verifications';
+var curSortField = '${search.sortField}';
+var curSortDir = '${search.sortDir}';
+
+document.querySelectorAll('th[data-sort]').forEach(function(th) {
+    if (th.getAttribute('data-sort') === curSortField) {
+        th.classList.add('sorted');
+        var ico = th.querySelector('.sort-ico');
+        if (ico) ico.textContent = curSortDir === 'ASC' ? '▲' : '▼';
+    }
+});
+
+function sortBy(field) {
+    var params = new URLSearchParams(window.location.search);
+    var dir = (params.get('sortField') === field && params.get('sortDir') !== 'ASC') ? 'ASC' : 'DESC';
+    params.set('sortField', field); params.set('sortDir', dir); params.set('page', '1');
+    location.href = BASE_URL + '?' + params.toString();
+}
+function filterByDate(dateStr) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('dateFilter', dateStr); params.set('page', '1');
+    location.href = BASE_URL + '?' + params.toString();
 }
 function applyKeywordFilter(button) {
-  const keyword = button.dataset.keyword || '';
-  const params = new URLSearchParams(window.location.search);
-  params.set('keyword', keyword);
-  params.set('page', '1');
-  location.href = '${pageContext.request.contextPath}/admin/email-verifications?' + params.toString();
+    var keyword = button.getAttribute('data-keyword');
+    if (!keyword) return;
+    var params = new URLSearchParams(window.location.search);
+    params.set('keyword', keyword); params.set('page', '1');
+    location.href = BASE_URL + '?' + params.toString();
+}
+function applySelectFilter(button) {
+    var paramName = button.getAttribute('data-param-name');
+    var paramValue = button.getAttribute('data-param-value');
+    if (!paramName || !paramValue) return;
+    var params = new URLSearchParams(window.location.search);
+    params.set(paramName, paramValue); params.set('page', '1');
+    location.href = BASE_URL + '?' + params.toString();
+}
+function goPage(page) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('page', page);
+    location.href = BASE_URL + '?' + params.toString();
 }
 function openRelatedHistory(path, button) {
-  const params = new URLSearchParams();
-  if (button.dataset.keyword) params.set('keyword', button.dataset.keyword);
-  params.set('page', '1');
-  location.href = '${pageContext.request.contextPath}/admin/' + path + '?' + params.toString();
+    var params = new URLSearchParams();
+    if (button.dataset.keyword) params.set('keyword', button.dataset.keyword);
+    params.set('page', '1');
+    location.href = '${pageContext.request.contextPath}/admin/' + path + '?' + params.toString();
 }
+function openVerificationDetail(btn) {
+    var d = btn.dataset;
+    showRowDetail('<spring:message code="admin.emailRequests.historyTitle"/>', [
+        ['요청 시각', d.time],
+        ['회원', d.user],
+        ['목적', d.purpose],
+        ['요청 이메일', d.email],
+        ['상태', d.status],
+        ['인증 시각', d.verifiedAt],
+        ['반영 시각', d.appliedAt],
+        ['만료 시각', d.expiresAt],
+        ['IP', d.ip],
+        ['요청 ID', d.requestId],
+        ['흐름 추적 ID', d.flowTrace]
+    ]);
+}
+function showRowDetail(title, fields) {
+    var modal = document.getElementById('rowDetailModal');
+    document.getElementById('rowDetailModalTitle').textContent = title;
+    var content = document.getElementById('rowDetailModalContent');
+    content.innerHTML = '';
+    fields.forEach(function(pair) {
+        var label = pair[0], value = pair[1];
+        if (!value || value === '' || value === '-') return;
+        var dt = document.createElement('dt');
+        dt.style.cssText = 'font-size:11px;color:#64748b;margin-top:12px;margin-bottom:2px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;';
+        dt.textContent = label;
+        var dd = document.createElement('dd');
+        dd.style.cssText = 'font-size:13px;color:#e2e8f0;word-break:break-all;margin:0;padding:6px 10px;background:#0f1520;border-radius:4px;';
+        dd.textContent = value;
+        content.appendChild(dt);
+        content.appendChild(dd);
+    });
+    modal.classList.add('open');
+}
+
+/* ── 공통 운영 목록: 체크박스 + CSV/Excel 내보내기 ── */
+(function enhanceAdminListExport() {
+    const table = document.querySelector('.adm-table');
+    if (!table || table.dataset.exportEnhanced === 'true') return;
+    table.dataset.exportEnhanced = 'true';
+
+    const wrap = table.closest('.adm-table-wrap') || table.parentElement;
+    if (wrap) {
+        const toolbar = document.createElement('div');
+        toolbar.className = 'adm-local-toolbar';
+        toolbar.style.margin = '0 0 12px';
+        toolbar.innerHTML =
+            '<div class="adm-local-toolbar-group">'
+            + '<select class="adm-select" id="adminListExportFormat" style="width:86px;"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-export" data-scope="all">전체 내보내기</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-export" data-scope="search">현재 검색 내보내기</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-export-selected" data-scope="selected" disabled>선택 내보내기 (0)</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-clear-selection" style="display:none;">선택 해제</button>'
+            + '</div>';
+        wrap.parentElement.insertBefore(toolbar, wrap);
+    }
+
+    const headRow = table.querySelector('thead tr');
+    if (headRow && !headRow.querySelector('.js-admin-check-all')) {
+        const th = document.createElement('th');
+        th.style.width = '42px';
+        th.style.textAlign = 'center';
+        th.innerHTML = '<input type="checkbox" class="js-admin-check-all" style="cursor:pointer;">';
+        headRow.insertBefore(th, headRow.firstElementChild);
+    }
+
+    table.querySelectorAll('tbody tr').forEach(function (row) {
+        if (row.querySelector('.js-admin-row-check')) return;
+        if (row.children.length === 1 && row.children[0].hasAttribute('colspan')) return;
+        const td = document.createElement('td');
+        td.style.textAlign = 'center';
+        td.innerHTML = '<input type="checkbox" class="js-admin-row-check" style="cursor:pointer;">';
+        row.insertBefore(td, row.firstElementChild);
+    });
+
+    function rows() {
+        return Array.from(table.querySelectorAll('tbody tr')).filter(function (row) {
+            return row.querySelector('.js-admin-row-check');
+        });
+    }
+    function selectedRows() {
+        return rows().filter(function (row) {
+            const cb = row.querySelector('.js-admin-row-check');
+            return cb && cb.checked;
+        });
+    }
+    function updateSelectionUi() {
+        const count = selectedRows().length;
+        const selectedBtn = document.querySelector('.js-admin-export-selected');
+        const clearBtn = document.querySelector('.js-admin-clear-selection');
+        const all = document.querySelector('.js-admin-check-all');
+        if (selectedBtn) {
+            selectedBtn.disabled = count === 0;
+            selectedBtn.textContent = '선택 내보내기 (' + count + ')';
+        }
+        if (clearBtn) clearBtn.style.display = count > 0 ? '' : 'none';
+        if (all) {
+            const allRows = rows();
+            all.checked = allRows.length > 0 && count === allRows.length;
+            all.indeterminate = count > 0 && count < allRows.length;
+        }
+    }
+    function text(cell) {
+        return (cell.innerText || '').replace(/\s+/g, ' ').trim();
+    }
+    function csvEscape(value) {
+        const s = String(value == null ? '' : value);
+        return '"' + s.replace(/"/g, '""') + '"';
+    }
+    function download(content, filename, type) {
+        const blob = new Blob([content], {type: type});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+    function exportRows(scope) {
+        let targetRows = scope === 'selected' ? selectedRows() : rows();
+        if (scope === 'selected' && targetRows.length === 0) {
+            if (typeof adm_toast === 'function') adm_toast('선택된 항목이 없습니다.', 'error');
+            else alert('선택된 항목이 없습니다.');
+            return;
+        }
+        const format = (document.getElementById('adminListExportFormat') || {}).value || 'csv';
+        const headers = Array.from(table.querySelectorAll('thead th'))
+            .filter(function (_, idx, arr) { return idx !== 0; })
+            .map(function (th) { return text(th).replace(/[↕▲▼]/g, '').trim(); });
+        const body = targetRows.map(function (row) {
+            return Array.from(row.children)
+                .filter(function (_, idx) { return idx !== 0; })
+                .map(text);
+        });
+        const name = (document.title || 'admin_list').replace(/[\\/:*?"<>|]+/g, '_') + '_' + scope + '_' + new Date().toISOString().slice(0, 10);
+        if (format === 'excel') {
+            const html = '<table><thead><tr>' + headers.map(h => '<th>' + h + '</th>').join('') + '</tr></thead><tbody>'
+                + body.map(row => '<tr>' + row.map(v => '<td>' + v + '</td>').join('') + '</tr>').join('')
+                + '</tbody></table>';
+            download('\ufeff' + html, name + '.xls', 'application/vnd.ms-excel;charset=utf-8');
+        } else {
+            const csv = [headers].concat(body).map(function (row) { return row.map(csvEscape).join(','); }).join('\n');
+            download('\ufeff' + csv, name + '.csv', 'text/csv;charset=utf-8');
+        }
+    }
+
+    document.addEventListener('change', function (e) {
+        if (e.target.matches('.js-admin-check-all')) {
+            rows().forEach(function (row) {
+                row.querySelector('.js-admin-row-check').checked = e.target.checked;
+            });
+            updateSelectionUi();
+        }
+        if (e.target.matches('.js-admin-row-check')) updateSelectionUi();
+    });
+    document.addEventListener('click', function (e) {
+        const exportBtn = e.target.closest('.js-admin-export, .js-admin-export-selected');
+        if (exportBtn) {
+            exportRows(exportBtn.dataset.scope || 'all');
+            return;
+        }
+        const clearBtn = e.target.closest('.js-admin-clear-selection');
+        if (clearBtn) {
+            rows().forEach(row => row.querySelector('.js-admin-row-check').checked = false);
+            updateSelectionUi();
+        }
+    });
+})();
+
 </script>
 <%@ include file="../layout-close.jsp" %>

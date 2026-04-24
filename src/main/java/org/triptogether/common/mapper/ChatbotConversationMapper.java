@@ -33,6 +33,10 @@ public interface ChatbotConversationMapper {
     // 소프트 삭제 (유저가 숨김)
     void softDelete(@Param("conversationId") Long conversationId);
 
+    // 정렬 순서 갱신 (드래그앤드롭)
+    void updateSortOrder(@Param("conversationId") Long conversationId,
+                         @Param("sortOrder") int sortOrder);
+
     // 유저/세션의 활성 대화 수 (한도 체크)
     int countActiveConversations(@Param("userIdx") Long userIdx,
                                  @Param("anonSessionId") String anonSessionId);

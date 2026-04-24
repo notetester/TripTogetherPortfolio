@@ -135,6 +135,62 @@
   font-weight: 700;
 }
 
+.pkg-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.pkg-search-form {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+}
+
+.pkg-search-form input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 13px 18px;
+  color: #0f172a;
+  background: #fff;
+  font: inherit;
+  outline: none;
+}
+
+.pkg-search-form input:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
+}
+
+.pkg-search-form button,
+.pkg-search-reset,
+.pkg-page-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.pkg-search-form button {
+  cursor: pointer;
+  color: #fff;
+  background: #0284c7;
+}
+
+.pkg-search-reset {
+  color: #0f172a;
+  background: #e2e8f0;
+  white-space: nowrap;
+}
+
 .pkg-empty {
   display: grid;
   place-items: center;
@@ -169,6 +225,30 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
   gap: 18px;
+}
+
+.pkg-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.pkg-page-link {
+  min-width: 44px;
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+.pkg-page-link--nav {
+  padding-inline: 16px;
+}
+
+.pkg-page-link.is-current {
+  color: #fff;
+  background: #0284c7;
 }
 
 .pkg-card {
@@ -508,11 +588,16 @@
   background: #e2e8f0;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .pkg-hero,
   .pkg-section-title,
-  .pkg-form-actions {
+  .pkg-form-actions,
+  .pkg-toolbar {
     align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pkg-search-form {
     flex-direction: column;
   }
 
@@ -526,10 +611,10 @@
 }
 
 /* =============================================
-   다크 테마 오버라이드 (html.dark)
+   ?? ?? ???? (html.dark)
    ============================================= */
 
-/* ── 배경 ── */
+/* ?? ?? */
 html.dark .pkg-wrap {
   background:
     radial-gradient(circle at 12% 10%, rgba(96, 165, 250, .10), transparent 28%),
@@ -537,26 +622,46 @@ html.dark .pkg-wrap {
     linear-gradient(180deg, #0f1115 0%, #151922 52%, #1a1f2b 100%);
 }
 
-/* ── hero (이미 어두움 → shadow 강화) ── */
+/* ?? hero */
 html.dark .pkg-hero { box-shadow: 0 28px 58px rgba(0, 0, 0, .55); }
 
-/* ── panel ── */
+/* ?? panel */
 html.dark .pkg-panel {
   background: #1a1f2b;
   border-color: #2b3241;
   box-shadow: 0 20px 44px rgba(0, 0, 0, .35);
 }
 
-/* ── 알림 ── */
+/* ?? ?? */
 html.dark .pkg-alert--success { background: #14532d; color: #86efac; }
 html.dark .pkg-alert--error { background: #4c1d1d; color: #fca5a5; }
 
-/* ── 섹션 타이틀 ── */
+/* ?? ?? ?? */
 html.dark .pkg-section-title span { color: #60a5fa; }
 html.dark .pkg-section-title h2 { color: #f1f5f9; }
 html.dark .pkg-section-title p { color: #9ca3af; }
 
-/* ── empty ── */
+html.dark .pkg-search-form input {
+  background: #151922;
+  border-color: #2b3241;
+  color: #f1f5f9;
+}
+html.dark .pkg-search-form input::placeholder { color: #6b7280; }
+html.dark .pkg-search-form input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, .15);
+}
+html.dark .pkg-search-reset,
+html.dark .pkg-page-link {
+  background: #232935;
+  color: #cbd5e1;
+}
+html.dark .pkg-page-link.is-current {
+  background: #0284c7;
+  color: #fff;
+}
+
+/* ?? empty */
 html.dark .pkg-empty {
   background: #151922;
   border-color: #2b3241;
@@ -564,7 +669,7 @@ html.dark .pkg-empty {
 html.dark .pkg-empty strong { color: #f1f5f9; }
 html.dark .pkg-empty p { color: #9ca3af; }
 
-/* ── card ── */
+/* ?? card */
 html.dark .pkg-card {
   background: #1a1f2b;
   border-color: #2b3241;
@@ -573,7 +678,7 @@ html.dark .pkg-card {
 
 html.dark .pkg-date { color: #6b7280; }
 
-/* ── status 뱃지 ── */
+/* ?? status badge */
 html.dark .pkg-status--DRAFT    { background: #232935; color: #cbd5e1; }
 html.dark .pkg-status--PENDING  { background: #3a2a05; color: #fde68a; }
 html.dark .pkg-status--APPROVED { background: #14532d; color: #86efac; }
@@ -581,7 +686,7 @@ html.dark .pkg-status--EXPIRED  { background: #3a2a05; color: #fcd34d; }
 html.dark .pkg-status--REJECTED { background: #4c1d1d; color: #fca5a5; }
 html.dark .pkg-status--BLOCKED  { background: #3b0764; color: #d8b4fe; }
 
-/* ── thumb ── */
+/* ?? thumb */
 html.dark .pkg-thumb {
   border-color: #2b3241;
   color: #93c5fd;
@@ -590,24 +695,24 @@ html.dark .pkg-thumb {
     #151922;
 }
 
-/* ── card body ── */
+/* ?? card body */
 html.dark .pkg-card__body { background: #1a1f2b; }
 html.dark .pkg-spot { color: #60a5fa; }
 html.dark .pkg-card h3 { color: #f1f5f9; }
 html.dark .pkg-summary { color: #9ca3af; }
 
-/* ── meta ── */
+/* ?? meta */
 html.dark .pkg-meta div { background: #151922; }
 html.dark .pkg-meta dt { color: #9ca3af; }
 html.dark .pkg-meta dd { color: #f1f5f9; }
 
-/* ── 거절 사유 ── */
+/* ?? ?? ?? */
 html.dark .pkg-reject {
   background: #2a0a0a;
   color: #fca5a5;
 }
 
-/* ── card actions ── */
+/* ?? card actions */
 html.dark .pkg-card__actions {
   background: #151922;
   border-top-color: #2b3241;
@@ -625,7 +730,7 @@ html.dark .pkg-waiting  { background: #3a2a05; color: #fde68a; }
 html.dark .pkg-approved { background: #14532d; color: #86efac; }
 html.dark .pkg-expired  { background: #3a2a05; color: #fcd34d; }
 
-/* ── form field ── */
+/* ?? form field */
 html.dark .pkg-field span { color: #f1f5f9; }
 html.dark .pkg-field em { color: #f87171; }
 html.dark .pkg-field input,
@@ -645,7 +750,7 @@ html.dark .pkg-field textarea:focus {
 }
 html.dark .pkg-field small { color: #9ca3af; }
 
-/* ── 현재 이미지 ── */
+/* ?? ?? ??? */
 html.dark .pkg-current-image {
   background: #1e293b;
   border-color: #2b3241;
@@ -653,7 +758,7 @@ html.dark .pkg-current-image {
 html.dark .pkg-current-image img { background: #232935; }
 html.dark .pkg-current-image strong { color: #f1f5f9; }
 
-/* ── 보조 버튼 ── */
+/* ?? ?? ?? */
 html.dark .pkg-secondary-btn {
   background: #232935;
   color: #cbd5e1;

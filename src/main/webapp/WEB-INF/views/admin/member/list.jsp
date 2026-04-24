@@ -89,22 +89,6 @@
                         </div>
                     </div>
 
-                    <%-- 정렬 --%>
-                    <div>
-                        <div class="adm-filter-label"><spring:message code="admin.members.sort"/></div>
-                        <div style="display:flex;gap:6px;">
-                            <select class="adm-select" name="sortBy">
-                                <option value="createdAt"   ${search.sortBy=='createdAt'   ? 'selected' : ''}><spring:message code="admin.context.createdAt"/></option>
-                                <option value="lastLoginAt" ${search.sortBy=='lastLoginAt' ? 'selected' : ''}><spring:message code="admin.context.lastLogin"/></option>
-                                <option value="nickname"    ${search.sortBy=='nickname'    ? 'selected' : ''}><spring:message code="admin.context.nickname"/></option>
-                            </select>
-                            <select class="adm-select" name="sortDir">
-                                <option value="DESC" ${search.sortDir=='DESC' ? 'selected' : ''}><spring:message code="admin.members.sortDesc"/></option>
-                                <option value="ASC"  ${search.sortDir=='ASC'  ? 'selected' : ''}><spring:message code="admin.members.sortAsc"/></option>
-                            </select>
-                        </div>
-                    </div>
-
                     <%-- 버튼 --%>
                     <div style="display:flex;gap:6px;align-items:flex-end;">
                         <button type="submit" class="adm-btn adm-btn-primary">🔍 <spring:message code="admin.common.searchButton"/></button>
@@ -114,6 +98,8 @@
 
                     <input type="hidden" name="page" value="1">
                     <input type="hidden" name="size" value="${search.size}">
+                    <input type="hidden" id="sortByInput" name="sortBy" value="${search.sortBy}">
+                    <input type="hidden" id="sortDirInput" name="sortDir" value="${search.sortDir}">
                 </div>
             </form>
         </div>
@@ -130,32 +116,85 @@
                     <spring:message code="admin.members.totalMembers" arguments="${total}"/>
                 </span>
             </div>
-            <select class="adm-select" style="width:80px;" id="sizeSelect"
-                    onchange="changeSize(this.value)">
-                <option value="10"  ${search.size==10  ? 'selected' : ''}>10</option>
-                <option value="20"  ${search.size==20  ? 'selected' : ''}>20</option>
-                <option value="50"  ${search.size==50  ? 'selected' : ''}>50</option>
-                <option value="100" ${search.size==100 ? 'selected' : ''}>100</option>
-            </select>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <%-- 내보내기 --%>
+                <select class="adm-select" id="exportFormat" style="width:85px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <div style="position:relative;">
+                    <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;"
+                            onclick="document.getElementById('exportDropdown').style.display=document.getElementById('exportDropdown').style.display==='block'?'none':'block'">
+                        ⬇ 내보내기 ▾
+                    </button>
+                    <div id="exportDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#1e2535;border:1px solid #334155;border-radius:6px;z-index:200;min-width:170px;box-shadow:0 4px 12px rgba(0,0,0,.4);">
+                        <button type="button" style="display:block;width:100%;text-align:left;padding:9px 14px;background:none;border:none;color:#e2e8f0;cursor:pointer;font-size:13px;border-bottom:1px solid #334155;" onmouseover="this.style.background='#2d3748'" onmouseout="this.style.background='none'" onclick="exportData('all')">📋 전체 내보내기</button>
+                        <button type="button" style="display:block;width:100%;text-align:left;padding:9px 14px;background:none;border:none;color:#e2e8f0;cursor:pointer;font-size:13px;border-bottom:1px solid #334155;" onmouseover="this.style.background='#2d3748'" onmouseout="this.style.background='none'" onclick="exportData('search')">🔍 검색결과 내보내기</button>
+                        <button type="button" id="exportSelectedBtn" style="display:block;width:100%;text-align:left;padding:9px 14px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:13px;" disabled onclick="exportData('selected')">☑ 선택 내보내기 (0)</button>
+                    </div>
+                </div>
+                <%-- 페이지 크기 --%>
+                <select class="adm-select" style="width:80px;" id="sizeSelect"
+                        onchange="changeSize(this.value)">
+                    <option value="10"  ${search.size==10  ? 'selected' : ''}>10</option>
+                    <option value="20"  ${search.size==20  ? 'selected' : ''}>20</option>
+                    <option value="50"  ${search.size==50  ? 'selected' : ''}>50</option>
+                    <option value="100" ${search.size==100 ? 'selected' : ''}>100</option>
+                </select>
+            </div>
+        </div>
+
+        <%-- 일괄 처리 바 --%>
+        <div id="bulkBar" style="display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 16px;margin:0 0 12px;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><span id="bulkCount">0</span>명 선택됨</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+                <select class="adm-select" id="bulkStatusSelect" style="width:130px;">
+                    <option value="">상태 선택</option>
+                    <option value="ACTIVE"><spring:message code="admin.status.ACTIVE"/></option>
+                    <option value="DORMANT"><spring:message code="admin.status.DORMANT"/></option>
+                    <option value="DELETED"><spring:message code="admin.status.DELETED"/></option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="applyBulkStatus()">적용</button>
+            </div>
+            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;margin-left:auto;" onclick="clearSelection()">선택 해제</button>
         </div>
 
         <div class="adm-table-wrap" style="overflow:visible;">
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th><spring:message code="admin.common.member"/></th>
-                    <th><spring:message code="admin.context.email"/></th>
-                    <th><spring:message code="admin.common.status"/></th>
-                    <th><spring:message code="admin.common.role"/></th>
+                    <th style="width:40px;text-align:center;">
+                        <input type="checkbox" id="checkAll" onchange="toggleAll(this)" style="cursor:pointer;">
+                    </th>
+                    <th data-sort="nickname" onclick="memberSortBy('nickname')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.common.member"/> <span class="sort-ico">▼</span>
+                    </th>
+                    <th data-sort="email" onclick="memberSortBy('email')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.context.email"/> <span class="sort-ico">▼</span>
+                    </th>
+                    <th data-sort="status" onclick="memberSortBy('status')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.common.status"/> <span class="sort-ico">▼</span>
+                    </th>
+                    <th data-sort="role" onclick="memberSortBy('role')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.common.role"/> <span class="sort-ico">▼</span>
+                    </th>
                     <th><spring:message code="admin.members.social"/></th>
-                    <th><spring:message code="admin.members.login"/></th>
-                    <th><spring:message code="admin.context.createdAt"/></th>
+                    <th data-sort="lastLoginAt" onclick="memberSortBy('lastLoginAt')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.members.login"/> <span class="sort-ico">▼</span>
+                    </th>
+                    <th data-sort="createdAt" onclick="memberSortBy('createdAt')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.context.createdAt"/> <span class="sort-ico">▼</span>
+                    </th>
                     <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="m">
                     <tr>
+                        <%-- 체크박스 --%>
+                        <td style="text-align:center;">
+                            <input type="checkbox" class="js-row-check" value="${m.userIdx}" onchange="updateBulkBar()" style="cursor:pointer;">
+                        </td>
                         <%-- 회원 정보 --%>
                         <td>
                             <div class="mem-id-cell">
@@ -185,33 +224,48 @@
 
                         <%-- 이메일 --%>
                         <td>
-                            <c:choose>
-                                <c:when test="${not empty m.userEmail}">
-                                    <span style="font-size:12px;">${m.userEmail}</span>
-                                    <c:if test="${m.emailVerified}">
-                                        <span style="color:#4ade80;font-size:10px;"> ✓</span>
-                                    </c:if>
-                                </c:when>
-                                <c:otherwise><span style="color:#475569;font-size:12px;">—</span></c:otherwise>
-                            </c:choose>
-                            <div style="font-size:10px;color:${m.verifiedMember ? '#4ade80' : '#64748b'};margin-top:2px;">
+                            <button type="button"
+                                    class="adm-cell-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="actions"
+                                    data-focus-section="email">
                                 <c:choose>
-                                    <c:when test="${m.verifiedMember}"><spring:message code="admin.members.verifiedMember"/></c:when>
-                                    <c:otherwise><spring:message code="admin.members.unverifiedMember"/></c:otherwise>
+                                    <c:when test="${not empty m.userEmail}">
+                                        <span style="font-size:12px;">${m.userEmail}</span>
+                                        <c:if test="${m.emailVerified}">
+                                            <span style="color:#4ade80;font-size:10px;">✓ <spring:message code="admin.members.emailVerified"/></span>
+                                        </c:if>
+                                    </c:when>
+                                    <c:otherwise><span style="color:#475569;font-size:12px;">—</span></c:otherwise>
                                 </c:choose>
-                            </div>
+                                <span class="adm-cell-link-note">
+                                    <c:choose>
+                                        <c:when test="${m.verifiedMember}"><spring:message code="admin.members.verifiedMember"/></c:when>
+                                        <c:otherwise><spring:message code="admin.members.unverifiedMember"/></c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </button>
                         </td>
 
                         <%-- 상태 --%>
                         <td>
-                            <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'actions')" style="padding:0;">
+                            <button type="button"
+                                    class="adm-inline-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="actions"
+                                    data-focus-section="statusRole"
+                                    style="padding:0;">
                                 <span class="status-badge ${m.accountStatus}">${m.accountStatus}</span>
                             </button>
                         </td>
 
                         <%-- 권한 --%>
                         <td>
-                            <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'actions')" style="padding:0;">
+                            <button type="button"
+                                    class="adm-cell-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="actions"
+                                    data-focus-section="statusRole">
                                 <span class="role-badge ${m.userRole}">
                                     <c:choose>
                                         <c:when test="${m.userRole eq 'USER'}"><spring:message code="admin.role.USER"/></c:when>
@@ -224,78 +278,95 @@
                                         <c:otherwise>${m.userRole}</c:otherwise>
                                     </c:choose>
                                 </span>
+                                <c:if test="${not empty m.adminPositionCode}">
+                                    <span class="adm-cell-link-note">${m.adminPositionCode}</span>
+                                </c:if>
                             </button>
-                            <c:if test="${not empty m.adminPositionCode}">
-                                <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${m.adminPositionCode}</div>
-                            </c:if>
                         </td>
 
                         <%-- 소셜 연동 --%>
                         <td>
-                            <div class="adm-social-list is-compact">
-                                <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('KAKAO')}">
-                                    <span class="adm-social-pill kakao" title="<spring:message code='admin.social.kakao'/>">
-                                        <span class="adm-social-icon kakao-mark">k</span>
-                                        <span class="adm-social-label"><spring:message code="admin.social.kakao"/></span>
-                                    </span>
-                                </c:if>
-                                <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('NAVER')}">
-                                    <span class="adm-social-pill naver" title="<spring:message code='admin.social.naver'/>">
-                                        <span class="adm-social-icon naver-mark">N</span>
-                                        <span class="adm-social-label"><spring:message code="admin.social.naver"/></span>
-                                    </span>
-                                </c:if>
-                                <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('GOOGLE')}">
-                                    <span class="adm-social-pill google" title="<spring:message code='admin.social.google'/>">
-                                        <span class="adm-social-icon google-mark">
-                                            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-                                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                                            </svg>
+                            <button type="button"
+                                    class="adm-cell-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="info"
+                                    data-focus-section="social">
+                                <div class="adm-social-list is-compact">
+                                    <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('KAKAO')}">
+                                        <span class="adm-social-pill kakao" title="<spring:message code='admin.social.kakao'/>">
+                                            <span class="adm-social-icon kakao-mark">k</span>
+                                            <span class="adm-social-label"><spring:message code="admin.social.kakao"/></span>
                                         </span>
-                                        <span class="adm-social-label"><spring:message code="admin.social.google"/></span>
-                                    </span>
-                                </c:if>
-                                <c:if test="${empty m.linkedProviders}">
-                                    <span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider"/></span>
-                                </c:if>
-                            </div>
+                                    </c:if>
+                                    <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('NAVER')}">
+                                        <span class="adm-social-pill naver" title="<spring:message code='admin.social.naver'/>">
+                                            <span class="adm-social-icon naver-mark">N</span>
+                                            <span class="adm-social-label"><spring:message code="admin.social.naver"/></span>
+                                        </span>
+                                    </c:if>
+                                    <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('GOOGLE')}">
+                                        <span class="adm-social-pill google" title="<spring:message code='admin.social.google'/>">
+                                            <span class="adm-social-icon google-mark">
+                                                <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                                                </svg>
+                                            </span>
+                                            <span class="adm-social-label"><spring:message code="admin.social.google"/></span>
+                                        </span>
+                                    </c:if>
+                                    <c:if test="${empty m.linkedProviders}">
+                                        <span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider"/></span>
+                                    </c:if>
+                                </div>
+                            </button>
                         </td>
 
                         <%-- 로그인 이력 --%>
                         <td>
-                            <div style="font-size:12px;">
-                                <c:choose>
-                                    <c:when test="${m.lastLoginAt != null}">
-                                        <fmt:formatDate value="${m.lastLoginAt}" pattern="MM.dd HH:mm"/>
-                                    </c:when>
-                                    <c:otherwise><span style="color:#475569;"><spring:message code="admin.members.none"/></span></c:otherwise>
-                                </c:choose>
-                            </div>
-                            <div style="font-size:10px;color:#475569;margin-top:1px;">
-                                ✅${m.loginSuccessCount} / ❌${m.loginFailCount}
-                            </div>
+                            <button type="button"
+                                    class="adm-cell-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="hist"
+                                    data-focus-section="loginHistory">
+                                <span style="font-size:12px;">
+                                    <c:choose>
+                                        <c:when test="${m.lastLoginAt != null}">
+                                            <fmt:formatDate value="${m.lastLoginAt}" pattern="MM.dd HH:mm"/>
+                                        </c:when>
+                                        <c:otherwise><span style="color:#475569;"><spring:message code="admin.members.none"/></span></c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="adm-cell-link-note">✅${m.loginSuccessCount} / ❌${m.loginFailCount}</span>
+                            </button>
                         </td>
 
                         <%-- 가입일 --%>
-                        <td style="font-size:12px;color:#64748b;">
-                            <fmt:formatDate value="${m.createdAt}" pattern="yyyy.MM.dd"/>
+                        <td>
+                            <button type="button"
+                                    class="adm-cell-link js-member-open-detail"
+                                    data-user-idx="${m.userIdx}"
+                                    data-default-tab="info"
+                                    data-focus-section="createdMeta"
+                                    style="font-size:12px;color:#64748b;">
+                                <fmt:formatDate value="${m.createdAt}" pattern="yyyy.MM.dd"/>
+                            </button>
                         </td>
 
                         <%-- 액션 --%>
                         <td>
-                            <div style="display:flex;gap:4px;align-items:center;">
+                            <div class="adm-row-actions">
                                 <button class="adm-row-btn detail"
                                         onclick="openDetail(${m.userIdx})"><spring:message code="admin.members.detail"/></button>
                                 <c:if test="${m.userRole != 'SYSTEM' and m.userRole != 'SUPERADMIN'}">
                                 <div class="action-menu-wrap">
-                                    <button class="adm-row-btn detail"
-                                            onclick="toggleMenu(this)">⋯</button>
+                                    <button class="adm-row-btn detail adm-row-btn-more"
+                                            type="button"
+                                            onclick="admToggleActionMenu(this)">⋯</button>
                                     <div class="action-menu">
-                                        <div style="font-size:10px;color:#475569;padding:4px 10px 6px;
-                                                    font-weight:700;text-transform:uppercase;letter-spacing:.06em;">
+                                        <div class="action-menu-head">
                                             <spring:message code="admin.members.action.changeStatus"/>
                                         </div>
                                         <c:if test="${m.accountStatus != 'ACTIVE'}">
@@ -325,8 +396,7 @@
                                             </button>
                                         </c:if>
                                         <div class="action-menu-sep"></div>
-                                        <div style="font-size:10px;color:#475569;padding:4px 10px 6px;
-                                                    font-weight:700;text-transform:uppercase;letter-spacing:.06em;">
+                                        <div class="action-menu-head">
                                             <spring:message code="admin.members.action.changeRole"/>
                                         </div>
                                         <div class="role-change-box">
@@ -357,7 +427,7 @@
 
                 <c:if test="${empty list}">
                     <tr>
-                        <td colspan="8" style="text-align:center;padding:40px;color:#475569;">
+                        <td colspan="9" style="text-align:center;padding:40px;color:#475569;">
                             <spring:message code="admin.common.noResults"/>
                         </td>
                     </tr>
@@ -442,6 +512,85 @@
 
 <script>
 const ctx = '${pageContext.request.contextPath}';
+
+/* ── 정렬 ── */
+function memberSortBy(field) {
+    const curField = document.getElementById('sortByInput').value || 'createdAt';
+    const curDir   = document.getElementById('sortDirInput').value || 'DESC';
+    document.getElementById('sortByInput').value  = field;
+    document.getElementById('sortDirInput').value = (field === curField && curDir === 'DESC') ? 'ASC' : 'DESC';
+    document.getElementById('searchForm').querySelector('[name=page]').value = 1;
+    document.getElementById('searchForm').submit();
+}
+
+/* ── 체크박스 ── */
+function toggleAll(cb) {
+    document.querySelectorAll('.js-row-check').forEach(c => { c.checked = cb.checked; });
+    updateBulkBar();
+}
+function updateBulkBar() {
+    const checked = document.querySelectorAll('.js-row-check:checked');
+    const n = checked.length;
+    document.getElementById('bulkBar').style.display = n > 0 ? 'flex' : 'none';
+    document.getElementById('bulkCount').textContent = n;
+    const selBtn = document.getElementById('exportSelectedBtn');
+    if (selBtn) {
+        selBtn.disabled = n === 0;
+        selBtn.style.color = n > 0 ? '#e2e8f0' : '#94a3b8';
+        selBtn.textContent = '☑ 선택 내보내기 (' + n + ')';
+    }
+}
+function clearSelection() {
+    document.querySelectorAll('.js-row-check, #checkAll').forEach(c => { c.checked = false; });
+    updateBulkBar();
+}
+
+/* ── 일괄 상태 변경 ── */
+async function applyBulkStatus() {
+    const status = document.getElementById('bulkStatusSelect').value;
+    if (!status) { adm_toast('상태를 선택해주세요.', 'error'); return; }
+    const ids = Array.from(document.querySelectorAll('.js-row-check:checked')).map(c => c.value);
+    if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+    if (!confirm(ids.length + '명의 상태를 "' + status + '"(으)로 변경하시겠습니까?')) return;
+    const params = new URLSearchParams();
+    ids.forEach(id => params.append('userIdxList', id));
+    params.append('status', status);
+    const res = await fetch(ctx + '/admin/members/bulk/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params
+    });
+    const data = await res.json();
+    if (res.ok && data.success) { adm_toast(data.message); setTimeout(() => location.reload(), 700); }
+    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+}
+
+/* ── 내보내기 ── */
+function exportData(scope) {
+    const format = document.getElementById('exportFormat').value;
+    const form   = document.getElementById('searchForm');
+    const params = new URLSearchParams();
+    new FormData(form).forEach((val, key) => {
+        if (key !== 'page' && key !== 'sortBy' && key !== 'sortDir') params.append(key, val);
+    });
+    params.set('scope', scope);
+    params.set('format', format);
+    if (scope === 'selected') {
+        const ids = Array.from(document.querySelectorAll('.js-row-check:checked')).map(c => c.value);
+        if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+        params.set('selectedIds', ids.join(','));
+    }
+    document.getElementById('exportDropdown').style.display = 'none';
+    window.location.href = ctx + '/admin/members/export?' + params.toString();
+}
+
+/* ── 드롭다운 외부 클릭 닫기 ── */
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('[onclick*="exportDropdown"]') && !e.target.closest('#exportDropdown')) {
+        const dd = document.getElementById('exportDropdown');
+        if (dd) dd.style.display = 'none';
+    }
+});
 const ADMIN_MEMBER_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
 const ADMIN_MEMBER_MSG = {
     loading: '<spring:message code="admin.common.loading" javaScriptEscape="true"/>',
@@ -466,6 +615,12 @@ const ADMIN_MEMBER_MSG = {
     blockApplied: '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>',
     memberDetailsTitle: '<spring:message code="admin.context.memberTitle" javaScriptEscape="true"/>',
     memberDetailsSuffix: '<spring:message code="admin.members.detailTitleSuffix" javaScriptEscape="true"/>',
+    emailSectionTitle: '<spring:message code="admin.members.action.emailTitle" javaScriptEscape="true"/>',
+    emailPlaceholder: '<spring:message code="admin.members.emailPlaceholder" javaScriptEscape="true"/>',
+    saveEmail: '<spring:message code="admin.members.action.saveEmail" javaScriptEscape="true"/>',
+    emailResetNotice: '<spring:message code="admin.members.emailResetNotice" javaScriptEscape="true"/>',
+    emailCellHint: '<spring:message code="admin.members.emailCellHint" javaScriptEscape="true"/>',
+    emailUpdated: '<spring:message code="admin.members.emailUpdated" javaScriptEscape="true"/>',
     infoTab: '<spring:message code="admin.context.tab.info" javaScriptEscape="true"/>',
     loginTab: '<spring:message code="admin.context.tab.logins" javaScriptEscape="true"/>',
     securityTab: '<spring:message code="admin.context.tab.security" javaScriptEscape="true"/>',
@@ -606,14 +761,6 @@ function changeSize(size) {
 }
 
 /* ── 액션 메뉴 토글 ── */
-function toggleMenu(btn) {
-    const menu = btn.nextElementSibling;
-    document.querySelectorAll('.action-menu.open').forEach(m => {
-        if (m !== menu) m.classList.remove('open');
-    });
-    menu.classList.toggle('open');
-}
-
 function openBlockModal(triggerOrUserIdx, nickname) {
     const trigger = typeof triggerOrUserIdx === 'object' ? triggerOrUserIdx : null;
     const userIdx = trigger ? trigger.dataset.userIdx : triggerOrUserIdx;
@@ -867,18 +1014,47 @@ function buildBlockRows(items) {
     }, '<spring:message code="admin.context.empty.blocks" javaScriptEscape="true"/>');
 }
 
+function buildChatbotLinkClickRows(items) {
+    return buildContextRows(items, function(item) {
+        const url = item.url || '';
+        return ''
+            + '<div class="adm-context-record">'
+            + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+            + '<div style="font-size:13px;"><strong>' + escapeHtml(item.label || '-') + '</strong></div>'
+            + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.clickedAt)) + '</div>'
+            + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;"><a href="' + ctx + escapeHtml(url) + '" target="_blank" style="color:#60a5fa;font-family:monospace;text-decoration:none;">' + escapeHtml(url) + '</a></div>'
+            + '<div style="margin-top:4px;font-size:11px;color:#94a3b8;">'
+            + 'conv #' + escapeHtml(item.conversationId || '-')
+            + ' · msg #' + escapeHtml(item.messageId || '-')
+            + ' · IP: ' + escapeHtml(item.ipAddress || '-')
+            + '</div>'
+            + '</div>';
+    }, '기록된 챗봇 링크 클릭이 없습니다.');
+}
+
 function buildActionTab(m) {
     return ''
         + '<div class="adm-context-actions-grid">'
-        + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.profileTitle" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="adm-context-panel" id="memberProfilePanel">'
+        + '<div class="adm-context-panel-title">' + '<spring:message code="admin.context.action.profileTitle" javaScriptEscape="true"/>' + '</div>'
         + '<div class="detail-label">' + '<spring:message code="admin.context.nickname" javaScriptEscape="true"/>' + '</div><input id="memberProfileNickname" class="adm-input" type="text" value="' + escapeHtml(m.nickname || '') + '">'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.nationality" javaScriptEscape="true"/>' + '</div><input id="memberProfileNationality" class="adm-input" type="text" value="' + escapeHtml(m.nationality || '') + '">'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.preferredLanguage" javaScriptEscape="true"/>' + '</div><input id="memberProfileLang" class="adm-input" type="text" value="' + escapeHtml(m.preferredLang || '') + '">'
         + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberProfile(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.saveProfile" javaScriptEscape="true"/>' + '</button>'
         + '</div>'
-        + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="adm-context-panel" id="memberEmailPanel">'
+        + '<div class="adm-context-panel-title">' + ADMIN_MEMBER_MSG.emailSectionTitle + '</div>'
+        + '<div class="detail-label">' + '<spring:message code="admin.context.email" javaScriptEscape="true"/>' + '</div><input id="memberEmailInput" class="adm-input" type="email" placeholder="' + ADMIN_MEMBER_MSG.emailPlaceholder + '" value="' + escapeHtml(m.userEmail || '') + '">'
+        + '<div class="adm-cell-link-note" style="margin-top:10px;">' + escapeHtml(ADMIN_MEMBER_MSG.emailResetNotice) + '</div>'
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">'
+        + '<span class="status-badge ' + (m.emailVerified ? 'ACTIVE' : 'DORMANT') + '">' + '<spring:message code="admin.members.emailVerified" javaScriptEscape="true"/>' + ': ' + (m.emailVerified ? escapeHtml(ADMIN_MEMBER_MSG.yes) : escapeHtml(ADMIN_MEMBER_MSG.no)) + '</span>'
+        + '<span class="status-badge ' + (m.emailLoginEnabled ? 'ACTIVE' : 'DORMANT') + '">' + '<spring:message code="admin.members.emailLoginEnabled" javaScriptEscape="true"/>' + ': ' + (m.emailLoginEnabled ? escapeHtml(ADMIN_MEMBER_MSG.yes) : escapeHtml(ADMIN_MEMBER_MSG.no)) + '</span>'
+        + '</div>'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberEmail(' + escapeHtml(m.userIdx) + ', this)">' + ADMIN_MEMBER_MSG.saveEmail + '</button>'
+        + '</div>'
+        + '<div class="adm-context-panel" id="memberStatusRolePanel">'
+        + '<div class="adm-context-panel-title">' + '<spring:message code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>' + '</div>'
         + '<div class="detail-label">' + '<spring:message code="admin.members.accountStatus" javaScriptEscape="true"/>' + '</div>'
         + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE"><spring:message code="admin.status.ACTIVE" javaScriptEscape="true"/></option><option value="DORMANT"><spring:message code="admin.status.DORMANT" javaScriptEscape="true"/></option><option value="BLOCKED"><spring:message code="admin.status.BLOCKED" javaScriptEscape="true"/></option><option value="DELETED"><spring:message code="admin.status.DELETED" javaScriptEscape="true"/></option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.common.apply" javaScriptEscape="true"/>' + '</button></div>'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.common.role" javaScriptEscape="true"/>' + '</div>'
@@ -887,8 +1063,8 @@ function buildActionTab(m) {
         + '<input id="memberRoleReason" class="adm-input" type="text" maxlength="500" placeholder="' + '<spring:message code="admin.context.action.roleReasonPlaceholder" javaScriptEscape="true"/>' + '">'
         + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.changeRole" javaScriptEscape="true"/>' + '</button>'
         + '</div>'
-        + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.quickBlockTitle" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="adm-context-panel" id="memberQuickBlockPanel">'
+        + '<div class="adm-context-panel-title">' + '<spring:message code="admin.context.action.quickBlockTitle" javaScriptEscape="true"/>' + '</div>'
         + '<div class="detail-label">' + '<spring:message code="admin.context.action.blockType" javaScriptEscape="true"/>' + '</div><select id="detailBlockType" class="adm-select" style="width:100%;"><option value="USER_ONLY">' + '<spring:message code="admin.context.blockType.userOnly" javaScriptEscape="true"/>' + '</option><option value="IP_ONLY">' + '<spring:message code="admin.context.blockType.ipOnly" javaScriptEscape="true"/>' + '</option><option value="USER_IP">' + '<spring:message code="admin.context.blockType.userIp" javaScriptEscape="true"/>' + '</option></select>'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.blockedIp" javaScriptEscape="true"/>' + '</div><input id="detailBlockedIp" class="adm-input" type="text" placeholder="' + '<spring:message code="admin.context.action.blockIpPlaceholder" javaScriptEscape="true"/>' + '">'
         + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.action.blockExpires" javaScriptEscape="true"/>' + '</div><input id="detailBlockedUntil" class="adm-input" type="datetime-local">'
@@ -899,7 +1075,7 @@ function buildActionTab(m) {
 }
 
 /* ── 회원 상세 모달 ── */
-async function openDetail(userIdx, defaultTab) {
+async function openDetail(userIdx, defaultTab, focusSection) {
     document.getElementById('detailModal').classList.add('open');
     document.getElementById('modalBody').innerHTML =
         '<div style="text-align:center;padding:40px;color:#475569;">' + escapeHtml(ADMIN_MEMBER_MSG.loading) + ' ⏳</div>';
@@ -927,7 +1103,8 @@ async function openDetail(userIdx, defaultTab) {
     const emailTokens = Array.isArray(data.emailTokens) ? data.emailTokens : [];
     const activityLogs = Array.isArray(data.activityLogs) ? data.activityLogs : [];
     const recentBlocks = Array.isArray(data.recentBlocks) ? data.recentBlocks : [];
-    const activeTab = ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'actions'].includes(defaultTab) ? defaultTab : 'info';
+    const chatbotLinkClicks = Array.isArray(data.chatbotLinkClicks) ? data.chatbotLinkClicks : [];
+    const activeTab = ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'chatbot', 'actions'].includes(defaultTab) ? defaultTab : 'info';
 
     document.getElementById('modalTitle').textContent = (m.nickname || ADMIN_MEMBER_MSG.memberDetailsTitle) + ' ' + ADMIN_MEMBER_MSG.memberDetailsSuffix;
 
@@ -939,6 +1116,7 @@ async function openDetail(userIdx, defaultTab) {
         + '<button class="adm-tab ' + (activeTab === 'emails' ? 'active' : '') + '" onclick="switchTab(\'emails\', this)">' + ADMIN_MEMBER_MSG.emailHistoryTab + '</button>'
         + '<button class="adm-tab ' + (activeTab === 'activity' ? 'active' : '') + '" onclick="switchTab(\'activity\', this)">' + ADMIN_MEMBER_MSG.activityTab + ' (' + activityLogs.length + ')</button>'
         + '<button class="adm-tab ' + (activeTab === 'blocks' ? 'active' : '') + '" onclick="switchTab(\'blocks\', this)">' + ADMIN_MEMBER_MSG.blockTab + ' (' + recentBlocks.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'chatbot' ? 'active' : '') + '" onclick="switchTab(\'chatbot\', this)">챗봇 링크 (' + chatbotLinkClicks.length + ')</button>'
         + '<button class="adm-tab ' + (activeTab === 'actions' ? 'active' : '') + '" onclick="switchTab(\'actions\', this)">' + ADMIN_MEMBER_MSG.actionsTab + '</button>'
         + '</div>'
         + '<div id="tab-info" style="display:' + (activeTab === 'info' ? '' : 'none') + ';"></div>'
@@ -947,6 +1125,7 @@ async function openDetail(userIdx, defaultTab) {
         + '<div id="tab-emails" style="display:' + (activeTab === 'emails' ? '' : 'none') + ';"></div>'
         + '<div id="tab-activity" style="display:' + (activeTab === 'activity' ? '' : 'none') + ';"></div>'
         + '<div id="tab-blocks" style="display:' + (activeTab === 'blocks' ? '' : 'none') + ';"></div>'
+        + '<div id="tab-chatbot" style="display:' + (activeTab === 'chatbot' ? '' : 'none') + ';"></div>'
         + '<div id="tab-actions" style="display:' + (activeTab === 'actions' ? '' : 'none') + ';"></div>';
 
     document.getElementById('tab-info').innerHTML = buildInfoTab(m);
@@ -959,11 +1138,46 @@ async function openDetail(userIdx, defaultTab) {
         + '</div>';
     document.getElementById('tab-activity').innerHTML = buildActivityRows(activityLogs);
     document.getElementById('tab-blocks').innerHTML = buildBlockRows(recentBlocks);
+    document.getElementById('tab-chatbot').innerHTML = buildChatbotLinkClickRows(chatbotLinkClicks);
     document.getElementById('tab-actions').innerHTML = buildActionTab(m);
     const statusSelect = document.getElementById('memberStatusSelect');
     const roleSelect = document.getElementById('memberRoleSelect');
     if (statusSelect) statusSelect.value = m.accountStatus || 'ACTIVE';
     if (roleSelect) roleSelect.value = m.userRole || 'USER';
+    if (focusSection) {
+        focusMemberSection(activeTab, focusSection);
+    }
+}
+
+function focusMemberSection(activeTab, focusSection) {
+    if (activeTab === 'actions') {
+        const panelMap = {
+            email: 'memberEmailPanel',
+            statusRole: 'memberStatusRolePanel',
+            quickBlock: 'memberQuickBlockPanel',
+            profile: 'memberProfilePanel'
+        };
+        const targetId = panelMap[focusSection];
+        const panel = targetId ? document.getElementById(targetId) : null;
+        if (panel) {
+            panel.classList.add('is-focus-flash');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            const focusable = panel.querySelector('input, textarea, select, button');
+            if (focusable) {
+                focusable.focus({ preventScroll: true });
+                if (typeof focusable.select === 'function' && focusSection === 'email') {
+                    focusable.select();
+                }
+            }
+            setTimeout(() => panel.classList.remove('is-focus-flash'), 1800);
+        }
+        return;
+    }
+
+    if (activeTab === 'hist') {
+        const table = document.querySelector('#tab-hist table');
+        if (table) table.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 }
 
 function buildInfoTab(m) {
@@ -1078,6 +1292,31 @@ async function saveMemberProfile(userIdx, button) {
     }
 }
 
+async function saveMemberEmail(userIdx, button) {
+    const email = document.getElementById('memberEmailInput').value.trim();
+
+    button.disabled = true;
+    try {
+        const res = await fetch(ctx + '/admin/members/' + userIdx + '/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ email })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            adm_toast(data.message || ADMIN_MEMBER_MSG.emailUpdated);
+            await openDetail(userIdx, 'actions', 'email');
+        } else {
+            adm_toast(data.message || '<spring:message code="admin.common.saveFailed" javaScriptEscape="true"/>', 'error');
+        }
+    } catch (e) {
+        console.error(e);
+        adm_toast('<spring:message code="admin.common.saveFailed" javaScriptEscape="true"/>', 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
 function applyStatusFromDetail(userIdx, button) {
     const status = document.getElementById('memberStatusSelect').value;
     changeStatus(userIdx, status, button);
@@ -1128,6 +1367,14 @@ async function submitDetailBlock(userIdx, button) {
 
 function closeDetail() {
     document.getElementById('detailModal').classList.remove('open');
+    // 외부에서 ?detailUserIdx=N 으로 들어와 자동 오픈된 경우, 닫힘 후 파라미터 제거 (리프레시 재오픈 방지)
+    try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('detailUserIdx')) {
+            url.searchParams.delete('detailUserIdx');
+            window.history.replaceState(null, '', url.toString());
+        }
+    } catch (e) {}
 }
 
 document.getElementById('detailModal').addEventListener('click', function (e) {
@@ -1138,7 +1385,24 @@ document.getElementById('blockModal').addEventListener('click', function (e) {
     if (e.target === this) closeBlockModal();
 });
 
+document.addEventListener('click', function (e) {
+    const detailTrigger = e.target.closest('.js-member-open-detail');
+    if (!detailTrigger) return;
+    openDetail(detailTrigger.dataset.userIdx, detailTrigger.dataset.defaultTab, detailTrigger.dataset.focusSection);
+});
+
 document.addEventListener('DOMContentLoaded', function () {
+    // 정렬 아이콘 초기화
+    const curSort = '${search.sortBy}';
+    const curDir  = '${search.sortDir}';
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+        if (th.dataset.sort === curSort) {
+            th.classList.add('sorted');
+            const ico = th.querySelector('.sort-ico');
+            if (ico) ico.textContent = curDir === 'ASC' ? '▲' : '▼';
+        }
+    });
+    // URL 파라미터로 상세 자동 오픈
     const detailUserIdx = '${fn:escapeXml(param.detailUserIdx)}';
     if (detailUserIdx) {
         openDetail(detailUserIdx);

@@ -136,7 +136,7 @@
                                 <div class="adm-meta-key"><spring:message code="admin.common.title"/></div>
                                 <div class="adm-detail-value" style="font-weight:600;">${fn:escapeXml(report.targetTitle)}</div>
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="신고 대상 제목 번역"
+                                     data-label="<spring:message code='admin.translation.label.reportTargetTitle'/>"
                                      data-source-type="REPORT_TARGET"
                                      data-source-idx="${report.targetId}"
                                      data-field-name="target_title"
@@ -154,7 +154,7 @@
                                     </c:choose>
                                 </div>
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="신고 대상 본문 번역"
+                                     data-label="<spring:message code='admin.translation.label.reportTargetContent'/>"
                                      data-source-type="REPORT_TARGET"
                                      data-source-idx="${report.targetId}"
                                      data-field-name="target_content"
@@ -182,7 +182,7 @@
                                         </c:choose>
                                     </div>
                                     <div class="adm-tr-inline js-admin-translation-widget"
-                                         data-label="리뷰 본문 번역"
+                                         data-label="<spring:message code='admin.translation.label.reportReviewContent'/>"
                                          data-source-type="REPORT_TARGET"
                                          data-source-idx="${report.targetId}"
                                          data-field-name="target_content"
@@ -214,7 +214,7 @@
                             <div class="adm-meta-key"><spring:message code="admin.common.description"/></div>
                             <div class="adm-report-desc">${report.description}</div>
                             <div class="adm-tr-inline js-admin-translation-widget"
-                                 data-label="신고 설명 번역"
+                                 data-label="<spring:message code='admin.translation.label.reportDescription'/>"
                                  data-source-type="REPORT"
                                  data-source-idx="${report.reportId}"
                                  data-field-name="description"
@@ -262,6 +262,14 @@
                 <div class="adm-card-body">
                     <div class="adm-side-section">
 
+                        <c:if test="${report.userIdx == 18}">
+                            <div>
+                                <span style="display:inline-block;padding:3px 10px;background:#ede9fe;color:#6d28d9;border-radius:999px;font-size:11px;font-weight:600;"
+                                      title="Perspective API 민감도 분석에 의해 자동 감지된 신고">
+                                    🤖 AI 자동감지
+                                </span>
+                            </div>
+                        </c:if>
                         <div>
                             <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.userId"/></div>
                             <div style="font-size:14px;font-weight:600;">${report.userId}</div>
@@ -301,7 +309,7 @@
                         </div>
 
                         <%-- 처리 버튼: targetType에 따라 조건부 --%>
-                        <div class="adm-meta-actions">
+                        <div class="adm-meta-actions" id="report-processing-actions">
                             <div style="font-size:11px;color:#64748b;margin-bottom:8px;">${adminReportsDetailProcessingTitle}</div>
                             <div style="display:flex;flex-direction:column;gap:6px;">
 
@@ -384,6 +392,21 @@ var REPORT_DETAIL_MSG = {
     processFailed: '${fn:escapeXml(adminReportsDetailProcessFailed)}'
 };
 
+
+(function () {
+    var jump = new URLSearchParams(window.location.search).get('jump');
+    if (!jump) return;
+    var target = document.getElementById(jump);
+    if (!target) return;
+    target.classList.add('is-focus-flash');
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    var focusable = target.querySelector('textarea, input, select, button, a');
+    if (focusable) {
+        try { focusable.focus({ preventScroll: true }); } catch (e) { focusable.focus(); }
+    }
+    setTimeout(function(){ target.classList.remove('is-focus-flash'); }, 2400);
+})();
+
 function goBackToList() {
     var params = new URLSearchParams(window.location.search);
     var page       = params.get('page')       || '1';
@@ -434,6 +457,4 @@ function resolve(action) {
     });
 }
 </script>
-
-<%@ include file="../common/context-modal.jspf" %>
 <%@ include file="../layout-close.jsp" %>

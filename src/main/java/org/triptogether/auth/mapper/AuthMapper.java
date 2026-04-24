@@ -184,4 +184,7 @@ public interface AuthMapper {
     /** 동일 이메일+목적의 미사용 토큰 전체 만료 처리 (중복 발급 방지) */
     void expireOldTokens(@Param("email") String email,
                          @Param("purpose") String purpose);
+
+    /** 이메일 인증 토큰으로 flowTraceId 조회 (만료/사용 여부 무관 — 흐름 추적 복원용) */
+    String findFlowTraceIdByToken(String token);
 }

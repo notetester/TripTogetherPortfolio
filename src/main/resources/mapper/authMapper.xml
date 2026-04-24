@@ -327,13 +327,20 @@
         INSERT INTO USER_SECURITY_HISTORY (
             user_idx, actor_user_idx, event_type, event_stage,
             input_identifier, target_email, is_success, fail_reason,
-            detail_message, ip_address, user_agent
+            detail_message, request_id, flow_trace_id, ip_address, user_agent
         ) VALUES (
             #{userIdx}, #{actorUserIdx}, #{eventType}, #{eventStage},
             #{inputIdentifier}, #{targetEmail}, #{success}, #{failReason},
-            #{detailMessage}, #{ipAddress}, #{userAgent}
+            #{detailMessage}, #{requestId}, #{flowTraceId}, #{ipAddress}, #{userAgent}
         )
     </insert>
+
+    <select id="findFlowTraceIdByToken" resultType="string">
+        SELECT COALESCE(flow_trace_id, request_id)
+        FROM EMAIL_VERIFICATION
+        WHERE token = #{token}
+        LIMIT 1
+    </select>
 
 
 

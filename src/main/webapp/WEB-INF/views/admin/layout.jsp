@@ -50,7 +50,7 @@
             <div class="adm-nav-group" data-group="members">
                 <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('members')">
                     <span class="adm-nav-group-caret">▸</span>
-                    <span class="adm-nav-group-title">회원 관리</span>
+                    <span class="adm-nav-group-title"><spring:message code="admin.layout.section.members"/></span>
                 </button>
                 <div class="adm-nav-group-body">
                     <c:if test="${hasMemberAdmin}">
@@ -75,7 +75,7 @@
             <div class="adm-nav-group" data-group="security">
                 <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('security')">
                     <span class="adm-nav-group-caret">▸</span>
-                    <span class="adm-nav-group-title">보안·감사</span>
+                    <span class="adm-nav-group-title"><spring:message code="admin.layout.section.security"/></span>
                 </button>
                 <div class="adm-nav-group-body">
                     <a class="adm-nav-item ${activeMenu=='logins'?'active':''}" href="${pageContext.request.contextPath}/admin/logins">
@@ -145,6 +145,11 @@
                         <span class="adm-nav-icon">🗺️</span> <spring:message code="admin.layout.menu.courses"/>
                     </a>
                     </c:if>
+                    <c:if test="${hasCommunityAdmin}">
+                    <a class="adm-nav-item ${activeMenu=='ads'?'active':''}" href="${pageContext.request.contextPath}/admin/ads">
+                        <span class="adm-nav-icon">📢</span> <spring:message code="admin.layout.menu.ads"/>
+                    </a>
+                    </c:if>
                 </div>
             </div>
             </c:if>
@@ -154,17 +159,17 @@
             <div class="adm-nav-group" data-group="ai">
                 <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('ai')">
                     <span class="adm-nav-group-caret">▸</span>
-                    <span class="adm-nav-group-title">AI 관리</span>
+                    <span class="adm-nav-group-title"><spring:message code="admin.layout.section.ai"/></span>
                 </button>
                 <div class="adm-nav-group-body">
                     <c:if test="${hasAssistantAdmin}">
                     <a class="adm-nav-item ${activeMenu=='aiHelper' and section ne 'chatbot'?'active':''}" href="${pageContext.request.contextPath}/admin/ai-helper">
-                        <span class="adm-nav-icon">🤖</span> AI 도우미 관리
+                        <span class="adm-nav-icon">🤖</span> <spring:message code="admin.layout.menu.aiAssistant"/>
                     </a>
                     </c:if>
                     <c:if test="${hasAiChatbotAdmin}">
                     <a class="adm-nav-item ${activeMenu=='aiHelper' and section eq 'chatbot'?'active':''}" href="${pageContext.request.contextPath}/admin/ai-helper/chatbot">
-                        <span class="adm-nav-icon">💬</span> AI 챗봇 관리
+                        <span class="adm-nav-icon">💬</span> <spring:message code="admin.layout.menu.aiChatbot"/>
                     </a>
                     </c:if>
                 </div>
@@ -248,10 +253,25 @@
 
     <div class="adm-main">
         <div class="adm-topbar">
-            <button class="adm-btn adm-btn-ghost" style="display:none;padding:6px 8px;" id="sidebar-toggle"
-                    onclick="document.getElementById('adm-sidebar').classList.toggle('open')">☰</button>
+            <button type="button" class="adm-nav-toggle" id="sidebar-toggle"
+                    aria-label="메뉴" aria-expanded="false" aria-controls="adm-sidebar">
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+                <span class="adm-nav-toggle-bar"></span>
+            </button>
             <div class="adm-topbar-title">${pageTitle}</div>
-            <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="<spring:message code="admin.layout.themeToggleTitle"/>">☀️ <spring:message code="admin.layout.theme.light"/></button>
+            <div class="adm-topbar-controls">
+                <label class="adm-topbar-select-wrap" for="admLangSel" title="<spring:message code='admin.layout.languageTitle'/>">
+                    <span class="adm-topbar-tool-label"><spring:message code="admin.layout.language"/></span>
+                    <select class="adm-select adm-topbar-select" id="admLangSel" aria-label="<spring:message code='admin.layout.languageTitle'/>">
+                        <option value="ko" ${pageContext.response.locale.language == 'ko' ? 'selected' : ''}><spring:message code="header.lang.ko"/></option>
+                        <option value="en" ${pageContext.response.locale.language == 'en' ? 'selected' : ''}><spring:message code="header.lang.en"/></option>
+                        <option value="ja" ${pageContext.response.locale.language == 'ja' ? 'selected' : ''}><spring:message code="header.lang.ja"/></option>
+                        <option value="zh" ${pageContext.response.locale.language == 'zh' ? 'selected' : ''}><spring:message code="header.lang.zh"/></option>
+                    </select>
+                </label>
+                <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="<spring:message code="admin.layout.themeToggleTitle"/>">☀️ <spring:message code="admin.layout.theme.light"/></button>
+            </div>
             <div class="adm-topbar-path">
                 <span><spring:message code="admin.layout.path.admin"/></span>
                 <c:if test="${not empty pageTitle}"><span>${pageTitle}</span></c:if>
@@ -280,49 +300,64 @@ function saToggleTheme() {
         if (btn) btn.textContent = '🌙 ${adminThemeDarkText}';
     }
 }
+
+(function(){
+    var langSel = document.getElementById('admLangSel');
+    if (!langSel) return;
+    langSel.addEventListener('change', function() {
+        var url = new URL(window.location.href);
+        url.searchParams.set('lang', this.value);
+        window.location.href = url.toString();
+    });
+})();
 </script>
 
 <script>
 window.__CTX__ = '${pageContext.request.contextPath}';
 window.ADMIN_TRANSLATION_UI = {
-    open: '<spring:message code="admin.translation.open" text="번역 보기" javaScriptEscape="true"/>',
-    hide: '<spring:message code="admin.translation.hide" text="숨기기" javaScriptEscape="true"/>',
-    refresh: '<spring:message code="admin.translation.refresh" text="새로고침" javaScriptEscape="true"/>',
-    createNew: '<spring:message code="admin.translation.createNew" text="새로 만들기" javaScriptEscape="true"/>',
-    create: '<spring:message code="admin.translation.create" text="생성" javaScriptEscape="true"/>',
-    none: '<spring:message code="admin.translation.none" text="생성된 번역본 없음" javaScriptEscape="true"/>',
-    noTranslationSelected: '<spring:message code="admin.translation.noTranslationSelected" text="번역안을 선택해줘야 함" javaScriptEscape="true"/>',
-    collapsedHint: '<spring:message code="admin.translation.collapsedHint" text="버튼을 눌러 번역 목록을 확인" javaScriptEscape="true"/>',
-    currentSource: '<spring:message code="admin.translation.currentSource" text="현재 원문" javaScriptEscape="true"/>',
-    basedSource: '<spring:message code="admin.translation.basedSource" text="현재 버전 기준 원문" javaScriptEscape="true"/>',
-    translatedText: '<spring:message code="admin.translation.translatedText" text="번역문" javaScriptEscape="true"/>',
-    title: '<spring:message code="admin.translation.title" text="제목" javaScriptEscape="true"/>',
-    titlePlaceholder: '<spring:message code="admin.translation.titlePlaceholder" text="예: ko→en 번역안" javaScriptEscape="true"/>',
-    sourceLang: '<spring:message code="admin.translation.sourceLang" text="소스 언어" javaScriptEscape="true"/>',
-    targetLang: '<spring:message code="admin.translation.targetLang" text="타겟 언어" javaScriptEscape="true"/>',
-    autoGenerate: '<spring:message code="admin.translation.autoGenerate" text="자동 번역으로 초안 생성" javaScriptEscape="true"/>',
-    initialText: '<spring:message code="admin.translation.initialText" text="초기 번역문" javaScriptEscape="true"/>',
-    note: '<spring:message code="admin.translation.note" text="메모" javaScriptEscape="true"/>',
-    primary: '<spring:message code="admin.translation.primary" text="대표본" javaScriptEscape="true"/>',
-    primaryShort: '<spring:message code="admin.translation.primaryShort" text="대표" javaScriptEscape="true"/>',
-    outdated: '<spring:message code="admin.translation.outdated" text="현재 원문과 기준 스냅샷이 다름" javaScriptEscape="true"/>',
-    outdatedShort: '<spring:message code="admin.translation.outdatedShort" text="구버전" javaScriptEscape="true"/>',
-    upToDate: '<spring:message code="admin.translation.upToDate" text="현재 원문 기준과 일치" javaScriptEscape="true"/>',
-    setPrimary: '<spring:message code="admin.translation.setPrimary" text="이 번역안을 대표본으로 지정" javaScriptEscape="true"/>',
-    saveRevision: '<spring:message code="admin.translation.saveRevision" text="새 버전 저장" javaScriptEscape="true"/>',
-    revisionHistory: '<spring:message code="admin.translation.revisionHistory" text="버전 이력" javaScriptEscape="true"/>',
-    restoreRevision: '<spring:message code="admin.translation.restoreRevision" text="선택 버전으로 되돌리기" javaScriptEscape="true"/>',
-    noRevision: '<spring:message code="admin.translation.noRevision" text="버전 없음" javaScriptEscape="true"/>',
-    untitled: '<spring:message code="admin.translation.untitled" text="제목 없음" javaScriptEscape="true"/>',
-    loading: '<spring:message code="admin.translation.loading" text="불러오는 중..." javaScriptEscape="true"/>',
-    created: '<spring:message code="admin.translation.created" text="번역안을 생성했음" javaScriptEscape="true"/>',
-    saved: '<spring:message code="admin.translation.saved" text="새 번역 버전을 저장했음" javaScriptEscape="true"/>',
-    restored: '<spring:message code="admin.translation.restored" text="선택 버전으로 되돌렸음" javaScriptEscape="true"/>',
-    confirmRestore: '<spring:message code="admin.translation.confirmRestore" text="선택한 버전으로 되돌리겠음?" javaScriptEscape="true"/>',
-    requestFailed: '<spring:message code="admin.translation.requestFailed" text="요청 처리 중 오류가 발생했음" javaScriptEscape="true"/>',
-    enterTranslatedText: '<spring:message code="admin.translation.enterTranslatedText" text="번역문을 입력해야 함" javaScriptEscape="true"/>',
+    open: '<spring:message code="admin.translation.open" text="Translations" javaScriptEscape="true"/>',
+    hide: '<spring:message code="admin.translation.hide" text="Hide" javaScriptEscape="true"/>',
+    refresh: '<spring:message code="admin.translation.refresh" text="Refresh" javaScriptEscape="true"/>',
+    createNew: '<spring:message code="admin.translation.createNew" text="Create new" javaScriptEscape="true"/>',
+    create: '<spring:message code="admin.translation.create" text="Create" javaScriptEscape="true"/>',
+    none: '<spring:message code="admin.translation.none" text="No translations" javaScriptEscape="true"/>',
+    noTranslationSelected: '<spring:message code="admin.translation.noTranslationSelected" text="Select a translation" javaScriptEscape="true"/>',
+    collapsedHint: '<spring:message code="admin.translation.collapsedHint" text="Open to load translations" javaScriptEscape="true"/>',
+    currentSource: '<spring:message code="admin.translation.currentSource" text="Current source" javaScriptEscape="true"/>',
+    basedSource: '<spring:message code="admin.translation.basedSource" text="Base source" javaScriptEscape="true"/>',
+    translatedText: '<spring:message code="admin.translation.translatedText" text="Translated text" javaScriptEscape="true"/>',
+    title: '<spring:message code="admin.translation.title" text="Title" javaScriptEscape="true"/>',
+    titlePlaceholder: '<spring:message code="admin.translation.titlePlaceholder" text="e.g. ko→en draft" javaScriptEscape="true"/>',
+    sourceLang: '<spring:message code="admin.translation.sourceLang" text="Source language" javaScriptEscape="true"/>',
+    targetLang: '<spring:message code="admin.translation.targetLang" text="Target language" javaScriptEscape="true"/>',
+    autoGenerate: '<spring:message code="admin.translation.autoGenerate" text="Generate draft automatically" javaScriptEscape="true"/>',
+    initialText: '<spring:message code="admin.translation.initialText" text="Initial translation" javaScriptEscape="true"/>',
+    note: '<spring:message code="admin.translation.note" text="Note" javaScriptEscape="true"/>',
+    primary: '<spring:message code="admin.translation.primary" text="Primary version" javaScriptEscape="true"/>',
+    primaryShort: '<spring:message code="admin.translation.primaryShort" text="Primary" javaScriptEscape="true"/>',
+    outdated: '<spring:message code="admin.translation.outdated" text="Source snapshot changed" javaScriptEscape="true"/>',
+    outdatedShort: '<spring:message code="admin.translation.outdatedShort" text="Old" javaScriptEscape="true"/>',
+    upToDate: '<spring:message code="admin.translation.upToDate" text="Up to date" javaScriptEscape="true"/>',
+    setPrimary: '<spring:message code="admin.translation.setPrimary" text="Mark as primary" javaScriptEscape="true"/>',
+    saveRevision: '<spring:message code="admin.translation.saveRevision" text="Save revision" javaScriptEscape="true"/>',
+    revisionHistory: '<spring:message code="admin.translation.revisionHistory" text="Revision history" javaScriptEscape="true"/>',
+    restoreRevision: '<spring:message code="admin.translation.restoreRevision" text="Restore selected revision" javaScriptEscape="true"/>',
+    noRevision: '<spring:message code="admin.translation.noRevision" text="No revisions" javaScriptEscape="true"/>',
+    untitled: '<spring:message code="admin.translation.untitled" text="Untitled" javaScriptEscape="true"/>',
+    loading: '<spring:message code="admin.translation.loading" text="Loading..." javaScriptEscape="true"/>',
+    created: '<spring:message code="admin.translation.created" text="Translation created" javaScriptEscape="true"/>',
+    saved: '<spring:message code="admin.translation.saved" text="Revision saved" javaScriptEscape="true"/>',
+    restored: '<spring:message code="admin.translation.restored" text="Revision restored" javaScriptEscape="true"/>',
+    confirmRestore: '<spring:message code="admin.translation.confirmRestore" text="Restore selected revision?" javaScriptEscape="true"/>',
+    requestFailed: '<spring:message code="admin.translation.requestFailed" text="Request failed" javaScriptEscape="true"/>',
+    enterTranslatedText: '<spring:message code="admin.translation.enterTranslatedText" text="Enter translated text" javaScriptEscape="true"/>',
+    loadFailed: '<spring:message code="admin.translation.loadFailed" text="Failed to load translations" javaScriptEscape="true"/>',
+    createFailed: '<spring:message code="admin.translation.createFailed" text="Failed to create translation" javaScriptEscape="true"/>',
+    saveFailed: '<spring:message code="admin.translation.saveFailed" text="Failed to save translation" javaScriptEscape="true"/>',
+    restoreFailed: '<spring:message code="admin.translation.restoreFailed" text="Failed to restore revision" javaScriptEscape="true"/>',
+    sectionTitle: '<spring:message code="admin.translation.sectionTitle" text="Translation management" javaScriptEscape="true"/>',
     languages: {
-        ko: '<spring:message code="header.lang.ko" text="한국어" javaScriptEscape="true"/>',
+        ko: '<spring:message code="header.lang.ko" text="Korean" javaScriptEscape="true"/>',
         en: '<spring:message code="header.lang.en" text="English" javaScriptEscape="true"/>',
         ja: '<spring:message code="header.lang.ja" text="日本語" javaScriptEscape="true"/>',
         zh: '<spring:message code="header.lang.zh" text="中文" javaScriptEscape="true"/>'

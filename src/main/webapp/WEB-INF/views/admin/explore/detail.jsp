@@ -227,7 +227,18 @@
                             </div>
                         </td>
                         <td style="font-size:12px;color:#d97706;">${review.rating}/5</td>
-                        <td style="font-size:13px;line-height:1.6;">${fn:escapeXml(review.content)}</td>
+                        <td style="font-size:13px;line-height:1.6;">
+                            ${fn:escapeXml(review.content)}
+                            <c:if test="${not empty review.content}">
+                                <div class="adm-tr-inline js-admin-translation-widget"
+                                     data-label="<spring:message code='admin.translation.label.exploreReviewContent'/>"
+                                     data-source-type="EXPLORE_REVIEW"
+                                     data-source-idx="${review.reviewIdx}"
+                                     data-field-name="content"
+                                     data-default-source-lang="ko"
+                                     data-source-text="${fn:escapeXml(review.content)}"></div>
+                            </c:if>
+                        </td>
                         <td>
                             <span class="status-badge ${review.displayStatus}">
                                 <c:choose>
@@ -254,8 +265,6 @@
         </div>
     </div>
 </div>
-
-<%@ include file="../common/context-modal.jspf" %>
 
 <script>
 var ctx = '${pageContext.request.contextPath}';

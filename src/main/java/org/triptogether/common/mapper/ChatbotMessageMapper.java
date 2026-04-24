@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.triptogether.common.vo.ChatMessageVO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -28,4 +29,8 @@ public interface ChatbotMessageMapper {
                                                     @Param("limit") int limit);
 
     int countInappropriateMessages();
+
+    // 특정 대화의 user 메시지 수 (주기 시작 시각 이후) — 쿼터 환급 시 차감량 계산용
+    int countUserMessagesByConversationSince(@Param("conversationId") Long conversationId,
+                                              @Param("since") LocalDateTime since);
 }

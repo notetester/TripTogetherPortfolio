@@ -2,13 +2,22 @@ package org.triptogether.courses.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.courses.service.TravelPlanService;
 import org.triptogether.courses.vo.TravelPlanVO;
+import org.triptogether.explore.service.SpotTextTranslationService;
+import org.triptogether.myPage.service.ViewHistoryService;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/courses")
@@ -17,12 +26,25 @@ public class TravelPlanController {
     @Autowired
     private TravelPlanService travelPlanService;
 
+    @Autowired
+    private SpotTextTranslationService translationService;
+
+    @Autowired
+    private MessageSource messageSource;
+
+    @Autowired
+    private ViewHistoryService viewHistoryService;
+
     private Long getLoginUserIdx(HttpSession session) {
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
         if (loginUser == null) {
             return null;
         }
         return loginUser.getUserIdx();
+    }
+
+    private String msg(String code) {
+        return messageSource.getMessage(code, null, LocaleContextHolder.getLocale());
     }
 
     // 0. 여행 코스 메인 선택 화면
@@ -46,21 +68,24 @@ public class TravelPlanController {
             Long userIdx = getLoginUserIdx(session);
 
             if (userIdx == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "로그인 후 이용해주세요.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.loginRequired"));
                 return "redirect:/auth/login";
             }
 
             TravelPlanVO travelPlanVO = new TravelPlanVO();
             travelPlanVO.setUser_idx(userIdx);
 
-            model.addAttribute("travelPlanList", travelPlanService.getTravelList(travelPlanVO));
+            List<TravelPlanVO> travelPlanList = travelPlanService.getTravelList(travelPlanVO);
+            translationService.translateTravelPlans(travelPlanList);
+
+            model.addAttribute("travelPlanList", travelPlanList);
             model.addAttribute("loginUserIdx", userIdx);
 
             return "courses/my";
 
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "내 여행 일정 목록 조회 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.myListLoadFailed"));
             return "redirect:/courses";
         }
     }
@@ -74,18 +99,21 @@ public class TravelPlanController {
             Long userIdx = getLoginUserIdx(session);
 
             if (userIdx == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "로그인 후 이용해주세요.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.loginRequired"));
                 return "redirect:/auth/login";
             }
 
-            model.addAttribute("travelPlanList", travelPlanService.getPublicTravelList());
+            List<TravelPlanVO> travelPlanList = travelPlanService.getPublicTravelList();
+            translationService.translateTravelPlans(travelPlanList);
+
+            model.addAttribute("travelPlanList", travelPlanList);
             model.addAttribute("loginUserIdx", userIdx);
 
             return "courses/public";
 
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "공개 일정 목록 조회 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.publicListLoadFailed"));
             return "redirect:/courses";
         }
     }
@@ -93,13 +121,12 @@ public class TravelPlanController {
     // 3. 일정 작성 폼
     @GetMapping("/write")
     public String writeForm(HttpSession session,
-                            Model model,
                             RedirectAttributes redirectAttributes) {
         try {
             Long userIdx = getLoginUserIdx(session);
 
             if (userIdx == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "로그인 후 이용해주세요.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.loginRequired"));
                 return "redirect:/auth/login";
             }
 
@@ -107,7 +134,7 @@ public class TravelPlanController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "일정 작성 페이지를 불러오는 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.writeLoadFailed"));
             return "redirect:/courses";
         }
     }
@@ -122,14 +149,14 @@ public class TravelPlanController {
             Long userIdx = getLoginUserIdx(session);
 
             if (userIdx == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "로그인 후 이용해주세요.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.loginRequired"));
                 return "redirect:/auth/login";
             }
 
             TravelPlanVO travelPlan = travelPlanService.getTravelPlanDetailByPlanId(planId);
 
             if (travelPlan == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "해당 여행 일정을 찾을 수 없습니다.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.notFound"));
                 return "redirect:/courses";
             }
 
@@ -137,9 +164,13 @@ public class TravelPlanController {
             boolean isPublic = travelPlan.getIs_public() != null && travelPlan.getIs_public() == 1;
 
             if (!isOwner && !isPublic) {
-                redirectAttributes.addFlashAttribute("errorMessage", "비공개 일정은 작성자만 조회할 수 있습니다.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.privateOwnerOnly"));
                 return "redirect:/courses";
             }
+
+            translationService.translateTravelPlan(travelPlan);
+
+            viewHistoryService.record(userIdx, ViewHistoryService.TYPE_PLAN, planId);
 
             model.addAttribute("travelPlan", travelPlan);
             model.addAttribute("isOwner", isOwner);
@@ -148,7 +179,7 @@ public class TravelPlanController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "여행 일정 상세 조회 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.detailLoadFailed"));
             return "redirect:/courses";
         }
     }
@@ -162,7 +193,7 @@ public class TravelPlanController {
             Long userIdx = getLoginUserIdx(session);
 
             if (userIdx == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "로그인 후 이용해주세요.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.loginRequired"));
                 return "redirect:/auth/login";
             }
 
@@ -170,7 +201,7 @@ public class TravelPlanController {
             travelPlanVO.setPlan_source("MANUAL");
             travelPlanService.insertTravelPlan(travelPlanVO);
 
-            redirectAttributes.addFlashAttribute("successMessage", "여행 일정이 등록되었습니다.");
+            redirectAttributes.addFlashAttribute("successMessage", msg("course.message.createSuccess"));
             return "redirect:/courses/my";
 
         } catch (IllegalArgumentException e) {
@@ -178,7 +209,7 @@ public class TravelPlanController {
             return "redirect:/courses/write";
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "여행 일정 등록 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.createFailed"));
             return "redirect:/courses/write";
         }
     }
@@ -193,7 +224,7 @@ public class TravelPlanController {
             Long userIdx = getLoginUserIdx(session);
 
             if (userIdx == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "로그인 후 이용해주세요.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.loginRequired"));
                 return "redirect:/auth/login";
             }
 
@@ -204,21 +235,23 @@ public class TravelPlanController {
             TravelPlanVO travelPlan = travelPlanService.getTravelPlanDetail(paramVO);
 
             if (travelPlan == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "수정할 여행 일정을 찾을 수 없습니다.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.editNotFound"));
                 return "redirect:/courses/my";
             }
 
             if (!travelPlan.getUser_idx().equals(userIdx)) {
-                redirectAttributes.addFlashAttribute("errorMessage", "본인의 여행 일정만 수정할 수 있습니다.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.ownerEditOnly"));
                 return "redirect:/courses/my";
             }
+
+            translationService.translateTravelPlan(travelPlan);
 
             model.addAttribute("travelPlan", travelPlan);
             return "courses/edit";
 
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "여행 일정 수정 페이지를 불러오는 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.editLoadFailed"));
             return "redirect:/courses/my";
         }
     }
@@ -232,7 +265,7 @@ public class TravelPlanController {
             Long userIdx = getLoginUserIdx(session);
 
             if (userIdx == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "로그인 후 이용해주세요.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.loginRequired"));
                 return "redirect:/auth/login";
             }
 
@@ -244,7 +277,7 @@ public class TravelPlanController {
 
             travelPlanService.editTravelPlan(travelPlanVO);
 
-            redirectAttributes.addFlashAttribute("successMessage", "여행 일정이 수정되었습니다.");
+            redirectAttributes.addFlashAttribute("successMessage", msg("course.message.editSuccess"));
             return "redirect:/courses/detail?planId=" + travelPlanVO.getPlan_id();
 
         } catch (IllegalArgumentException e) {
@@ -252,7 +285,7 @@ public class TravelPlanController {
             return "redirect:/courses/edit?planId=" + travelPlanVO.getPlan_id();
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "여행 일정 수정 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.editFailed"));
             return "redirect:/courses/edit?planId=" + travelPlanVO.getPlan_id();
         }
     }
@@ -266,7 +299,7 @@ public class TravelPlanController {
             Long userIdx = getLoginUserIdx(session);
 
             if (userIdx == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "로그인 후 이용해주세요.");
+                redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.loginRequired"));
                 return "redirect:/auth/login";
             }
 
@@ -276,7 +309,7 @@ public class TravelPlanController {
 
             travelPlanService.deleteTravelPlan(travelPlanVO);
 
-            redirectAttributes.addFlashAttribute("successMessage", "여행 일정이 삭제되었습니다.");
+            redirectAttributes.addFlashAttribute("successMessage", msg("course.message.deleteSuccess"));
             return "redirect:/courses/my";
 
         } catch (IllegalArgumentException e) {
@@ -284,7 +317,7 @@ public class TravelPlanController {
             return "redirect:/courses/detail?planId=" + planId;
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "여행 일정 삭제 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("errorMessage", msg("course.error.deleteFailed"));
             return "redirect:/courses/detail?planId=" + planId;
         }
     }
