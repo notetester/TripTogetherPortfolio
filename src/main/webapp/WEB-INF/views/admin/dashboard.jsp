@@ -65,7 +65,7 @@
     <div class="adm-chart-grid">
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">최근 7일 신규 가입자</div>
+                <div class="adm-card-title"><spring:message code="admin.dashboard.chart.newMembersTitle"/></div>
             </div>
             <div class="adm-card-body">
                 <div class="adm-chart-box"><canvas id="chartNewMembers"></canvas></div>
@@ -73,7 +73,7 @@
         </div>
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title">최근 7일 로그인 추이</div>
+                <div class="adm-card-title"><spring:message code="admin.dashboard.chart.loginTitle"/></div>
             </div>
             <div class="adm-card-body">
                 <div class="adm-chart-box"><canvas id="chartLogin"></canvas></div>

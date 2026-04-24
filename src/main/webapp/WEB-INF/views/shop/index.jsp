@@ -44,7 +44,6 @@
                 <p class="shop-section-kicker"><spring:message code="shop.preview.kicker"/></p>
                 <h2><spring:message code="shop.preview.title"/></h2>
             </div>
-            <span class="shop-ready-badge"><spring:message code="shop.status.ready"/></span>
         </div>
 
         <div class="shop-section-list">
@@ -96,18 +95,9 @@
             </c:forEach>
         </div>
 
-        <section class="shop-coming-card">
-            <div>
-                <p class="shop-section-kicker"><spring:message code="shop.next.kicker"/></p>
-                <h2><spring:message code="shop.next.title"/></h2>
-                <p><spring:message code="shop.next.desc"/></p>
-            </div>
-            <button type="button" class="shop-disabled-btn" disabled>
-                <spring:message code="shop.button.prepare"/>
-            </button>
-        </section>
     </section>
 </main>
 
+<%@ include file="../common/footer.jsp" %>
 </body>
 </html>

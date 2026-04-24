@@ -20,6 +20,7 @@ import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.explore.vo.RecommendVO;
 import org.triptogether.explore.vo.ReviewVO;
 import org.triptogether.explore.vo.SpotTextTranslationVO;
+import org.triptogether.home.vo.HomeSpotVO;
 import org.triptogether.myPage.vo.WalletHistoryDto;
 /* ── 패키지 번역 기능에서 사용하는 VO import ── */
 import org.triptogether.travelPackage.vo.TravelPackageVO;
@@ -65,6 +66,23 @@ public class SpotTextTranslationService {
 
     @Value("${gcp.translate.api.key:}")
     private String googleTranslateApiKey;
+
+    public void translateHomeSpots(List<HomeSpotVO> spots) {
+        String targetLang = getTargetLanguage();
+        if (targetLang == null || spots == null || spots.isEmpty()) {
+            return;
+        }
+
+        for (HomeSpotVO spot : spots) {
+            if (spot == null) {
+                continue;
+            }
+            Long sourcePk = spot.getSpotIdx() == null ? 0L : spot.getSpotIdx();
+            spot.setName(translateText(SOURCE_TYPE_SPOT, sourcePk, "name", spot.getName(), targetLang));
+            spot.setRegion(translateText(SOURCE_TYPE_SPOT, sourcePk, "region", spot.getRegion(), targetLang));
+            spot.setDescription(translateText(SOURCE_TYPE_SPOT, sourcePk, "description", spot.getDescription(), targetLang));
+        }
+    }
 
     public void translateExploreSpots(List<ExploreVO> spots) {
         String targetLang = getTargetLanguage();

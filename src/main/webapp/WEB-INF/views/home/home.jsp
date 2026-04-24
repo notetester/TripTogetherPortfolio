@@ -150,8 +150,7 @@
 
                         <article class="home-package-card"
                                  data-spot-id="${pkg.spotIdx}"
-                                 tabindex="0"
-                                 role="button">
+                                 tabindex="0">
                             <div class="home-package-img-wrap">
                                 <c:choose>
                                     <c:when test="${not empty packageImagePath}">

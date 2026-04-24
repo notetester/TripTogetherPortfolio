@@ -35,19 +35,28 @@
             <div class="wallet-summary-grid">
                 <div class="wallet-stat wallet-stat--cash">
                     <div class="wallet-stat__label"><spring:message code="wallet.stat.cash"/></div>
-                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0"/> C</div>
+                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.cashBalance}" pattern="#,##0"/> <spring:message code="wallet.stat.unit.cash"/></div>
                 </div>
                 <div class="wallet-stat wallet-stat--mileage">
                     <div class="wallet-stat__label"><spring:message code="wallet.stat.mileage"/></div>
-                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.mileageBalance}" pattern="#,##0"/> M</div>
+                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.mileageBalance}" pattern="#,##0"/> <spring:message code="wallet.stat.unit.mileage"/></div>
                 </div>
                 <div class="wallet-stat wallet-stat--point">
                     <div class="wallet-stat__label"><spring:message code="wallet.stat.point"/></div>
-                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.pointBalance}" pattern="#,##0"/> P</div>
+                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.pointBalance}" pattern="#,##0"/> <spring:message code="wallet.stat.unit.point"/></div>
                 </div>
                 <div class="wallet-stat wallet-stat--grade">
                     <div class="wallet-stat__label"><spring:message code="wallet.stat.grade"/></div>
-                    <div class="wallet-stat__value">${user.memberGrade}</div>
+                    <div class="wallet-stat__value">
+                        <c:choose>
+                            <c:when test="${user.memberGrade eq 'BRONZE'}"><spring:message code="wallet.grade.BRONZE"/></c:when>
+                            <c:when test="${user.memberGrade eq 'SILVER'}"><spring:message code="wallet.grade.SILVER"/></c:when>
+                            <c:when test="${user.memberGrade eq 'GOLD'}"><spring:message code="wallet.grade.GOLD"/></c:when>
+                            <c:when test="${user.memberGrade eq 'DIAMOND'}"><spring:message code="wallet.grade.DIAMOND"/></c:when>
+                            <c:when test="${user.memberGrade eq 'PLATINUM'}"><spring:message code="wallet.grade.PLATINUM"/></c:when>
+                            <c:otherwise>${user.memberGrade}</c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
                 <div class="wallet-stat wallet-stat--level">
                     <div class="wallet-stat__label"><spring:message code="wallet.stat.level"/></div>
@@ -55,7 +64,7 @@
                 </div>
                 <div class="wallet-stat wallet-stat--exp">
                     <div class="wallet-stat__label"><spring:message code="wallet.stat.exp"/></div>
-                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.expPoints}" pattern="#,##0"/> EXP</div>
+                    <div class="wallet-stat__value"><fmt:formatNumber value="${user.expPoints}" pattern="#,##0"/> <spring:message code="wallet.stat.unit.exp"/></div>
                 </div>
             </div>
         </section>
@@ -136,7 +145,7 @@
                     <c:otherwise>
                         <div class="wallet-history-list">
                             <c:forEach var="payment" items="${paymentHistory}">
-                                <div class="wallet-history-item">
+                                <div class="wallet-history-item wallet-pay-item">
                                     <div class="wallet-history-item__main">
                                         <strong>
                                         <c:choose>
@@ -156,10 +165,23 @@
                                     <div class="wallet-history-item__sub">
                                         <span><spring:message code="wallet.payment.amount"/> <fmt:formatNumber value="${payment.finalAmount}" pattern="#,##0"/> C</span>
                                         <span><spring:message code="wallet.payment.mileage"/> +<fmt:formatNumber value="${payment.earnedMileage}" pattern="#,##0"/> M</span>
-                                        <span class="wallet-status">${payment.paymentStatus}</span>
+                                        <span class="wallet-status">
+                                            <c:choose>
+                                                <c:when test="${payment.paymentStatus eq 'COMPLETED'}"><spring:message code="wallet.paymentStatus.COMPLETED"/></c:when>
+                                                <c:when test="${payment.paymentStatus eq 'READY'}"><spring:message code="wallet.paymentStatus.READY"/></c:when>
+                                                <c:when test="${payment.paymentStatus eq 'CANCELLED'}"><spring:message code="wallet.paymentStatus.CANCELLED"/></c:when>
+                                                <c:when test="${payment.paymentStatus eq 'REFUNDED'}"><spring:message code="wallet.paymentStatus.REFUNDED"/></c:when>
+                                                <c:otherwise>${payment.paymentStatus}</c:otherwise>
+                                            </c:choose>
+                                        </span>
                                     </div>
                                 </div>
                             </c:forEach>
+                        </div>
+                        <div class="wallet-pagination" id="paymentPagination" style="display:none;">
+                            <button type="button" class="wallet-page-btn" id="paymentPrevBtn"><spring:message code="wallet.pagination.prev"/></button>
+                            <span class="wallet-page-info" id="paymentPageInfo"></span>
+                            <button type="button" class="wallet-page-btn" id="paymentNextBtn"><spring:message code="wallet.pagination.next"/></button>
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -190,10 +212,25 @@
                             </thead>
                             <tbody>
                             <c:forEach var="history" items="${walletHistory}">
-                                <tr>
+                                <tr class="wallet-hist-row">
                                     <td>${fn:replace(fn:substring(history.createdAt, 0, 16), 'T', ' ')}</td>
-                                    <td>${history.assetType}</td>
-                                    <td>${history.changeType}</td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${history.assetType eq 'CASH'}"><spring:message code="wallet.assetType.CASH"/></c:when>
+                                            <c:when test="${history.assetType eq 'MILEAGE'}"><spring:message code="wallet.assetType.MILEAGE"/></c:when>
+                                            <c:otherwise>${history.assetType}</c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${history.changeType eq 'CHARGE'}"><spring:message code="wallet.changeType.CHARGE"/></c:when>
+                                            <c:when test="${history.changeType eq 'EARN'}"><spring:message code="wallet.changeType.EARN"/></c:when>
+                                            <c:when test="${history.changeType eq 'USE'}"><spring:message code="wallet.changeType.USE"/></c:when>
+                                            <c:when test="${history.changeType eq 'REFUND'}"><spring:message code="wallet.changeType.REFUND"/></c:when>
+                                            <c:when test="${history.changeType eq 'ADJUST'}"><spring:message code="wallet.changeType.ADJUST"/></c:when>
+                                            <c:otherwise>${history.changeType}</c:otherwise>
+                                        </c:choose>
+                                    </td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${history.amount gt 0}">
@@ -223,16 +260,27 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="wallet-pagination" id="historyPagination" style="display:none;">
+                        <button type="button" class="wallet-page-btn" id="historyPrevBtn"><spring:message code="wallet.pagination.prev"/></button>
+                        <span class="wallet-page-info" id="historyPageInfo"></span>
+                        <button type="button" class="wallet-page-btn" id="historyNextBtn"><spring:message code="wallet.pagination.next"/></button>
+                    </div>
                 </c:otherwise>
             </c:choose>
         </section>
 
         <section class="wallet-card">
-            <div class="wallet-card__head">
+            <div class="wallet-card__head wallet-benefit-head">
+                <div>
                 <h2><spring:message code="wallet.benefit.title"/></h2>
                 <p><spring:message code="wallet.benefit.desc"/></p>
+                </div>
+                <button type="button" class="wallet-benefit-toggle" id="walletBenefitToggle">
+                    <spring:message code="wallet.benefit.toggle.hide"/>
+                </button>
             </div>
 
+            <div class="wallet-benefit-body" id="walletBenefitBody">
             <div class="wallet-benefit-banner">
                 <span class="wallet-benefit-banner__badge"><spring:message code="wallet.benefit.banner.badge"/></span>
                 <p>
@@ -262,7 +310,16 @@
                             <c:forEach var="policy" items="${gradePolicies}">
                                 <tr class="${user.memberGrade eq policy.memberGrade ? 'is-current-grade' : ''}">
                                     <td>
-                                        <strong>${policy.memberGrade}</strong>
+                                        <strong>
+                                            <c:choose>
+                                                <c:when test="${policy.memberGrade eq 'BRONZE'}"><spring:message code="wallet.grade.BRONZE"/></c:when>
+                                                <c:when test="${policy.memberGrade eq 'SILVER'}"><spring:message code="wallet.grade.SILVER"/></c:when>
+                                                <c:when test="${policy.memberGrade eq 'GOLD'}"><spring:message code="wallet.grade.GOLD"/></c:when>
+                                                <c:when test="${policy.memberGrade eq 'DIAMOND'}"><spring:message code="wallet.grade.DIAMOND"/></c:when>
+                                                <c:when test="${policy.memberGrade eq 'PLATINUM'}"><spring:message code="wallet.grade.PLATINUM"/></c:when>
+                                                <c:otherwise>${policy.memberGrade}</c:otherwise>
+                                            </c:choose>
+                                        </strong>
                                         <c:if test="${user.memberGrade eq policy.memberGrade}">
                                             <span class="wallet-current-badge"><spring:message code="wallet.benefit.current"/></span>
                                         </c:if>
@@ -298,6 +355,7 @@
                     </tbody>
                 </table>
             </div>
+            </div><%-- wallet-benefit-body --%>
         </section>
     </div>
 </div>
@@ -454,6 +512,56 @@
       });
     }
     updateChargePreview();
+  })();
+
+  // ===== 클라이언트 페이징 =====
+  (function() {
+    var PAYMENT_PAGE_SIZE = 4;
+    var HISTORY_PAGE_SIZE = 5;
+
+    function initClientPaging(selector, pageSize, prevId, nextId, infoId, paginationId) {
+      var items = Array.prototype.slice.call(document.querySelectorAll(selector));
+      var pagination = document.getElementById(paginationId);
+      if (!items.length || items.length <= pageSize) {
+        if (pagination) pagination.style.display = 'none';
+        return;
+      }
+      if (pagination) pagination.style.display = '';
+      var totalPages = Math.ceil(items.length / pageSize);
+      var currentPage = 1;
+      function render() {
+        items.forEach(function(item, idx) {
+          item.style.display = (idx >= (currentPage - 1) * pageSize && idx < currentPage * pageSize) ? '' : 'none';
+        });
+        var info = document.getElementById(infoId);
+        if (info) info.textContent = currentPage + ' / ' + totalPages;
+        var prev = document.getElementById(prevId);
+        var next = document.getElementById(nextId);
+        if (prev) prev.disabled = currentPage <= 1;
+        if (next) next.disabled = currentPage >= totalPages;
+      }
+      var prev = document.getElementById(prevId);
+      var next = document.getElementById(nextId);
+      if (prev) prev.addEventListener('click', function() { if (currentPage > 1) { currentPage--; render(); } });
+      if (next) next.addEventListener('click', function() { if (currentPage < totalPages) { currentPage++; render(); } });
+      render();
+    }
+
+    initClientPaging('.wallet-pay-item', PAYMENT_PAGE_SIZE, 'paymentPrevBtn', 'paymentNextBtn', 'paymentPageInfo', 'paymentPagination');
+    initClientPaging('.wallet-hist-row', HISTORY_PAGE_SIZE, 'historyPrevBtn', 'historyNextBtn', 'historyPageInfo', 'historyPagination');
+
+    // ===== 등급 혜택 아코디언 =====
+    var benefitToggle = document.getElementById('walletBenefitToggle');
+    var benefitBody   = document.getElementById('walletBenefitBody');
+    var BENEFIT_SHOW  = '<spring:message code="wallet.benefit.toggle.show" javaScriptEscape="true"/>';
+    var BENEFIT_HIDE  = '<spring:message code="wallet.benefit.toggle.hide" javaScriptEscape="true"/>';
+    if (benefitToggle && benefitBody) {
+      benefitToggle.addEventListener('click', function() {
+        var hidden = benefitBody.style.display === 'none';
+        benefitBody.style.display = hidden ? '' : 'none';
+        benefitToggle.textContent = hidden ? BENEFIT_HIDE : BENEFIT_SHOW;
+      });
+    }
   })();
 </script>
 

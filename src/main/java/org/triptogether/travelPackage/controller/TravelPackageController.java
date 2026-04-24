@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.travelPackage.service.TravelPackageService;
-/* ── 패키지의 동적 텍스트(제목, 요약, 여행지명 등)를 번역하기 위한 서비스 ── */
+/* ??? ??, ??, ???? ?? ?? ???? ?? ??? ?? ???? ??? */
 import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.travelPackage.vo.PackageBookingRequestVO;
 import org.triptogether.travelPackage.vo.PackageBookingResultVO;
@@ -24,18 +24,42 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/packages")
 public class TravelPackageController {
+    private static final int PACKAGE_LIST_PAGE_SIZE = 9;
+    private static final int PACKAGE_LIST_PAGE_BLOCK_SIZE = 5;
 
     private final TravelPackageService travelPackageService;
-    /* ── 동적 텍스트 번역 서비스 — 사용자 로케일에 맞춰 패키지 제목/여행지명 등을 번역 ── */
+    /* ??? ?? ???? ??? ????, ????? ?? ?? ???? ?? */
     private final SpotTextTranslationService translationService;
     private final MessageSource messageSource;
 
     @GetMapping("")
-    public String packageList(Model model) {
-        java.util.List<TravelPackageVO> packages = travelPackageService.getApprovedPackages();
-        // ── 사용자 로케일이 ko가 아닌 경우, 패키지 제목/여행지명 등을 API+캐싱으로 번역 ──
+    public String packageList(@RequestParam(defaultValue = "1") int page,
+                              @RequestParam(required = false) String keyword,
+                              Model model) {
+        String normalizedKeyword = keyword != null ? keyword.trim() : "";
+        int totalCount = travelPackageService.countApprovedPackages(normalizedKeyword);
+        int totalPages = totalCount == 0 ? 1 : (int) Math.ceil((double) totalCount / PACKAGE_LIST_PAGE_SIZE);
+        int currentPage = Math.max(1, page);
+        if (currentPage > totalPages) {
+            currentPage = totalPages;
+        }
+
+        java.util.List<TravelPackageVO> packages =
+                travelPackageService.getApprovedPackages(normalizedKeyword, currentPage, PACKAGE_LIST_PAGE_SIZE);
+        // ???? ?????? ??? ??? ????? ???? ????.
         translationService.translatePackages(packages);
+
+        int startPage = Math.max(1, currentPage - (PACKAGE_LIST_PAGE_BLOCK_SIZE / 2));
+        int endPage = Math.min(totalPages, startPage + PACKAGE_LIST_PAGE_BLOCK_SIZE - 1);
+        startPage = Math.max(1, endPage - PACKAGE_LIST_PAGE_BLOCK_SIZE + 1);
+
         model.addAttribute("packageList", packages);
+        model.addAttribute("keyword", normalizedKeyword);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         return "packages/list";
     }
 
@@ -46,7 +70,7 @@ public class TravelPackageController {
             return redirectByAuthState(loginUser);
         }
 
-        // ── 판매자 관리 페이지에서도 여행지명·패키지 제목 등을 현재 로케일에 맞게 번역 ──
+        // ??? ?? ????? ????? ????? ?? ??? ?? ????.
         java.util.List<TravelPackageVO> packages = travelPackageService.getSellerPackages(loginUser.getUserIdx());
         translationService.translatePackages(packages);
         model.addAttribute("packageList", packages);
@@ -60,7 +84,7 @@ public class TravelPackageController {
             return redirectByAuthState(loginUser);
         }
 
-        // ── 여행지 드롭다운의 이름/지역을 현재 로케일에 맞게 번역 ──
+        // ??? ?? ???? ??? ?? ?? ???? ????.
         java.util.List<org.triptogether.travelPackage.vo.PackageSpotOptionVO> spotOptions = travelPackageService.getSpotOptions();
         translationService.translateSpotOptions(spotOptions);
 
