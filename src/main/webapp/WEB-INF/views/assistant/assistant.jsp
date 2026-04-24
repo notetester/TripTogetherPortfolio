@@ -518,6 +518,6 @@
 </script>
 
 <%@ include file="../common/footer.jsp" %>
-<%--fix--%>
+
 </body>
 </html>
