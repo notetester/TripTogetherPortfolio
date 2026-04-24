@@ -50,7 +50,7 @@ public class AdminModerationController {
 
         Map<String, Object> res = new HashMap<>();
 
-        if (!VALID_LEVELS.contains(toxicityLevel)) {
+        if (toxicityLevel == null || !VALID_LEVELS.contains(toxicityLevel)) {
             res.put("success", false);
             res.put("message", "민감도 값이 올바르지 않습니다.");
             return ResponseEntity.badRequest().body(res);
