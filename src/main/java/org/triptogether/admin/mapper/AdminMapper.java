@@ -21,6 +21,9 @@ public interface AdminMapper {
     // ===== 회원 관리 =====
     List<AdminMemberVO> findMembers(AdminSearchVO search);
     int countMembers(AdminSearchVO search);
+    List<AdminMemberVO> findMembersForExport(AdminSearchVO search);
+    List<AdminMemberVO> findMembersByIds(@Param("ids") List<Long> ids);
+    void bulkChangeMemberStatus(@Param("userIdxList") List<Long> userIdxList, @Param("status") String status);
     AdminMemberVO findMemberDetail(Long userIdx);
     void updateMemberProfile(@Param("userIdx") Long userIdx,
                              @Param("nickname") String nickname,

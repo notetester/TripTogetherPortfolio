@@ -380,14 +380,14 @@
         <include refid="memberSearchBase"/>
         ORDER BY
         <choose>
-            <when test="sortBy == 'lastLoginAt'">h.last_login_at</when>
+            <when test="sortBy == 'lastLoginAt'">COALESCE(u.last_login_at, h.last_login_at)</when>
             <when test="sortBy == 'nickname'">u.nickname</when>
+            <when test="sortBy == 'email'">u.user_email</when>
+            <when test="sortBy == 'status'">u.account_status</when>
+            <when test="sortBy == 'role'">u.user_role</when>
             <otherwise>u.created_at</otherwise>
         </choose>
-        <choose>
-            <when test="sortDir == 'ASC'">ASC</when>
-            <otherwise>DESC</otherwise>
-        </choose>
+        ${sortDir}
         LIMIT #{size} OFFSET #{offset}
     </select>
 
@@ -395,6 +395,81 @@
         SELECT COUNT(*)
         <include refid="memberSearchBase"/>
     </select>
+
+    <select id="findMembersForExport" resultMap="memberRM">
+        SELECT
+            u.user_idx, u.user_id, u.user_email,
+            u.password_enabled, u.email_verified, u.email_login_enabled,
+            u.account_status, u.user_role, u.member_grade, u.is_verified_member,
+            u.cash_balance, u.mileage_balance, u.point_balance,
+            u.level_no, u.exp_points, u.total_post_count, u.total_comment_count,
+            u.dormant_at, u.dormant_release_required,
+            u.blocked_until, u.blocked_reason,
+            u.admin_position_code, u.admin_permission_code,
+            u.nickname, u.nationality, u.preferred_lang,
+            u.created_at, u.status_changed_at,
+            IFNULL(s.social_count, 0) AS social_count,
+            s.linked_providers,
+            COALESCE(u.last_login_at, h.last_login_at) AS last_login_at, h.last_login_method,
+            IFNULL(h.login_success_count, 0) AS login_success_count,
+            IFNULL(h.login_fail_count, 0) AS login_fail_count
+        <include refid="memberSearchBase"/>
+        ORDER BY u.created_at DESC
+        LIMIT 10000
+    </select>
+
+    <select id="findMembersByIds" resultMap="memberRM">
+        SELECT
+            u.user_idx, u.user_id, u.user_email,
+            u.password_enabled, u.email_verified, u.email_login_enabled,
+            u.account_status, u.user_role, u.member_grade, u.is_verified_member,
+            u.cash_balance, u.mileage_balance, u.point_balance,
+            u.level_no, u.exp_points, u.total_post_count, u.total_comment_count,
+            u.dormant_at, u.dormant_release_required,
+            u.blocked_until, u.blocked_reason,
+            u.admin_position_code, u.admin_permission_code,
+            u.nickname, u.nationality, u.preferred_lang,
+            u.created_at, u.status_changed_at,
+            IFNULL(s.social_count, 0) AS social_count,
+            s.linked_providers,
+            COALESCE(u.last_login_at, h.last_login_at) AS last_login_at, h.last_login_method,
+            IFNULL(h.login_success_count, 0) AS login_success_count,
+            IFNULL(h.login_fail_count, 0) AS login_fail_count
+        FROM USERS u
+        LEFT JOIN (
+            SELECT user_idx,
+                   COUNT(*) AS social_count,
+                   GROUP_CONCAT(provider ORDER BY provider) AS linked_providers
+            FROM USER_SOCIAL
+            GROUP BY user_idx
+        ) s ON u.user_idx = s.user_idx
+        LEFT JOIN (
+            SELECT user_idx,
+                   MAX(login_at) AS last_login_at,
+                   SUBSTRING_INDEX(GROUP_CONCAT(login_method ORDER BY login_at DESC), ',', 1) AS last_login_method,
+                   SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS login_success_count,
+                   SUM(CASE WHEN is_success = 0 THEN 1 ELSE 0 END) AS login_fail_count
+            FROM USER_LOGIN_HISTORY
+            WHERE event_type = 'LOGIN'
+              AND auth_type IN ('PASSWORD', 'SOCIAL')
+            GROUP BY user_idx
+        ) h ON u.user_idx = h.user_idx
+        WHERE u.user_idx IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY u.created_at DESC
+    </select>
+
+    <update id="bulkChangeMemberStatus">
+        UPDATE USERS
+        SET account_status = #{status}, status_changed_at = NOW()
+        WHERE user_idx IN
+        <foreach collection="userIdxList" item="idx" open="(" separator="," close=")">
+            #{idx}
+        </foreach>
+        AND user_role NOT IN ('SUPERADMIN', 'SYSTEM')
+    </update>
 
     <select id="findMemberDetail" resultMap="memberRM">
         SELECT

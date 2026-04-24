@@ -16,6 +16,9 @@ public interface AdminService {
     // ===== 회원 관리 =====
     Map<String, Object> getMemberList(AdminSearchVO search);
     AdminMemberVO getMemberDetail(Long userIdx);
+    void bulkChangeMemberStatus(List<Long> userIdxList, String status);
+    List<AdminMemberVO> getMembersForExport(AdminSearchVO search);
+    List<AdminMemberVO> getMembersByIds(List<Long> ids);
     List<UserLoginHistoryVO> getLoginHistory(Long userIdx);
     Map<String, Object> getMemberContext(Long userIdx);
     Map<String, Object> getIpContext(String ipAddress);
