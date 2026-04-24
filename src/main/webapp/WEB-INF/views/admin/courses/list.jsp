@@ -131,12 +131,23 @@
                 <c:forEach items="${list}" var="p">
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${p.planId}"></td>
-                        <td style="color:#64748b;font-size:12px;">#${p.planId}</td>
+                        <td style="color:#64748b;font-size:12px;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">#${p.planId}</a>
+                        </td>
 
                         <%-- 작성자 --%>
                         <td>
-                            <div style="font-weight:600;font-size:13px;color:#7dd3fc;">${p.nickname}</div>
-                            <div style="font-size:11px;color:#64748b;">${p.userId}</div>
+                            <button type="button"
+                                    class="adm-inline-link js-open-member-context"
+                                    data-user-idx="${p.userIdx}"
+                                    style="font-weight:600;font-size:13px;color:#7dd3fc;">${p.nickname}</button>
+                            <div>
+                                <button type="button"
+                                        class="adm-inline-link js-open-member-context"
+                                        data-user-idx="${p.userIdx}"
+                                        style="font-size:11px;color:#64748b;">${p.userId}</button>
+                            </div>
                             <c:if test="${p.accountStatus == 'BLOCKED'}">
                                 <span class="adm-inline-danger"><spring:message code="admin.courses.list.accountBlocked"/></span>
                             </c:if>
@@ -155,14 +166,19 @@
 
                         <%-- 여행지 --%>
                         <td style="font-size:12px;color:#cbd5e1;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${not empty p.destination}">${p.destination}</c:when>
                                 <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
                             </c:choose>
+                            </a>
                         </td>
 
                         <%-- 일정 --%>
                         <td style="font-size:11px;color:#94a3b8;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${not empty p.startDate}">
                                     <fmt:formatDate value="${p.startDate}" pattern="yyyy.MM.dd"/>
@@ -170,20 +186,26 @@
                                 </c:when>
                                 <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
                             </c:choose>
+                            </a>
                         </td>
 
                         <%-- 스팟 수 --%>
                         <td style="text-align:center;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${p.spotCount > 0}">
                                     <span style="color:#7dd3fc;font-weight:600;">${p.spotCount}</span>
                                 </c:when>
                                 <c:otherwise><span style="color:#475569;">0</span></c:otherwise>
                             </c:choose>
+                            </a>
                         </td>
 
                         <%-- 유형 --%>
                         <td style="font-size:12px;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${p.planSource == 'AI'}">
                                     <span style="color:#a78bfa;font-weight:600;"><spring:message code="admin.courses.source.ai"/></span>
@@ -193,10 +215,13 @@
                                 </c:when>
                                 <c:otherwise><span style="color:#64748b;">${p.planSource}</span></c:otherwise>
                             </c:choose>
+                            </a>
                         </td>
 
                         <%-- 공개 --%>
                         <td style="font-size:12px;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${p.isPublic == 1}">
                                     <span style="color:#34d399;"><spring:message code="admin.courses.visibility.public"/></span>
@@ -205,39 +230,45 @@
                                     <span style="color:#64748b;"><spring:message code="admin.courses.visibility.private"/></span>
                                 </c:otherwise>
                             </c:choose>
+                            </a>
                         </td>
 
                         <%-- 상태 --%>
                         <td>
                             <c:choose>
                                 <c:when test="${p.isDeleted == 0}">
-                                    <span class="status-badge ACTIVE"><spring:message code="admin.common.active"/></span>
+                                    <a href="${pageContext.request.contextPath}/admin/courses/${p.planId}"
+                                       class="adm-cell-link adm-cell-link--inline status-badge ACTIVE"><spring:message code="admin.common.active"/></a>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="status-badge DELETED"><spring:message code="admin.courses.status.deleted"/></span>
+                                    <a href="${pageContext.request.contextPath}/admin/courses/${p.planId}"
+                                       class="adm-cell-link adm-cell-link--inline status-badge DELETED"><spring:message code="admin.courses.status.deleted"/></a>
                                 </c:otherwise>
                             </c:choose>
                         </td>
 
                         <%-- 등록일 --%>
                         <td style="font-size:11px;color:#64748b;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <fmt:formatDate value="${p.createdAt}" pattern="yyyy.MM.dd"/>
                             <div><fmt:formatDate value="${p.createdAt}" pattern="HH:mm"/></div>
+                            </a>
                         </td>
 
                         <%-- 액션 --%>
                         <td>
-                            <div style="display:flex;gap:4px;">
+                            <div class="adm-row-actions is-single">
                                 <c:choose>
                                     <c:when test="${p.isDeleted == 0}">
-                                        <button class="adm-btn adm-btn-ghost"
-                                                style="font-size:11px;padding:3px 8px;color:#f87171;border-color:#f87171;"
+                                        <button class="adm-row-btn danger"
+                                                type="button"
                                                 data-id="${p.planId}"
                                                 onclick="actionPlan(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.common.delete"/></button>
                                     </c:when>
                                     <c:otherwise>
-                                        <button class="adm-btn adm-btn-ghost"
-                                                style="font-size:11px;padding:3px 8px;color:#34d399;border-color:#34d399;"
+                                        <button class="adm-row-btn success"
+                                                type="button"
                                                 data-id="${p.planId}"
                                                 onclick="actionPlan(this.getAttribute('data-id'), 'restore')"><spring:message code="admin.common.restore"/></button>
                                     </c:otherwise>

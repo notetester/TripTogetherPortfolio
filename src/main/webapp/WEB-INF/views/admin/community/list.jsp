@@ -152,7 +152,10 @@
                 <c:forEach items="${list}" var="p">
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${p.postId}"></td>
-                        <td style="color:#64748b;font-size:12px;">#${p.postId}</td>
+                        <td style="color:#64748b;font-size:12px;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}">#${p.postId}</a>
+                        </td>
 
                         <%-- 작성자 --%>
                         <td style="cursor:pointer;"
@@ -173,7 +176,13 @@
                         <%-- IP --%>
                         <td style="font-size:11px;color:#94a3b8;font-family:monospace;">
                             <c:choose>
-                                <c:when test="${not empty p.lastIp}">${p.lastIp}</c:when>
+                                <c:when test="${not empty p.lastIp}">
+                                    <button type="button"
+                                            class="adm-inline-link js-open-ip-context"
+                                            data-ip-address="${p.lastIp}"
+                                            data-default-tab="blocks"
+                                            onclick="event.stopPropagation();">${p.lastIp}</button>
+                                </c:when>
                                 <c:otherwise><span style="color:#475569;">—</span></c:otherwise>
                             </c:choose>
                         </td>
@@ -197,64 +206,95 @@
 
                         <%-- 유형 --%>
                         <td style="font-size:12px;color:#94a3b8;">
-                            <c:choose>
-                                <c:when test="${p.postType == 'review'}"><spring:message code="admin.community.postType.review"/></c:when>
-                                <c:when test="${p.postType == 'photo'}"><spring:message code="admin.community.postType.photo"/></c:when>
-                                <c:when test="${p.postType == 'tip'}"><spring:message code="admin.community.postType.tip"/></c:when>
-                                <c:when test="${p.postType == 'question'}"><spring:message code="admin.community.postType.question"/></c:when>
-                                <c:otherwise>${p.postType}</c:otherwise>
-                            </c:choose>
+                            <button type="button" class="adm-cell-link" data-param-name="postType" data-param-value="${p.postType}" onclick="applySelectFilter(this)">
+                                <span><c:choose>
+                                    <c:when test="${p.postType == 'review'}"><spring:message code="admin.community.postType.review"/></c:when>
+                                    <c:when test="${p.postType == 'photo'}"><spring:message code="admin.community.postType.photo"/></c:when>
+                                    <c:when test="${p.postType == 'tip'}"><spring:message code="admin.community.postType.tip"/></c:when>
+                                    <c:when test="${p.postType == 'question'}"><spring:message code="admin.community.postType.question"/></c:when>
+                                    <c:otherwise>${p.postType}</c:otherwise>
+                                </c:choose></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                            </button>
                         </td>
 
                         <%-- 신고 수 --%>
                         <td>
-                            <c:choose>
-                                <c:when test="${p.reportCount >= 3}">
-                                    <span style="color:#f87171;font-weight:700;">🔴 ${p.reportCount}</span>
-                                </c:when>
-                                <c:when test="${p.reportCount > 0}">
-                                    <span style="color:#fbbf24;">${p.reportCount}</span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span style="color:#475569;">0</span>
-                                </c:otherwise>
-                            </c:choose>
+                            <a href="${pageContext.request.contextPath}/admin/reports?targetType=post&keyword=${p.postId}"
+                               class="adm-cell-link adm-cell-link--inline"
+                               onclick="event.stopPropagation();">
+                                <c:choose>
+                                    <c:when test="${p.reportCount >= 3}">
+                                        <span style="color:#f87171;font-weight:700;">🔴 ${p.reportCount}</span>
+                                    </c:when>
+                                    <c:when test="${p.reportCount > 0}">
+                                        <span style="color:#fbbf24;">${p.reportCount}</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span style="color:#475569;">0</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </a>
                         </td>
 
                         <%-- 상태 --%>
                         <td>
-                            <span class="status-badge ${p.postStatus}">
+                            <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
+                               class="adm-cell-link adm-cell-link--inline status-badge ${p.postStatus}">
                                 <c:choose>
                                     <c:when test="${p.postStatus == 'ACTIVE'}"><spring:message code="admin.community.status.active"/></c:when>
                                     <c:when test="${p.postStatus == 'BLOCKED'}"><spring:message code="admin.community.status.blocked"/></c:when>
                                     <c:when test="${p.postStatus == 'DELETED'}"><spring:message code="admin.community.status.deleted"/></c:when>
                                     <c:otherwise>${p.postStatus}</c:otherwise>
                                 </c:choose>
-                            </span>
+                            </a>
                         </td>
 
                         <%-- 등록일 --%>
                         <td style="font-size:11px;color:#64748b;">
+                            <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
+                               class="adm-cell-link adm-cell-link--inline">
                             <fmt:formatDate value="${p.createdAt}" pattern="yyyy.MM.dd"/>
                             <div><fmt:formatDate value="${p.createdAt}" pattern="HH:mm"/></div>
+                            </a>
                         </td>
 
                         <%-- 액션 --%>
                         <td>
-                            <div style="display:flex;gap:4px;">
-                                <c:if test="${p.postStatus != 'BLOCKED'}">
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;padding:3px 8px;color:#f87171;border-color:#f87171;"
-                                            data-id="${p.postId}"
-                                            onclick="actionPost(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
-                                </c:if>
-                                <c:if test="${p.postStatus != 'DELETED'}">
-                                    <button class="adm-btn adm-btn-ghost"
-                                            style="font-size:11px;padding:3px 8px;color:#64748b;"
-                                            data-id="${p.postId}"
-                                            onclick="actionPost(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
-                                </c:if>
-                            </div>
+                            <c:choose>
+                                <c:when test="${p.postStatus != 'BLOCKED'}">
+                                    <div class="adm-row-actions">
+                                        <button class="adm-row-btn danger"
+                                                type="button"
+                                                data-id="${p.postId}"
+                                                onclick="actionPost(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
+                                        <c:if test="${p.postStatus != 'DELETED'}">
+                                            <div class="action-menu-wrap">
+                                                <button class="adm-row-btn detail adm-row-btn-more"
+                                                        type="button"
+                                                        onclick="admToggleActionMenu(this)">⋯</button>
+                                                <div class="action-menu">
+                                                    <button class="action-menu-item danger"
+                                                            type="button"
+                                                            data-id="${p.postId}"
+                                                            onclick="actionPost(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
+                                                </div>
+                                            </div>
+                                        </c:if>
+                                    </div>
+                                </c:when>
+                                <c:when test="${p.postStatus != 'DELETED'}">
+                                    <div class="adm-row-actions is-single">
+                                        <button class="adm-row-btn danger"
+                                                type="button"
+                                                data-id="${p.postId}"
+                                                onclick="actionPost(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="adm-muted-inline">-</span>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </c:forEach>
@@ -374,6 +414,16 @@ function bulkAction(action) {
         if (d.success) { location.reload(); }
         else { alert(d.message || COMMUNITY_POST_MSG.actionFailed); }
     });
+}
+
+function applySelectFilter(button) {
+    var paramName = button.getAttribute('data-param-name');
+    var paramValue = button.getAttribute('data-param-value');
+    if (!paramName || !paramValue) return;
+    var params = new URLSearchParams(window.location.search);
+    params.set(paramName, paramValue);
+    params.set('page', '1');
+    location.href = ctx + '/admin/community?' + params.toString();
 }
 
 function goPage(page) {

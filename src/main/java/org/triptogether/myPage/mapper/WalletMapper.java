@@ -22,6 +22,16 @@ public interface WalletMapper {
 
     void insertPaymentHistory(WalletPaymentDto payment);
 
+    WalletPaymentDto selectPaymentByIdx(@Param("paymentIdx") Long paymentIdx);
+
+    WalletPaymentDto selectPaymentByTossOrderId(@Param("tossOrderId") String tossOrderId);
+
+    WalletPaymentDto selectPaymentByTossOrderIdForUpdate(@Param("tossOrderId") String tossOrderId);
+
+    int updateReadyTossPaymentAsCompleted(WalletPaymentDto payment);
+
+    int deleteReadyTossPaymentByTossOrderId(@Param("tossOrderId") String tossOrderId);
+
     void cancelPaymentHistory(@Param("paymentIdx") Long paymentIdx,
                               @Param("userIdx") Long userIdx);
 

@@ -4,7 +4,7 @@
 
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <body>
 <div class="auth-wrap">
   <div class="auth-card">
@@ -123,9 +123,10 @@
       if (data.success) {
         location.href = data.redirect;
       } else if (data.dormantReleaseRequired) {
-        const ok = confirm((data.message || '휴면 계정을 해제하시겠습니까?') + '\n\n확인을 누르면 즉시 휴면을 해제하고 로그인합니다.');
+        const dormantMessage = data.message || '<spring:message code="auth.login.dormant.confirmDefault" javaScriptEscape="true"/>';
+        const ok = confirm(dormantMessage + '\n\n' + '<spring:message code="auth.login.dormant.confirmGuide" javaScriptEscape="true"/>');
         if (!ok) {
-          showError(data.message || '휴면 해제가 필요합니다.');
+          showError(data.message || '<spring:message code="auth.login.dormant.required" javaScriptEscape="true"/>');
           return;
         }
         const releaseRes = await fetch(ctx + '/auth/dormant/release', {
@@ -137,7 +138,7 @@
         if (releaseData.success) {
           location.href = releaseData.redirect;
         } else {
-          showError(releaseData.message || '휴면 해제 중 오류가 발생했습니다.');
+          showError(releaseData.message || '<spring:message code="auth.login.dormant.error" javaScriptEscape="true"/>');
         }
       } else {
         showError(data.message || '<spring:message code="auth.login.error.fail" javaScriptEscape="true"/>');

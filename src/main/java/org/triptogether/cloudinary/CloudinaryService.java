@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -93,5 +96,67 @@ public class CloudinaryService {
     private String getExtension(String filename) {
         if (filename == null || !filename.contains(".")) return "";
         return filename.substring(filename.lastIndexOf("."));
+    }
+
+    /**
+     * Cloudinary Admin API로 특정 폴더 내 모든 리소스를 조회한다.
+     * next_cursor로 반복하여 페이지네이션 전체 수집.
+     *
+     * @param folder Cloudinary 폴더 경로 (예: "community/inline")
+     * @return 각 항목: {publicId, secureUrl, createdAt(ISO8601 String)}
+     */
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> listResourcesInFolder(String folder) {
+        List<Map<String, Object>> all = new ArrayList<>();
+        String nextCursor = null;
+        int pageCount = 0;
+        try {
+            do {
+                Map<String, Object> options = new HashMap<>();
+                options.put("type", "upload");
+                options.put("prefix", folder + "/");
+                options.put("max_results", 500);
+                if (nextCursor != null) options.put("next_cursor", nextCursor);
+
+                Map<?, ?> result = cloudinary.api().resources(options);
+                List<Map<String, Object>> resources = (List<Map<String, Object>>) result.get("resources");
+                if (resources != null) {
+                    for (Map<String, Object> r : resources) {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("publicId",  r.get("public_id"));
+                        item.put("secureUrl", r.get("secure_url"));
+                        item.put("createdAt", r.get("created_at"));
+                        all.add(item);
+                    }
+                }
+                nextCursor = (String) result.get("next_cursor");
+                pageCount++;
+                if (pageCount > 200) {  // 안전 가드: 최대 10만개
+                    log.warn("Cloudinary 리소스 페이지 초과. 조기 종료. folder={}", folder);
+                    break;
+                }
+            } while (nextCursor != null);
+        } catch (Exception e) {
+            log.error("Cloudinary 리소스 조회 실패 folder={}, error={}", folder, e.getMessage());
+        }
+        return all;
+    }
+
+    /**
+     * Cloudinary에서 단일 리소스를 삭제한다.
+     *
+     * @param publicId Cloudinary public_id (폴더 포함, 확장자 제외)
+     * @return 성공 여부
+     */
+    public boolean deleteResource(String publicId) {
+        if (publicId == null || publicId.isBlank()) return false;
+        try {
+            Map<?, ?> result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            Object status = result.get("result");
+            return "ok".equals(status);
+        } catch (Exception e) {
+            log.error("Cloudinary 삭제 실패 publicId={}, error={}", publicId, e.getMessage());
+            return false;
+        }
     }
 }

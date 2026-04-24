@@ -92,36 +92,39 @@
                             </c:choose>
                         </td>
                         <td>
-                            <c:choose>
-                                <c:when test="${item.purpose == 'PROFILE_EMAIL'}"><spring:message code="admin.emailRequests.purpose.profileEmail"/></c:when>
-                                <c:when test="${item.purpose == 'FIND_ID'}"><spring:message code="admin.emailRequests.purpose.findId"/></c:when>
-                                <c:when test="${item.purpose == 'RESET_PW'}"><spring:message code="admin.emailRequests.purpose.resetPw"/></c:when>
-                                <c:when test="${item.purpose == 'VERIFY'}"><spring:message code="admin.emailRequests.purpose.verify"/></c:when>
-                                <c:otherwise><c:out value="${item.purpose}"/></c:otherwise>
-                            </c:choose>
+                            <button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="${item.purpose}" onclick="applySelectFilter(this)">
+                                <span><c:choose>
+                                    <c:when test="${item.purpose == 'PROFILE_EMAIL'}"><spring:message code="admin.emailRequests.purpose.profileEmail"/></c:when>
+                                    <c:when test="${item.purpose == 'FIND_ID'}"><spring:message code="admin.emailRequests.purpose.findId"/></c:when>
+                                    <c:when test="${item.purpose == 'RESET_PW'}"><spring:message code="admin.emailRequests.purpose.resetPw"/></c:when>
+                                    <c:when test="${item.purpose == 'VERIFY'}"><spring:message code="admin.emailRequests.purpose.verify"/></c:when>
+                                    <c:otherwise><c:out value="${item.purpose}"/></c:otherwise>
+                                </c:choose></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                            </button>
                         </td>
                         <td>
-                            <div><c:out value="${item.pendingEmail}"/></div>
-                            <div class="adm-inline-actions">
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-keyword="${item.pendingEmail}"
-                                        onclick="applyKeywordFilter(this)">
-                                    <spring:message code="admin.common.sameEmail"/>
-                                </button>
-                            </div>
+                            <button type="button"
+                                    class="adm-cell-link"
+                                    data-keyword="${item.pendingEmail}"
+                                    onclick="applyKeywordFilter(this)">
+                                <span><c:out value="${item.pendingEmail}"/></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameEmail"/></span>
+                            </button>
                         </td>
                         <td>
-                            <span class="status-badge ACTIVE">
-                                <c:choose>
-                                    <c:when test="${item.status == 'REQUESTED'}"><spring:message code="admin.emailRequests.status.requested"/></c:when>
-                                    <c:when test="${item.status == 'VERIFIED'}"><spring:message code="admin.emailRequests.status.verified"/></c:when>
-                                    <c:when test="${item.status == 'APPLIED'}"><spring:message code="admin.emailRequests.status.applied"/></c:when>
-                                    <c:when test="${item.status == 'EXPIRED'}"><spring:message code="admin.emailRequests.status.expired"/></c:when>
-                                    <c:when test="${item.status == 'CANCELLED'}"><spring:message code="admin.emailRequests.status.cancelled"/></c:when>
-                                    <c:otherwise><c:out value="${item.status}"/></c:otherwise>
-                                </c:choose>
-                            </span>
+                            <button type="button" class="adm-cell-link" data-param-name="status" data-param-value="${item.status}" onclick="applySelectFilter(this)">
+                                <span class="status-badge ${item.status}">
+                                    <c:choose>
+                                        <c:when test="${item.status == 'REQUESTED'}"><spring:message code="admin.emailRequests.status.requested"/></c:when>
+                                        <c:when test="${item.status == 'VERIFIED'}"><spring:message code="admin.emailRequests.status.verified"/></c:when>
+                                        <c:when test="${item.status == 'APPLIED'}"><spring:message code="admin.emailRequests.status.applied"/></c:when>
+                                        <c:when test="${item.status == 'EXPIRED'}"><spring:message code="admin.emailRequests.status.expired"/></c:when>
+                                        <c:when test="${item.status == 'CANCELLED'}"><spring:message code="admin.emailRequests.status.cancelled"/></c:when>
+                                        <c:otherwise><c:out value="${item.status}"/></c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </button>
                         </td>
                         <td><c:choose><c:when test="${not empty item.verifiedAtDate}"><fmt:formatDate value="${item.verifiedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
                         <td><c:choose><c:when test="${not empty item.appliedAtDate}"><fmt:formatDate value="${item.appliedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
@@ -129,41 +132,27 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.ipAddress}">
-                                    <div>
-                                        <button type="button"
-                                                class="adm-inline-link js-open-ip-context"
-                                                data-ip-address="${item.ipAddress}"
-                                                data-default-tab="emailRequests"
-                                                style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
-                                    </div>
-                                    <div class="adm-inline-actions">
-                                        <button type="button"
-                                                class="adm-inline-chip"
-                                                data-keyword="${item.ipAddress}"
-                                                onclick="applyKeywordFilter(this)">
-                                            <spring:message code="admin.common.sameIp"/>
-                                        </button>
-                                    </div>
+                                    <button type="button"
+                                            class="adm-cell-link js-open-ip-context"
+                                            data-ip-address="${item.ipAddress}"
+                                            data-default-tab="emailRequests">
+                                        <span style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameIp"/></span>
+                                    </button>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
                         </td>
-                        <td style="font-size:12px;color:#64748b;">
-                            <div><c:out value="${item.requestId}"/></div>
-                            <div class="adm-inline-actions">
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-keyword="${item.requestId}"
-                                        onclick="applyKeywordFilter(this)">
-                                    <spring:message code="admin.common.sameRequest"/>
-                                </button>
-                                <button type="button"
-                                        class="adm-inline-chip"
-                                        data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
-                                        onclick="openRelatedHistory('email-tokens', this)">
-                                    <spring:message code="admin.common.sameFlow"/>
-                                </button>
-                            </div>
+                        <td>
+                            <button type="button"
+                                    class="adm-cell-link"
+                                    data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
+                                    onclick="openRelatedHistory('email-tokens', this)">
+                                <span style="font-size:12px;color:#64748b;"><c:out value="${item.requestId}"/></span>
+                                <c:if test="${not empty item.flowTraceId}">
+                                    <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
+                                </c:if>
+                            </button>
                         </td>
                     </tr>
                 </c:forEach>
@@ -186,7 +175,6 @@
         </c:if>
     </div>
 </div>
-<%@ include file="../common/context-modal.jspf" %>
 <script>
 function goPage(page) {
   const params = new URLSearchParams(window.location.search);
@@ -197,6 +185,15 @@ function applyKeywordFilter(button) {
   const keyword = button.dataset.keyword || '';
   const params = new URLSearchParams(window.location.search);
   params.set('keyword', keyword);
+  params.set('page', '1');
+  location.href = '${pageContext.request.contextPath}/admin/email-verifications?' + params.toString();
+}
+function applySelectFilter(button) {
+  var paramName = button.getAttribute('data-param-name');
+  var paramValue = button.getAttribute('data-param-value');
+  if (!paramName || !paramValue) return;
+  var params = new URLSearchParams(window.location.search);
+  params.set(paramName, paramValue);
   params.set('page', '1');
   location.href = '${pageContext.request.contextPath}/admin/email-verifications?' + params.toString();
 }

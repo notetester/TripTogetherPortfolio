@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="activityLogs"/>
 <spring:message code="admin.activity.pageTitle" var="adminActivityPageTitle"/>
@@ -52,24 +53,30 @@
           </c:choose>
         </td>
         <td>
-          <c:choose>
-            <c:when test="${item.activityDomain eq 'GENERAL'}"><spring:message code="admin.activity.domain.general"/></c:when>
-            <c:when test="${item.activityDomain eq 'AUTH'}"><spring:message code="admin.activity.domain.auth"/></c:when>
-            <c:when test="${item.activityDomain eq 'ADMIN'}"><spring:message code="admin.activity.domain.admin"/></c:when>
-            <c:when test="${item.activityDomain eq 'COMMUNITY'}"><spring:message code="admin.activity.domain.community"/></c:when>
-            <c:when test="${item.activityDomain eq 'MYPAGE'}"><spring:message code="admin.activity.domain.mypage"/></c:when>
-            <c:when test="${item.activityDomain eq 'INQUIRY'}"><spring:message code="admin.activity.domain.inquiry"/></c:when>
-            <c:otherwise><c:out value="${empty item.activityDomain ? '-' : item.activityDomain}"/></c:otherwise>
-          </c:choose>
+          <button type="button" class="adm-cell-link" data-param-name="activityDomain" data-param-value="${item.activityDomain}" onclick="applySelectFilter(this)">
+            <span><c:choose>
+              <c:when test="${item.activityDomain eq 'GENERAL'}"><spring:message code="admin.activity.domain.general"/></c:when>
+              <c:when test="${item.activityDomain eq 'AUTH'}"><spring:message code="admin.activity.domain.auth"/></c:when>
+              <c:when test="${item.activityDomain eq 'ADMIN'}"><spring:message code="admin.activity.domain.admin"/></c:when>
+              <c:when test="${item.activityDomain eq 'COMMUNITY'}"><spring:message code="admin.activity.domain.community"/></c:when>
+              <c:when test="${item.activityDomain eq 'MYPAGE'}"><spring:message code="admin.activity.domain.mypage"/></c:when>
+              <c:when test="${item.activityDomain eq 'INQUIRY'}"><spring:message code="admin.activity.domain.inquiry"/></c:when>
+              <c:otherwise><c:out value="${empty item.activityDomain ? '-' : item.activityDomain}"/></c:otherwise>
+            </c:choose></span>
+            <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+          </button>
         </td>
         <td>
-          <c:choose>
-            <c:when test="${item.activityType eq 'PAGE_VIEW'}"><spring:message code="admin.activity.type.pageView"/></c:when>
-            <c:when test="${item.activityType eq 'ACTION'}"><spring:message code="admin.activity.type.action"/></c:when>
-            <c:when test="${item.activityType eq 'AJAX'}"><spring:message code="admin.activity.type.ajax"/></c:when>
-            <c:when test="${item.activityType eq 'API'}"><spring:message code="admin.activity.type.api"/></c:when>
-            <c:otherwise><c:out value="${item.activityType}"/></c:otherwise>
-          </c:choose>
+          <button type="button" class="adm-cell-link" data-param-name="activityType" data-param-value="${item.activityType}" onclick="applySelectFilter(this)">
+            <span><c:choose>
+              <c:when test="${item.activityType eq 'PAGE_VIEW'}"><spring:message code="admin.activity.type.pageView"/></c:when>
+              <c:when test="${item.activityType eq 'ACTION'}"><spring:message code="admin.activity.type.action"/></c:when>
+              <c:when test="${item.activityType eq 'AJAX'}"><spring:message code="admin.activity.type.ajax"/></c:when>
+              <c:when test="${item.activityType eq 'API'}"><spring:message code="admin.activity.type.api"/></c:when>
+              <c:otherwise><c:out value="${item.activityType}"/></c:otherwise>
+            </c:choose></span>
+            <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+          </button>
         </td>
         <td>
           <div><c:out value="${empty item.activityCode ? '-' : item.activityCode}"/></div>
@@ -124,62 +131,68 @@
             </c:if>
           </div>
         </td>
-        <td style="max-width:300px;word-break:break-all;"><c:out value="${item.requestUri}"/></td>
         <td>
-          <c:choose>
-            <c:when test="${item.httpMethod eq 'GET'}"><spring:message code="admin.activity.method.get"/></c:when>
-            <c:when test="${item.httpMethod eq 'POST'}"><spring:message code="admin.activity.method.post"/></c:when>
-            <c:when test="${item.httpMethod eq 'PUT'}"><spring:message code="admin.activity.method.put"/></c:when>
-            <c:when test="${item.httpMethod eq 'DELETE'}"><spring:message code="admin.activity.method.delete"/></c:when>
-            <c:otherwise><c:out value="${item.httpMethod}"/></c:otherwise>
-          </c:choose>
+          <button type="button"
+                  class="adm-cell-link"
+                  data-keyword="${item.requestUri}"
+                  onclick="applyKeywordFilter(this)">
+            <span style="word-break:break-all;"><c:out value="${item.requestUri}"/></span>
+            <c:if test="${not empty item.detailSummary}">
+              <span class="adm-cell-link-note"><c:out value="${item.detailSummary}"/></span>
+            </c:if>
+          </button>
+          <c:if test="${not empty item.detailSummary}">
+            <div class="adm-tr-inline js-admin-translation-widget"
+                 data-label="<spring:message code='admin.translation.label.activityLogDetailSummary'/>"
+                 data-source-type="ACTIVITY_LOG"
+                 data-source-idx="${item.activityIdx}"
+                 data-field-name="detail_summary"
+                 data-default-source-lang="ko"
+                 data-source-text="${fn:escapeXml(item.detailSummary)}"></div>
+          </c:if>
         </td>
-        <td><c:out value="${item.responseStatus}"/> / <c:out value="${item.success ? adminActivitySuccessLabel : adminActivityFailLabel}"/></td>
+        <td>
+          <button type="button" class="adm-cell-link" data-param-name="httpMethod" data-param-value="${item.httpMethod}" onclick="applySelectFilter(this)">
+            <span><c:choose>
+              <c:when test="${item.httpMethod eq 'GET'}"><spring:message code="admin.activity.method.get"/></c:when>
+              <c:when test="${item.httpMethod eq 'POST'}"><spring:message code="admin.activity.method.post"/></c:when>
+              <c:when test="${item.httpMethod eq 'PUT'}"><spring:message code="admin.activity.method.put"/></c:when>
+              <c:when test="${item.httpMethod eq 'DELETE'}"><spring:message code="admin.activity.method.delete"/></c:when>
+              <c:otherwise><c:out value="${item.httpMethod}"/></c:otherwise>
+            </c:choose></span>
+            <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+          </button>
+        </td>
+        <td>
+          <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="${item.success ? 'SUCCESS' : 'FAIL'}" onclick="applySelectFilter(this)">
+            <span><c:out value="${item.responseStatus}"/></span>
+            <span class="adm-cell-link-note"><c:out value="${item.success ? adminActivitySuccessLabel : adminActivityFailLabel}"/></span>
+          </button>
+        </td>
         <td>
           <c:choose>
             <c:when test="${not empty item.ipAddress}">
-              <div>
-                <button type="button"
-                        class="adm-inline-link js-open-ip-context"
-                        data-ip-address="${item.ipAddress}"
-                        data-default-tab="activity"
-                        style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
-              </div>
-              <div class="adm-inline-actions">
-                <button type="button"
-                        class="adm-inline-chip"
-                        data-keyword="${item.ipAddress}"
-                        onclick="applyKeywordFilter(this)">
-                  <spring:message code="admin.common.sameIp"/>
-                </button>
-              </div>
+              <button type="button"
+                      class="adm-cell-link js-open-ip-context"
+                      data-ip-address="${item.ipAddress}"
+                      data-default-tab="activity">
+                <span style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></span>
+                <span class="adm-cell-link-note"><spring:message code="admin.common.sameIp"/></span>
+              </button>
             </c:when>
             <c:otherwise>-</c:otherwise>
           </c:choose>
         </td>
-        <td style="font-size:12px;color:#64748b;">
-          <div><c:out value="${item.requestId}"/></div>
-          <c:if test="${not empty item.flowTraceId}">
-            <div style="margin-top:4px;"><c:out value="${item.flowTraceId}"/></div>
-          </c:if>
-          <div class="adm-inline-actions">
-            <c:if test="${not empty item.requestId}">
-              <button type="button"
-                      class="adm-inline-chip"
-                      data-keyword="${item.requestId}"
-                      onclick="applyKeywordFilter(this)">
-                <spring:message code="admin.common.sameRequest"/>
-              </button>
-            </c:if>
+        <td>
+          <button type="button"
+                  class="adm-cell-link"
+                  data-keyword="${not empty item.requestId ? item.requestId : item.flowTraceId}"
+                  onclick="applyKeywordFilter(this)">
+            <span style="font-size:12px;color:#64748b;"><c:out value="${empty item.requestId ? '-' : item.requestId}"/></span>
             <c:if test="${not empty item.flowTraceId}">
-              <button type="button"
-                      class="adm-inline-chip"
-                      data-keyword="${item.flowTraceId}"
-                      onclick="applyKeywordFilter(this)">
-                <spring:message code="admin.common.sameFlow"/>
-              </button>
+              <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
             </c:if>
-          </div>
+          </button>
         </td>
       </tr></c:forEach>
       <c:if test="${empty list}"><tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr></c:if>
@@ -187,13 +200,21 @@
     <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info"><spring:message code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/></span></div></c:if>
   </div>
 </div>
-<%@ include file="../common/context-modal.jspf" %>
 <script>
 function applyKeywordFilter(button){
   var keyword = button.getAttribute('data-keyword');
   if(!keyword) return;
   const params=new URLSearchParams(window.location.search);
   params.set('keyword',keyword);
+  params.set('page','1');
+  location.href='${pageContext.request.contextPath}/admin/activity-logs?'+params.toString();
+}
+function applySelectFilter(button){
+  var paramName=button.getAttribute('data-param-name');
+  var paramValue=button.getAttribute('data-param-value');
+  if(!paramName||!paramValue) return;
+  var params=new URLSearchParams(window.location.search);
+  params.set(paramName,paramValue);
   params.set('page','1');
   location.href='${pageContext.request.contextPath}/admin/activity-logs?'+params.toString();
 }

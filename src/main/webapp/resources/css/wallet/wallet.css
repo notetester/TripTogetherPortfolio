@@ -494,7 +494,7 @@
   border-bottom: none;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1023px) {
   .wallet-summary-grid,
   .wallet-two-col {
     grid-template-columns: 1fr;
@@ -505,7 +505,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .wallet-hero {
     padding: 24px 14px 12px;
   }

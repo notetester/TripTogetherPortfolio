@@ -12,6 +12,7 @@ public interface AdminService {
     // ===== 대시보드 통계 =====
     AdminStatsVO getStats();
     AdminDashboardChartVO getDashboardChart(int days);
+    List<AdminSalesDailyStatVO> getSalesDailyStats(int days);
 
     // ===== 회원 관리 =====
     Map<String, Object> getMemberList(AdminSearchVO search);
@@ -20,6 +21,7 @@ public interface AdminService {
     Map<String, Object> getMemberContext(Long userIdx);
     Map<String, Object> getIpContext(String ipAddress);
     void updateMemberProfile(Long userIdx, String nickname, String nationality, String preferredLang);
+    void updateMemberEmail(Long userIdx, String email);
     void changeMemberStatus(Long userIdx, String status);
     void blockMember(Long userIdx, String blockType, String blockedIp, String reason, java.time.LocalDateTime expiresAt, Long actorUserIdx);
     void updateMemberMeta(AdminMemberVO member);

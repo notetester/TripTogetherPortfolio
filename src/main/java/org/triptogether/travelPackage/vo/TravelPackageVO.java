@@ -46,6 +46,7 @@ public class TravelPackageVO {
     private String spotName;
     private String spotRegion;
     private String sellerNickname;
+    private String sellerRole;
     private Integer pendingRevisionCount;
 
     /**

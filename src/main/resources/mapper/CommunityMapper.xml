@@ -24,6 +24,8 @@
         <result property="updatedAt"    column="updated_at"/>
         <result property="isSolved"     column="is_solved"/>
         <result property="thumbUrl"     column="thumb_url"/>
+        <result property="thumbUrl2"    column="thumb_url2"/>
+        <result property="thumbUrl3"    column="thumb_url3"/>
         <result property="accountStatus" column="account_status"/>
         <result property="reportCount"  column="report_count"/>
         <result property="aiFlagged"    column="ai_flagged"/>
@@ -168,7 +170,12 @@
             cp.like_count,
             cp.comment_count,
             cp.updated_at,
-            cpi.image_url AS thumb_url,
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 1 LIMIT 1) AS thumb_url,
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 2 LIMIT 1) AS thumb_url2,
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 3 LIMIT 1) AS thumb_url3,
             cp.is_solved,
             u.account_status,
             cp.report_count,
@@ -177,8 +184,6 @@
             <include refid="PostDecorationColumns"/>
         FROM COMMUNITY_POST cp
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
-        LEFT JOIN COMMUNITY_POST_IMAGE cpi
-            ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
         LEFT JOIN COMMUNITY_POST_TAG cpt ON cp.post_id = cpt.post_id
         LEFT JOIN COMMUNITY_TAG ct ON cpt.tag_id = ct.tag_id
         WHERE 1=1
@@ -433,14 +438,17 @@
             cp.post_type,
             cp.region,
             cp.tip_category,
-            cpi.image_url AS thumb_url,
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 1 LIMIT 1) AS thumb_url,
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 2 LIMIT 1) AS thumb_url2,
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 3 LIMIT 1) AS thumb_url3,
             u.account_status
             <include refid="PostDecorationColumns"/>,
             SUM(ctr.co_count) AS total_co_count
         FROM COMMUNITY_POST cp
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
-        LEFT JOIN COMMUNITY_POST_IMAGE cpi
-            ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
         JOIN COMMUNITY_POST_TAG cpt_other ON cp.post_id = cpt_other.post_id
         JOIN COMMUNITY_POST_TAG cpt_mine  ON cpt_mine.post_id = #{postId}
         JOIN COMMUNITY_TAG_RELATION ctr
@@ -454,7 +462,7 @@
         GROUP BY cp.post_id, cp.user_idx, u.nickname, cp.title, cp.content,
                  cp.post_status, cp.view_count, cp.like_count, cp.comment_count,
                  cp.report_count, cp.ai_flagged, cp.created_at, cp.post_type, cp.region,
-                 cp.tip_category, cpi.image_url, u.account_status
+                 cp.tip_category, u.account_status
         ORDER BY total_co_count DESC, cp.like_count DESC, cp.created_at DESC
         LIMIT 3
     </select>
@@ -478,7 +486,11 @@
             cp.region,
             cp.tip_category,
             (SELECT image_url FROM COMMUNITY_POST_IMAGE
-             WHERE post_id = cp.post_id ORDER BY sort_order LIMIT 1) AS thumb_url,
+              WHERE post_id = cp.post_id AND sort_order = 1 LIMIT 1) AS thumb_url,
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 2 LIMIT 1) AS thumb_url2,
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 3 LIMIT 1) AS thumb_url3,
             u.account_status
             <include refid="PostDecorationColumns"/>
         FROM COMMUNITY_POST cp
@@ -1055,12 +1067,15 @@
             cp.report_count,
             cp.ai_flagged,
             u.account_status,
-            cpi.image_url AS thumb_url
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 1 LIMIT 1) AS thumb_url,
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 2 LIMIT 1) AS thumb_url2,
+            (SELECT image_url FROM COMMUNITY_POST_IMAGE
+              WHERE post_id = cp.post_id AND sort_order = 3 LIMIT 1) AS thumb_url3
             <include refid="PostDecorationColumns"/>
         FROM COMMUNITY_POST cp
         LEFT JOIN USERS u ON cp.user_idx = u.user_idx
-        LEFT JOIN COMMUNITY_POST_IMAGE cpi
-            ON cp.post_id = cpi.post_id AND cpi.sort_order = 1
         WHERE cp.post_status != 'DELETED'
         ORDER BY cp.like_count DESC, cp.created_at DESC
         LIMIT #{limit}
@@ -1086,6 +1101,44 @@
         WHERE user_idx = #{userIdx}
           AND comment_status != 'DELETED'
           AND created_at >= DATE_SUB(NOW(), INTERVAL #{minutes} MINUTE)
+    </select>
+
+    <!-- 챗봇 컨텍스트용 공개 게시글 다중 키워드 검색 -->
+    <select id="searchPostsByKeywords" resultType="java.util.HashMap">
+        SELECT
+            cp.post_id       AS postId,
+            cp.title         AS title,
+            cp.post_type     AS postType,
+            cp.region        AS region,
+            cp.like_count    AS likeCount,
+            cp.view_count    AS viewCount,
+            cp.comment_count AS commentCount,
+            cp.created_at    AS createdAt,
+            u.nickname       AS nickname
+        FROM COMMUNITY_POST cp
+        LEFT JOIN USERS u ON u.user_idx = cp.user_idx
+        WHERE cp.post_status = 'ACTIVE'
+          AND COALESCE(cp.report_count, 0) &lt; 3
+          AND (
+          <foreach collection="keywords" item="kw" separator=" OR ">
+                cp.title   LIKE CONCAT('%', #{kw}, '%')
+             OR cp.content LIKE CONCAT('%', #{kw}, '%')
+          </foreach>
+          )
+        ORDER BY cp.like_count DESC, cp.view_count DESC, cp.created_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- =============================================
+         Summernote inline 이미지 orphan 스캔용
+         ACTIVE 상태 게시글의 content 전체 조회
+         ============================================= -->
+    <select id="selectAllActiveContents" resultType="string">
+        SELECT content
+        FROM COMMUNITY_POST
+        WHERE post_status = 'ACTIVE'
+          AND content IS NOT NULL
+          AND content &lt;&gt; ''
     </select>
 
 </mapper>

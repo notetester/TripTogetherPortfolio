@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.common.mapper.ChatbotLinkClickMapper">
+
+    <!-- =============================================
+         1. 클릭 기록 저장
+         ============================================= -->
+    <insert id="insertClick" parameterType="ChatbotLinkClickVO"
+            useGeneratedKeys="true" keyProperty="clickId">
+        INSERT INTO CHATBOT_LINK_CLICK
+            (message_id, conversation_id, user_idx, anon_session_id, url, label, ip_address)
+        VALUES
+            (#{messageId}, #{conversationId}, #{userIdx}, #{anonSessionId}, #{url}, #{label}, #{ipAddress})
+    </insert>
+
+    <!-- =============================================
+         2. 총 클릭 수 (기간)
+         ============================================= -->
+    <select id="countClicks" resultType="int">
+        SELECT COUNT(*)
+          FROM CHATBOT_LINK_CLICK
+         WHERE clicked_at &gt;= #{from}
+           AND clicked_at &lt;  #{to}
+    </select>
+
+    <!-- =============================================
+         3. URL 별 클릭 상위 N (기간)
+         ============================================= -->
+    <select id="selectTopUrls" resultType="map">
+        SELECT url            AS url,
+               COUNT(*)       AS clickCount
+          FROM CHATBOT_LINK_CLICK
+         WHERE clicked_at &gt;= #{from}
+           AND clicked_at &lt;  #{to}
+         GROUP BY url
+         ORDER BY clickCount DESC, url ASC
+         LIMIT #{limit}
+    </select>
+
+    <!-- =============================================
+         4. 일별 클릭 수 (기간, 오름차순)
+         ============================================= -->
+    <select id="selectDailyTrend" resultType="map">
+        SELECT DATE(clicked_at) AS clickDate,
+               COUNT(*)         AS clickCount
+          FROM CHATBOT_LINK_CLICK
+         WHERE clicked_at &gt;= #{from}
+           AND clicked_at &lt;  #{to}
+         GROUP BY DATE(clicked_at)
+         ORDER BY clickDate ASC
+    </select>
+
+    <!-- =============================================
+         5. 유저의 최근 클릭 이력
+         ============================================= -->
+    <resultMap id="ClickResultMap" type="ChatbotLinkClickVO">
+        <id     property="clickId"         column="click_id"/>
+        <result property="messageId"       column="message_id"/>
+        <result property="conversationId"  column="conversation_id"/>
+        <result property="userIdx"         column="user_idx"/>
+        <result property="anonSessionId"   column="anon_session_id"/>
+        <result property="url"             column="url"/>
+        <result property="label"           column="label"/>
+        <result property="ipAddress"       column="ip_address"/>
+        <result property="clickedAt"       column="clicked_at"/>
+    </resultMap>
+
+    <select id="selectClicksByUser" resultMap="ClickResultMap">
+        SELECT click_id, message_id, conversation_id, user_idx, anon_session_id,
+               url, label, ip_address, clicked_at
+          FROM CHATBOT_LINK_CLICK
+         WHERE user_idx = #{userIdx}
+         ORDER BY clicked_at DESC
+         LIMIT #{limit}
+    </select>
+
+    <!-- =============================================
+         6. 대화별 클릭 이력 (오름차순)
+         ============================================= -->
+    <select id="selectClicksByConversation" resultMap="ClickResultMap">
+        SELECT click_id, message_id, conversation_id, user_idx, anon_session_id,
+               url, label, ip_address, clicked_at
+          FROM CHATBOT_LINK_CLICK
+         WHERE conversation_id = #{conversationId}
+         ORDER BY clicked_at ASC
+    </select>
+
+    <!-- =============================================
+         7. URL 별 클릭자 목록 (닉네임 조인, 최신순)
+         ============================================= -->
+    <select id="selectClickersByUrl" resultType="map">
+        SELECT c.click_id        AS clickId,
+               c.message_id      AS messageId,
+               c.conversation_id AS conversationId,
+               c.user_idx        AS userIdx,
+               u.nickname        AS nickname,
+               c.anon_session_id AS anonSessionId,
+               c.ip_address      AS ipAddress,
+               c.clicked_at      AS clickedAt
+          FROM CHATBOT_LINK_CLICK c
+          LEFT JOIN USERS u ON u.user_idx = c.user_idx
+         WHERE c.url = #{url}
+         ORDER BY c.clicked_at DESC
+         LIMIT #{limit}
+    </select>
+
+</mapper>

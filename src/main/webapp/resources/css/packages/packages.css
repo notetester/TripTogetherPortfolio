@@ -508,7 +508,7 @@
   background: #e2e8f0;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .pkg-hero,
   .pkg-section-title,
   .pkg-form-actions {

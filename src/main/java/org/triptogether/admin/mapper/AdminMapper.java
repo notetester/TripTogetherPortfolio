@@ -17,6 +17,7 @@ public interface AdminMapper {
     // ===== 대시보드 차트 (시계열) =====
     List<java.util.Map<String, Object>> findDailyNewMembers(@Param("days") int days);
     List<java.util.Map<String, Object>> findDailyLoginStats(@Param("days") int days);
+    List<AdminSalesDailyStatVO> findDailySalesStats(@Param("days") int days);
 
     // ===== 회원 관리 =====
     List<AdminMemberVO> findMembers(AdminSearchVO search);
@@ -26,6 +27,10 @@ public interface AdminMapper {
                              @Param("nickname") String nickname,
                              @Param("nationality") String nationality,
                              @Param("preferredLang") String preferredLang);
+    int countOtherMembersByEmail(@Param("userIdx") Long userIdx,
+                                 @Param("email") String email);
+    void updateMemberEmail(@Param("userIdx") Long userIdx,
+                           @Param("email") String email);
     void updateMemberStatus(@Param("userIdx") Long userIdx, @Param("status") String status);
     void markMemberDormant(@Param("userIdx") Long userIdx);
     void releaseMemberDormant(@Param("userIdx") Long userIdx);

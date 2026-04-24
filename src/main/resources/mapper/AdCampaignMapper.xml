@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    =============================================
+    AdCampaignMapper.xml - 광고 캠페인 SQL
+    =============================================
+-->
+<mapper namespace="org.triptogether.admin.mapper.AdCampaignMapper">
+
+    <resultMap id="AdResultMap" type="org.triptogether.admin.vo.AdCampaignVO">
+        <id     property="adId"       column="ad_id"/>
+        <result property="slotCode"   column="slot_code"/>
+        <result property="title"      column="title"/>
+        <result property="imageUrl"   column="image_url"/>
+        <result property="linkUrl"    column="link_url"/>
+        <result property="startAt"    column="start_at"/>
+        <result property="endAt"      column="end_at"/>
+        <result property="isActive"   column="is_active"/>
+        <result property="sortOrder"  column="sort_order"/>
+        <result property="viewCount"  column="view_count"/>
+        <result property="clickCount" column="click_count"/>
+        <result property="createdAt"  column="created_at"/>
+        <result property="updatedAt"  column="updated_at"/>
+        <result property="createdBy"  column="created_by"/>
+        <result property="creatorNickname" column="creator_nickname"/>
+    </resultMap>
+
+    <sql id="adBaseSelect">
+        SELECT
+            a.ad_id, a.slot_code, a.title, a.image_url, a.link_url,
+            a.start_at, a.end_at, a.is_active, a.sort_order,
+            a.view_count, a.click_count,
+            a.created_at, a.updated_at, a.created_by,
+            u.nickname AS creator_nickname
+        FROM AD_CAMPAIGN a
+        LEFT JOIN USERS u ON a.created_by = u.user_idx
+    </sql>
+
+    <select id="selectAll" resultMap="AdResultMap">
+        <include refid="adBaseSelect"/>
+        <where>
+            <if test="slotCode != null and slotCode != ''">
+                AND a.slot_code = #{slotCode}
+            </if>
+            <if test="activeOnly">
+                AND a.is_active = 1
+            </if>
+        </where>
+        ORDER BY a.is_active DESC, a.slot_code ASC, a.sort_order ASC, a.created_at DESC
+    </select>
+
+    <select id="selectById" resultMap="AdResultMap">
+        <include refid="adBaseSelect"/>
+        WHERE a.ad_id = #{adId}
+    </select>
+
+    <select id="selectActiveBySlot" resultMap="AdResultMap">
+        <include refid="adBaseSelect"/>
+        WHERE a.slot_code = #{slotCode}
+          AND a.is_active = 1
+          AND (a.start_at IS NULL OR a.start_at &lt;= NOW())
+          AND (a.end_at   IS NULL OR a.end_at   &gt;  NOW())
+        ORDER BY a.sort_order ASC, a.created_at DESC
+    </select>
+
+    <insert id="insertAd" useGeneratedKeys="true" keyProperty="adId">
+        INSERT INTO AD_CAMPAIGN (
+            slot_code, title, image_url, link_url,
+            start_at, end_at, is_active, sort_order,
+            view_count, click_count, created_by
+        ) VALUES (
+            #{slotCode}, #{title}, #{imageUrl}, #{linkUrl},
+            #{startAt}, #{endAt},
+            <choose>
+                <when test="isActive != null">#{isActive}</when>
+                <otherwise>1</otherwise>
+            </choose>,
+            <choose>
+                <when test="sortOrder != null">#{sortOrder}</when>
+                <otherwise>0</otherwise>
+            </choose>,
+            0, 0, #{createdBy}
+        )
+    </insert>
+
+    <update id="updateAd">
+        UPDATE AD_CAMPAIGN
+        SET slot_code  = #{slotCode},
+            title      = #{title},
+            image_url  = #{imageUrl},
+            link_url   = #{linkUrl},
+            start_at   = #{startAt},
+            end_at     = #{endAt},
+            is_active  = #{isActive},
+            sort_order = #{sortOrder}
+        WHERE ad_id = #{adId}
+    </update>
+
+    <update id="updateActive">
+        UPDATE AD_CAMPAIGN
+        SET is_active = #{isActive}
+        WHERE ad_id = #{adId}
+    </update>
+
+    <delete id="deleteAd">
+        DELETE FROM AD_CAMPAIGN WHERE ad_id = #{adId}
+    </delete>
+
+    <update id="incrementView">
+        UPDATE AD_CAMPAIGN SET view_count = view_count + 1 WHERE ad_id = #{adId}
+    </update>
+
+    <update id="incrementClick">
+        UPDATE AD_CAMPAIGN SET click_count = click_count + 1 WHERE ad_id = #{adId}
+    </update>
+
+</mapper>

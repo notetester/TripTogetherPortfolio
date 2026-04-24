@@ -27,6 +27,7 @@ import org.triptogether.travelPackage.vo.TravelPackageRevisionVO;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,8 +64,15 @@ public class AdminController {
     public String dashboard(Model model) {
         model.addAttribute("stats", adminService.getStats());
         model.addAttribute("chart", adminService.getDashboardChart(7));
+        model.addAttribute("salesStats", adminService.getSalesDailyStats(30));
         model.addAttribute("activeMenu", "dashboard");
         return "admin/dashboard";
+    }
+
+    @GetMapping("/sales/stats")
+    @ResponseBody
+    public ResponseEntity<List<AdminSalesDailyStatVO>> salesStats(@RequestParam(defaultValue = "30") int days) {
+        return ResponseEntity.ok(adminService.getSalesDailyStats(days));
     }
 
     @GetMapping("/members")
@@ -223,6 +231,22 @@ public class AdminController {
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/members/{userIdx}/email")
+    @ResponseBody
+    public Map<String, Object> updateMemberEmail(@PathVariable Long userIdx,
+                                                 @RequestParam(required = false) String email) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            adminService.updateMemberEmail(userIdx, email);
+            result.put("success", true);
+            result.put("message", msg("admin.members.emailUpdated"));
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", msg(e.getMessage()));
         }
         return result;
     }

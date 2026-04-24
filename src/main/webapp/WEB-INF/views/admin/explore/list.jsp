@@ -122,7 +122,10 @@
                 <c:forEach items="${list}" var="spot">
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${spot.spotIdx}"></td>
-                        <td class="adm-muted-inline">#${spot.spotIdx}</td>
+                        <td class="adm-muted-inline">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}">#${spot.spotIdx}</a>
+                        </td>
                         <td>
                             <c:choose>
                                 <c:when test="${not empty spot.thumbUrl}">
@@ -141,7 +144,9 @@
                                 <c:param name="keyword" value="${spot.name}"/>
                             </c:url>
                             <a href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}" class="adm-link-title" style="font-weight:600;">${fn:escapeXml(spot.name)}</a>
-                            <div class="adm-cell-ellipsis" style="font-size:11px;color:#64748b;margin-top:4px;max-width:260px;">${fn:escapeXml(spot.address)}</div>
+                            <a class="adm-cell-link adm-cell-link--inline adm-cell-ellipsis"
+                               href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}"
+                               style="font-size:11px;color:#64748b;margin-top:4px;max-width:260px;">${fn:escapeXml(spot.address)}</a>
                             <div class="adm-inline-actions">
                                 <a href="${pageContext.request.contextPath}/detail/${spot.spotIdx}" target="_blank" class="adm-inline-chip"><spring:message code="admin.explore.detail.userView"/></a>
                                 <a href="${pageContext.request.contextPath}${spotReviewsManageUrl}" class="adm-inline-chip"><spring:message code="admin.explore.detail.reviewsManageAll"/></a>
@@ -163,23 +168,50 @@
                                 </button>
                             </div>
                         </td>
-                        <td class="adm-muted-inline">${fn:escapeXml(spot.region)}</td>
-                        <td style="font-size:12px;color:#d97706;font-weight:700;"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/></td>
-                        <td class="adm-muted-inline">${spot.reviewCount}</td>
-                        <td class="adm-muted-inline">${spot.likeCount}</td>
+                        <td class="adm-muted-inline">
+                            <c:url var="spotRegionSearchUrl" value="/admin/explore">
+                                <c:param name="searchType" value="region"/>
+                                <c:param name="keyword" value="${spot.region}"/>
+                            </c:url>
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}${spotRegionSearchUrl}">${fn:escapeXml(spot.region)}</a>
+                        </td>
+                        <td style="font-size:12px;color:#d97706;font-weight:700;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}${spotReviewsManageUrl}"><fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/></a>
+                        </td>
+                        <td class="adm-muted-inline">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}${spotReviewsManageUrl}">${spot.reviewCount}</a>
+                        </td>
+                        <td class="adm-muted-inline">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}">${spot.likeCount}</a>
+                        </td>
                         <td>
-                            <span class="status-badge ${spot.displayStatus}">
+                            <a href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}?edit=true"
+                               class="adm-cell-link adm-cell-link--inline status-badge ${spot.displayStatus}">
                                 <c:choose>
                                     <c:when test="${spot.displayStatus == 'ACTIVE'}"><spring:message code="admin.explore.status.active"/></c:when>
                                     <c:otherwise><spring:message code="admin.explore.status.deleted"/></c:otherwise>
                                 </c:choose>
-                            </span>
+                            </a>
                         </td>
                         <td>
-                            <div style="display:flex;gap:4px;flex-wrap:wrap;">
-                                <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}?edit=true" style="font-size:11px;padding:3px 8px;text-decoration:none;"><spring:message code="admin.common.edit"/></a>
+                            <div class="adm-row-actions">
+                                <a class="adm-row-btn detail" href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}?edit=true"><spring:message code="admin.common.edit"/></a>
                                 <c:if test="${spot.displayStatus != 'DELETED'}">
-                                    <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${spot.spotIdx}" onclick="actionSpot(this, 'delete')"><spring:message code="admin.common.delete"/></button>
+                                    <div class="action-menu-wrap">
+                                        <button class="adm-row-btn detail adm-row-btn-more"
+                                                type="button"
+                                                onclick="admToggleActionMenu(this)">⋯</button>
+                                        <div class="action-menu">
+                                            <button class="action-menu-item danger"
+                                                    type="button"
+                                                    data-id="${spot.spotIdx}"
+                                                    onclick="actionSpot(this, 'delete')"><spring:message code="admin.common.delete"/></button>
+                                        </div>
+                                    </div>
                                 </c:if>
                             </div>
                         </td>
@@ -209,8 +241,6 @@
         </c:if>
     </div>
 </div>
-
-<%@ include file="../common/context-modal.jspf" %>
 
 <script>
 var ctx = '${pageContext.request.contextPath}';

@@ -28,6 +28,9 @@ public class CommunityPostDto {
 
     // COMMUNITY_POST_IMAGE (sort_order = 1, 대표 이미지)
     private String  thumbUrl;
+    // photo 유형 갤러리 표시용 (sort_order = 2, 3)
+    private String  thumbUrl2;
+    private String  thumbUrl3;
 
     // USERS JOIN (닉네임)
     private String  nickname;

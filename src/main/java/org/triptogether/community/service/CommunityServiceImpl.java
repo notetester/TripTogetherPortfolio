@@ -2,10 +2,16 @@ package org.triptogether.community.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.safety.Safelist;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.cloudinary.CloudinaryService;
+import org.triptogether.common.vo.SystemUser;
 import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.community.vo.*;
 import org.triptogether.config.IpBlockMapper;
@@ -15,8 +21,10 @@ import org.triptogether.moderation.vo.ContentModerationPolicyVO;
 import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
+import org.triptogether.report.service.ReportService;
 import org.triptogether.reward.service.RewardService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -32,6 +40,72 @@ public class CommunityServiceImpl implements CommunityService {
     private final SpotTextTranslationService spotTextTranslationService;
     private final RewardService rewardService;
     private final ModerationPolicyService moderationPolicyService;
+    private final ReportService reportService;
+
+    // Summernote 본문 XSS 정화용 화이트리스트
+    // basicWithImages 기반 + 서식/이미지/인라인스타일 허용, img src 프로토콜은 http/https/data 허용
+    // data: 는 Phase 1 base64 인라인 이미지용. Phase 2(Cloudinary) 이후 재검토 예정
+    private static final Safelist COMMUNITY_SAFELIST = Safelist.basicWithImages()
+            .addTags("h1", "h2", "h3", "h4", "h5", "h6", "u", "s", "strike", "font", "span", "div", "hr")
+            .addAttributes("span",  "style")
+            .addAttributes("p",     "style")
+            .addAttributes("div",   "style")
+            .addAttributes("font",  "color", "face", "size")
+            .addAttributes("img",   "src", "alt", "width", "height", "style")
+            .addProtocols("img", "src", "http", "https", "data");
+
+    // Summernote 본문 HTML을 화이트리스트 기준으로 정화함 (XSS 방지)
+    // - <script>, on* 핸들러, javascript: URL 등 실행 가능 요소 제거
+    // - prettyPrint=false: 불필요한 개행 삽입 방지
+    private String sanitizeHtml(String html) {
+        if (html == null || html.isBlank()) return "";
+        return Jsoup.clean(html, "", COMMUNITY_SAFELIST,
+                new Document.OutputSettings().prettyPrint(false));
+    }
+
+    // 목록 카드용 본문 HTML → plain text 요약
+    // - 태그 제거, 공백 정리, maxLen 초과 시 "..." 붙임
+    private String htmlToPlainTextSummary(String html, int maxLen) {
+        if (html == null || html.isBlank()) return "";
+        String text = Jsoup.parse(html).text().trim();
+        if (text.length() <= maxLen) return text;
+        return text.substring(0, maxLen) + "...";
+    }
+
+    // 본문 HTML에서 <img src> 를 최대 maxCount 개까지 수집
+    // - COMMUNITY_POST_IMAGE 테이블의 썸네일(대표이미지) 후보로 사용
+    // - 목록 갤러리 표시용(photo 유형 3장, 일반 1장)
+    private List<String> collectImageUrlsInHtml(String html, int maxCount) {
+        List<String> urls = new ArrayList<>();
+        if (html == null || html.isBlank()) return urls;
+        Elements imgs = Jsoup.parse(html).select("img[src]");
+        for (Element img : imgs) {
+            String src = img.attr("src");
+            if (src == null || src.isBlank()) continue;
+            urls.add(src);
+            if (urls.size() >= maxCount) break;
+        }
+        return urls;
+    }
+
+    // 유형별 썸네일 저장 개수
+    // - photo: 3장 (갤러리 표시용)
+    // - 그 외 : 1장 (단일 썸네일)
+    private int thumbnailImageCount(String postType) {
+        return "photo".equals(postType) ? 3 : 1;
+    }
+
+    // 목록 카드의 content 필드를 plain text 요약으로 덮어씀
+    // - Summernote HTML이 목록 카드에서 원본 크기로 렌더되는 문제 해결
+    // - 상세 페이지는 이 변환을 거치지 않음
+    private static final int LIST_PREVIEW_MAX_LEN = 200;
+    private void applyListPreviewText(List<CommunityPostDto> posts) {
+        if (posts == null) return;
+        for (CommunityPostDto p : posts) {
+            if (p == null) continue;
+            p.setContent(htmlToPlainTextSummary(p.getContent(), LIST_PREVIEW_MAX_LEN));
+        }
+    }
 
     // ===== 목록 =====
 
@@ -40,6 +114,7 @@ public class CommunityServiceImpl implements CommunityService {
     public List<CommunityPostDto> getPostList(CommunitySearchDto search) {
         List<CommunityPostDto> postList = communityMapper.selectPostList(search);
         spotTextTranslationService.translateCommunityPosts(postList);
+        applyListPreviewText(postList);
         return postList;
     }
 
@@ -119,6 +194,7 @@ public class CommunityServiceImpl implements CommunityService {
     public List<CommunityPostDto> getRelatedList(Long postId) {
         List<CommunityPostDto> relatedList = communityMapper.selectRelatedList(postId);
         spotTextTranslationService.translateCommunityPosts(relatedList);
+        applyListPreviewText(relatedList);
         return relatedList;
     }
 
@@ -128,6 +204,7 @@ public class CommunityServiceImpl implements CommunityService {
         int offset = (page - 1) * pageSize;
         List<CommunityPostDto> latestList = communityMapper.selectLatestList(excludeIds, pageSize, offset);
         spotTextTranslationService.translateCommunityPosts(latestList);
+        applyListPreviewText(latestList);
         return latestList;
     }
 
@@ -165,20 +242,41 @@ public class CommunityServiceImpl implements CommunityService {
                     policy.getPostWindowMinutes() + "분 내 게시글을 " + policy.getPostMaxCount() + "개 이상 작성할 수 없습니다.");
         }
 
-        // 1. COMMUNITY_POST INSERT
+        // 1. 본문 XSS 정화
+        String sanitizedContent = sanitizeHtml(writeDto.getContent());
+        String postType = writeDto.getPostType();
+
+        // 2. photo 유형 검증: 본문에 이미지 3장 이상 필수
+        List<String> contentImages = collectImageUrlsInHtml(sanitizedContent, thumbnailImageCount(postType));
+        if ("photo".equals(postType)) {
+            // photo 는 목록 갤러리 표시를 위해 최소 3장 필수
+            int totalImgs = Jsoup.parse(sanitizedContent).select("img[src]").size();
+            if (totalImgs < 3) {
+                throw new IllegalStateException("사진 유형은 본문에 이미지 3장 이상 첨부해야 합니다.");
+            }
+        }
+
+        // 3. COMMUNITY_POST INSERT (본문 HTML은 정화본 저장)
         CommunityPostDto post = new CommunityPostDto();
         post.setUserIdx(userIdx);
         post.setTitle(writeDto.getTitle());
-        post.setContent(writeDto.getContent());
+        post.setContent(sanitizedContent);
         communityMapper.insertPost(post);
         Long postId = post.getPostId(); // useGeneratedKeys로 자동 주입
 
-        // 2. 지역/유형 업데이트
+        // 4. 지역/유형 업데이트
         communityMapper.updatePostRegionType(postId, writeDto.getRegion(), writeDto.getPostType());
 
-        // 3. COMMUNITY_POST_IMAGE INSERT (이미지 파일 업로드)
+        // 5. COMMUNITY_POST_IMAGE INSERT
+        //  - 우선순위 1: 본문 inline 이미지 (썸네일/갤러리용으로 최대 N장 저장)
+        //  - 우선순위 2: (하위호환) writeDto.getImages() 사이드바 첨부
+        //  - 우선순위 3: Pixabay 자동추천
         int imageSortOrder = 1;
-        if (writeDto.getImages() != null && !writeDto.getImages().isEmpty()) {
+        if (!contentImages.isEmpty()) {
+            for (String url : contentImages) {
+                communityMapper.insertImage(postId, url, imageSortOrder++);
+            }
+        } else if (writeDto.getImages() != null && !writeDto.getImages().isEmpty()) {
             for (MultipartFile file : writeDto.getImages()) {
                 if (file == null || file.isEmpty()) continue;
                 String savedUrl = saveFile(file);
@@ -187,7 +285,6 @@ public class CommunityServiceImpl implements CommunityService {
                 }
             }
         }
-        // 이미지 없으면 Pixabay 자동추천 이미지 배정
         if (imageSortOrder == 1) {
             assignAutoImage(postId, writeDto.getRegion());
         }
@@ -238,26 +335,34 @@ public class CommunityServiceImpl implements CommunityService {
     public void editPost(Long postId, CommunityWriteDto writeDto,
                          List<String> existingImages, Long userIdx) {
 
-        // 1. COMMUNITY_POST 제목/본문 수정
-        communityMapper.updatePost(postId, writeDto.getTitle(), writeDto.getContent());
+        // 1. 본문 XSS 정화
+        String sanitizedContent = sanitizeHtml(writeDto.getContent());
+        String postType = writeDto.getPostType();
 
-        // 2. 지역/유형 수정
-        communityMapper.updatePostRegionType(postId, writeDto.getRegion(), writeDto.getPostType());
-
-        // 3. 이미지 처리 - 기존 이미지 전부 삭제 후 재등록
-        communityMapper.deleteImages(postId);
-
-        // 3-1. 기존 이미지 중 유지할 것 재등록 (자동추천 URL은 http로 시작 → 제외)
-        int sortOrder = 1;
-        if (existingImages != null) {
-            for (String imageUrl : existingImages) {
-                if (imageUrl == null || imageUrl.startsWith("http")) continue;
-                communityMapper.insertImage(postId, imageUrl, sortOrder++);
+        // 2. photo 유형 검증
+        List<String> contentImages = collectImageUrlsInHtml(sanitizedContent, thumbnailImageCount(postType));
+        if ("photo".equals(postType)) {
+            int totalImgs = Jsoup.parse(sanitizedContent).select("img[src]").size();
+            if (totalImgs < 3) {
+                throw new IllegalStateException("사진 유형은 본문에 이미지 3장 이상 첨부해야 합니다.");
             }
         }
 
-        // 3-2. 새로 추가된 이미지 저장
-        if (writeDto.getImages() != null) {
+        // 3. COMMUNITY_POST 제목/본문 수정
+        communityMapper.updatePost(postId, writeDto.getTitle(), sanitizedContent);
+
+        // 4. 지역/유형 수정
+        communityMapper.updatePostRegionType(postId, writeDto.getRegion(), writeDto.getPostType());
+
+        // 5. 이미지 재설정 - 전부 삭제 후 본문 기반으로 재구성
+        communityMapper.deleteImages(postId);
+        int sortOrder = 1;
+        if (!contentImages.isEmpty()) {
+            for (String url : contentImages) {
+                communityMapper.insertImage(postId, url, sortOrder++);
+            }
+        } else if (writeDto.getImages() != null && !writeDto.getImages().isEmpty()) {
+            // 하위호환: 사이드바 첨부가 남아있으면 업로드
             for (MultipartFile file : writeDto.getImages()) {
                 if (file == null || file.isEmpty()) continue;
                 String savedUrl = saveFile(file);
@@ -266,8 +371,6 @@ public class CommunityServiceImpl implements CommunityService {
                 }
             }
         }
-
-        // 이미지 없으면 Pixabay 자동추천 이미지 재배정
         if (sortOrder == 1) {
             assignAutoImage(postId, writeDto.getRegion());
         }
@@ -589,12 +692,21 @@ public class CommunityServiceImpl implements CommunityService {
     // ===== AI 욕설 감지 =====
 
     // 게시글 AI 감지 플래그 세팅 (비동기 Perspective 검사 후 호출됨)
+    // + SYSTEM 봇 이름으로 REPORT 자동 insert → 관리자 신고 게시판 합류
     @Override
     @Transactional
     public void flagPostAsToxic(Long postId) {
         CommunityPostDto post = communityMapper.selectPost(postId);
         if (post == null) return;
         boolean wasBlurred = (post.getReportCount() >= 3) || post.isAiFlagged();
+
+        try {
+            reportService.submitReport("post", postId, SystemUser.BOT_USER_IDX,
+                    "toxicity", "AI 민감도 분석 감지", null, null);
+        } catch (Exception e) {
+            log.warn("봇 신고 등록 실패 postId={}: {}", postId, e.getMessage());
+        }
+
         communityMapper.setPostAiFlagged(postId);
         if (!wasBlurred) {
             notifyPostBlurred(post, "부적절한 표현 감지");
@@ -602,12 +714,21 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     // 댓글 AI 감지 플래그 세팅
+    // + SYSTEM 봇 이름으로 REPORT 자동 insert
     @Override
     @Transactional
     public void flagCommentAsToxic(Long commentId) {
         CommunityCommentDto comment = communityMapper.selectComment(commentId);
         if (comment == null) return;
         boolean wasBlurred = (comment.getReportCount() >= 3) || comment.isAiFlagged();
+
+        try {
+            reportService.submitReport("comment", commentId, SystemUser.BOT_USER_IDX,
+                    "toxicity", "AI 민감도 분석 감지", null, null);
+        } catch (Exception e) {
+            log.warn("봇 신고 등록 실패 commentId={}: {}", commentId, e.getMessage());
+        }
+
         communityMapper.setCommentAiFlagged(commentId);
         if (!wasBlurred) {
             notifyCommentBlurred(comment, "부적절한 표현 감지");
@@ -824,6 +945,7 @@ public class CommunityServiceImpl implements CommunityService {
     public List<CommunityPostDto> getPopularList(int limit) {
         List<CommunityPostDto> popularList = communityMapper.selectPopularList(limit);
         spotTextTranslationService.translateCommunityPosts(popularList);
+        applyListPreviewText(popularList);
         return popularList;
     }
 
@@ -856,6 +978,14 @@ public class CommunityServiceImpl implements CommunityService {
 
     private String saveFile(MultipartFile file) {
         return cloudinaryService.uploadImage(file, "community");
+    }
+
+    // Summernote 에디터 내부 삽입용 이미지 업로드
+    // 대표이미지용 community/ 와 분리하여 community/inline/ 폴더에 저장
+    // → orphan 정리 스케줄러가 "본문에 없는 inline 이미지"만 선별 삭제하기 위함
+    @Override
+    public String uploadInlineImage(MultipartFile file) {
+        return cloudinaryService.uploadImage(file, "community/inline");
     }
 
 }

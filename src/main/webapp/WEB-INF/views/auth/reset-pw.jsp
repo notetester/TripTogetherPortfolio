@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <body>
 <div class="auth-wrap">
   <div class="auth-card">
@@ -32,7 +32,7 @@
           <label class="form-label" for="newPassword"><spring:message code="auth.resetPw.newPassword"/></label>
           <div class="pw-wrap">
             <input class="form-input" type="password" id="newPassword" placeholder="<spring:message code='auth.register.password.placeholder'/>" maxlength="64">
-            <button type="button" class="pw-toggle" id="pt1">보기</button>
+            <button type="button" class="pw-toggle" id="pt1"><spring:message code="auth.common.password.show"/></button>
           </div>
           <div class="pw-strength">
             <div class="pw-bar" id="b1"></div>
@@ -46,7 +46,7 @@
           <label class="form-label" for="confirmPassword"><spring:message code="auth.register.passwordConfirm"/></label>
           <div class="pw-wrap">
             <input class="form-input" type="password" id="confirmPassword" placeholder="<spring:message code='auth.register.passwordConfirm.placeholder'/>" maxlength="64">
-            <button type="button" class="pw-toggle" id="pt2">보기</button>
+            <button type="button" class="pw-toggle" id="pt2"><spring:message code="auth.common.password.show"/></button>
           </div>
           <div class="field-msg" id="cfmMsg"></div>
         </div>
@@ -67,7 +67,7 @@
       const el=document.getElementById(inputId);
       const t=el.type==='text';
       el.type=t?'password':'text';
-      this.textContent=t?'보기':'숨김';
+      this.textContent=t?'<spring:message code="auth.common.password.show" javaScriptEscape="true"/>':'<spring:message code="auth.common.password.hide" javaScriptEscape="true"/>';
     });
   }
   toggle('pt1','newPassword');
@@ -114,7 +114,7 @@
     if(data.success){
       location.href = data.redirect + '?resetOk=1';
     } else {
-      errBanner.textContent='오류 ' + (data.message||'<spring:message code="auth.login.error.server" javaScriptEscape="true"/>');
+      errBanner.textContent='<spring:message code="auth.common.errorPrefix" javaScriptEscape="true"/> ' + (data.message||'<spring:message code="auth.login.error.server" javaScriptEscape="true"/>');
       errBanner.classList.add('show');
       this.classList.remove('loading'); this.disabled=false;
     }

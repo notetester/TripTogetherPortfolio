@@ -41,10 +41,10 @@
                         <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
                           <c:choose>
                             <c:when test="${comment.accountStatus eq 'BLOCKED'}">
-                              <button class="block-btn unblock" onclick="unblockUser(${comment.userIdx})">👤 유저차단해제</button>
+                              <button class="block-btn unblock" onclick="unblockUser(${comment.userIdx})"><spring:message code="community.detail.user.unblock"/></button>
                             </c:when>
                             <c:otherwise>
-                              <button class="block-btn" onclick="blockUser(${comment.userIdx})">👤 유저차단</button>
+                              <button class="block-btn" onclick="blockUser(${comment.userIdx})"><spring:message code="community.detail.user.block"/></button>
                             </c:otherwise>
                           </c:choose>
                           <c:choose>
@@ -57,20 +57,20 @@
                           </c:choose>
                         </c:if>
                         <c:if test="${comment.commentId eq acceptedCommentId}">
-                          <span class="accepted-badge">&#10003; 채택됨</span>
+                          <span class="accepted-badge"><spring:message code="community.detail.comment.accepted"/></span>
                         </c:if>
                         <span class="comment-date">
                           <fmt:formatDate value="${comment.createdAt}" pattern="yyyy-MM-dd"/>
                         </span>
                         <c:if test="${isOwner and post.postType eq 'question' and not isSolved and comment.commentId ne acceptedCommentId}">
-                          <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})">채택하기</button>
+                          <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})"><spring:message code="community.detail.comment.accept"/></button>
                         </c:if>
                         <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne comment.userIdx and not isAdminMode}">
                           <span class="comment-author-link rpt-user-link" data-user-idx="${comment.userIdx}" data-source-type="comment" data-source-id="${comment.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
-                          <button class="report-btn" data-comment-id="${comment.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">&#9888; 신고</button>
+                          <button class="report-btn" data-comment-id="${comment.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))"><spring:message code="community.detail.report"/></button>
                         </c:if>
                         <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq comment.userIdx or isAdminMode)}">
-                          <button class="comment-delete-btn" onclick="deleteComment(${comment.commentId})">삭제</button>
+                          <button class="comment-delete-btn" onclick="deleteComment(${comment.commentId})"><spring:message code="community.detail.comment.delete"/></button>
                         </c:if>
                       </div>
                       <div class="comment-text">${comment.content}</div>
@@ -80,13 +80,13 @@
                             <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
                           </c:when>
                           <c:when test="${comment.commentStatus eq 'ACTIVE' and comment.reportCount >= 3}">
-                            <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
+                            <span class="blocked-badge"><spring:message code="community.badge.report"/></span>
                           </c:when>
                           <c:when test="${comment.commentStatus eq 'BLOCKED'}">
-                            <span class="blocked-badge">🚫 차단된 댓글</span>
+                            <span class="blocked-badge"><spring:message code="community.detail.badge.comment.blocked"/></span>
                           </c:when>
                           <c:when test="${comment.accountStatus eq 'BLOCKED'}">
-                            <span class="blocked-badge">🚫 차단된 유저</span>
+                            <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
                           </c:when>
                         </c:choose>
                       </c:if>
@@ -97,7 +97,7 @@
                                     onclick="toggleCommentLike(${comment.commentId}, this)">
                               &#10084; <span id="commentLikeCount_${comment.commentId}">${comment.likeCount}</span>
                             </button>
-                            <button class="reply-btn" onclick="toggleReplyInput(${comment.commentId})">&#8618; 답글</button>
+                            <button class="reply-btn" onclick="toggleReplyInput(${comment.commentId})"><spring:message code="community.detail.reply"/></button>
                           </c:when>
                           <c:otherwise>
                             <button class="comment-like-btn"
@@ -113,8 +113,8 @@
                                     placeholder="<spring:message code='community.detail.reply.placeholder'/>" rows="2"
                                     onkeydown="if(event.key==='Enter' && !event.shiftKey)\u007Bevent.preventDefault(); submitReply(${post.postId}, ${comment.commentId});\u007D"></textarea>
                           <div class="reply-input-actions">
-                            <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.commentId})">취소</button>
-                            <button class="reply-submit-btn" onclick="submitReply(${post.postId}, ${comment.commentId})">등록</button>
+                            <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.commentId})"><spring:message code="community.detail.cancel"/></button>
+                            <button class="reply-submit-btn" onclick="submitReply(${post.postId}, ${comment.commentId})"><spring:message code="community.detail.submit"/></button>
                           </div>
                         </div>
                       </c:if>
@@ -165,10 +165,10 @@
                                   <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
                                     <c:choose>
                                       <c:when test="${reply.accountStatus eq 'BLOCKED'}">
-                                        <button class="block-btn unblock" onclick="unblockUser(${reply.userIdx})">👤 유저차단해제</button>
+                                        <button class="block-btn unblock" onclick="unblockUser(${reply.userIdx})"><spring:message code="community.detail.user.unblock"/></button>
                                       </c:when>
                                       <c:otherwise>
-                                        <button class="block-btn" onclick="blockUser(${reply.userIdx})">👤 유저차단</button>
+                                        <button class="block-btn" onclick="blockUser(${reply.userIdx})"><spring:message code="community.detail.user.block"/></button>
                                       </c:otherwise>
                                     </c:choose>
                                     <c:choose>
@@ -185,10 +185,10 @@
                                   </span>
                                   <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne reply.userIdx and not isAdminMode}">
                                     <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
-                                    <button class="report-btn" data-comment-id="${reply.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">&#9888; 신고</button>
+                                    <button class="report-btn" data-comment-id="${reply.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))"><spring:message code="community.detail.report"/></button>
                                   </c:if>
                                   <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq reply.userIdx or isAdminMode)}">
-                                    <button class="comment-delete-btn" onclick="deleteComment(${reply.commentId})">삭제</button>
+                                    <button class="comment-delete-btn" onclick="deleteComment(${reply.commentId})"><spring:message code="community.detail.comment.delete"/></button>
                                   </c:if>
                                 </div>
                                 <div class="comment-text">${reply.content}</div>
@@ -198,13 +198,13 @@
                                       <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
                                     </c:when>
                                     <c:when test="${reply.commentStatus eq 'ACTIVE' and reply.reportCount >= 3}">
-                                      <span class="blocked-badge">🚨 신고에 의해 차단됨</span>
+                                      <span class="blocked-badge"><spring:message code="community.badge.report"/></span>
                                     </c:when>
                                     <c:when test="${reply.commentStatus eq 'BLOCKED'}">
-                                      <span class="blocked-badge">🚫 차단된 댓글</span>
+                                      <span class="blocked-badge"><spring:message code="community.detail.badge.comment.blocked"/></span>
                                     </c:when>
                                     <c:when test="${reply.accountStatus eq 'BLOCKED'}">
-                                      <span class="blocked-badge">🚫 차단된 유저</span>
+                                      <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
                                     </c:when>
                                   </c:choose>
                                 </c:if>

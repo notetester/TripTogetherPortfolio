@@ -29,6 +29,10 @@ public class WalletPaymentDto {
     private long earnedMileage;
 
     private String paymentStatus;
+    private String tossOrderId;
+    private String tossPaymentKey;
+    private String tossStatus;
+    private LocalDateTime tossApprovedAt;
     private LocalDateTime paidAt;
     private LocalDateTime cancelledAt;
     private LocalDateTime createdAt;

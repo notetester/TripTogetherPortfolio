@@ -774,7 +774,7 @@ body.modal-open {
 }
 
 /* ── 반응형 ── */
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .exp-header { padding: 28px 16px 0; }
   .exp-header h1 { font-size: 1.6rem; }
   .exp-body { padding: 24px 16px 48px; }
@@ -791,7 +791,7 @@ body.modal-open {
   .exp-primary-btn, .exp-secondary-btn { width: 100%; }
 }
 
-@media (min-width: 641px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 1023px) {
   .spot-grid { grid-template-columns: repeat(2, 1fr); }
   .spot-write-grid { grid-template-columns: 1fr; }
 }

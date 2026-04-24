@@ -10,6 +10,7 @@ import org.triptogether.travelPackage.vo.TravelPackageRevisionVO;
 import org.triptogether.travelPackage.vo.TravelPackageVO;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface TravelPackageMapper {
@@ -41,6 +42,8 @@ public interface TravelPackageMapper {
     void insertPackageReviewHistory(PackageReviewHistoryCreateVO history);
 
     List<TravelPackageVO> selectApprovedPackages();
+
+    List<TravelPackageVO> selectHomeRecommendedPackages();
 
     List<TravelPackageVO> selectApprovedPackagesBySpot(@Param("spotIdx") Long spotIdx);
 
@@ -75,4 +78,12 @@ public interface TravelPackageMapper {
     int rejectPackageRevision(@Param("packageRevisionIdx") Long packageRevisionIdx,
                               @Param("rejectReason") String rejectReason,
                               @Param("reviewedByUserIdx") Long reviewedByUserIdx);
+
+    /**
+     * 챗봇 컨텍스트용 승인 패키지 다중 키워드 검색.
+     * package_title/package_summary/연결 SPOT_TRAVEL.name/region 에 OR LIKE.
+     * 인기순(예약 수 DESC, 조회 수 DESC).
+     */
+    List<Map<String, Object>> searchPackagesByKeywords(@Param("keywords") List<String> keywords,
+                                                         @Param("limit") int limit);
 }

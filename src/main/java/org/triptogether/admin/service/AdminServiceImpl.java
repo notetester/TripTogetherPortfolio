@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.admin.mapper.AdminMapper;
+import org.triptogether.common.mapper.ChatbotLinkClickMapper;
 import org.triptogether.config.IpBlockMapper;
 import org.triptogether.admin.vo.*;
 import org.triptogether.auth.vo.UserRole;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * 관리자 서비스 구현체.
@@ -34,9 +36,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
 
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+
     private final AdminMapper adminMapper;
     private final IpBlockMapper ipBlockMapper;
     private final MyPageService myPageService;
+    private final ChatbotLinkClickMapper chatbotLinkClickMapper;
 
     // ===== 대시보드 통계 =====
 
@@ -93,6 +98,41 @@ public class AdminServiceImpl implements AdminService {
                 .build();
     }
 
+    @Override
+    public List<AdminSalesDailyStatVO> getSalesDailyStats(int days) {
+        int safeDays = normalizeSalesDays(days);
+        int spanParam = safeDays - 1;
+
+        List<AdminSalesDailyStatVO> rows = adminMapper.findDailySalesStats(spanParam);
+        Map<LocalDate, AdminSalesDailyStatVO> rowMap = new HashMap<>();
+        for (AdminSalesDailyStatVO row : rows) {
+            if (row != null && row.getSalesDate() != null) {
+                rowMap.put(row.getSalesDate(), row);
+            }
+        }
+
+        LocalDate startDate = LocalDate.now().minusDays(spanParam);
+        List<AdminSalesDailyStatVO> result = new ArrayList<>(safeDays);
+        for (int i = 0; i < safeDays; i++) {
+            LocalDate date = startDate.plusDays(i);
+            result.add(rowMap.getOrDefault(date, emptySalesStat(date)));
+        }
+        return result;
+    }
+
+    private int normalizeSalesDays(int days) {
+        if (days < 1) {
+            return 30;
+        }
+        return Math.min(days, 365);
+    }
+
+    private AdminSalesDailyStatVO emptySalesStat(LocalDate salesDate) {
+        AdminSalesDailyStatVO stat = new AdminSalesDailyStatVO();
+        stat.setSalesDate(salesDate);
+        return stat;
+    }
+
     private static long toLong(Object v) {
         if (v == null) return 0L;
         if (v instanceof Number n) return n.longValue();
@@ -141,6 +181,7 @@ public class AdminServiceImpl implements AdminService {
         result.put("emailTokens", adminMapper.findEmailVerificationsByUser(userIdx, 30));
         result.put("activityLogs", adminMapper.findActivityLogsByUser(userIdx, 40));
         result.put("recentBlocks", adminMapper.findRecentUserBlocksByUser(userIdx, 20));
+        result.put("chatbotLinkClicks", chatbotLinkClickMapper.selectClicksByUser(userIdx, 20));
         return result;
     }
 
@@ -175,6 +216,30 @@ public class AdminServiceImpl implements AdminService {
         String normalizedPreferredLang = normalizeOptionalText(preferredLang, 10);
 
         adminMapper.updateMemberProfile(userIdx, normalizedNickname, normalizedNationality, normalizedPreferredLang);
+    }
+
+    @Override
+    @Transactional
+    public void updateMemberEmail(Long userIdx, String email) {
+        AdminMemberVO member = adminMapper.findMemberDetail(userIdx);
+        if (member == null) {
+            throw new IllegalArgumentException("admin.members.memberNotFound");
+        }
+
+        String currentEmail = normalizeOptionalEmail(member.getUserEmail());
+        String normalizedEmail = normalizeOptionalEmail(email);
+
+        if (currentEmail != null && normalizedEmail != null && currentEmail.equalsIgnoreCase(normalizedEmail)) {
+            return;
+        }
+        if (currentEmail == null && normalizedEmail == null) {
+            return;
+        }
+        if (normalizedEmail != null && adminMapper.countOtherMembersByEmail(userIdx, normalizedEmail) > 0) {
+            throw new IllegalArgumentException("admin.members.emailDuplicate");
+        }
+
+        adminMapper.updateMemberEmail(userIdx, normalizedEmail);
     }
 
     @Override
@@ -364,6 +429,23 @@ public class AdminServiceImpl implements AdminService {
             return null;
         }
         return trimmed.length() > maxLength ? trimmed.substring(0, maxLength) : trimmed;
+    }
+
+    private String normalizeOptionalEmail(String email) {
+        if (email == null) {
+            return null;
+        }
+        String trimmed = email.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        if (trimmed.length() > 120) {
+            throw new IllegalArgumentException("admin.members.emailTooLong");
+        }
+        if (!EMAIL_PATTERN.matcher(trimmed).matches()) {
+            throw new IllegalArgumentException("admin.members.emailInvalid");
+        }
+        return trimmed;
     }
 
     @Override
