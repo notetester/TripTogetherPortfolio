@@ -1,5 +1,8 @@
 package org.triptogether.assistant.service;
 
+import org.triptogether.assistant.vo.ChatCommentVO;
+import org.triptogether.assistant.vo.ChatPostVO;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,4 +26,12 @@ public interface AssistantService {
             Long chatPostIdx,
             String lang       // ← 다국어 응답을 위해 추가된 파라미터
     );
+
+    List<ChatPostVO> getRecentChatPosts(Long userIdx);
+
+    List<ChatCommentVO> getChatComments(Long chatPostIdx, Long userIdx);
+
+    boolean updateChatPostTitle(Long chatPostIdx, Long userIdx, String title);
+
+    boolean deleteChatPost(Long chatPostIdx, Long userIdx);
 }

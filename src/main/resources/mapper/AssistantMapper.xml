@@ -41,4 +41,64 @@
         )
     </insert>
 
+    <select id="selectRecentChatPosts"
+            parameterType="long"
+            resultType="org.triptogether.assistant.vo.ChatPostVO">
+        SELECT
+        chat_post_idx,
+        user_idx,
+        title,
+        created_at
+        FROM CHAT_POST
+        WHERE user_idx = #{userIdx}
+        ORDER BY created_at DESC
+        LIMIT 10
+    </select>
+
+    <select id="selectChatComments"
+            resultType="org.triptogether.assistant.vo.ChatCommentVO">
+        SELECT
+        c.chat_comment_idx,
+        c.chat_post_idx,
+        c.user_idx,
+        c.comment_role,
+        c.content,
+        c.comment_order,
+        c.created_at
+        FROM CHAT_COMMENT c
+        INNER JOIN CHAT_POST p
+        ON c.chat_post_idx = p.chat_post_idx
+        WHERE c.chat_post_idx = #{chatPostIdx}
+        AND p.user_idx = #{userIdx}
+        ORDER BY c.comment_order ASC
+    </select>
+
+    <update id="updateChatPostTitle">
+        UPDATE CHAT_POST
+        SET title = #{title}
+        WHERE chat_post_idx = #{chatPostIdx}
+        AND user_idx = #{userIdx}
+    </update>
+
+    <delete id="deleteChatComments">
+        DELETE c
+        FROM CHAT_COMMENT c
+        INNER JOIN CHAT_POST p
+        ON c.chat_post_idx = p.chat_post_idx
+        WHERE c.chat_post_idx = #{chatPostIdx}
+        AND p.user_idx = #{userIdx}
+    </delete>
+
+    <delete id="deleteChatPost">
+        DELETE FROM CHAT_POST
+        WHERE chat_post_idx = #{chatPostIdx}
+        AND user_idx = #{userIdx}
+    </delete>
+
+    <select id="selectMaxCommentOrder" resultType="int">
+        SELECT COALESCE(MAX(comment_order), 0)
+        FROM CHAT_COMMENT
+        WHERE chat_post_idx = #{chatPostIdx}
+    </select>
+
 </mapper>

@@ -202,43 +202,53 @@ public class AssistantServiceImpl implements AssistantService {
             }
 
             Long currentChatPostIdx = chatPostIdx;
-            if (currentChatPostIdx == null) {
-                ChatPostVO chatPost = ChatPostVO.builder()
+
+            if (userIdx != null) {
+
+                if (currentChatPostIdx == null) {
+                    ChatPostVO chatPostVO = ChatPostVO.builder()
+                            .user_idx(userIdx)
+                            .title(makeTitle(userMessage))
+                            .build();
+
+                    assistantMapper.insertChatPost(chatPostVO);
+                    currentChatPostIdx = chatPostVO.getChat_post_idx();
+                }
+
+                Integer maxOrder = assistantMapper.selectMaxCommentOrder(currentChatPostIdx);
+                int lastOrder = (maxOrder == null) ? 0 : maxOrder;
+
+                int userOrder = lastOrder + 1;
+                int assistantOrder = lastOrder + 2;
+
+                ChatCommentVO userComment = ChatCommentVO.builder()
+                        .chat_post_idx(currentChatPostIdx)
                         .user_idx(userIdx)
-                        .title(makeTitle(userMessage))
+                        .comment_role("USER")
+                        .content(userMessage.trim())
+                        .comment_order(userOrder)
                         .build();
 
-                assistantMapper.insertChatPost(chatPost);
-                currentChatPostIdx = chatPost.getChat_post_idx();
+                ChatCommentVO assistantComment = ChatCommentVO.builder()
+                        .chat_post_idx(currentChatPostIdx)
+                        .user_idx(userIdx)
+                        .comment_role("ASSISTANT")
+                        .content(assistantAnswer)
+                        .comment_order(assistantOrder)
+                        .build();
+
+                assistantMapper.insertChatComment(userComment);
+                assistantMapper.insertChatComment(assistantComment);
+
+                result.put("chatPostIdx", currentChatPostIdx);
+            } else {
+                // 비로그인 -> 저장 안함
+                result.put("chatPostIdx", null);
             }
-
-            int historySizeBeforeThisTurn = (history == null) ? 0 : history.size();
-            int userOrder = historySizeBeforeThisTurn + 1;
-            int assistantOrder = historySizeBeforeThisTurn + 2;
-
-            ChatCommentVO userComment = ChatCommentVO.builder()
-                    .chat_post_idx(currentChatPostIdx)
-                    .user_idx(userIdx)
-                    .comment_role("USER")
-                    .content(userMessage.trim())
-                    .comment_order(userOrder)
-                    .build();
-
-            ChatCommentVO assistantComment = ChatCommentVO.builder()
-                    .chat_post_idx(currentChatPostIdx)
-                    .user_idx(userIdx)
-                    .comment_role("ASSISTANT")
-                    .content(assistantAnswer)
-                    .comment_order(assistantOrder)
-                    .build();
-
-            assistantMapper.insertChatComment(userComment);
-            assistantMapper.insertChatComment(assistantComment);
 
             result.put("success", true);
             result.put("answer", assistantAnswer);
             result.put("history", messages);
-            result.put("chatPostIdx", currentChatPostIdx);
 
         } catch (HttpStatusCodeException e) {
             String responseBody = e.getResponseBodyAsString();
@@ -255,6 +265,53 @@ public class AssistantServiceImpl implements AssistantService {
         }
 
         return result;
+    }
+
+    @Override
+    public List<ChatPostVO> getRecentChatPosts(Long userIdx) {
+        if (userIdx == null) {
+            return new ArrayList<>();
+        }
+
+        return assistantMapper.selectRecentChatPosts(userIdx);
+    }
+
+    @Override
+    public List<ChatCommentVO> getChatComments(Long chatPostIdx, Long userIdx) {
+        if (userIdx == null || chatPostIdx == null) {
+            return new ArrayList<>();
+        }
+
+        return assistantMapper.selectChatComments(chatPostIdx, userIdx);
+    }
+
+    @Override
+    @Transactional
+    public boolean updateChatPostTitle(Long chatPostIdx, Long userIdx, String title) {
+        if (userIdx == null || chatPostIdx == null || title == null || title.trim().isEmpty()) {
+            return false;
+        }
+
+        int result = assistantMapper.updateChatPostTitle(
+                chatPostIdx,
+                userIdx,
+                title.trim()
+        );
+
+        return result > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteChatPost(Long chatPostIdx, Long userIdx) {
+        if (userIdx == null || chatPostIdx == null) {
+            return false;
+        }
+
+        assistantMapper.deleteChatComments(chatPostIdx, userIdx);
+        int result = assistantMapper.deleteChatPost(chatPostIdx, userIdx);
+
+        return result > 0;
     }
 
     private String makeTitle(String userMessage) {
