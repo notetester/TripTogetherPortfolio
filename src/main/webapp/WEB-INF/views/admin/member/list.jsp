@@ -621,8 +621,19 @@ const ADMIN_MEMBER_MSG = {
     emailHistoryTab: '<spring:message code="admin.members.emailHistoryTab" javaScriptEscape="true"/>',
     activityTab: '<spring:message code="admin.context.tab.activity" javaScriptEscape="true"/>',
     blockTab: '<spring:message code="admin.context.tab.blocks" javaScriptEscape="true"/>',
-    actionsTab: '<spring:message code="admin.context.tab.actions" javaScriptEscape="true"/>'
+    actionsTab: '<spring:message code="admin.context.tab.actions" javaScriptEscape="true"/>',
+    chatbotTab: '<spring:message code="admin.context.tab.chatbot" javaScriptEscape="true"/>',
+    chatbotFilterSelectIp: '<spring:message code="admin.context.chatbotFilter.selectIp" javaScriptEscape="true"/>',
+    chatbotFilterF1: '<spring:message code="admin.context.chatbotFilter.f1" javaScriptEscape="true"/>',
+    chatbotFilterF3: '<spring:message code="admin.context.chatbotFilter.f3" javaScriptEscape="true"/>',
+    chatbotFilterF4: '<spring:message code="admin.context.chatbotFilter.f4" javaScriptEscape="true"/>',
+    chatbotFilterF5: '<spring:message code="admin.context.chatbotFilter.f5" javaScriptEscape="true"/>',
+    chatbotFilterLoadFailed: '<spring:message code="admin.context.chatbotFilter.loadFailed" javaScriptEscape="true"/>',
+    chatbotEmptyClicks: '<spring:message code="admin.context.empty.chatbotClicks" javaScriptEscape="true"/>',
+    anonymous: '<spring:message code="admin.common.anonymous" javaScriptEscape="true"/>'
 };
+
+let _chatbotDetailUserIdx = null;
 
 function escapeHtml(value) {
     if (value == null) return '';
@@ -1022,9 +1033,86 @@ function buildChatbotLinkClickRows(items) {
             + 'conv #' + escapeHtml(item.conversationId || '-')
             + ' · msg #' + escapeHtml(item.messageId || '-')
             + ' · IP: ' + escapeHtml(item.ipAddress || '-')
+            + (item.userIdx ? '' : ' · <span style="color:#fbbf24;">' + escapeHtml(ADMIN_MEMBER_MSG.anonymous) + '</span>')
             + '</div>'
             + '</div>';
-    }, '기록된 챗봇 링크 클릭이 없습니다.');
+    }, ADMIN_MEMBER_MSG.chatbotEmptyClicks);
+}
+
+function buildChatbotTab(initialClicks, loginAudits, userIdx) {
+    _chatbotDetailUserIdx = userIdx;
+    const ips = [];
+    const seen = {};
+    (loginAudits || []).forEach(function(a) {
+        if (a.ipAddress && !seen[a.ipAddress]) {
+            seen[a.ipAddress] = true;
+            ips.push(a.ipAddress);
+        }
+    });
+
+    let ipOptions = '<option value="">' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterSelectIp) + '</option>';
+    ips.forEach(function(ip) {
+        ipOptions += '<option value="' + escapeHtml(ip) + '">' + escapeHtml(ip) + '</option>';
+    });
+
+    return ''
+        + '<div class="adm-chatbot-filter">'
+        + '<span class="adm-chatbot-filter-label">IP</span>'
+        + '<select id="chatbotIpSelect" class="adm-select" style="min-width:140px;font-size:11px;" onchange="chatbotOnIpChange()">'
+        + ipOptions
+        + '</select>'
+        + '<div class="adm-chatbot-mode-group" id="chatbotModeGroup">'
+        + '<button type="button" class="adm-chatbot-mode-btn active" data-mode="1" onclick="chatbotOnModeClick(this)">' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF1) + '</button>'
+        + '<button type="button" class="adm-chatbot-mode-btn" data-mode="3" onclick="chatbotOnModeClick(this)" disabled>' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF3) + '</button>'
+        + '<button type="button" class="adm-chatbot-mode-btn" data-mode="4" onclick="chatbotOnModeClick(this)" disabled>' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF4) + '</button>'
+        + '<button type="button" class="adm-chatbot-mode-btn" data-mode="5" onclick="chatbotOnModeClick(this)" disabled>' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF5) + '</button>'
+        + '</div>'
+        + '</div>'
+        + '<div id="chatbotClickRows">' + buildChatbotLinkClickRows(initialClicks) + '</div>';
+}
+
+function chatbotOnIpChange() {
+    const ip = document.getElementById('chatbotIpSelect').value;
+    document.querySelectorAll('#chatbotModeGroup .adm-chatbot-mode-btn').forEach(function(btn) {
+        const mode = parseInt(btn.dataset.mode);
+        if (mode === 1) return;
+        if (ip) {
+            btn.disabled = false;
+        } else {
+            btn.disabled = true;
+            btn.classList.remove('active');
+        }
+    });
+    if (!ip) {
+        const f1 = document.querySelector('#chatbotModeGroup .adm-chatbot-mode-btn[data-mode="1"]');
+        if (f1) f1.classList.add('active');
+    }
+    const activeBtn = document.querySelector('#chatbotModeGroup .adm-chatbot-mode-btn.active');
+    const mode = activeBtn ? parseInt(activeBtn.dataset.mode) : 1;
+    chatbotLoadFilter(_chatbotDetailUserIdx, ip || null, !ip ? 1 : mode);
+}
+
+function chatbotOnModeClick(btn) {
+    if (btn.disabled) return;
+    document.querySelectorAll('#chatbotModeGroup .adm-chatbot-mode-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    const ip = document.getElementById('chatbotIpSelect').value || null;
+    chatbotLoadFilter(_chatbotDetailUserIdx, ip, parseInt(btn.dataset.mode));
+}
+
+async function chatbotLoadFilter(userIdx, ip, mode) {
+    const rows = document.getElementById('chatbotClickRows');
+    if (!rows) return;
+    rows.innerHTML = '<div style="text-align:center;padding:20px;color:#475569;">' + escapeHtml(ADMIN_MEMBER_MSG.loading) + '</div>';
+    let url = ctx + '/admin/members/' + userIdx + '/chatbot-clicks?mode=' + (mode || 1);
+    if (ip) url += '&ip=' + encodeURIComponent(ip);
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        rows.innerHTML = buildChatbotLinkClickRows(Array.isArray(data.clicks) ? data.clicks : []);
+    } catch (e) {
+        rows.innerHTML = '<div style="text-align:center;padding:20px;color:#f87171;">' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterLoadFailed) + '</div>';
+    }
 }
 
 function buildActionTab(m) {
@@ -1098,19 +1186,20 @@ async function openDetail(userIdx, defaultTab, focusSection) {
     const activityLogs = Array.isArray(data.activityLogs) ? data.activityLogs : [];
     const recentBlocks = Array.isArray(data.recentBlocks) ? data.recentBlocks : [];
     const chatbotLinkClicks = Array.isArray(data.chatbotLinkClicks) ? data.chatbotLinkClicks : [];
+    const loginAudits = Array.isArray(data.loginAudits) ? data.loginAudits : [];
     const activeTab = ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'chatbot', 'actions'].includes(defaultTab) ? defaultTab : 'info';
 
     document.getElementById('modalTitle').textContent = (m.nickname || ADMIN_MEMBER_MSG.memberDetailsTitle) + ' ' + ADMIN_MEMBER_MSG.memberDetailsSuffix;
 
     document.getElementById('modalBody').innerHTML = ''
-        + '<div class="adm-tabs">'
+        + '<div class="adm-tabs adm-tabs-scroll">'
         + '<button class="adm-tab ' + (activeTab === 'info' ? 'active' : '') + '" onclick="switchTab(\'info\', this)">' + ADMIN_MEMBER_MSG.infoTab + '</button>'
         + '<button class="adm-tab ' + (activeTab === 'hist' ? 'active' : '') + '" onclick="switchTab(\'hist\', this)">' + ADMIN_MEMBER_MSG.loginTab + ' (' + h.length + ')</button>'
         + '<button class="adm-tab ' + (activeTab === 'security' ? 'active' : '') + '" onclick="switchTab(\'security\', this)">' + ADMIN_MEMBER_MSG.securityTab + ' (' + securityAudits.length + ')</button>'
         + '<button class="adm-tab ' + (activeTab === 'emails' ? 'active' : '') + '" onclick="switchTab(\'emails\', this)">' + ADMIN_MEMBER_MSG.emailHistoryTab + '</button>'
         + '<button class="adm-tab ' + (activeTab === 'activity' ? 'active' : '') + '" onclick="switchTab(\'activity\', this)">' + ADMIN_MEMBER_MSG.activityTab + ' (' + activityLogs.length + ')</button>'
         + '<button class="adm-tab ' + (activeTab === 'blocks' ? 'active' : '') + '" onclick="switchTab(\'blocks\', this)">' + ADMIN_MEMBER_MSG.blockTab + ' (' + recentBlocks.length + ')</button>'
-        + '<button class="adm-tab ' + (activeTab === 'chatbot' ? 'active' : '') + '" onclick="switchTab(\'chatbot\', this)">챗봇 링크 (' + chatbotLinkClicks.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'chatbot' ? 'active' : '') + '" onclick="switchTab(\'chatbot\', this)">' + ADMIN_MEMBER_MSG.chatbotTab + ' (' + chatbotLinkClicks.length + ')</button>'
         + '<button class="adm-tab ' + (activeTab === 'actions' ? 'active' : '') + '" onclick="switchTab(\'actions\', this)">' + ADMIN_MEMBER_MSG.actionsTab + '</button>'
         + '</div>'
         + '<div id="tab-info" style="display:' + (activeTab === 'info' ? '' : 'none') + ';"></div>'
@@ -1132,7 +1221,7 @@ async function openDetail(userIdx, defaultTab, focusSection) {
         + '</div>';
     document.getElementById('tab-activity').innerHTML = buildActivityRows(activityLogs);
     document.getElementById('tab-blocks').innerHTML = buildBlockRows(recentBlocks);
-    document.getElementById('tab-chatbot').innerHTML = buildChatbotLinkClickRows(chatbotLinkClicks);
+    document.getElementById('tab-chatbot').innerHTML = buildChatbotTab(chatbotLinkClicks, loginAudits, userIdx);
     document.getElementById('tab-actions').innerHTML = buildActionTab(m);
     const statusSelect = document.getElementById('memberStatusSelect');
     const roleSelect = document.getElementById('memberRoleSelect');

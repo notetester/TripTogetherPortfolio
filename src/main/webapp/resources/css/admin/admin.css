@@ -945,28 +945,57 @@ button.adm-inline-chip {
 .h-fail    { color: #f87171; font-weight: 600; }
 
 /* ── 탭 ── */
-.adm-tabs { display: flex; gap: 2px; margin-bottom: 16px; }
-.adm-tab {
-    padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 600;
-    color: #64748b; cursor: pointer; border: none; background: none;
-    font-family: inherit; transition: all .15s;
-}
-.adm-tab.active { background: #1e2330; color: #93c5fd; }
-.adm-tab:hover:not(.active) { color: #94a3b8; background: #1e2330; }
 .adm-tabs-scroll {
     overflow-x: auto;
     padding-bottom: 2px;
+    /* 스크롤바가 없어도 터치 스크롤 허용 */
+    -webkit-overflow-scrolling: touch;
 }
-.adm-tabs-scroll::-webkit-scrollbar {
-    height: 4px;
-}
+.adm-tabs-scroll::-webkit-scrollbar { height: 4px; }
+.adm-tabs-scroll::-webkit-scrollbar-track { background: transparent; }
 .adm-tabs-scroll::-webkit-scrollbar-thumb {
     background: rgba(100,116,139,.45);
     border-radius: 999px;
 }
+.adm-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 2px;
+    margin-bottom: 16px;
+    min-width: max-content;   /* 탭이 부모보다 넓어질 수 있도록 허용 */
+}
 .adm-tab {
     flex-shrink: 0;
+    padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 600;
+    color: #64748b; cursor: pointer; border: none; background: none;
+    font-family: inherit; transition: all .15s;
+    white-space: nowrap;
 }
+.adm-tab.active { background: #1e2330; color: #93c5fd; }
+.adm-tab:hover:not(.active) { color: #94a3b8; background: #1e2330; }
+
+/* 챗봇 링크 필터 UI */
+.adm-chatbot-filter {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 8px; margin-bottom: 14px;
+    padding: 10px 12px;
+    background: #1a2030; border-radius: 8px;
+    font-size: 12px;
+}
+.adm-chatbot-filter-label { color: #64748b; font-weight: 600; white-space: nowrap; }
+.adm-chatbot-mode-group {
+    display: flex; gap: 4px; flex-wrap: wrap;
+}
+.adm-chatbot-mode-btn {
+    padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600;
+    color: #64748b; cursor: pointer; border: 1px solid #2d3748; background: none;
+    font-family: inherit; transition: all .15s; white-space: nowrap;
+}
+.adm-chatbot-mode-btn.active { background: #1e3a5f; color: #93c5fd; border-color: #3b82f6; }
+.adm-chatbot-mode-btn:hover:not(.active) { color: #94a3b8; border-color: #475569; }
+body.sa-light .adm-chatbot-filter { background: #f1f5f9; }
+body.sa-light .adm-chatbot-mode-btn { color: #64748b; border-color: #cbd5e1; }
+body.sa-light .adm-chatbot-mode-btn.active { background: #dbeafe; color: #1d4ed8; border-color: #3b82f6; }
 
 /* ── 공통 컨텍스트 모달 ── */
 .adm-context-modal {

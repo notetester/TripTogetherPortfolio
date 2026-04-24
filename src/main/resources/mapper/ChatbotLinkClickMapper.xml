@@ -78,6 +78,57 @@
     </select>
 
     <!-- =============================================
+         5-2. Filter 2: 특정 IP 전체 (모든 유저 + 익명)
+         ============================================= -->
+    <select id="selectClicksByIp" resultMap="ClickResultMap">
+        SELECT click_id, message_id, conversation_id, user_idx, anon_session_id,
+               url, label, ip_address, clicked_at
+          FROM CHATBOT_LINK_CLICK
+         WHERE ip_address = #{ip}
+         ORDER BY clicked_at DESC
+         LIMIT #{limit}
+    </select>
+
+    <!-- =============================================
+         5-3. Filter 3: 특정 유저 AND 특정 IP (교집합)
+         ============================================= -->
+    <select id="selectClicksByUserAndIp" resultMap="ClickResultMap">
+        SELECT click_id, message_id, conversation_id, user_idx, anon_session_id,
+               url, label, ip_address, clicked_at
+          FROM CHATBOT_LINK_CLICK
+         WHERE user_idx = #{userIdx}
+           AND ip_address = #{ip}
+         ORDER BY clicked_at DESC
+         LIMIT #{limit}
+    </select>
+
+    <!-- =============================================
+         5-4. Filter 4: 특정 유저 OR 특정 IP (합집합)
+         ============================================= -->
+    <select id="selectClicksByUserOrIp" resultMap="ClickResultMap">
+        SELECT click_id, message_id, conversation_id, user_idx, anon_session_id,
+               url, label, ip_address, clicked_at
+          FROM CHATBOT_LINK_CLICK
+         WHERE user_idx = #{userIdx}
+            OR ip_address = #{ip}
+         ORDER BY clicked_at DESC
+         LIMIT #{limit}
+    </select>
+
+    <!-- =============================================
+         5-5. Filter 5: 특정 IP, 특정 유저 로그인 + 익명 (다른 로그인 유저 제외)
+         ============================================= -->
+    <select id="selectClicksByIpExcludeOtherUsers" resultMap="ClickResultMap">
+        SELECT click_id, message_id, conversation_id, user_idx, anon_session_id,
+               url, label, ip_address, clicked_at
+          FROM CHATBOT_LINK_CLICK
+         WHERE ip_address = #{ip}
+           AND (user_idx = #{userIdx} OR user_idx IS NULL)
+         ORDER BY clicked_at DESC
+         LIMIT #{limit}
+    </select>
+
+    <!-- =============================================
          6. 대화별 클릭 이력 (오름차순)
          ============================================= -->
     <select id="selectClicksByConversation" resultMap="ClickResultMap">

@@ -23,6 +23,7 @@ public interface AdminService {
     List<UserLoginHistoryVO> getLoginHistory(Long userIdx);
     Map<String, Object> getMemberContext(Long userIdx);
     Map<String, Object> getIpContext(String ipAddress);
+    List<org.triptogether.common.vo.ChatbotLinkClickVO> getChatbotLinkClicks(Long userIdx, String ip, int mode);
     void updateMemberProfile(Long userIdx, String nickname, String nationality, String preferredLang);
     void updateMemberEmail(Long userIdx, String email);
     void changeMemberStatus(Long userIdx, String status);

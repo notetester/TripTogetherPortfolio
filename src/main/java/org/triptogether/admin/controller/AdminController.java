@@ -261,6 +261,17 @@ public class AdminController {
         return result;
     }
 
+    @GetMapping("/members/{userIdx}/chatbot-clicks")
+    @ResponseBody
+    public Map<String, Object> memberChatbotClicks(@PathVariable Long userIdx,
+                                                    @RequestParam(required = false) String ip,
+                                                    @RequestParam(defaultValue = "1") int mode) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("clicks", adminService.getChatbotLinkClicks(userIdx, ip, mode));
+        return result;
+    }
+
     @GetMapping("/ips/context")
     @ResponseBody
     public Map<String, Object> ipContext(@RequestParam String ipAddress) {

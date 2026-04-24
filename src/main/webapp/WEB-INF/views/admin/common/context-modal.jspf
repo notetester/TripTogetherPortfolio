@@ -137,7 +137,9 @@ const ADMIN_CONTEXT_MSG = {
     ipOnly: '<spring:message code="admin.context.blockType.ipOnly" javaScriptEscape="true"/>',
     userIp: '<spring:message code="admin.context.blockType.userIp" javaScriptEscape="true"/>',
     block: '<spring:message code="admin.context.ruleAction.block" javaScriptEscape="true"/>',
-    allow: '<spring:message code="admin.context.ruleAction.allow" javaScriptEscape="true"/>'
+    allow: '<spring:message code="admin.context.ruleAction.allow" javaScriptEscape="true"/>',
+    chatbotTab: '<spring:message code="admin.context.tab.chatbot" javaScriptEscape="true"/>',
+    emptyChatbotClicks: '<spring:message code="admin.context.empty.chatbotClicks" javaScriptEscape="true"/>'
 };
 const ADMIN_CONTEXT_STATUS_LABELS = {
     ACTIVE: '<spring:message code="admin.status.ACTIVE" javaScriptEscape="true"/>',
@@ -422,6 +424,25 @@ function renderIpRuleItem(item) {
     );
 }
 
+function renderChatbotLinkItem(item) {
+    const url = item.url || adminContextMessage('dash');
+    const userLabel = item.userIdx
+        ? ('#' + escapeAdminContextHtml(item.userIdx))
+        : '<span style="color:#fbbf24;">익명</span>';
+    return renderContextRecord(
+        '<strong>' + escapeAdminContextHtml(item.label || adminContextMessage('dash')) + '</strong>',
+        formatAdminContextShortDate(item.clickedAt),
+        [
+            'URL: <a href="' + escapeAdminContextHtml(url) + '" target="_blank" style="color:#60a5fa;font-family:monospace;text-decoration:none;">' + escapeAdminContextHtml(url) + '</a>',
+            'conv #' + escapeAdminContextHtml(item.conversationId || adminContextMessage('dash'))
+            + ' <span class="adm-context-slash">/</span> '
+            + 'msg #' + escapeAdminContextHtml(item.messageId || adminContextMessage('dash'))
+            + ' <span class="adm-context-slash">/</span> '
+            + 'user ' + userLabel
+        ]
+    );
+}
+
 function switchAdminContextTab(modalId, tabId, button) {
     const modal = document.getElementById(modalId);
     modal.querySelectorAll('.adm-tab').forEach(function(tab) { tab.classList.remove('active'); });
@@ -521,6 +542,7 @@ function renderIpContext(context, defaultTab) {
         { key: 'emailTokens', label: adminContextMessage('emailTokenTab'), content: renderContextTimeline(context.emailTokens || [], renderEmailTokenItem, adminContextMessage('emptyEmailTokens')) },
         { key: 'activity', label: adminContextMessage('activityTab'), content: renderContextTimeline(context.activityLogs || [], renderActivityItem, adminContextMessage('emptyActivity')) },
         { key: 'blocks', label: adminContextMessage('blockTab'), content: renderContextTimeline(context.blockHistories || [], renderBlockHistoryItem, adminContextMessage('emptyIpBlockHistory')) + '<div class="adm-context-spacer"></div>' + renderContextTimeline(context.ipRules || [], renderIpRuleItem, adminContextMessage('emptyIpRules')) },
+        { key: 'chatbot', label: adminContextMessage('chatbotTab'), content: renderContextTimeline(context.chatbotLinkClicks || [], renderChatbotLinkItem, adminContextMessage('emptyChatbotClicks')) },
         { key: 'actions', label: adminContextMessage('actionTab'), content: buildIpActions(ipAddress) }
     ];
     const activeKey = tabs.some(function(tab) { return tab.key === defaultTab; }) ? defaultTab : 'logins';

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import org.triptogether.common.vo.ChatbotLinkClickVO;
 
 /**
  * 관리자 서비스 구현체.
@@ -221,7 +222,18 @@ public class AdminServiceImpl implements AdminService {
         result.put("activityLogs", adminMapper.findActivityLogsByIp(normalizedIp, 40));
         result.put("blockHistories", adminMapper.findBlockHistoriesByIp(normalizedIp, 30));
         result.put("ipRules", adminMapper.findExactIpRules(normalizedIp, 20));
+        result.put("chatbotLinkClicks", chatbotLinkClickMapper.selectClicksByIp(normalizedIp, 30));
         return result;
+    }
+
+    @Override
+    public List<ChatbotLinkClickVO> getChatbotLinkClicks(Long userIdx, String ip, int mode) {
+        switch (mode) {
+            case 3: return chatbotLinkClickMapper.selectClicksByUserAndIp(userIdx, ip, 30);
+            case 4: return chatbotLinkClickMapper.selectClicksByUserOrIp(userIdx, ip, 30);
+            case 5: return chatbotLinkClickMapper.selectClicksByIpExcludeOtherUsers(userIdx, ip, 30);
+            default: return chatbotLinkClickMapper.selectClicksByUser(userIdx, 20);
+        }
     }
 
     @Override
