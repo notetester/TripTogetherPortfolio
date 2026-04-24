@@ -4,7 +4,7 @@
 
 <c:set var="pageCSS" value="assistant/assistant.css" />
 <%@ include file="../common/header.jsp" %>
-
+<%--ㅇ--%>
 <style>
     .history-section {
         margin-top: 22px;
