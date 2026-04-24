@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="emailVerifications"/>
 <spring:message code="admin.emailRequests.pageTitle" var="adminEmailRequestsPageTitle"/>
@@ -38,7 +39,10 @@
                             <option value="CANCELLED" ${search.status=='CANCELLED'?'selected':''}><spring:message code="admin.emailRequests.status.cancelled"/></option>
                         </select>
                     </div>
-                    <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
+                    <div style="display:flex;align-items:flex-end;gap:8px;">
+                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/email-verifications"><spring:message code="admin.common.reset"/></a>
+                    </div>
                 </div>
             </form>
         </div>
@@ -53,22 +57,38 @@
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th><spring:message code="admin.emailRequests.requestedAt"/></th>
+                    <th data-sort="time" onclick="sortBy('time')"><spring:message code="admin.emailRequests.requestedAt"/><span class="sort-ico">▼</span></th>
                     <th><spring:message code="admin.common.member"/></th>
-                    <th><spring:message code="admin.emailRequests.purpose"/></th>
+                    <th data-sort="purpose" onclick="sortBy('purpose')"><spring:message code="admin.emailRequests.purpose"/><span class="sort-ico">▼</span></th>
                     <th><spring:message code="admin.context.requestEmail"/></th>
-                    <th><spring:message code="admin.common.status"/></th>
-                    <th><spring:message code="admin.emailRequests.verifiedAt"/></th>
-                    <th><spring:message code="admin.emailRequests.appliedAt"/></th>
-                    <th><spring:message code="admin.context.expiresAt"/></th>
-                    <th><spring:message code="admin.common.ip"/></th>
+                    <th data-sort="status" onclick="sortBy('status')"><spring:message code="admin.common.status"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="verifiedAt" onclick="sortBy('verifiedAt')"><spring:message code="admin.emailRequests.verifiedAt"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="appliedAt" onclick="sortBy('appliedAt')"><spring:message code="admin.emailRequests.appliedAt"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="expiresAt" onclick="sortBy('expiresAt')"><spring:message code="admin.context.expiresAt"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="ip" onclick="sortBy('ip')"><spring:message code="admin.common.ip"/><span class="sort-ico">▼</span></th>
                     <th><spring:message code="admin.context.requestId"/></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="item">
+                    <fmt:formatDate var="itemDateFilter" value="${item.requestedAtDate}" pattern="yyyy-MM-dd"/>
+                    <fmt:formatDate var="itemTimeDisplay" value="${item.requestedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
+                    <fmt:formatDate var="itemVerifiedAtDisplay" value="${item.verifiedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
+                    <fmt:formatDate var="itemVerifiedAtFilter" value="${item.verifiedAtDate}" pattern="yyyy-MM-dd"/>
+                    <fmt:formatDate var="itemAppliedAtDisplay" value="${item.appliedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
+                    <fmt:formatDate var="itemAppliedAtFilter" value="${item.appliedAtDate}" pattern="yyyy-MM-dd"/>
+                    <fmt:formatDate var="itemExpiredAtDisplay" value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
+                    <fmt:formatDate var="itemExpiredAtFilter" value="${item.expiredAtDate}" pattern="yyyy-MM-dd"/>
                     <tr>
-                        <td><fmt:formatDate value="${item.requestedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></td>
+                        <td>
+                            <button type="button" class="adm-cell-link"
+                                    data-date="${itemDateFilter}"
+                                    onclick="filterByDate(this.dataset.date)">
+                                <span>${itemTimeDisplay}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                            </button>
+                        </td>
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.userIdx}">
@@ -104,10 +124,7 @@
                             </button>
                         </td>
                         <td>
-                            <button type="button"
-                                    class="adm-cell-link"
-                                    data-keyword="${item.pendingEmail}"
-                                    onclick="applyKeywordFilter(this)">
+                            <button type="button" class="adm-cell-link" data-keyword="${item.pendingEmail}" onclick="applyKeywordFilter(this)">
                                 <span><c:out value="${item.pendingEmail}"/></span>
                                 <span class="adm-cell-link-note"><spring:message code="admin.common.sameEmail"/></span>
                             </button>
@@ -126,9 +143,45 @@
                                 </span>
                             </button>
                         </td>
-                        <td><c:choose><c:when test="${not empty item.verifiedAtDate}"><fmt:formatDate value="${item.verifiedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
-                        <td><c:choose><c:when test="${not empty item.appliedAtDate}"><fmt:formatDate value="${item.appliedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
-                        <td><c:choose><c:when test="${not empty item.expiredAtDate}"><fmt:formatDate value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.verifiedAtDate}">
+                                    <button type="button" class="adm-cell-link"
+                                            data-date="${itemVerifiedAtFilter}"
+                                            onclick="filterByDate(this.dataset.date)">
+                                        <span>${itemVerifiedAtDisplay}</span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                                    </button>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.appliedAtDate}">
+                                    <button type="button" class="adm-cell-link"
+                                            data-date="${itemAppliedAtFilter}"
+                                            onclick="filterByDate(this.dataset.date)">
+                                        <span>${itemAppliedAtDisplay}</span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                                    </button>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty item.expiredAtDate}">
+                                    <button type="button" class="adm-cell-link"
+                                            data-date="${itemExpiredAtFilter}"
+                                            onclick="filterByDate(this.dataset.date)">
+                                        <span>${itemExpiredAtDisplay}</span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                                    </button>
+                                </c:when>
+                                <c:otherwise>-</c:otherwise>
+                            </c:choose>
+                        </td>
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.ipAddress}">
@@ -154,10 +207,27 @@
                                 </c:if>
                             </button>
                         </td>
+                        <td>
+                            <button type="button" class="adm-row-btn detail"
+                                    data-time="${itemTimeDisplay}"
+                                    data-user="${fn:escapeXml(item.nickname)} (@${fn:escapeXml(item.userId)})"
+                                    data-purpose="${fn:escapeXml(item.purpose)}"
+                                    data-email="${fn:escapeXml(item.pendingEmail)}"
+                                    data-status="${fn:escapeXml(item.status)}"
+                                    data-verified-at="${itemVerifiedAtDisplay}"
+                                    data-applied-at="${itemAppliedAtDisplay}"
+                                    data-expires-at="${itemExpiredAtDisplay}"
+                                    data-ip="${fn:escapeXml(item.ipAddress)}"
+                                    data-request-id="${fn:escapeXml(item.requestId)}"
+                                    data-flow-trace="${fn:escapeXml(item.flowTraceId)}"
+                                    onclick="openVerificationDetail(this)">
+                                <spring:message code="admin.common.viewDetail"/>
+                            </button>
+                        </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
+                    <tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -175,33 +245,103 @@
         </c:if>
     </div>
 </div>
+
+<div id="rowDetailModal" class="adm-modal-overlay" onclick="this.classList.remove('open')">
+    <div class="adm-modal" style="max-width:560px;width:100%;" onclick="event.stopPropagation()">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="rowDetailModalTitle"></div>
+            <button class="adm-modal-close" onclick="document.getElementById('rowDetailModal').classList.remove('open')">✕</button>
+        </div>
+        <div class="adm-modal-body" style="padding:20px 24px;max-height:72vh;overflow-y:auto;">
+            <dl id="rowDetailModalContent" style="margin:0;"></dl>
+        </div>
+    </div>
+</div>
+
 <script>
-function goPage(page) {
-  const params = new URLSearchParams(window.location.search);
-  params.set('page', page);
-  location.href = '${pageContext.request.contextPath}/admin/email-verifications?' + params.toString();
+var BASE_URL = '${pageContext.request.contextPath}/admin/email-verifications';
+var curSortField = '${search.sortField}';
+var curSortDir = '${search.sortDir}';
+
+document.querySelectorAll('th[data-sort]').forEach(function(th) {
+    if (th.getAttribute('data-sort') === curSortField) {
+        th.classList.add('sorted');
+        var ico = th.querySelector('.sort-ico');
+        if (ico) ico.textContent = curSortDir === 'ASC' ? '▲' : '▼';
+    }
+});
+
+function sortBy(field) {
+    var params = new URLSearchParams(window.location.search);
+    var dir = (params.get('sortField') === field && params.get('sortDir') !== 'ASC') ? 'ASC' : 'DESC';
+    params.set('sortField', field); params.set('sortDir', dir); params.set('page', '1');
+    location.href = BASE_URL + '?' + params.toString();
+}
+function filterByDate(dateStr) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('dateFilter', dateStr); params.set('page', '1');
+    location.href = BASE_URL + '?' + params.toString();
 }
 function applyKeywordFilter(button) {
-  const keyword = button.dataset.keyword || '';
-  const params = new URLSearchParams(window.location.search);
-  params.set('keyword', keyword);
-  params.set('page', '1');
-  location.href = '${pageContext.request.contextPath}/admin/email-verifications?' + params.toString();
+    var keyword = button.getAttribute('data-keyword');
+    if (!keyword) return;
+    var params = new URLSearchParams(window.location.search);
+    params.set('keyword', keyword); params.set('page', '1');
+    location.href = BASE_URL + '?' + params.toString();
 }
 function applySelectFilter(button) {
-  var paramName = button.getAttribute('data-param-name');
-  var paramValue = button.getAttribute('data-param-value');
-  if (!paramName || !paramValue) return;
-  var params = new URLSearchParams(window.location.search);
-  params.set(paramName, paramValue);
-  params.set('page', '1');
-  location.href = '${pageContext.request.contextPath}/admin/email-verifications?' + params.toString();
+    var paramName = button.getAttribute('data-param-name');
+    var paramValue = button.getAttribute('data-param-value');
+    if (!paramName || !paramValue) return;
+    var params = new URLSearchParams(window.location.search);
+    params.set(paramName, paramValue); params.set('page', '1');
+    location.href = BASE_URL + '?' + params.toString();
+}
+function goPage(page) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('page', page);
+    location.href = BASE_URL + '?' + params.toString();
 }
 function openRelatedHistory(path, button) {
-  const params = new URLSearchParams();
-  if (button.dataset.keyword) params.set('keyword', button.dataset.keyword);
-  params.set('page', '1');
-  location.href = '${pageContext.request.contextPath}/admin/' + path + '?' + params.toString();
+    var params = new URLSearchParams();
+    if (button.dataset.keyword) params.set('keyword', button.dataset.keyword);
+    params.set('page', '1');
+    location.href = '${pageContext.request.contextPath}/admin/' + path + '?' + params.toString();
+}
+function openVerificationDetail(btn) {
+    var d = btn.dataset;
+    showRowDetail('<spring:message code="admin.emailRequests.historyTitle"/>', [
+        ['요청 시각', d.time],
+        ['회원', d.user],
+        ['목적', d.purpose],
+        ['요청 이메일', d.email],
+        ['상태', d.status],
+        ['인증 시각', d.verifiedAt],
+        ['반영 시각', d.appliedAt],
+        ['만료 시각', d.expiresAt],
+        ['IP', d.ip],
+        ['요청 ID', d.requestId],
+        ['흐름 추적 ID', d.flowTrace]
+    ]);
+}
+function showRowDetail(title, fields) {
+    var modal = document.getElementById('rowDetailModal');
+    document.getElementById('rowDetailModalTitle').textContent = title;
+    var content = document.getElementById('rowDetailModalContent');
+    content.innerHTML = '';
+    fields.forEach(function(pair) {
+        var label = pair[0], value = pair[1];
+        if (!value || value === '' || value === '-') return;
+        var dt = document.createElement('dt');
+        dt.style.cssText = 'font-size:11px;color:#64748b;margin-top:12px;margin-bottom:2px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;';
+        dt.textContent = label;
+        var dd = document.createElement('dd');
+        dd.style.cssText = 'font-size:13px;color:#e2e8f0;word-break:break-all;margin:0;padding:6px 10px;background:#0f1520;border-radius:4px;';
+        dd.textContent = value;
+        content.appendChild(dt);
+        content.appendChild(dd);
+    });
+    modal.classList.add('open');
 }
 </script>
 <%@ include file="../layout-close.jsp" %>

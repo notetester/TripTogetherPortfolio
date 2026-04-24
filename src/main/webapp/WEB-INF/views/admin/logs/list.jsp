@@ -64,7 +64,10 @@
                             <option value="GOOGLE" ${search.loginMethod=='GOOGLE'?'selected':''}><spring:message code="admin.logs.provider.google"/></option>
                         </select>
                     </div>
-                    <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
+                    <div style="display:flex;align-items:flex-end;gap:8px;">
+                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/logins"><spring:message code="admin.common.reset"/></a>
+                    </div>
                 </div>
             </form>
         </div>
@@ -79,23 +82,33 @@
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th><spring:message code="admin.common.time"/></th>
+                    <th data-sort="time" onclick="sortBy('time')"><spring:message code="admin.common.time"/><span class="sort-ico">▼</span></th>
                     <th><spring:message code="admin.common.member"/></th>
-                    <th><spring:message code="admin.logs.event"/></th>
-                    <th><spring:message code="admin.logs.authType"/></th>
-                    <th><spring:message code="admin.logs.provider"/></th>
-                    <th><spring:message code="admin.logs.authFlow"/></th>
+                    <th data-sort="eventType" onclick="sortBy('eventType')"><spring:message code="admin.logs.event"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="authType" onclick="sortBy('authType')"><spring:message code="admin.logs.authType"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="provider" onclick="sortBy('provider')"><spring:message code="admin.logs.provider"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="loginMethod" onclick="sortBy('loginMethod')"><spring:message code="admin.logs.authFlow"/><span class="sort-ico">▼</span></th>
                     <th><spring:message code="admin.context.inputValue"/></th>
-                    <th><spring:message code="admin.common.result"/></th>
+                    <th data-sort="success" onclick="sortBy('success')"><spring:message code="admin.common.result"/><span class="sort-ico">▼</span></th>
                     <th><spring:message code="admin.common.reason"/></th>
-                    <th><spring:message code="admin.common.ip"/></th>
+                    <th data-sort="ip" onclick="sortBy('ip')"><spring:message code="admin.common.ip"/><span class="sort-ico">▼</span></th>
                     <th><spring:message code="admin.context.requestId"/></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach items="${list}" var="item">
+                    <fmt:formatDate var="itemDateFilter" value="${item.loginAt}" pattern="yyyy-MM-dd"/>
+                    <fmt:formatDate var="itemTimeDisplay" value="${item.loginAt}" pattern="yyyy.MM.dd HH:mm:ss"/>
                     <tr>
-                        <td><fmt:formatDate value="${item.loginAt}" pattern="yyyy.MM.dd HH:mm:ss"/></td>
+                        <td>
+                            <button type="button" class="adm-cell-link"
+                                    data-date="${itemDateFilter}"
+                                    onclick="filterByDate(this.dataset.date)">
+                                <span>${itemTimeDisplay}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                            </button>
+                        </td>
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.userIdx}">
@@ -209,7 +222,13 @@
                                          data-default-source-lang="ko"
                                          data-source-text="${fn:escapeXml(item.failReason)}"></div>
                                 </c:when>
-                                <c:otherwise><div>-</div></c:otherwise>
+                                <c:when test="${item.success and not empty item.authFlow}">
+                                    <button type="button" class="adm-cell-link" data-param-name="loginMethod" data-param-value="${item.loginMethod}" onclick="applySelectFilter(this)">
+                                        <span style="color:#64748b;font-size:12px;"><c:out value="${item.authFlow}"/></span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                                    </button>
+                                </c:when>
+                                <c:otherwise><div style="color:#475569;">-</div></c:otherwise>
                             </c:choose>
                         </td>
                         <td>
@@ -242,10 +261,32 @@
                                 <c:otherwise><div style="font-size:12px;color:#64748b;">-</div></c:otherwise>
                             </c:choose>
                         </td>
+                        <td>
+                            <button type="button" class="adm-row-btn detail"
+                                    data-time="${itemTimeDisplay}"
+                                    data-user="${fn:escapeXml(item.nickname)} (@${fn:escapeXml(item.userId)})"
+                                    data-event="${fn:escapeXml(item.eventType)}"
+                                    data-auth-type="${fn:escapeXml(item.authType)}"
+                                    data-provider="${fn:escapeXml(item.authProvider)}"
+                                    data-auth-flow="${fn:escapeXml(item.authFlow)}"
+                                    data-login-method="${fn:escapeXml(item.loginMethod)}"
+                                    data-identifier="${fn:escapeXml(item.loginIdentifier)}"
+                                    data-success="${item.success ? 'SUCCESS' : 'FAIL'}"
+                                    data-fail-reason="${fn:escapeXml(item.failReason)}"
+                                    data-ip="${fn:escapeXml(item.ipAddress)}"
+                                    data-request-id="${fn:escapeXml(item.requestId)}"
+                                    data-flow-trace="${fn:escapeXml(item.flowTraceId)}"
+                                    data-user-agent="${fn:escapeXml(item.userAgent)}"
+                                    data-request-uri="${fn:escapeXml(item.requestUri)}"
+                                    data-session-id="${fn:escapeXml(item.sessionId)}"
+                                    onclick="openLoginDetail(this)">
+                                <spring:message code="admin.common.viewDetail"/>
+                            </button>
+                        </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
+                    <tr><td colspan="12" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -264,14 +305,55 @@
     </div>
 </div>
 
+<div id="rowDetailModal" class="adm-modal-overlay" onclick="this.classList.remove('open')">
+    <div class="adm-modal" style="max-width:560px;width:100%;" onclick="event.stopPropagation()">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="rowDetailModalTitle"></div>
+            <button class="adm-modal-close" onclick="document.getElementById('rowDetailModal').classList.remove('open')">✕</button>
+        </div>
+        <div class="adm-modal-body" style="padding:20px 24px;max-height:72vh;overflow-y:auto;">
+            <dl id="rowDetailModalContent" style="margin:0;"></dl>
+        </div>
+    </div>
+</div>
+
 <script>
+var BASE_URL = '${pageContext.request.contextPath}/admin/logins';
+var curSortField = '${search.sortField}';
+var curSortDir = '${search.sortDir}';
+
+document.querySelectorAll('th[data-sort]').forEach(function(th) {
+    var f = th.getAttribute('data-sort');
+    if (f === curSortField) {
+        th.classList.add('sorted');
+        var ico = th.querySelector('.sort-ico');
+        if (ico) ico.textContent = curSortDir === 'ASC' ? '▲' : '▼';
+    }
+});
+
+function sortBy(field) {
+    var params = new URLSearchParams(window.location.search);
+    var dir = (params.get('sortField') === field && params.get('sortDir') !== 'ASC') ? 'ASC' : 'DESC';
+    params.set('sortField', field);
+    params.set('sortDir', dir);
+    params.set('page', '1');
+    location.href = BASE_URL + '?' + params.toString();
+}
+
+function filterByDate(dateStr) {
+    var params = new URLSearchParams(window.location.search);
+    params.set('dateFilter', dateStr);
+    params.set('page', '1');
+    location.href = BASE_URL + '?' + params.toString();
+}
+
 function applyKeywordFilter(button) {
     var keyword = button.getAttribute('data-keyword');
     if (!keyword) return;
-    const params = new URLSearchParams(window.location.search);
+    var params = new URLSearchParams(window.location.search);
     params.set('keyword', keyword);
     params.set('page', '1');
-    location.href = '${pageContext.request.contextPath}/admin/logins?' + params.toString();
+    location.href = BASE_URL + '?' + params.toString();
 }
 
 function applySelectFilter(button) {
@@ -281,13 +363,55 @@ function applySelectFilter(button) {
     var params = new URLSearchParams(window.location.search);
     params.set(paramName, paramValue);
     params.set('page', '1');
-    location.href = '${pageContext.request.contextPath}/admin/logins?' + params.toString();
+    location.href = BASE_URL + '?' + params.toString();
 }
 
 function goPage(page) {
-    const params = new URLSearchParams(window.location.search);
+    var params = new URLSearchParams(window.location.search);
     params.set('page', page);
-    location.href = '${pageContext.request.contextPath}/admin/logins?' + params.toString();
+    location.href = BASE_URL + '?' + params.toString();
+}
+
+function openLoginDetail(btn) {
+    var d = btn.dataset;
+    showRowDetail('<spring:message code="admin.logs.historyTitle"/>', [
+        ['시각', d.time],
+        ['회원', d.user],
+        ['이벤트', d.event],
+        ['인증 유형', d.authType],
+        ['공급자', d.provider],
+        ['인증 흐름', d.authFlow],
+        ['로그인 방법', d.loginMethod],
+        ['입력 식별자', d.identifier],
+        ['결과', d.success],
+        ['사유', d.failReason],
+        ['IP', d.ip],
+        ['요청 ID', d.requestId],
+        ['흐름 추적 ID', d.flowTrace],
+        ['세션 ID', d.sessionId],
+        ['요청 URI', d.requestUri],
+        ['User-Agent', d.userAgent]
+    ]);
+}
+
+function showRowDetail(title, fields) {
+    var modal = document.getElementById('rowDetailModal');
+    document.getElementById('rowDetailModalTitle').textContent = title;
+    var content = document.getElementById('rowDetailModalContent');
+    content.innerHTML = '';
+    fields.forEach(function(pair) {
+        var label = pair[0], value = pair[1];
+        if (!value || value === '' || value === '-') return;
+        var dt = document.createElement('dt');
+        dt.style.cssText = 'font-size:11px;color:#64748b;margin-top:12px;margin-bottom:2px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;';
+        dt.textContent = label;
+        var dd = document.createElement('dd');
+        dd.style.cssText = 'font-size:13px;color:#e2e8f0;word-break:break-all;margin:0;padding:6px 10px;background:#0f1520;border-radius:4px;';
+        dd.textContent = value;
+        content.appendChild(dt);
+        content.appendChild(dd);
+    });
+    modal.classList.add('open');
 }
 </script>
 

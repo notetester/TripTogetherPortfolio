@@ -186,7 +186,15 @@
                                                 </button>
                                             </div>
                                         </td>
-                                        <td>${b.snapshotStatus}</td>
+                                        <td>
+                                            <button type="button"
+                                                    class="adm-inline-chip js-apply-block-filter"
+                                                    data-section="user-blocks"
+                                                    data-field="snapshotStatus"
+                                                    data-keyword="${fn:escapeXml(b.snapshotStatus)}">
+                                                <span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span>
+                                            </button>
+                                        </td>
                                         <td>
                                             <button type="button"
                                                     class="adm-row-btn detail js-open-user-block-editor"
@@ -482,7 +490,15 @@
                             </c:otherwise>
                         </c:choose>
                             </td>
-                            <td>${b.blockType}</td>
+                            <td>
+                                <button type="button"
+                                        class="adm-inline-chip js-apply-block-filter"
+                                        data-section="user-blocks"
+                                        data-field="blockType"
+                                        data-keyword="${fn:escapeXml(b.blockType)}">
+                                    <c:out value="${b.blockType}"/>
+                                </button>
+                            </td>
                             <td>
                                 <button type="button"
                                         class="adm-link-btn js-open-user-block-editor"
@@ -522,8 +538,17 @@
                             </td>
                             <td style="max-width:260px;white-space:normal;">
                                 <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
-                                    <span>${empty b.reason ? '-' : b.reason}</span>
+                                    <span><c:out value="${empty b.reason ? '-' : b.reason}"/></span>
                                 </button>
+                                <c:if test="${not empty b.reason}">
+                                    <div class="adm-tr-inline js-admin-translation-widget"
+                                         data-label="<spring:message code='admin.common.reason'/>"
+                                         data-source-type="USER_BLOCK"
+                                         data-source-idx="${b.blockIdx}"
+                                         data-field-name="reason"
+                                         data-default-source-lang="ko"
+                                         data-source-text="${fn:escapeXml(b.reason)}"></div>
+                                </c:if>
                             </td>
                             <td style="font-size:12px;">
                                 <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
