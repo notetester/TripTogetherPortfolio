@@ -15,7 +15,7 @@ public class AdminSecurityAuditSearchVO {
     private String eventType;   // ALL / FIND_ID / FIND_PASSWORD / RESET_PASSWORD / PASSWORD_CHANGE / EMAIL_VERIFY / EMAIL_LOGIN_TOGGLE
     private String eventStage;  // ALL / REQUEST / ISSUE / VERIFY / COMPLETE
     private String dateFilter;  // yyyy-MM-dd
-    private String sortField;   // time / eventType / eventStage / success / ip
+    private String sortField;   // time / targetMember / actor / eventType / eventStage / input / targetEmail / success / reason / ip / requestId
     private String sortDir;     // ASC / DESC
     private int page = 1;
     private int size = 30;

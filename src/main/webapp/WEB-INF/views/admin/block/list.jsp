@@ -130,7 +130,7 @@
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:8px;">
                         <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.apply"/></button>
-                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/blocks"><spring:message code="admin.common.reset"/></a>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/blocks" onclick="return resetBlockFilters();"><spring:message code="admin.common.reset"/></a>
                     </div>
                 </div>
             </form>
@@ -152,6 +152,50 @@
             <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.sub"/></div>
         </div>
         <div class="adm-card-body">
+            <div class="adm-block-dashboard-summary">
+                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">
+                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activeUserBlocks"/></span>
+                    <strong>${activeUserBlockCount}</strong>
+                    <span class="adm-block-stat-note">회원 차단 현재 적용</span>
+                    <span class="adm-block-stat-bar"><i style="width:${activeUserBlockCount > 0 ? '78' : '8'}%"></i></span>
+                </button>
+                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">
+                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activePolicies"/></span>
+                    <strong>${activeIpBlockCount}</strong>
+                    <span class="adm-block-stat-note">IP/범위 정책 현재 적용</span>
+                    <span class="adm-block-stat-bar"><i style="width:${activeIpBlockCount > 0 ? '72' : '8'}%"></i></span>
+                </button>
+                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('histories');renderLocalSection('histories');">
+                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.history"/></span>
+                    <strong>${blockHistoryCount}</strong>
+                    <span class="adm-block-stat-note">누적 차단/해제/정책 변경</span>
+                    <span class="adm-block-stat-bar"><i style="width:${blockHistoryCount > 0 ? '88' : '8'}%"></i></span>
+                </button>
+                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('batches');renderLocalSection('batches');">
+                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activeBatches"/></span>
+                    <strong>${activeBatchCount}</strong>
+                    <span class="adm-block-stat-note">활성 배치 정책 묶음</span>
+                    <span class="adm-block-stat-bar"><i style="width:${activeBatchCount > 0 ? '64' : '8'}%"></i></span>
+                </button>
+            </div>
+            <div class="adm-block-dashboard-grid">
+                <div class="adm-block-dashboard-insight">
+                    <div class="adm-block-insight-title">운영 우선순위</div>
+                    <div class="adm-block-insight-body">
+                        <span>① 최근 이력 확인</span>
+                        <span>② 만료 예정/비활성 규칙 점검</span>
+                        <span>③ 배치 정책 영향 범위 확인</span>
+                    </div>
+                </div>
+                <div class="adm-block-dashboard-insight">
+                    <div class="adm-block-insight-title">빠른 이동</div>
+                    <div class="adm-block-insight-actions">
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">회원 차단</button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">IP 규칙</button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('histories');renderLocalSection('histories');">최근 로그</button>
+                    </div>
+                </div>
+            </div>
             <div class="adm-kpi-grid" style="display:grid;grid-template-columns:1fr;row-gap:28px;">
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
@@ -345,9 +389,17 @@
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
                             <table class="adm-table">
-                                <thead><tr><th><spring:message code="admin.common.target"/></th><th><spring:message code="admin.blocks.changeKind"/></th><th><spring:message code="admin.blocks.result"/></th><th><spring:message code="admin.common.action"/></th></tr></thead>
+                                <thead><tr><th><spring:message code="admin.common.time"/></th><th><spring:message code="admin.common.target"/></th><th><spring:message code="admin.blocks.changeKind"/></th><th><spring:message code="admin.blocks.result"/></th><th><spring:message code="admin.common.action"/></th></tr></thead>
                                 <tbody>
                                 <c:forEach var="h" items="${histories}" begin="0" end="4">
+                                    <c:set var="historyDashboardAt" value="${h.blockedAtDate}"/>
+                                    <c:if test="${not empty h.releasedAtDate}">
+                                        <c:set var="historyDashboardAt" value="${h.releasedAtDate}"/>
+                                    </c:if>
+                                    <c:if test="${not empty h.listSyncedAtDate}">
+                                        <c:set var="historyDashboardAt" value="${h.listSyncedAtDate}"/>
+                                    </c:if>
+                                    <fmt:formatDate var="historyDashboardTime" value="${historyDashboardAt}" pattern="MM.dd HH:mm"/>
                                     <c:set var="historyCurrentType" value="IP_RULE"/>
                                     <c:if test="${h.blockScope == 'USER_ACTION'}">
                                         <c:set var="historyCurrentType" value="USER_BLOCK"/>
@@ -356,6 +408,11 @@
                                         <c:set var="historyCurrentType" value="BATCH"/>
                                     </c:if>
                                     <tr>
+                                        <td>
+                                            <button type="button" class="adm-cell-link" data-section="histories" data-field="blockedAt" data-keyword="${fn:escapeXml(historyDashboardTime)}" onclick="applyBlockLocalFilter(this.dataset.section, this.dataset.field, this.dataset.keyword)">
+                                                <span>${empty historyDashboardTime ? '-' : historyDashboardTime}</span>
+                                            </button>
+                                        </td>
                                         <td>
                                             <div>${h.blockTargetKey}</div>
                                             <div class="adm-inline-actions">
@@ -400,7 +457,7 @@
                                     </tr>
                                 </c:forEach>
                                 <c:if test="${empty histories}">
-                                    <tr><td colspan="4" style="text-align:center;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                                    <tr><td colspan="5" style="text-align:center;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                                 </c:if>
                                 </tbody>
                             </table>
@@ -2114,6 +2171,12 @@ function updateTabQuery(tab) {
     window.history.replaceState({}, '', url.toString());
 }
 
+function resetBlockFilters() {
+    const tab = activeBlockTab || (document.getElementById('blockActiveTabInput') || {}).value || 'dashboard';
+    window.location.href = CTX + '/admin/blocks?tab=' + encodeURIComponent(tab);
+    return false;
+}
+
 function activateBlockTab(tab) {
     const validTabs = ['dashboard', 'all', 'user-blocks', 'ip-rules', 'batches', 'histories'];
     activeBlockTab = validTabs.includes(tab) ? tab : 'dashboard';
@@ -2296,23 +2359,76 @@ function blockRowKey(row, section) {
 
 function enhanceBlockDashboardTables() {
     const sections = ['user-blocks', 'ip-rules', 'batches', 'histories'];
+    const titles = ['회원 차단 전체 보기', 'IP 규칙 전체 보기', '배치 전체 보기', '최근 로그 전체 보기'];
+
     document.querySelectorAll('.js-dashboard-panel table.adm-table').forEach(function (table, tableIndex) {
         const targetSection = sections[tableIndex] || 'all';
+        const card = table.closest('.adm-card');
+        const head = card ? card.querySelector('.adm-card-head') : null;
+        if (head && !head.querySelector('.js-dashboard-open-section')) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'adm-btn adm-btn-ghost js-dashboard-open-section';
+            btn.style.fontSize = '12px';
+            btn.textContent = titles[tableIndex] || '전체 보기';
+            btn.addEventListener('click', function () {
+                activateBlockTab(targetSection);
+                renderLocalSection(targetSection);
+            });
+            head.appendChild(btn);
+        }
+
         table.querySelectorAll('thead th').forEach(function (th, idx, arr) {
             if (idx === arr.length - 1 || th.dataset.dashboardEnhanced === 'true') return;
             th.dataset.dashboardEnhanced = 'true';
+            th.dataset.sortIndex = String(idx);
             th.style.cursor = 'pointer';
             th.style.userSelect = 'none';
-            th.title = '클릭하면 해당 운영 탭으로 이동합니다.';
-            th.insertAdjacentHTML('beforeend', ' <span style="font-size:10px;color:#94a3b8;">↗</span>');
+            th.title = '현재 5개 행을 이 컬럼 기준으로 정렬합니다.';
+            th.insertAdjacentHTML('beforeend', ' <span class="sort-ico" style="font-size:10px;color:#94a3b8;">↕</span>');
             th.addEventListener('click', function () {
-                activateBlockTab(targetSection);
-                renderLocalSection(targetSection);
+                sortDashboardTable(table, idx);
             });
         });
     });
 }
 
+function sortDashboardTable(table, cellIndex) {
+    const tbody = table.querySelector('tbody');
+    if (!tbody) return;
+
+    const prevIndex = Number(table.dataset.dashboardSortIndex || -1);
+    const prevDir = table.dataset.dashboardSortDir || 'ASC';
+    const nextDir = prevIndex === cellIndex && prevDir === 'ASC' ? 'DESC' : 'ASC';
+    table.dataset.dashboardSortIndex = String(cellIndex);
+    table.dataset.dashboardSortDir = nextDir;
+
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(function (row) {
+        return row.children.length > 1 && !row.querySelector('td[colspan]');
+    });
+
+    rows.sort(function (a, b) {
+        const av = (a.children[cellIndex] ? a.children[cellIndex].innerText : '').replace(/\s+/g, ' ').trim();
+        const bv = (b.children[cellIndex] ? b.children[cellIndex].innerText : '').replace(/\s+/g, ' ').trim();
+        const an = Number(av.replace(/[^0-9.-]/g, ''));
+        const bn = Number(bv.replace(/[^0-9.-]/g, ''));
+        let cmp;
+        if (!Number.isNaN(an) && !Number.isNaN(bn) && av.match(/\d/) && bv.match(/\d/)) {
+            cmp = an - bn;
+        } else {
+            cmp = av.localeCompare(bv, ADMIN_BLOCK_LOCALE || undefined, {numeric: true, sensitivity: 'base'});
+        }
+        return nextDir === 'ASC' ? cmp : -cmp;
+    });
+
+    rows.forEach(function (row) { tbody.appendChild(row); });
+
+    table.querySelectorAll('thead th').forEach(function (th) {
+        const ico = th.querySelector('.sort-ico');
+        const active = Number(th.dataset.sortIndex || -1) === cellIndex;
+        if (ico) ico.textContent = active ? (nextDir === 'ASC' ? '▲' : '▼') : '↕';
+    });
+}
 
 function enhanceBlockLocalTables() {
     Object.keys(BLOCK_SECTION_CONFIG).forEach(function (section) {
@@ -2325,11 +2441,15 @@ function enhanceBlockLocalTables() {
             const group = document.createElement('div');
             group.className = 'adm-local-toolbar-group js-local-export-group';
             group.innerHTML =
-                '<select class="adm-select js-block-export-format" data-section="' + section + '" style="width:86px;">'
-                + '<option value="csv">CSV</option><option value="excel">Excel</option></select>'
-                + '<button type="button" class="adm-btn adm-btn-ghost js-block-export" data-section="' + section + '" data-scope="all">전체 내보내기</button>'
-                + '<button type="button" class="adm-btn adm-btn-ghost js-block-export" data-section="' + section + '" data-scope="search">검색결과 내보내기</button>'
-                + '<button type="button" class="adm-btn adm-btn-ghost js-block-export js-block-export-selected" data-section="' + section + '" data-scope="selected" disabled>선택 내보내기 (0)</button>';
+                '<div class="adm-export-control">'
+                + '<select class="adm-select js-block-export-format" data-section="' + section + '"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
+                + '<div class="adm-export-menu">'
+                + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ 내보내기 ▾</button>'
+                + '<div class="adm-export-dropdown">'
+                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="all">📋 전체 내보내기</button>'
+                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="search">🔍 검색결과 내보내기</button>'
+                + '<button type="button" class="js-block-export js-block-export-selected" data-section="' + section + '" data-scope="selected" disabled>☑ 선택 내보내기 (0)</button>'
+                + '</div></div></div>';
             toolbar.appendChild(group);
         }
 
@@ -2341,7 +2461,7 @@ function enhanceBlockLocalTables() {
             checkTh.className = 'js-block-check-cell';
             checkTh.style.width = '42px';
             checkTh.style.textAlign = 'center';
-            checkTh.innerHTML = '<input type="checkbox" class="js-block-check-all" data-section="' + section + '" style="cursor:pointer;">';
+            checkTh.innerHTML = '<input type="checkbox" class="js-block-check-all adm-check" data-section="' + section + '">';
             headRow.insertBefore(checkTh, headRow.firstElementChild);
         }
 
@@ -2363,7 +2483,7 @@ function enhanceBlockLocalTables() {
             const checkTd = document.createElement('td');
             checkTd.className = 'js-block-check-cell';
             checkTd.style.textAlign = 'center';
-            checkTd.innerHTML = '<input type="checkbox" class="js-block-row-check" data-section="' + section + '" value="' + escapeHtml(blockRowKey(row, section)) + '" style="cursor:pointer;">';
+            checkTd.innerHTML = '<input type="checkbox" class="js-block-row-check adm-check" data-section="' + section + '" value="' + escapeHtml(blockRowKey(row, section)) + '">';
             row.insertBefore(checkTd, row.firstElementChild);
         });
 

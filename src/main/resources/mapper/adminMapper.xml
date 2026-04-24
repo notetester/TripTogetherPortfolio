@@ -1472,12 +1472,16 @@
         ORDER BY
         <choose>
             <when test="sortField == 'time'">h.login_at ${sortDir}</when>
+            <when test="sortField == 'member'">COALESCE(u.nickname, u.user_id, CAST(h.user_idx AS CHAR)) ${sortDir}, h.login_at DESC</when>
             <when test="sortField == 'eventType'">h.event_type ${sortDir}, h.login_at DESC</when>
             <when test="sortField == 'authType'">h.auth_type ${sortDir}, h.login_at DESC</when>
             <when test="sortField == 'provider'">h.auth_provider ${sortDir}, h.login_at DESC</when>
             <when test="sortField == 'loginMethod'">h.login_method ${sortDir}, h.login_at DESC</when>
+            <when test="sortField == 'input'">h.login_identifier ${sortDir}, h.login_at DESC</when>
             <when test="sortField == 'success'">h.is_success ${sortDir}, h.login_at DESC</when>
+            <when test="sortField == 'reason'">h.fail_reason ${sortDir}, h.login_at DESC</when>
             <when test="sortField == 'ip'">h.ip_address ${sortDir}, h.login_at DESC</when>
+            <when test="sortField == 'requestId'">h.request_id ${sortDir}, h.login_at DESC</when>
             <otherwise>h.login_at DESC</otherwise>
         </choose>
         LIMIT #{size} OFFSET #{offset}
@@ -1543,10 +1547,16 @@
         ORDER BY
         <choose>
             <when test="sortField == 'time'">s.occurred_at ${sortDir}, s.security_idx ${sortDir}</when>
+            <when test="sortField == 'targetMember'">COALESCE(u.nickname, u.user_id, CAST(s.user_idx AS CHAR)) ${sortDir}, s.occurred_at DESC</when>
+            <when test="sortField == 'actor'">COALESCE(au.nickname, au.user_id, CAST(s.actor_user_idx AS CHAR)) ${sortDir}, s.occurred_at DESC</when>
             <when test="sortField == 'eventType'">s.event_type ${sortDir}, s.occurred_at DESC</when>
             <when test="sortField == 'eventStage'">s.event_stage ${sortDir}, s.occurred_at DESC</when>
+            <when test="sortField == 'input'">s.input_identifier ${sortDir}, s.occurred_at DESC</when>
+            <when test="sortField == 'targetEmail'">s.target_email ${sortDir}, s.occurred_at DESC</when>
             <when test="sortField == 'success'">s.is_success ${sortDir}, s.occurred_at DESC</when>
+            <when test="sortField == 'reason'">s.fail_reason ${sortDir}, s.occurred_at DESC</when>
             <when test="sortField == 'ip'">s.ip_address ${sortDir}, s.occurred_at DESC</when>
+            <when test="sortField == 'requestId'">s.request_id ${sortDir}, s.occurred_at DESC</when>
             <otherwise>s.occurred_at DESC, s.security_idx DESC</otherwise>
         </choose>
         LIMIT #{size} OFFSET #{offset}
@@ -1600,6 +1610,9 @@
         ORDER BY
         <choose>
             <when test="sortField == 'time'">r.requested_at ${sortDir}, r.email_verification_request_idx ${sortDir}</when>
+            <when test="sortField == 'member'">COALESCE(u.nickname, u.user_id, CAST(r.user_idx AS CHAR)) ${sortDir}, r.requested_at DESC</when>
+            <when test="sortField == 'requestEmail'">r.pending_email ${sortDir}, r.requested_at DESC</when>
+            <when test="sortField == 'requestId'">r.request_id ${sortDir}, r.requested_at DESC</when>
             <when test="sortField == 'purpose'">r.purpose ${sortDir}, r.requested_at DESC</when>
             <when test="sortField == 'status'">r.status ${sortDir}, r.requested_at DESC</when>
             <when test="sortField == 'verifiedAt'">r.verified_at ${sortDir}, r.requested_at DESC</when>
@@ -1673,6 +1686,9 @@
         ORDER BY
         <choose>
             <when test="sortField == 'time'">v.created_at ${sortDir}, v.verify_idx ${sortDir}</when>
+            <when test="sortField == 'member'">COALESCE(u.nickname, u.user_id, CAST(v.user_idx AS CHAR)) ${sortDir}, v.created_at DESC</when>
+            <when test="sortField == 'targetEmail'">v.email ${sortDir}, v.created_at DESC</when>
+            <when test="sortField == 'requestId'">v.request_id ${sortDir}, v.created_at DESC</when>
             <when test="sortField == 'purpose'">v.purpose ${sortDir}, v.created_at DESC</when>
             <when test="sortField == 'used'">v.used ${sortDir}, v.created_at DESC</when>
             <when test="sortField == 'usedAt'">v.used_at ${sortDir}, v.created_at DESC</when>
@@ -1751,8 +1767,12 @@
         ORDER BY
         <choose>
             <when test="sortField == 'time'">a.created_at ${sortDir}, a.activity_idx ${sortDir}</when>
+            <when test="sortField == 'member'">COALESCE(u.nickname, u.user_id, CAST(a.user_idx AS CHAR)) ${sortDir}, a.created_at DESC</when>
             <when test="sortField == 'domain'">a.activity_domain ${sortDir}, a.created_at DESC</when>
             <when test="sortField == 'type'">a.activity_type ${sortDir}, a.created_at DESC</when>
+            <when test="sortField == 'activityCode'">a.activity_code ${sortDir}, a.created_at DESC</when>
+            <when test="sortField == 'uri'">a.request_uri ${sortDir}, a.created_at DESC</when>
+            <when test="sortField == 'flow'">a.flow_trace_id ${sortDir}, a.created_at DESC</when>
             <when test="sortField == 'method'">a.http_method ${sortDir}, a.created_at DESC</when>
             <when test="sortField == 'status'">a.response_status ${sortDir}, a.created_at DESC</when>
             <when test="sortField == 'ip'">a.ip_address ${sortDir}, a.created_at DESC</when>
