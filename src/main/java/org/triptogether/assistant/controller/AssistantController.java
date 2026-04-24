@@ -4,8 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.assistant.service.AssistantService;
+import org.triptogether.assistant.vo.ChatCommentVO;
+import org.triptogether.assistant.vo.ChatPostVO;
 import org.triptogether.auth.vo.UsersVO;
 
 import java.util.ArrayList;
@@ -22,7 +25,20 @@ public class AssistantController {
     private final AssistantService assistantService;
 
     @GetMapping("")
-    public String assistantPage() {
+    public String assistantPage(HttpSession session, Model model) {
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+
+        boolean isLogin = loginUser != null;
+        model.addAttribute("isLogin", isLogin);
+
+        if (isLogin) {
+            Long userIdx = loginUser.getUserIdx();
+            List<ChatPostVO> chatPostList = assistantService.getRecentChatPosts(userIdx);
+            model.addAttribute("chatPostList", chatPostList);
+        } else {
+            model.addAttribute("chatPostList", new ArrayList<>());
+        }
+
         return "assistant/assistant";
     }
 
@@ -43,22 +59,22 @@ public class AssistantController {
         }
 
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return Map.of(
-                    "success", false,
-                    "answer", "로그인 후 이용해주세요.",
-                    "history", new ArrayList<>()
-            );
-        }
 
-        // 네 UsersVO getter명에 맞게 수정
-        Long userIdx = loginUser.getUserIdx();
+        Long userIdx = null;
+        if (loginUser != null) {
+            userIdx = loginUser.getUserIdx();
+        }
 
         @SuppressWarnings("unchecked")
         List<Map<String, String>> history =
                 (List<Map<String, String>>) session.getAttribute("chatHistory");
 
         Long chatPostIdx = (Long) session.getAttribute("currentChatPostIdx");
+
+        Object payloadChatPostIdx = payload.get("chatPostIdx");
+        if (payloadChatPostIdx != null && !payloadChatPostIdx.toString().isBlank()) {
+            chatPostIdx = Long.valueOf(payloadChatPostIdx.toString());
+        }
 
         Map<String, Object> result =
                 assistantService.chat(userMessage, history, userIdx, chatPostIdx);
@@ -70,6 +86,95 @@ public class AssistantController {
         }
 
         return result;
+    }
+
+    @GetMapping("/history/{chatPostIdx}")
+    @ResponseBody
+    public Map<String, Object> getHistory(
+            @PathVariable Long chatPostIdx,
+            HttpSession session) {
+
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            return Map.of(
+                    "success", false,
+                    "message", "로그인 후 이용할 수 있습니다."
+            );
+        }
+
+        Long userIdx = loginUser.getUserIdx();
+        List<ChatCommentVO> comments = assistantService.getChatComments(chatPostIdx, userIdx);
+
+        List<Map<String, String>> history = new ArrayList<>();
+
+        for (ChatCommentVO comment : comments) {
+            String role = "USER".equals(comment.getComment_role()) ? "user" : "assistant";
+
+            history.add(Map.of(
+                    "role", role,
+                    "content", comment.getContent()
+            ));
+        }
+
+        session.setAttribute("chatHistory", history);
+        session.setAttribute("currentChatPostIdx", chatPostIdx);
+
+        return Map.of(
+                "success", true,
+                "history", history,
+                "chatPostIdx", chatPostIdx
+        );
+    }
+
+    @PostMapping("/history/{chatPostIdx}/title")
+    @ResponseBody
+    public Map<String, Object> updateTitle(
+            @PathVariable Long chatPostIdx,
+            @RequestBody Map<String, Object> payload,
+            HttpSession session) {
+
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            return Map.of("success", false, "message", "로그인 후 이용할 수 있습니다.");
+        }
+
+        String title = Objects.toString(payload.get("title"), "").trim();
+
+        boolean success = assistantService.updateChatPostTitle(
+                chatPostIdx,
+                loginUser.getUserIdx(),
+                title
+        );
+
+        return Map.of("success", success);
+    }
+
+    @PostMapping("/history/{chatPostIdx}/delete")
+    @ResponseBody
+    public Map<String, Object> deleteHistory(
+            @PathVariable Long chatPostIdx,
+            HttpSession session) {
+
+        UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            return Map.of("success", false, "message", "로그인 후 이용할 수 있습니다.");
+        }
+
+        boolean success = assistantService.deleteChatPost(
+                chatPostIdx,
+                loginUser.getUserIdx()
+        );
+
+        Long currentChatPostIdx = (Long) session.getAttribute("currentChatPostIdx");
+        if (currentChatPostIdx != null && currentChatPostIdx.equals(chatPostIdx)) {
+            session.removeAttribute("chatHistory");
+            session.removeAttribute("currentChatPostIdx");
+        }
+
+        return Map.of("success", success);
     }
 
     @PostMapping("/reset")

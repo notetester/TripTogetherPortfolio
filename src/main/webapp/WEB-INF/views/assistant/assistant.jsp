@@ -3,6 +3,129 @@
 
 <c:set var="pageCSS" value="assistant/assistant.css"/>
 <%@ include file="../common/header.jsp" %>
+
+<head>
+    <style>
+        .history-section {
+            margin-top: 22px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .history-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .new-chat-btn {
+            border: none;
+            background: transparent;
+            color: #4f46e5;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .history-load-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            text-align: left;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .history-edit-btn,
+        .history-delete-btn {
+            border: none;
+            background: #f3f4f6;
+            color: #6b7280;
+            font-size: 11px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .history-edit-btn {
+            color: #6b7280;
+        }
+
+        .history-delete-btn {
+            color: #ef4444;
+        }
+
+        .history-empty,
+        .history-login-guide {
+            font-size: 12px;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            background: #fff;
+        }
+
+        .history-item.active {
+            border-color: #6366f1;
+            background: #eef2ff;
+        }
+
+        .history-item.active .history-load-btn {
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        .history-item.editing {
+            padding: 8px;
+            border-color: #6366f1;
+            background: #fff;
+        }
+
+        .history-title-input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            color: #374151;
+            background: transparent;
+        }
+
+
+    </style>
+</head>
 <body>
 <div class="chat-wrap">
 
@@ -29,7 +152,52 @@
             <button class="qb" onclick="sendQuick('여행 준비물 체크리스트 알려줘')">📋 준비물 체크리스트</button>
         </div>
 
-        <button class="reset-btn" onclick="resetChat()">🗑️ 대화 초기화</button>
+        <div class="history-section">
+            <div class="history-header">
+                <span class="history-title">이전 대화</span>
+            </div>
+
+            <c:choose>
+                <c:when test="${isLogin}">
+                    <c:choose>
+                        <c:when test="${not empty chatPostList}">
+                            <div class="history-list">
+                                <c:forEach var="chatPost" items="${chatPostList}">
+                                    <div class="history-item" id="history-${chatPost.chat_post_idx}">
+                                        <button type="button"
+                                                class="history-load-btn"
+                                                onclick="loadHistory('${chatPost.chat_post_idx}', this)">
+                                            <c:out value="${chatPost.title}" />
+                                        </button>
+
+                                        <button type="button"
+                                                class="history-edit-btn"
+                                                onclick="editHistoryTitle('${chatPost.chat_post_idx}', this)">
+                                            수정
+                                        </button>
+
+                                        <button type="button"
+                                                class="history-delete-btn"
+                                                onclick="deleteHistory('${chatPost.chat_post_idx}')">
+                                            삭제
+                                        </button>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <p class="history-empty">저장된 대화가 없습니다.</p>
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
+
+                <c:otherwise>
+                    <p class="history-login-guide">로그인하면 이전 대화를 저장하고 다시 볼 수 있어요.</p>
+                </c:otherwise>
+            </c:choose>
+        </div>
+
+        <button class="reset-btn" onclick="startNewChat()">새 대화 시작하기</button>
     </aside>
 
     <main class="chat-main">
@@ -69,11 +237,10 @@
     </main>
 </div>
 
-<%@ include file="../common/footer.jsp" %>
-
 <script>
     const CTX = '${pageContext.request.contextPath}';
     let isLoading = false;
+    let currentChatPostIdx = null;
 
     async function sendMessage() {
         if (isLoading) return;
@@ -92,37 +259,29 @@
             const res = await fetch(CTX + '/assistant/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message})
+                body: JSON.stringify({
+                    message: message,
+                    chatPostIdx: currentChatPostIdx
+                })
             });
 
-            const rawText = await res.text();
-            console.log('[assistant] status=', res.status);
-            console.log('[assistant] raw response=', rawText);
-
-            let data;
-            try {
-                data = JSON.parse(rawText);
-            } catch (parseError) {
-                removeLoadingBubble(loadingId);
-                appendMessage('ai', '❌ 서버 응답을 해석하지 못했습니다.\nHTML 오류 페이지가 반환되었을 가능성이 있습니다.');
-                return;
-            }
+            const data = await res.json();
 
             removeLoadingBubble(loadingId);
 
-            if (!res.ok) {
-                appendMessage('ai', data.answer || ('❌ 서버 오류가 발생했습니다. status=' + res.status));
+            if (!data.success) {
+                appendMessage('ai', data.answer || '요청 처리 중 오류가 발생했습니다.');
                 return;
             }
 
-            if (!data.success) {
-                appendMessage('ai', data.answer || '❌ 요청 처리 중 오류가 발생했습니다.');
-                return;
+            if (data.chatPostIdx) {
+                currentChatPostIdx = data.chatPostIdx;
             }
 
             appendMessage('ai', data.answer || '응답을 받지 못했습니다.');
+
         } catch (e) {
-            console.error('[assistant] fetch error=', e);
+            console.error(e);
             removeLoadingBubble(loadingId);
             appendMessage('ai', '❌ 네트워크 오류가 발생했습니다.');
         } finally {
@@ -135,22 +294,159 @@
         sendMessage();
     }
 
-    async function resetChat() {
-        if (!confirm('대화 내용을 모두 초기화할까요?')) return;
+    async function loadHistory(chatPostIdx, button) {
+        if (!chatPostIdx) {
+            alert("대화 번호를 찾을 수 없습니다.");
+            return;
+        }
 
         try {
-            const res = await fetch(CTX + '/assistant/reset', {method: 'POST'});
-            console.log('[assistant] reset status=', res.status);
+            const res = await fetch(CTX + '/assistant/history/' + chatPostIdx);
+            const data = await res.json();
+
+            if (!data.success) {
+                alert(data.message || "대화 기록을 불러오지 못했습니다.");
+                return;
+            }
+
+            currentChatPostIdx = data.chatPostIdx;
+
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            const item = button.closest('.history-item');
+            if (item) item.classList.add('active');
+
+            const body = document.getElementById('chatBody');
+            body.innerHTML = '';
+
+            data.history.forEach(msg => {
+                appendMessage(msg.role === 'assistant' ? 'ai' : 'user', msg.content);
+            });
+
         } catch (e) {
-            console.error('[assistant] reset error=', e);
+            console.error(e);
+            alert("대화 기록을 불러오는 중 오류가 발생했습니다.");
+        }
+    }
+
+    function editHistoryTitle(chatPostIdx, button) {
+        const item = button.closest('.history-item');
+        const titleBtn = item.querySelector('.history-load-btn');
+        const oldTitle = titleBtn.textContent.trim();
+
+        item.classList.add('editing');
+        item.innerHTML = '';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'history-title-input';
+        input.value = oldTitle;
+
+        item.appendChild(input);
+        input.focus();
+        input.select();
+
+        let saved = false;
+
+        async function saveTitle() {
+            if (saved) return;
+            saved = true;
+
+            const newTitle = input.value.trim();
+
+            if (!newTitle || newTitle === oldTitle) {
+                location.reload();
+                return;
+            }
+
+            try {
+                const res = await fetch(CTX + '/assistant/history/' + chatPostIdx + '/title', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({title: newTitle})
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message || '제목 수정에 실패했습니다.');
+                    location.reload();
+                }
+            } catch (e) {
+                console.error(e);
+                alert('제목 수정 중 오류가 발생했습니다.');
+                location.reload();
+            }
+        }
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                input.blur();
+            }
+
+            if (e.key === 'Escape') {
+                location.reload();
+            }
+        });
+
+        input.addEventListener('blur', saveTitle);
+    }
+
+    async function deleteHistory(chatPostIdx) {
+        if (!chatPostIdx) {
+            alert("대화 번호를 찾을 수 없습니다.");
+            return;
+        }
+
+        if (!confirm("이 대화를 삭제할까요?")) return;
+
+        try {
+            const res = await fetch(CTX + '/assistant/history/' + chatPostIdx + '/delete', {
+                method: 'POST'
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                location.reload();
+            } else {
+                alert("대화 삭제에 실패했습니다.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("대화 삭제 중 오류가 발생했습니다.");
+        }
+    }
+
+    async function startNewChat() {
+        currentChatPostIdx = null;
+
+        try {
+            await fetch(CTX + '/assistant/reset', {method: 'POST'});
+        } catch (e) {
+            console.error(e);
         }
 
         const body = document.getElementById('chatBody');
         body.innerHTML =
             '<div class="msg-row ai">' +
             '<div class="msg-avatar">✈️</div>' +
-            '<div class="msg-bubble">대화가 초기화되었습니다.</div>' +
+            '<div class="msg-bubble">새 대화를 시작할게요. 어떤 여행을 도와드릴까요? ✨</div>' +
             '</div>';
+
+        document.querySelectorAll('.history-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // 왼쪽 이전 대화 목록 갱신용
+        setTimeout(() => {
+            location.reload();
+        }, 300);
     }
 
     function appendMessage(role, text) {
@@ -196,16 +492,13 @@
     }
 
     function formatText(text) {
-        return text
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
+        return escapeHtml(text)
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\n/g, '<br>');
     }
 
     function escapeHtml(text) {
-        return text
+        return String(text)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
@@ -223,5 +516,8 @@
         el.style.height = Math.min(el.scrollHeight, 120) + 'px';
     }
 </script>
+
+<%@ include file="../common/footer.jsp" %>
+
 </body>
 </html>
