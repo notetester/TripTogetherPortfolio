@@ -5,158 +5,134 @@
 <c:set var="pageCSS" value="assistant/assistant.css" />
 <%@ include file="../common/header.jsp" %>
 
-<<<<<<< PARK-SEO-JIN
-<head>
-    <style>
-        .history-section {
-            margin-top: 22px;
-            padding-top: 16px;
-            border-top: 1px solid #e5e7eb;
-        }
+<style>
+    .history-section {
+        margin-top: 22px;
+        padding-top: 16px;
+        border-top: 1px solid #e5e7eb;
+    }
 
-        .history-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
+    .history-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
 
-        .history-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #374151;
-        }
+    .history-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+    }
 
-        .new-chat-btn {
-            border: none;
-            background: transparent;
-            color: #4f46e5;
-            font-size: 12px;
-            cursor: pointer;
-        }
+    .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+    .history-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        background: #fff;
+    }
 
-        .history-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 8px;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            background: #fff;
-        }
+    .history-item.active {
+        border-color: #6366f1;
+        background: #eef2ff;
+    }
 
-        .history-load-btn {
-            flex: 1;
-            border: none;
-            background: transparent;
-            text-align: left;
-            font-size: 13px;
-            color: #374151;
-            cursor: pointer;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
+    .history-item.active .history-load-btn {
+        color: #4f46e5;
+        font-weight: 700;
+    }
 
-        .history-edit-btn,
-        .history-delete-btn {
-            border: none;
-            background: #f3f4f6;
-            color: #6b7280;
-            font-size: 11px;
-            padding: 4px 6px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+    .history-item.editing {
+        padding: 8px;
+        border-color: #6366f1;
+        background: #fff;
+    }
 
-        .history-edit-btn {
-            color: #6b7280;
-        }
+    .history-load-btn {
+        flex: 1;
+        border: none;
+        background: transparent;
+        text-align: left;
+        font-size: 13px;
+        color: #374151;
+        cursor: pointer;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
 
-        .history-delete-btn {
-            color: #ef4444;
-        }
+    .history-edit-btn,
+    .history-delete-btn {
+        border: none;
+        background: #f3f4f6;
+        font-size: 11px;
+        padding: 4px 6px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
 
-        .history-empty,
-        .history-login-guide {
-            font-size: 12px;
-            color: #9ca3af;
-            line-height: 1.5;
-        }
+    .history-edit-btn {
+        color: #6b7280;
+    }
 
-        .history-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 10px;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            background: #fff;
-        }
+    .history-delete-btn {
+        color: #ef4444;
+    }
 
-        .history-item.active {
-            border-color: #6366f1;
-            background: #eef2ff;
-        }
+    .history-title-input {
+        width: 100%;
+        border: none;
+        outline: none;
+        font-size: 14px;
+        color: #374151;
+        background: transparent;
+    }
 
-        .history-item.active .history-load-btn {
-            color: #4f46e5;
-            font-weight: 700;
-        }
+    .history-empty,
+    .history-login-guide {
+        font-size: 12px;
+        color: #9ca3af;
+        line-height: 1.5;
+    }
+</style>
 
-        .history-item.editing {
-            padding: 8px;
-            border-color: #6366f1;
-            background: #fff;
-        }
+<%-- ============================================================
+     JS용 메시지 변수 — 서버 사이드에서 미리 꺼내 둠
+     ============================================================ --%>
+<spring:message code="assistant.error.parse"          var="msgErrorParse"               javaScriptEscape="true"/>
+<spring:message code="assistant.error.server"         var="msgErrorServer"              javaScriptEscape="true"/>
+<spring:message code="assistant.error.request"        var="msgErrorRequest"             javaScriptEscape="true"/>
+<spring:message code="assistant.error.network"        var="msgErrorNetwork"             javaScriptEscape="true"/>
+<spring:message code="assistant.error.noResponse"     var="msgErrorNoResponse"          javaScriptEscape="true"/>
+<spring:message code="assistant.loading"              var="msgLoading"                  javaScriptEscape="true"/>
+<spring:message code="assistant.reset.confirm"        var="msgResetConfirm"             javaScriptEscape="true"/>
+<spring:message code="assistant.reset.done"           var="msgResetDone"                javaScriptEscape="true"/>
+<spring:message code="assistant.quick.tokyo"          var="msgQuickTokyo"               javaScriptEscape="true"/>
+<spring:message code="assistant.quick.budget"         var="msgQuickBudget"              javaScriptEscape="true"/>
+<spring:message code="assistant.quick.backpacking"    var="msgQuickBackpacking"         javaScriptEscape="true"/>
+<spring:message code="assistant.quick.jeju"           var="msgQuickJeju"                javaScriptEscape="true"/>
+<spring:message code="assistant.quick.solo"           var="msgQuickSolo"                javaScriptEscape="true"/>
+<spring:message code="assistant.quick.checklist"      var="msgQuickChecklist"           javaScriptEscape="true"/>
+<spring:message code="assistant.input.placeholder"    var="msgInputPlaceholder"         javaScriptEscape="true"/>
+<spring:message code="assistant.history.noIdx"        var="msgHistoryNoIdx"             javaScriptEscape="true"/>
+<spring:message code="assistant.history.loadFailed"   var="msgHistoryLoadFailed"        javaScriptEscape="true"/>
+<spring:message code="assistant.history.loadError"    var="msgHistoryLoadError"         javaScriptEscape="true"/>
+<spring:message code="assistant.history.deleteConfirm" var="msgHistoryDeleteConfirm"    javaScriptEscape="true"/>
+<spring:message code="assistant.history.deleteFailed" var="msgHistoryDeleteFailed"      javaScriptEscape="true"/>
+<spring:message code="assistant.history.deleteError"  var="msgHistoryDeleteError"       javaScriptEscape="true"/>
+<spring:message code="assistant.history.editTitleFailed" var="msgHistoryEditTitleFailed" javaScriptEscape="true"/>
+<spring:message code="assistant.history.editTitleError"  var="msgHistoryEditTitleError"  javaScriptEscape="true"/>
+<spring:message code="assistant.history.newChatGreeting" var="msgHistoryNewChatGreeting" javaScriptEscape="true"/>
 
-        .history-title-input {
-            width: 100%;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            color: #374151;
-            background: transparent;
-        }
-
-
-    </style>
-</head>
-=======
-<%-- ==========================================================================
-     [다국어] JavaScript에서 사용할 메시지를 서버 사이드에서 미리 변수로 꺼내 둔다.
-     ========================================================================== --%>
-
-<%-- 에러 메시지 --%>
-<spring:message code="assistant.error.parse" var="msgErrorParse" />
-<spring:message code="assistant.error.server" var="msgErrorServer" />
-<spring:message code="assistant.error.request" var="msgErrorRequest" />
-<spring:message code="assistant.error.network" var="msgErrorNetwork" />
-<spring:message code="assistant.error.noResponse" var="msgErrorNoResponse" />
-
-<%-- 로딩 / 초기화 관련 메시지 --%>
-<spring:message code="assistant.loading" var="msgLoading" />
-<spring:message code="assistant.reset.confirm" var="msgResetConfirm" />
-<spring:message code="assistant.reset.done" var="msgResetDone" />
-
-<%-- 퀵버튼에서 보내는 질문 텍스트 --%>
-<spring:message code="assistant.quick.tokyo" var="msgQuickTokyo" />
-<spring:message code="assistant.quick.budget" var="msgQuickBudget" />
-<spring:message code="assistant.quick.backpacking" var="msgQuickBackpacking" />
-<spring:message code="assistant.quick.jeju" var="msgQuickJeju" />
-<spring:message code="assistant.quick.solo" var="msgQuickSolo" />
-<spring:message code="assistant.quick.checklist" var="msgQuickChecklist" />
-
-<%-- input placeholder 용 메시지 --%>
-<spring:message code="assistant.input.placeholder" var="msgInputPlaceholder" />
-
->>>>>>> dev
 <body>
 <div class="chat-wrap">
 
@@ -199,10 +175,9 @@
             </button>
         </div>
 
-<<<<<<< PARK-SEO-JIN
         <div class="history-section">
             <div class="history-header">
-                <span class="history-title">이전 대화</span>
+                <span class="history-title"><spring:message code="assistant.history.title" /></span>
             </div>
 
             <c:choose>
@@ -214,43 +189,40 @@
                                     <div class="history-item" id="history-${chatPost.chat_post_idx}">
                                         <button type="button"
                                                 class="history-load-btn"
-                                                onclick="loadHistory('${chatPost.chat_post_idx}', this)">
+                                                data-idx="${chatPost.chat_post_idx}"
+                                                onclick="loadHistory(this.dataset.idx, this)">
                                             <c:out value="${chatPost.title}" />
                                         </button>
-
                                         <button type="button"
                                                 class="history-edit-btn"
-                                                onclick="editHistoryTitle('${chatPost.chat_post_idx}', this)">
-                                            수정
+                                                data-idx="${chatPost.chat_post_idx}"
+                                                onclick="editHistoryTitle(this.dataset.idx, this)">
+                                            <spring:message code="assistant.history.edit" />
                                         </button>
-
                                         <button type="button"
                                                 class="history-delete-btn"
-                                                onclick="deleteHistory('${chatPost.chat_post_idx}')">
-                                            삭제
+                                                data-idx="${chatPost.chat_post_idx}"
+                                                onclick="deleteHistory(this.dataset.idx)">
+                                            <spring:message code="assistant.history.delete" />
                                         </button>
                                     </div>
                                 </c:forEach>
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <p class="history-empty">저장된 대화가 없습니다.</p>
+                            <p class="history-empty"><spring:message code="assistant.history.empty" /></p>
                         </c:otherwise>
                     </c:choose>
                 </c:when>
-
                 <c:otherwise>
-                    <p class="history-login-guide">로그인하면 이전 대화를 저장하고 다시 볼 수 있어요.</p>
+                    <p class="history-login-guide"><spring:message code="assistant.history.loginGuide" /></p>
                 </c:otherwise>
             </c:choose>
         </div>
 
-        <button class="reset-btn" onclick="startNewChat()">새 대화 시작하기</button>
-=======
-        <button class="reset-btn" onclick="resetChat()">
-            <spring:message code="assistant.reset.btn" />
+        <button class="reset-btn" onclick="startNewChat()">
+            <spring:message code="assistant.history.newChat" />
         </button>
->>>>>>> dev
     </aside>
 
     <%-- ===================== 메인 채팅 영역 ===================== --%>
@@ -294,39 +266,26 @@
 <script>
     const CTX = '${pageContext.request.contextPath}';
 
-    // --- 다국어 메시지 상수 ---
-    const MSG_ERROR_PARSE = '${msgErrorParse}';
-    const MSG_ERROR_SERVER = '${msgErrorServer}';
-    const MSG_ERROR_REQUEST = '${msgErrorRequest}';
-    const MSG_ERROR_NETWORK = '${msgErrorNetwork}';
+    const MSG_ERROR_PARSE       = '${msgErrorParse}';
+    const MSG_ERROR_SERVER      = '${msgErrorServer}';
+    const MSG_ERROR_REQUEST     = '${msgErrorRequest}';
+    const MSG_ERROR_NETWORK     = '${msgErrorNetwork}';
     const MSG_ERROR_NO_RESPONSE = '${msgErrorNoResponse}';
-    const MSG_LOADING = '${msgLoading}';
-    const MSG_RESET_CONFIRM = '${msgResetConfirm}';
-    const MSG_RESET_DONE = '${msgResetDone}';
+    const MSG_LOADING           = '${msgLoading}';
+    const MSG_RESET_CONFIRM     = '${msgResetConfirm}';
+    const MSG_RESET_DONE        = '${msgResetDone}';
+    const MSG_HISTORY_NO_IDX         = '${msgHistoryNoIdx}';
+    const MSG_HISTORY_LOAD_FAILED    = '${msgHistoryLoadFailed}';
+    const MSG_HISTORY_LOAD_ERROR     = '${msgHistoryLoadError}';
+    const MSG_HISTORY_DELETE_CONFIRM = '${msgHistoryDeleteConfirm}';
+    const MSG_HISTORY_DELETE_FAILED  = '${msgHistoryDeleteFailed}';
+    const MSG_HISTORY_DELETE_ERROR   = '${msgHistoryDeleteError}';
+    const MSG_HISTORY_EDIT_FAILED    = '${msgHistoryEditTitleFailed}';
+    const MSG_HISTORY_EDIT_ERROR     = '${msgHistoryEditTitleError}';
+    const MSG_NEW_CHAT_GREETING      = '${msgHistoryNewChatGreeting}';
 
     let isLoading = false;
-<<<<<<< PARK-SEO-JIN
     let currentChatPostIdx = null;
-=======
-    <spring:message code="assistant.error.parse" javaScriptEscape="true" var="assistantErrorParseJs"/>
-    <spring:message code="assistant.error.request" javaScriptEscape="true" var="assistantErrorRequestJs"/>
-    <spring:message code="assistant.error.network" javaScriptEscape="true" var="assistantErrorNetworkJs"/>
-    <spring:message code="assistant.error.noResponse" javaScriptEscape="true" var="assistantErrorNoResponseJs"/>
-    <spring:message code="assistant.error.server" javaScriptEscape="true" var="assistantErrorServerJs"/>
-    <spring:message code="assistant.reset.confirm" javaScriptEscape="true" var="assistantResetConfirmJs"/>
-    <spring:message code="assistant.reset.done" javaScriptEscape="true" var="assistantResetDoneJs"/>
-    <spring:message code="assistant.loading.answering" javaScriptEscape="true" var="assistantLoadingAnsweringJs"/>
-    const assistantMessages = {
-        errorNetwork: '${assistantErrorNetworkJs}',
-        errorNoResponse: '${assistantErrorNoResponseJs}',
-        errorParse: '${assistantErrorParseJs}',
-        errorRequest: '${assistantErrorRequestJs}',
-        errorServer: '${assistantErrorServerJs}',
-        loadingAnswering: '${assistantLoadingAnsweringJs}',
-        resetConfirm: '${assistantResetConfirmJs}',
-        resetDone: '${assistantResetDoneJs}'
-    };
->>>>>>> dev
 
     async function sendMessage() {
         if (isLoading) return;
@@ -344,38 +303,11 @@
         try {
             const res = await fetch(CTX + '/assistant/chat', {
                 method: 'POST',
-<<<<<<< PARK-SEO-JIN
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    message: message,
-                    chatPostIdx: currentChatPostIdx
-                })
-            });
-
-            const data = await res.json();
-
-            removeLoadingBubble(loadingId);
-
-            if (!data.success) {
-                appendMessage('ai', data.answer || '요청 처리 중 오류가 발생했습니다.');
-                return;
-            }
-
-            if (data.chatPostIdx) {
-                currentChatPostIdx = data.chatPostIdx;
-            }
-
-            appendMessage('ai', data.answer || '응답을 받지 못했습니다.');
-
-=======
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message })
+                body: JSON.stringify({ message: message, chatPostIdx: currentChatPostIdx })
             });
 
             const rawText = await res.text();
-            console.log('[assistant] status=', res.status);
-            console.log('[assistant] raw response=', rawText);
-
             let data;
             try {
                 data = JSON.parse(rawText);
@@ -397,8 +329,11 @@
                 return;
             }
 
+            if (data.chatPostIdx) {
+                currentChatPostIdx = data.chatPostIdx;
+            }
+
             appendMessage('ai', data.answer || MSG_ERROR_NO_RESPONSE);
->>>>>>> dev
         } catch (e) {
             console.error(e);
             removeLoadingBubble(loadingId);
@@ -413,10 +348,9 @@
         sendMessage();
     }
 
-<<<<<<< PARK-SEO-JIN
     async function loadHistory(chatPostIdx, button) {
         if (!chatPostIdx) {
-            alert("대화 번호를 찾을 수 없습니다.");
+            alert(MSG_HISTORY_NO_IDX);
             return;
         }
 
@@ -425,13 +359,13 @@
             const data = await res.json();
 
             if (!data.success) {
-                alert(data.message || "대화 기록을 불러오지 못했습니다.");
+                alert(data.message || MSG_HISTORY_LOAD_FAILED);
                 return;
             }
 
             currentChatPostIdx = data.chatPostIdx;
 
-            document.querySelectorAll('.history-item').forEach(item => {
+            document.querySelectorAll('.history-item').forEach(function(item) {
                 item.classList.remove('active');
             });
 
@@ -440,14 +374,12 @@
 
             const body = document.getElementById('chatBody');
             body.innerHTML = '';
-
-            data.history.forEach(msg => {
+            data.history.forEach(function(msg) {
                 appendMessage(msg.role === 'assistant' ? 'ai' : 'user', msg.content);
             });
-
         } catch (e) {
             console.error(e);
-            alert("대화 기록을 불러오는 중 오류가 발생했습니다.");
+            alert(MSG_HISTORY_LOAD_ERROR);
         }
     }
 
@@ -463,7 +395,6 @@
         input.type = 'text';
         input.className = 'history-title-input';
         input.value = oldTitle;
-
         item.appendChild(input);
         input.focus();
         input.select();
@@ -475,7 +406,6 @@
             saved = true;
 
             const newTitle = input.value.trim();
-
             if (!newTitle || newTitle === oldTitle) {
                 location.reload();
                 return;
@@ -484,62 +414,50 @@
             try {
                 const res = await fetch(CTX + '/assistant/history/' + chatPostIdx + '/title', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({title: newTitle})
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: newTitle })
                 });
-
                 const data = await res.json();
-
                 if (data.success) {
                     location.reload();
                 } else {
-                    alert(data.message || '제목 수정에 실패했습니다.');
+                    alert(data.message || MSG_HISTORY_EDIT_FAILED);
                     location.reload();
                 }
             } catch (e) {
                 console.error(e);
-                alert('제목 수정 중 오류가 발생했습니다.');
+                alert(MSG_HISTORY_EDIT_ERROR);
                 location.reload();
             }
         }
 
-        input.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                input.blur();
-            }
-
-            if (e.key === 'Escape') {
-                location.reload();
-            }
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+            if (e.key === 'Escape') { location.reload(); }
         });
-
         input.addEventListener('blur', saveTitle);
     }
 
     async function deleteHistory(chatPostIdx) {
         if (!chatPostIdx) {
-            alert("대화 번호를 찾을 수 없습니다.");
+            alert(MSG_HISTORY_NO_IDX);
             return;
         }
-
-        if (!confirm("이 대화를 삭제할까요?")) return;
+        if (!confirm(MSG_HISTORY_DELETE_CONFIRM)) return;
 
         try {
             const res = await fetch(CTX + '/assistant/history/' + chatPostIdx + '/delete', {
                 method: 'POST'
             });
-
             const data = await res.json();
-
             if (data.success) {
                 location.reload();
             } else {
-                alert("대화 삭제에 실패했습니다.");
+                alert(MSG_HISTORY_DELETE_FAILED);
             }
         } catch (e) {
             console.error(e);
-            alert("대화 삭제 중 오류가 발생했습니다.");
+            alert(MSG_HISTORY_DELETE_ERROR);
         }
     }
 
@@ -547,15 +465,7 @@
         currentChatPostIdx = null;
 
         try {
-            await fetch(CTX + '/assistant/reset', {method: 'POST'});
-=======
-    async function resetChat() {
-        if (!confirm(MSG_RESET_CONFIRM)) return;
-
-        try {
-            const res = await fetch(CTX + '/assistant/reset', { method: 'POST' });
-            console.log('[assistant] reset status=', res.status);
->>>>>>> dev
+            await fetch(CTX + '/assistant/reset', { method: 'POST' });
         } catch (e) {
             console.error(e);
         }
@@ -563,23 +473,15 @@
         const body = document.getElementById('chatBody');
         body.innerHTML =
             '<div class="msg-row ai">' +
-<<<<<<< PARK-SEO-JIN
             '<div class="msg-avatar">✈️</div>' +
-            '<div class="msg-bubble">새 대화를 시작할게요. 어떤 여행을 도와드릴까요? ✨</div>' +
-=======
-                '<div class="msg-avatar">✈️</div>' +
-                '<div class="msg-bubble">' + escapeHtml(MSG_RESET_DONE) + '</div>' +
->>>>>>> dev
+            '<div class="msg-bubble">' + escapeHtml(MSG_NEW_CHAT_GREETING) + '</div>' +
             '</div>';
 
-        document.querySelectorAll('.history-item').forEach(item => {
+        document.querySelectorAll('.history-item').forEach(function(item) {
             item.classList.remove('active');
         });
 
-        // 왼쪽 이전 대화 목록 갱신용
-        setTimeout(() => {
-            location.reload();
-        }, 300);
+        setTimeout(function() { location.reload(); }, 300);
     }
 
     function appendMessage(role, text) {
@@ -592,8 +494,7 @@
                 '<div class="msg-avatar">✈️</div>' +
                 '<div class="msg-bubble">' + formatText(text) + '</div>';
         } else {
-            row.innerHTML =
-                '<div class="msg-bubble">' + escapeHtml(text) + '</div>';
+            row.innerHTML = '<div class="msg-bubble">' + escapeHtml(text) + '</div>';
         }
 
         body.appendChild(row);
@@ -613,15 +514,12 @@
 
     function setLoading(flag) {
         isLoading = flag;
-
-        const btn = document.getElementById('sendBtn');
-        const icon = document.getElementById('sendIcon');
+        const btn   = document.getElementById('sendBtn');
+        const icon  = document.getElementById('sendIcon');
         const input = document.getElementById('chatInput');
-
-        btn.disabled = flag;
+        btn.disabled   = flag;
         input.disabled = flag;
         icon.textContent = flag ? '...' : '➤';
-
         if (!flag) input.focus();
     }
 

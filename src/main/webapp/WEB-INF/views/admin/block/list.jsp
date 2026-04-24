@@ -204,8 +204,13 @@
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
-                            <table class="adm-table">
-                                <thead><tr><th><spring:message code="admin.common.member"/></th><th><spring:message code="admin.common.target"/></th><th><spring:message code="admin.common.status"/></th><th><spring:message code="admin.common.action"/></th></tr></thead>
+                            <table class="adm-table" id="dash-user-blocks">
+                                <thead><tr>
+                                    <th onclick="dashSortBy('dash-user-blocks',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-user-blocks',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-user-blocks',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/> <span class="sort-ico">▼</span></th>
+                                    <th><spring:message code="admin.common.action"/></th>
+                                </tr></thead>
                                 <tbody>
                                 <c:forEach var="b" items="${userBlocks}" begin="0" end="4">
                                     <tr>
@@ -276,8 +281,13 @@
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
-                            <table class="adm-table">
-                                <thead><tr><th><spring:message code="admin.common.target"/></th><th><spring:message code="admin.common.actionLabel"/></th><th><spring:message code="admin.blocks.effectiveState"/></th><th><spring:message code="admin.common.action"/></th></tr></thead>
+                            <table class="adm-table" id="dash-ip-rules">
+                                <thead><tr>
+                                    <th onclick="dashSortBy('dash-ip-rules',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-ip-rules',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-ip-rules',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.effectiveState"/> <span class="sort-ico">▼</span></th>
+                                    <th><spring:message code="admin.common.action"/></th>
+                                </tr></thead>
                                 <tbody>
                                 <c:forEach var="r" items="${ipBlocks}" begin="0" end="4">
                                     <tr>
@@ -354,8 +364,13 @@
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
-                            <table class="adm-table">
-                                <thead><tr><th><spring:message code="admin.context.batch"/></th><th><spring:message code="admin.common.actionLabel"/></th><th><spring:message code="admin.blocks.impact"/></th><th><spring:message code="admin.common.action"/></th></tr></thead>
+                            <table class="adm-table" id="dash-batches">
+                                <thead><tr>
+                                    <th onclick="dashSortBy('dash-batches',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-batches',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-batches',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.impact"/> <span class="sort-ico">▼</span></th>
+                                    <th><spring:message code="admin.common.action"/></th>
+                                </tr></thead>
                                 <tbody>
                                 <c:forEach var="op" items="${batchOperations}" begin="0" end="4">
                                     <tr>
@@ -388,8 +403,14 @@
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
-                            <table class="adm-table">
-                                <thead><tr><th><spring:message code="admin.common.time"/></th><th><spring:message code="admin.common.target"/></th><th><spring:message code="admin.blocks.changeKind"/></th><th><spring:message code="admin.blocks.result"/></th><th><spring:message code="admin.common.action"/></th></tr></thead>
+                            <table class="adm-table" id="dash-histories">
+                                <thead><tr>
+                                    <th onclick="dashSortBy('dash-histories',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-histories',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-histories',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-histories',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.result"/> <span class="sort-ico">▼</span></th>
+                                    <th><spring:message code="admin.common.action"/></th>
+                                </tr></thead>
                                 <tbody>
                                 <c:forEach var="h" items="${histories}" begin="0" end="4">
                                     <c:set var="historyDashboardAt" value="${h.blockedAtDate}"/>
@@ -468,10 +489,27 @@
         </div>
     </div>
 
-    <div class="adm-card js-section-card" data-section="user-blocks" style="margin-bottom:20px;">
+    <div class="adm-card js-section-card" data-section="user-blocks" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.blocks.userBlocks.title"/></div>
-            <div class="adm-card-sub"><spring:message code="admin.blocks.userBlocks.sub"/></div>
+            <div>
+                <div class="adm-card-title"><spring:message code="admin.blocks.userBlocks.title"/></div>
+                <div class="adm-card-sub"><spring:message code="admin.blocks.userBlocks.sub"/></div>
+            </div>
+            <div style="position:relative;display:flex;align-items:center;gap:8px;">
+                <select id="ub-exportFormat" class="adm-select js-block-export-format" data-section="user-blocks" style="width:90px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-ghost"
+                        onclick="document.getElementById('ub-exportDropdown').style.display=(document.getElementById('ub-exportDropdown').style.display==='none'?'block':'none')">
+                    <spring:message code="admin.common.export"/> ▾
+                </button>
+                <div id="ub-exportDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#1e293b;border:1px solid #334155;border-radius:8px;z-index:200;min-width:180px;padding:4px 0;">
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','all')"><spring:message code="admin.common.exportAll"/></button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
+                    <button type="button" class="adm-export-item js-block-export-selected" data-section="user-blocks" id="ub-exportSelectedBtn" disabled onclick="exportBlockData('user-blocks','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="ub-selectedCount">0</span>)</button>
+                </div>
+            </div>
         </div>
         <div class="adm-card-body" style="padding:0;">
             <div class="adm-local-toolbar">
@@ -497,10 +535,26 @@
                     </select>
                 </div>
             </div>
+            <div id="ub-bulkBar" class="js-block-bulkbar" data-section="user-blocks" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
+                <span style="color:#93c5fd;font-size:13px;"><spring:message code="admin.common.selectedCount"/>: <strong id="ub-bulkCount" class="js-block-bulk-count">0</strong></span>
+                <c:if test="${hasUserBlockAdmin}">
+                    <button type="button" class="adm-btn adm-btn-danger" onclick="bulkReleaseUserBlocks()"><spring:message code="admin.common.bulkRelease"/></button>
+                </c:if>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('user-blocks')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
+            </div>
             <div class="adm-table-wrap">
                 <table class="adm-table">
                     <thead>
-                    <tr><th><spring:message code="admin.common.member"/></th><th><spring:message code="admin.blocks.filter.blockType"/></th><th><spring:message code="admin.common.target"/></th><th><spring:message code="admin.common.status"/></th><th><spring:message code="admin.common.reason"/></th><th><spring:message code="admin.blocks.blockAndExpire"/></th><th><spring:message code="admin.common.action"/></th></tr>
+                    <tr>
+                        <th style="width:36px;"><input type="checkbox" id="ub-checkAll" class="js-block-check-all" data-section="user-blocks" onchange="blockToggleAll('user-blocks')"></th>
+                        <th class="js-local-sort" data-section="user-blocks" data-sort="nickname" onclick="blockSortBy('user-blocks','nickname')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="user-blocks" data-sort="blockType" onclick="blockSortBy('user-blocks','blockType')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.filter.blockType"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="user-blocks" data-sort="target" onclick="blockSortBy('user-blocks','target')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="user-blocks" data-sort="snapshotStatus" onclick="blockSortBy('user-blocks','snapshotStatus')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="user-blocks" data-sort="reason" onclick="blockSortBy('user-blocks','reason')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="user-blocks" data-sort="blockedAt" onclick="blockSortBy('user-blocks','blockedAt')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.blockAndExpire"/> <span class="sort-ico">↕</span></th>
+                        <th><spring:message code="admin.common.action"/></th>
+                    </tr>
                     </thead>
                     <tbody>
                     <c:forEach var="b" items="${userBlocks}">
@@ -521,8 +575,10 @@
                             data-target="${fn:toLowerCase(empty b.blockedIp ? '' : b.blockedIp)} ${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)}"
                             data-reason="${fn:toLowerCase(empty b.reason ? '' : b.reason)}"
                             data-block-type="${fn:toLowerCase(empty b.blockType ? '' : b.blockType)}"
+                            data-snapshot-status="${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}"
                             data-blocked-at="${fn:toLowerCase(userBlockBlockedAtText)}"
                             data-expires-at="${fn:toLowerCase(empty b.expiresAtInputValue ? '' : b.expiresAtInputValue)}">
+                            <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="user-blocks" data-target-key="${fn:escapeXml(b.blockTargetKey)}" value="${fn:escapeXml(b.blockTargetKey)}" onchange="updateBlockBulkBar('user-blocks')"></td>
                             <td>
                                 <c:choose>
                                     <c:when test="${b.userIdx != null}">
@@ -666,7 +722,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty userBlocks}">
-                        <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                        <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                     </c:if>
                     </tbody>
                 </table>
@@ -735,19 +791,34 @@
         </template>
     </c:forEach>
 
-    <div class="adm-card js-section-card" data-section="ip-rules" style="margin-bottom:20px;">
+    <div class="adm-card js-section-card" data-section="ip-rules" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
             <div>
                 <div class="adm-card-title"><spring:message code="admin.blocks.ipRules.title"/></div>
                 <div class="adm-card-sub"><spring:message code="admin.blocks.ipRules.sub"/></div>
             </div>
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                 <c:if test="${hasBlockPolicyAdmin}">
                     <button class="adm-btn adm-btn-ghost" type="button" onclick="openBatchModal()"><spring:message code="admin.blocks.createBatch"/></button>
                 </c:if>
                 <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
                     <button class="adm-btn adm-btn-primary" type="button" onclick="openIpRuleModal()"><spring:message code="admin.blocks.addRule"/></button>
                 </c:if>
+                <div style="position:relative;display:flex;align-items:center;gap:6px;">
+                    <select id="ipr-exportFormat" class="adm-select js-block-export-format" data-section="ip-rules" style="width:90px;">
+                        <option value="csv">CSV</option>
+                        <option value="excel">Excel</option>
+                    </select>
+                    <button type="button" class="adm-btn adm-btn-ghost"
+                            onclick="document.getElementById('ipr-exportDropdown').style.display=(document.getElementById('ipr-exportDropdown').style.display==='none'?'block':'none')">
+                        <spring:message code="admin.common.export"/> ▾
+                    </button>
+                    <div id="ipr-exportDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#1e293b;border:1px solid #334155;border-radius:8px;z-index:200;min-width:180px;padding:4px 0;">
+                        <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','all')"><spring:message code="admin.common.exportAll"/></button>
+                        <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
+                        <button type="button" class="adm-export-item js-block-export-selected" data-section="ip-rules" id="ipr-exportSelectedBtn" disabled onclick="exportBlockData('ip-rules','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="ipr-selectedCount">0</span>)</button>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="adm-card-body" style="padding:0;">
@@ -774,10 +845,27 @@
                     </select>
                 </div>
             </div>
+            <div id="ipr-bulkBar" class="js-block-bulkbar" data-section="ip-rules" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
+                <span style="color:#93c5fd;font-size:13px;"><spring:message code="admin.common.selectedCount"/>: <strong id="ipr-bulkCount" class="js-block-bulk-count">0</strong></span>
+                <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
+                    <button type="button" class="adm-btn adm-btn-primary" onclick="bulkToggleIpRules(true)"><spring:message code="admin.blocks.ruleOn"/></button>
+                    <button type="button" class="adm-btn adm-btn-danger" onclick="bulkToggleIpRules(false)"><spring:message code="admin.blocks.ruleOff"/></button>
+                </c:if>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('ip-rules')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
+            </div>
             <div class="adm-table-wrap">
                 <table class="adm-table">
                     <thead>
-                    <tr><th><spring:message code="admin.common.target"/></th><th><spring:message code="admin.blocks.actionControl"/></th><th><spring:message code="admin.context.batch"/></th><th><spring:message code="admin.common.status"/></th><th><spring:message code="admin.context.priority"/></th><th><spring:message code="admin.common.reason"/></th><th><spring:message code="admin.common.action"/></th></tr>
+                    <tr>
+                        <th style="width:36px;"><input type="checkbox" id="ipr-checkAll" class="js-block-check-all" data-section="ip-rules" onchange="blockToggleAll('ip-rules')"></th>
+                        <th class="js-local-sort" data-section="ip-rules" data-sort="target" onclick="blockSortBy('ip-rules','target')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="ip-rules" data-sort="policy" onclick="blockSortBy('ip-rules','policy')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.actionControl"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="ip-rules" data-sort="batch" onclick="blockSortBy('ip-rules','batch')" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="ip-rules" data-sort="finalState" onclick="blockSortBy('ip-rules','finalState')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="ip-rules" data-sort="priority" onclick="blockSortBy('ip-rules','priority')" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.priority"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="ip-rules" data-sort="reason" onclick="blockSortBy('ip-rules','reason')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/> <span class="sort-ico">↕</span></th>
+                        <th><spring:message code="admin.common.action"/></th>
+                    </tr>
                     </thead>
                     <tbody>
                     <c:forEach var="r" items="${ipBlocks}">
@@ -795,7 +883,9 @@
                             data-priority="${r.priority}"
                             data-policy="${fn:toLowerCase(empty r.blockCategory ? '' : r.blockCategory)} ${fn:toLowerCase(empty r.controlMode ? '' : r.controlMode)} ${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)} ${fn:toLowerCase(empty r.effectiveStatus ? '' : r.effectiveStatus)}"
                             data-blocked-at="${fn:toLowerCase(ipRuleBlockedAtText)}"
-                            data-expires-at="${fn:toLowerCase(empty ipRuleExpiresText ? '' : ipRuleExpiresText)}">
+                            data-expires-at="${fn:toLowerCase(empty ipRuleExpiresText ? '' : ipRuleExpiresText)}"
+                            data-final-state="${fn:toLowerCase(empty r.finalStateLabel ? '' : r.finalStateLabel)}">
+                            <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="ip-rules" data-id="${r.ipBlocklistIdx}" value="${r.ipBlocklistIdx}" onchange="updateBlockBulkBar('ip-rules')"></td>
                             <td>
                                 <button type="button"
                                         class="adm-link-btn js-open-ip-rule-editor"
@@ -938,7 +1028,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty ipBlocks}">
-                        <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                        <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                     </c:if>
                     </tbody>
                 </table>
@@ -1022,7 +1112,7 @@
         </template>
     </c:forEach>
 
-    <div class="adm-card js-section-card" data-section="batches" style="margin-bottom:20px;">
+    <div class="adm-card js-section-card" data-section="batches" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
             <div class="adm-card-title"><spring:message code="admin.blocks.section.batches"/></div>
             <div class="adm-card-sub"><spring:message code="admin.blocks.batches.sub"/></div>
@@ -1052,7 +1142,14 @@
             </div>
             <div class="adm-table-wrap">
                 <table class="adm-table">
-                    <thead><tr><th><spring:message code="admin.blocks.batch"/></th><th><spring:message code="admin.blocks.basePolicy"/></th><th><spring:message code="admin.blocks.currentState"/></th><th><spring:message code="admin.blocks.ruleStats"/></th><th><spring:message code="admin.blocks.description"/></th><th><spring:message code="admin.common.action"/></th></tr></thead>
+                    <thead><tr>
+                        <th class="js-local-sort" data-section="batches" data-sort="batch" onclick="blockSortBy('batches','batch')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.batch"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="batches" data-sort="policy" onclick="blockSortBy('batches','policy')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.basePolicy"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="batches" data-sort="status" onclick="blockSortBy('batches','status')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.currentState"/> <span class="sort-ico">↕</span></th>
+                        <th><spring:message code="admin.blocks.ruleStats"/></th>
+                        <th class="js-local-sort" data-section="batches" data-sort="description" onclick="blockSortBy('batches','description')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.description"/> <span class="sort-ico">↕</span></th>
+                        <th><spring:message code="admin.common.action"/></th>
+                    </tr></thead>
                     <tbody>
                     <c:forEach var="b" items="${batches}">
                         <fmt:formatDate var="batchCreatedAtText" value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
@@ -1236,7 +1333,7 @@
         </template>
     </c:forEach>
 
-    <div class="adm-card js-section-card" data-section="histories">
+    <div class="adm-card js-section-card" data-section="histories" data-enhanced="true">
         <div class="adm-card-head">
             <div class="adm-card-title"><spring:message code="admin.blocks.section.histories"/></div>
             <div class="adm-card-sub"><spring:message code="admin.blocks.histories.sub"/></div>
@@ -1267,7 +1364,15 @@
             </div>
             <div class="adm-table-wrap">
                 <table class="adm-table">
-                    <thead><tr><th><spring:message code="admin.common.time"/></th><th><spring:message code="admin.common.target"/></th><th><spring:message code="admin.common.actionLabel"/></th><th><spring:message code="admin.blocks.changeKind"/></th><th><spring:message code="admin.blocks.result"/></th><th><spring:message code="admin.common.reason"/></th><th><spring:message code="admin.common.action"/></th></tr></thead>
+                    <thead><tr>
+                        <th class="js-local-sort" data-section="histories" data-sort="blockedAt" onclick="blockSortBy('histories','blockedAt')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="histories" data-sort="target" onclick="blockSortBy('histories','target')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="histories" data-sort="change" onclick="blockSortBy('histories','change')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="histories" data-sort="change" onclick="blockSortBy('histories','change')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/> <span class="sort-ico">↕</span></th>
+                        <th><spring:message code="admin.blocks.result"/></th>
+                        <th class="js-local-sort" data-section="histories" data-sort="reason" onclick="blockSortBy('histories','reason')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/> <span class="sort-ico">↕</span></th>
+                        <th><spring:message code="admin.common.action"/></th>
+                    </tr></thead>
                     <tbody>
                     <c:forEach var="h" items="${histories}">
                         <c:set var="historyCurrentType" value="IP_RULE"/>
@@ -2525,7 +2630,12 @@ function updateBlockBulkBar(section) {
     const selectedBtn = document.querySelector('.js-block-export-selected[data-section="' + section + '"]');
     if (selectedBtn) {
         selectedBtn.disabled = checks.length === 0;
-        selectedBtn.textContent = '선택 내보내기 (' + checks.length + ')';
+        const countSpan = selectedBtn.querySelector('span');
+        if (countSpan) {
+            countSpan.textContent = checks.length;
+        } else {
+            selectedBtn.textContent = selectedBtn.textContent.replace(/\(\d+\)/, '(' + checks.length + ')');
+        }
     }
     const all = document.querySelector('.js-block-check-all[data-section="' + section + '"]');
     if (all) {
@@ -2730,6 +2840,22 @@ function applyBlockLocalFilter(section, field, keyword) {
     activateBlockTab(section);
     renderLocalSection(section);
 }
+
+function blockSortBy(section, field) { setLocalSort(section, field); }
+function blockToggleAll(section) {
+    const checkAll = section === 'user-blocks' ? document.getElementById('ub-checkAll') : document.getElementById('ipr-checkAll');
+    const checked = checkAll ? checkAll.checked : false;
+    getLocalRows(section).forEach(function(row) {
+        if (row.style.display === 'none') return;
+        const cb = row.querySelector('.js-block-row-check');
+        if (cb) cb.checked = checked;
+    });
+    updateBlockBulkBar(section);
+}
+function exportBlockData(section, scope) { exportBlockSection(section, scope); }
+function bulkReleaseUserBlocks() { bulkReleaseSelectedUserBlocks(); }
+function bulkToggleIpRules(active) { bulkToggleSelectedIpRules(active); }
+function blockClearSelection(section) { clearBlockSelection(section); }
 
 function findFirstButton(selector, predicate) {
     const buttons = Array.from(document.querySelectorAll(selector));
