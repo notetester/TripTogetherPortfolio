@@ -206,28 +206,35 @@
 
                         <%-- 유형 --%>
                         <td style="font-size:12px;color:#94a3b8;">
-                            <c:choose>
-                                <c:when test="${p.postType == 'review'}"><spring:message code="admin.community.postType.review"/></c:when>
-                                <c:when test="${p.postType == 'photo'}"><spring:message code="admin.community.postType.photo"/></c:when>
-                                <c:when test="${p.postType == 'tip'}"><spring:message code="admin.community.postType.tip"/></c:when>
-                                <c:when test="${p.postType == 'question'}"><spring:message code="admin.community.postType.question"/></c:when>
-                                <c:otherwise>${p.postType}</c:otherwise>
-                            </c:choose>
+                            <button type="button" class="adm-cell-link" data-param-name="postType" data-param-value="${p.postType}" onclick="applySelectFilter(this)">
+                                <span><c:choose>
+                                    <c:when test="${p.postType == 'review'}"><spring:message code="admin.community.postType.review"/></c:when>
+                                    <c:when test="${p.postType == 'photo'}"><spring:message code="admin.community.postType.photo"/></c:when>
+                                    <c:when test="${p.postType == 'tip'}"><spring:message code="admin.community.postType.tip"/></c:when>
+                                    <c:when test="${p.postType == 'question'}"><spring:message code="admin.community.postType.question"/></c:when>
+                                    <c:otherwise>${p.postType}</c:otherwise>
+                                </c:choose></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                            </button>
                         </td>
 
                         <%-- 신고 수 --%>
                         <td>
-                            <c:choose>
-                                <c:when test="${p.reportCount >= 3}">
-                                    <span style="color:#f87171;font-weight:700;">🔴 ${p.reportCount}</span>
-                                </c:when>
-                                <c:when test="${p.reportCount > 0}">
-                                    <span style="color:#fbbf24;">${p.reportCount}</span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span style="color:#475569;">0</span>
-                                </c:otherwise>
-                            </c:choose>
+                            <a href="${pageContext.request.contextPath}/admin/reports?targetType=post&keyword=${p.postId}"
+                               class="adm-cell-link adm-cell-link--inline"
+                               onclick="event.stopPropagation();">
+                                <c:choose>
+                                    <c:when test="${p.reportCount >= 3}">
+                                        <span style="color:#f87171;font-weight:700;">🔴 ${p.reportCount}</span>
+                                    </c:when>
+                                    <c:when test="${p.reportCount > 0}">
+                                        <span style="color:#fbbf24;">${p.reportCount}</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span style="color:#475569;">0</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </a>
                         </td>
 
                         <%-- 상태 --%>
@@ -407,6 +414,16 @@ function bulkAction(action) {
         if (d.success) { location.reload(); }
         else { alert(d.message || COMMUNITY_POST_MSG.actionFailed); }
     });
+}
+
+function applySelectFilter(button) {
+    var paramName = button.getAttribute('data-param-name');
+    var paramValue = button.getAttribute('data-param-value');
+    if (!paramName || !paramValue) return;
+    var params = new URLSearchParams(window.location.search);
+    params.set(paramName, paramValue);
+    params.set('page', '1');
+    location.href = ctx + '/admin/community?' + params.toString();
 }
 
 function goPage(page) {
