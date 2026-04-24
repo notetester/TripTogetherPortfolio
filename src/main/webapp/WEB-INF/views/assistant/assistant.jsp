@@ -518,6 +518,6 @@
 </script>
 
 <%@ include file="../common/footer.jsp" %>
-
+<%--git 충돌 해결--%>
 </body>
 </html>
