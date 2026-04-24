@@ -26,8 +26,10 @@
 <spring:message code="course.validation.visitDateRequired" javaScriptEscape="true" var="courseValidationVisitDateRequiredJs"/>
 <spring:message code="course.validation.visitOrderRequired" javaScriptEscape="true" var="courseValidationVisitOrderRequiredJs"/>
 <spring:message code="course.validation.duplicateVisitOrder" javaScriptEscape="true" var="courseValidationDuplicateVisitOrderJs"/>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%@ include file="../common/header.jsp" %>
+<fmt:setLocale value="${pageContext.response.locale}" />
 
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
@@ -742,6 +744,33 @@
 </div>
 
 <script>
+    const courseWriteMessages = {
+        spotIndexed: "<spring:message code='courses.common.spotIndexed' javaScriptEscape='true' />",
+        deleteLabel: "<spring:message code='courses.common.delete' javaScriptEscape='true' />",
+        placeNameLabel: "<spring:message code='courses.common.field.placeName' javaScriptEscape='true' />",
+        placePlaceholder: "<spring:message code='courses.common.placeholder.placeExample' javaScriptEscape='true' />",
+        placeHelp: "<spring:message code='courses.common.help.placeStored' javaScriptEscape='true' />",
+        visitDateLabel: "<spring:message code='courses.common.field.visitDate' javaScriptEscape='true' />",
+        visitOrderLabel: "<spring:message code='courses.common.field.visitOrder' javaScriptEscape='true' />",
+        emptyInput: "<spring:message code='courses.common.value.emptyInput' javaScriptEscape='true' />",
+        emptySelection: "<spring:message code='courses.common.value.emptySelection' javaScriptEscape='true' />",
+        publicLabel: "<spring:message code='courses.common.visibility.public' javaScriptEscape='true' />",
+        privateLabel: "<spring:message code='courses.common.visibility.private' javaScriptEscape='true' />",
+        countWithUnit: "<spring:message code='courses.common.countWithUnit' javaScriptEscape='true' />",
+        invalidEndDate: "<spring:message code='courses.common.alert.invalidEndDate' javaScriptEscape='true' />",
+        minSpot: "<spring:message code='courses.common.alert.minSpot' javaScriptEscape='true' />",
+        placeRequired: "<spring:message code='courses.common.alert.placeRequired' javaScriptEscape='true' />",
+        visitDateRequired: "<spring:message code='courses.common.alert.visitDateRequired' javaScriptEscape='true' />",
+        orderRequired: "<spring:message code='courses.common.alert.orderRequired' javaScriptEscape='true' />",
+        duplicateOrder: "<spring:message code='courses.common.alert.duplicateOrder' javaScriptEscape='true' />"
+    };
+
+    function formatCourseMessage(template, ...values) {
+        return template.replace(/\u007B(\d+)\u007D/g, function (_, index) {
+            return values[index] ?? "";
+        });
+    }
+
     const spotListEl = document.getElementById("spotList");
     const addSpotBtn = document.getElementById("addSpotBtn");
     const isPublicToggle = document.getElementById("isPublicToggle");

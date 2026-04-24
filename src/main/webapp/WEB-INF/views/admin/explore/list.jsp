@@ -176,10 +176,20 @@
                             </span>
                         </td>
                         <td>
-                            <div style="display:flex;gap:4px;flex-wrap:wrap;">
-                                <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}?edit=true" style="font-size:11px;padding:3px 8px;text-decoration:none;"><spring:message code="admin.common.edit"/></a>
+                            <div class="adm-row-actions">
+                                <a class="adm-row-btn detail" href="${pageContext.request.contextPath}/admin/explore/spots/${spot.spotIdx}?edit=true"><spring:message code="admin.common.edit"/></a>
                                 <c:if test="${spot.displayStatus != 'DELETED'}">
-                                    <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${spot.spotIdx}" onclick="actionSpot(this, 'delete')"><spring:message code="admin.common.delete"/></button>
+                                    <div class="action-menu-wrap">
+                                        <button class="adm-row-btn detail adm-row-btn-more"
+                                                type="button"
+                                                onclick="admToggleActionMenu(this)">⋯</button>
+                                        <div class="action-menu">
+                                            <button class="action-menu-item danger"
+                                                    type="button"
+                                                    data-id="${spot.spotIdx}"
+                                                    onclick="actionSpot(this, 'delete')"><spring:message code="admin.common.delete"/></button>
+                                        </div>
+                                    </div>
                                 </c:if>
                             </div>
                         </td>
@@ -209,8 +219,6 @@
         </c:if>
     </div>
 </div>
-
-<%@ include file="../common/context-modal.jspf" %>
 
 <script>
 var ctx = '${pageContext.request.contextPath}';

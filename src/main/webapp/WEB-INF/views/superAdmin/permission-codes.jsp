@@ -1,8 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="permissionCodes"/>
-<c:set var="pageTitle"  value="권한 템플릿 관리"/>
+<spring:message code="superAdmin.permissionCodes.pageTitle" var="pageTitle"/>
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
@@ -11,10 +12,10 @@
         <div class="adm-card-body">
             <div style="display:flex;align-items:center;justify-content:space-between;">
                 <div>
-                    <div style="font-size:15px;font-weight:700;margin-bottom:4px;">실효 권한 코드 목록</div>
-                    <div style="font-size:13px;color:#94a3b8;">관리자 계정에 일괄 적용할 권한 번들을 관리합니다. 개별 권한과 권한 그룹을 조합할 수 있습니다.</div>
+                    <div style="font-size:15px;font-weight:700;margin-bottom:4px;"><spring:message code="superAdmin.permissionCodes.cardTitle"/></div>
+                    <div style="font-size:13px;color:#94a3b8;"><spring:message code="superAdmin.permissionCodes.cardDescription"/></div>
                 </div>
-                <button class="adm-btn adm-btn-primary" onclick="openCreateModal()">+ 코드 생성</button>
+                <button class="adm-btn adm-btn-primary" onclick="openCreateModal()"><spring:message code="superAdmin.permissionCodes.createButton"/></button>
             </div>
         </div>
     </div>
@@ -23,7 +24,7 @@
         <div class="adm-card-body" style="padding:0;">
             <c:choose>
                 <c:when test="${empty codeList}">
-                    <div style="text-align:center;padding:60px;color:#94a3b8;">등록된 권한 코드가 없습니다.</div>
+                    <div style="text-align:center;padding:60px;color:#94a3b8;"><spring:message code="superAdmin.permissionCodes.empty"/></div>
                 </c:when>
                 <c:otherwise>
                     <c:forEach var="c" items="${codeList}">
@@ -35,34 +36,34 @@
                             <div class="sa-group-name">${fn:escapeXml(c.displayName)}</div>
                             <div class="sa-group-desc">${fn:escapeXml(c.description)}</div>
                         </div>
-                        <div class="sa-group-cnt">권한 ${c.permissionItemCount}개 · 그룹 ${c.groupItemCount}개</div>
+                        <div class="sa-group-cnt"><spring:message code="superAdmin.permissionCodes.list.count" arguments="${c.permissionItemCount},${c.groupItemCount}"/></div>
                         <div>
                             <c:choose>
-                                <c:when test="${c.active}"><span class="adm-badge adm-badge-green">활성</span></c:when>
-                                <c:otherwise><span class="adm-badge">비활성</span></c:otherwise>
+                                <c:when test="${c.active}"><span class="adm-badge adm-badge-green"><spring:message code="superAdmin.permissionCodes.status.active"/></span></c:when>
+                                <c:otherwise><span class="adm-badge"><spring:message code="superAdmin.permissionCodes.status.inactive"/></span></c:otherwise>
                             </c:choose>
                         </div>
                         <div style="display:flex;gap:6px;">
                             <button class="adm-btn adm-btn-sm adm-btn-ghost"
                                     data-code="${fn:escapeXml(c.adminPermissionCode)}"
                                     data-name="${fn:escapeXml(c.displayName)}"
-                                    onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))">상세</button>
+                                    onclick="openDetailModal(this.getAttribute('data-code'), this.getAttribute('data-name'))"><spring:message code="superAdmin.permissionCodes.action.detail"/></button>
                             <c:choose>
                                 <c:when test="${c.active}">
                                     <button class="adm-btn adm-btn-sm adm-btn-danger"
                                             data-code="${fn:escapeXml(c.adminPermissionCode)}"
-                                            onclick="toggleCode(this.getAttribute('data-code'), false)">비활성화</button>
+                                            onclick="toggleCode(this.getAttribute('data-code'), false)"><spring:message code="superAdmin.permissionCodes.action.deactivate"/></button>
                                 </c:when>
                                 <c:otherwise>
                                     <button class="adm-btn adm-btn-sm adm-btn-primary"
                                             data-code="${fn:escapeXml(c.adminPermissionCode)}"
-                                            onclick="toggleCode(this.getAttribute('data-code'), true)">활성화</button>
+                                            onclick="toggleCode(this.getAttribute('data-code'), true)"><spring:message code="superAdmin.permissionCodes.action.activate"/></button>
                                 </c:otherwise>
                             </c:choose>
                             <button class="adm-btn adm-btn-sm"
                                     style="background:#1e2330;color:#94a3b8;border:1px solid #2d3748;"
                                     data-code="${fn:escapeXml(c.adminPermissionCode)}"
-                                    onclick="deleteCode(this.getAttribute('data-code'))">삭제</button>
+                                    onclick="deleteCode(this.getAttribute('data-code'))"><spring:message code="superAdmin.permissionCodes.action.delete"/></button>
                         </div>
                     </div>
                     </c:forEach>
@@ -76,28 +77,28 @@
 <div class="adm-modal-overlay" id="createModal">
     <div class="adm-modal" style="width:460px;max-width:95vw;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title">권한 코드 생성</div>
+            <div class="adm-modal-title"><spring:message code="superAdmin.permissionCodes.modal.createTitle"/></div>
             <button class="adm-modal-close" onclick="closeModal('createModal')">✕</button>
         </div>
         <div class="adm-modal-body">
             <div class="sa-form-grid" style="grid-template-columns:1fr;">
                 <div class="sa-form-group">
-                    <label class="sa-form-label">권한 코드 <span style="color:#ef4444;">*</span></label>
-                    <input class="adm-input" id="newCode" type="text" placeholder="예: CS_MANAGER_L1" style="text-transform:uppercase;">
+                    <label class="sa-form-label"><spring:message code="superAdmin.permissionCodes.form.code"/> <span style="color:#ef4444;">*</span></label>
+                    <input class="adm-input" id="newCode" type="text" placeholder="<spring:message code='superAdmin.permissionCodes.form.codePlaceholder'/>" style="text-transform:uppercase;">
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">표시명 <span style="color:#ef4444;">*</span></label>
-                    <input class="adm-input" id="newName" type="text" placeholder="예: 고객지원 매니저 L1">
+                    <label class="sa-form-label"><spring:message code="superAdmin.permissionCodes.form.displayName"/> <span style="color:#ef4444;">*</span></label>
+                    <input class="adm-input" id="newName" type="text" placeholder="<spring:message code='superAdmin.permissionCodes.form.displayNamePlaceholder'/>">
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">설명</label>
-                    <input class="adm-input" id="newDesc" type="text" placeholder="설명 (선택)">
+                    <label class="sa-form-label"><spring:message code="superAdmin.permissionCodes.form.description"/></label>
+                    <input class="adm-input" id="newDesc" type="text" placeholder="<spring:message code='superAdmin.permissionCodes.form.descriptionPlaceholder'/>">
                 </div>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost"   onclick="closeModal('createModal')">취소</button>
-            <button class="adm-btn adm-btn-primary"  onclick="createCode()">생성</button>
+            <button class="adm-btn adm-btn-ghost"   onclick="closeModal('createModal')"><spring:message code="admin.common.cancel"/></button>
+            <button class="adm-btn adm-btn-primary"  onclick="createCode()"><spring:message code="superAdmin.permissionCodes.action.create"/></button>
         </div>
     </div>
 </div>
@@ -106,55 +107,55 @@
 <div class="adm-modal-overlay" id="detailModal">
     <div class="adm-modal" style="width:600px;max-width:95vw;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="detailModalTitle">코드 상세</div>
+            <div class="adm-modal-title" id="detailModalTitle"><spring:message code="superAdmin.permissionCodes.modal.detailTitleSuffix"/></div>
             <button class="adm-modal-close" onclick="closeModal('detailModal')">✕</button>
         </div>
         <div class="adm-modal-body">
 
-            <div class="sa-section-title">포함된 개별 권한</div>
+            <div class="sa-section-title"><spring:message code="superAdmin.permissionCodes.modal.addPermission"/></div>
             <div id="permItemList" style="margin-bottom:16px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;">불러오는 중...</div>
+                <div style="text-align:center;padding:16px;color:#94a3b8;"><spring:message code="superAdmin.permissionCodes.loading"/></div>
             </div>
             <div style="display:flex;gap:8px;margin-bottom:20px;">
                 <select class="adm-select" id="addPermSelect" style="flex:1;">
-                    <option value="">-- 권한 선택 --</option>
+                    <option value=""><spring:message code="superAdmin.permissionCodes.modal.permissionSelectPlaceholder"/></option>
                     <c:forEach var="p" items="${permissionPolicies}">
                         <option value="${fn:escapeXml(p.permissionCode)}">${fn:escapeXml(p.displayName)} (${fn:escapeXml(p.permissionCode)})</option>
                     </c:forEach>
                 </select>
-                <button class="adm-btn adm-btn-primary" onclick="addPermItem()">추가</button>
+                <button class="adm-btn adm-btn-primary" onclick="addPermItem()"><spring:message code="superAdmin.permissionCodes.action.add"/></button>
             </div>
 
-            <div class="sa-section-title">포함된 권한 그룹</div>
+            <div class="sa-section-title"><spring:message code="superAdmin.permissionCodes.modal.addGroup"/></div>
             <div id="groupItemList" style="margin-bottom:16px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;">불러오는 중...</div>
+                <div style="text-align:center;padding:16px;color:#94a3b8;"><spring:message code="superAdmin.permissionCodes.loading"/></div>
             </div>
             <div style="display:flex;gap:8px;margin-bottom:20px;">
                 <select class="adm-select" id="addGroupSelect" style="flex:1;">
-                    <option value="">-- 그룹 선택 --</option>
+                    <option value=""><spring:message code="superAdmin.permissionCodes.modal.groupSelectPlaceholder"/></option>
                     <c:forEach var="g" items="${groupList}">
                         <c:if test="${g.active}">
                         <option value="${fn:escapeXml(g.groupCode)}">${fn:escapeXml(g.displayName)} (${fn:escapeXml(g.groupCode)})</option>
                         </c:if>
                     </c:forEach>
                 </select>
-                <button class="adm-btn adm-btn-primary" onclick="addGroupItem()">추가</button>
+                <button class="adm-btn adm-btn-primary" onclick="addGroupItem()"><spring:message code="superAdmin.permissionCodes.action.add"/></button>
             </div>
 
-            <div class="sa-section-title">이 템플릿이 배정된 관리자</div>
+            <div class="sa-section-title"><spring:message code="superAdmin.permissionCodes.modal.assignedAdmins"/></div>
             <div style="display:flex;gap:8px;margin-bottom:10px;">
-                <input class="adm-input" id="adminSearchInput" type="text" placeholder="닉네임 또는 아이디 검색" style="flex:1;"
+                <input class="adm-input" id="adminSearchInput" type="text" placeholder="<spring:message code='superAdmin.permissionCodes.modal.adminSearchPlaceholder'/>" style="flex:1;"
                        onkeydown="if(event.key==='Enter') searchAdminsToAssign()">
-                <button class="adm-btn adm-btn-primary" onclick="searchAdminsToAssign()">검색</button>
+                <button class="adm-btn adm-btn-primary" onclick="searchAdminsToAssign()"><spring:message code="superAdmin.permissionCodes.searchButton"/></button>
             </div>
             <div id="adminSearchResult" style="margin-bottom:12px;"></div>
             <div id="adminList" style="margin-bottom:8px;">
-                <div style="text-align:center;padding:16px;color:#94a3b8;">불러오는 중...</div>
+                <div style="text-align:center;padding:16px;color:#94a3b8;"><spring:message code="superAdmin.permissionCodes.loading"/></div>
             </div>
 
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeModal('detailModal')">닫기</button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('detailModal')"><spring:message code="superAdmin.permissionCodes.modal.close"/></button>
         </div>
     </div>
 </div>
@@ -162,6 +163,54 @@
 <script>
 const CTX = '${pageContext.request.contextPath}';
 let currentCode = null;
+const PERMISSION_CODE_MESSAGES = {
+    required: '<spring:message code="superAdmin.permissionCodes.toast.required" javaScriptEscape="true"/>',
+    createFailed: '<spring:message code="superAdmin.permissionCodes.toast.createFailed" javaScriptEscape="true"/>',
+    created: '<spring:message code="superAdmin.permissionCodes.toast.created" javaScriptEscape="true"/>',
+    confirmActivate: '<spring:message code="superAdmin.permissionCodes.confirm.activate" javaScriptEscape="true"/>',
+    confirmDeactivate: '<spring:message code="superAdmin.permissionCodes.confirm.deactivate" javaScriptEscape="true"/>',
+    updated: '<spring:message code="superAdmin.permissionCodes.toast.updated" javaScriptEscape="true"/>',
+    updateFailed: '<spring:message code="superAdmin.permissionCodes.toast.updateFailed" javaScriptEscape="true"/>',
+    confirmDeleteEmpty: '<spring:message code="superAdmin.permissionCodes.confirm.deleteEmpty" javaScriptEscape="true"/>',
+    confirmDeleteWithAdmins: '<spring:message code="superAdmin.permissionCodes.confirm.deleteWithAdmins" javaScriptEscape="true"/>',
+    deleted: '<spring:message code="superAdmin.permissionCodes.toast.deleted" javaScriptEscape="true"/>',
+    deleteFailed: '<spring:message code="superAdmin.permissionCodes.toast.deleteFailed" javaScriptEscape="true"/>',
+    detailSuffix: '<spring:message code="superAdmin.permissionCodes.modal.detailTitleSuffix" javaScriptEscape="true"/>',
+    loading: '<spring:message code="superAdmin.permissionCodes.loading" javaScriptEscape="true"/>',
+    noPermissions: '<spring:message code="superAdmin.permissionCodes.noPermissions" javaScriptEscape="true"/>',
+    noGroups: '<spring:message code="superAdmin.permissionCodes.noGroups" javaScriptEscape="true"/>',
+    noAdmins: '<spring:message code="superAdmin.permissionCodes.noAdmins" javaScriptEscape="true"/>',
+    removeAction: '<spring:message code="superAdmin.permissionCodes.action.remove" javaScriptEscape="true"/>',
+    revokeAction: '<spring:message code="superAdmin.permissionCodes.action.revoke" javaScriptEscape="true"/>',
+    permissionRequired: '<spring:message code="superAdmin.permissionCodes.toast.permissionRequired" javaScriptEscape="true"/>',
+    permissionAdded: '<spring:message code="superAdmin.permissionCodes.toast.permissionAdded" javaScriptEscape="true"/>',
+    permissionAddFailed: '<spring:message code="superAdmin.permissionCodes.toast.permissionAddFailed" javaScriptEscape="true"/>',
+    confirmRemovePermission: '<spring:message code="superAdmin.permissionCodes.confirm.removePermission" javaScriptEscape="true"/>',
+    permissionRemoved: '<spring:message code="superAdmin.permissionCodes.toast.permissionRemoved" javaScriptEscape="true"/>',
+    permissionRemoveFailed: '<spring:message code="superAdmin.permissionCodes.toast.permissionRemoveFailed" javaScriptEscape="true"/>',
+    groupRequired: '<spring:message code="superAdmin.permissionCodes.toast.groupRequired" javaScriptEscape="true"/>',
+    groupAdded: '<spring:message code="superAdmin.permissionCodes.toast.groupAdded" javaScriptEscape="true"/>',
+    groupAddFailed: '<spring:message code="superAdmin.permissionCodes.toast.groupAddFailed" javaScriptEscape="true"/>',
+    confirmRemoveGroup: '<spring:message code="superAdmin.permissionCodes.confirm.removeGroup" javaScriptEscape="true"/>',
+    groupRemoved: '<spring:message code="superAdmin.permissionCodes.toast.groupRemoved" javaScriptEscape="true"/>',
+    groupRemoveFailed: '<spring:message code="superAdmin.permissionCodes.toast.groupRemoveFailed" javaScriptEscape="true"/>',
+    searchRequired: '<spring:message code="superAdmin.permissionCodes.toast.searchRequired" javaScriptEscape="true"/>',
+    searchEmpty: '<spring:message code="superAdmin.permissionCodes.searchEmpty" javaScriptEscape="true"/>',
+    assignAction: '<spring:message code="superAdmin.permissionCodes.action.assign" javaScriptEscape="true"/>',
+    confirmAssignAdmin: '<spring:message code="superAdmin.permissionCodes.confirm.assignAdmin" javaScriptEscape="true"/>',
+    templateAssigned: '<spring:message code="superAdmin.permissionCodes.toast.templateAssigned" javaScriptEscape="true"/>',
+    templateAssignFailed: '<spring:message code="superAdmin.permissionCodes.toast.templateAssignFailed" javaScriptEscape="true"/>',
+    confirmRevokeAdmin: '<spring:message code="superAdmin.permissionCodes.confirm.revokeAdmin" javaScriptEscape="true"/>',
+    templateRevoked: '<spring:message code="superAdmin.permissionCodes.toast.templateRevoked" javaScriptEscape="true"/>',
+    templateRevokeFailed: '<spring:message code="superAdmin.permissionCodes.toast.templateRevokeFailed" javaScriptEscape="true"/>'
+};
+
+function formatPermissionCodeMessage(template) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return template.replace(/\u007B(\d+)\u007D/g, function(_, idx) {
+        return args[idx] !== undefined ? args[idx] : '';
+    });
+}
 
 function openCreateModal() {
     document.getElementById('newCode').value = '';
@@ -174,7 +223,7 @@ function createCode() {
     const code = document.getElementById('newCode').value.trim().toUpperCase();
     const name = document.getElementById('newName').value.trim();
     const desc = document.getElementById('newDesc').value.trim();
-    if (!code || !name) { adm_toast('코드와 표시명은 필수입니다.', 'error'); return; }
+    if (!code || !name) { adm_toast(PERMISSION_CODE_MESSAGES.required, 'error'); return; }
 
     const params = new URLSearchParams({ adminPermissionCode: code, displayName: name, description: desc });
     fetch(CTX + '/superAdmin/permission-codes', {
@@ -184,13 +233,13 @@ function createCode() {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) { adm_toast('생성되었습니다.'); closeModal('createModal'); location.reload(); }
-        else adm_toast(data.message || '생성 실패', 'error');
+        if (data.success) { adm_toast(PERMISSION_CODE_MESSAGES.created); closeModal('createModal'); location.reload(); }
+        else adm_toast(data.message || PERMISSION_CODE_MESSAGES.createFailed, 'error');
     });
 }
 
 function toggleCode(code, active) {
-    const msg = active ? '이 코드를 활성화하시겠습니까?' : '이 코드를 비활성화하시겠습니까?';
+    const msg = active ? PERMISSION_CODE_MESSAGES.confirmActivate : PERMISSION_CODE_MESSAGES.confirmDeactivate;
     if (!confirm(msg)) return;
     fetch(CTX + '/superAdmin/permission-codes/' + encodeURIComponent(code) + '/toggle', {
         method: 'POST',
@@ -199,8 +248,8 @@ function toggleCode(code, active) {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) { adm_toast('변경되었습니다.'); location.reload(); }
-        else adm_toast(data.message || '변경 실패', 'error');
+        if (data.success) { adm_toast(PERMISSION_CODE_MESSAGES.updated); location.reload(); }
+        else adm_toast(data.message || PERMISSION_CODE_MESSAGES.updateFailed, 'error');
     });
 }
 
@@ -210,8 +259,8 @@ function deleteCode(code) {
         .then(data => {
             const cnt = (data.admins || []).length;
             const msg = cnt > 0
-                ? '이 코드를 삭제하시겠습니까?\n현재 ' + cnt + '명의 관리자에게 배정되어 있습니다.\n삭제 시 해당 관리자들의 코드가 NULL로 초기화됩니다.'
-                : '이 코드를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.';
+                ? formatPermissionCodeMessage(PERMISSION_CODE_MESSAGES.confirmDeleteWithAdmins, cnt)
+                : PERMISSION_CODE_MESSAGES.confirmDeleteEmpty;
             if (!confirm(msg)) return;
             fetch(CTX + '/superAdmin/permission-codes/' + encodeURIComponent(code) + '/delete', {
                 method: 'POST',
@@ -219,15 +268,15 @@ function deleteCode(code) {
             })
             .then(r => r.json())
             .then(d => {
-                if (d.success) { adm_toast('삭제되었습니다.'); location.reload(); }
-                else adm_toast(d.message || '삭제 실패', 'error');
+                if (d.success) { adm_toast(PERMISSION_CODE_MESSAGES.deleted); location.reload(); }
+                else adm_toast(d.message || PERMISSION_CODE_MESSAGES.deleteFailed, 'error');
             });
         });
 }
 
 function openDetailModal(code, name) {
     currentCode = code;
-    document.getElementById('detailModalTitle').textContent = name + ' — 상세';
+    document.getElementById('detailModalTitle').textContent = name + ' - ' + PERMISSION_CODE_MESSAGES.detailSuffix;
     document.getElementById('detailModal').classList.add('open');
     loadDetail();
 }
@@ -241,44 +290,44 @@ function loadDetail() {
             var adminCount = data.adminCount      || 0;
 
             document.getElementById('permItemList').innerHTML = permItems.length === 0
-                ? '<div style="color:#94a3b8;padding:4px 0;">포함된 개별 권한이 없습니다.</div>'
+                ? '<div style="color:#94a3b8;padding:4px 0;">' + PERMISSION_CODE_MESSAGES.noPermissions + '</div>'
                 : permItems.map(i => `
                     <div class="sa-group-item-row">
                         <span class="sa-group-item-name">\${i.displayName}</span>
                         <span class="sa-group-item-code">\${i.permissionCode}</span>
                         <button class="adm-btn adm-btn-sm adm-btn-danger"
                                 data-code="\${i.permissionCode}"
-                                onclick="removePermItem(this.getAttribute('data-code'))">제거</button>
+                                onclick="removePermItem(this.getAttribute('data-code'))">\${PERMISSION_CODE_MESSAGES.removeAction}</button>
                     </div>`).join('');
 
             document.getElementById('groupItemList').innerHTML = groupItems.length === 0
-                ? '<div style="color:#94a3b8;padding:4px 0;">포함된 그룹이 없습니다.</div>'
+                ? '<div style="color:#94a3b8;padding:4px 0;">' + PERMISSION_CODE_MESSAGES.noGroups + '</div>'
                 : groupItems.map(g => `
                     <div class="sa-group-item-row">
                         <span class="sa-group-item-name">\${g.displayName}</span>
                         <span class="sa-group-item-code">\${g.groupCode}</span>
                         <button class="adm-btn adm-btn-sm adm-btn-danger"
                                 data-code="\${g.groupCode}"
-                                onclick="removeGroupItem(this.getAttribute('data-code'))">제거</button>
+                                onclick="removeGroupItem(this.getAttribute('data-code'))">\${PERMISSION_CODE_MESSAGES.removeAction}</button>
                     </div>`).join('');
 
             var admins = data.admins || [];
             document.getElementById('adminList').innerHTML = admins.length === 0
-                ? '<div style="color:#94a3b8;padding:4px 0;">배정된 관리자가 없습니다.</div>'
+                ? '<div style="color:#94a3b8;padding:4px 0;">' + PERMISSION_CODE_MESSAGES.noAdmins + '</div>'
                 : admins.map(m => `
                     <div class="sa-group-item-row">
                         <span class="sa-group-item-name">\${m.nickname}</span>
                         <span class="sa-group-item-code">\${m.userId}</span>
                         <button class="adm-btn adm-btn-sm adm-btn-danger"
                                 data-uid="\${m.userIdx}"
-                                onclick="revokeAdminCode(this.getAttribute('data-uid'))">해제</button>
+                                onclick="revokeAdminCode(this.getAttribute('data-uid'))">\${PERMISSION_CODE_MESSAGES.revokeAction}</button>
                     </div>`).join('');
         });
 }
 
 function addPermItem() {
     const permCode = document.getElementById('addPermSelect').value;
-    if (!permCode) { adm_toast('권한을 선택하세요.', 'error'); return; }
+    if (!permCode) { adm_toast(PERMISSION_CODE_MESSAGES.permissionRequired, 'error'); return; }
     fetch(CTX + '/superAdmin/permission-codes/' + encodeURIComponent(currentCode) + '/permissions/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
@@ -286,13 +335,13 @@ function addPermItem() {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) { adm_toast('권한이 추가되었습니다.'); loadDetail(); }
-        else adm_toast(data.message || '추가 실패', 'error');
+        if (data.success) { adm_toast(PERMISSION_CODE_MESSAGES.permissionAdded); loadDetail(); }
+        else adm_toast(data.message || PERMISSION_CODE_MESSAGES.permissionAddFailed, 'error');
     });
 }
 
 function removePermItem(permCode) {
-    if (!confirm('이 권한을 코드에서 제거하시겠습니까?')) return;
+    if (!confirm(PERMISSION_CODE_MESSAGES.confirmRemovePermission)) return;
     fetch(CTX + '/superAdmin/permission-codes/' + encodeURIComponent(currentCode) + '/permissions/remove', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
@@ -300,14 +349,14 @@ function removePermItem(permCode) {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) { adm_toast('제거되었습니다.'); loadDetail(); }
-        else adm_toast(data.message || '제거 실패', 'error');
+        if (data.success) { adm_toast(PERMISSION_CODE_MESSAGES.permissionRemoved); loadDetail(); }
+        else adm_toast(data.message || PERMISSION_CODE_MESSAGES.permissionRemoveFailed, 'error');
     });
 }
 
 function addGroupItem() {
     const groupCode = document.getElementById('addGroupSelect').value;
-    if (!groupCode) { adm_toast('그룹을 선택하세요.', 'error'); return; }
+    if (!groupCode) { adm_toast(PERMISSION_CODE_MESSAGES.groupRequired, 'error'); return; }
     fetch(CTX + '/superAdmin/permission-codes/' + encodeURIComponent(currentCode) + '/groups/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
@@ -315,13 +364,13 @@ function addGroupItem() {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) { adm_toast('그룹이 추가되었습니다.'); loadDetail(); }
-        else adm_toast(data.message || '추가 실패', 'error');
+        if (data.success) { adm_toast(PERMISSION_CODE_MESSAGES.groupAdded); loadDetail(); }
+        else adm_toast(data.message || PERMISSION_CODE_MESSAGES.groupAddFailed, 'error');
     });
 }
 
 function removeGroupItem(groupCode) {
-    if (!confirm('이 그룹을 코드에서 제거하시겠습니까?')) return;
+    if (!confirm(PERMISSION_CODE_MESSAGES.confirmRemoveGroup)) return;
     fetch(CTX + '/superAdmin/permission-codes/' + encodeURIComponent(currentCode) + '/groups/remove', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
@@ -329,20 +378,20 @@ function removeGroupItem(groupCode) {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) { adm_toast('제거되었습니다.'); loadDetail(); }
-        else adm_toast(data.message || '제거 실패', 'error');
+        if (data.success) { adm_toast(PERMISSION_CODE_MESSAGES.groupRemoved); loadDetail(); }
+        else adm_toast(data.message || PERMISSION_CODE_MESSAGES.groupRemoveFailed, 'error');
     });
 }
 
 function searchAdminsToAssign() {
     const keyword = document.getElementById('adminSearchInput').value.trim();
-    if (!keyword) { adm_toast('검색어를 입력하세요.', 'error'); return; }
+    if (!keyword) { adm_toast(PERMISSION_CODE_MESSAGES.searchRequired, 'error'); return; }
     fetch(CTX + '/superAdmin/admins/search?keyword=' + encodeURIComponent(keyword) + '&excludeTemplateCode=' + encodeURIComponent(currentCode))
         .then(r => r.json())
         .then(data => {
             var users = data.users || [];
             if (users.length === 0) {
-                document.getElementById('adminSearchResult').innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:4px 0;">검색 결과가 없습니다.</div>';
+                document.getElementById('adminSearchResult').innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:4px 0;">' + PERMISSION_CODE_MESSAGES.searchEmpty + '</div>';
                 return;
             }
             document.getElementById('adminSearchResult').innerHTML =
@@ -352,13 +401,13 @@ function searchAdminsToAssign() {
                          onclick="assignCodeToAdmin(this.getAttribute('data-uid'), '\${u.nickname}')">
                         <span class="sa-group-item-name">\${u.nickname}</span>
                         <span class="sa-group-item-code">\${u.userId}</span>
-                        <span style="font-size:12px;color:#6366f1;">+ 배정</span>
+                        <span style="font-size:12px;color:#6366f1;">\${PERMISSION_CODE_MESSAGES.assignAction}</span>
                     </div>`).join('') + '</div>';
         });
 }
 
 function assignCodeToAdmin(userIdx, nickname) {
-    if (!confirm(nickname + '에게 이 템플릿을 배정하시겠습니까?')) return;
+    if (!confirm(formatPermissionCodeMessage(PERMISSION_CODE_MESSAGES.confirmAssignAdmin, nickname))) return;
     fetch(CTX + '/superAdmin/members/' + userIdx + '/permission-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
@@ -367,16 +416,16 @@ function assignCodeToAdmin(userIdx, nickname) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            adm_toast('배정되었습니다.');
+            adm_toast(PERMISSION_CODE_MESSAGES.templateAssigned);
             document.getElementById('adminSearchResult').innerHTML = '';
             document.getElementById('adminSearchInput').value = '';
             loadDetail();
-        } else adm_toast(data.message || '배정 실패', 'error');
+        } else adm_toast(data.message || PERMISSION_CODE_MESSAGES.templateAssignFailed, 'error');
     });
 }
 
 function revokeAdminCode(userIdx) {
-    if (!confirm('이 관리자의 권한 코드를 해제하시겠습니까?')) return;
+    if (!confirm(PERMISSION_CODE_MESSAGES.confirmRevokeAdmin)) return;
     const params = new URLSearchParams();
     fetch(CTX + '/superAdmin/members/' + userIdx + '/permission-code', {
         method: 'POST',
@@ -385,8 +434,8 @@ function revokeAdminCode(userIdx) {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) { adm_toast('해제되었습니다.'); loadDetail(); }
-        else adm_toast(data.message || '해제 실패', 'error');
+        if (data.success) { adm_toast(PERMISSION_CODE_MESSAGES.templateRevoked); loadDetail(); }
+        else adm_toast(data.message || PERMISSION_CODE_MESSAGES.templateRevokeFailed, 'error');
     });
 }
 

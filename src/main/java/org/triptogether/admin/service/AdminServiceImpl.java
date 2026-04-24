@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * 관리자 서비스 구현체.
@@ -33,6 +34,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
+
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 
     private final AdminMapper adminMapper;
     private final IpBlockMapper ipBlockMapper;
@@ -210,6 +213,30 @@ public class AdminServiceImpl implements AdminService {
         String normalizedPreferredLang = normalizeOptionalText(preferredLang, 10);
 
         adminMapper.updateMemberProfile(userIdx, normalizedNickname, normalizedNationality, normalizedPreferredLang);
+    }
+
+    @Override
+    @Transactional
+    public void updateMemberEmail(Long userIdx, String email) {
+        AdminMemberVO member = adminMapper.findMemberDetail(userIdx);
+        if (member == null) {
+            throw new IllegalArgumentException("admin.members.memberNotFound");
+        }
+
+        String currentEmail = normalizeOptionalEmail(member.getUserEmail());
+        String normalizedEmail = normalizeOptionalEmail(email);
+
+        if (currentEmail != null && normalizedEmail != null && currentEmail.equalsIgnoreCase(normalizedEmail)) {
+            return;
+        }
+        if (currentEmail == null && normalizedEmail == null) {
+            return;
+        }
+        if (normalizedEmail != null && adminMapper.countOtherMembersByEmail(userIdx, normalizedEmail) > 0) {
+            throw new IllegalArgumentException("admin.members.emailDuplicate");
+        }
+
+        adminMapper.updateMemberEmail(userIdx, normalizedEmail);
     }
 
     @Override
@@ -399,6 +426,23 @@ public class AdminServiceImpl implements AdminService {
             return null;
         }
         return trimmed.length() > maxLength ? trimmed.substring(0, maxLength) : trimmed;
+    }
+
+    private String normalizeOptionalEmail(String email) {
+        if (email == null) {
+            return null;
+        }
+        String trimmed = email.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        if (trimmed.length() > 120) {
+            throw new IllegalArgumentException("admin.members.emailTooLong");
+        }
+        if (!EMAIL_PATTERN.matcher(trimmed).matches()) {
+            throw new IllegalArgumentException("admin.members.emailInvalid");
+        }
+        return trimmed;
     }
 
     @Override

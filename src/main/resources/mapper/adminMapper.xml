@@ -431,6 +431,21 @@
         WHERE user_idx = #{userIdx}
     </update>
 
+    <select id="countOtherMembersByEmail" resultType="int">
+        SELECT COUNT(*)
+        FROM USERS
+        WHERE user_idx &lt;&gt; #{userIdx}
+          AND user_email = #{email}
+    </select>
+
+    <update id="updateMemberEmail">
+        UPDATE USERS
+        SET user_email = #{email},
+            email_verified = FALSE,
+            email_login_enabled = FALSE
+        WHERE user_idx = #{userIdx}
+    </update>
+
     <update id="updateMemberStatus">
         UPDATE USERS
         SET account_status = #{status},

@@ -9,8 +9,12 @@
     const body = dropdown.querySelector('.noti-dropdown-body');
     if (!body) return;
 
+    const cfg = window.__notificationConfig || {};
+    const labels = cfg.labels || {};
+    const locale = cfg.locale || undefined;
+
     // contextPath 추출 (예: /TripTogether)
-    const ctx = (function () {
+    const ctx = cfg.ctx || (function () {
         const script = document.currentScript
             || document.querySelector('script[src*="/resources/js/common/notification.js"]');
         if (!script) return '';
@@ -20,23 +24,28 @@
 
     // 소스 타입 → 표시 라벨
     const TYPE_LABELS = {
-        community:     '[커뮤니티]',
-        inquiry:       '[문의]',
-        report:        '[신고]',
-        levelup:       '[레벨업]',
-        grade:         '[등급]',
-        account_block: '[계정]'
+        community:     labels.typeCommunity || '[Community]',
+        inquiry:       labels.typeInquiry || '[Inquiry]',
+        report:        labels.typeReport || '[Report]',
+        levelup:       labels.typeLevelup || '[Level Up]',
+        grade:         labels.typeGrade || '[Grade]',
+        account_block: labels.typeAccountBlock || '[Account]'
     };
     function typeLabel(sourceType) {
-        return TYPE_LABELS[sourceType] || '[알림]';
+        return TYPE_LABELS[sourceType] || labels.typeDefault || '[Notification]';
     }
 
     // 날짜 포맷 (MM-dd HH:mm)
     function formatDate(value) {
         const d = value ? new Date(value) : new Date();
         const pad = function (n) { return String(n).padStart(2, '0'); };
-        return pad(d.getMonth() + 1) + '-' + pad(d.getDate())
-            + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+        return new Intl.DateTimeFormat(locale, {
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        }).format(d).replace(',', '');
     }
 
     // ===== 드롭다운 토글 =====
@@ -220,7 +229,7 @@
         const closeBtn = document.createElement('button');
         closeBtn.type = 'button';
         closeBtn.className = 'noti-toast-close';
-        closeBtn.setAttribute('aria-label', '닫기');
+        closeBtn.setAttribute('aria-label', labels.close || 'Close');
         closeBtn.textContent = '✕';
         closeBtn.addEventListener('click', function (e) {
             e.stopPropagation();

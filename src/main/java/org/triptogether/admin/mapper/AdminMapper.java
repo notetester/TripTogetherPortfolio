@@ -27,6 +27,10 @@ public interface AdminMapper {
                              @Param("nickname") String nickname,
                              @Param("nationality") String nationality,
                              @Param("preferredLang") String preferredLang);
+    int countOtherMembersByEmail(@Param("userIdx") Long userIdx,
+                                 @Param("email") String email);
+    void updateMemberEmail(@Param("userIdx") Long userIdx,
+                           @Param("email") String email);
     void updateMemberStatus(@Param("userIdx") Long userIdx, @Param("status") String status);
     void markMemberDormant(@Param("userIdx") Long userIdx);
     void releaseMemberDormant(@Param("userIdx") Long userIdx);

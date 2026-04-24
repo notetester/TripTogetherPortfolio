@@ -265,6 +265,4 @@ document.querySelectorAll('.adm-inq-row[data-id]').forEach(function (tr) {
 });
 </script>
 
-<%@ include file="../common/context-modal.jspf" %>
-
 <%@ include file="../layout-close.jsp" %>

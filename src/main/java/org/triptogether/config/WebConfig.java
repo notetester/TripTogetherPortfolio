@@ -59,6 +59,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "classpath:messages/auth",
                 "classpath:messages/community",
                 "classpath:messages/course",
+                "classpath:messages/courses",
                 "classpath:messages/detail",
                 "classpath:messages/explore",
                 "classpath:messages/footer",
@@ -69,6 +70,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "classpath:messages/package",
                 "classpath:messages/report",
                 "classpath:messages/recommend",
+                "classpath:messages/superAdmin",
                 "classpath:messages/shop",
                 "classpath:messages/wallet"
         );

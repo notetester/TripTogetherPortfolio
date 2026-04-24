@@ -255,8 +255,6 @@
     </div>
 </div>
 
-<%@ include file="../common/context-modal.jspf" %>
-
 <script>
 var ctx = '${pageContext.request.contextPath}';
 var EXPLORE_DETAIL_MSG = {

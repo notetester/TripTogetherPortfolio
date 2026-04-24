@@ -85,7 +85,21 @@
                         </c:if>
                     </div>
                     <h3 class="adm-detail-title">${inquiry.title}</h3>
+                    <div class="adm-tr-inline js-admin-translation-widget"
+                         data-label="문의 제목 번역"
+                         data-source-type="INQUIRY_POST"
+                         data-source-idx="${inquiry.inquiryId}"
+                         data-field-name="title"
+                         data-default-source-lang="ko"
+                         data-source-text="${fn:escapeXml(inquiry.title)}"></div>
                     <div class="adm-detail-body">${inquiry.content}</div>
+                    <div class="adm-tr-inline js-admin-translation-widget"
+                         data-label="문의 본문 번역"
+                         data-source-type="INQUIRY_POST"
+                         data-source-idx="${inquiry.inquiryId}"
+                         data-field-name="content"
+                         data-default-source-lang="ko"
+                         data-source-text="${fn:escapeXml(inquiry.content)}"></div>
                     <div style="margin-top:16px;padding-top:12px;border-top:1px solid #1e2736;
                                 display:flex;gap:20px;font-size:12px;color:#64748b;">
                         <span><spring:message code="admin.inquiry.viewCount" arguments="${inquiry.viewCount}"/></span>
@@ -111,6 +125,13 @@
                     <c:if test="${not empty inquiry.answerId}">
                         <div id="answerView">
                             <div class="adm-inquiry-answer" id="answerText">${inquiry.answerContent}</div>
+                            <div class="adm-tr-inline js-admin-translation-widget"
+                                 data-label="문의 답변 번역"
+                                 data-source-type="INQUIRY_ANSWER"
+                                 data-source-idx="${inquiry.answerId}"
+                                 data-field-name="content"
+                                 data-default-source-lang="ko"
+                                 data-source-text="${fn:escapeXml(inquiry.answerContent)}"></div>
                             <div style="display:flex;gap:8px;">
                                 <button class="adm-btn adm-btn-ghost" style="font-size:12px;"
                                         onclick="showEditForm()">${adminInquiryDetailAnswerEdit}</button>
@@ -405,6 +426,4 @@ function hideEditForm() {
     document.getElementById('answerView').style.display = 'block';
 }
 </script>
-
-<%@ include file="../common/context-modal.jspf" %>
 <%@ include file="../layout-close.jsp" %>

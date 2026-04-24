@@ -7,8 +7,44 @@
 <spring:message code="course.confirm.delete" var="courseDeleteConfirm"/>
 <spring:message code="course.filter.placeholder" var="courseFilterPlaceholder"/>
 <spring:message code="course.common.yearSuffix" javaScriptEscape="true" var="courseYearSuffixJs"/>
+<fmt:setLocale value="${pageContext.response.locale}"/>
 
 <%@ include file="../common/header.jsp" %>
+
+<spring:message code="courses.my.pageTitle" var="coursesMyPageTitle"/>
+<spring:message code="courses.my.pageDesc" var="coursesMyPageDesc"/>
+<spring:message code="courses.my.createButton" var="coursesMyCreateButton"/>
+<spring:message code="courses.common.directCreate" var="coursesDirectCreate"/>
+<spring:message code="courses.common.aiCreate" var="coursesAiCreate"/>
+<spring:message code="courses.common.all" var="coursesAllLabel"/>
+<spring:message code="courses.common.source.manual" var="coursesSourceManual"/>
+<spring:message code="courses.common.source.ai" var="coursesSourceAi"/>
+<spring:message code="courses.common.planCount" arguments="0" var="coursesPlanCountZero"/>
+<spring:message code="courses.common.planCount.prefix" var="coursesPlanCountPrefix"/>
+<spring:message code="courses.common.planCount.suffix" var="coursesPlanCountSuffix"/>
+<spring:message code="courses.common.period.all" var="coursesPeriodAll"/>
+<spring:message code="courses.common.period.upcoming" var="coursesPeriodUpcoming"/>
+<spring:message code="courses.common.period.now" var="coursesPeriodNow"/>
+<spring:message code="courses.common.period.past" var="coursesPeriodPast"/>
+<spring:message code="courses.common.year.all" var="coursesYearAll"/>
+<spring:message code="courses.common.visibility.all" var="coursesVisibilityAll"/>
+<spring:message code="courses.common.visibility.public" var="coursesVisibilityPublic"/>
+<spring:message code="courses.common.visibility.private" var="coursesVisibilityPrivate"/>
+<spring:message code="courses.list.filter.searchPlaceholder" var="coursesSearchPlaceholder"/>
+<spring:message code="courses.common.filter.noResult.title" var="coursesNoResultTitle"/>
+<spring:message code="courses.common.filter.noResult.desc" var="coursesNoResultDesc"/>
+<spring:message code="courses.common.destinationMissing" var="coursesDestinationMissing"/>
+<spring:message code="courses.common.detail" var="coursesDetailLabel"/>
+<spring:message code="courses.common.edit" var="coursesEditLabel"/>
+<spring:message code="courses.common.delete" var="coursesDeleteLabel"/>
+<spring:message code="courses.common.confirmDelete" var="coursesDeleteConfirm"/>
+<spring:message code="courses.common.summary.ai" var="coursesSummaryAi"/>
+<spring:message code="courses.common.summary.manual" var="coursesSummaryManual"/>
+<spring:message code="courses.common.detailArrow" var="coursesDetailArrow"/>
+<spring:message code="courses.common.visibility.public" var="coursesBadgePublic"/>
+<spring:message code="courses.common.visibility.private" var="coursesBadgePrivate"/>
+<spring:message code="courses.my.empty.title" var="coursesEmptyTitle"/>
+<spring:message code="courses.my.empty.desc" var="coursesEmptyDesc"/>
 
 <style>
     * {
