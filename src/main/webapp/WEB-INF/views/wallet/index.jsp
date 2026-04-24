@@ -65,7 +65,14 @@
             <section class="wallet-card">
                 <div class="wallet-card__head">
                     <h2><spring:message code="wallet.charge.title"/></h2>
-                    <p><spring:message code="wallet.charge.desc"/></p>
+                    <c:choose>
+                        <c:when test="${tossEnabled}">
+                            <p><spring:message code="wallet.charge.toss.desc"/></p>
+                        </c:when>
+                        <c:otherwise>
+                            <p><spring:message code="wallet.charge.desc"/></p>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
 
                 <div class="wallet-charge-presets">
@@ -75,33 +82,46 @@
                     <button type="button" class="wallet-preset-btn" onclick="setChargeAmount(100000)">100,000</button>
                 </div>
 
-                <form class="wallet-charge-form" method="post" action="${pageContext.request.contextPath}/wallet/charge">
-                    <label for="amount"><spring:message code="wallet.charge.amount"/></label>
-                    <div class="wallet-charge-input">
-                        <input id="amount" name="amount" type="number" min="1000" max="1000000" step="100" value="10000" required>
-                        <span><spring:message code="wallet.charge.currency"/></span>
+                <label for="amount"><spring:message code="wallet.charge.amount"/></label>
+                <div class="wallet-charge-input">
+                    <input id="amount" name="amount" type="number" min="1000" max="1000000" step="100" value="10000" required>
+                    <span><spring:message code="wallet.charge.currency"/></span>
+                </div>
+                <p class="wallet-charge-limit" id="chargeLimitMessage">${walletChargeLimitMessage}</p>
+
+                <div class="wallet-charge-preview">
+                    <div>
+                        <span><spring:message code="wallet.charge.preview.cash"/></span>
+                        <strong id="chargeCashPreview">10,000 C</strong>
                     </div>
-                    <p class="wallet-charge-limit" id="chargeLimitMessage">${walletChargeLimitMessage}</p>
-
-                    <div class="wallet-charge-preview">
-                        <div>
-                            <span><spring:message code="wallet.charge.preview.cash"/></span>
-                            <strong id="chargeCashPreview">10,000 C</strong>
-                        </div>
-                        <div>
-                            <span><spring:message code="wallet.charge.preview.mileage"/></span>
-                            <strong id="chargeMileagePreview">1,000 M</strong>
-                        </div>
+                    <div>
+                        <span><spring:message code="wallet.charge.preview.mileage"/></span>
+                        <strong id="chargeMileagePreview">1,000 M</strong>
                     </div>
+                </div>
 
-                    <button type="submit" class="wallet-submit-btn"><spring:message code="wallet.charge.submit"/></button>
-                </form>
-
-                <ul class="wallet-notice-list">
-                    <li><spring:message code="wallet.notice.simulation"/></li>
-                    <li><spring:message code="wallet.notice.mileage"/></li>
-                    <li><spring:message code="wallet.notice.history"/></li>
-                </ul>
+                <c:choose>
+                    <c:when test="${tossEnabled}">
+                        <button type="button" class="wallet-submit-btn" onclick="requestTossCharge()">
+                            <spring:message code="wallet.charge.toss.button"/>
+                        </button>
+                        <ul class="wallet-notice-list">
+                            <li><spring:message code="wallet.charge.toss.notice"/></li>
+                            <li><spring:message code="wallet.notice.mileage"/></li>
+                            <li><spring:message code="wallet.notice.history"/></li>
+                        </ul>
+                    </c:when>
+                    <c:otherwise>
+                        <form class="wallet-charge-form" method="post" action="${pageContext.request.contextPath}/wallet/charge">
+                            <button type="submit" class="wallet-submit-btn"><spring:message code="wallet.charge.submit"/></button>
+                        </form>
+                        <ul class="wallet-notice-list">
+                            <li><spring:message code="wallet.notice.simulation"/></li>
+                            <li><spring:message code="wallet.notice.mileage"/></li>
+                            <li><spring:message code="wallet.notice.history"/></li>
+                        </ul>
+                    </c:otherwise>
+                </c:choose>
             </section>
 
             <section class="wallet-card">
@@ -120,9 +140,12 @@
                                 <div class="wallet-history-item">
                                     <div class="wallet-history-item__main">
                                         <strong>
-                                            <c:choose>
+                                        <c:choose>
                                                 <c:when test="${payment.sourceType eq 'MANUAL_CHARGE'}">
                                                     <spring:message code="wallet.payment.order.manualCharge"/>
+                                                </c:when>
+                                                <c:when test="${payment.sourceType eq 'TOSS_CHARGE'}">
+                                                    <spring:message code="wallet.payment.order.tossCharge"/>
                                                 </c:when>
                                                 <c:otherwise>
                                                     ${payment.orderName}
@@ -280,10 +303,20 @@
     </div>
 </div>
 
+<c:if test="${tossEnabled}">
+    <script src="https://js.tosspayments.com/v2/payment"></script>
+</c:if>
 <script>
   function formatNumber(value) {
     return Number(value || 0).toLocaleString();
   }
+
+  var TOSS_ENABLED = ${tossEnabled};
+  var TOSS_CLIENT_KEY = '${tossClientKey}';
+  var TOSS_SUCCESS_URL = '${tossSuccessUrl}';
+  var TOSS_FAIL_URL = '${tossFailUrl}';
+  var TOSS_PREPARE_URL = '${pageContext.request.contextPath}/wallet/charge/prepare';
+  var TOSS_ORDER_NAME = '<spring:message code="wallet.payment.order.tossCharge" javaScriptEscape="true"/>';
 
   function updateChargePreview() {
     var input = document.getElementById('amount');
@@ -308,6 +341,59 @@
     updateChargePreview();
   }
 
+  async function requestTossCharge() {
+    var input = document.getElementById('amount');
+    if (!input) return;
+
+    if (!TOSS_ENABLED) {
+      alert('<spring:message code="wallet.charge.toss.unavailable" javaScriptEscape="true"/>');
+      return;
+    }
+
+    var amount = Number(input.value || 0);
+    if (amount < 1000 || amount > 1000000 || amount % 100 !== 0) {
+      alert('${walletChargeLimitMessageJs}');
+      input.focus();
+      return;
+    }
+
+    try {
+      var response = await fetch(TOSS_PREPARE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          'Accept': 'application/json'
+        },
+        body: 'amount=' + encodeURIComponent(amount)
+      });
+
+      if (!response.ok) {
+        throw new Error('결제 준비에 실패했습니다.');
+      }
+
+      var payload = await response.json();
+      var tossPayments = TossPayments(TOSS_CLIENT_KEY);
+      var payment = tossPayments.payment({
+        customerKey: payload.customerKey
+      });
+
+      payment.requestPayment({
+        method: 'CARD',
+        amount: {
+          currency: 'KRW',
+          value: payload.amount
+        },
+        orderId: payload.orderId,
+        orderName: payload.orderName || TOSS_ORDER_NAME,
+        successUrl: payload.successUrl || TOSS_SUCCESS_URL,
+        failUrl: payload.failUrl || TOSS_FAIL_URL
+      });
+    } catch (error) {
+      console.error(error);
+      alert(error.message || 'Toss 결제 요청에 실패했습니다.');
+    }
+  }
+
   (function() {
     var input = document.getElementById('amount');
     if (!input) return;
@@ -315,6 +401,9 @@
     input.addEventListener('input', updateChargePreview);
     if (form) {
       form.addEventListener('submit', function(event) {
+        if (TOSS_ENABLED) {
+          return;
+        }
         var amount = Number(input.value || 0);
         if (amount > 1000000) {
           event.preventDefault();

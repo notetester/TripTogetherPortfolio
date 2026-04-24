@@ -93,6 +93,41 @@ public class AdminServiceImpl implements AdminService {
                 .build();
     }
 
+    @Override
+    public List<AdminSalesDailyStatVO> getSalesDailyStats(int days) {
+        int safeDays = normalizeSalesDays(days);
+        int spanParam = safeDays - 1;
+
+        List<AdminSalesDailyStatVO> rows = adminMapper.findDailySalesStats(spanParam);
+        Map<LocalDate, AdminSalesDailyStatVO> rowMap = new HashMap<>();
+        for (AdminSalesDailyStatVO row : rows) {
+            if (row != null && row.getSalesDate() != null) {
+                rowMap.put(row.getSalesDate(), row);
+            }
+        }
+
+        LocalDate startDate = LocalDate.now().minusDays(spanParam);
+        List<AdminSalesDailyStatVO> result = new ArrayList<>(safeDays);
+        for (int i = 0; i < safeDays; i++) {
+            LocalDate date = startDate.plusDays(i);
+            result.add(rowMap.getOrDefault(date, emptySalesStat(date)));
+        }
+        return result;
+    }
+
+    private int normalizeSalesDays(int days) {
+        if (days < 1) {
+            return 30;
+        }
+        return Math.min(days, 365);
+    }
+
+    private AdminSalesDailyStatVO emptySalesStat(LocalDate salesDate) {
+        AdminSalesDailyStatVO stat = new AdminSalesDailyStatVO();
+        stat.setSalesDate(salesDate);
+        return stat;
+    }
+
     private static long toLong(Object v) {
         if (v == null) return 0L;
         if (v instanceof Number n) return n.longValue();

@@ -27,6 +27,7 @@ import org.triptogether.travelPackage.vo.TravelPackageRevisionVO;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,8 +64,15 @@ public class AdminController {
     public String dashboard(Model model) {
         model.addAttribute("stats", adminService.getStats());
         model.addAttribute("chart", adminService.getDashboardChart(7));
+        model.addAttribute("salesStats", adminService.getSalesDailyStats(30));
         model.addAttribute("activeMenu", "dashboard");
         return "admin/dashboard";
+    }
+
+    @GetMapping("/sales/stats")
+    @ResponseBody
+    public ResponseEntity<List<AdminSalesDailyStatVO>> salesStats(@RequestParam(defaultValue = "30") int days) {
+        return ResponseEntity.ok(adminService.getSalesDailyStats(days));
     }
 
     @GetMapping("/members")

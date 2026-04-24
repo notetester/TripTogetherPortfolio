@@ -1162,6 +1162,51 @@
         ORDER BY day
     </select>
 
+    <resultMap id="salesDailyStatRM" type="org.triptogether.admin.vo.AdminSalesDailyStatVO">
+        <id property="salesDate" column="sales_date" javaType="java.time.LocalDate"/>
+        <result property="grossSales" column="gross_sales"/>
+        <result property="cashSales" column="cash_sales"/>
+        <result property="mileageUsed" column="mileage_used"/>
+        <result property="cancelAmount" column="cancel_amount"/>
+        <result property="netSales" column="net_sales"/>
+        <result property="flightBookingCount" column="flight_booking_count"/>
+        <result property="packageBookingCount" column="package_booking_count"/>
+        <result property="cancelCount" column="cancel_count"/>
+    </resultMap>
+
+    <!-- 최근 N+1일 결제 매출/취소 통계 (일별) -->
+    <select id="findDailySalesStats" resultMap="salesDailyStatRM">
+        SELECT
+            event_date AS sales_date,
+            SUM(CASE WHEN payment_status = 'COMPLETED' THEN final_amount ELSE 0 END) AS gross_sales,
+            SUM(CASE WHEN payment_status = 'COMPLETED' THEN used_cash ELSE 0 END) AS cash_sales,
+            SUM(CASE WHEN payment_status = 'COMPLETED' THEN used_mileage ELSE 0 END) AS mileage_used,
+            SUM(CASE WHEN payment_status IN ('CANCELLED', 'REFUNDED') THEN final_amount ELSE 0 END) AS cancel_amount,
+            SUM(CASE WHEN payment_status = 'COMPLETED' THEN final_amount ELSE 0 END)
+                - SUM(CASE WHEN payment_status IN ('CANCELLED', 'REFUNDED') THEN final_amount ELSE 0 END) AS net_sales,
+            SUM(CASE WHEN payment_status = 'COMPLETED' AND source_type = 'FLIGHT_TICKET' THEN 1 ELSE 0 END) AS flight_booking_count,
+            SUM(CASE WHEN payment_status = 'COMPLETED' AND source_type = 'TRAVEL_PACKAGE' THEN 1 ELSE 0 END) AS package_booking_count,
+            SUM(CASE WHEN payment_status IN ('CANCELLED', 'REFUNDED') THEN 1 ELSE 0 END) AS cancel_count
+        FROM (
+            SELECT
+                payment_type,
+                source_type,
+                payment_status,
+                final_amount,
+                used_cash,
+                used_mileage,
+                COALESCE(cancelled_at, paid_at) AS event_at,
+                DATE(COALESCE(cancelled_at, paid_at)) AS event_date
+            FROM USER_PAYMENT_HISTORY
+            WHERE payment_type = 'PURCHASE'
+              AND payment_status IN ('COMPLETED', 'CANCELLED', 'REFUNDED')
+              AND COALESCE(cancelled_at, paid_at) >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+              AND COALESCE(cancelled_at, paid_at) &lt; DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+        ) p
+        GROUP BY event_date
+        ORDER BY event_date
+    </select>
+
     <!-- ══════════════════════════════════════════
          문의 관리
     ══════════════════════════════════════════ -->
