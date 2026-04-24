@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.travelPackage.service.TravelPackageService;
-/* 패키지명, 요약, 여행지명 같은 동적 문구 번역 처리용 서비스 */
+/* ??? ??, ??, ???? ?? ?? ???? ?? ??? ?? ???? ??? */
 import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.travelPackage.vo.PackageBookingRequestVO;
 import org.triptogether.travelPackage.vo.PackageBookingResultVO;
@@ -28,7 +28,7 @@ public class TravelPackageController {
     private static final int PACKAGE_LIST_PAGE_BLOCK_SIZE = 5;
 
     private final TravelPackageService travelPackageService;
-    /* 목록/여행지 옵션의 동적 문구를 현재 언어로 번역한다. */
+    /* ??? ?? ???? ??? ????, ????? ?? ?? ???? ?? */
     private final SpotTextTranslationService translationService;
     private final MessageSource messageSource;
 
@@ -46,7 +46,7 @@ public class TravelPackageController {
 
         java.util.List<TravelPackageVO> packages =
                 travelPackageService.getApprovedPackages(normalizedKeyword, currentPage, PACKAGE_LIST_PAGE_SIZE);
-        // 패키지 목록의 동적 문구를 현재 언어 기준으로 번역한다.
+        // ???? ?????? ??? ??? ????? ???? ????.
         translationService.translatePackages(packages);
 
         int startPage = Math.max(1, currentPage - (PACKAGE_LIST_PAGE_BLOCK_SIZE / 2));
@@ -70,7 +70,7 @@ public class TravelPackageController {
             return redirectByAuthState(loginUser);
         }
 
-        // 판매자가 관리하는 패키지 목록도 현재 언어 기준으로 번역한다.
+        // ??? ?? ????? ????? ????? ?? ??? ?? ????.
         java.util.List<TravelPackageVO> packages = travelPackageService.getSellerPackages(loginUser.getUserIdx());
         translationService.translatePackages(packages);
         model.addAttribute("packageList", packages);
@@ -84,7 +84,7 @@ public class TravelPackageController {
             return redirectByAuthState(loginUser);
         }
 
-        // 패키지 작성 폼의 여행지 선택 옵션을 현재 언어 기준으로 번역한다.
+        // ??? ?? ???? ??? ?? ?? ???? ????.
         java.util.List<org.triptogether.travelPackage.vo.PackageSpotOptionVO> spotOptions = travelPackageService.getSpotOptions();
         translationService.translateSpotOptions(spotOptions);
 
@@ -128,7 +128,7 @@ public class TravelPackageController {
             model.addAttribute("formMode", "APPROVED".equals(travelPackage.getPackageStatus()) ? "REVISION" : "EDIT");
             model.addAttribute("packageForm", toForm(travelPackage));
 
-            // 수정 폼의 여행지 드롭다운도 현재 언어 기준으로 번역한다.
+            // ── 여행지 드롭다운의 이름/지역을 현재 로케일에 맞게 번역 ──
             java.util.List<org.triptogether.travelPackage.vo.PackageSpotOptionVO> spotOptions = travelPackageService.getSpotOptions();
             translationService.translateSpotOptions(spotOptions);
             model.addAttribute("spotOptions", spotOptions);

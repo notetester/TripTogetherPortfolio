@@ -786,3 +786,180 @@ body {
     font-size: 12px;
     text-align: center;
 }
+
+/* ══════════════════════════════════════════
+   운영 목록 공통 컨트롤 보정
+   - JSP에서 실제 로드되는 /webapp/resources/css/admin/admin.css 기준
+   - 내보내기 드롭다운/체크박스/로컬 페이징 스타일 통일
+══════════════════════════════════════════ */
+.adm-check {
+    width: 15px;
+    height: 15px;
+    accent-color: #3b82f6;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.adm-card-head > .adm-card-title + div,
+.adm-unified-export,
+.adm-export-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.adm-card-head > .adm-card-title + div {
+    margin-left: auto;
+    justify-content: flex-end;
+}
+
+.adm-export-control > .adm-select,
+.adm-export-control .js-op-export-format,
+.adm-export-control .js-block-export-format,
+#adminListExportFormat,
+#exportFormat {
+    width: 86px;
+    min-width: 86px;
+    flex: 0 0 auto;
+}
+
+.adm-export-menu {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+}
+
+.adm-export-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    min-width: 184px;
+    overflow: hidden;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background: #1e2535;
+    box-shadow: 0 12px 26px rgba(0,0,0,.42);
+    z-index: 300;
+}
+
+.adm-export-menu:hover .adm-export-dropdown,
+.adm-export-menu:focus-within .adm-export-dropdown,
+.adm-export-dropdown.open {
+    display: block;
+}
+
+.adm-export-dropdown button {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 9px 14px;
+    border: 0;
+    border-bottom: 1px solid #334155;
+    border-radius: 0;
+    background: transparent;
+    color: #e2e8f0;
+    font-size: 13px;
+    line-height: 1.35;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.adm-export-dropdown button:last-child {
+    border-bottom: 0;
+}
+
+.adm-export-dropdown button:hover:not(:disabled) {
+    background: #2d3748;
+}
+
+.adm-export-dropdown button:disabled {
+    color: #64748b;
+    cursor: not-allowed;
+    background: transparent;
+}
+
+.adm-local-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    flex-wrap: wrap;
+}
+
+.adm-local-toolbar-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.adm-local-toolbar .adm-unified-export {
+    margin-left: auto;
+    justify-content: flex-end;
+}
+
+.adm-local-pager,
+.adm-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.adm-table th .sort-ico,
+.adm-table th .sort-ico-generic {
+    margin-left: 4px;
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+body.sa-light .adm-export-dropdown {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 12px 26px rgba(15,23,42,.16);
+}
+body.sa-light .adm-export-dropdown button {
+    color: #334155;
+    border-bottom-color: #e2e8f0;
+}
+body.sa-light .adm-export-dropdown button:hover:not(:disabled) {
+    background: #f1f5f9;
+}
+body.sa-light .adm-export-dropdown button:disabled {
+    color: #94a3b8;
+}
+
+@media (max-width: 767px) {
+    .adm-card-head > .adm-card-title + div,
+    .adm-local-toolbar .adm-unified-export,
+    .adm-export-control {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .adm-export-dropdown {
+        left: 0;
+        right: auto;
+    }
+    .adm-local-pager,
+    .adm-pagination {
+        justify-content: center;
+    }
+}
+
+/* 상단바/사이드바 브랜드 높이 정렬 */
+.adm-brand {
+    min-height: 56px;
+    height: 56px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.adm-brand-icon {
+    width: 30px;
+    height: 30px;
+}

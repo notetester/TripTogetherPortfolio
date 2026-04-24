@@ -1,136 +1,151 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:set var="pageCSS" value="assistant/assistant.css" />
 <%@ include file="../common/header.jsp" %>
 
-<style>
-    .history-section {
-        margin-top: 22px;
-        padding-top: 16px;
-        border-top: 1px solid #e5e7eb;
-    }
+<<<<<<< PARK-SEO-JIN
+<head>
+    <style>
+        .history-section {
+            margin-top: 22px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
 
-    .history-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-    }
+        .history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
 
-    .history-title {
-        font-size: 13px;
-        font-weight: 700;
-        color: #374151;
-    }
+        .history-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
 
-    .new-chat-btn {
-        border: none;
-        background: transparent;
-        color: #4f46e5;
-        font-size: 12px;
-        cursor: pointer;
-    }
+        .new-chat-btn {
+            border: none;
+            background: transparent;
+            color: #4f46e5;
+            font-size: 12px;
+            cursor: pointer;
+        }
 
-    .history-list {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-    .history-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 10px;
-        border: 1px solid #e5e7eb;
-        border-radius: 14px;
-        background: #fff;
-    }
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fff;
+        }
 
-    .history-load-btn {
-        flex: 1;
-        border: none;
-        background: transparent;
-        text-align: left;
-        font-size: 13px;
-        color: #374151;
-        cursor: pointer;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
+        .history-load-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            text-align: left;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
 
-    .history-edit-btn,
-    .history-delete-btn {
-        border: none;
-        background: #f3f4f6;
-        color: #6b7280;
-        font-size: 11px;
-        padding: 4px 6px;
-        border-radius: 6px;
-        cursor: pointer;
-    }
+        .history-edit-btn,
+        .history-delete-btn {
+            border: none;
+            background: #f3f4f6;
+            color: #6b7280;
+            font-size: 11px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
 
-    .history-edit-btn {
-        color: #6b7280;
-    }
+        .history-edit-btn {
+            color: #6b7280;
+        }
 
-    .history-delete-btn {
-        color: #ef4444;
-    }
+        .history-delete-btn {
+            color: #ef4444;
+        }
 
-    .history-empty,
-    .history-login-guide {
-        font-size: 12px;
-        color: #9ca3af;
-        line-height: 1.5;
-    }
+        .history-empty,
+        .history-login-guide {
+            font-size: 12px;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
 
-    .history-item.active {
-        border-color: #6366f1;
-        background: #eef2ff;
-    }
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            background: #fff;
+        }
 
-    .history-item.active .history-load-btn {
-        color: #4f46e5;
-        font-weight: 700;
-    }
+        .history-item.active {
+            border-color: #6366f1;
+            background: #eef2ff;
+        }
 
-    .history-item.editing {
-        padding: 8px;
-        border-color: #6366f1;
-        background: #fff;
-    }
+        .history-item.active .history-load-btn {
+            color: #4f46e5;
+            font-weight: 700;
+        }
 
-    .history-title-input {
-        width: 100%;
-        border: none;
-        outline: none;
-        font-size: 14px;
-        color: #374151;
-        background: transparent;
-    }
-</style>
+        .history-item.editing {
+            padding: 8px;
+            border-color: #6366f1;
+            background: #fff;
+        }
 
+        .history-title-input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            color: #374151;
+            background: transparent;
+        }
+
+
+    </style>
+</head>
+=======
 <%-- ==========================================================================
-     [????곗뵯??? JavaScript???????????꿔꺂????????????嶺뚮Ĳ?됭짆??????嶺?獄?????붺몭?겹럷????⑤슢堉??????????Β?ル빝?????됰Ŧ???
+     [다국어] JavaScript에서 사용할 메시지를 서버 사이드에서 미리 변수로 꺼내 둔다.
      ========================================================================== --%>
 
-<%-- ??????꿔꺂???????? --%>
+<%-- 에러 메시지 --%>
 <spring:message code="assistant.error.parse" var="msgErrorParse" />
 <spring:message code="assistant.error.server" var="msgErrorServer" />
 <spring:message code="assistant.error.request" var="msgErrorRequest" />
 <spring:message code="assistant.error.network" var="msgErrorNetwork" />
 <spring:message code="assistant.error.noResponse" var="msgErrorNoResponse" />
 
-<%-- ?汝??吏??뮤?/ ?潁??용끏??????援온???꿔꺂???????? --%>
+<%-- 로딩 / 초기화 관련 메시지 --%>
 <spring:message code="assistant.loading" var="msgLoading" />
 <spring:message code="assistant.reset.confirm" var="msgResetConfirm" />
 <spring:message code="assistant.reset.done" var="msgResetDone" />
 
-<%-- ??????濚밸Ŧ援잒キ????⑤슢??????꿔꺂???熬곻퐢利?????紐꾨쫯??--%>
+<%-- 퀵버튼에서 보내는 질문 텍스트 --%>
 <spring:message code="assistant.quick.tokyo" var="msgQuickTokyo" />
 <spring:message code="assistant.quick.budget" var="msgQuickBudget" />
 <spring:message code="assistant.quick.backpacking" var="msgQuickBackpacking" />
@@ -138,16 +153,17 @@
 <spring:message code="assistant.quick.solo" var="msgQuickSolo" />
 <spring:message code="assistant.quick.checklist" var="msgQuickChecklist" />
 
-<%-- input placeholder ???꿔꺂???????? --%>
+<%-- input placeholder 용 메시지 --%>
 <spring:message code="assistant.input.placeholder" var="msgInputPlaceholder" />
 
+>>>>>>> dev
 <body>
 <div class="chat-wrap">
 
-    <%-- ===================== ?????嶺뚮Ĳ???????쇨덧??===================== --%>
+    <%-- ===================== 사이드바 영역 ===================== --%>
     <aside class="chat-side">
         <div class="side-header">
-            <div class="ai-avatar">&#129302;</div>
+            <div class="ai-avatar">✈️</div>
             <div class="ai-info">
                 <div class="ai-name"><spring:message code="assistant.side.name" /></div>
                 <div class="ai-status">
@@ -183,6 +199,7 @@
             </button>
         </div>
 
+<<<<<<< PARK-SEO-JIN
         <div class="history-section">
             <div class="history-header">
                 <span class="history-title">이전 대화</span>
@@ -200,11 +217,13 @@
                                                 onclick="loadHistory('${chatPost.chat_post_idx}', this)">
                                             <c:out value="${chatPost.title}" />
                                         </button>
+
                                         <button type="button"
                                                 class="history-edit-btn"
                                                 onclick="editHistoryTitle('${chatPost.chat_post_idx}', this)">
                                             수정
                                         </button>
+
                                         <button type="button"
                                                 class="history-delete-btn"
                                                 onclick="deleteHistory('${chatPost.chat_post_idx}')">
@@ -219,16 +238,22 @@
                         </c:otherwise>
                     </c:choose>
                 </c:when>
+
                 <c:otherwise>
-                    <p class="history-login-guide">로그인하면 이전 대화를 저장하고 다시 불러올 수 있습니다.</p>
+                    <p class="history-login-guide">로그인하면 이전 대화를 저장하고 다시 볼 수 있어요.</p>
                 </c:otherwise>
             </c:choose>
         </div>
 
-        <button class="reset-btn" onclick="startNewChat()"><spring:message code="assistant.reset.btn" /></button>
+        <button class="reset-btn" onclick="startNewChat()">새 대화 시작하기</button>
+=======
+        <button class="reset-btn" onclick="resetChat()">
+            <spring:message code="assistant.reset.btn" />
+        </button>
+>>>>>>> dev
     </aside>
 
-    <%-- ===================== ?꿔꺂??????????????쇨덧??===================== --%>
+    <%-- ===================== 메인 채팅 영역 ===================== --%>
     <main class="chat-main">
         <div class="chat-header">
             <h2><spring:message code="assistant.header.title" /></h2>
@@ -237,7 +262,7 @@
 
         <div class="chat-body" id="chatBody">
             <div class="msg-row ai">
-                <div class="msg-avatar">&#129302;</div>
+                <div class="msg-avatar">✈️</div>
                 <div class="msg-bubble">
                     <spring:message code="assistant.greeting.line1" /><br><br>
                     <spring:message code="assistant.greeting.line2" /><br>
@@ -258,7 +283,7 @@
                     oninput="autoResize(this)"
                 ></textarea>
                 <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-                    <span id="sendIcon">&#10148;</span>
+                    <span id="sendIcon">➤</span>
                 </button>
             </div>
             <div class="chat-hint"><spring:message code="assistant.hint" /></div>
@@ -269,7 +294,7 @@
 <script>
     const CTX = '${pageContext.request.contextPath}';
 
-    // --- ????곗뵯????꿔꺂???????? ????쇨덧??---
+    // --- 다국어 메시지 상수 ---
     const MSG_ERROR_PARSE = '${msgErrorParse}';
     const MSG_ERROR_SERVER = '${msgErrorServer}';
     const MSG_ERROR_REQUEST = '${msgErrorRequest}';
@@ -280,7 +305,28 @@
     const MSG_RESET_DONE = '${msgResetDone}';
 
     let isLoading = false;
+<<<<<<< PARK-SEO-JIN
     let currentChatPostIdx = null;
+=======
+    <spring:message code="assistant.error.parse" javaScriptEscape="true" var="assistantErrorParseJs"/>
+    <spring:message code="assistant.error.request" javaScriptEscape="true" var="assistantErrorRequestJs"/>
+    <spring:message code="assistant.error.network" javaScriptEscape="true" var="assistantErrorNetworkJs"/>
+    <spring:message code="assistant.error.noResponse" javaScriptEscape="true" var="assistantErrorNoResponseJs"/>
+    <spring:message code="assistant.error.server" javaScriptEscape="true" var="assistantErrorServerJs"/>
+    <spring:message code="assistant.reset.confirm" javaScriptEscape="true" var="assistantResetConfirmJs"/>
+    <spring:message code="assistant.reset.done" javaScriptEscape="true" var="assistantResetDoneJs"/>
+    <spring:message code="assistant.loading.answering" javaScriptEscape="true" var="assistantLoadingAnsweringJs"/>
+    const assistantMessages = {
+        errorNetwork: '${assistantErrorNetworkJs}',
+        errorNoResponse: '${assistantErrorNoResponseJs}',
+        errorParse: '${assistantErrorParseJs}',
+        errorRequest: '${assistantErrorRequestJs}',
+        errorServer: '${assistantErrorServerJs}',
+        loadingAnswering: '${assistantLoadingAnsweringJs}',
+        resetConfirm: '${assistantResetConfirmJs}',
+        resetDone: '${assistantResetDoneJs}'
+    };
+>>>>>>> dev
 
     async function sendMessage() {
         if (isLoading) return;
@@ -298,11 +344,32 @@
         try {
             const res = await fetch(CTX + '/assistant/chat', {
                 method: 'POST',
+<<<<<<< PARK-SEO-JIN
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     message: message,
                     chatPostIdx: currentChatPostIdx
                 })
+            });
+
+            const data = await res.json();
+
+            removeLoadingBubble(loadingId);
+
+            if (!data.success) {
+                appendMessage('ai', data.answer || '요청 처리 중 오류가 발생했습니다.');
+                return;
+            }
+
+            if (data.chatPostIdx) {
+                currentChatPostIdx = data.chatPostIdx;
+            }
+
+            appendMessage('ai', data.answer || '응답을 받지 못했습니다.');
+
+=======
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
             });
 
             const rawText = await res.text();
@@ -330,12 +397,8 @@
                 return;
             }
 
-            if (data.chatPostIdx) {
-                currentChatPostIdx = data.chatPostIdx;
-            }
-
             appendMessage('ai', data.answer || MSG_ERROR_NO_RESPONSE);
-
+>>>>>>> dev
         } catch (e) {
             console.error(e);
             removeLoadingBubble(loadingId);
@@ -350,6 +413,7 @@
         sendMessage();
     }
 
+<<<<<<< PARK-SEO-JIN
     async function loadHistory(chatPostIdx, button) {
         if (!chatPostIdx) {
             alert("대화 번호를 찾을 수 없습니다.");
@@ -380,6 +444,7 @@
             data.history.forEach(msg => {
                 appendMessage(msg.role === 'assistant' ? 'ai' : 'user', msg.content);
             });
+
         } catch (e) {
             console.error(e);
             alert("대화 기록을 불러오는 중 오류가 발생했습니다.");
@@ -410,6 +475,7 @@
             saved = true;
 
             const newTitle = input.value.trim();
+
             if (!newTitle || newTitle === oldTitle) {
                 location.reload();
                 return;
@@ -423,6 +489,7 @@
                 });
 
                 const data = await res.json();
+
                 if (data.success) {
                     location.reload();
                 } else {
@@ -464,6 +531,7 @@
             });
 
             const data = await res.json();
+
             if (data.success) {
                 location.reload();
             } else {
@@ -476,12 +544,18 @@
     }
 
     async function startNewChat() {
-        if (!confirm(MSG_RESET_CONFIRM)) return;
-
         currentChatPostIdx = null;
 
         try {
             await fetch(CTX + '/assistant/reset', {method: 'POST'});
+=======
+    async function resetChat() {
+        if (!confirm(MSG_RESET_CONFIRM)) return;
+
+        try {
+            const res = await fetch(CTX + '/assistant/reset', { method: 'POST' });
+            console.log('[assistant] reset status=', res.status);
+>>>>>>> dev
         } catch (e) {
             console.error(e);
         }
@@ -489,14 +563,20 @@
         const body = document.getElementById('chatBody');
         body.innerHTML =
             '<div class="msg-row ai">' +
-            '<div class="msg-avatar">&#129302;</div>' +
-            '<div class="msg-bubble">' + escapeHtml(MSG_RESET_DONE) + '</div>' +
+<<<<<<< PARK-SEO-JIN
+            '<div class="msg-avatar">✈️</div>' +
+            '<div class="msg-bubble">새 대화를 시작할게요. 어떤 여행을 도와드릴까요? ✨</div>' +
+=======
+                '<div class="msg-avatar">✈️</div>' +
+                '<div class="msg-bubble">' + escapeHtml(MSG_RESET_DONE) + '</div>' +
+>>>>>>> dev
             '</div>';
 
         document.querySelectorAll('.history-item').forEach(item => {
             item.classList.remove('active');
         });
 
+        // 왼쪽 이전 대화 목록 갱신용
         setTimeout(() => {
             location.reload();
         }, 300);
@@ -509,7 +589,7 @@
 
         if (role === 'ai') {
             row.innerHTML =
-                '<div class="msg-avatar">&#129302;</div>' +
+                '<div class="msg-avatar">✈️</div>' +
                 '<div class="msg-bubble">' + formatText(text) + '</div>';
         } else {
             row.innerHTML =
@@ -540,7 +620,7 @@
 
         btn.disabled = flag;
         input.disabled = flag;
-        icon.textContent = flag ? '...' : '\u27A1';
+        icon.textContent = flag ? '...' : '➤';
 
         if (!flag) input.focus();
     }
@@ -572,6 +652,6 @@
 </script>
 
 <%@ include file="../common/footer.jsp" %>
+
 </body>
 </html>
-

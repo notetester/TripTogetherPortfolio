@@ -151,6 +151,7 @@
                     <option value="">상태 선택</option>
                     <option value="ACTIVE"><spring:message code="admin.status.ACTIVE"/></option>
                     <option value="DORMANT"><spring:message code="admin.status.DORMANT"/></option>
+                    <option value="BLOCKED"><spring:message code="admin.status.BLOCKED"/></option>
                     <option value="DELETED"><spring:message code="admin.status.DELETED"/></option>
                 </select>
                 <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="applyBulkStatus()">적용</button>
@@ -579,7 +580,8 @@ function exportData(scope) {
         if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
         params.set('selectedIds', ids.join(','));
     }
-    document.getElementById('exportDropdown').style.display = 'none';
+    const exportDropdown = document.getElementById('exportDropdown');
+    if (exportDropdown) exportDropdown.classList.remove('open');
     window.location.href = ctx + '/admin/members/export?' + params.toString();
 }
 
