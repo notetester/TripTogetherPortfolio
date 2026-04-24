@@ -413,6 +413,143 @@ function showRowDetail(title, fields) {
     });
     modal.classList.add('open');
 }
+
+/* ── 공통 운영 목록: 체크박스 + CSV/Excel 내보내기 ── */
+(function enhanceAdminListExport() {
+    const table = document.querySelector('.adm-table');
+    if (!table || table.dataset.exportEnhanced === 'true') return;
+    table.dataset.exportEnhanced = 'true';
+
+    const wrap = table.closest('.adm-table-wrap') || table.parentElement;
+    if (wrap) {
+        const toolbar = document.createElement('div');
+        toolbar.className = 'adm-local-toolbar';
+        toolbar.style.margin = '0 0 12px';
+        toolbar.innerHTML =
+            '<div class="adm-local-toolbar-group">'
+            + '<select class="adm-select" id="adminListExportFormat" style="width:86px;"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-export" data-scope="all">전체 내보내기</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-export" data-scope="search">현재 검색 내보내기</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-export-selected" data-scope="selected" disabled>선택 내보내기 (0)</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-clear-selection" style="display:none;">선택 해제</button>'
+            + '</div>';
+        wrap.parentElement.insertBefore(toolbar, wrap);
+    }
+
+    const headRow = table.querySelector('thead tr');
+    if (headRow && !headRow.querySelector('.js-admin-check-all')) {
+        const th = document.createElement('th');
+        th.style.width = '42px';
+        th.style.textAlign = 'center';
+        th.innerHTML = '<input type="checkbox" class="js-admin-check-all" style="cursor:pointer;">';
+        headRow.insertBefore(th, headRow.firstElementChild);
+    }
+
+    table.querySelectorAll('tbody tr').forEach(function (row) {
+        if (row.querySelector('.js-admin-row-check')) return;
+        if (row.children.length === 1 && row.children[0].hasAttribute('colspan')) return;
+        const td = document.createElement('td');
+        td.style.textAlign = 'center';
+        td.innerHTML = '<input type="checkbox" class="js-admin-row-check" style="cursor:pointer;">';
+        row.insertBefore(td, row.firstElementChild);
+    });
+
+    function rows() {
+        return Array.from(table.querySelectorAll('tbody tr')).filter(function (row) {
+            return row.querySelector('.js-admin-row-check');
+        });
+    }
+    function selectedRows() {
+        return rows().filter(function (row) {
+            const cb = row.querySelector('.js-admin-row-check');
+            return cb && cb.checked;
+        });
+    }
+    function updateSelectionUi() {
+        const count = selectedRows().length;
+        const selectedBtn = document.querySelector('.js-admin-export-selected');
+        const clearBtn = document.querySelector('.js-admin-clear-selection');
+        const all = document.querySelector('.js-admin-check-all');
+        if (selectedBtn) {
+            selectedBtn.disabled = count === 0;
+            selectedBtn.textContent = '선택 내보내기 (' + count + ')';
+        }
+        if (clearBtn) clearBtn.style.display = count > 0 ? '' : 'none';
+        if (all) {
+            const allRows = rows();
+            all.checked = allRows.length > 0 && count === allRows.length;
+            all.indeterminate = count > 0 && count < allRows.length;
+        }
+    }
+    function text(cell) {
+        return (cell.innerText || '').replace(/\s+/g, ' ').trim();
+    }
+    function csvEscape(value) {
+        const s = String(value == null ? '' : value);
+        return '"' + s.replace(/"/g, '""') + '"';
+    }
+    function download(content, filename, type) {
+        const blob = new Blob([content], {type: type});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+    function exportRows(scope) {
+        let targetRows = scope === 'selected' ? selectedRows() : rows();
+        if (scope === 'selected' && targetRows.length === 0) {
+            if (typeof adm_toast === 'function') adm_toast('선택된 항목이 없습니다.', 'error');
+            else alert('선택된 항목이 없습니다.');
+            return;
+        }
+        const format = (document.getElementById('adminListExportFormat') || {}).value || 'csv';
+        const headers = Array.from(table.querySelectorAll('thead th'))
+            .filter(function (_, idx, arr) { return idx !== 0; })
+            .map(function (th) { return text(th).replace(/[↕▲▼]/g, '').trim(); });
+        const body = targetRows.map(function (row) {
+            return Array.from(row.children)
+                .filter(function (_, idx) { return idx !== 0; })
+                .map(text);
+        });
+        const name = (document.title || 'admin_list').replace(/[\\/:*?"<>|]+/g, '_') + '_' + scope + '_' + new Date().toISOString().slice(0, 10);
+        if (format === 'excel') {
+            const html = '<table><thead><tr>' + headers.map(h => '<th>' + h + '</th>').join('') + '</tr></thead><tbody>'
+                + body.map(row => '<tr>' + row.map(v => '<td>' + v + '</td>').join('') + '</tr>').join('')
+                + '</tbody></table>';
+            download('\ufeff' + html, name + '.xls', 'application/vnd.ms-excel;charset=utf-8');
+        } else {
+            const csv = [headers].concat(body).map(function (row) { return row.map(csvEscape).join(','); }).join('\n');
+            download('\ufeff' + csv, name + '.csv', 'text/csv;charset=utf-8');
+        }
+    }
+
+    document.addEventListener('change', function (e) {
+        if (e.target.matches('.js-admin-check-all')) {
+            rows().forEach(function (row) {
+                row.querySelector('.js-admin-row-check').checked = e.target.checked;
+            });
+            updateSelectionUi();
+        }
+        if (e.target.matches('.js-admin-row-check')) updateSelectionUi();
+    });
+    document.addEventListener('click', function (e) {
+        const exportBtn = e.target.closest('.js-admin-export, .js-admin-export-selected');
+        if (exportBtn) {
+            exportRows(exportBtn.dataset.scope || 'all');
+            return;
+        }
+        const clearBtn = e.target.closest('.js-admin-clear-selection');
+        if (clearBtn) {
+            rows().forEach(row => row.querySelector('.js-admin-row-check').checked = false);
+            updateSelectionUi();
+        }
+    });
+})();
+
 </script>
 
 <%@ include file="../layout-close.jsp" %>

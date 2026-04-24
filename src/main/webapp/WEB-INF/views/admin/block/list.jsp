@@ -2099,7 +2099,7 @@ function getLocalRows(section) {
 
 function getLocalState(section) {
     if (!blockSectionState[section]) {
-        blockSectionState[section] = {page: 1, pageSize: 20};
+        blockSectionState[section] = {page: 1, pageSize: 20, sortKey: '', sortDir: 'ASC'};
     }
     return blockSectionState[section];
 }
@@ -2176,9 +2176,344 @@ function filterLocalRows(section) {
     });
 }
 
+
+function getSectionCard(section) {
+    return document.querySelector('.js-section-card[data-section="' + section + '"]');
+}
+
+const BLOCK_SECTION_SORT_CONFIG = {
+    'user-blocks': {
+        member: {cell: 0, label: '<spring:message code="admin.common.member" javaScriptEscape="true"/>'},
+        blockType: {cell: 1, label: '<spring:message code="admin.blocks.filter.blockType" javaScriptEscape="true"/>'},
+        target: {cell: 2, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
+        status: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
+        reason: {cell: 4, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'},
+        blockedAt: {cell: 5, label: '<spring:message code="admin.blocks.blockAndExpire" javaScriptEscape="true"/>'}
+    },
+    'ip-rules': {
+        target: {cell: 0, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
+        policy: {cell: 1, label: '<spring:message code="admin.blocks.actionControl" javaScriptEscape="true"/>'},
+        batch: {cell: 2, label: '<spring:message code="admin.context.batch" javaScriptEscape="true"/>'},
+        status: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
+        priority: {cell: 4, label: '<spring:message code="admin.context.priority" javaScriptEscape="true"/>', numeric: true},
+        reason: {cell: 5, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'}
+    },
+    'batches': {
+        batch: {cell: 0, label: '<spring:message code="admin.blocks.batch" javaScriptEscape="true"/>'},
+        policy: {cell: 1, label: '<spring:message code="admin.blocks.basePolicy" javaScriptEscape="true"/>'},
+        status: {cell: 2, label: '<spring:message code="admin.blocks.currentState" javaScriptEscape="true"/>'},
+        stats: {cell: 3, label: '<spring:message code="admin.blocks.ruleStats" javaScriptEscape="true"/>'},
+        description: {cell: 4, label: '<spring:message code="admin.blocks.description" javaScriptEscape="true"/>'}
+    },
+    'histories': {
+        blockedAt: {cell: 0, label: '<spring:message code="admin.common.time" javaScriptEscape="true"/>'},
+        target: {cell: 1, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
+        policy: {cell: 2, label: '<spring:message code="admin.common.actionLabel" javaScriptEscape="true"/>'},
+        change: {cell: 3, label: '<spring:message code="admin.blocks.changeKind" javaScriptEscape="true"/>'},
+        result: {cell: 4, label: '<spring:message code="admin.blocks.result" javaScriptEscape="true"/>'},
+        reason: {cell: 5, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'}
+    }
+};
+
+function getSortableCells(row) {
+    return Array.from(row.children).filter(function (cell) {
+        return !cell.classList.contains('js-block-check-cell');
+    });
+}
+
+function localSortValue(row, section, sortKey) {
+    const config = BLOCK_SECTION_SORT_CONFIG[section] && BLOCK_SECTION_SORT_CONFIG[section][sortKey];
+    if (!config) return '';
+    const dataValue = row.dataset[sortKey] || row.dataset[sortKey.replace(/-([a-z])/g, function (_, c) { return c.toUpperCase(); })];
+    if (dataValue != null && dataValue !== '') return dataValue;
+    const cells = getSortableCells(row);
+    return cells[config.cell] ? cells[config.cell].innerText.trim() : '';
+}
+
+function sortLocalRows(section, rows) {
+    const state = getLocalState(section);
+    const sortKey = state.sortKey;
+    if (!sortKey) return rows;
+    const config = BLOCK_SECTION_SORT_CONFIG[section] && BLOCK_SECTION_SORT_CONFIG[section][sortKey];
+    if (!config) return rows;
+    const dir = state.sortDir === 'DESC' ? -1 : 1;
+    return rows.slice().sort(function (a, b) {
+        let av = localSortValue(a, section, sortKey);
+        let bv = localSortValue(b, section, sortKey);
+        if (config.numeric) {
+            av = Number(String(av).replace(/[^0-9.-]/g, '')) || 0;
+            bv = Number(String(bv).replace(/[^0-9.-]/g, '')) || 0;
+            return (av - bv) * dir;
+        }
+        return String(av).localeCompare(String(bv), ADMIN_BLOCK_LOCALE || undefined, {numeric: true, sensitivity: 'base'}) * dir;
+    });
+}
+
+function updateLocalSortIndicators(section) {
+    const state = getLocalState(section);
+    const card = getSectionCard(section);
+    if (!card) return;
+    card.querySelectorAll('.js-local-sort').forEach(function (th) {
+        const active = th.dataset.sort === state.sortKey;
+        th.classList.toggle('sorted', active);
+        const ico = th.querySelector('.sort-ico');
+        if (ico) ico.textContent = active ? (state.sortDir === 'DESC' ? '▼' : '▲') : '↕';
+    });
+}
+
+function setLocalSort(section, sortKey) {
+    const state = getLocalState(section);
+    if (state.sortKey === sortKey) {
+        state.sortDir = state.sortDir === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+        state.sortKey = sortKey;
+        state.sortDir = 'ASC';
+    }
+    state.page = 1;
+    renderLocalSection(section);
+}
+
+function blockRowKey(row, section) {
+    if (section === 'user-blocks') {
+        const btn = row.querySelector('.js-open-user-block-editor[data-target-key]');
+        return btn ? btn.dataset.targetKey : '';
+    }
+    if (section === 'ip-rules') {
+        const btn = row.querySelector('.js-open-ip-rule-editor[data-id]');
+        return btn ? btn.dataset.id : '';
+    }
+    if (section === 'batches') {
+        const btn = row.querySelector('.js-open-batch-editor[data-batch-id]');
+        return btn ? btn.dataset.batchId : '';
+    }
+    if (section === 'histories') {
+        const btn = row.querySelector('.js-open-history-current[data-history-id]');
+        return btn ? btn.dataset.historyId : '';
+    }
+    return '';
+}
+
+
+function enhanceBlockDashboardTables() {
+    const sections = ['user-blocks', 'ip-rules', 'batches', 'histories'];
+    document.querySelectorAll('.js-dashboard-panel table.adm-table').forEach(function (table, tableIndex) {
+        const targetSection = sections[tableIndex] || 'all';
+        table.querySelectorAll('thead th').forEach(function (th, idx, arr) {
+            if (idx === arr.length - 1 || th.dataset.dashboardEnhanced === 'true') return;
+            th.dataset.dashboardEnhanced = 'true';
+            th.style.cursor = 'pointer';
+            th.style.userSelect = 'none';
+            th.title = '클릭하면 해당 운영 탭으로 이동합니다.';
+            th.insertAdjacentHTML('beforeend', ' <span style="font-size:10px;color:#94a3b8;">↗</span>');
+            th.addEventListener('click', function () {
+                activateBlockTab(targetSection);
+                renderLocalSection(targetSection);
+            });
+        });
+    });
+}
+
+
+function enhanceBlockLocalTables() {
+    Object.keys(BLOCK_SECTION_CONFIG).forEach(function (section) {
+        const card = getSectionCard(section);
+        if (!card || card.dataset.enhanced === 'true') return;
+        card.dataset.enhanced = 'true';
+
+        const toolbar = card.querySelector('.adm-local-toolbar');
+        if (toolbar) {
+            const group = document.createElement('div');
+            group.className = 'adm-local-toolbar-group js-local-export-group';
+            group.innerHTML =
+                '<select class="adm-select js-block-export-format" data-section="' + section + '" style="width:86px;">'
+                + '<option value="csv">CSV</option><option value="excel">Excel</option></select>'
+                + '<button type="button" class="adm-btn adm-btn-ghost js-block-export" data-section="' + section + '" data-scope="all">전체 내보내기</button>'
+                + '<button type="button" class="adm-btn adm-btn-ghost js-block-export" data-section="' + section + '" data-scope="search">검색결과 내보내기</button>'
+                + '<button type="button" class="adm-btn adm-btn-ghost js-block-export js-block-export-selected" data-section="' + section + '" data-scope="selected" disabled>선택 내보내기 (0)</button>';
+            toolbar.appendChild(group);
+        }
+
+        const table = card.querySelector('table.adm-table');
+        if (!table) return;
+        const headRow = table.querySelector('thead tr');
+        if (headRow && !headRow.querySelector('.js-block-check-all')) {
+            const checkTh = document.createElement('th');
+            checkTh.className = 'js-block-check-cell';
+            checkTh.style.width = '42px';
+            checkTh.style.textAlign = 'center';
+            checkTh.innerHTML = '<input type="checkbox" class="js-block-check-all" data-section="' + section + '" style="cursor:pointer;">';
+            headRow.insertBefore(checkTh, headRow.firstElementChild);
+        }
+
+        const sortConfig = BLOCK_SECTION_SORT_CONFIG[section] || {};
+        Object.keys(sortConfig).forEach(function (key) {
+            const cellIndex = sortConfig[key].cell + 1;
+            const th = headRow ? headRow.children[cellIndex] : null;
+            if (!th || th.classList.contains('js-local-sort')) return;
+            th.classList.add('js-local-sort');
+            th.dataset.section = section;
+            th.dataset.sort = key;
+            th.style.cursor = 'pointer';
+            th.style.userSelect = 'none';
+            th.innerHTML = th.innerHTML + ' <span class="sort-ico" style="font-size:10px;color:#94a3b8;">↕</span>';
+        });
+
+        getLocalRows(section).forEach(function (row) {
+            if (row.querySelector('.js-block-row-check')) return;
+            const checkTd = document.createElement('td');
+            checkTd.className = 'js-block-check-cell';
+            checkTd.style.textAlign = 'center';
+            checkTd.innerHTML = '<input type="checkbox" class="js-block-row-check" data-section="' + section + '" value="' + escapeHtml(blockRowKey(row, section)) + '" style="cursor:pointer;">';
+            row.insertBefore(checkTd, row.firstElementChild);
+        });
+
+        if (section === 'user-blocks' || section === 'ip-rules') {
+            const wrap = card.querySelector('.adm-table-wrap');
+            if (wrap && !card.querySelector('.js-block-bulkbar[data-section="' + section + '"]')) {
+                const bar = document.createElement('div');
+                bar.className = 'js-block-bulkbar';
+                bar.dataset.section = section;
+                bar.style.cssText = 'display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 14px;margin:0 16px 12px;align-items:center;gap:10px;flex-wrap:wrap;';
+                if (section === 'user-blocks') {
+                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>개 선택됨</span>'
+                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-release-user-blocks">선택 차단 해제</button>'
+                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">선택 해제</button>';
+                } else {
+                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>개 선택됨</span>'
+                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-toggle-ip-rules" data-active="true">선택 활성화</button>'
+                        + '<button type="button" class="adm-btn adm-btn-danger js-bulk-toggle-ip-rules" data-active="false">선택 비활성화</button>'
+                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">선택 해제</button>';
+                }
+                wrap.parentElement.insertBefore(bar, wrap);
+            }
+        }
+    });
+}
+
+function selectedBlockChecks(section) {
+    return Array.from(document.querySelectorAll('.js-block-row-check[data-section="' + section + '"]:checked'));
+}
+
+function updateBlockBulkBar(section) {
+    const checks = selectedBlockChecks(section);
+    const bar = document.querySelector('.js-block-bulkbar[data-section="' + section + '"]');
+    if (bar) {
+        bar.style.display = checks.length > 0 ? 'flex' : 'none';
+        const count = bar.querySelector('.js-block-bulk-count');
+        if (count) count.textContent = checks.length;
+    }
+    const selectedBtn = document.querySelector('.js-block-export-selected[data-section="' + section + '"]');
+    if (selectedBtn) {
+        selectedBtn.disabled = checks.length === 0;
+        selectedBtn.textContent = '선택 내보내기 (' + checks.length + ')';
+    }
+    const all = document.querySelector('.js-block-check-all[data-section="' + section + '"]');
+    if (all) {
+        const visibleChecks = getLocalRows(section)
+            .filter(row => row.style.display !== 'none')
+            .map(row => row.querySelector('.js-block-row-check'))
+            .filter(Boolean);
+        all.checked = visibleChecks.length > 0 && visibleChecks.every(cb => cb.checked);
+        all.indeterminate = visibleChecks.some(cb => cb.checked) && !all.checked;
+    }
+}
+
+function clearBlockSelection(section) {
+    document.querySelectorAll('.js-block-row-check[data-section="' + section + '"], .js-block-check-all[data-section="' + section + '"]').forEach(function (cb) {
+        cb.checked = false;
+        cb.indeterminate = false;
+    });
+    updateBlockBulkBar(section);
+}
+
+async function bulkReleaseSelectedUserBlocks() {
+    const keys = selectedBlockChecks('user-blocks').map(cb => cb.value).filter(Boolean);
+    if (!keys.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+    if (!confirm(keys.length + '개의 회원 차단을 해제하시겠습니까?')) return;
+    const params = new URLSearchParams();
+    keys.forEach(key => params.append('blockTargetKeys', key));
+    const res = await fetch(CTX + '/admin/blocks/user-blocks/bulk-release', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params
+    });
+    const data = await res.json();
+    if (res.ok && data.success) { adm_toast(data.message || '처리되었습니다.'); location.reload(); }
+    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+}
+
+async function bulkToggleSelectedIpRules(active) {
+    const ids = selectedBlockChecks('ip-rules').map(cb => cb.value).filter(Boolean);
+    if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+    if (!confirm(ids.length + '개의 IP 규칙을 ' + (active ? '활성화' : '비활성화') + '하시겠습니까?')) return;
+    const params = new URLSearchParams();
+    ids.forEach(id => params.append('ipBlocklistIdxList', id));
+    params.append('active', active ? 'true' : 'false');
+    const res = await fetch(CTX + '/admin/blocks/ip-rules/bulk-toggle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params
+    });
+    const data = await res.json();
+    if (res.ok && data.success) { adm_toast(data.message || '처리되었습니다.'); location.reload(); }
+    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+}
+
+function exportBlockSection(section, scope) {
+    const card = getSectionCard(section);
+    if (!card) return;
+    const table = card.querySelector('table.adm-table');
+    const formatSelect = card.querySelector('.js-block-export-format[data-section="' + section + '"]');
+    const format = formatSelect ? formatSelect.value : 'csv';
+    let rows;
+    if (scope === 'selected') {
+        rows = selectedBlockChecks(section).map(cb => cb.closest('tr')).filter(Boolean);
+        if (!rows.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+    } else if (scope === 'search') {
+        rows = sortLocalRows(section, filterLocalRows(section));
+    } else {
+        rows = sortLocalRows(section, getLocalRows(section));
+    }
+    const headers = Array.from(table.querySelectorAll('thead th'))
+        .filter((th, idx, arr) => idx !== 0 && idx !== arr.length - 1)
+        .map(th => th.innerText.replace(/[↕▲▼]/g, '').trim());
+    const body = rows.map(function (row) {
+        const cells = Array.from(row.children).filter((td, idx, arr) => idx !== 0 && idx !== arr.length - 1);
+        return cells.map(td => td.innerText.replace(/\s+/g, ' ').trim());
+    });
+    const filename = 'blocks_' + section + '_' + scope + '_' + new Date().toISOString().slice(0, 10);
+    if (format === 'excel') {
+        const html = '<table><thead><tr>' + headers.map(h => '<th>' + escapeHtml(h) + '</th>').join('') + '</tr></thead><tbody>'
+            + body.map(row => '<tr>' + row.map(v => '<td>' + escapeHtml(v) + '</td>').join('') + '</tr>').join('')
+            + '</tbody></table>';
+        downloadBlob('\ufeff' + html, filename + '.xls', 'application/vnd.ms-excel;charset=utf-8');
+    } else {
+        const csv = [headers].concat(body).map(row => row.map(csvEscape).join(',')).join('\n');
+        downloadBlob('\ufeff' + csv, filename + '.csv', 'text/csv;charset=utf-8');
+    }
+}
+
+function csvEscape(value) {
+    const s = String(value == null ? '' : value);
+    return '"' + s.replace(/"/g, '""') + '"';
+}
+
+function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], {type: type});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+}
+
+
 function renderLocalSection(section) {
     const state = getLocalState(section);
-    const filteredRows = filterLocalRows(section);
+    const filteredRows = sortLocalRows(section, filterLocalRows(section));
     const total = filteredRows.length;
     const pageSize = Math.max(1, Number(state.pageSize || 20));
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -2196,11 +2531,18 @@ function renderLocalSection(section) {
     getLocalRows(section).forEach(function (row) {
         row.style.display = 'none';
     });
-    filteredRows.slice(start, end).forEach(function (row) {
-        row.style.display = '';
-    });
+    const visibleRows = filteredRows.slice(start, end);
+    if (visibleRows.length) {
+        const tbody = visibleRows[0].parentElement;
+        visibleRows.forEach(function (row) {
+            tbody.appendChild(row);
+            row.style.display = '';
+        });
+    }
 
-    ensureLocalEmptyRow(section, filteredRows.slice(start, end).length);
+    ensureLocalEmptyRow(section, visibleRows.length);
+    updateLocalSortIndicators(section);
+    updateBlockBulkBar(section);
 
     const info = document.querySelector('.js-local-page-info[data-section="' + section + '"]');
     const pageState = document.querySelector('.js-local-page-state[data-section="' + section + '"]');
@@ -3134,6 +3476,54 @@ document.addEventListener('click', function (e) {
         return;
     }
 
+    const sortBtn = e.target.closest('.js-local-sort');
+    if (sortBtn) {
+        setLocalSort(sortBtn.dataset.section, sortBtn.dataset.sort);
+        return;
+    }
+
+    const checkAll = e.target.closest('.js-block-check-all');
+    if (checkAll) {
+        const section = checkAll.dataset.section;
+        getLocalRows(section).forEach(function (row) {
+            if (row.style.display === 'none') return;
+            const cb = row.querySelector('.js-block-row-check');
+            if (cb) cb.checked = checkAll.checked;
+        });
+        updateBlockBulkBar(section);
+        return;
+    }
+
+    const rowCheck = e.target.closest('.js-block-row-check');
+    if (rowCheck) {
+        updateBlockBulkBar(rowCheck.dataset.section);
+        return;
+    }
+
+    const clearSelectionBtn = e.target.closest('.js-block-clear-selection');
+    if (clearSelectionBtn) {
+        clearBlockSelection(clearSelectionBtn.dataset.section);
+        return;
+    }
+
+    const blockExportBtn = e.target.closest('.js-block-export');
+    if (blockExportBtn) {
+        exportBlockSection(blockExportBtn.dataset.section, blockExportBtn.dataset.scope);
+        return;
+    }
+
+    const bulkReleaseBtn = e.target.closest('.js-bulk-release-user-blocks');
+    if (bulkReleaseBtn) {
+        bulkReleaseSelectedUserBlocks();
+        return;
+    }
+
+    const bulkToggleIpBtn = e.target.closest('.js-bulk-toggle-ip-rules');
+    if (bulkToggleIpBtn) {
+        bulkToggleSelectedIpRules(bulkToggleIpBtn.dataset.active === 'true');
+        return;
+    }
+
     const prevBtn = e.target.closest('.js-local-prev');
     if (prevBtn) {
         const section = prevBtn.dataset.section;
@@ -3160,6 +3550,8 @@ document.querySelectorAll('.adm-modal-overlay').forEach(function (overlay) {
     });
 });
 
+enhanceBlockLocalTables();
+enhanceBlockDashboardTables();
 initializeLocalSections();
 activateBlockTab(new URLSearchParams(window.location.search).get('tab') || 'dashboard');
 </script>

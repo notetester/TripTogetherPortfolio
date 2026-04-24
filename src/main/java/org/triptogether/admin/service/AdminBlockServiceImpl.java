@@ -560,6 +560,31 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     }
 
     @Override
+    public void bulkReleaseUserBlocks(List<String> blockTargetKeys, Long actorUserIdx) {
+        if (blockTargetKeys == null || blockTargetKeys.isEmpty()) return;
+        List<String> targetKeys = blockTargetKeys.stream()
+                .filter(key -> key != null && !key.isBlank())
+                .map(String::trim)
+                .distinct()
+                .collect(Collectors.toList());
+        for (String targetKey : targetKeys) {
+            releaseUserBlock(targetKey, actorUserIdx);
+        }
+    }
+
+    @Override
+    public void bulkToggleIpRules(List<Long> ipBlocklistIdxList, boolean active, Long actorUserIdx) {
+        if (ipBlocklistIdxList == null || ipBlocklistIdxList.isEmpty()) return;
+        List<Long> ids = ipBlocklistIdxList.stream()
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        for (Long id : ids) {
+            toggleIpRule(id, active, actorUserIdx);
+        }
+    }
+
+    @Override
     public Map<String, Object> findCurrentSettingByHistory(Long historyBlockIdx) {
         if (historyBlockIdx == null) {
             throw new IllegalArgumentException("차단 이력 식별자가 필요합니다.");

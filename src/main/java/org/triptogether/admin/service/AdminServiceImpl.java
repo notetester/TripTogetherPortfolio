@@ -124,7 +124,7 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public void bulkChangeMemberStatus(List<Long> userIdxList, String status) {
         if (userIdxList == null || userIdxList.isEmpty()) return;
-        java.util.Set<String> valid = java.util.Set.of("ACTIVE", "DORMANT", "DELETED");
+        java.util.Set<String> valid = java.util.Set.of("ACTIVE", "DORMANT", "BLOCKED", "DELETED");
         if (!valid.contains(status)) throw new IllegalArgumentException("허용되지 않는 상태값입니다.");
         adminMapper.bulkChangeMemberStatus(userIdxList, status);
     }
