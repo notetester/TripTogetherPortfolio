@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.mapper.WalletMapper;
@@ -12,6 +13,8 @@ import org.triptogether.myPage.vo.WalletChargeResultDto;
 import org.triptogether.myPage.vo.WalletHistoryDto;
 import org.triptogether.myPage.vo.WalletMemberGradePolicyDto;
 import org.triptogether.myPage.vo.WalletPaymentDto;
+import org.triptogether.myPage.vo.TossPaymentConfirmResponse;
+import org.triptogether.myPage.vo.WalletTossChargeRequestDto;
 import org.triptogether.reward.service.RewardService;
 
 import java.math.BigDecimal;
@@ -32,6 +35,7 @@ public class WalletServiceImpl implements WalletService {
     private final WalletMapper walletMapper;
     private final RewardService rewardService;
     private final MyPageService myPageService;
+    private final TossPaymentsClient tossPaymentsClient;
 
     @Override
     public UsersVO getWalletUser(Long userIdx) {
@@ -71,7 +75,61 @@ public class WalletServiceImpl implements WalletService {
     @Transactional
     public WalletChargeResultDto simulateCashCharge(Long userIdx, long amount) {
         validateChargeAmount(amount);
+        return applyChargeTransaction(
+                userIdx,
+                amount,
+                "TEST",
+                "MANUAL_CHARGE",
+                "캐시 충전 시뮬레이션",
+                "테스트 충전으로 캐시가 지급되었습니다.",
+                "캐시 충전 10% 적립 마일리지가 지급되었습니다."
+        );
+    }
 
+    @Override
+    @Transactional
+    public WalletChargeResultDto completeTossCharge(Long userIdx,
+                                                    WalletTossChargeRequestDto request,
+                                                    String paymentKey) {
+        validateChargeAmount(request.getAmount());
+        if (request.getOrderId() == null || request.getOrderId().isBlank()) {
+            throw new IllegalArgumentException("주문번호가 없습니다.");
+        }
+
+        TossPaymentConfirmResponse response = tossPaymentsClient.confirmPayment(
+                paymentKey,
+                request.getOrderId(),
+                request.getAmount(),
+                LocaleContextHolder.getLocale()
+        );
+
+        if (response == null) {
+            throw new IllegalStateException("Toss Payments confirmation returned no response.");
+        }
+        if (response.getTotalAmount() != request.getAmount()) {
+            throw new IllegalStateException("승인 금액이 요청 금액과 일치하지 않습니다.");
+        }
+
+        String paymentMethod = response.getMethod() != null ? response.getMethod() : "CARD";
+        String orderName = request.getOrderName() != null ? request.getOrderName() : "캐시 충전";
+        return applyChargeTransaction(
+                userIdx,
+                request.getAmount(),
+                paymentMethod,
+                "TOSS_CHARGE",
+                orderName,
+                "Toss 테스트 결제로 캐시가 지급되었습니다.",
+                "Toss 테스트 결제로 10% 마일리지가 지급되었습니다."
+        );
+    }
+
+    private WalletChargeResultDto applyChargeTransaction(Long userIdx,
+                                                          long amount,
+                                                          String paymentMethod,
+                                                          String sourceType,
+                                                          String orderName,
+                                                          String cashHistoryMessage,
+                                                          String mileageHistoryMessage) {
         UsersVO user = walletMapper.selectUserByIdxForUpdate(userIdx);
         if (user == null) {
             throw new IllegalStateException("로그인 정보가 유효하지 않습니다.");
@@ -86,9 +144,9 @@ public class WalletServiceImpl implements WalletService {
         WalletPaymentDto payment = new WalletPaymentDto();
         payment.setUserIdx(userIdx);
         payment.setPaymentType("CHARGE");
-        payment.setPaymentMethod("TEST");
-        payment.setOrderName("캐시 충전 시뮬레이션");
-        payment.setSourceType("MANUAL_CHARGE");
+        payment.setPaymentMethod(paymentMethod);
+        payment.setOrderName(orderName);
+        payment.setSourceType(sourceType);
         payment.setOriginalAmount(amount);
         payment.setDiscountRate(0.0);
         payment.setDiscountAmount(0L);
@@ -104,7 +162,7 @@ public class WalletServiceImpl implements WalletService {
                 "PAYMENT",
                 payment.getPaymentIdx(),
                 amount,
-                "캐시 충전 시뮬레이션 결제 경험치"
+                orderName + " 결제 적립"
         );
 
         WalletHistoryDto cashHistory = new WalletHistoryDto();
@@ -114,7 +172,7 @@ public class WalletServiceImpl implements WalletService {
         cashHistory.setAmount(amount);
         cashHistory.setBalanceAfter(newCashBalance);
         cashHistory.setRelatedPaymentIdx(payment.getPaymentIdx());
-        cashHistory.setDetailMessage("테스트 충전으로 캐시가 지급되었습니다.");
+        cashHistory.setDetailMessage(cashHistoryMessage);
         walletMapper.insertWalletHistory(cashHistory);
 
         if (earnedMileage > 0) {
@@ -125,11 +183,10 @@ public class WalletServiceImpl implements WalletService {
             mileageHistory.setAmount(earnedMileage);
             mileageHistory.setBalanceAfter(newMileageBalance);
             mileageHistory.setRelatedPaymentIdx(payment.getPaymentIdx());
-            mileageHistory.setDetailMessage("캐시 충전 10% 적립 마일리지가 지급되었습니다.");
+            mileageHistory.setDetailMessage(mileageHistoryMessage);
             walletMapper.insertWalletHistory(mileageHistory);
         }
 
-        // ── 결제 완료 후 직전 달 결제 총액 기준으로 회원 등급 재산정 ──
         recalculateMemberGrade(userIdx);
 
         UsersVO updatedUser = walletMapper.selectUserByIdx(userIdx);
