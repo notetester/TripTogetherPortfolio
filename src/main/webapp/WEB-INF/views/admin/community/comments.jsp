@@ -140,7 +140,10 @@
                 <c:forEach items="${list}" var="comment">
                     <tr>
                         <td><input type="checkbox" class="row-check" data-id="${comment.commentId}"></td>
-                        <td style="color:#64748b;font-size:12px;">#${comment.commentId}</td>
+                        <td style="color:#64748b;font-size:12px;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/community/posts/${comment.postId}">#${comment.commentId}</a>
+                        </td>
 
                         <%-- 작성자 --%>
                         <td style="cursor:pointer;"
@@ -161,16 +164,24 @@
                         <%-- IP --%>
                         <td style="font-size:11px;color:#94a3b8;font-family:monospace;">
                             <c:choose>
-                                <c:when test="${not empty comment.lastIp}">${comment.lastIp}</c:when>
+                                <c:when test="${not empty comment.lastIp}">
+                                    <button type="button"
+                                            class="adm-inline-link js-open-ip-context"
+                                            data-ip-address="${comment.lastIp}"
+                                            data-default-tab="blocks"
+                                            onclick="event.stopPropagation();">${comment.lastIp}</button>
+                                </c:when>
                                 <c:otherwise><span style="color:#475569;">—</span></c:otherwise>
                             </c:choose>
                         </td>
 
                         <%-- 댓글 내용 + 30일 배지 --%>
                         <td>
-                            <div class="adm-cell-ellipsis" title="${comment.content}">
+                            <a class="adm-cell-link adm-cell-link--inline adm-cell-ellipsis"
+                               href="${pageContext.request.contextPath}/admin/community/posts/${comment.postId}"
+                               title="${comment.content}">
                                 ${comment.content}
-                            </div>
+                            </a>
                             <c:if test="${comment.authorResolveCount30d > 0}">
                                 <span class="adm-inline-warning">
                                     ⚠ <spring:message code="admin.community.rowResolved30d" arguments="${comment.authorResolveCount30d}"/>
@@ -189,6 +200,8 @@
 
                         <%-- 구분: 댓글 / 대댓글 --%>
                         <td style="font-size:12px;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/community/posts/${comment.postId}">
                             <c:choose>
                                 <c:when test="${not empty comment.parentCommentId}">
                                     <span style="color:#94a3b8;">↩ <spring:message code="admin.community.kind.reply"/></span>
@@ -197,10 +210,13 @@
                                     <span style="color:#64748b;"><spring:message code="admin.community.kind.comment"/></span>
                                 </c:otherwise>
                             </c:choose>
+                            </a>
                         </td>
 
                         <%-- 신고 수 --%>
                         <td>
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/community/posts/${comment.postId}">
                             <c:choose>
                                 <c:when test="${comment.reportCount >= 3}">
                                     <span style="color:#f87171;font-weight:700;">🔴 ${comment.reportCount}</span>
@@ -212,23 +228,28 @@
                                     <span style="color:#475569;">0</span>
                                 </c:otherwise>
                             </c:choose>
+                            </a>
                         </td>
 
                         <%-- 상태 --%>
                         <td>
-                            <span class="status-badge ${comment.commentStatus}">
+                            <a href="${pageContext.request.contextPath}/admin/community/posts/${comment.postId}"
+                               class="adm-cell-link adm-cell-link--inline status-badge ${comment.commentStatus}">
                                 <c:choose>
                                     <c:when test="${comment.commentStatus == 'ACTIVE'}"><spring:message code="admin.community.status.active"/></c:when>
                                     <c:when test="${comment.commentStatus == 'BLOCKED'}"><spring:message code="admin.community.status.blocked"/></c:when>
                                     <c:otherwise>${comment.commentStatus}</c:otherwise>
                                 </c:choose>
-                            </span>
+                            </a>
                         </td>
 
                         <%-- 등록일 --%>
                         <td style="font-size:11px;color:#64748b;">
+                            <a class="adm-cell-link adm-cell-link--inline"
+                               href="${pageContext.request.contextPath}/admin/community/posts/${comment.postId}">
                             <fmt:formatDate value="${comment.createdAt}" pattern="yyyy.MM.dd"/>
                             <div><fmt:formatDate value="${comment.createdAt}" pattern="HH:mm"/></div>
+                            </a>
                         </td>
 
                         <%-- 액션 --%>

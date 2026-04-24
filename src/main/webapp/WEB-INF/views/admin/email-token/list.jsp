@@ -76,15 +76,13 @@
           </c:choose>
         </td>
         <td>
-          <div><c:out value="${item.email}"/></div>
-          <div class="adm-inline-actions">
-            <button type="button"
-                    class="adm-inline-chip"
-                    data-keyword="${item.email}"
-                    onclick="applyKeywordFilter(this)">
-              <spring:message code="admin.common.sameEmail"/>
-            </button>
-          </div>
+          <button type="button"
+                  class="adm-cell-link"
+                  data-keyword="${item.email}"
+                  onclick="applyKeywordFilter(this)">
+            <span><c:out value="${item.email}"/></span>
+            <span class="adm-cell-link-note"><spring:message code="admin.common.sameEmail"/></span>
+          </button>
         </td>
         <td>
           <c:choose>
@@ -94,22 +92,16 @@
         </td>
         <td><c:choose><c:when test="${not empty item.usedAtDate}"><fmt:formatDate value="${item.usedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
         <td><c:choose><c:when test="${not empty item.expiredAtDate}"><fmt:formatDate value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
-        <td style="font-size:12px;color:#64748b;">
-          <div><c:out value="${item.requestId}"/></div>
-          <div class="adm-inline-actions">
-            <button type="button"
-                    class="adm-inline-chip"
-                    data-keyword="${item.requestId}"
-                    onclick="applyKeywordFilter(this)">
-              <spring:message code="admin.common.sameRequest"/>
-            </button>
-            <button type="button"
-                    class="adm-inline-chip"
-                    data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
-                    onclick="openRelatedHistory('email-verifications', this)">
-              <spring:message code="admin.common.sameFlow"/>
-            </button>
-          </div>
+        <td>
+          <button type="button"
+                  class="adm-cell-link"
+                  data-keyword="${empty item.flowTraceId ? item.requestId : item.flowTraceId}"
+                  onclick="openRelatedHistory('email-verifications', this)">
+            <span style="font-size:12px;color:#64748b;"><c:out value="${item.requestId}"/></span>
+            <c:if test="${not empty item.flowTraceId}">
+              <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
+            </c:if>
+          </button>
         </td>
       </tr></c:forEach>
       <c:if test="${empty list}"><tr><td colspan="8" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr></c:if>

@@ -619,7 +619,7 @@
             <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.detailReason"/></div><div class="detail-value">${empty b.reason ? '-' : fn:escapeXml(b.reason)}</div></div>
             <c:if test="${not empty b.reason}">
                 <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="회원 차단 사유 번역"
+                     data-label="<spring:message code='admin.translation.label.userBlockReason'/>"
                      data-source-type="USER_BLOCK"
                      data-source-idx="${b.blockIdx}"
                      data-field-name="reason"
@@ -896,7 +896,7 @@
             <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.policyReason"/></div><div class="detail-value">${empty r.reason ? '-' : fn:escapeXml(r.reason)}</div></div>
             <c:if test="${not empty r.reason}">
                 <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="IP 정책 사유 번역"
+                     data-label="<spring:message code='admin.translation.label.ipRuleReason'/>"
                      data-source-type="IP_BLOCK_RULE"
                      data-source-idx="${r.ipBlocklistIdx}"
                      data-field-name="reason"
@@ -906,7 +906,7 @@
             <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.context.detailMemo"/></div><div class="detail-value">${empty r.detailMessage ? '-' : fn:escapeXml(r.detailMessage)}</div></div>
             <c:if test="${not empty r.detailMessage}">
                 <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="IP 상세 메모 번역"
+                     data-label="<spring:message code='admin.translation.label.ipRuleDetailNote'/>"
                      data-source-type="IP_BLOCK_RULE"
                      data-source-idx="${r.ipBlocklistIdx}"
                      data-field-name="detail_message"

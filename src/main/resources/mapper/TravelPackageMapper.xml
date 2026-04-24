@@ -598,4 +598,33 @@
           AND revision_status = 'PENDING'
     </update>
 
+    <!-- 챗봇 컨텍스트용 승인 패키지 다중 키워드 검색 -->
+    <select id="searchPackagesByKeywords" resultType="java.util.HashMap">
+        SELECT
+            tp.package_idx     AS packageIdx,
+            tp.package_title   AS packageTitle,
+            tp.package_summary AS packageSummary,
+            tp.package_price   AS packagePrice,
+            tp.currency_code   AS currencyCode,
+            tp.start_date      AS startDate,
+            tp.end_date        AS endDate,
+            tp.view_count      AS viewCount,
+            tp.booking_count   AS bookingCount,
+            st.name            AS spotName,
+            st.region          AS spotRegion
+        FROM TRAVEL_PACKAGE tp
+        LEFT JOIN SPOT_TRAVEL st ON st.spot_idx = tp.spot_idx
+        WHERE tp.package_status = 'APPROVED'
+          AND (
+          <foreach collection="keywords" item="kw" separator=" OR ">
+                tp.package_title   LIKE CONCAT('%', #{kw}, '%')
+             OR tp.package_summary LIKE CONCAT('%', #{kw}, '%')
+             OR st.name            LIKE CONCAT('%', #{kw}, '%')
+             OR st.region          LIKE CONCAT('%', #{kw}, '%')
+          </foreach>
+          )
+        ORDER BY tp.booking_count DESC, tp.view_count DESC
+        LIMIT #{limit}
+    </select>
+
 </mapper>

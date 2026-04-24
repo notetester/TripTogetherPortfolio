@@ -3,17 +3,17 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message code="course.ai.destinationPlaceholder" var="courseAiDestinationPlaceholder"/>
-<spring:message code="course.ai.requestPlaceholder" var="courseAiRequestPlaceholder"/>
-<spring:message code="course.ai.submitting" javaScriptEscape="true" var="courseAiSubmittingJs"/>
-
 <%@ include file="../common/header.jsp" %>
+
+<spring:message code="courses.ai.destination.placeholder" var="aiDestinationPlaceholder"/>
+<spring:message code="courses.ai.request.placeholder" var="aiRequestPlaceholder"/>
+<spring:message code="courses.ai.submit.loading" var="aiSubmitLoadingLabel"/>
 
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <head>
   <meta charset="UTF-8">
-  <title><spring:message code="course.ai.title"/></title>
+  <title><spring:message code="courses.ai.pageTitle"/></title>
   <style>
     * {
       box-sizing: border-box;
@@ -189,10 +189,10 @@
 </head>
 <body>
 <div class="container">
-  <h1><spring:message code="course.ai.title"/></h1>
+  <h1><spring:message code="courses.ai.pageTitle"/></h1>
   <div class="sub-text">
-    <spring:message code="course.ai.descLine1"/> <br>
-    <spring:message code="course.ai.descLine2"/>
+    <spring:message code="courses.ai.subtitle.line1"/> <br>
+    <spring:message code="courses.ai.subtitle.line2"/>
   </div>
 
   <c:if test="${not empty errorMessage}">
@@ -205,28 +205,28 @@
     <div class="form-grid">
 
       <div class="form-group">
-        <label for="destination"><spring:message code="course.ai.destination"/></label>
+        <label for="destination"><spring:message code="courses.ai.destination"/></label>
         <input type="text"
                id="destination"
                name="destination"
                value="${requestDto.destination}"
-               placeholder="${courseAiDestinationPlaceholder}">
+               placeholder="${aiDestinationPlaceholder}">
       </div>
 
       <div class="form-group">
-        <label for="companion"><spring:message code="course.ai.companion"/></label>
+        <label for="companion"><spring:message code="courses.ai.companion"/></label>
         <select id="companion" name="companion">
-          <option value=""><spring:message code="course.ai.selectPlaceholder"/></option>
-          <option value="혼자" <c:if test="${requestDto.companion eq '혼자'}">selected</c:if>><spring:message code="course.ai.companion.alone"/></option>
-          <option value="친구" <c:if test="${requestDto.companion eq '친구'}">selected</c:if>><spring:message code="course.ai.companion.friends"/></option>
-          <option value="연인" <c:if test="${requestDto.companion eq '연인'}">selected</c:if>><spring:message code="course.ai.companion.couple"/></option>
-          <option value="가족" <c:if test="${requestDto.companion eq '가족'}">selected</c:if>><spring:message code="course.ai.companion.family"/></option>
-          <option value="부모님" <c:if test="${requestDto.companion eq '부모님'}">selected</c:if>><spring:message code="course.ai.companion.parents"/></option>
+          <option value=""><spring:message code="courses.ai.select.placeholder"/></option>
+          <option value="혼자" <c:if test="${requestDto.companion eq '혼자'}">selected</c:if>><spring:message code="courses.ai.companion.solo"/></option>
+          <option value="친구" <c:if test="${requestDto.companion eq '친구'}">selected</c:if>><spring:message code="courses.ai.companion.friends"/></option>
+          <option value="연인" <c:if test="${requestDto.companion eq '연인'}">selected</c:if>><spring:message code="courses.ai.companion.couple"/></option>
+          <option value="가족" <c:if test="${requestDto.companion eq '가족'}">selected</c:if>><spring:message code="courses.ai.companion.family"/></option>
+          <option value="부모님" <c:if test="${requestDto.companion eq '부모님'}">selected</c:if>><spring:message code="courses.ai.companion.parents"/></option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="startDate"><spring:message code="course.ai.startDate"/></label>
+        <label for="startDate"><spring:message code="courses.ai.startDate"/></label>
         <input type="date"
                id="startDate"
                name="startDate"
@@ -235,7 +235,7 @@
       </div>
 
       <div class="form-group">
-        <label for="endDate"><spring:message code="course.ai.endDate"/></label>
+        <label for="endDate"><spring:message code="courses.ai.endDate"/></label>
         <input type="date"
                id="endDate"
                name="endDate"
@@ -244,41 +244,41 @@
       </div>
 
       <div class="form-group">
-        <label for="style"><spring:message code="course.ai.style"/></label>
+        <label for="style"><spring:message code="courses.ai.style"/></label>
         <select id="style" name="style">
-          <option value=""><spring:message code="course.ai.selectPlaceholder"/></option>
-          <option value="맛집 중심" <c:if test="${requestDto.style eq '맛집 중심'}">selected</c:if>><spring:message code="course.ai.style.food"/></option>
-          <option value="감성 카페" <c:if test="${requestDto.style eq '감성 카페'}">selected</c:if>><spring:message code="course.ai.style.cafe"/></option>
-          <option value="힐링 여행" <c:if test="${requestDto.style eq '힐링 여행'}">selected</c:if>><spring:message code="course.ai.style.healing"/></option>
-          <option value="액티비티" <c:if test="${requestDto.style eq '액티비티'}">selected</c:if>><spring:message code="course.ai.style.activity"/></option>
-          <option value="관광지 중심" <c:if test="${requestDto.style eq '관광지 중심'}">selected</c:if>><spring:message code="course.ai.style.landmark"/></option>
-          <option value="사진/포토스팟" <c:if test="${requestDto.style eq '사진/포토스팟'}">selected</c:if>><spring:message code="course.ai.style.photo"/></option>
-          <option value="여유로운 일정" <c:if test="${requestDto.style eq '여유로운 일정'}">selected</c:if>><spring:message code="course.ai.style.relaxed"/></option>
+          <option value=""><spring:message code="courses.ai.select.placeholder"/></option>
+          <option value="맛집 중심" <c:if test="${requestDto.style eq '맛집 중심'}">selected</c:if>><spring:message code="courses.ai.style.food"/></option>
+          <option value="감성 카페" <c:if test="${requestDto.style eq '감성 카페'}">selected</c:if>><spring:message code="courses.ai.style.cafe"/></option>
+          <option value="힐링 여행" <c:if test="${requestDto.style eq '힐링 여행'}">selected</c:if>><spring:message code="courses.ai.style.healing"/></option>
+          <option value="액티비티" <c:if test="${requestDto.style eq '액티비티'}">selected</c:if>><spring:message code="courses.ai.style.activity"/></option>
+          <option value="관광지 중심" <c:if test="${requestDto.style eq '관광지 중심'}">selected</c:if>><spring:message code="courses.ai.style.sightseeing"/></option>
+          <option value="사진/포토스팟" <c:if test="${requestDto.style eq '사진/포토스팟'}">selected</c:if>><spring:message code="courses.ai.style.photo"/></option>
+          <option value="여유로운 일정" <c:if test="${requestDto.style eq '여유로운 일정'}">selected</c:if>><spring:message code="courses.ai.style.relaxed"/></option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="budget"><spring:message code="course.ai.budget"/></label>
+        <label for="budget"><spring:message code="courses.ai.budget"/></label>
         <select id="budget" name="budget">
-          <option value=""><spring:message code="course.ai.selectPlaceholder"/></option>
-          <option value="낮음" <c:if test="${requestDto.budget eq '낮음'}">selected</c:if>><spring:message code="course.ai.budget.low"/></option>
-          <option value="낮음" <c:if test="${requestDto.budget eq '중간'}">selected</c:if>><spring:message code="course.ai.budget.medium"/></option>
-          <option value="낮음" <c:if test="${requestDto.budget eq '높음'}">selected</c:if>><spring:message code="course.ai.budget.high"/></option>
+          <option value=""><spring:message code="courses.ai.select.placeholder"/></option>
+          <option value="낮음" <c:if test="${requestDto.budget eq '낮음'}">selected</c:if>><spring:message code="courses.ai.budget.low"/></option>
+          <option value="중간" <c:if test="${requestDto.budget eq '중간'}">selected</c:if>><spring:message code="courses.ai.budget.medium"/></option>
+          <option value="높음" <c:if test="${requestDto.budget eq '높음'}">selected</c:if>><spring:message code="courses.ai.budget.high"/></option>
         </select>
       </div>
 
       <div class="form-group full">
-        <label for="requestText"><spring:message code="course.ai.requestText"/></label>
+        <label for="requestText"><spring:message code="courses.ai.request"/></label>
         <textarea id="requestText"
                   name="requestText"
-                  placeholder="${courseAiRequestPlaceholder}">${requestDto.requestText}</textarea>
+                  placeholder="${aiRequestPlaceholder}">${requestDto.requestText}</textarea>
         <div class="hint">
-          <spring:message code="course.ai.requestHint"/>
+          <spring:message code="courses.ai.request.hint"/>
         </div>
       </div>
 
       <div class="btn-area full">
-        <button type="submit" class="submit-btn"><spring:message code="course.ai.submit"/></button>
+        <button type="submit" class="submit-btn"><spring:message code="courses.ai.submit"/></button>
       </div>
 
     </div>
@@ -288,9 +288,10 @@
 <div id="loadingOverlay" class="loading-overlay" style="display:none;">
   <div class="loading-card">
     <div class="loading-spinner"></div>
-    <div class="loading-title"><spring:message code="course.ai.loadingTitle"/></div>
+    <div class="loading-title"><spring:message code="courses.ai.loading.title"/></div>
     <div class="loading-text">
-      <spring:message code="course.ai.loadingText"/>
+      <spring:message code="courses.ai.loading.text1"/><br>
+      <spring:message code="courses.ai.loading.text2"/>
     </div>
   </div>
 </div>
@@ -304,7 +305,7 @@
 
     overlay.style.display = 'flex';
     submitBtn.disabled = true;
-    submitBtn.textContent = '${courseAiSubmittingJs}';
+    submitBtn.textContent = '${aiSubmitLoadingLabel}';
   });
 </script>
 

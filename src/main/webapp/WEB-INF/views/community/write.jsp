@@ -24,12 +24,35 @@
 <spring:message code="community.type.review" var="communityTypeReviewLabel"/>
 <spring:message code="community.type.tip" var="communityTypeTipLabel"/>
 <spring:message code="community.write.content.placeholder" var="communityWriteContentPlaceholder"/>
-<spring:message code="community.write.image.add" var="communityWriteImageAddLabel"/>
-<spring:message code="community.write.image.hint" var="communityWriteImageHintLabel"/>
-<spring:message code="community.write.image.max" arguments="5" var="communityWriteImageMaxInitialLabel"/>
 <spring:message code="community.write.tag.hint" var="communityWriteTagHintLabel"/>
 <spring:message code="community.write.tag.placeholder" var="communityWriteTagPlaceholder"/>
 <spring:message code="community.write.title.placeholder" var="communityWriteTitlePlaceholder"/>
+
+<%-- Summernote CDN (WYSIWYG 에디터) --%>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.9.1/dist/summernote-lite.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.1/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.1/dist/lang/summernote-ko-KR.min.js"></script>
+
+<%-- Summernote 모달 여백 강제 override (CSS 파일 로드 순서/캐시 회피) --%>
+<style>
+.note-modal .note-modal-header { padding: 18px 32px !important; }
+.note-modal .note-modal-body   { padding: 32px 32px !important; }
+.note-modal .note-modal-body .note-form-group { padding-bottom: 28px !important; }
+.note-modal .note-modal-body .note-form-group:last-child { padding-bottom: 0 !important; }
+/* footer를 flex로 전환: Summernote 기본 float:right 가 height:auto 일 때 컨테이너 밖으로 밀려나는 문제 방지 */
+.note-modal .note-modal-footer {
+    height: auto !important;
+    padding: 16px 32px !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-align: right !important;
+}
+.note-modal .note-modal-footer .note-btn { float: none !important; }
+.note-modal .note-form-label { margin-bottom: 12px !important; }
+</style>
 
 <%-- 비로그인 체크 --%>
 <c:if test="${empty sessionScope.loginUser}">
@@ -101,27 +124,6 @@
           <p class="input-hint">${communityWriteTagHintLabel}</p>
         </div>
 
-  <%-- 이미지 업로드 --%>
-        <div class="write-section">
-          <label class="section-label">
-            <spring:message code="community.write.image.label"/>
-            <span class="section-label-sub" id="imgLimitLabel">${communityWriteImageMaxInitialLabel}</span>
-          </label>
-          <div class="img-upload-grid" id="imgUploadGrid">
-            <div class="img-add-btn"
-                 onclick="document.getElementById('imgInput').click()">
-              <div class="img-add-icon">&#128247;</div>
-              <span class="img-add-text">${communityWriteImageAddLabel}</span>
-              <span class="img-add-count">
-                <span id="imgCount">0</span>/<span id="imgMax">5</span>
-              </span>
-            </div>
-          </div>
-          <input type="file" id="imgInput" accept="image/*" multiple
-                 style="display:none;" onchange="addImages(event)">
-          <p class="input-hint">${communityWriteImageHintLabel}</p>
-        </div>
-
           <%-- 유형별 추가 입력 (JS로 동적 렌더링) --%>
         <div id="typeExtraSection"></div>
 
@@ -130,12 +132,14 @@
           <label class="section-label" for="writeContent">
             <spring:message code="community.write.content.label"/> <span class="required">*</span>
           </label>
+          <div id="photoCountBadge" class="photo-count-badge is-short" hidden>
+            <span class="photo-count-icon">&#128247;</span>
+            <span id="photoCountText"></span>
+          </div>
           <textarea id="writeContent" name="content" class="write-textarea"
-                    placeholder="${communityWriteContentPlaceholder}"
-                    rows="12" maxlength="3000"
-                    oninput="document.getElementById('contentCount').textContent=this.value.length"><c:if test="${isEdit}">${post.content}</c:if></textarea>
+                    placeholder="${communityWriteContentPlaceholder}"><c:if test="${isEdit}">${fn:escapeXml(post.content)}</c:if></textarea>
           <div class="input-counter">
-            <span id="contentCount">${isEdit ? fn:length(post.content) : 0}</span>/3000
+            <span id="contentCount">0</span>/3000
           </div>
           <div class="write-bottom-actions">
             <button type="button" class="btn-cancel" onclick="cancelWrite()"><spring:message code="community.write.cancel"/></button>
@@ -226,8 +230,8 @@ var CTX      = '${pageContext.request.contextPath}';
 var IS_EDIT  = ${isEdit ? 'true' : 'false'};
 var POST_ID  = ${isEdit ? post.postId : 0};
 var tags     = [];
-var uploadedFiles = [];
-var MAX_IMAGES = 5;
+/* 사진 유형 검증용: content 본문에 img 최소 장수 */
+var PHOTO_MIN_IMAGES = 3;
 
 <spring:message code="community.region.africa" javaScriptEscape="true" var="communityRegionAfricaJs"/>
 <spring:message code="community.region.asia" javaScriptEscape="true" var="communityRegionAsiaJs"/>
@@ -240,14 +244,14 @@ var MAX_IMAGES = 5;
 <spring:message code="community.write.content.placeholder" javaScriptEscape="true" var="communityWriteContentPlaceholderJs"/>
 <spring:message code="community.write.error.contentRequired" javaScriptEscape="true" var="communityWriteErrorContentRequiredJs"/>
 <spring:message code="community.write.error.generic" javaScriptEscape="true" var="communityWriteErrorGenericJs"/>
-<spring:message code="community.write.error.maxImages" javaScriptEscape="true" var="communityWriteErrorMaxImagesJs"/>
 <spring:message code="community.write.error.photoRequired" javaScriptEscape="true" var="communityWriteErrorPhotoRequiredJs"/>
 <spring:message code="community.write.error.regionTagLocked" javaScriptEscape="true" var="communityWriteErrorRegionTagLockedJs"/>
 <spring:message code="community.write.error.titleRequired" javaScriptEscape="true" var="communityWriteErrorTitleRequiredJs"/>
-<spring:message code="community.write.error.unsupportedType" javaScriptEscape="true" var="communityWriteErrorUnsupportedTypeJs"/>
 <spring:message code="community.write.guide.photo.1" javaScriptEscape="true" var="communityWriteGuidePhoto1Js"/>
 <spring:message code="community.write.guide.photo.2" javaScriptEscape="true" var="communityWriteGuidePhoto2Js"/>
 <spring:message code="community.write.guide.photo.3" javaScriptEscape="true" var="communityWriteGuidePhoto3Js"/>
+<spring:message code="community.write.guide.photo.requirement" javaScriptEscape="true" var="communityWriteGuidePhotoRequirementJs"/>
+<spring:message code="community.write.photoCount.label" javaScriptEscape="true" var="communityWritePhotoCountLabelJs"/>
 <spring:message code="community.write.guide.question.1" javaScriptEscape="true" var="communityWriteGuideQuestion1Js"/>
 <spring:message code="community.write.guide.question.2" javaScriptEscape="true" var="communityWriteGuideQuestion2Js"/>
 <spring:message code="community.write.guide.review.1" javaScriptEscape="true" var="communityWriteGuideReview1Js"/>
@@ -256,11 +260,6 @@ var MAX_IMAGES = 5;
 <spring:message code="community.write.guide.tip.1" javaScriptEscape="true" var="communityWriteGuideTip1Js"/>
 <spring:message code="community.write.guide.tip.2" javaScriptEscape="true" var="communityWriteGuideTip2Js"/>
 <spring:message code="community.write.guide.tip.3" javaScriptEscape="true" var="communityWriteGuideTip3Js"/>
-<spring:message code="community.write.image.add" javaScriptEscape="true" var="communityWriteImageAddJs"/>
-<spring:message code="community.write.image.existing" javaScriptEscape="true" var="communityWriteImageExistingJs"/>
-<spring:message code="community.write.image.max" javaScriptEscape="true" var="communityWriteImageMaxJs"/>
-<spring:message code="community.write.image.previewAlt" javaScriptEscape="true" var="communityWriteImagePreviewAltJs"/>
-<spring:message code="community.write.image.primary" javaScriptEscape="true" var="communityWriteImagePrimaryJs"/>
 <spring:message code="community.write.resetConfirm" javaScriptEscape="true" var="communityWriteResetConfirmJs"/>
 <spring:message code="community.write.tipCategory.food" javaScriptEscape="true" var="communityWriteTipCategoryFoodJs"/>
 <spring:message code="community.write.tipCategory.label" javaScriptEscape="true" var="communityWriteTipCategoryLabelJs"/>
@@ -292,21 +291,28 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+/* Summernote HTML → plain text 변환 (글자수 카운트·빈값 검증용) */
+function htmlToPlainText(html) {
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html || '';
+  return (tmp.textContent || tmp.innerText || '').trim();
+}
+
 var writeMessages = {
   cancelConfirm: '${communityWriteCancelConfirmJs}',
   contentPhotoOnly: '${communityWriteContentPhotoOnlyJs}',
   contentPlaceholder: '${communityWriteContentPlaceholderJs}',
+  photoCountLabel: '${communityWritePhotoCountLabelJs}',
   errors: {
     contentRequired: '${communityWriteErrorContentRequiredJs}',
     generic: '${communityWriteErrorGenericJs}',
-    maxImages: '${communityWriteErrorMaxImagesJs}',
     photoRequired: '${communityWriteErrorPhotoRequiredJs}',
     regionTagLocked: '${communityWriteErrorRegionTagLockedJs}',
-    titleRequired: '${communityWriteErrorTitleRequiredJs}',
-    unsupportedType: '${communityWriteErrorUnsupportedTypeJs}'
+    titleRequired: '${communityWriteErrorTitleRequiredJs}'
   },
   guides: {
     photo: [
+      '${communityWriteGuidePhotoRequirementJs}',
       '${communityWriteGuidePhoto1Js}',
       '${communityWriteGuidePhoto2Js}',
       '${communityWriteGuidePhoto3Js}'
@@ -325,13 +331,6 @@ var writeMessages = {
       '${communityWriteGuideTip2Js}',
       '${communityWriteGuideTip3Js}'
     ]
-  },
-  image: {
-    add: '${communityWriteImageAddJs}',
-    existing: '${communityWriteImageExistingJs}',
-    maxTemplate: '${communityWriteImageMaxJs}',
-    previewAlt: '${communityWriteImagePreviewAltJs}',
-    primary: '${communityWriteImagePrimaryJs}'
   },
   regionLabels: {
     africa: '${communityRegionAfricaJs}',
@@ -362,19 +361,19 @@ var writeMessages = {
 
 var TYPE_CONFIG = {
   review: {
-    title: IS_EDIT ? writeMessages.titles.review.edit : writeMessages.titles.review.create, imgMax: 5,
+    title: IS_EDIT ? writeMessages.titles.review.edit : writeMessages.titles.review.create,
     guide: writeMessages.guides.review
   },
   photo: {
-    title: IS_EDIT ? writeMessages.titles.photo.edit : writeMessages.titles.photo.create, imgMax: 10,
+    title: IS_EDIT ? writeMessages.titles.photo.edit : writeMessages.titles.photo.create,
     guide: writeMessages.guides.photo
   },
   tip: {
-    title: IS_EDIT ? writeMessages.titles.tip.edit : writeMessages.titles.tip.create, imgMax: 3,
+    title: IS_EDIT ? writeMessages.titles.tip.edit : writeMessages.titles.tip.create,
     guide: writeMessages.guides.tip
   },
   question: {
-    title: IS_EDIT ? writeMessages.titles.question.edit : writeMessages.titles.question.create, imgMax: 2,
+    title: IS_EDIT ? writeMessages.titles.question.edit : writeMessages.titles.question.create,
     guide: writeMessages.guides.question
   }
 };
@@ -405,11 +404,7 @@ window.onload = function() {
     }
     renderTags();
 
-    /* 기존 이미지 복원 (URL로 표시, 실제 파일 객체는 없음) */
-    <c:forEach var="img" items="${imageList}">
-    uploadedFiles.push({ url: '${img.imageUrl}', file: null, existing: true, imageUrl: '${img.imageUrl}' });
-    </c:forEach>
-    renderImageGrid();
+    /* 기존 이미지는 content 본문 HTML 안에 이미 포함됨 (별도 복원 불필요) */
 
     /* tip 카테고리 복원 */
     if (currentType === 'tip') {
@@ -425,6 +420,11 @@ window.onload = function() {
           if (activeBtn) activeBtn.classList.add('active');
         }
       }, 100);
+    }
+
+    /* photo 유형 수정 시: 가이드 리스트 및 카운터 배지 갱신 */
+    if (currentType === 'photo') {
+      selectType('photo', document.querySelector('[data-type="photo"]'));
     }
 
   } else {
@@ -447,27 +447,9 @@ function selectType(type, btn) {
   var cfg = TYPE_CONFIG[type];
   document.getElementById('writePageTitle').textContent = cfg.title;
 
-  /* 사진 유형이면 본문 비활성화 */
-  var contentArea    = document.getElementById('writeContent');
-  var contentSection = contentArea.closest('.write-section');
-  if (type === 'photo') {
-    contentArea.readOnly = true;
-    contentArea.value       = '';
-    contentArea.placeholder = writeMessages.contentPhotoOnly;
-    contentArea.style.background = '#f3f4f6';
-    contentArea.style.color      = '#9ca3af';
-    contentSection.style.opacity = '0.5';
-  } else {
-    contentArea.readOnly    = false;
-    contentArea.disabled    = false;
-    contentArea.placeholder = writeMessages.contentPlaceholder;
-    contentArea.style.background = '';
-    contentArea.style.color      = '';
-    contentSection.style.opacity = '';
-  }
-  MAX_IMAGES = cfg.imgMax;
-  document.getElementById('imgLimitLabel').textContent = formatMessage(writeMessages.image.maxTemplate, cfg.imgMax);
-  document.getElementById('imgMax').textContent = cfg.imgMax;
+  /* 모든 유형에서 에디터 활성. photo 유형은 이미지 최소 3장 요구는 submitWrite 에서 검증 */
+  var $editor = (window.jQuery && jQuery('#writeContent').data('summernote')) ? jQuery('#writeContent') : null;
+  if ($editor) $editor.summernote('enable');
   document.getElementById('guideList').innerHTML =
       cfg.guide.map(function(g) { return '<li>' + escapeHtml(g) + '</li>'; }).join('');
 
@@ -490,10 +472,33 @@ function selectType(type, btn) {
     sec.innerHTML = '';
   }
 
-  if (uploadedFiles.length > MAX_IMAGES) {
-    uploadedFiles = uploadedFiles.slice(0, MAX_IMAGES);
-    renderImageGrid();
+  /* 사진 유형: 이미지 카운터 배지 표시 + 현재 카운트 반영 */
+  var badge = document.getElementById('photoCountBadge');
+  if (badge) {
+    if (type === 'photo') {
+      badge.hidden = false;
+      updatePhotoCount();
+    } else {
+      badge.hidden = true;
+    }
   }
+}
+
+function updatePhotoCount() {
+  var badge = document.getElementById('photoCountBadge');
+  if (!badge || badge.hidden) return;
+  var $editor = (window.jQuery && jQuery('#writeContent').data('summernote')) ? jQuery('#writeContent') : null;
+  var html = $editor ? $editor.summernote('code') : (document.getElementById('writeContent').value || '');
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  var count = tmp.querySelectorAll('img').length;
+  var textEl = document.getElementById('photoCountText');
+  if (textEl) {
+    var tpl = writeMessages.photoCountLabel || 'Photos {0}/{1}';
+    textEl.textContent = tpl.replace('{0}', count).replace('{1}', PHOTO_MIN_IMAGES);
+  }
+  badge.classList.toggle('is-short', count < PHOTO_MIN_IMAGES);
+  badge.classList.toggle('is-ok', count >= PHOTO_MIN_IMAGES);
 }
 
 function selTipCat(cat, btn) {
@@ -524,62 +529,8 @@ function selectRegion(region, btn) {
   renderTags();
 }
 
-function addImages(event) {
-  var files = Array.from(event.target.files);
-  var allowed = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-
-  /* 파일 형식 검증 */
-  for (var i = 0; i < files.length; i++) {
-    var ext = files[i].name.substring(files[i].name.lastIndexOf('.')).toLowerCase();
-    if (allowed.indexOf(ext) === -1) {
-      alert(formatMessage(writeMessages.errors.unsupportedType, files[i].name));
-      event.target.value = '';
-      return;
-    }
-  }
-
-  var remain = MAX_IMAGES - uploadedFiles.length;
-  if (remain <= 0) {
-    alert(formatMessage(writeMessages.errors.maxImages, MAX_IMAGES));
-    return;
-  }
-  files.slice(0, remain).forEach(function(file) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      uploadedFiles.push({ url: e.target.result, file: file, existing: false });
-      renderImageGrid();
-    };
-    reader.readAsDataURL(file);
-  });
-  event.target.value = '';
-}
-
-function removeImage(idx) {
-  uploadedFiles.splice(idx, 1);
-  renderImageGrid();
-}
-
-function renderImageGrid() {
-  var grid = document.getElementById('imgUploadGrid');
-  var html = '';
-  uploadedFiles.forEach(function(img, i) {
-    html += '<div class="img-preview-item">'
-      + '<img src="' + img.url + '" alt="' + escapeHtml(writeMessages.image.previewAlt) + '">'
-      + '<button type="button" class="img-remove-btn" onclick="removeImage(' + i + ')">&#10005;</button>'
-      + (i === 0 ? '<span class="img-rep-badge">' + escapeHtml(writeMessages.image.primary) + '</span>' : '')
-      + (img.existing ? '<span class="img-rep-badge" style="background:#16a34a;bottom:20px;">' + escapeHtml(writeMessages.image.existing) + '</span>' : '')
-      + '</div>';
-  });
-  if (uploadedFiles.length < MAX_IMAGES) {
-    html += '<div class="img-add-btn" onclick="document.getElementById(\'imgInput\').click()">'
-      + '<div class="img-add-icon">&#128247;</div>'
-      + '<span class="img-add-text">' + escapeHtml(writeMessages.image.add) + '</span>'
-      + '<span class="img-add-count"><span id="imgCount">'
-      + uploadedFiles.length + '</span>/<span id="imgMax">' + MAX_IMAGES + '</span></span>'
-      + '</div>';
-  }
-  grid.innerHTML = html;
-}
+/* 사이드바 이미지 업로드 관련 함수(addImages/removeImage/renderImageGrid) 제거됨.
+   이제 이미지는 Summernote 에디터 본문으로만 삽입됨. */
 
 function addTag(event) {
   if (event.key !== 'Enter') return;
@@ -623,9 +574,21 @@ function renderTags() {
 
 function submitWrite() {
   var title   = document.getElementById('writeTitle').value.trim();
-  var content = document.getElementById('writeContent').value.trim();
   var type    = document.getElementById('postType').value;
   var region  = document.getElementById('regionInput').value;
+
+  /* Summernote HTML을 textarea에 동기화 (FormData가 최신값을 읽도록) */
+  var $editor = (window.jQuery && jQuery('#writeContent').data('summernote')) ? jQuery('#writeContent') : null;
+  if ($editor) {
+    document.getElementById('writeContent').value = $editor.summernote('code');
+  }
+  var contentHtml = document.getElementById('writeContent').value;
+  var contentText = htmlToPlainText(contentHtml);
+
+  /* 본문에 포함된 <img> 개수 (photo 유형 최소 장수 검증용) */
+  var tmpDiv = document.createElement('div');
+  tmpDiv.innerHTML = contentHtml || '';
+  var imgCount = tmpDiv.querySelectorAll('img').length;
 
   /* 지역 태그 강제 포함 */
   var regionTag = REGION_TAG_VALUE[region];
@@ -639,39 +602,20 @@ function submitWrite() {
     document.getElementById('writeTitle').focus();
     return;
   }
-  if (!content && type !== 'photo') {
+  /* 본문 필수: 텍스트나 이미지 중 하나는 있어야 함 */
+  if (!contentText && imgCount === 0) {
     alert(writeMessages.errors.contentRequired);
-    document.getElementById('writeContent').focus();
+    if ($editor) $editor.summernote('focus');
+    else document.getElementById('writeContent').focus();
     return;
   }
-  if (type === 'photo' && uploadedFiles.length === 0) {
+  /* photo 유형: 본문에 이미지 최소 3장 필수 */
+  if (type === 'photo' && imgCount < PHOTO_MIN_IMAGES) {
     alert(writeMessages.errors.photoRequired);
     return;
   }
 
-  /* 사진 유형이면 content를 빈 문자열로 강제 설정 */
-  if (type === 'photo') {
-    document.getElementById('writeContent').value = '';
-    document.getElementById('writeContent').readOnly = false;
-  }
-
   var formData = new FormData(document.getElementById('writeForm'));
-
-  /* 새로 추가된 이미지만 전송 */
-  uploadedFiles.forEach(function(img) {
-    if (!img.existing && img.file) {
-      formData.append('images', img.file);
-    }
-  });
-
-  /* 기존 이미지 URL 전송 (수정 시 유지할 이미지) */
-  if (IS_EDIT) {
-    uploadedFiles.forEach(function(img) {
-      if (img.existing) {
-        formData.append('existingImages', img.imageUrl);
-      }
-    });
-  }
 
   var url = IS_EDIT
     ? CTX + '/community/edit/' + POST_ID
@@ -699,8 +643,10 @@ function resetWrite() {
 
 function cancelWrite() {
   var title   = document.getElementById('writeTitle').value;
-  var content = document.getElementById('writeContent').value;
-  if (title || content) {
+  var $editor = (window.jQuery && jQuery('#writeContent').data('summernote')) ? jQuery('#writeContent') : null;
+  var contentHtml = $editor ? $editor.summernote('code') : document.getElementById('writeContent').value;
+  var contentText = htmlToPlainText(contentHtml);
+  if (title || contentText) {
     if (!confirm(writeMessages.cancelConfirm)) return;
   }
   if (IS_EDIT) {
@@ -709,6 +655,71 @@ function cancelWrite() {
     location.href = CTX + '/community/list';
   }
 }
+</script>
+
+<script>
+/* =============================================
+   Summernote 에디터 초기화
+   - textarea 초기값(isEdit 시 기존 post.content)은 자동 반영
+   - onChange 콜백에서 plain text 글자수 카운터 갱신
+   - onImageUpload: Phase 1 임시 base64 삽입 (Phase 2에서 Cloudinary 업로드로 교체 예정)
+   ============================================= */
+jQuery(function($) {
+  $('#writeContent').summernote({
+    lang: 'ko-KR',
+    height: 640,
+    minHeight: 480,
+    placeholder: writeMessages.contentPlaceholder,
+    focus: false,
+    disableResizeEditor: false,
+    toolbar: [
+      ['style', ['style']],
+      ['font',  ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+      ['fontsize', ['fontsize']],
+      ['color', ['color']],
+      ['para',  ['ul', 'ol', 'paragraph']],
+      ['insert',['link', 'picture']],
+      ['view',  ['fullscreen', 'codeview']]
+    ],
+    callbacks: {
+      onChange: function(contents) {
+        var plain = htmlToPlainText(contents);
+        document.getElementById('contentCount').textContent = plain.length;
+        updatePhotoCount();
+      },
+      onImageUpload: function(files) {
+        /* Cloudinary 업로드 → 반환된 secure_url 을 <img>로 삽입 */
+        for (var i = 0; i < files.length; i++) {
+          (function(file) {
+            var form = new FormData();
+            form.append('file', file);
+            fetch(CTX + '/community/inline-image', {
+              method: 'POST',
+              headers: { 'X-Requested-With': 'XMLHttpRequest' },
+              body: form
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data && data.success && data.url) {
+                $('#writeContent').summernote('insertImage', data.url);
+              } else {
+                alert((data && data.message) || '이미지 업로드에 실패했습니다.');
+              }
+            })
+            .catch(function(err) {
+              console.error('inline image upload error', err);
+              alert('이미지 업로드 중 오류가 발생했습니다.');
+            });
+          })(files[i]);
+        }
+      }
+    }
+  });
+
+  /* 초기 글자수 카운터 (isEdit 시 기존 본문 기준) */
+  var initialHtml = document.getElementById('writeContent').value;
+  document.getElementById('contentCount').textContent = htmlToPlainText(initialHtml).length;
+});
 </script>
 
 <%@ include file="../common/footer.jsp" %>

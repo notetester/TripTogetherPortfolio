@@ -102,7 +102,21 @@
                             <span style="font-size:11px;color:#64748b;">${post.region}</span>
                         </div>
                         <h3 class="adm-detail-title">${post.title}</h3>
+                        <div class="adm-tr-inline js-admin-translation-widget"
+                             data-label="<spring:message code='admin.translation.label.communityPostTitle'/>"
+                             data-source-type="COMMUNITY_POST"
+                             data-source-idx="${post.postId}"
+                             data-field-name="title"
+                             data-default-source-lang="ko"
+                             data-source-text="${fn:escapeXml(post.title)}"></div>
                         <div class="adm-detail-body">${post.content}</div>
+                        <div class="adm-tr-inline js-admin-translation-widget"
+                             data-label="<spring:message code='admin.translation.label.communityPostContent'/>"
+                             data-source-type="COMMUNITY_POST"
+                             data-source-idx="${post.postId}"
+                             data-field-name="content"
+                             data-default-source-lang="ko"
+                             data-source-text="${fn:escapeXml(post.content)}"></div>
                         <div style="margin-top:16px;padding-top:12px;border-top:1px solid #1e2736;
                                     display:flex;gap:20px;font-size:12px;color:#64748b;">
                             <span>👁 ${post.viewCount}</span>
@@ -144,12 +158,21 @@
                                     <tbody>
                                     <c:forEach items="${reports}" var="r">
                                         <tr>
-                                            <td style="color:#64748b;font-size:12px;">#${r.reportId}</td>
+                                            <td style="color:#64748b;font-size:12px;">
+                                                <a class="adm-cell-link adm-cell-link--inline"
+                                                   href="${pageContext.request.contextPath}/admin/reports/${r.reportId}">#${r.reportId}</a>
+                                            </td>
                                             <td>
-                                                <div style="font-size:13px;">${r.reporterNickname}</div>
-                                                <div style="font-size:11px;color:#64748b;">${r.reporterUserId}</div>
+                                                <button type="button"
+                                                        class="adm-cell-link js-open-member-context"
+                                                        data-user-idx="${r.reporterIdx}">
+                                                    <span style="font-size:13px;">${r.reporterNickname}</span>
+                                                    <span style="font-size:11px;color:#64748b;">${r.reporterUserId}</span>
+                                                </button>
                                             </td>
                                             <td style="font-size:12px;">
+                                                <a class="adm-cell-link adm-cell-link--inline"
+                                                   href="${pageContext.request.contextPath}/admin/reports/${r.reportId}">
                                                 <c:choose>
                                                     <c:when test="${r.reason == 'spam'}"><spring:message code="admin.reports.reason.spam"/></c:when>
                                                     <c:when test="${r.reason == 'abuse'}"><spring:message code="admin.reports.reason.abuse"/></c:when>
@@ -158,20 +181,28 @@
                                                     <c:when test="${r.reason == 'illegal'}"><spring:message code="admin.reports.reason.illegal"/></c:when>
                                                     <c:otherwise>${r.reason}</c:otherwise>
                                                 </c:choose>
+                                                </a>
                                             </td>
                                             <td style="font-size:11px;color:#64748b;">
+                                                <a class="adm-cell-link adm-cell-link--inline"
+                                                   href="${pageContext.request.contextPath}/admin/reports/${r.reportId}">
                                                 <fmt:formatDate value="${r.createdAt}" type="both" dateStyle="short" timeStyle="short"/>
+                                                </a>
                                             </td>
                                             <td>
-                                                <span class="status-badge ${r.status}" style="font-size:11px;">
+                                                <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}"
+                                                   class="adm-cell-link adm-cell-link--inline status-badge ${r.status}"
+                                                   style="font-size:11px;">
                                                     <c:choose>
                                                         <c:when test="${r.status == 'RESOLVED'}"><spring:message code="admin.reports.status.resolved"/></c:when>
                                                         <c:when test="${r.status == 'DISMISSED'}"><spring:message code="admin.reports.status.dismissed"/></c:when>
                                                         <c:otherwise><spring:message code="admin.community.detail.reportStatusPending"/></c:otherwise>
                                                     </c:choose>
-                                                </span>
+                                                </a>
                                             </td>
                                             <td style="font-size:11px;color:#64748b;">
+                                                <a class="adm-cell-link adm-cell-link--inline"
+                                                   href="${pageContext.request.contextPath}/admin/reports/${r.reportId}">
                                                 <c:choose>
                                                     <c:when test="${not empty r.resolvedAt}">
                                                         <fmt:formatDate value="${r.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/>
@@ -181,6 +212,7 @@
                                                     </c:when>
                                                     <c:otherwise>—</c:otherwise>
                                                 </c:choose>
+                                                </a>
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -210,12 +242,24 @@
                                         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
                                             <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
                                                 <div>
-                                                    <span style="font-weight:600;font-size:13px;">${comment.nickname}</span>
-                                                    <span style="font-size:11px;color:#64748b;margin-left:6px;">${comment.userId}</span>
+                                                    <button type="button"
+                                                            class="adm-inline-link js-open-member-context"
+                                                            data-user-idx="${comment.userIdx}"
+                                                            style="font-weight:600;font-size:13px;">${comment.nickname}</button>
+                                                    <button type="button"
+                                                            class="adm-inline-link js-open-member-context"
+                                                            data-user-idx="${comment.userIdx}"
+                                                            style="font-size:11px;color:#64748b;margin-left:6px;">${comment.userId}</button>
                                                 </div>
                                                 <span style="font-size:10px;color:#94a3b8;font-family:monospace;">
                                                     <c:choose>
-                                                        <c:when test="${not empty comment.lastIp}">${comment.lastIp}</c:when>
+                                                        <c:when test="${not empty comment.lastIp}">
+                                                            <button type="button"
+                                                                    class="adm-inline-link js-open-ip-context"
+                                                                    data-ip-address="${comment.lastIp}"
+                                                                    data-default-tab="blocks"
+                                                                    style="font-size:10px;color:#94a3b8;">${comment.lastIp}</button>
+                                                        </c:when>
                                                         <c:otherwise>${adminCommunityDetailNoIp}</c:otherwise>
                                                     </c:choose>
                                                 </span>
@@ -271,6 +315,15 @@
                                         </div>
                                         <%-- 댓글 내용 --%>
                                         <div style="font-size:13px;color:#cbd5e1;line-height:1.6;">${comment.content}</div>
+                                        <c:if test="${not empty comment.content}">
+                                            <div class="adm-tr-inline js-admin-translation-widget"
+                                                 data-label="<spring:message code='admin.translation.label.communityCommentContent'/>"
+                                                 data-source-type="COMMUNITY_COMMENT"
+                                                 data-source-idx="${comment.commentId}"
+                                                 data-field-name="content"
+                                                 data-default-source-lang="ko"
+                                                 data-source-text="${fn:escapeXml(comment.content)}"></div>
+                                        </c:if>
                                         <div style="font-size:11px;color:#475569;margin-top:4px;">
                                             <fmt:formatDate value="${comment.createdAt}" type="both" dateStyle="short" timeStyle="short"/>
                                             <c:if test="${not empty comment.parentCommentId}">
@@ -296,19 +349,30 @@
 
                             <div>
                                 <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.userId"/></div>
-                                <div style="font-size:14px;font-weight:600;">${post.userId}</div>
+                                <button type="button"
+                                        class="adm-inline-link js-open-member-context"
+                                        data-user-idx="${post.userIdx}"
+                                        style="font-size:14px;font-weight:600;">${post.userId}</button>
                             </div>
 
                             <div>
                                 <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.nickname"/></div>
-                                <div style="font-size:14px;font-weight:600;">${post.nickname}</div>
+                                <button type="button"
+                                        class="adm-inline-link js-open-member-context"
+                                        data-user-idx="${post.userIdx}"
+                                        style="font-size:14px;font-weight:600;">${post.nickname}</button>
                             </div>
 
                             <div>
                                 <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${adminCommunityDetailLastIp}</div>
                                 <div style="font-size:13px;font-family:monospace;color:#94a3b8;">
                                     <c:choose>
-                                        <c:when test="${not empty post.lastIp}">${post.lastIp}</c:when>
+                                        <c:when test="${not empty post.lastIp}">
+                                            <button type="button"
+                                                    class="adm-inline-link js-open-ip-context"
+                                                    data-ip-address="${post.lastIp}"
+                                                    data-default-tab="blocks">${post.lastIp}</button>
+                                        </c:when>
                                         <c:otherwise><span style="color:#475569;">${adminCommunityDetailNoRecord}</span></c:otherwise>
                                     </c:choose>
                                 </div>

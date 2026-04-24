@@ -140,15 +140,13 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.inputIdentifier}">
-                                    <div><c:out value="${item.inputIdentifier}"/></div>
-                                    <div class="adm-inline-actions">
-                                        <button type="button"
-                                                class="adm-inline-chip"
-                                                data-keyword="${item.inputIdentifier}"
-                                                onclick="applyKeywordFilter(this)">
-                                            <spring:message code="admin.common.sameValue"/>
-                                        </button>
-                                    </div>
+                                    <button type="button"
+                                            class="adm-cell-link"
+                                            data-keyword="${item.inputIdentifier}"
+                                            onclick="applyKeywordFilter(this)">
+                                        <span><c:out value="${item.inputIdentifier}"/></span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                                    </button>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
@@ -156,15 +154,13 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.targetEmail}">
-                                    <div><c:out value="${item.targetEmail}"/></div>
-                                    <div class="adm-inline-actions">
-                                        <button type="button"
-                                                class="adm-inline-chip"
-                                                data-keyword="${item.targetEmail}"
-                                                onclick="applyKeywordFilter(this)">
-                                            <spring:message code="admin.common.sameEmail"/>
-                                        </button>
-                                    </div>
+                                    <button type="button"
+                                            class="adm-cell-link"
+                                            data-keyword="${item.targetEmail}"
+                                            onclick="applyKeywordFilter(this)">
+                                        <span><c:out value="${item.targetEmail}"/></span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameEmail"/></span>
+                                    </button>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>
@@ -179,7 +175,7 @@
                             <div><c:out value="${empty item.failReason ? '-' : item.failReason}"/></div>
                             <c:if test="${not empty item.failReason}">
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="보안 이력 사유 번역"
+                                     data-label="<spring:message code='admin.translation.label.securityFailReason'/>"
                                      data-source-type="SECURITY_AUDIT"
                                      data-source-idx="${item.securityIdx}"
                                      data-field-name="fail_reason"
@@ -189,7 +185,7 @@
                             <c:if test="${not empty item.detailMessage}">
                                 <div style="margin-top:8px;font-size:12px;color:#94a3b8;"><c:out value="${item.detailMessage}"/></div>
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="보안 이력 상세 메모 번역"
+                                     data-label="<spring:message code='admin.translation.label.securityDetailMessage'/>"
                                      data-source-type="SECURITY_AUDIT"
                                      data-source-idx="${item.securityIdx}"
                                      data-field-name="detail_message"
@@ -200,21 +196,13 @@
                         <td>
                             <c:choose>
                                 <c:when test="${not empty item.ipAddress}">
-                                    <div>
-                                        <button type="button"
-                                                class="adm-inline-link js-open-ip-context"
-                                                data-ip-address="${item.ipAddress}"
-                                                data-default-tab="security"
-                                                style="color:#93c5fd;">${item.ipAddress}</button>
-                                    </div>
-                                    <div class="adm-inline-actions">
-                                        <button type="button"
-                                                class="adm-inline-chip"
-                                                data-keyword="${item.ipAddress}"
-                                                onclick="applyKeywordFilter(this)">
-                                            <spring:message code="admin.common.sameIp"/>
-                                        </button>
-                                    </div>
+                                    <button type="button"
+                                            class="adm-cell-link js-open-ip-context"
+                                            data-ip-address="${item.ipAddress}"
+                                            data-default-tab="security">
+                                        <span style="color:#93c5fd;">${item.ipAddress}</span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameIp"/></span>
+                                    </button>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
                             </c:choose>

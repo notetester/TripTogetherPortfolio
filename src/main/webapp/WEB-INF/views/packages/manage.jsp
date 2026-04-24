@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="packages/packages.css"/>
 <spring:message code="package.manage.submitConfirm" var="packageSubmitConfirm"/>
 <%@ include file="../common/header.jsp" %>

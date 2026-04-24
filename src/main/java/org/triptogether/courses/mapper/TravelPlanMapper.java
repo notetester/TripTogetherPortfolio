@@ -1,11 +1,13 @@
 package org.triptogether.courses.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.triptogether.courses.vo.PlanSpotVO;
 import org.triptogether.courses.vo.SpotTravelVO;
 import org.triptogether.courses.vo.TravelPlanVO;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface TravelPlanMapper {
@@ -41,4 +43,11 @@ public interface TravelPlanMapper {
 
     // planId 기준 단건 조회 (공개 상세 조회용)
     TravelPlanVO getTravelPlanDetailByPlanId(Long planId);
+
+    /**
+     * 챗봇 컨텍스트용 공개 코스 다중 키워드 검색.
+     * title/destination 에 OR LIKE, 최신순.
+     */
+    List<Map<String, Object>> searchPlansByKeywords(@Param("keywords") List<String> keywords,
+                                                      @Param("limit") int limit);
 }

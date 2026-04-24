@@ -125,12 +125,19 @@
             </c:if>
           </div>
         </td>
-        <td style="max-width:300px;word-break:break-all;white-space:normal;">
-          <div><c:out value="${item.requestUri}"/></div>
+        <td>
+          <button type="button"
+                  class="adm-cell-link"
+                  data-keyword="${item.requestUri}"
+                  onclick="applyKeywordFilter(this)">
+            <span style="word-break:break-all;"><c:out value="${item.requestUri}"/></span>
+            <c:if test="${not empty item.detailSummary}">
+              <span class="adm-cell-link-note"><c:out value="${item.detailSummary}"/></span>
+            </c:if>
+          </button>
           <c:if test="${not empty item.detailSummary}">
-            <div style="margin-top:8px;color:#94a3b8;"><c:out value="${item.detailSummary}"/></div>
             <div class="adm-tr-inline js-admin-translation-widget"
-                 data-label="활동 로그 상세 요약 번역"
+                 data-label="<spring:message code='admin.translation.label.activityLogDetailSummary'/>"
                  data-source-type="ACTIVITY_LOG"
                  data-source-idx="${item.activityIdx}"
                  data-field-name="detail_summary"
@@ -151,48 +158,27 @@
         <td>
           <c:choose>
             <c:when test="${not empty item.ipAddress}">
-              <div>
-                <button type="button"
-                        class="adm-inline-link js-open-ip-context"
-                        data-ip-address="${item.ipAddress}"
-                        data-default-tab="activity"
-                        style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></button>
-              </div>
-              <div class="adm-inline-actions">
-                <button type="button"
-                        class="adm-inline-chip"
-                        data-keyword="${item.ipAddress}"
-                        onclick="applyKeywordFilter(this)">
-                  <spring:message code="admin.common.sameIp"/>
-                </button>
-              </div>
+              <button type="button"
+                      class="adm-cell-link js-open-ip-context"
+                      data-ip-address="${item.ipAddress}"
+                      data-default-tab="activity">
+                <span style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></span>
+                <span class="adm-cell-link-note"><spring:message code="admin.common.sameIp"/></span>
+              </button>
             </c:when>
             <c:otherwise>-</c:otherwise>
           </c:choose>
         </td>
-        <td style="font-size:12px;color:#64748b;">
-          <div><c:out value="${item.requestId}"/></div>
-          <c:if test="${not empty item.flowTraceId}">
-            <div style="margin-top:4px;"><c:out value="${item.flowTraceId}"/></div>
-          </c:if>
-          <div class="adm-inline-actions">
-            <c:if test="${not empty item.requestId}">
-              <button type="button"
-                      class="adm-inline-chip"
-                      data-keyword="${item.requestId}"
-                      onclick="applyKeywordFilter(this)">
-                <spring:message code="admin.common.sameRequest"/>
-              </button>
-            </c:if>
+        <td>
+          <button type="button"
+                  class="adm-cell-link"
+                  data-keyword="${not empty item.requestId ? item.requestId : item.flowTraceId}"
+                  onclick="applyKeywordFilter(this)">
+            <span style="font-size:12px;color:#64748b;"><c:out value="${empty item.requestId ? '-' : item.requestId}"/></span>
             <c:if test="${not empty item.flowTraceId}">
-              <button type="button"
-                      class="adm-inline-chip"
-                      data-keyword="${item.flowTraceId}"
-                      onclick="applyKeywordFilter(this)">
-                <spring:message code="admin.common.sameFlow"/>
-              </button>
+              <span class="adm-cell-link-note"><c:out value="${item.flowTraceId}"/></span>
             </c:if>
-          </div>
+          </button>
         </td>
       </tr></c:forEach>
       <c:if test="${empty list}"><tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr></c:if>

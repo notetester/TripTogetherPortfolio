@@ -34,16 +34,16 @@
     function translationOptionLabel(item) {
         const badges = [];
         badges.push((item.targetLang || '').toUpperCase());
-        if (item.isPrimary) badges.push(msg('primaryShort', '대표'));
-        if (item.outdated) badges.push(msg('outdatedShort', '구버전'));
+        if (item.isPrimary) badges.push(msg('primaryShort', 'Primary'));
+        if (item.outdated) badges.push(msg('outdatedShort', 'Old'));
         const versionNo = item.currentRevision && item.currentRevision.versionNo ? item.currentRevision.versionNo : '-';
         badges.push('v' + versionNo);
-        return '[' + badges.join('][') + '] ' + (item.title || msg('untitled', '제목 없음'));
+        return '[' + badges.join('][') + '] ' + (item.title || msg('untitled', 'Untitled'));
     }
 
     function renderRevisionOptions(revisions, currentRevisionIdx) {
         if (!Array.isArray(revisions) || !revisions.length) {
-            return '<option value="">' + escapeHtml(msg('noRevision', '버전 없음')) + '</option>';
+            return '<option value="">' + escapeHtml(msg('noRevision', 'No revisions')) + '</option>';
         }
         return revisions.map(function (revision) {
             const selected = String(revision.translationRevisionIdx) === String(currentRevisionIdx) ? ' selected' : '';
@@ -58,7 +58,7 @@
         const container = widget.querySelector('.js-translation-detail');
         if (!container) return;
         if (!item) {
-            container.innerHTML = '<div class="adm-tr-empty">' + escapeHtml(msg('noTranslationSelected', '번역안을 선택해줘야 함')) + '</div>';
+            container.innerHTML = '<div class="adm-tr-empty">' + escapeHtml(msg('noTranslationSelected', 'Select a translation')) + '</div>';
             return;
         }
 
@@ -74,40 +74,40 @@
             + '    <span class="adm-tr-pill">' + escapeHtml((item.targetLang || '').toUpperCase()) + '</span>'
             + '    <span class="adm-tr-pill">' + escapeHtml(status) + '</span>'
             + '    <span class="adm-tr-pill">' + escapeHtml(visibility) + '</span>'
-            + (item.isPrimary ? '    <span class="adm-tr-pill is-primary">' + escapeHtml(msg('primary', '대표본')) + '</span>' : '')
-            + (item.outdated ? '    <span class="adm-tr-pill is-warn">' + escapeHtml(msg('outdated', '현재 원문과 기준 스냅샷이 다름')) + '</span>' : '    <span class="adm-tr-pill is-ok">' + escapeHtml(msg('upToDate', '현재 원문 기준과 일치')) + '</span>')
+            + (item.isPrimary ? '    <span class="adm-tr-pill is-primary">' + escapeHtml(msg('primary', 'Primary version')) + '</span>' : '')
+            + (item.outdated ? '    <span class="adm-tr-pill is-warn">' + escapeHtml(msg('outdated', 'Source snapshot changed')) + '</span>' : '    <span class="adm-tr-pill is-ok">' + escapeHtml(msg('upToDate', 'Up to date')) + '</span>')
             + '  </div>'
             + '  <div class="adm-tr-row">'
-            + '    <label class="adm-tr-label">' + escapeHtml(msg('title', '제목')) + '</label>'
+            + '    <label class="adm-tr-label">' + escapeHtml(msg('title', 'Title')) + '</label>'
             + '    <input type="text" class="adm-input js-edit-title" value="' + escapeHtml(item.title || '') + '">'
             + '  </div>'
             + '  <div class="adm-tr-grid">'
             + '    <div>'
-            + '      <label class="adm-tr-label">' + escapeHtml(msg('currentSource', '현재 원문')) + '</label>'
+            + '      <label class="adm-tr-label">' + escapeHtml(msg('currentSource', 'Current source')) + '</label>'
             + '      <div class="adm-tr-source-box">' + escapeHtml(widget.dataset.sourceText || '') + '</div>'
             + '    </div>'
             + '    <div>'
-            + '      <label class="adm-tr-label">' + escapeHtml(msg('basedSource', '현재 버전 기준 원문')) + '</label>'
+            + '      <label class="adm-tr-label">' + escapeHtml(msg('basedSource', 'Base source')) + '</label>'
             + '      <div class="adm-tr-source-box">' + escapeHtml(sourceTextSnapshot) + '</div>'
             + '    </div>'
             + '  </div>'
             + '  <div class="adm-tr-row">'
-            + '    <label class="adm-tr-label">' + escapeHtml(msg('translatedText', '번역문')) + '</label>'
+            + '    <label class="adm-tr-label">' + escapeHtml(msg('translatedText', 'Translated text')) + '</label>'
             + '    <textarea class="adm-input adm-tr-textarea js-edit-text">' + escapeHtml(translatedText) + '</textarea>'
             + '  </div>'
             + '  <div class="adm-tr-row">'
-            + '    <label class="adm-tr-label">' + escapeHtml(msg('note', '메모')) + '</label>'
+            + '    <label class="adm-tr-label">' + escapeHtml(msg('note', 'Note')) + '</label>'
             + '    <textarea class="adm-input adm-tr-note js-edit-note">' + escapeHtml(currentRevision.note || '') + '</textarea>'
             + '  </div>'
             + '  <div class="adm-tr-actions">'
-            + '    <label class="adm-tr-check"><input type="checkbox" class="js-edit-primary"' + (item.isPrimary ? ' checked' : '') + '> ' + escapeHtml(msg('setPrimary', '이 번역안을 대표본으로 지정')) + '</label>'
-            + '    <button type="button" class="adm-btn adm-btn-primary js-save-revision">' + escapeHtml(msg('saveRevision', '새 버전 저장')) + '</button>'
+            + '    <label class="adm-tr-check"><input type="checkbox" class="js-edit-primary"' + (item.isPrimary ? ' checked' : '') + '> ' + escapeHtml(msg('setPrimary', 'Mark as primary')) + '</label>'
+            + '    <button type="button" class="adm-btn adm-btn-primary js-save-revision">' + escapeHtml(msg('saveRevision', 'Save revision')) + '</button>'
             + '  </div>'
             + '  <div class="adm-tr-history">'
-            + '    <div class="adm-tr-history-head">' + escapeHtml(msg('revisionHistory', '버전 이력')) + '</div>'
+            + '    <div class="adm-tr-history-head">' + escapeHtml(msg('revisionHistory', 'Revision history')) + '</div>'
             + '    <div class="adm-tr-history-row">'
             + '      <select class="adm-input js-revision-select">' + renderRevisionOptions(item.revisions, item.currentRevisionIdx) + '</select>'
-            + '      <button type="button" class="adm-btn adm-btn-ghost js-restore-revision">' + escapeHtml(msg('restoreRevision', '선택 버전으로 되돌리기')) + '</button>'
+            + '      <button type="button" class="adm-btn adm-btn-ghost js-restore-revision">' + escapeHtml(msg('restoreRevision', 'Restore selected revision')) + '</button>'
             + '    </div>'
             + '  </div>'
             + '</div>';
@@ -121,7 +121,7 @@
         if (!select) return;
 
         if (!widget.__translations.length) {
-            select.innerHTML = '<option value="">' + escapeHtml(msg('none', '생성된 번역본 없음')) + '</option>';
+            select.innerHTML = '<option value="">' + escapeHtml(msg('none', 'No translations')) + '</option>';
             renderTranslationDetail(widget, null);
             return;
         }
@@ -155,10 +155,10 @@
         try {
             payload = await response.json();
         } catch (e) {
-            throw new Error(msg('requestFailed', '요청 처리 중 오류가 발생했음'));
+            throw new Error(msg('requestFailed', 'Request failed'));
         }
         if (!response.ok || !payload.success) {
-            throw new Error((payload && payload.message) || msg('requestFailed', '요청 처리 중 오류가 발생했음'));
+            throw new Error((payload && payload.message) || msg('requestFailed', 'Request failed'));
         }
         return payload;
     }
@@ -179,7 +179,7 @@
         widget.dataset.loading = 'true';
         const detail = widget.querySelector('.js-translation-detail');
         if (detail) {
-            detail.innerHTML = '<div class="adm-tr-empty">' + escapeHtml(msg('loading', '불러오는 중...')) + '</div>';
+            detail.innerHTML = '<div class="adm-tr-empty">' + escapeHtml(msg('loading', 'Loading...')) + '</div>';
         }
         try {
             const payload = await fetchJson(lookupUrl(widget), {headers: {'Accept': 'application/json'}});
@@ -187,7 +187,7 @@
             widget.dataset.loaded = 'true';
         } catch (error) {
             if (detail) {
-                detail.innerHTML = '<div class="adm-tr-empty is-error">' + escapeHtml(error.message || msg('loadFailed', '번역 목록을 불러오지 못했음')) + '</div>';
+                detail.innerHTML = '<div class="adm-tr-empty is-error">' + escapeHtml(error.message || msg('loadFailed', 'Failed to load translations')) + '</div>';
             }
         } finally {
             widget.dataset.loading = 'false';
@@ -202,7 +202,7 @@
         const translatedText = widget.querySelector('.js-create-translated-text').value.trim();
 
         if (!autoTranslate && !translatedText) {
-            alert(msg('enterTranslatedText', '수동 번역문을 입력해야 함'));
+            alert(msg('enterTranslatedText', 'Enter translated text'));
             return;
         }
 
@@ -226,7 +226,7 @@
                 body: JSON.stringify(payload)
             });
             if (typeof window.adm_toast === 'function') {
-                window.adm_toast(msg('created', '번역안을 생성했음'));
+                window.adm_toast(msg('created', 'Translation created'));
             }
             widget.dataset.loaded = 'false';
             await loadTranslations(widget, true);
@@ -234,7 +234,7 @@
             widget.querySelector('.js-create-translated-text').value = '';
             widget.querySelector('.js-create-box').classList.remove('open');
         } catch (error) {
-            alert(error.message || msg('createFailed', '번역안 생성에 실패했음'));
+            alert(error.message || msg('createFailed', 'Failed to create translation'));
         }
     }
 
@@ -246,7 +246,7 @@
         const note = widget.querySelector('.js-edit-note').value.trim();
         const markPrimary = widget.querySelector('.js-edit-primary').checked;
         if (!translatedText) {
-            alert(msg('enterTranslatedText', '번역문을 입력해야 함'));
+            alert(msg('enterTranslatedText', 'Enter translated text'));
             return;
         }
 
@@ -266,12 +266,12 @@
                 body: JSON.stringify(payload)
             });
             if (typeof window.adm_toast === 'function') {
-                window.adm_toast(msg('saved', '새 번역 버전을 저장했음'));
+                window.adm_toast(msg('saved', 'Revision saved'));
             }
             widget.dataset.loaded = 'false';
             await loadTranslations(widget, true);
         } catch (error) {
-            alert(error.message || msg('saveFailed', '번역 저장에 실패했음'));
+            alert(error.message || msg('saveFailed', 'Failed to save translation'));
         }
     }
 
@@ -280,7 +280,7 @@
         if (!current) return;
         const revisionIdx = widget.querySelector('.js-revision-select').value;
         if (!revisionIdx) return;
-        if (!window.confirm(msg('confirmRestore', '선택한 버전으로 되돌리겠음?'))) {
+        if (!window.confirm(msg('confirmRestore', 'Restore selected revision?'))) {
             return;
         }
 
@@ -291,12 +291,12 @@
                 body: JSON.stringify({revisionIdx: Number(revisionIdx)})
             });
             if (typeof window.adm_toast === 'function') {
-                window.adm_toast(msg('restored', '선택 버전으로 되돌렸음'));
+                window.adm_toast(msg('restored', 'Revision restored'));
             }
             widget.dataset.loaded = 'false';
             await loadTranslations(widget, true);
         } catch (error) {
-            alert(error.message || msg('restoreFailed', '버전 복원에 실패했음'));
+            alert(error.message || msg('restoreFailed', 'Failed to restore revision'));
         }
     }
 
@@ -306,7 +306,7 @@
             if (toggleBtn) {
                 const body = widget.querySelector('.js-translation-body');
                 const open = body.classList.toggle('open');
-                toggleBtn.textContent = open ? msg('hide', '숨기기') : msg('open', '번역 보기');
+                toggleBtn.textContent = open ? msg('hide', 'Hide') : msg('open', 'Translations');
                 if (open) {
                     loadTranslations(widget, false);
                 }
@@ -362,40 +362,40 @@
     }
 
     function createMarkup(widget) {
-        const title = widget.dataset.label || msg('sectionTitle', '번역 관리');
+        const title = widget.dataset.label || msg('sectionTitle', 'Translation management');
         const defaultSourceLang = widget.dataset.defaultSourceLang || 'ko';
         widget.innerHTML = ''
             + '<div class="adm-tr-widget-box">'
             + '  <div class="adm-tr-head">'
             + '    <div class="adm-tr-title">' + escapeHtml(title) + '</div>'
             + '    <div class="adm-tr-head-actions">'
-            + '      <button type="button" class="adm-btn adm-btn-ghost js-translation-toggle">' + escapeHtml(msg('open', '번역 보기')) + '</button>'
+            + '      <button type="button" class="adm-btn adm-btn-ghost js-translation-toggle">' + escapeHtml(msg('open', 'Translations')) + '</button>'
             + '    </div>'
             + '  </div>'
             + '  <div class="adm-tr-body js-translation-body">'
             + '    <div class="adm-tr-toolbar">'
-            + '      <select class="adm-input js-translation-select"><option value="">' + escapeHtml(msg('none', '생성된 번역본 없음')) + '</option></select>'
-            + '      <button type="button" class="adm-btn adm-btn-ghost js-translation-refresh">' + escapeHtml(msg('refresh', '새로고침')) + '</button>'
-            + '      <button type="button" class="adm-btn adm-btn-ghost js-translation-create-toggle">' + escapeHtml(msg('createNew', '새로 만들기')) + '</button>'
+            + '      <select class="adm-input js-translation-select"><option value="">' + escapeHtml(msg('none', 'No translations')) + '</option></select>'
+            + '      <button type="button" class="adm-btn adm-btn-ghost js-translation-refresh">' + escapeHtml(msg('refresh', 'Refresh')) + '</button>'
+            + '      <button type="button" class="adm-btn adm-btn-ghost js-translation-create-toggle">' + escapeHtml(msg('createNew', 'Create new')) + '</button>'
             + '    </div>'
             + '    <div class="adm-tr-create js-create-box">'
             + '      <div class="adm-tr-create-grid">'
-            + '        <div><label class="adm-tr-label">' + escapeHtml(msg('sourceLang', '소스 언어')) + '</label><select class="adm-input js-create-source-lang">' + langOptions(defaultSourceLang) + '</select></div>'
-            + '        <div><label class="adm-tr-label">' + escapeHtml(msg('targetLang', '타겟 언어')) + '</label><select class="adm-input js-create-target-lang">' + langOptions('en') + '</select></div>'
+            + '        <div><label class="adm-tr-label">' + escapeHtml(msg('sourceLang', 'Source language')) + '</label><select class="adm-input js-create-source-lang">' + langOptions(defaultSourceLang) + '</select></div>'
+            + '        <div><label class="adm-tr-label">' + escapeHtml(msg('targetLang', 'Target language')) + '</label><select class="adm-input js-create-target-lang">' + langOptions('en') + '</select></div>'
             + '      </div>'
-            + '      <div class="adm-tr-row"><label class="adm-tr-label">' + escapeHtml(msg('title', '제목')) + '</label><input type="text" class="adm-input js-create-title" placeholder="' + escapeHtml(msg('titlePlaceholder', '예: ko→en 번역안')) + '"></div>'
-            + '      <label class="adm-tr-check"><input type="checkbox" class="js-create-auto" checked> ' + escapeHtml(msg('autoGenerate', '자동 번역으로 초안 생성')) + '</label>'
-            + '      <div class="adm-tr-row js-create-manual-wrap" style="display:none;"><label class="adm-tr-label">' + escapeHtml(msg('initialText', '초기 번역문')) + '</label><textarea class="adm-input adm-tr-note js-create-translated-text"></textarea></div>'
-            + '      <div class="adm-tr-actions"><button type="button" class="adm-btn adm-btn-primary js-create-submit">' + escapeHtml(msg('create', '생성')) + '</button></div>'
+            + '      <div class="adm-tr-row"><label class="adm-tr-label">' + escapeHtml(msg('title', 'Title')) + '</label><input type="text" class="adm-input js-create-title" placeholder="' + escapeHtml(msg('titlePlaceholder', 'e.g. ko→en draft')) + '"></div>'
+            + '      <label class="adm-tr-check"><input type="checkbox" class="js-create-auto" checked> ' + escapeHtml(msg('autoGenerate', 'Generate draft automatically')) + '</label>'
+            + '      <div class="adm-tr-row js-create-manual-wrap" style="display:none;"><label class="adm-tr-label">' + escapeHtml(msg('initialText', 'Initial translation')) + '</label><textarea class="adm-input adm-tr-note js-create-translated-text"></textarea></div>'
+            + '      <div class="adm-tr-actions"><button type="button" class="adm-btn adm-btn-primary js-create-submit">' + escapeHtml(msg('create', 'Create')) + '</button></div>'
             + '    </div>'
-            + '    <div class="js-translation-detail"><div class="adm-tr-empty">' + escapeHtml(msg('collapsedHint', '버튼을 눌러 번역 목록을 확인')) + '</div></div>'
+            + '    <div class="js-translation-detail"><div class="adm-tr-empty">' + escapeHtml(msg('collapsedHint', 'Open to load translations')) + '</div></div>'
             + '  </div>'
             + '</div>';
     }
 
     function langOptions(selectedValue) {
         const langs = i18n.languages || {
-            ko: '한국어',
+            ko: 'Korean',
             en: 'English',
             ja: '日本語',
             zh: '中文'
