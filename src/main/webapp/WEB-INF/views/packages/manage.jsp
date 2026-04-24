@@ -169,6 +169,8 @@
     </section>
 </main>
 
+<%@ include file="../common/footer.jsp" %>
+
 <script>
 document.querySelectorAll('form[data-confirm]').forEach(function (form) {
     form.addEventListener('submit', function (event) {

@@ -5,6 +5,9 @@
 <c:set var="activeMenu" value="dashboard"/>
 <spring:message code="admin.dashboard.pageTitle" var="adminDashboardPageTitle"/>
 <c:set var="pageTitle" value="${adminDashboardPageTitle}"/>
+<spring:message code="admin.dashboard.chart.newMembersDataset" var="adminDashboardNewMembersDataset"/>
+<spring:message code="admin.dashboard.chart.loginSuccessDataset" var="adminDashboardLoginSuccessDataset"/>
+<spring:message code="admin.dashboard.chart.loginFailDataset" var="adminDashboardLoginFailDataset"/>
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
@@ -645,7 +648,7 @@
             data: {
                 labels: DASH_CHART.labels,
                 datasets: [{
-                    label: '理쒓렐 7???좉퇋 媛?낆옄',
+                    label: '${adminDashboardNewMembersDataset}',
                     data: DASH_CHART.newMembers,
                     backgroundColor: c.bar1,
                     borderColor: c.bar1b,
@@ -663,8 +666,8 @@
             data: {
                 labels: DASH_CHART.labels,
                 datasets: [
-                    { label: '理쒓렐 7??濡쒓렇??異붿씠', data: DASH_CHART.loginSuccess, backgroundColor: c.bar2, borderColor: c.bar2b, borderWidth: 1, borderRadius: 4 },
-                    { label: '理쒓렐 7??濡쒓렇??失쒓났', data: DASH_CHART.loginFail,    backgroundColor: c.bar3, borderColor: c.bar3b, borderWidth: 1, borderRadius: 4 }
+                    { label: '${adminDashboardLoginSuccessDataset}', data: DASH_CHART.loginSuccess, backgroundColor: c.bar2, borderColor: c.bar2b, borderWidth: 1, borderRadius: 4 },
+                    { label: '${adminDashboardLoginFailDataset}', data: DASH_CHART.loginFail,    backgroundColor: c.bar3, borderColor: c.bar3b, borderWidth: 1, borderRadius: 4 }
                 ]
             },
             options: Object.assign({}, common, {

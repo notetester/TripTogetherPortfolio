@@ -7,7 +7,6 @@
 <html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="wallet/wallet.css"/>
 <spring:message code="wallet.charge.limit" var="walletChargeLimitMessage"/>
-<spring:message code="wallet.charge.limit" javaScriptEscape="true" var="walletChargeLimitMessageJs"/>
 <%@ include file="../common/header.jsp" %>
 <body>
 
@@ -102,7 +101,7 @@
 
                 <c:choose>
                     <c:when test="${tossEnabled}">
-                        <button type="button" class="wallet-submit-btn" onclick="requestTossCharge()">
+                        <button type="button" id="walletTossChargeButton" class="wallet-submit-btn" onclick="requestTossCharge()">
                             <spring:message code="wallet.charge.toss.button"/>
                         </button>
                         <ul class="wallet-notice-list">
@@ -304,11 +303,20 @@
 </div>
 
 <c:if test="${tossEnabled}">
-    <script src="https://js.tosspayments.com/v2/payment"></script>
+    <script
+            id="walletTossSdkScript"
+            src="https://js.tosspayments.com/v2/standard"
+            onload="window.walletTossSdkLoaded && window.walletTossSdkLoaded()"
+            onerror="window.walletTossSdkFailed && window.walletTossSdkFailed()"></script>
 </c:if>
 <script>
   const WALLET_MESSAGES = {
-    chargeLimitMessage: '<spring:message code="wallet.charge.limitMessage" javaScriptEscape="true"/>'
+    chargeLimitMessage: '<spring:message code="wallet.charge.limitMessage" javaScriptEscape="true"/>',
+    chargeMinMessage: '<spring:message code="wallet.charge.error.min" arguments="1000" javaScriptEscape="true"/>',
+    chargeStepMessage: '<spring:message code="wallet.charge.error.step" javaScriptEscape="true"/>',
+    tossPrepareError: '<spring:message code="wallet.charge.toss.prepareError" javaScriptEscape="true"/>',
+    tossRequestError: '<spring:message code="wallet.charge.toss.requestError" javaScriptEscape="true"/>',
+    tossSdkUnavailable: '<spring:message code="wallet.charge.toss.sdkUnavailable" javaScriptEscape="true"/>'
   };
 
   function formatNumber(value) {
@@ -321,6 +329,7 @@
   var TOSS_FAIL_URL = '${tossFailUrl}';
   var TOSS_PREPARE_URL = '${pageContext.request.contextPath}/wallet/charge/prepare';
   var TOSS_ORDER_NAME = '<spring:message code="wallet.payment.order.tossCharge" javaScriptEscape="true"/>';
+  var TOSS_SDK_READY = typeof window.TossPayments === 'function';
 
   function updateChargePreview() {
     var input = document.getElementById('amount');
@@ -345,6 +354,27 @@
     updateChargePreview();
   }
 
+  function validateChargeAmount(amount) {
+    if (amount < 1000) {
+      return WALLET_MESSAGES.chargeMinMessage;
+    }
+    if (amount > 1000000) {
+      return WALLET_MESSAGES.chargeLimitMessage;
+    }
+    if (amount % 100 !== 0) {
+      return WALLET_MESSAGES.chargeStepMessage;
+    }
+    return '';
+  }
+
+  window.walletTossSdkLoaded = function() {
+    TOSS_SDK_READY = typeof window.TossPayments === 'function';
+  };
+
+  window.walletTossSdkFailed = function() {
+    TOSS_SDK_READY = false;
+  };
+
   async function requestTossCharge() {
     var input = document.getElementById('amount');
     if (!input) return;
@@ -354,9 +384,15 @@
       return;
     }
 
+    if (!TOSS_SDK_READY || typeof window.TossPayments !== 'function') {
+      alert(WALLET_MESSAGES.tossSdkUnavailable);
+      return;
+    }
+
     var amount = Number(input.value || 0);
-    if (amount < 1000 || amount > 1000000 || amount % 100 !== 0) {
-      alert('${walletChargeLimitMessageJs}');
+    var validationMessage = validateChargeAmount(amount);
+    if (validationMessage) {
+      alert(validationMessage);
       input.focus();
       return;
     }
@@ -372,11 +408,11 @@
       });
 
       if (!response.ok) {
-        throw new Error('결제 준비에 실패했습니다.');
+        throw new Error(WALLET_MESSAGES.tossPrepareError);
       }
 
       var payload = await response.json();
-      var tossPayments = TossPayments(TOSS_CLIENT_KEY);
+      var tossPayments = window.TossPayments(TOSS_CLIENT_KEY);
       var payment = tossPayments.payment({
         customerKey: payload.customerKey
       });
@@ -394,7 +430,7 @@
       });
     } catch (error) {
       console.error(error);
-      alert(error.message || 'Toss 결제 요청에 실패했습니다.');
+      alert(error.message || WALLET_MESSAGES.tossRequestError);
     }
   }
 
@@ -409,9 +445,10 @@
           return;
         }
         var amount = Number(input.value || 0);
-        if (amount > 1000000) {
+        var validationMessage = validateChargeAmount(amount);
+        if (validationMessage) {
           event.preventDefault();
-          alert('${walletChargeLimitMessageJs}');
+          alert(validationMessage);
           input.focus();
         }
       });
