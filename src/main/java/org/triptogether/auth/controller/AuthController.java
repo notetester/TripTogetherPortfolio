@@ -381,10 +381,12 @@ public class AuthController {
     @ResponseBody
     public Map<String, Object> sendFindId(@RequestParam String email,
                                           HttpServletRequest request) {
-
+        String reqId = (String) request.getAttribute(ActivityLogInterceptor.ATTR_REQUEST_ID);
         LoginRequestContext context = LoginRequestContext.builder()
                 .ipAddress(getClientIp(request))
                 .userAgent(request.getHeader("User-Agent"))
+                .requestId(reqId)
+                .flowTraceId(reqId)
                 .build();
 
         authService.sendFindIdEmail(email, context);
@@ -397,9 +399,16 @@ public class AuthController {
     public String verifyFindId(@RequestParam String token,
                                Model model,
                                HttpServletRequest request) {
+        String reqId = (String) request.getAttribute(ActivityLogInterceptor.ATTR_REQUEST_ID);
+        String flowTraceId = authService.resolveFlowTraceIdByToken(token);
+        if (hasText(flowTraceId)) {
+            request.setAttribute(ActivityLogInterceptor.ATTR_FLOW_TRACE_ID_OVERRIDE, flowTraceId);
+        }
         LoginRequestContext context = LoginRequestContext.builder()
                 .ipAddress(getClientIp(request))
                 .userAgent(request.getHeader("User-Agent"))
+                .requestId(reqId)
+                .flowTraceId(hasText(flowTraceId) ? flowTraceId : reqId)
                 .build();
 
         String userId = authService.verifyFindIdToken(token, context);
@@ -424,10 +433,12 @@ public class AuthController {
     @ResponseBody
     public Map<String, Object> sendResetPw(@RequestParam String identifier,
                                            HttpServletRequest request) {
-
+        String reqId = (String) request.getAttribute(ActivityLogInterceptor.ATTR_REQUEST_ID);
         LoginRequestContext context = LoginRequestContext.builder()
                 .ipAddress(getClientIp(request))
                 .userAgent(request.getHeader("User-Agent"))
+                .requestId(reqId)
+                .flowTraceId(reqId)
                 .build();
 
         authService.sendResetPasswordEmail(identifier, context);
@@ -440,9 +451,16 @@ public class AuthController {
     public String resetPwPage(@RequestParam String token,
                               Model model,
                               HttpServletRequest request) {
+        String reqId = (String) request.getAttribute(ActivityLogInterceptor.ATTR_REQUEST_ID);
+        String flowTraceId = authService.resolveFlowTraceIdByToken(token);
+        if (hasText(flowTraceId)) {
+            request.setAttribute(ActivityLogInterceptor.ATTR_FLOW_TRACE_ID_OVERRIDE, flowTraceId);
+        }
         LoginRequestContext context = LoginRequestContext.builder()
                 .ipAddress(getClientIp(request))
                 .userAgent(request.getHeader("User-Agent"))
+                .requestId(reqId)
+                .flowTraceId(hasText(flowTraceId) ? flowTraceId : reqId)
                 .build();
 
         UsersVO user = authService.verifyResetToken(token, context);
@@ -460,9 +478,16 @@ public class AuthController {
     public Map<String, Object> doResetPw(@RequestParam String token,
                                          @RequestParam String newPassword,
                                          HttpServletRequest request) {
+        String reqId = (String) request.getAttribute(ActivityLogInterceptor.ATTR_REQUEST_ID);
+        String flowTraceId = authService.resolveFlowTraceIdByToken(token);
+        if (hasText(flowTraceId)) {
+            request.setAttribute(ActivityLogInterceptor.ATTR_FLOW_TRACE_ID_OVERRIDE, flowTraceId);
+        }
         LoginRequestContext context = LoginRequestContext.builder()
                 .ipAddress(getClientIp(request))
                 .userAgent(request.getHeader("User-Agent"))
+                .requestId(reqId)
+                .flowTraceId(hasText(flowTraceId) ? flowTraceId : reqId)
                 .build();
 
         boolean ok = authService.resetPassword(token, newPassword, context);
@@ -481,9 +506,16 @@ public class AuthController {
                               Model model,
                               HttpSession session,
                               HttpServletRequest request) {
+        String reqId = (String) request.getAttribute(ActivityLogInterceptor.ATTR_REQUEST_ID);
+        String flowTraceId = authService.resolveFlowTraceIdByToken(token);
+        if (hasText(flowTraceId)) {
+            request.setAttribute(ActivityLogInterceptor.ATTR_FLOW_TRACE_ID_OVERRIDE, flowTraceId);
+        }
         LoginRequestContext context = LoginRequestContext.builder()
                 .ipAddress(getClientIp(request))
                 .userAgent(request.getHeader("User-Agent"))
+                .requestId(reqId)
+                .flowTraceId(hasText(flowTraceId) ? flowTraceId : reqId)
                 .build();
 
         boolean ok = authService.verifyEmail(token, context);

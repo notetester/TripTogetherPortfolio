@@ -67,13 +67,16 @@
           </c:choose>
         </td>
         <td>
-          <c:choose>
-            <c:when test="${item.purpose == 'PROFILE_EMAIL'}"><spring:message code="admin.emailRequests.purpose.profileEmail"/></c:when>
-            <c:when test="${item.purpose == 'FIND_ID'}"><spring:message code="admin.emailRequests.purpose.findId"/></c:when>
-            <c:when test="${item.purpose == 'RESET_PW'}"><spring:message code="admin.emailRequests.purpose.resetPw"/></c:when>
-            <c:when test="${item.purpose == 'VERIFY'}"><spring:message code="admin.emailRequests.purpose.verify"/></c:when>
-            <c:otherwise><c:out value="${item.purpose}"/></c:otherwise>
-          </c:choose>
+          <button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="${item.purpose}" onclick="applySelectFilter(this)">
+            <span><c:choose>
+              <c:when test="${item.purpose == 'PROFILE_EMAIL'}"><spring:message code="admin.emailRequests.purpose.profileEmail"/></c:when>
+              <c:when test="${item.purpose == 'FIND_ID'}"><spring:message code="admin.emailRequests.purpose.findId"/></c:when>
+              <c:when test="${item.purpose == 'RESET_PW'}"><spring:message code="admin.emailRequests.purpose.resetPw"/></c:when>
+              <c:when test="${item.purpose == 'VERIFY'}"><spring:message code="admin.emailRequests.purpose.verify"/></c:when>
+              <c:otherwise><c:out value="${item.purpose}"/></c:otherwise>
+            </c:choose></span>
+            <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+          </button>
         </td>
         <td>
           <button type="button"
@@ -85,10 +88,13 @@
           </button>
         </td>
         <td>
-          <c:choose>
-            <c:when test="${item.used}"><spring:message code="admin.context.used"/></c:when>
-            <c:otherwise><spring:message code="admin.context.unused"/></c:otherwise>
-          </c:choose>
+          <button type="button" class="adm-cell-link" data-param-name="used" data-param-value="${item.used ? 'USED' : 'UNUSED'}" onclick="applySelectFilter(this)">
+            <span><c:choose>
+              <c:when test="${item.used}"><spring:message code="admin.context.used"/></c:when>
+              <c:otherwise><spring:message code="admin.context.unused"/></c:otherwise>
+            </c:choose></span>
+            <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+          </button>
         </td>
         <td><c:choose><c:when test="${not empty item.usedAtDate}"><fmt:formatDate value="${item.usedAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
         <td><c:choose><c:when test="${not empty item.expiredAtDate}"><fmt:formatDate value="${item.expiredAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/></c:when><c:otherwise>-</c:otherwise></c:choose></td>
@@ -112,6 +118,7 @@
 <script>
 function goPage(page){const params=new URLSearchParams(window.location.search);params.set('page',page);location.href='${pageContext.request.contextPath}/admin/email-tokens?'+params.toString();}
 function applyKeywordFilter(button){const keyword=button.dataset.keyword||'';const params=new URLSearchParams(window.location.search);params.set('keyword',keyword);params.set('page','1');location.href='${pageContext.request.contextPath}/admin/email-tokens?'+params.toString();}
+function applySelectFilter(button){var paramName=button.getAttribute('data-param-name');var paramValue=button.getAttribute('data-param-value');if(!paramName||!paramValue)return;var params=new URLSearchParams(window.location.search);params.set(paramName,paramValue);params.set('page','1');location.href='${pageContext.request.contextPath}/admin/email-tokens?'+params.toString();}
 function openRelatedHistory(path, button){const params=new URLSearchParams();if(button.dataset.keyword)params.set('keyword',button.dataset.keyword);params.set('page','1');location.href='${pageContext.request.contextPath}/admin/'+path+'?'+params.toString();}
 </script>
 <%@ include file="../layout-close.jsp" %>

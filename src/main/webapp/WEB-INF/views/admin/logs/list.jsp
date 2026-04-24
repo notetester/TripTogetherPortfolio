@@ -89,6 +89,7 @@
                     <th><spring:message code="admin.common.result"/></th>
                     <th><spring:message code="admin.common.reason"/></th>
                     <th><spring:message code="admin.common.ip"/></th>
+                    <th><spring:message code="admin.context.requestId"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -115,33 +116,41 @@
                             </c:choose>
                         </td>
                         <td>
-                            <span class="status-badge ${item.eventType == 'LOGOUT' ? 'PENDING' : 'ACTIVE'}">
-                                <c:choose>
-                                    <c:when test="${item.eventType eq 'LOGIN'}"><spring:message code="admin.logs.event.login"/></c:when>
-                                    <c:when test="${item.eventType eq 'LOGOUT'}"><spring:message code="admin.logs.event.logout"/></c:when>
-                                    <c:otherwise><c:out value="${item.eventType}"/></c:otherwise>
-                                </c:choose>
-                            </span>
+                            <button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="${item.eventType}" onclick="applySelectFilter(this)">
+                                <span class="status-badge ${item.eventType == 'LOGOUT' ? 'PENDING' : 'ACTIVE'}">
+                                    <c:choose>
+                                        <c:when test="${item.eventType eq 'LOGIN'}"><spring:message code="admin.logs.event.login"/></c:when>
+                                        <c:when test="${item.eventType eq 'LOGOUT'}"><spring:message code="admin.logs.event.logout"/></c:when>
+                                        <c:otherwise><c:out value="${item.eventType}"/></c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </button>
                         </td>
                         <td>
-                            <c:choose>
-                                <c:when test="${item.authType eq 'PASSWORD'}"><spring:message code="admin.logs.authType.password"/></c:when>
-                                <c:when test="${item.authType eq 'SOCIAL'}"><spring:message code="admin.logs.authType.social"/></c:when>
-                                <c:otherwise><c:out value="${item.authType}"/></c:otherwise>
-                            </c:choose>
+                            <button type="button" class="adm-cell-link" data-param-name="authType" data-param-value="${item.authType}" onclick="applySelectFilter(this)">
+                                <span><c:choose>
+                                    <c:when test="${item.authType eq 'PASSWORD'}"><spring:message code="admin.logs.authType.password"/></c:when>
+                                    <c:when test="${item.authType eq 'SOCIAL'}"><spring:message code="admin.logs.authType.social"/></c:when>
+                                    <c:otherwise><c:out value="${item.authType}"/></c:otherwise>
+                                </c:choose></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                            </button>
                         </td>
                         <td>
-                            <c:choose>
-                                <c:when test="${item.authProvider eq 'LOCAL'}"><spring:message code="admin.logs.provider.local"/></c:when>
-                                <c:when test="${item.authProvider eq 'KAKAO'}"><spring:message code="admin.logs.provider.kakao"/></c:when>
-                                <c:when test="${item.authProvider eq 'NAVER'}"><spring:message code="admin.logs.provider.naver"/></c:when>
-                                <c:when test="${item.authProvider eq 'GOOGLE'}"><spring:message code="admin.logs.provider.google"/></c:when>
-                                <c:otherwise><c:out value="${item.authProvider}"/></c:otherwise>
-                            </c:choose>
+                            <button type="button" class="adm-cell-link" data-param-name="authProvider" data-param-value="${item.authProvider}" onclick="applySelectFilter(this)">
+                                <span><c:choose>
+                                    <c:when test="${item.authProvider eq 'LOCAL'}"><spring:message code="admin.logs.provider.local"/></c:when>
+                                    <c:when test="${item.authProvider eq 'KAKAO'}"><spring:message code="admin.logs.provider.kakao"/></c:when>
+                                    <c:when test="${item.authProvider eq 'NAVER'}"><spring:message code="admin.logs.provider.naver"/></c:when>
+                                    <c:when test="${item.authProvider eq 'GOOGLE'}"><spring:message code="admin.logs.provider.google"/></c:when>
+                                    <c:otherwise><c:out value="${item.authProvider}"/></c:otherwise>
+                                </c:choose></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                            </button>
                         </td>
                         <td>
-                            <div>
-                                <c:choose>
+                            <button type="button" class="adm-cell-link" data-param-name="loginMethod" data-param-value="${item.loginMethod}" onclick="applySelectFilter(this)">
+                                <span><c:choose>
                                     <c:when test="${empty item.authFlow and item.loginMethod eq 'LOCAL'}"><spring:message code="admin.logs.authFlow.local"/></c:when>
                                     <c:when test="${empty item.authFlow and item.loginMethod eq 'ID'}"><spring:message code="admin.logs.authFlow.id"/></c:when>
                                     <c:when test="${empty item.authFlow and item.loginMethod eq 'EMAIL'}"><spring:message code="admin.logs.authFlow.email"/></c:when>
@@ -155,13 +164,11 @@
                                     <c:when test="${item.authFlow eq 'LOGOUT_LOCAL'}"><spring:message code="admin.logs.authFlow.logoutLocal"/></c:when>
                                     <c:when test="${item.authFlow eq 'LOGOUT_SOCIAL'}"><spring:message code="admin.logs.authFlow.logoutSocial"/></c:when>
                                     <c:otherwise><c:out value="${empty item.authFlow ? item.loginMethod : item.authFlow}"/></c:otherwise>
-                                </c:choose>
-                            </div>
-                            <c:if test="${not empty item.requestUri}">
-                                <div style="margin-top:4px;font-size:11px;color:#64748b;max-width:220px;word-break:break-all;">
-                                    <c:out value="${item.requestUri}"/>
-                                </div>
-                            </c:if>
+                                </c:choose></span>
+                                <c:if test="${not empty item.requestUri}">
+                                    <span class="adm-cell-link-note"><c:out value="${item.requestUri}"/></span>
+                                </c:if>
+                            </button>
                         </td>
                         <td>
                             <c:choose>
@@ -180,22 +187,30 @@
                             </c:choose>
                         </td>
                         <td>
-                            <c:choose>
-                                <c:when test="${item.success}"><span class="status-badge ACTIVE"><spring:message code="admin.common.success"/></span></c:when>
-                                <c:otherwise><span class="status-badge DELETED"><spring:message code="admin.common.fail"/></span></c:otherwise>
-                            </c:choose>
+                            <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="${item.success ? 'SUCCESS' : 'FAIL'}" onclick="applySelectFilter(this)">
+                                <c:choose>
+                                    <c:when test="${item.success}"><span class="status-badge ACTIVE"><spring:message code="admin.common.success"/></span></c:when>
+                                    <c:otherwise><span class="status-badge DELETED"><spring:message code="admin.common.fail"/></span></c:otherwise>
+                                </c:choose>
+                            </button>
                         </td>
                         <td style="max-width:280px;white-space:normal;">
-                            <div><c:out value="${empty item.failReason ? '-' : item.failReason}"/></div>
-                            <c:if test="${not empty item.failReason}">
-                                <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="<spring:message code='admin.translation.label.loginFailReason'/>"
-                                     data-source-type="LOGIN_AUDIT"
-                                     data-source-idx="${item.loginIdx}"
-                                     data-field-name="fail_reason"
-                                     data-default-source-lang="ko"
-                                     data-source-text="${fn:escapeXml(item.failReason)}"></div>
-                            </c:if>
+                            <c:choose>
+                                <c:when test="${not empty item.failReason}">
+                                    <button type="button" class="adm-cell-link" data-keyword="${item.failReason}" onclick="applyKeywordFilter(this)">
+                                        <span><c:out value="${item.failReason}"/></span>
+                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                                    </button>
+                                    <div class="adm-tr-inline js-admin-translation-widget"
+                                         data-label="<spring:message code='admin.translation.label.loginFailReason'/>"
+                                         data-source-type="LOGIN_AUDIT"
+                                         data-source-idx="${item.loginIdx}"
+                                         data-field-name="fail_reason"
+                                         data-default-source-lang="ko"
+                                         data-source-text="${fn:escapeXml(item.failReason)}"></div>
+                                </c:when>
+                                <c:otherwise><div>-</div></c:otherwise>
+                            </c:choose>
                         </td>
                         <td>
                             <c:choose>
@@ -230,7 +245,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
+                    <tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -255,6 +270,16 @@ function applyKeywordFilter(button) {
     if (!keyword) return;
     const params = new URLSearchParams(window.location.search);
     params.set('keyword', keyword);
+    params.set('page', '1');
+    location.href = '${pageContext.request.contextPath}/admin/logins?' + params.toString();
+}
+
+function applySelectFilter(button) {
+    var paramName = button.getAttribute('data-param-name');
+    var paramValue = button.getAttribute('data-param-value');
+    if (!paramName || !paramValue) return;
+    var params = new URLSearchParams(window.location.search);
+    params.set(paramName, paramValue);
     params.set('page', '1');
     location.href = '${pageContext.request.contextPath}/admin/logins?' + params.toString();
 }

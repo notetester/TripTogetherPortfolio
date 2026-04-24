@@ -53,24 +53,30 @@
           </c:choose>
         </td>
         <td>
-          <c:choose>
-            <c:when test="${item.activityDomain eq 'GENERAL'}"><spring:message code="admin.activity.domain.general"/></c:when>
-            <c:when test="${item.activityDomain eq 'AUTH'}"><spring:message code="admin.activity.domain.auth"/></c:when>
-            <c:when test="${item.activityDomain eq 'ADMIN'}"><spring:message code="admin.activity.domain.admin"/></c:when>
-            <c:when test="${item.activityDomain eq 'COMMUNITY'}"><spring:message code="admin.activity.domain.community"/></c:when>
-            <c:when test="${item.activityDomain eq 'MYPAGE'}"><spring:message code="admin.activity.domain.mypage"/></c:when>
-            <c:when test="${item.activityDomain eq 'INQUIRY'}"><spring:message code="admin.activity.domain.inquiry"/></c:when>
-            <c:otherwise><c:out value="${empty item.activityDomain ? '-' : item.activityDomain}"/></c:otherwise>
-          </c:choose>
+          <button type="button" class="adm-cell-link" data-param-name="activityDomain" data-param-value="${item.activityDomain}" onclick="applySelectFilter(this)">
+            <span><c:choose>
+              <c:when test="${item.activityDomain eq 'GENERAL'}"><spring:message code="admin.activity.domain.general"/></c:when>
+              <c:when test="${item.activityDomain eq 'AUTH'}"><spring:message code="admin.activity.domain.auth"/></c:when>
+              <c:when test="${item.activityDomain eq 'ADMIN'}"><spring:message code="admin.activity.domain.admin"/></c:when>
+              <c:when test="${item.activityDomain eq 'COMMUNITY'}"><spring:message code="admin.activity.domain.community"/></c:when>
+              <c:when test="${item.activityDomain eq 'MYPAGE'}"><spring:message code="admin.activity.domain.mypage"/></c:when>
+              <c:when test="${item.activityDomain eq 'INQUIRY'}"><spring:message code="admin.activity.domain.inquiry"/></c:when>
+              <c:otherwise><c:out value="${empty item.activityDomain ? '-' : item.activityDomain}"/></c:otherwise>
+            </c:choose></span>
+            <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+          </button>
         </td>
         <td>
-          <c:choose>
-            <c:when test="${item.activityType eq 'PAGE_VIEW'}"><spring:message code="admin.activity.type.pageView"/></c:when>
-            <c:when test="${item.activityType eq 'ACTION'}"><spring:message code="admin.activity.type.action"/></c:when>
-            <c:when test="${item.activityType eq 'AJAX'}"><spring:message code="admin.activity.type.ajax"/></c:when>
-            <c:when test="${item.activityType eq 'API'}"><spring:message code="admin.activity.type.api"/></c:when>
-            <c:otherwise><c:out value="${item.activityType}"/></c:otherwise>
-          </c:choose>
+          <button type="button" class="adm-cell-link" data-param-name="activityType" data-param-value="${item.activityType}" onclick="applySelectFilter(this)">
+            <span><c:choose>
+              <c:when test="${item.activityType eq 'PAGE_VIEW'}"><spring:message code="admin.activity.type.pageView"/></c:when>
+              <c:when test="${item.activityType eq 'ACTION'}"><spring:message code="admin.activity.type.action"/></c:when>
+              <c:when test="${item.activityType eq 'AJAX'}"><spring:message code="admin.activity.type.ajax"/></c:when>
+              <c:when test="${item.activityType eq 'API'}"><spring:message code="admin.activity.type.api"/></c:when>
+              <c:otherwise><c:out value="${item.activityType}"/></c:otherwise>
+            </c:choose></span>
+            <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+          </button>
         </td>
         <td>
           <div><c:out value="${empty item.activityCode ? '-' : item.activityCode}"/></div>
@@ -146,15 +152,23 @@
           </c:if>
         </td>
         <td>
-          <c:choose>
-            <c:when test="${item.httpMethod eq 'GET'}"><spring:message code="admin.activity.method.get"/></c:when>
-            <c:when test="${item.httpMethod eq 'POST'}"><spring:message code="admin.activity.method.post"/></c:when>
-            <c:when test="${item.httpMethod eq 'PUT'}"><spring:message code="admin.activity.method.put"/></c:when>
-            <c:when test="${item.httpMethod eq 'DELETE'}"><spring:message code="admin.activity.method.delete"/></c:when>
-            <c:otherwise><c:out value="${item.httpMethod}"/></c:otherwise>
-          </c:choose>
+          <button type="button" class="adm-cell-link" data-param-name="httpMethod" data-param-value="${item.httpMethod}" onclick="applySelectFilter(this)">
+            <span><c:choose>
+              <c:when test="${item.httpMethod eq 'GET'}"><spring:message code="admin.activity.method.get"/></c:when>
+              <c:when test="${item.httpMethod eq 'POST'}"><spring:message code="admin.activity.method.post"/></c:when>
+              <c:when test="${item.httpMethod eq 'PUT'}"><spring:message code="admin.activity.method.put"/></c:when>
+              <c:when test="${item.httpMethod eq 'DELETE'}"><spring:message code="admin.activity.method.delete"/></c:when>
+              <c:otherwise><c:out value="${item.httpMethod}"/></c:otherwise>
+            </c:choose></span>
+            <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+          </button>
         </td>
-        <td><c:out value="${item.responseStatus}"/> / <c:out value="${item.success ? adminActivitySuccessLabel : adminActivityFailLabel}"/></td>
+        <td>
+          <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="${item.success ? 'SUCCESS' : 'FAIL'}" onclick="applySelectFilter(this)">
+            <span><c:out value="${item.responseStatus}"/></span>
+            <span class="adm-cell-link-note"><c:out value="${item.success ? adminActivitySuccessLabel : adminActivityFailLabel}"/></span>
+          </button>
+        </td>
         <td>
           <c:choose>
             <c:when test="${not empty item.ipAddress}">
@@ -176,7 +190,7 @@
                   onclick="applyKeywordFilter(this)">
             <span style="font-size:12px;color:#64748b;"><c:out value="${empty item.requestId ? '-' : item.requestId}"/></span>
             <c:if test="${not empty item.flowTraceId}">
-              <span class="adm-cell-link-note"><c:out value="${item.flowTraceId}"/></span>
+              <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
             </c:if>
           </button>
         </td>
@@ -192,6 +206,15 @@ function applyKeywordFilter(button){
   if(!keyword) return;
   const params=new URLSearchParams(window.location.search);
   params.set('keyword',keyword);
+  params.set('page','1');
+  location.href='${pageContext.request.contextPath}/admin/activity-logs?'+params.toString();
+}
+function applySelectFilter(button){
+  var paramName=button.getAttribute('data-param-name');
+  var paramValue=button.getAttribute('data-param-value');
+  if(!paramName||!paramValue) return;
+  var params=new URLSearchParams(window.location.search);
+  params.set(paramName,paramValue);
   params.set('page','1');
   location.href='${pageContext.request.contextPath}/admin/activity-logs?'+params.toString();
 }
