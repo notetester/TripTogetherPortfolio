@@ -4,8 +4,13 @@
 
 <c:set var="pageCSS" value="assistant/assistant.css" />
 <%@ include file="../common/header.jsp" %>
-
-<<<<<<< PARK-SEO-JIN
+<%--ㅇ--%>
+<style>
+    .history-section {
+        margin-top: 22px;
+        padding-top: 16px;
+        border-top: 1px solid #e5e7eb;
+    }
 <head>
     <style>
         .history-section {
@@ -199,7 +204,6 @@
             </button>
         </div>
 
-<<<<<<< PARK-SEO-JIN
         <div class="history-section">
             <div class="history-header">
                 <span class="history-title">이전 대화</span>
@@ -246,11 +250,6 @@
         </div>
 
         <button class="reset-btn" onclick="startNewChat()">새 대화 시작하기</button>
-=======
-        <button class="reset-btn" onclick="resetChat()">
-            <spring:message code="assistant.reset.btn" />
-        </button>
->>>>>>> dev
     </aside>
 
     <%-- ===================== 메인 채팅 영역 ===================== --%>
@@ -305,28 +304,7 @@
     const MSG_RESET_DONE = '${msgResetDone}';
 
     let isLoading = false;
-<<<<<<< PARK-SEO-JIN
     let currentChatPostIdx = null;
-=======
-    <spring:message code="assistant.error.parse" javaScriptEscape="true" var="assistantErrorParseJs"/>
-    <spring:message code="assistant.error.request" javaScriptEscape="true" var="assistantErrorRequestJs"/>
-    <spring:message code="assistant.error.network" javaScriptEscape="true" var="assistantErrorNetworkJs"/>
-    <spring:message code="assistant.error.noResponse" javaScriptEscape="true" var="assistantErrorNoResponseJs"/>
-    <spring:message code="assistant.error.server" javaScriptEscape="true" var="assistantErrorServerJs"/>
-    <spring:message code="assistant.reset.confirm" javaScriptEscape="true" var="assistantResetConfirmJs"/>
-    <spring:message code="assistant.reset.done" javaScriptEscape="true" var="assistantResetDoneJs"/>
-    <spring:message code="assistant.loading.answering" javaScriptEscape="true" var="assistantLoadingAnsweringJs"/>
-    const assistantMessages = {
-        errorNetwork: '${assistantErrorNetworkJs}',
-        errorNoResponse: '${assistantErrorNoResponseJs}',
-        errorParse: '${assistantErrorParseJs}',
-        errorRequest: '${assistantErrorRequestJs}',
-        errorServer: '${assistantErrorServerJs}',
-        loadingAnswering: '${assistantLoadingAnsweringJs}',
-        resetConfirm: '${assistantResetConfirmJs}',
-        resetDone: '${assistantResetDoneJs}'
-    };
->>>>>>> dev
 
     async function sendMessage() {
         if (isLoading) return;
@@ -344,7 +322,6 @@
         try {
             const res = await fetch(CTX + '/assistant/chat', {
                 method: 'POST',
-<<<<<<< PARK-SEO-JIN
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     message: message,
@@ -367,38 +344,6 @@
 
             appendMessage('ai', data.answer || '응답을 받지 못했습니다.');
 
-=======
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message })
-            });
-
-            const rawText = await res.text();
-            console.log('[assistant] status=', res.status);
-            console.log('[assistant] raw response=', rawText);
-
-            let data;
-            try {
-                data = JSON.parse(rawText);
-            } catch (parseError) {
-                removeLoadingBubble(loadingId);
-                appendMessage('ai', MSG_ERROR_PARSE);
-                return;
-            }
-
-            removeLoadingBubble(loadingId);
-
-            if (!res.ok) {
-                appendMessage('ai', data.answer || (MSG_ERROR_SERVER + ' (' + res.status + ')'));
-                return;
-            }
-
-            if (!data.success) {
-                appendMessage('ai', data.answer || MSG_ERROR_REQUEST);
-                return;
-            }
-
-            appendMessage('ai', data.answer || MSG_ERROR_NO_RESPONSE);
->>>>>>> dev
         } catch (e) {
             console.error(e);
             removeLoadingBubble(loadingId);
@@ -413,7 +358,6 @@
         sendMessage();
     }
 
-<<<<<<< PARK-SEO-JIN
     async function loadHistory(chatPostIdx, button) {
         if (!chatPostIdx) {
             alert("대화 번호를 찾을 수 없습니다.");
@@ -548,14 +492,6 @@
 
         try {
             await fetch(CTX + '/assistant/reset', {method: 'POST'});
-=======
-    async function resetChat() {
-        if (!confirm(MSG_RESET_CONFIRM)) return;
-
-        try {
-            const res = await fetch(CTX + '/assistant/reset', { method: 'POST' });
-            console.log('[assistant] reset status=', res.status);
->>>>>>> dev
         } catch (e) {
             console.error(e);
         }
@@ -563,13 +499,8 @@
         const body = document.getElementById('chatBody');
         body.innerHTML =
             '<div class="msg-row ai">' +
-<<<<<<< PARK-SEO-JIN
             '<div class="msg-avatar">✈️</div>' +
             '<div class="msg-bubble">새 대화를 시작할게요. 어떤 여행을 도와드릴까요? ✨</div>' +
-=======
-                '<div class="msg-avatar">✈️</div>' +
-                '<div class="msg-bubble">' + escapeHtml(MSG_RESET_DONE) + '</div>' +
->>>>>>> dev
             '</div>';
 
         document.querySelectorAll('.history-item').forEach(item => {
