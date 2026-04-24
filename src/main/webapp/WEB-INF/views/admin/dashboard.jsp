@@ -5,6 +5,9 @@
 <c:set var="activeMenu" value="dashboard"/>
 <spring:message code="admin.dashboard.pageTitle" var="adminDashboardPageTitle"/>
 <c:set var="pageTitle" value="${adminDashboardPageTitle}"/>
+<spring:message code="admin.dashboard.chart.newMembersDataset" var="adminDashboardNewMembersDataset"/>
+<spring:message code="admin.dashboard.chart.loginSuccessDataset" var="adminDashboardLoginSuccessDataset"/>
+<spring:message code="admin.dashboard.chart.loginFailDataset" var="adminDashboardLoginFailDataset"/>
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
@@ -75,6 +78,33 @@
             <div class="adm-card-body">
                 <div class="adm-chart-box"><canvas id="chartLogin"></canvas></div>
             </div>
+        </div>
+    </div>
+
+    <div class="adm-card" style="margin-bottom:20px;">
+        <div class="adm-card-head" style="justify-content:space-between;gap:12px;align-items:flex-start;">
+            <div>
+                <div class="adm-card-title"><spring:message code="admin.dashboard.sales.title"/></div>
+                <div style="margin-top:6px;font-size:12px;color:#64748b;">
+                    <spring:message code="admin.dashboard.sales.sub" arguments="30"/>
+                </div>
+            </div>
+            <div class="adm-inline-actions">
+                <button type="button" class="adm-btn adm-btn-primary" onclick="openSalesDetailModal()">
+                    <spring:message code="admin.dashboard.sales.detail"/>
+                </button>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div style="display:grid;grid-template-columns:1fr;gap:18px;">
+                <div class="adm-chart-box" style="height:300px;">
+                    <canvas id="salesAmountChart"></canvas>
+                </div>
+                <div class="adm-chart-box" style="height:240px;">
+                    <canvas id="salesCountChart"></canvas>
+                </div>
+            </div>
+            <div class="adm-summary-grid" id="salesSummaryGrid" style="margin-top:16px;"></div>
         </div>
     </div>
 
@@ -181,6 +211,36 @@
     </div>
 </div>
 
+<div class="adm-modal-overlay" id="salesDetailModal">
+    <div class="adm-modal" style="max-width:920px;">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title"><spring:message code="admin.dashboard.sales.pageTitle"/></div>
+            <button class="adm-modal-close" type="button" onclick="closeSalesDetailModal()">✕</button>
+        </div>
+        <div class="adm-modal-body">
+            <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px;">
+                <div style="flex:0 0 180px;max-width:180px;">
+                    <label for="salesDaysInput" style="display:block;margin-bottom:6px;font-size:12px;color:#64748b;">
+                        <spring:message code="admin.dashboard.sales.daysLabel"/>
+                    </label>
+                    <input type="number" id="salesDaysInput" class="adm-input" min="1" max="365" value="30" style="width:100%;">
+                </div>
+                <button type="button" class="adm-btn adm-btn-primary" onclick="loadSalesStats()">
+                    <spring:message code="admin.common.searchButton"/>
+                </button>
+            </div>
+            <div id="salesDetailStatus" style="font-size:12px;color:#64748b;margin-bottom:12px;">
+                <spring:message code="admin.dashboard.sales.sub" arguments="30"/>
+            </div>
+        </div>
+        <div class="adm-modal-foot">
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeSalesDetailModal()">
+                <spring:message code="admin.dashboard.sales.close"/>
+            </button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 (function(){
@@ -189,6 +249,36 @@
         newMembers:   [<c:forEach var="n" items="${chart.newMembers}"   varStatus="s">${n}${s.last?'':','}</c:forEach>],
         loginSuccess: [<c:forEach var="n" items="${chart.loginSuccess}" varStatus="s">${n}${s.last?'':','}</c:forEach>],
         loginFail:    [<c:forEach var="n" items="${chart.loginFail}"    varStatus="s">${n}${s.last?'':','}</c:forEach>]
+    };
+
+    var SALES_STATS = [
+        <c:forEach var="sale" items="${salesStats}" varStatus="s">
+        {
+            salesDate: "${sale.salesDate}",
+            grossSales: ${sale.grossSales},
+            cashSales: ${sale.cashSales},
+            mileageUsed: ${sale.mileageUsed},
+            cancelAmount: ${sale.cancelAmount},
+            netSales: ${sale.netSales},
+            flightBookingCount: ${sale.flightBookingCount},
+            packageBookingCount: ${sale.packageBookingCount},
+            cancelCount: ${sale.cancelCount}
+        }${s.last ? '' : ','}
+        </c:forEach>
+    ];
+    var SALES_DAYS = 30;
+    var SALES_SUB_TEMPLATE = '<spring:message code="admin.dashboard.sales.sub" arguments="__DAYS__"/>';
+    var SALES_LOADING_TEXT = '<spring:message code="admin.dashboard.sales.loading"/>';
+    var SALES_NO_DATA_TEXT = '<spring:message code="admin.dashboard.sales.noData"/>';
+    var SALES_CHART_LABELS = {
+        gross: '<spring:message code="admin.dashboard.sales.chart.gross"/>',
+        cash: '<spring:message code="admin.dashboard.sales.chart.cash"/>',
+        mileage: '<spring:message code="admin.dashboard.sales.chart.mileage"/>',
+        cancel: '<spring:message code="admin.dashboard.sales.chart.cancel"/>',
+        net: '<spring:message code="admin.dashboard.sales.chart.net"/>',
+        flightCount: '<spring:message code="admin.dashboard.sales.chart.flightCount"/>',
+        packageCount: '<spring:message code="admin.dashboard.sales.chart.packageCount"/>',
+        cancelCount: '<spring:message code="admin.dashboard.sales.chart.cancelCount"/>'
     };
 
     function isLight() { return document.body.classList.contains('sa-light'); }
@@ -204,6 +294,333 @@
             bar3:  'rgba(239,68,68,.85)',
             bar3b: '#ef4444'
         };
+    }
+
+    function locale() {
+        return document.documentElement.lang || 'ko-KR';
+    }
+
+    function formatNumber(value) {
+        return new Intl.NumberFormat(locale()).format(Number(value || 0));
+    }
+
+    function formatDateText(value) {
+        if (!value) return '-';
+        return String(value);
+    }
+
+    function shortDateText(value) {
+        if (!value) return '-';
+        var text = String(value);
+        if (text.length >= 10 && text.indexOf('-') >= 0) {
+            return text.substring(5, 10).replace('-', '/');
+        }
+        return text;
+    }
+
+    function sumField(rows, field) {
+        return rows.reduce(function(total, row) {
+            return total + Number(row[field] || 0);
+        }, 0);
+    }
+
+    function renderSalesSummary(rows) {
+        var summary = document.getElementById('salesSummaryGrid');
+        if (!summary) return;
+
+        if (!rows || !rows.length) {
+            summary.innerHTML = '';
+            return;
+        }
+
+        summary.innerHTML =
+            '<div class="adm-card adm-summary-card">' +
+                '<div class="adm-summary-label"><spring:message code="admin.dashboard.sales.table.grossSales"/></div>' +
+                '<div class="adm-summary-value is-primary">' + formatNumber(sumField(rows, 'grossSales')) + '</div>' +
+                '<div class="adm-summary-sub"><spring:message code="admin.dashboard.sales.table.totalSummary"/></div>' +
+            '</div>' +
+            '<div class="adm-card adm-summary-card">' +
+                '<div class="adm-summary-label"><spring:message code="admin.dashboard.sales.table.cashSales"/></div>' +
+                '<div class="adm-summary-value is-success">' + formatNumber(sumField(rows, 'cashSales')) + '</div>' +
+                '<div class="adm-summary-sub"><spring:message code="admin.dashboard.sales.table.totalSummary"/></div>' +
+            '</div>' +
+            '<div class="adm-card adm-summary-card">' +
+                '<div class="adm-summary-label"><spring:message code="admin.dashboard.sales.table.mileageUsed"/></div>' +
+                '<div class="adm-summary-value is-warning">' + formatNumber(sumField(rows, 'mileageUsed')) + '</div>' +
+                '<div class="adm-summary-sub"><spring:message code="admin.dashboard.sales.table.totalSummary"/></div>' +
+            '</div>' +
+            '<div class="adm-card adm-summary-card">' +
+                '<div class="adm-summary-label"><spring:message code="admin.dashboard.sales.table.netSales"/></div>' +
+                '<div class="adm-summary-value is-danger">' + formatNumber(sumField(rows, 'netSales')) + '</div>' +
+                '<div class="adm-summary-sub"><spring:message code="admin.dashboard.sales.table.totalSummary"/></div>' +
+            '</div>';
+    }
+
+    var salesAmountChart = null;
+    var salesCountChart = null;
+
+    function chartLabels(rows) {
+        return rows.map(function(row) {
+            return shortDateText(row.salesDate);
+        });
+    }
+
+    function chartTooltipLabel(context) {
+        return context.dataset.label + ': ' + formatNumber(context.parsed.y);
+    }
+
+    function renderSalesAmountChart(rows) {
+        var canvas = document.getElementById('salesAmountChart');
+        if (!canvas) return;
+
+        if (salesAmountChart) {
+            salesAmountChart.destroy();
+            salesAmountChart = null;
+        }
+
+        if (!rows || !rows.length) {
+            renderSalesSummary([]);
+            return;
+        }
+
+        var c = colors();
+        salesAmountChart = new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: chartLabels(rows),
+                datasets: [
+                    {
+                        label: SALES_CHART_LABELS.gross,
+                        data: rows.map(function(row) { return row.grossSales; }),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,.14)',
+                        pointRadius: 2,
+                        tension: 0.25,
+                        borderWidth: 2
+                    },
+                    {
+                        label: SALES_CHART_LABELS.cash,
+                        data: rows.map(function(row) { return row.cashSales; }),
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34,197,94,.14)',
+                        pointRadius: 2,
+                        tension: 0.25,
+                        borderWidth: 2
+                    },
+                    {
+                        label: SALES_CHART_LABELS.mileage,
+                        data: rows.map(function(row) { return row.mileageUsed; }),
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245,158,11,.14)',
+                        pointRadius: 2,
+                        tension: 0.25,
+                        borderWidth: 2
+                    },
+                    {
+                        label: SALES_CHART_LABELS.cancel,
+                        data: rows.map(function(row) { return row.cancelAmount; }),
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139,92,246,.14)',
+                        pointRadius: 2,
+                        tension: 0.25,
+                        borderWidth: 2
+                    },
+                    {
+                        label: SALES_CHART_LABELS.net,
+                        data: rows.map(function(row) { return row.netSales; }),
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,.12)',
+                        pointRadius: 3,
+                        tension: 0.25,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: { labels: { color: c.tick } },
+                    tooltip: {
+                        callbacks: {
+                            label: chartTooltipLabel
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: c.tick,
+                            autoSkip: false,
+                            maxRotation: 0,
+                            callback: function(value, index) {
+                                return index % 3 === 0 ? this.getLabelForValue(value) : '';
+                            }
+                        },
+                        grid: { color: c.grid }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: c.tick,
+                            callback: function(value) {
+                                return formatNumber(value);
+                            }
+                        },
+                        grid: { color: c.grid }
+                    }
+                }
+            }
+        });
+
+        renderSalesSummary(rows);
+    }
+
+    function renderSalesCountChart(rows) {
+        var canvas = document.getElementById('salesCountChart');
+        if (!canvas) return;
+
+        if (salesCountChart) {
+            salesCountChart.destroy();
+            salesCountChart = null;
+        }
+
+        if (!rows || !rows.length) {
+            return;
+        }
+
+        var c = colors();
+        salesCountChart = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: chartLabels(rows),
+                datasets: [
+                    {
+                        label: SALES_CHART_LABELS.flightCount,
+                        data: rows.map(function(row) { return row.flightBookingCount; }),
+                        backgroundColor: 'rgba(59,130,246,.18)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    },
+                    {
+                        label: SALES_CHART_LABELS.packageCount,
+                        data: rows.map(function(row) { return row.packageBookingCount; }),
+                        backgroundColor: 'rgba(34,197,94,.18)',
+                        borderColor: '#22c55e',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    },
+                    {
+                        label: SALES_CHART_LABELS.cancelCount,
+                        data: rows.map(function(row) { return row.cancelCount; }),
+                        backgroundColor: 'rgba(239,68,68,.18)',
+                        borderColor: '#ef4444',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: { labels: { color: c.tick } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + formatNumber(context.parsed.y);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            color: c.tick,
+                            autoSkip: false,
+                            maxRotation: 0,
+                            callback: function(value, index) {
+                                return index % 3 === 0 ? this.getLabelForValue(value) : '';
+                            }
+                        },
+                        grid: { color: c.grid }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        ticks: {
+                            color: c.tick,
+                            precision: 0,
+                            callback: function(value) {
+                                return formatNumber(value);
+                            }
+                        },
+                        grid: { color: c.grid }
+                    }
+                }
+            }
+        });
+    }
+
+    function setSalesStatus(message) {
+        var status = document.getElementById('salesDetailStatus');
+        if (status) status.textContent = message;
+    }
+
+    function openSalesDetailModal() {
+        var modal = document.getElementById('salesDetailModal');
+        var input = document.getElementById('salesDaysInput');
+        if (input) input.value = SALES_DAYS;
+        if (modal) modal.classList.add('open');
+        setSalesStatus(SALES_SUB_TEMPLATE.replace('__DAYS__', SALES_DAYS));
+    }
+
+    function closeSalesDetailModal() {
+        var modal = document.getElementById('salesDetailModal');
+        if (modal) modal.classList.remove('open');
+    }
+
+    function loadSalesStats() {
+        var input = document.getElementById('salesDaysInput');
+        var days = input ? parseInt(input.value, 10) : SALES_DAYS;
+        if (!days || days < 1) days = SALES_DAYS;
+        if (days > 365) days = 365;
+        SALES_DAYS = days;
+        if (input) input.value = days;
+
+        setSalesStatus(SALES_LOADING_TEXT);
+
+        fetch('${pageContext.request.contextPath}/admin/sales/stats?days=' + encodeURIComponent(days), {
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        })
+        .then(function(rows) {
+            SALES_STATS = Array.isArray(rows) ? rows : [];
+            renderSalesAmountChart(SALES_STATS);
+            renderSalesCountChart(SALES_STATS);
+            setSalesStatus(SALES_SUB_TEMPLATE.replace('__DAYS__', days));
+        })
+        .catch(function(error) {
+            console.error('Failed to load sales stats', error);
+            setSalesStatus(SALES_NO_DATA_TEXT);
+        });
     }
 
     var chartNew = null, chartLog = null;
@@ -231,7 +648,7 @@
             data: {
                 labels: DASH_CHART.labels,
                 datasets: [{
-                    label: '신규 가입자',
+                    label: '${adminDashboardNewMembersDataset}',
                     data: DASH_CHART.newMembers,
                     backgroundColor: c.bar1,
                     borderColor: c.bar1b,
@@ -249,8 +666,8 @@
             data: {
                 labels: DASH_CHART.labels,
                 datasets: [
-                    { label: '성공', data: DASH_CHART.loginSuccess, backgroundColor: c.bar2, borderColor: c.bar2b, borderWidth: 1, borderRadius: 4 },
-                    { label: '실패', data: DASH_CHART.loginFail,    backgroundColor: c.bar3, borderColor: c.bar3b, borderWidth: 1, borderRadius: 4 }
+                    { label: '${adminDashboardLoginSuccessDataset}', data: DASH_CHART.loginSuccess, backgroundColor: c.bar2, borderColor: c.bar2b, borderWidth: 1, borderRadius: 4 },
+                    { label: '${adminDashboardLoginFailDataset}', data: DASH_CHART.loginFail,    backgroundColor: c.bar3, borderColor: c.bar3b, borderWidth: 1, borderRadius: 4 }
                 ]
             },
             options: Object.assign({}, common, {
@@ -263,9 +680,24 @@
     }
 
     build();
+    renderSalesAmountChart(SALES_STATS);
+    renderSalesCountChart(SALES_STATS);
 
     var themeBtn = document.getElementById('saThemeBtn');
     if (themeBtn) themeBtn.addEventListener('click', function(){ setTimeout(build, 0); });
+
+    var salesModal = document.getElementById('salesDetailModal');
+    if (salesModal) {
+        salesModal.addEventListener('click', function(event) {
+            if (event.target === salesModal) {
+                closeSalesDetailModal();
+            }
+        });
+    }
+
+    window.openSalesDetailModal = openSalesDetailModal;
+    window.closeSalesDetailModal = closeSalesDetailModal;
+    window.loadSalesStats = loadSalesStats;
 })();
 </script>
 

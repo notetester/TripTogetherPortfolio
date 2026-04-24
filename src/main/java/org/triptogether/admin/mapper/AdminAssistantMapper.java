@@ -38,4 +38,17 @@ public interface AdminAssistantMapper {
 
     // ===== 관리자 삭제 (세션 삭제 시 FK CASCADE로 메시지도 삭제됨) =====
     int deleteSession(@Param("chatPostIdx") Long chatPostIdx);
+
+    // ===== 한도/모더레이션 enforcement 지원 (인터셉터·스케줄러 사용) =====
+    /** 특정 유저의 전체 CHAT_POST(세션) 수 — max_sessions 체크용 */
+    int countChatPostsByUser(@Param("userIdx") Long userIdx);
+
+    /** 특정 CHAT_COMMENT 본문만 조회 — 스케줄러가 Perspective 호출용으로 사용 */
+    String selectCommentContent(@Param("chatCommentIdx") Long chatCommentIdx);
+
+    /** 세션 삭제 환급용 — 해당 세션의 user 메시지 수 */
+    int countUserMessagesInSession(@Param("chatPostIdx") Long chatPostIdx);
+
+    /** 세션 삭제 환급용 — 특정 유저의 member_grade 문자열. 없으면 null. */
+    String selectUserGrade(@Param("userIdx") Long userIdx);
 }

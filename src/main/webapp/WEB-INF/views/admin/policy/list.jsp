@@ -345,3 +345,179 @@ async function runPolicyNow(policyCode, button) {
 </script>
 
 <%@ include file="../layout-close.jsp" %>
+
+
+<script>
+/* ── 공통 운영 탭: 헤더 클릭 정렬 + 체크박스 + CSV/Excel 내보내기 ── */
+(function enhanceGenericAdminOperationTables() {
+    const tables = Array.from(document.querySelectorAll('.adm-table'));
+    if (!tables.length) return;
+
+    function cleanText(el) {
+        return (el && el.innerText ? el.innerText : '').replace(/[↕▲▼]/g, '').replace(/\s+/g, ' ').trim();
+    }
+    function rowsOf(table) {
+        return Array.from(table.querySelectorAll('tbody tr')).filter(function (row) {
+            return row.querySelector('.js-op-row-check');
+        });
+    }
+    function selectedRowsOf(table) {
+        return rowsOf(table).filter(function (row) {
+            const cb = row.querySelector('.js-op-row-check');
+            return cb && cb.checked;
+        });
+    }
+    function csvEscape(value) {
+        const s = String(value == null ? '' : value);
+        return '"' + s.replace(/"/g, '""') + '"';
+    }
+    function download(content, filename, type) {
+        const blob = new Blob([content], {type: type});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+    function updateSelectionUi(table) {
+        const wrap = table.closest('.adm-table-wrap') || table.parentElement;
+        const selected = selectedRowsOf(table).length;
+        const selectedBtn = wrap.parentElement.querySelector('.js-op-export-selected');
+        const clearBtn = wrap.parentElement.querySelector('.js-op-clear-selection');
+        const all = table.querySelector('.js-op-check-all');
+        if (selectedBtn) {
+            selectedBtn.disabled = selected === 0;
+            selectedBtn.textContent = '선택 내보내기 (' + selected + ')';
+        }
+        if (clearBtn) clearBtn.style.display = selected > 0 ? '' : 'none';
+        if (all) {
+            const rows = rowsOf(table);
+            all.checked = rows.length > 0 && selected === rows.length;
+            all.indeterminate = selected > 0 && selected < rows.length;
+        }
+    }
+    function exportTable(table, scope) {
+        let exportRows = scope === 'selected' ? selectedRowsOf(table) : rowsOf(table);
+        if (scope === 'selected' && exportRows.length === 0) {
+            if (typeof adm_toast === 'function') adm_toast('선택된 항목이 없습니다.', 'error');
+            else alert('선택된 항목이 없습니다.');
+            return;
+        }
+        const wrap = table.closest('.adm-table-wrap') || table.parentElement;
+        const formatSelect = wrap.parentElement.querySelector('.js-op-export-format');
+        const format = formatSelect ? formatSelect.value : 'csv';
+        const headers = Array.from(table.querySelectorAll('thead th'))
+            .filter(function (_, idx, arr) { return idx !== 0 && idx !== arr.length - 1; })
+            .map(cleanText);
+        const body = exportRows.map(function (row) {
+            return Array.from(row.children)
+                .filter(function (_, idx, arr) { return idx !== 0 && idx !== arr.length - 1; })
+                .map(cleanText);
+        });
+        const base = (document.title || 'admin_operation').replace(/[\\/:*?"<>|]+/g, '_') + '_' + scope + '_' + new Date().toISOString().slice(0, 10);
+        if (format === 'excel') {
+            const html = '<table><thead><tr>' + headers.map(h => '<th>' + h + '</th>').join('') + '</tr></thead><tbody>'
+                + body.map(row => '<tr>' + row.map(v => '<td>' + v + '</td>').join('') + '</tr>').join('')
+                + '</tbody></table>';
+            download('\ufeff' + html, base + '.xls', 'application/vnd.ms-excel;charset=utf-8');
+        } else {
+            const csv = [headers].concat(body).map(row => row.map(csvEscape).join(',')).join('\n');
+            download('\ufeff' + csv, base + '.csv', 'text/csv;charset=utf-8');
+        }
+    }
+    function sortTable(table, colIndex, th) {
+        const tbody = table.querySelector('tbody');
+        const rows = rowsOf(table);
+        const dir = th.dataset.sortDir === 'ASC' ? 'DESC' : 'ASC';
+        th.closest('tr').querySelectorAll('th').forEach(function (h) {
+            h.dataset.sortDir = '';
+            const ico = h.querySelector('.sort-ico-generic');
+            if (ico) ico.textContent = '↕';
+        });
+        th.dataset.sortDir = dir;
+        const ico = th.querySelector('.sort-ico-generic');
+        if (ico) ico.textContent = dir === 'ASC' ? '▲' : '▼';
+        rows.sort(function (a, b) {
+            const av = cleanText(a.children[colIndex]);
+            const bv = cleanText(b.children[colIndex]);
+            const an = Number(av.replace(/[^0-9.-]/g, ''));
+            const bn = Number(bv.replace(/[^0-9.-]/g, ''));
+            const bothNumeric = !Number.isNaN(an) && !Number.isNaN(bn) && /[0-9]/.test(av + bv);
+            const result = bothNumeric ? (an - bn) : av.localeCompare(bv, undefined, {numeric: true, sensitivity: 'base'});
+            return dir === 'ASC' ? result : -result;
+        });
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
+    tables.forEach(function (table, tableIndex) {
+        if (table.dataset.genericOperationEnhanced === 'true') return;
+        table.dataset.genericOperationEnhanced = 'true';
+        const wrap = table.closest('.adm-table-wrap') || table.parentElement;
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'adm-local-toolbar';
+        toolbar.style.margin = '0 0 12px';
+        toolbar.innerHTML =
+            '<div class="adm-local-toolbar-group">'
+            + '<select class="adm-select js-op-export-format" style="width:86px;"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-op-export" data-scope="all">전체 내보내기</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-op-export" data-scope="search">현재 검색 내보내기</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-op-export-selected" data-scope="selected" disabled>선택 내보내기 (0)</button>'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-op-clear-selection" style="display:none;">선택 해제</button>'
+            + '</div>';
+        wrap.parentElement.insertBefore(toolbar, wrap);
+
+        const headRow = table.querySelector('thead tr');
+        if (headRow && !headRow.querySelector('.js-op-check-all')) {
+            const th = document.createElement('th');
+            th.style.width = '42px';
+            th.style.textAlign = 'center';
+            th.innerHTML = '<input type="checkbox" class="js-op-check-all" style="cursor:pointer;">';
+            headRow.insertBefore(th, headRow.firstElementChild);
+        }
+
+        table.querySelectorAll('tbody tr').forEach(function (row) {
+            if (row.children.length === 1 && row.children[0].hasAttribute('colspan')) return;
+            if (row.querySelector('.js-op-row-check')) return;
+            const td = document.createElement('td');
+            td.style.textAlign = 'center';
+            td.innerHTML = '<input type="checkbox" class="js-op-row-check" style="cursor:pointer;">';
+            row.insertBefore(td, row.firstElementChild);
+        });
+
+        Array.from(table.querySelectorAll('thead th')).forEach(function (th, idx, arr) {
+            if (idx === 0 || idx === arr.length - 1 || th.querySelector('input')) return;
+            if (!th.querySelector('.sort-ico-generic')) {
+                th.style.cursor = 'pointer';
+                th.style.userSelect = 'none';
+                th.insertAdjacentHTML('beforeend', ' <span class="sort-ico-generic" style="font-size:10px;color:#94a3b8;">↕</span>');
+                th.addEventListener('click', function () { sortTable(table, idx, th); });
+            }
+        });
+
+        table.addEventListener('change', function (e) {
+            if (e.target.matches('.js-op-check-all')) {
+                rowsOf(table).forEach(row => row.querySelector('.js-op-row-check').checked = e.target.checked);
+                updateSelectionUi(table);
+            }
+            if (e.target.matches('.js-op-row-check')) updateSelectionUi(table);
+        });
+        toolbar.addEventListener('click', function (e) {
+            const exportBtn = e.target.closest('.js-op-export, .js-op-export-selected');
+            if (exportBtn) {
+                exportTable(table, exportBtn.dataset.scope || 'all');
+                return;
+            }
+            const clearBtn = e.target.closest('.js-op-clear-selection');
+            if (clearBtn) {
+                rowsOf(table).forEach(row => row.querySelector('.js-op-row-check').checked = false);
+                updateSelectionUi(table);
+            }
+        });
+    });
+})();
+</script>
+

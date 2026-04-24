@@ -14,6 +14,9 @@ public class AdminSecurityAuditSearchVO {
     private String success;     // ALL / SUCCESS / FAIL
     private String eventType;   // ALL / FIND_ID / FIND_PASSWORD / RESET_PASSWORD / PASSWORD_CHANGE / EMAIL_VERIFY / EMAIL_LOGIN_TOGGLE
     private String eventStage;  // ALL / REQUEST / ISSUE / VERIFY / COMPLETE
+    private String dateFilter;  // yyyy-MM-dd
+    private String sortField;   // time / eventType / eventStage / success / ip
+    private String sortDir;     // ASC / DESC
     private int page = 1;
     private int size = 30;
 
@@ -24,4 +27,6 @@ public class AdminSecurityAuditSearchVO {
     public String getSuccess() { return success != null ? success : "ALL"; }
     public String getEventType() { return eventType != null ? eventType : "ALL"; }
     public String getEventStage() { return eventStage != null ? eventStage : "ALL"; }
+    public String getSortField() { return sortField != null ? sortField : ""; }
+    public String getSortDir() { return "ASC".equals(sortDir) ? "ASC" : "DESC"; }
 }

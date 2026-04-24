@@ -645,7 +645,34 @@
 }
 .comm-ad-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; }
 .comm-ad-size  { font-size: 0.7rem; }
-@media (max-width: 1100px) { .comm-ad-banner-inner { width: 100%; border-radius: 0; border-left: none; border-right: none; } }
+.comm-ad-link  { display: block; width: 970px; margin: 0 auto; line-height: 0; }
+.comm-ad-image { display: block; width: 970px; max-width: 100%; height: auto; margin: 0 auto; border-radius: 8px; }
+@media (max-width: 1199px) {
+    .comm-ad-banner-inner,
+    .comm-ad-link { width: 100%; border-radius: 0; }
+    .comm-ad-banner-inner { border-left: none; border-right: none; }
+    .comm-ad-image { width: 100%; border-radius: 0; }
+}
+
+/* =============================================
+   반응형 — 모바일
+   ============================================= */
+@media (max-width: 767px) {
+    .detail-wrap { padding: 16px 16px 48px; }
+
+    .detail-author-bar { padding: 14px 16px; gap: 10px; }
+    .detail-title { font-size: 1.2rem; padding: 16px 16px 0; }
+    .detail-type-extra { padding: 8px 16px 0; }
+    .detail-content { padding: 16px; }
+    .detail-tags { padding: 14px 16px 0; }
+    .detail-action-bar { padding: 12px 16px; gap: 10px; }
+
+    .comment-header { padding: 14px 16px; }
+    .comm-comment-toolbar { padding: 10px 16px; }
+    .comment-item { padding: 12px 16px; gap: 10px; }
+    .comment-input-wrap { padding: 12px 16px; }
+    .comm-comment-pagination { padding: 12px 16px; }
+}
 
 /* =============================================
    다크 테마 오버라이드 (html.dark)

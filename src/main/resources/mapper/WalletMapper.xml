@@ -54,6 +54,10 @@
         <result property="usedMileage" column="used_mileage"/>
         <result property="earnedMileage" column="earned_mileage"/>
         <result property="paymentStatus" column="payment_status"/>
+        <result property="tossOrderId" column="toss_order_id"/>
+        <result property="tossPaymentKey" column="toss_payment_key"/>
+        <result property="tossStatus" column="toss_status"/>
+        <result property="tossApprovedAt" column="toss_approved_at"/>
         <result property="paidAt" column="paid_at"/>
         <result property="cancelledAt" column="cancelled_at"/>
         <result property="createdAt" column="created_at"/>
@@ -108,13 +112,58 @@
         INSERT INTO USER_PAYMENT_HISTORY (
             user_idx, payment_type, payment_method, order_name, source_type, source_id,
             original_amount, discount_rate, discount_amount, final_amount,
-            used_cash, used_mileage, earned_mileage, payment_status, paid_at, created_at
+            used_cash, used_mileage, earned_mileage, payment_status,
+            toss_order_id, toss_payment_key, toss_status, toss_approved_at,
+            paid_at, created_at
         ) VALUES (
             #{userIdx}, #{paymentType}, #{paymentMethod}, #{orderName}, #{sourceType}, #{sourceId},
             #{originalAmount}, #{discountRate}, #{discountAmount}, #{finalAmount},
-            #{usedCash}, #{usedMileage}, #{earnedMileage}, #{paymentStatus}, NOW(), NOW()
+            #{usedCash}, #{usedMileage}, #{earnedMileage}, #{paymentStatus},
+            #{tossOrderId}, #{tossPaymentKey}, #{tossStatus}, #{tossApprovedAt},
+            COALESCE(#{paidAt}, NOW()), COALESCE(#{createdAt}, NOW())
         )
     </insert>
+
+    <select id="selectPaymentByIdx" resultMap="WalletPaymentMap">
+        SELECT *
+        FROM USER_PAYMENT_HISTORY
+        WHERE payment_idx = #{paymentIdx}
+    </select>
+
+    <select id="selectPaymentByTossOrderId" resultMap="WalletPaymentMap">
+        SELECT *
+        FROM USER_PAYMENT_HISTORY
+        WHERE toss_order_id = #{tossOrderId}
+        LIMIT 1
+    </select>
+
+    <select id="selectPaymentByTossOrderIdForUpdate" resultMap="WalletPaymentMap">
+        SELECT *
+        FROM USER_PAYMENT_HISTORY
+        WHERE toss_order_id = #{tossOrderId}
+        LIMIT 1
+        FOR UPDATE
+    </select>
+
+    <update id="updateReadyTossPaymentAsCompleted">
+        UPDATE USER_PAYMENT_HISTORY
+        SET payment_method = #{paymentMethod},
+            order_name = #{orderName},
+            earned_mileage = #{earnedMileage},
+            payment_status = #{paymentStatus},
+            toss_payment_key = #{tossPaymentKey},
+            toss_status = #{tossStatus},
+            toss_approved_at = #{tossApprovedAt},
+            paid_at = NOW()
+        WHERE payment_idx = #{paymentIdx}
+          AND payment_status = 'READY'
+    </update>
+
+    <delete id="deleteReadyTossPaymentByTossOrderId">
+        DELETE FROM USER_PAYMENT_HISTORY
+        WHERE toss_order_id = #{tossOrderId}
+          AND payment_status = 'READY'
+    </delete>
 
     <update id="cancelPaymentHistory">
         UPDATE USER_PAYMENT_HISTORY
@@ -140,6 +189,7 @@
         FROM USER_PAYMENT_HISTORY
         WHERE user_idx = #{userIdx}
           AND payment_type = 'CHARGE'
+          AND payment_status != 'READY'
         ORDER BY created_at DESC
         LIMIT 12
     </select>
@@ -186,11 +236,6 @@
         LIMIT 1
     </select>
 
-    <!--
-        직전 달(현재 월 기준) 유저의 COMPLETED 결제 총액을 합산합니다.
-        예: 현재가 2026-04이면 2026-03-01 ~ 2026-03-31 결제만 합산
-        등급 재산정(recalculateMemberGrade) 시 실제 등급 판정에 사용됩니다.
-    -->
     <select id="selectLastMonthPaymentTotal" resultType="long">
         SELECT COALESCE(SUM(final_amount), 0)
         FROM USER_PAYMENT_HISTORY
@@ -200,11 +245,6 @@
           AND paid_at &lt; DATE_FORMAT(CURDATE(), '%Y-%m-01')
     </select>
 
-    <!--
-        당월(현재 월) 유저의 COMPLETED 결제 총액을 합산합니다.
-        예: 현재가 2026-04이면 2026-04-01 ~ 현재까지 결제 합산
-        마이페이지 등급 바에서 "이번 달 결제 → 다음 달 등급 예측"에 사용됩니다.
-    -->
     <select id="selectCurrentMonthPaymentTotal" resultType="long">
         SELECT COALESCE(SUM(final_amount), 0)
         FROM USER_PAYMENT_HISTORY
@@ -213,20 +253,12 @@
           AND paid_at >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
     </select>
 
-    <!--
-        유저의 회원 등급(member_grade) 컬럼을 갱신합니다.
-    -->
     <update id="updateMemberGrade">
         UPDATE USERS
         SET member_grade = #{memberGrade}
         WHERE user_idx = #{userIdx}
     </update>
 
-    <!--
-        등급 변경 이력을 USER_GRADE_HISTORY 테이블에 저장합니다.
-        uq_ugh_user_month 유니크 제약이 있으므로 같은 달에 중복 산정되면
-        기존 이력을 새 등급으로 덮어씁니다 (ON DUPLICATE KEY UPDATE).
-    -->
     <insert id="insertGradeHistory">
         INSERT INTO USER_GRADE_HISTORY (
             user_idx, base_year_month, prev_grade, new_grade,

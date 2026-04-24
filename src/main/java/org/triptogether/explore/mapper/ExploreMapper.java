@@ -72,6 +72,13 @@ public interface ExploreMapper {
      */
     List<java.util.Map<String, Object>> selectSuggestList(@Param("keyword") String keyword);
 
+    /**
+     * 챗봇 컨텍스트용 다중 키워드 검색.
+     * name/region/address/description 에 대해 OR LIKE 매칭, 리뷰 수 → 평점 내림차순 정렬.
+     */
+    List<java.util.Map<String, Object>> searchSpotsByKeywords(@Param("keywords") List<String> keywords,
+                                                                @Param("limit") int limit);
+
     /* ============================================================
        상세 조회
        ============================================================ */

@@ -63,14 +63,18 @@
                 <c:forEach var="app" items="${applicationList}">
                     <tr>
                         <td>
-                            <div class="mem-name">${fn:escapeXml(app.nickname)}</div>
-                            <div class="mem-uid">
-                                <c:choose>
-                                    <c:when test="${not empty app.userId}">@${fn:escapeXml(app.userId)}</c:when>
-                                    <c:otherwise><spring:message code="admin.business.socialOnly"/></c:otherwise>
-                                </c:choose>
-                            </div>
-                            <div style="font-size:11px;color:#64748b;margin-top:2px;"><spring:message code="admin.business.currentRole" arguments="${fn:escapeXml(app.currentUserRole)}"/></div>
+                            <button type="button"
+                                    class="adm-cell-link js-open-member-context"
+                                    data-user-idx="${app.userIdx}">
+                                <span class="mem-name">${fn:escapeXml(app.nickname)}</span>
+                                <span class="mem-uid">
+                                    <c:choose>
+                                        <c:when test="${not empty app.userId}">@${fn:escapeXml(app.userId)}</c:when>
+                                        <c:otherwise><spring:message code="admin.business.socialOnly"/></c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.business.currentRole" arguments="${fn:escapeXml(app.currentUserRole)}"/></span>
+                            </button>
                         </td>
                         <td>
                             <span class="role-badge ${app.requestedRole}">
@@ -95,31 +99,57 @@
                             </div>
                             <c:if test="${not empty app.description}">
                                 <div style="font-size:12px;color:#cbd5e1;margin-top:6px;max-width:420px;white-space:pre-wrap;">${fn:escapeXml(app.description)}</div>
+                                <div class="adm-tr-inline js-admin-translation-widget"
+                                     data-label="<spring:message code='admin.translation.label.businessAppDescription'/>"
+                                     data-source-type="BUSINESS_APPLICATION"
+                                     data-source-idx="${app.applicationIdx}"
+                                     data-field-name="description"
+                                     data-default-source-lang="ko"
+                                     data-source-text="${fn:escapeXml(app.description)}"></div>
                             </c:if>
                         </td>
                         <td>
-                            <span class="status-badge ${app.applicationStatus}">
-                                <c:choose>
-                                    <c:when test="${app.applicationStatus eq 'PENDING'}"><spring:message code="admin.business.status.pending"/></c:when>
-                                    <c:when test="${app.applicationStatus eq 'APPROVED'}"><spring:message code="admin.business.status.approved"/></c:when>
-                                    <c:when test="${app.applicationStatus eq 'REJECTED'}"><spring:message code="admin.business.status.rejected"/></c:when>
-                                    <c:otherwise>${fn:escapeXml(app.applicationStatus)}</c:otherwise>
-                                </c:choose>
-                            </span>
+                            <button type="button"
+                                    class="adm-cell-link js-focus-review-actions"
+                                    data-application-idx="${app.applicationIdx}">
+                                <span class="status-badge ${app.applicationStatus}">
+                                    <c:choose>
+                                        <c:when test="${app.applicationStatus eq 'PENDING'}"><spring:message code="admin.business.status.pending"/></c:when>
+                                        <c:when test="${app.applicationStatus eq 'APPROVED'}"><spring:message code="admin.business.status.approved"/></c:when>
+                                        <c:when test="${app.applicationStatus eq 'REJECTED'}"><spring:message code="admin.business.status.rejected"/></c:when>
+                                        <c:otherwise>${fn:escapeXml(app.applicationStatus)}</c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <c:if test="${not empty app.rejectReason}">
+                                    <span class="adm-cell-link-note" style="color:#fca5a5;">${fn:escapeXml(app.rejectReason)}</span>
+                                </c:if>
+                                <c:if test="${not empty app.reviewerNickname}">
+                                    <span class="adm-cell-link-note"><spring:message code="admin.business.reviewer" arguments="${fn:escapeXml(app.reviewerNickname)}"/></span>
+                                </c:if>
+                                <span class="adm-cell-link-note"><spring:message code="admin.business.column.review"/></span>
+                            </button>
                             <c:if test="${not empty app.rejectReason}">
-                                <div style="font-size:11px;color:#fca5a5;margin-top:6px;">${fn:escapeXml(app.rejectReason)}</div>
-                            </c:if>
-                            <c:if test="${not empty app.reviewerNickname}">
-                                <div style="font-size:11px;color:#94a3b8;margin-top:4px;"><spring:message code="admin.business.reviewer" arguments="${fn:escapeXml(app.reviewerNickname)}"/></div>
+                                <div class="adm-tr-inline js-admin-translation-widget"
+                                     data-label="<spring:message code='admin.translation.label.businessAppRejectReason'/>"
+                                     data-source-type="BUSINESS_APPLICATION"
+                                     data-source-idx="${app.applicationIdx}"
+                                     data-field-name="reject_reason"
+                                     data-default-source-lang="ko"
+                                     data-source-text="${fn:escapeXml(app.rejectReason)}"></div>
                             </c:if>
                         </td>
                         <td>
-                            <fmt:formatDate value="${app.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/>
+                            <button type="button"
+                                    class="adm-cell-link js-focus-review-actions"
+                                    data-application-idx="${app.applicationIdx}">
+                                <span><fmt:formatDate value="${app.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.business.column.review"/></span>
+                            </button>
                         </td>
                         <td>
                             <c:choose>
                                 <c:when test="${app.applicationStatus eq 'PENDING'}">
-                                    <div class="business-review-actions">
+                                    <div class="business-review-actions js-business-review-actions" id="business-review-actions-${app.applicationIdx}">
                                         <form method="post" action="${pageContext.request.contextPath}/admin/business-applications/${app.applicationIdx}/approve">
                                             <button type="submit" class="adm-row-btn detail"
                                                     onclick="return confirm('<spring:message code="admin.business.confirmApprove" javaScriptEscape="true"/>')"><spring:message code="admin.business.status.approved"/></button>
@@ -150,5 +180,25 @@
         </div>
     </div>
 </div>
+
+
+<script>
+(function() {
+    document.addEventListener('click', function(event) {
+        var trigger = event.target.closest('.js-focus-review-actions');
+        if (!trigger) return;
+        var target = document.getElementById('business-review-actions-' + trigger.getAttribute('data-application-idx'));
+        if (!target) return;
+        target.scrollIntoView({behavior: 'smooth', block: 'center'});
+        target.classList.remove('is-focus-flash');
+        void target.offsetWidth;
+        target.classList.add('is-focus-flash');
+        var focusable = target.querySelector('input, button, textarea, select');
+        if (focusable) {
+            try { focusable.focus({preventScroll: true}); } catch (e) { focusable.focus(); }
+        }
+    });
+})();
+</script>
 
 <%@ include file="../layout-close.jsp" %>

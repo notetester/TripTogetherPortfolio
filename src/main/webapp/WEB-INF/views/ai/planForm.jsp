@@ -1,14 +1,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ include file="../common/header.jsp" %>
 
+<spring:message code="courses.ai.destination.placeholder" var="aiDestinationPlaceholder"/>
+<spring:message code="courses.ai.request.placeholder" var="aiRequestPlaceholder"/>
+<spring:message code="courses.ai.submit.loading" var="aiSubmitLoadingLabel"/>
+
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <head>
   <meta charset="UTF-8">
-  <title>AI 여행 일정 생성</title>
+  <title><spring:message code="courses.ai.pageTitle"/></title>
   <style>
     * {
       box-sizing: border-box;
@@ -184,10 +189,10 @@
 </head>
 <body>
 <div class="container">
-  <h1>AI 여행 일정 생성</h1>
+  <h1><spring:message code="courses.ai.pageTitle"/></h1>
   <div class="sub-text">
-    여행 조건을 입력하면 AI가 여행 일정 초안을 생성합니다. <br>
-    AI 여행 일정은 기본적으로 비공개 일정으로 생성됩니다. 일정 생성 후 '수정하기'에서 공개 여부를 바꿀 수 있습니다.
+    <spring:message code="courses.ai.subtitle.line1"/> <br>
+    <spring:message code="courses.ai.subtitle.line2"/>
   </div>
 
   <c:if test="${not empty errorMessage}">
@@ -200,78 +205,80 @@
     <div class="form-grid">
 
       <div class="form-group">
-        <label for="destination">여행지</label>
+        <label for="destination"><spring:message code="courses.ai.destination"/></label>
         <input type="text"
                id="destination"
                name="destination"
                value="${requestDto.destination}"
-               placeholder="예: 제주, 부산, 도쿄">
+               placeholder="${aiDestinationPlaceholder}">
       </div>
 
       <div class="form-group">
-        <label for="companion">동행</label>
+        <label for="companion"><spring:message code="courses.ai.companion"/></label>
         <select id="companion" name="companion">
-          <option value="">선택해주세요</option>
-          <option value="혼자" <c:if test="${requestDto.companion eq '혼자'}">selected</c:if>>혼자</option>
-          <option value="친구" <c:if test="${requestDto.companion eq '친구'}">selected</c:if>>친구</option>
-          <option value="연인" <c:if test="${requestDto.companion eq '연인'}">selected</c:if>>연인</option>
-          <option value="가족" <c:if test="${requestDto.companion eq '가족'}">selected</c:if>>가족</option>
-          <option value="부모님" <c:if test="${requestDto.companion eq '부모님'}">selected</c:if>>부모님</option>
+          <option value=""><spring:message code="courses.ai.select.placeholder"/></option>
+          <option value="혼자" <c:if test="${requestDto.companion eq '혼자'}">selected</c:if>><spring:message code="courses.ai.companion.solo"/></option>
+          <option value="친구" <c:if test="${requestDto.companion eq '친구'}">selected</c:if>><spring:message code="courses.ai.companion.friends"/></option>
+          <option value="연인" <c:if test="${requestDto.companion eq '연인'}">selected</c:if>><spring:message code="courses.ai.companion.couple"/></option>
+          <option value="가족" <c:if test="${requestDto.companion eq '가족'}">selected</c:if>><spring:message code="courses.ai.companion.family"/></option>
+          <option value="부모님" <c:if test="${requestDto.companion eq '부모님'}">selected</c:if>><spring:message code="courses.ai.companion.parents"/></option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="startDate">시작일</label>
+        <label for="startDate"><spring:message code="courses.ai.startDate"/></label>
         <input type="date"
                id="startDate"
                name="startDate"
                value="${requestDto.startDate}">
+        <div class="hint"><spring:message code="course.write.dateFormatHint"/></div>
       </div>
 
       <div class="form-group">
-        <label for="endDate">종료일</label>
+        <label for="endDate"><spring:message code="courses.ai.endDate"/></label>
         <input type="date"
                id="endDate"
                name="endDate"
                value="${requestDto.endDate}">
+        <div class="hint"><spring:message code="course.write.dateFormatHint"/></div>
       </div>
 
       <div class="form-group">
-        <label for="style">여행 스타일</label>
+        <label for="style"><spring:message code="courses.ai.style"/></label>
         <select id="style" name="style">
-          <option value="">선택해주세요</option>
-          <option value="맛집 중심" <c:if test="${requestDto.style eq '맛집 중심'}">selected</c:if>>맛집 중심</option>
-          <option value="감성 카페" <c:if test="${requestDto.style eq '감성 카페'}">selected</c:if>>감성 카페</option>
-          <option value="힐링 여행" <c:if test="${requestDto.style eq '힐링 여행'}">selected</c:if>>힐링 여행</option>
-          <option value="액티비티" <c:if test="${requestDto.style eq '액티비티'}">selected</c:if>>액티비티</option>
-          <option value="관광지 중심" <c:if test="${requestDto.style eq '관광지 중심'}">selected</c:if>>관광지 중심</option>
-          <option value="사진/포토스팟" <c:if test="${requestDto.style eq '사진/포토스팟'}">selected</c:if>>사진/포토스팟</option>
-          <option value="여유로운 일정" <c:if test="${requestDto.style eq '여유로운 일정'}">selected</c:if>>여유로운 일정</option>
+          <option value=""><spring:message code="courses.ai.select.placeholder"/></option>
+          <option value="맛집 중심" <c:if test="${requestDto.style eq '맛집 중심'}">selected</c:if>><spring:message code="courses.ai.style.food"/></option>
+          <option value="감성 카페" <c:if test="${requestDto.style eq '감성 카페'}">selected</c:if>><spring:message code="courses.ai.style.cafe"/></option>
+          <option value="힐링 여행" <c:if test="${requestDto.style eq '힐링 여행'}">selected</c:if>><spring:message code="courses.ai.style.healing"/></option>
+          <option value="액티비티" <c:if test="${requestDto.style eq '액티비티'}">selected</c:if>><spring:message code="courses.ai.style.activity"/></option>
+          <option value="관광지 중심" <c:if test="${requestDto.style eq '관광지 중심'}">selected</c:if>><spring:message code="courses.ai.style.sightseeing"/></option>
+          <option value="사진/포토스팟" <c:if test="${requestDto.style eq '사진/포토스팟'}">selected</c:if>><spring:message code="courses.ai.style.photo"/></option>
+          <option value="여유로운 일정" <c:if test="${requestDto.style eq '여유로운 일정'}">selected</c:if>><spring:message code="courses.ai.style.relaxed"/></option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="budget">예산</label>
+        <label for="budget"><spring:message code="courses.ai.budget"/></label>
         <select id="budget" name="budget">
-          <option value="">선택해주세요</option>
-          <option value="낮음" <c:if test="${requestDto.budget eq '낮음'}">selected</c:if>>낮음</option>
-          <option value="낮음" <c:if test="${requestDto.budget eq '중간'}">selected</c:if>>중간</option>
-          <option value="낮음" <c:if test="${requestDto.budget eq '높음'}">selected</c:if>>높음</option>
+          <option value=""><spring:message code="courses.ai.select.placeholder"/></option>
+          <option value="낮음" <c:if test="${requestDto.budget eq '낮음'}">selected</c:if>><spring:message code="courses.ai.budget.low"/></option>
+          <option value="중간" <c:if test="${requestDto.budget eq '중간'}">selected</c:if>><spring:message code="courses.ai.budget.medium"/></option>
+          <option value="높음" <c:if test="${requestDto.budget eq '높음'}">selected</c:if>><spring:message code="courses.ai.budget.high"/></option>
         </select>
       </div>
 
       <div class="form-group full">
-        <label for="requestText">추가 요청사항</label>
+        <label for="requestText"><spring:message code="courses.ai.request"/></label>
         <textarea id="requestText"
                   name="requestText"
-                  placeholder="예: 바다는 꼭 보고 싶고, 이동이 너무 길지 않았으면 좋겠어요.">${requestDto.requestText}</textarea>
+                  placeholder="${aiRequestPlaceholder}">${requestDto.requestText}</textarea>
         <div class="hint">
-          원하는 분위기, 꼭 가고 싶은 곳, 피하고 싶은 요소 등을 자유롭게 적어주세요.
+          <spring:message code="courses.ai.request.hint"/>
         </div>
       </div>
 
       <div class="btn-area full">
-        <button type="submit" class="submit-btn">AI 일정 생성</button>
+        <button type="submit" class="submit-btn"><spring:message code="courses.ai.submit"/></button>
       </div>
 
     </div>
@@ -281,10 +288,10 @@
 <div id="loadingOverlay" class="loading-overlay" style="display:none;">
   <div class="loading-card">
     <div class="loading-spinner"></div>
-    <div class="loading-title">AI 일정 생성 중</div>
+    <div class="loading-title"><spring:message code="courses.ai.loading.title"/></div>
     <div class="loading-text">
-      여행 조건을 바탕으로 일정을 만들고 있어요.<br>
-      잠시만 기다려주세요.
+      <spring:message code="courses.ai.loading.text1"/><br>
+      <spring:message code="courses.ai.loading.text2"/>
     </div>
   </div>
 </div>
@@ -298,7 +305,7 @@
 
     overlay.style.display = 'flex';
     submitBtn.disabled = true;
-    submitBtn.textContent = '생성 중...';
+    submitBtn.textContent = '${aiSubmitLoadingLabel}';
   });
 </script>
 

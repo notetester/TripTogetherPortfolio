@@ -86,7 +86,7 @@
                     </div>
                     <h3 class="adm-detail-title">${inquiry.title}</h3>
                     <div class="adm-tr-inline js-admin-translation-widget"
-                         data-label="문의 제목 번역"
+                         data-label="<spring:message code='admin.translation.label.inquiryTitle'/>"
                          data-source-type="INQUIRY_POST"
                          data-source-idx="${inquiry.inquiryId}"
                          data-field-name="title"
@@ -94,7 +94,7 @@
                          data-source-text="${fn:escapeXml(inquiry.title)}"></div>
                     <div class="adm-detail-body">${inquiry.content}</div>
                     <div class="adm-tr-inline js-admin-translation-widget"
-                         data-label="문의 본문 번역"
+                         data-label="<spring:message code='admin.translation.label.inquiryContent'/>"
                          data-source-type="INQUIRY_POST"
                          data-source-idx="${inquiry.inquiryId}"
                          data-field-name="content"
@@ -109,7 +109,7 @@
             </div>
 
             <%-- 답변 카드 --%>
-            <div class="adm-card">
+            <div class="adm-card" id="inquiry-answer-card">
                 <div class="adm-card-head">
                     <div class="adm-card-title">${adminInquiryDetailAnswerTitle}</div>
                     <c:if test="${not empty inquiry.answerId}">
@@ -126,7 +126,7 @@
                         <div id="answerView">
                             <div class="adm-inquiry-answer" id="answerText">${inquiry.answerContent}</div>
                             <div class="adm-tr-inline js-admin-translation-widget"
-                                 data-label="문의 답변 번역"
+                                 data-label="<spring:message code='admin.translation.label.inquiryAnswer'/>"
                                  data-source-type="INQUIRY_ANSWER"
                                  data-source-idx="${inquiry.answerId}"
                                  data-field-name="content"
@@ -226,7 +226,7 @@
                         </div>
 
                         <%-- 상태 변경 --%>
-                        <div class="adm-meta-actions">
+                        <div class="adm-meta-actions" id="inquiry-status-actions">
                             <div style="font-size:11px;color:#64748b;margin-bottom:8px;">${adminInquiryDetailStatusChange}</div>
                             <div style="display:flex;gap:6px;flex-wrap:wrap;">
                                 <button class="adm-btn adm-btn-ghost"
@@ -291,6 +291,21 @@ var INQUIRY_DETAIL_MSG = {
     statusInProgress: '<spring:message code="admin.inquiry.status.inProgress" javaScriptEscape="true"/>',
     statusCompleted: '<spring:message code="admin.inquiry.status.completed" javaScriptEscape="true"/>'
 };
+
+
+(function () {
+    var jump = new URLSearchParams(window.location.search).get('jump');
+    if (!jump) return;
+    var target = document.getElementById(jump);
+    if (!target) return;
+    target.classList.add('is-focus-flash');
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    var focusable = target.querySelector('textarea, input, select, button, a');
+    if (focusable) {
+        try { focusable.focus({ preventScroll: true }); } catch (e) { focusable.focus(); }
+    }
+    setTimeout(function(){ target.classList.remove('is-focus-flash'); }, 2400);
+})();
 
 function goBackToList() {
     var params = new URLSearchParams(window.location.search);
@@ -426,6 +441,4 @@ function hideEditForm() {
     document.getElementById('answerView').style.display = 'block';
 }
 </script>
-
-<%@ include file="../common/context-modal.jspf" %>
 <%@ include file="../layout-close.jsp" %>

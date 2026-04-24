@@ -19,7 +19,7 @@
     - page    : 페이지 번호 (기본값: 1)
 --%>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="community/community.css"/>
 <%@ include file="../common/header.jsp" %>
 <body>
@@ -200,12 +200,30 @@
 </div>
 
 <%-- 상단 배너 광고 --%>
-<div class="comm-ad-banner">
-    <div class="comm-ad-banner-inner">
-        <span class="comm-ad-label">AD</span>
-        <span class="comm-ad-size">970 × 90</span>
-    </div>
-</div>
+<c:choose>
+    <c:when test="${not empty currentAd}">
+        <div class="comm-ad-banner" data-ad-id="${currentAd.adId}">
+            <c:choose>
+                <c:when test="${not empty currentAd.linkUrl}">
+                    <a href="${pageContext.request.contextPath}/ad/${currentAd.adId}/click" class="comm-ad-link" target="_blank" rel="noopener sponsored">
+                        <img src="${currentAd.imageUrl}" alt="${currentAd.title}" class="comm-ad-image"/>
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <img src="${currentAd.imageUrl}" alt="${currentAd.title}" class="comm-ad-image"/>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </c:when>
+    <c:otherwise>
+        <div class="comm-ad-banner">
+            <div class="comm-ad-banner-inner">
+                <span class="comm-ad-label">AD</span>
+                <span class="comm-ad-size">970 × 90</span>
+            </div>
+        </div>
+    </c:otherwise>
+</c:choose>
 
 <%-- 본문 --%>
 <div class="comm-body-wrap">
@@ -317,17 +335,22 @@
                                 </button>
                             </c:if>
                             <div class="post-card ${isBlurred ? 'report-blurred' : ''}">
-                                <div class="post-card-img-wrap">
+                                <%-- 이미지 경로 보정 (http* 이면 그대로, 아니면 contextPath prefix) --%>
+                                <c:set var="thumb1" value="${fn:startsWith(post.thumbUrl,  'http') ? post.thumbUrl  : (empty post.thumbUrl  ? '' : pageContext.request.contextPath.concat(post.thumbUrl))}"/>
+                                <c:set var="thumb2" value="${fn:startsWith(post.thumbUrl2, 'http') ? post.thumbUrl2 : (empty post.thumbUrl2 ? '' : pageContext.request.contextPath.concat(post.thumbUrl2))}"/>
+                                <c:set var="thumb3" value="${fn:startsWith(post.thumbUrl3, 'http') ? post.thumbUrl3 : (empty post.thumbUrl3 ? '' : pageContext.request.contextPath.concat(post.thumbUrl3))}"/>
+                                <c:set var="isPhotoGallery" value="${post.postType eq 'photo' and not empty post.thumbUrl2 and not empty post.thumbUrl3}"/>
+
+                                <div class="post-card-img-wrap ${isPhotoGallery ? 'post-card-img-gallery' : ''}">
                                     <c:choose>
+                                        <c:when test="${isPhotoGallery}">
+                                            <%-- photo 유형 3장 갤러리: 좌측 크게 1장 + 우측 상/하 2장 --%>
+                                            <img class="post-card-img gallery-main" src="${thumb1}" alt="${post.title}" loading="lazy">
+                                            <img class="post-card-img gallery-sub gallery-sub-top"    src="${thumb2}" alt="" loading="lazy">
+                                            <img class="post-card-img gallery-sub gallery-sub-bottom" src="${thumb3}" alt="" loading="lazy">
+                                        </c:when>
                                         <c:when test="${not empty post.thumbUrl}">
-                                            <c:choose>
-                                                <c:when test="${fn:startsWith(post.thumbUrl, 'http')}">
-                                                    <img class="post-card-img" src="${post.thumbUrl}" alt="${post.title}" loading="lazy">
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <img class="post-card-img" src="${pageContext.request.contextPath}${post.thumbUrl}" alt="${post.title}" loading="lazy">
-                                                </c:otherwise>
-                                            </c:choose>
+                                            <img class="post-card-img" src="${thumb1}" alt="${post.title}" loading="lazy">
                                         </c:when>
                                         <c:otherwise>
                                             <div class="post-card-img"
@@ -675,7 +698,10 @@
                 'blockIpAndDelete':    '<spring:message code="community.admin.blockDelete.ip" javaScriptEscape="true"/>',
                 'blockAndDelete':      '<spring:message code="community.admin.blockDelete.both" javaScriptEscape="true"/>'
             };
-        if (!confirm(checked.length + '개 게시글에 대해 [' + labels[action] + '] 을(를) 실행하시겠습니까?')) return;
+        var confirmMessage = '<spring:message code="community.detail.bulk.posts.confirm" arguments="__COUNT__,__ACTION__" javaScriptEscape="true"/>'
+            .replace('__COUNT__', checked.length)
+            .replace('__ACTION__', labels[action]);
+        if (!confirm(confirmMessage)) return;
 
         var postIds = checked.map(function (c) { return c.getAttribute('data-id'); });
         var params  = new URLSearchParams();
@@ -690,16 +716,18 @@
         .then(function (res) { return res.json(); })
         .then(function (data) {
             if (data.success) {
-                alert('처리가 완료되었습니다.');
+                alert('<spring:message code="community.detail.bulk.done" javaScriptEscape="true"/>');
                 location.reload();
             } else {
-                alert('처리 중 오류가 발생했습니다: ' + (data.message || ''));
+                alert('<spring:message code="community.detail.bulk.fail" arguments="__MSG__" javaScriptEscape="true"/>'.replace('__MSG__', data.message || ''));
             }
         })
-        .catch(function () { alert('요청 중 오류가 발생했습니다.'); });
+        .catch(function () { alert('<spring:message code="community.detail.request.fail" javaScriptEscape="true"/>'); });
     };
 </script>
 
+<script>window.AD_TRACKER_CTX = '${pageContext.request.contextPath}';</script>
+<script src="${pageContext.request.contextPath}/resources/js/common/ad-impression.js" defer></script>
 
 <%@ include file="../common/footer.jsp" %>
 </body>

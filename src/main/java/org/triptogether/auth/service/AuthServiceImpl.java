@@ -274,7 +274,8 @@ public class AuthServiceImpl implements AuthService {
 
         authMapper.cancelActiveEmailVerificationRequests(user.getUserIdx(), "FIND_ID");
         authMapper.expireOldTokens(user.getUserEmail(), "FIND_ID");
-        String requestId = UUID.randomUUID().toString();
+        String requestId = context != null && hasText(context.getRequestId())
+                ? context.getRequestId() : UUID.randomUUID().toString();
         String flowTraceId = resolveFlowTraceId(context, requestId);
         String token = UUID.randomUUID().toString();
         LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
@@ -402,7 +403,8 @@ public class AuthServiceImpl implements AuthService {
 
         authMapper.cancelActiveEmailVerificationRequests(user.getUserIdx(), "RESET_PW");
         authMapper.expireOldTokens(user.getUserEmail(), "RESET_PW");
-        String requestId = UUID.randomUUID().toString();
+        String requestId = context != null && hasText(context.getRequestId())
+                ? context.getRequestId() : UUID.randomUUID().toString();
         String flowTraceId = resolveFlowTraceId(context, requestId);
         String token = UUID.randomUUID().toString();
         LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
@@ -1680,6 +1682,8 @@ public class AuthServiceImpl implements AuthService {
                 .success(success)
                 .failReason(failReason)
                 .detailMessage(detailMessage)
+                .requestId(context.getRequestId())
+                .flowTraceId(hasText(context.getFlowTraceId()) ? context.getFlowTraceId() : context.getRequestId())
                 .ipAddress(context.getIpAddress())
                 .userAgent(context.getUserAgent())
                 .build());
@@ -1740,6 +1744,12 @@ public class AuthServiceImpl implements AuthService {
 
     private boolean hasText(String value) {
         return value != null && !value.isBlank();
+    }
+
+    @Override
+    public String resolveFlowTraceIdByToken(String token) {
+        if (!hasText(token)) return null;
+        return authMapper.findFlowTraceIdByToken(token);
     }
 
     private String resolveFlowTraceId(LoginRequestContext context, String fallbackRequestId) {

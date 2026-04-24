@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
-<html lang="ko">
+<html lang="${pageContext.response.locale.language}">
 <body>
 <div class="auth-wrap">
   <div class="auth-card">
@@ -72,16 +72,16 @@
       <label class="form-label" for="nationality"><spring:message code="auth.register.nationality"/> <span style="color:#ef4444">*</span></label>
       <select class="form-select" id="nationality" name="nationality">
         <option value=""><spring:message code="auth.register.nationality.placeholder"/></option>
-        <option value="KR">대한민국</option>
-        <option value="US">미국</option>
-        <option value="JP">일본</option>
-        <option value="CN">중국</option>
-        <option value="GB">영국</option>
-        <option value="FR">프랑스</option>
-        <option value="DE">독일</option>
-        <option value="AU">호주</option>
-        <option value="CA">캐나다</option>
-        <option value="OTHER">기타</option>
+        <option value="KR"><spring:message code="auth.register.nationality.option.kr"/></option>
+        <option value="US"><spring:message code="auth.register.nationality.option.us"/></option>
+        <option value="JP"><spring:message code="auth.register.nationality.option.jp"/></option>
+        <option value="CN"><spring:message code="auth.register.nationality.option.cn"/></option>
+        <option value="GB"><spring:message code="auth.register.nationality.option.gb"/></option>
+        <option value="FR"><spring:message code="auth.register.nationality.option.fr"/></option>
+        <option value="DE"><spring:message code="auth.register.nationality.option.de"/></option>
+        <option value="AU"><spring:message code="auth.register.nationality.option.au"/></option>
+        <option value="CA"><spring:message code="auth.register.nationality.option.ca"/></option>
+        <option value="OTHER"><spring:message code="auth.register.nationality.option.other"/></option>
       </select>
       <div class="field-msg" id="nationalityMsg"></div>
     </div>
@@ -90,10 +90,10 @@
       <label class="form-label" for="preferredLang"><spring:message code="auth.register.language"/> <span style="color:#ef4444">*</span></label>
       <select class="form-select" id="preferredLang" name="preferredLang">
         <option value=""><spring:message code="auth.register.language.placeholder"/></option>
-        <option value="ko">한국어</option>
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-        <option value="zh">中文</option>
+        <option value="ko"><spring:message code="auth.register.language.option.ko"/></option>
+        <option value="en"><spring:message code="auth.register.language.option.en"/></option>
+        <option value="ja"><spring:message code="auth.register.language.option.ja"/></option>
+        <option value="zh"><spring:message code="auth.register.language.option.zh"/></option>
       </select>
       <div class="field-msg" id="langMsg"></div>
     </div>
@@ -164,11 +164,11 @@
       if (data.success) {
         location.href = data.redirect;
       } else {
-        errorBanner.textContent = '오류 ' + (data.message || '<spring:message code="auth.register.server" javaScriptEscape="true"/>');
+        errorBanner.textContent = '<spring:message code="auth.common.errorPrefix" javaScriptEscape="true"/> ' + (data.message || '<spring:message code="auth.register.server" javaScriptEscape="true"/>');
         errorBanner.classList.add('show');
       }
     } catch (e) {
-      errorBanner.textContent = '오류 <spring:message code="auth.register.server" javaScriptEscape="true"/>';
+      errorBanner.textContent = '<spring:message code="auth.common.errorPrefix" javaScriptEscape="true"/> <spring:message code="auth.register.server" javaScriptEscape="true"/>';
       errorBanner.classList.add('show');
     } finally {
       this.classList.remove('loading');

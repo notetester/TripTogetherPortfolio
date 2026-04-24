@@ -38,6 +38,8 @@ public interface TravelPackageService {
 
     List<TravelPackageVO> getApprovedPackages();
 
+    List<TravelPackageVO> getHomeRecommendedPackages();
+
     List<TravelPackageVO> getApprovedPackagesBySpot(Long spotIdx);
 
     PackageBookingResultVO bookPackage(Long userIdx, PackageBookingRequestVO request);

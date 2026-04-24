@@ -1,5 +1,6 @@
 package org.triptogether.community.service;
 
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.community.vo.*;
 import java.util.List;
 
@@ -50,6 +51,11 @@ public interface CommunityService {
     // ===== 수정 =====
     // 게시글 수정. 이미지/태그는 전부 지우고 다시 등록함
     void editPost(Long postId, CommunityWriteDto writeDto, List<String> existingImages, Long userIdx);
+
+    // ===== Summernote 인라인 이미지 업로드 =====
+    // 에디터 내부에 삽입할 이미지 1개를 Cloudinary에 업로드하고 secure_url을 반환한다.
+    // 폴더: community/inline (대표 이미지용 community/ 와 분리)
+    String uploadInlineImage(MultipartFile file);
 
     // ===== 삭제 =====
     // 게시글 삭제. 실제 삭제가 아니라 status를 'DELETED'로 바꿈 (소프트 딜리트)

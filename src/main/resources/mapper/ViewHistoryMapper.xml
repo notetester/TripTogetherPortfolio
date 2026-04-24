@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    =============================================
+    ViewHistoryMapper.xml - 마이페이지 최근 조회 내역
+    =============================================
+-->
+<mapper namespace="org.triptogether.myPage.mapper.ViewHistoryMapper">
+
+    <resultMap id="ItemResultMap" type="org.triptogether.myPage.vo.ViewHistoryItemDto">
+        <id     property="historyIdx"   column="history_idx"/>
+        <result property="contentType"  column="content_type"/>
+        <result property="contentId"    column="content_id"/>
+        <result property="viewedAt"     column="viewed_at"/>
+        <result property="title"        column="title"/>
+        <result property="subtitle"     column="subtitle"/>
+        <result property="thumbnailUrl" column="thumbnail_url"/>
+        <result property="available"    column="available"/>
+    </resultMap>
+
+    <!-- 업서트: 재조회 시 viewed_at 만 갱신 -->
+    <insert id="upsertView">
+        INSERT INTO USER_VIEW_HISTORY (user_idx, content_type, content_id, viewed_at)
+        VALUES (#{userIdx}, #{contentType}, #{contentId}, NOW())
+        ON DUPLICATE KEY UPDATE viewed_at = NOW()
+    </insert>
+
+    <!-- 유저당 keep 개 초과분 삭제 -->
+    <delete id="pruneOld">
+        DELETE h
+        FROM USER_VIEW_HISTORY h
+        JOIN (
+          SELECT history_idx
+          FROM USER_VIEW_HISTORY
+          WHERE user_idx = #{userIdx}
+          ORDER BY viewed_at DESC
+          LIMIT 18446744073709551615 OFFSET #{keep}
+        ) x ON x.history_idx = h.history_idx
+    </delete>
+
+    <!-- 최근 조회 목록 + title/thumbnail 조인 -->
+    <select id="selectRecent" resultMap="ItemResultMap">
+        SELECT
+            h.history_idx,
+            h.content_type,
+            h.content_id,
+            h.viewed_at,
+            CASE h.content_type
+                WHEN 'community' THEN cp.title
+                WHEN 'spot'      THEN st.name
+                WHEN 'plan'      THEN tp.title
+                ELSE NULL
+            END AS title,
+            CASE h.content_type
+                WHEN 'community' THEN cp.region
+                WHEN 'spot'      THEN st.region
+                WHEN 'plan'      THEN tp.destination
+                ELSE NULL
+            END AS subtitle,
+            CASE h.content_type
+                WHEN 'community' THEN (
+                    SELECT img.image_url FROM COMMUNITY_POST_IMAGE img
+                    WHERE img.post_id = cp.post_id
+                    ORDER BY img.sort_order ASC LIMIT 1
+                )
+                WHEN 'spot' THEN (
+                    SELECT si.image_url FROM SPOT_IMAGE si
+                    WHERE si.spot_idx = st.spot_idx
+                    ORDER BY si.image_idx ASC LIMIT 1
+                )
+                ELSE NULL
+            END AS thumbnail_url,
+            CASE h.content_type
+                WHEN 'community' THEN (cp.post_id IS NOT NULL AND cp.post_status &lt;&gt; 'DELETED')
+                WHEN 'spot'      THEN (st.spot_idx IS NOT NULL)
+                WHEN 'plan'      THEN (tp.plan_id IS NOT NULL)
+                ELSE FALSE
+            END AS available
+        FROM USER_VIEW_HISTORY h
+        LEFT JOIN COMMUNITY_POST cp ON h.content_type = 'community' AND cp.post_id  = h.content_id
+        LEFT JOIN SPOT_TRAVEL    st ON h.content_type = 'spot'      AND st.spot_idx = h.content_id
+        LEFT JOIN TRAVEL_PLAN    tp ON h.content_type = 'plan'      AND tp.plan_id  = h.content_id
+        WHERE h.user_idx = #{userIdx}
+        ORDER BY h.viewed_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="countRecent" resultType="int">
+        SELECT COUNT(*) FROM USER_VIEW_HISTORY WHERE user_idx = #{userIdx}
+    </select>
+
+    <delete id="deleteOne">
+        DELETE FROM USER_VIEW_HISTORY
+        WHERE user_idx = #{userIdx} AND history_idx = #{historyIdx}
+    </delete>
+
+    <delete id="deleteAll">
+        DELETE FROM USER_VIEW_HISTORY WHERE user_idx = #{userIdx}
+    </delete>
+
+</mapper>

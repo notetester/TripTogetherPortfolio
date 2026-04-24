@@ -7,17 +7,24 @@ import com.google.gson.JsonParser;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.triptogether.cloudinary.CloudinaryService;
+import org.triptogether.community.mapper.CommunityMapper;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 커뮤니티 대표 이미지 스케줄러.
@@ -42,6 +49,15 @@ public class CommunityImageScheduler {
 
     private final RestTemplate restTemplate;
     private final CloudinaryService cloudinaryService;
+    private final CommunityMapper communityMapper;
+
+    /** Summernote inline 이미지 폴더 */
+    private static final String INLINE_FOLDER = "community/inline";
+    /** 신규 업로드 grace period — 저장 전 삭제 방지 */
+    private static final int GRACE_PERIOD_HOURS = 24;
+    /** Cloudinary URL에서 publicId 추출 (예: .../community/inline/abc123.jpg → community/inline/abc123) */
+    private static final Pattern INLINE_PUBLIC_ID_PATTERN =
+            Pattern.compile("/(community/inline/[^./?\\s\"']+)");
 
     /** region → Cloudinary URL */
     private final Map<String, String> imageCache = new ConcurrentHashMap<>();
@@ -154,6 +170,92 @@ public class CommunityImageScheduler {
 
         } catch (Exception e) {
             log.error("캐시 갱신 실패: region={}, error={}", region, e.getMessage());
+        }
+    }
+
+    // =====================================================
+    // Summernote inline 이미지 Orphan 정리
+    // - 매주 월요일 04:00 KST (한산 시간대)
+    // - Cloudinary community/inline 폴더 전수 조회
+    // - ACTIVE 게시글 본문에서 사용 중인 publicId 수집 (jsoup)
+    // - 둘을 비교해 orphan 후보 산출
+    // - 업로드 후 24h 경과한 orphan만 삭제 (작성 중 취소 UX 보호)
+    // =====================================================
+    @Scheduled(cron = "0 0 4 ? * MON", zone = "Asia/Seoul")
+    public void cleanupOrphanInlineImages() {
+        log.info("[OrphanCleanup] 시작 folder={}, gracePeriodHours={}", INLINE_FOLDER, GRACE_PERIOD_HOURS);
+
+        // 1) Cloudinary inline 폴더 전체 리소스
+        List<Map<String, Object>> all = cloudinaryService.listResourcesInFolder(INLINE_FOLDER);
+        if (all.isEmpty()) {
+            log.info("[OrphanCleanup] Cloudinary 리소스 없음. 종료");
+            return;
+        }
+
+        // 2) 사용 중 publicId 집합 (ACTIVE 게시글 본문 파싱)
+        Set<String> usedPublicIds = collectUsedInlinePublicIds();
+        log.info("[OrphanCleanup] Cloudinary 리소스 {}개, 사용 중 publicId {}개", all.size(), usedPublicIds.size());
+
+        // 3) orphan 후보 중 grace period 지난 것만 삭제
+        Instant graceCutoff = Instant.now().minus(GRACE_PERIOD_HOURS, ChronoUnit.HOURS);
+        int totalOrphan = 0;
+        int deleted = 0;
+        int skippedGrace = 0;
+
+        for (Map<String, Object> r : all) {
+            String publicId = (String) r.get("publicId");
+            if (publicId == null) continue;
+            if (usedPublicIds.contains(publicId)) continue;
+
+            totalOrphan++;
+
+            // createdAt 파싱 (ISO8601: "2026-04-23T15:31:38Z")
+            String createdAtStr = (String) r.get("createdAt");
+            Instant createdAt = parseInstant(createdAtStr);
+            if (createdAt == null || createdAt.isAfter(graceCutoff)) {
+                skippedGrace++;
+                continue;
+            }
+
+            boolean ok = cloudinaryService.deleteResource(publicId);
+            if (ok) {
+                deleted++;
+                log.info("[OrphanCleanup] 삭제 publicId={}", publicId);
+            }
+        }
+
+        log.info("[OrphanCleanup] 완료 스캔={}, 사용중={}, orphan={}, 삭제={}, grace 스킵={}",
+                all.size(), usedPublicIds.size(), totalOrphan, deleted, skippedGrace);
+    }
+
+    /** ACTIVE 게시글의 본문 HTML에서 community/inline/* publicId 를 모두 수집한다. */
+    private Set<String> collectUsedInlinePublicIds() {
+        Set<String> used = new HashSet<>();
+        List<String> contents = communityMapper.selectAllActiveContents();
+        if (contents == null || contents.isEmpty()) return used;
+
+        for (String html : contents) {
+            if (html == null || html.isBlank()) continue;
+            try {
+                Elements imgs = Jsoup.parse(html).select("img[src]");
+                for (Element img : imgs) {
+                    String src = img.attr("src");
+                    Matcher m = INLINE_PUBLIC_ID_PATTERN.matcher(src);
+                    if (m.find()) used.add(m.group(1));
+                }
+            } catch (Exception e) {
+                log.warn("[OrphanCleanup] 본문 파싱 실패: {}", e.getMessage());
+            }
+        }
+        return used;
+    }
+
+    private Instant parseInstant(String iso) {
+        if (iso == null || iso.isBlank()) return null;
+        try {
+            return Instant.parse(iso);
+        } catch (Exception e) {
+            return null;
         }
     }
 }

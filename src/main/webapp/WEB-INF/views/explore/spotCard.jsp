@@ -2,6 +2,7 @@
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <div class="spot-card" data-spot-idx="${spot.spotIdx}">
 
@@ -15,14 +16,14 @@
     <div class="spot-card__actions">
       <button class="action-btn fav-btn ${spot.favorited ? 'active' : ''}"
               type="button"
-              title="찜하기"
-              aria-label="찜하기">
+              title="<spring:message code='explore.card.favorite'/>"
+              aria-label="<spring:message code='explore.card.favorite'/>">
         <c:out value="${spot.favorited ? '⭐' : '☆'}"/>
       </button>
       <button class="action-btn like-btn ${spot.liked ? 'active' : ''}"
               type="button"
-              title="좋아요"
-              aria-label="좋아요">
+              title="<spring:message code='explore.card.like'/>"
+              aria-label="<spring:message code='explore.card.like'/>">
         <c:out value="${spot.liked ? '❤️' : '🤍'}"/>
       </button>
     </div>

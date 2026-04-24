@@ -245,13 +245,15 @@
 }
 
 /* 반응형 */
-@media (max-width: 768px) {
-    nav {
-        display: none;
-    }
-
+@media (max-width: 767px) {
     .cg {
         grid-template-columns: 1fr;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
     }
 }
 

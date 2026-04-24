@@ -5,8 +5,10 @@ import org.triptogether.myPage.vo.WalletChargeResultDto;
 import org.triptogether.myPage.vo.WalletHistoryDto;
 import org.triptogether.myPage.vo.WalletMemberGradePolicyDto;
 import org.triptogether.myPage.vo.WalletPaymentDto;
+import org.triptogether.myPage.vo.WalletTossChargeRequestDto;
 
 import java.util.List;
+import java.util.Locale;
 
 public interface WalletService {
 
@@ -19,6 +21,19 @@ public interface WalletService {
     List<WalletMemberGradePolicyDto> getActiveMemberGradePolicies();
 
     WalletChargeResultDto simulateCashCharge(Long userIdx, long amount);
+
+    WalletTossChargeRequestDto prepareTossCharge(Long userIdx,
+                                                 long amount,
+                                                 String customerKey,
+                                                 String successUrl,
+                                                 String failUrl,
+                                                 Locale locale);
+
+    WalletChargeResultDto completeTossCharge(String orderId,
+                                             long amount,
+                                             String paymentKey);
+
+    void cancelPendingTossCharge(String orderId);
 
     /**
      * 직전 달 결제 총액을 조회합니다.
