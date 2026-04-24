@@ -14,7 +14,7 @@ public class AdminLoginAuditSearchVO {
     private String authProvider; // ALL / LOCAL / KAKAO / NAVER / GOOGLE
     private String loginMethod; // ALL / ID / EMAIL / KAKAO / NAVER / GOOGLE
     private String dateFilter;  // yyyy-MM-dd
-    private String sortField;   // time / eventType / authType / provider / loginMethod / success / ip
+    private String sortField;   // time / member / eventType / authType / provider / loginMethod / input / success / reason / ip / requestId
     private String sortDir;     // ASC / DESC
     private int page = 1;
     private int size = 30;

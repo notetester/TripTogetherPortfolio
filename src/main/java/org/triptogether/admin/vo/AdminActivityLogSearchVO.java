@@ -12,7 +12,7 @@ public class AdminActivityLogSearchVO {
     private String httpMethod;   // ALL / GET / POST / PUT / DELETE
     private String success;      // ALL / SUCCESS / FAIL
     private String dateFilter;   // yyyy-MM-dd
-    private String sortField;    // time / domain / type / method / status / ip
+    private String sortField;    // time / member / domain / type / activityCode / uri / flow / method / status / ip
     private String sortDir;      // ASC / DESC
     private int page = 1;
     private int size = 30;

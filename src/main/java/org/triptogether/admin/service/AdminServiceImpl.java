@@ -160,7 +160,7 @@ public class AdminServiceImpl implements AdminService {
     public void bulkChangeMemberStatus(List<Long> userIdxList, String status) {
         if (userIdxList == null || userIdxList.isEmpty()) return;
         java.util.Set<String> valid = java.util.Set.of("ACTIVE", "DORMANT", "BLOCKED", "DELETED");
-        if (!valid.contains(status)) throw new IllegalArgumentException("허용되지 않는 상태값입니다.");
+        if (status == null || !valid.contains(status)) throw new IllegalArgumentException("허용되지 않는 상태값입니다.");
         adminMapper.bulkChangeMemberStatus(userIdxList, status);
     }
 
@@ -265,7 +265,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void changeMemberStatus(Long userIdx, String status) {
         List<String> allowed = List.of("ACTIVE", "DORMANT", "DELETED", "BLOCKED");
-        if (!allowed.contains(status)) {
+        if (status == null || !allowed.contains(status)) {
             throw new IllegalArgumentException("유효하지 않은 상태값: " + status);
         }
         switch (status) {
@@ -317,7 +317,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void blockMember(Long userIdx, String blockType, String blockedIp, String reason, LocalDateTime expiresAt, Long actorUserIdx) {
         List<String> allowed = List.of("USER_ONLY", "IP_ONLY", "USER_IP");
-        if (!allowed.contains(blockType)) {
+        if (blockType == null || !allowed.contains(blockType)) {
             throw new IllegalArgumentException("유효하지 않은 차단 유형입니다.");
         }
 

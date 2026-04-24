@@ -785,7 +785,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         if ("MANUAL".equals(normalized)) {
             return "BATCH";
         }
-        if (!List.of("BATCH", "MANUAL_OVERRIDE").contains(normalized)) {
+        if (normalized == null || !List.of("BATCH", "MANUAL_OVERRIDE").contains(normalized)) {
             throw new IllegalArgumentException("지원하지 않는 규칙 제어 방식입니다.");
         }
         return normalized;
@@ -985,7 +985,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
             return "MANUAL";
         }
         String normalized = safeUpper(rawControlMode, "BATCH");
-        if (!List.of("MANUAL", "BATCH", "MANUAL_OVERRIDE").contains(normalized)) {
+        if (normalized == null || !List.of("MANUAL", "BATCH", "MANUAL_OVERRIDE").contains(normalized)) {
             throw new IllegalArgumentException("지원하지 않는 제어 모드입니다.");
         }
         if ("MANUAL_OVERRIDE".equals(normalized) && ipBlockBatchIdx == null) {
@@ -997,10 +997,10 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     private String resolveBatchOperationOption(AdminIpBlockBatchVO batch, boolean active, String requested) {
         String defaultValue = active ? batch.getDefaultEnableStrategy() : batch.getDefaultDisableStrategy();
         String normalized = safeUpper(requested, defaultValue);
-        if (active && !List.of("BATCH_ONLY", "RESTORE_BATCH_CONTROL", "FORCE_ENABLE_ALL").contains(normalized)) {
+        if (active && (normalized == null || !List.of("BATCH_ONLY", "RESTORE_BATCH_CONTROL", "FORCE_ENABLE_ALL").contains(normalized))) {
             throw new IllegalArgumentException("지원하지 않는 배치 활성화 옵션입니다.");
         }
-        if (!active && !List.of("BATCH_ONLY", "CASCADE_ACTIVE_RULES").contains(normalized)) {
+        if (!active && (normalized == null || !List.of("BATCH_ONLY", "CASCADE_ACTIVE_RULES").contains(normalized))) {
             throw new IllegalArgumentException("지원하지 않는 배치 비활성화 옵션입니다.");
         }
         return normalized;
@@ -1008,7 +1008,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
 
     private String resolveBatchDisableStrategy(String value) {
         String normalized = safeUpper(value, "BATCH_ONLY");
-        if (!List.of("BATCH_ONLY", "CASCADE_ACTIVE_RULES").contains(normalized)) {
+        if (normalized == null || !List.of("BATCH_ONLY", "CASCADE_ACTIVE_RULES").contains(normalized)) {
             throw new IllegalArgumentException("지원하지 않는 배치 OFF 기본 전략입니다.");
         }
         return normalized;
@@ -1016,7 +1016,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
 
     private String resolveBatchEnableStrategy(String value) {
         String normalized = safeUpper(value, "BATCH_ONLY");
-        if (!List.of("BATCH_ONLY", "RESTORE_BATCH_CONTROL", "FORCE_ENABLE_ALL").contains(normalized)) {
+        if (normalized == null || !List.of("BATCH_ONLY", "RESTORE_BATCH_CONTROL", "FORCE_ENABLE_ALL").contains(normalized)) {
             throw new IllegalArgumentException("지원하지 않는 배치 ON 기본 전략입니다.");
         }
         return normalized;

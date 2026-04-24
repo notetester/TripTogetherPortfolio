@@ -118,19 +118,18 @@
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
                 <%-- 내보내기 --%>
-                <select class="adm-select" id="exportFormat" style="width:85px;">
-                    <option value="csv">CSV</option>
-                    <option value="excel">Excel</option>
-                </select>
-                <div style="position:relative;">
-                    <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;"
-                            onclick="document.getElementById('exportDropdown').style.display=document.getElementById('exportDropdown').style.display==='block'?'none':'block'">
-                        ⬇ 내보내기 ▾
-                    </button>
-                    <div id="exportDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#1e2535;border:1px solid #334155;border-radius:6px;z-index:200;min-width:170px;box-shadow:0 4px 12px rgba(0,0,0,.4);">
-                        <button type="button" style="display:block;width:100%;text-align:left;padding:9px 14px;background:none;border:none;color:#e2e8f0;cursor:pointer;font-size:13px;border-bottom:1px solid #334155;" onmouseover="this.style.background='#2d3748'" onmouseout="this.style.background='none'" onclick="exportData('all')">📋 전체 내보내기</button>
-                        <button type="button" style="display:block;width:100%;text-align:left;padding:9px 14px;background:none;border:none;color:#e2e8f0;cursor:pointer;font-size:13px;border-bottom:1px solid #334155;" onmouseover="this.style.background='#2d3748'" onmouseout="this.style.background='none'" onclick="exportData('search')">🔍 검색결과 내보내기</button>
-                        <button type="button" id="exportSelectedBtn" style="display:block;width:100%;text-align:left;padding:9px 14px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:13px;" disabled onclick="exportData('selected')">☑ 선택 내보내기 (0)</button>
+                <div class="adm-export-control">
+                    <select class="adm-select" id="exportFormat">
+                        <option value="csv">CSV</option>
+                        <option value="excel">Excel</option>
+                    </select>
+                    <div class="adm-export-menu">
+                        <button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ 내보내기 ▾</button>
+                        <div id="exportDropdown" class="adm-export-dropdown">
+                            <button type="button" onclick="exportData('all')">📋 전체 내보내기</button>
+                            <button type="button" onclick="exportData('search')">🔍 검색결과 내보내기</button>
+                            <button type="button" id="exportSelectedBtn" disabled onclick="exportData('selected')">☑ 선택 내보내기 (0)</button>
+                        </div>
                     </div>
                 </div>
                 <%-- 페이지 크기 --%>
@@ -164,7 +163,7 @@
                 <thead>
                 <tr>
                     <th style="width:40px;text-align:center;">
-                        <input type="checkbox" id="checkAll" onchange="toggleAll(this)" style="cursor:pointer;">
+                        <input type="checkbox" id="checkAll" class="adm-check" onchange="toggleAll(this)">
                     </th>
                     <th data-sort="nickname" onclick="memberSortBy('nickname')" style="cursor:pointer;user-select:none;">
                         <spring:message code="admin.common.member"/> <span class="sort-ico">▼</span>
@@ -193,7 +192,7 @@
                     <tr>
                         <%-- 체크박스 --%>
                         <td style="text-align:center;">
-                            <input type="checkbox" class="js-row-check" value="${m.userIdx}" onchange="updateBulkBar()" style="cursor:pointer;">
+                            <input type="checkbox" class="js-row-check adm-check" value="${m.userIdx}" onchange="updateBulkBar()">
                         </td>
                         <%-- 회원 정보 --%>
                         <td>
@@ -584,13 +583,6 @@ function exportData(scope) {
     window.location.href = ctx + '/admin/members/export?' + params.toString();
 }
 
-/* ── 드롭다운 외부 클릭 닫기 ── */
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('[onclick*="exportDropdown"]') && !e.target.closest('#exportDropdown')) {
-        const dd = document.getElementById('exportDropdown');
-        if (dd) dd.style.display = 'none';
-    }
-});
 const ADMIN_MEMBER_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
 const ADMIN_MEMBER_MSG = {
     loading: '<spring:message code="admin.common.loading" javaScriptEscape="true"/>',

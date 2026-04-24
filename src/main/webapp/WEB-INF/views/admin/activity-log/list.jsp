@@ -35,15 +35,15 @@
       <table class="adm-table">
         <thead><tr>
           <th data-sort="time" onclick="sortBy('time')"><spring:message code="admin.common.time"/><span class="sort-ico">▼</span></th>
-          <th><spring:message code="admin.common.member"/></th>
+          <th data-sort="member" onclick="sortBy('member')"><spring:message code="admin.common.member"/><span class="sort-ico">▼</span></th>
           <th data-sort="domain" onclick="sortBy('domain')"><spring:message code="admin.activity.domain"/><span class="sort-ico">▼</span></th>
           <th data-sort="type" onclick="sortBy('type')"><spring:message code="admin.activity.type"/><span class="sort-ico">▼</span></th>
-          <th><spring:message code="admin.activity.code"/></th>
-          <th><spring:message code="admin.common.uri"/></th>
+          <th data-sort="activityCode" onclick="sortBy('activityCode')"><spring:message code="admin.activity.code"/><span class="sort-ico">▼</span></th>
+          <th data-sort="uri" onclick="sortBy('uri')"><spring:message code="admin.common.uri"/><span class="sort-ico">▼</span></th>
           <th data-sort="method" onclick="sortBy('method')"><spring:message code="admin.activity.method"/><span class="sort-ico">▼</span></th>
           <th data-sort="status" onclick="sortBy('status')"><spring:message code="admin.common.status"/><span class="sort-ico">▼</span></th>
           <th data-sort="ip" onclick="sortBy('ip')"><spring:message code="admin.common.ip"/><span class="sort-ico">▼</span></th>
-          <th><spring:message code="admin.activity.flow"/></th>
+          <th data-sort="flow" onclick="sortBy('flow')"><spring:message code="admin.activity.flow"/><span class="sort-ico">▼</span></th>
           <th></th>
         </tr></thead>
         <tbody>
@@ -345,13 +345,18 @@ function showRowDetail(title, fields) {
         toolbar.className = 'adm-local-toolbar';
         toolbar.style.margin = '0 0 12px';
         toolbar.innerHTML =
-            '<div class="adm-local-toolbar-group">'
-            + '<select class="adm-select" id="adminListExportFormat" style="width:86px;"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-export" data-scope="all">전체 내보내기</button>'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-export" data-scope="search">현재 검색 내보내기</button>'
-            + '<button type="button" class="adm-btn adm-btn-ghost js-admin-export-selected" data-scope="selected" disabled>선택 내보내기 (0)</button>'
+            '<div class="adm-local-toolbar-group adm-unified-export">'
+            + '<div class="adm-export-control">'
+            + '<select class="adm-select" id="adminListExportFormat"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
+            + '<div class="adm-export-menu">'
+            + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ 내보내기 ▾</button>'
+            + '<div class="adm-export-dropdown">'
+            + '<button type="button" class="js-admin-export" data-scope="all">📋 전체 내보내기</button>'
+            + '<button type="button" class="js-admin-export" data-scope="search">🔍 현재 검색 내보내기</button>'
+            + '<button type="button" class="js-admin-export-selected" data-scope="selected" disabled>☑ 선택 내보내기 (0)</button>'
+            + '</div></div>'
             + '<button type="button" class="adm-btn adm-btn-ghost js-admin-clear-selection" style="display:none;">선택 해제</button>'
-            + '</div>';
+            + '</div></div>';
         wrap.parentElement.insertBefore(toolbar, wrap);
     }
 
@@ -360,7 +365,7 @@ function showRowDetail(title, fields) {
         const th = document.createElement('th');
         th.style.width = '42px';
         th.style.textAlign = 'center';
-        th.innerHTML = '<input type="checkbox" class="js-admin-check-all" style="cursor:pointer;">';
+        th.innerHTML = '<input type="checkbox" class="js-admin-check-all adm-check">';
         headRow.insertBefore(th, headRow.firstElementChild);
     }
 
@@ -369,7 +374,7 @@ function showRowDetail(title, fields) {
         if (row.children.length === 1 && row.children[0].hasAttribute('colspan')) return;
         const td = document.createElement('td');
         td.style.textAlign = 'center';
-        td.innerHTML = '<input type="checkbox" class="js-admin-row-check" style="cursor:pointer;">';
+        td.innerHTML = '<input type="checkbox" class="js-admin-row-check adm-check">';
         row.insertBefore(td, row.firstElementChild);
     });
 
