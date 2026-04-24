@@ -184,5 +184,5 @@ public class AssistantController {
         session.removeAttribute("currentChatPostIdx");
         return Map.of("success", true);
     }
-//    git 충돌 해결
+//    fix
 }
