@@ -37,7 +37,7 @@ public class AdminSearchVO {
         java.util.Set<String> valid = java.util.Set.of(
             "createdAt", "lastLoginAt", "nickname", "email", "status", "role"
         );
-        return valid.contains(sortBy) ? sortBy : "createdAt";
+        return sortBy != null && valid.contains(sortBy) ? sortBy : "createdAt";
     }
     public String getSortDir()  { return "ASC".equals(sortDir) ? "ASC" : "DESC"; }
     public String getStatus()   { return status   != null ? status   : "ALL"; }
