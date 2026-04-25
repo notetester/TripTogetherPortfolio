@@ -475,6 +475,18 @@ body.adm-nav-lock { overflow: hidden; }
     width: 100%; border-collapse: collapse;
     font-size: 13px;
 }
+.adm-section-table-fixed {
+    table-layout: fixed;
+    min-width: 920px;
+}
+.adm-section-table-fixed th,
+.adm-section-table-fixed td {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+@media (max-width: 767px) {
+    .adm-section-table-fixed { min-width: 760px; }
+}
 .adm-table thead tr {
     background: #111827;
     border-bottom: 1px solid #1e2330;

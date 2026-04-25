@@ -552,9 +552,9 @@
                     </select>
                     <input type="text" class="adm-input js-local-keyword" data-section="user-blocks" placeholder="<spring:message code='admin.blocks.userBlocks.searchPlaceholder'/>">
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="user-blocks"><spring:message code="admin.common.reset"/></button>
-                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="user-blocks" style="display:none;" onclick="sectionSortReset('user-blocks')"></button>
                 </div>
                 <div class="adm-local-toolbar-group">
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="user-blocks" style="display:none;" onclick="sectionSortReset('user-blocks')"></button>
                     <select class="adm-select js-local-page-size" data-section="user-blocks">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -570,17 +570,17 @@
                 <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('user-blocks')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
             </div>
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-section-table-fixed">
                     <thead>
                     <tr>
                         <th style="width:36px;"><input type="checkbox" id="ub-checkAll" class="js-block-check-all" data-section="user-blocks" onchange="blockToggleAll('user-blocks')"></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('user-blocks',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('user-blocks',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.filter.blockType"/></th>
-                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('user-blocks',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
-                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('user-blocks',4)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
-                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('user-blocks',5)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/></th>
-                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('user-blocks',6)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.blockAndExpire"/></th>
-                        <th><spring:message code="admin.common.action"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('user-blocks',1)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.common.member"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('user-blocks',2)" style="cursor:pointer;user-select:none;width:12%;"><spring:message code="admin.blocks.filter.blockType"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('user-blocks',3)" style="cursor:pointer;user-select:none;width:17%;"><spring:message code="admin.common.target"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('user-blocks',4)" style="cursor:pointer;user-select:none;width:9%;"><spring:message code="admin.common.status"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('user-blocks',5)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.common.reason"/></th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('user-blocks',6)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.blockAndExpire"/></th>
+                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -863,9 +863,9 @@
                     </select>
                     <input type="text" class="adm-input js-local-keyword" data-section="ip-rules" placeholder="<spring:message code='admin.blocks.ipRules.searchPlaceholder'/>">
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="ip-rules"><spring:message code="admin.common.reset"/></button>
-                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="ip-rules" style="display:none;" onclick="sectionSortReset('ip-rules')"></button>
                 </div>
                 <div class="adm-local-toolbar-group">
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="ip-rules" style="display:none;" onclick="sectionSortReset('ip-rules')"></button>
                     <select class="adm-select js-local-page-size" data-section="ip-rules">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -882,17 +882,17 @@
                 <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('ip-rules')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
             </div>
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-section-table-fixed">
                     <thead>
                     <tr>
                         <th style="width:36px;"><input type="checkbox" id="ipr-checkAll" class="js-block-check-all" data-section="ip-rules" onchange="blockToggleAll('ip-rules')"></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('ip-rules',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('ip-rules',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.actionControl"/></th>
-                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('ip-rules',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/></th>
-                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('ip-rules',4)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
-                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('ip-rules',5)" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.priority"/></th>
-                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('ip-rules',6)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/></th>
-                        <th><spring:message code="admin.common.action"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('ip-rules',1)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.common.target"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('ip-rules',2)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.actionControl"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('ip-rules',3)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.context.batch"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('ip-rules',4)" style="cursor:pointer;user-select:none;width:11%;"><spring:message code="admin.common.status"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('ip-rules',5)" style="cursor:pointer;user-select:none;width:9%;"><spring:message code="admin.context.priority"/></th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('ip-rules',6)" style="cursor:pointer;user-select:none;width:20%;"><spring:message code="admin.common.reason"/></th>
+                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -1180,9 +1180,9 @@
                     </select>
                     <input type="text" class="adm-input js-local-keyword" data-section="batches" placeholder="<spring:message code='admin.blocks.batches.searchPlaceholder'/>">
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="batches"><spring:message code="admin.common.reset"/></button>
-                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="batches" style="display:none;" onclick="sectionSortReset('batches')"></button>
                 </div>
                 <div class="adm-local-toolbar-group">
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="batches" style="display:none;" onclick="sectionSortReset('batches')"></button>
                     <select class="adm-select js-local-page-size" data-section="batches">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -1191,15 +1191,15 @@
                 </div>
             </div>
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-section-table-fixed">
                     <thead><tr>
                         <th style="width:36px;"><input type="checkbox" id="bat-checkAll" class="js-block-check-all" data-section="batches" onchange="blockToggleAll('batches')"></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.batch"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.basePolicy"/></th>
-                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('batches',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.currentState"/></th>
-                        <th><spring:message code="admin.blocks.ruleStats"/></th>
-                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('batches',5)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.description"/></th>
-                        <th><spring:message code="admin.common.action"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;width:22%;"><spring:message code="admin.blocks.batch"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.basePolicy"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('batches',3)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.currentState"/></th>
+                        <th style="width:18%;"><spring:message code="admin.blocks.ruleStats"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('batches',5)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.description"/></th>
+                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr></thead>
                     <tbody>
                     <c:forEach var="b" items="${batches}">
@@ -1426,9 +1426,9 @@
                     </select>
                     <input type="text" class="adm-input js-local-keyword" data-section="histories" placeholder="<spring:message code='admin.blocks.histories.searchPlaceholder'/>">
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="histories"><spring:message code="admin.common.reset"/></button>
-                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="histories" style="display:none;" onclick="sectionSortReset('histories')"></button>
                 </div>
                 <div class="adm-local-toolbar-group">
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="histories" style="display:none;" onclick="sectionSortReset('histories')"></button>
                     <select class="adm-select js-local-page-size" data-section="histories">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -1437,16 +1437,16 @@
                 </div>
             </div>
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-section-table-fixed">
                     <thead><tr>
                         <th style="width:36px;"><input type="checkbox" id="hist-checkAll" class="js-block-check-all" data-section="histories" onchange="blockToggleAll('histories')"></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('histories',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('histories',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
-                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('histories',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
-                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('histories',4)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/></th>
-                        <th><spring:message code="admin.blocks.result"/></th>
-                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('histories',6)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/></th>
-                        <th><spring:message code="admin.common.action"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('histories',1)" style="cursor:pointer;user-select:none;width:12%;"><spring:message code="admin.common.time"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('histories',2)" style="cursor:pointer;user-select:none;width:18%;"><spring:message code="admin.common.target"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('histories',3)" style="cursor:pointer;user-select:none;width:12%;"><spring:message code="admin.common.actionLabel"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('histories',4)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.changeKind"/></th>
+                        <th style="width:13%;"><spring:message code="admin.blocks.result"/></th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('histories',6)" style="cursor:pointer;user-select:none;width:17%;"><spring:message code="admin.common.reason"/></th>
+                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr></thead>
                     <tbody>
                     <c:forEach var="h" items="${histories}">
@@ -2450,7 +2450,11 @@ function getSectionCard(section) {
 function sortLocalRows(section, rows) {
     const state = getLocalState(section);
     const cellIndex = (state.sectionSortCell != null) ? state.sectionSortCell : -1;
-    if (cellIndex < 0) return rows;
+    if (cellIndex < 0) {
+        return rows.slice().sort(function (a, b) {
+            return Number(a.dataset.originalIndex || 0) - Number(b.dataset.originalIndex || 0);
+        });
+    }
     const dir = state.sortDir === 'DESC' ? -1 : 1;
     return rows.slice().sort(function (a, b) {
         const av = (a.children[cellIndex] ? a.children[cellIndex].innerText : '').replace(/\s+/g, ' ').trim();
@@ -2517,6 +2521,16 @@ function sectionSortReset(section) {
     state.sortDir = 'ASC';
     state.page = 1;
     renderLocalSection(section);
+}
+
+function ensureOriginalIndices() {
+    ['user-blocks', 'ip-rules', 'batches', 'histories'].forEach(function (section) {
+        getLocalRows(section).forEach(function (row, idx) {
+            if (row.dataset.originalIndex == null) {
+                row.dataset.originalIndex = String(idx);
+            }
+        });
+    });
 }
 
 function blockRowKey(row, section) {
@@ -3914,6 +3928,7 @@ document.querySelectorAll('.adm-modal-overlay').forEach(function (overlay) {
 
 enhanceBlockLocalTables();
 enhanceBlockDashboardTables();
+ensureOriginalIndices();
 initializeLocalSections();
 activateBlockTab(new URLSearchParams(window.location.search).get('tab') || 'dashboard');
 </script>
