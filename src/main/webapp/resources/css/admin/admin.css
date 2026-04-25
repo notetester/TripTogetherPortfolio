@@ -2487,3 +2487,65 @@ body.sa-light .adm-export-dropdown button:disabled {
 @media (max-width: 480px) {
     .adm-block-dashboard-summary { grid-template-columns: 1fr; }
 }
+
+/* ── KPI 네비게이션 버튼 (클릭 가능 카드) ── */
+.adm-kpi-card.adm-kpi-nav-btn {
+    cursor: pointer;
+    text-align: left;
+    transition: border-color .15s, background .15s;
+    width: 100%;
+}
+.adm-kpi-card.adm-kpi-nav-btn:hover {
+    background: #1a2030;
+    border-color: #3b82f6;
+}
+.adm-kpi-sub {
+    font-size: 11px;
+    color: #475569;
+    margin-top: 2px;
+}
+
+/* ── 대시보드 테이블 정렬 초기화 버튼 ── */
+.adm-dash-sort-reset {
+    font-size: 11px;
+    color: #64748b;
+    background: transparent;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 2px 8px;
+    cursor: pointer;
+    line-height: 1.4;
+    transition: color .15s, border-color .15s;
+    white-space: nowrap;
+}
+.adm-dash-sort-reset:hover {
+    color: #94a3b8;
+    border-color: #475569;
+}
+
+/* ── 라이트 모드: KPI / 대시보드 인사이트 ── */
+body.sa-light .adm-kpi-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+}
+body.sa-light .adm-kpi-label { color: #64748b; }
+body.sa-light .adm-kpi-value { color: #1e293b; }
+body.sa-light .adm-kpi-sub   { color: #94a3b8; }
+body.sa-light .adm-kpi-card.adm-kpi-nav-btn:hover {
+    background: #eff6ff;
+    border-color: #3b82f6;
+}
+body.sa-light .adm-block-dashboard-insight {
+    background: #ffffff;
+    border-color: #e2e8f0;
+}
+body.sa-light .adm-block-insight-title { color: #64748b; }
+body.sa-light .adm-block-insight-body span { color: #334155; }
+body.sa-light .adm-dash-sort-reset {
+    color: #64748b;
+    border-color: #cbd5e1;
+}
+body.sa-light .adm-dash-sort-reset:hover {
+    color: #334155;
+    border-color: #94a3b8;
+}

@@ -19,22 +19,26 @@
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-body">
             <div class="adm-kpi-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));">
-                <div class="adm-kpi-card">
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activeUserBlocks"/></div>
                     <div class="adm-kpi-value">${activeUserBlockCount}</div>
-                </div>
-                <div class="adm-kpi-card">
+                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.userBlocks"/></div>
+                </button>
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activePolicies"/></div>
                     <div class="adm-kpi-value">${activeIpBlockCount}</div>
-                </div>
-                <div class="adm-kpi-card">
+                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.ipRules"/></div>
+                </button>
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('histories');renderLocalSection('histories');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.history"/></div>
                     <div class="adm-kpi-value">${blockHistoryCount}</div>
-                </div>
-                <div class="adm-kpi-card">
+                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.history"/></div>
+                </button>
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('batches');renderLocalSection('batches');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activeBatches"/></div>
                     <div class="adm-kpi-value">${activeBatchCount}</div>
-                </div>
+                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.batches"/></div>
+                </button>
             </div>
         </div>
     </div>
@@ -152,32 +156,6 @@
             <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.sub"/></div>
         </div>
         <div class="adm-card-body">
-            <div class="adm-block-dashboard-summary">
-                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">
-                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activeUserBlocks"/></span>
-                    <strong>${activeUserBlockCount}</strong>
-                    <span class="adm-block-stat-note"><spring:message code="admin.blocks.dashboard.stat.userBlocks"/></span>
-                    <span class="adm-block-stat-bar"><i style="width:${activeUserBlockCount > 0 ? '78' : '8'}%"></i></span>
-                </button>
-                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">
-                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activePolicies"/></span>
-                    <strong>${activeIpBlockCount}</strong>
-                    <span class="adm-block-stat-note"><spring:message code="admin.blocks.dashboard.stat.ipRules"/></span>
-                    <span class="adm-block-stat-bar"><i style="width:${activeIpBlockCount > 0 ? '72' : '8'}%"></i></span>
-                </button>
-                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('histories');renderLocalSection('histories');">
-                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.history"/></span>
-                    <strong>${blockHistoryCount}</strong>
-                    <span class="adm-block-stat-note"><spring:message code="admin.blocks.dashboard.stat.history"/></span>
-                    <span class="adm-block-stat-bar"><i style="width:${blockHistoryCount > 0 ? '88' : '8'}%"></i></span>
-                </button>
-                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('batches');renderLocalSection('batches');">
-                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activeBatches"/></span>
-                    <strong>${activeBatchCount}</strong>
-                    <span class="adm-block-stat-note"><spring:message code="admin.blocks.dashboard.stat.batches"/></span>
-                    <span class="adm-block-stat-bar"><i style="width:${activeBatchCount > 0 ? '64' : '8'}%"></i></span>
-                </button>
-            </div>
             <div class="adm-block-dashboard-grid">
                 <div class="adm-block-dashboard-insight">
                     <div class="adm-block-insight-title"><spring:message code="admin.blocks.dashboard.insight.priorityTitle"/></div>
@@ -200,15 +178,18 @@
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
                         <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentUserBlocks"/></div>
-                        <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.topFive"/></div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.topFive"/></div>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-user-blocks" style="display:none;"></button>
+                        </div>
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-user-blocks">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-user-blocks',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-user-blocks',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-user-blocks',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-user-blocks',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/></th>
+                                    <th onclick="dashSortBy('dash-user-blocks',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                                    <th onclick="dashSortBy('dash-user-blocks',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -277,15 +258,18 @@
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
                         <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentIpRules"/></div>
-                        <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.ipRulesSub"/></div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.ipRulesSub"/></div>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-ip-rules" style="display:none;"></button>
+                        </div>
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-ip-rules">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-ip-rules',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-ip-rules',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-ip-rules',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.effectiveState"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-ip-rules',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                                    <th onclick="dashSortBy('dash-ip-rules',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
+                                    <th onclick="dashSortBy('dash-ip-rules',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.effectiveState"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -360,15 +344,18 @@
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
                         <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentBatchOps"/></div>
-                        <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.batchOpsSub"/></div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.batchOpsSub"/></div>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-batches" style="display:none;"></button>
+                        </div>
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-batches">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-batches',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-batches',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-batches',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.impact"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-batches',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/></th>
+                                    <th onclick="dashSortBy('dash-batches',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
+                                    <th onclick="dashSortBy('dash-batches',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.impact"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -399,16 +386,19 @@
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
                         <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentHistory"/></div>
-                        <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.historySub"/></div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.historySub"/></div>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-histories" style="display:none;"></button>
+                        </div>
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-histories">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-histories',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-histories',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-histories',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-histories',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.result"/> <span class="sort-ico">▼</span></th>
+                                    <th onclick="dashSortBy('dash-histories',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/></th>
+                                    <th onclick="dashSortBy('dash-histories',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                                    <th onclick="dashSortBy('dash-histories',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/></th>
+                                    <th onclick="dashSortBy('dash-histories',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.result"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -2198,6 +2188,7 @@ const ADMIN_BLOCK_MSG = {
     dashViewHistories: '<spring:message code="admin.blocks.js.dashViewHistories" javaScriptEscape="true"/>',
     dashViewAll: '<spring:message code="admin.blocks.js.dashViewAll" javaScriptEscape="true"/>',
     dashSortTip: '<spring:message code="admin.blocks.js.dashSortTip" javaScriptEscape="true"/>',
+    dashSortReset: '<spring:message code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>',
     bulkActivate: '<spring:message code="admin.blocks.js.bulkActivate" javaScriptEscape="true"/>',
     bulkDeactivate: '<spring:message code="admin.blocks.js.bulkDeactivate" javaScriptEscape="true"/>',
     noSelection: '<spring:message code="admin.blocks.js.noSelection" javaScriptEscape="true"/>',
@@ -2504,6 +2495,21 @@ function enhanceBlockDashboardTables() {
             head.appendChild(btn);
         }
 
+        const resetBtn = head ? head.querySelector('.js-dash-sort-reset') : null;
+        if (resetBtn) {
+            resetBtn.textContent = ADMIN_BLOCK_MSG.dashSortReset;
+            resetBtn.addEventListener('click', function () {
+                resetDashboardSort(table);
+            });
+        }
+
+        const tbody = table.querySelector('tbody');
+        if (tbody) {
+            Array.from(tbody.querySelectorAll('tr')).forEach(function (row, i) {
+                row.dataset.origOrder = String(i);
+            });
+        }
+
         table.querySelectorAll('thead th').forEach(function (th, idx, arr) {
             if (idx === arr.length - 1 || th.dataset.dashboardEnhanced === 'true') return;
             th.dataset.dashboardEnhanced = 'true';
@@ -2511,7 +2517,6 @@ function enhanceBlockDashboardTables() {
             th.style.cursor = 'pointer';
             th.style.userSelect = 'none';
             th.title = ADMIN_BLOCK_MSG.dashSortTip;
-            th.insertAdjacentHTML('beforeend', ' <span class="sort-ico" style="font-size:10px;color:#94a3b8;">↕</span>');
             th.addEventListener('click', function () {
                 sortDashboardTable(table, idx);
             });
@@ -2550,10 +2555,49 @@ function sortDashboardTable(table, cellIndex) {
     rows.forEach(function (row) { tbody.appendChild(row); });
 
     table.querySelectorAll('thead th').forEach(function (th) {
-        const ico = th.querySelector('.sort-ico');
         const active = Number(th.dataset.sortIndex || -1) === cellIndex;
-        if (ico) ico.textContent = active ? (nextDir === 'ASC' ? '▲' : '▼') : '↕';
+        let ico = th.querySelector('.sort-ico');
+        if (active) {
+            if (!ico) {
+                ico = document.createElement('span');
+                ico.className = 'sort-ico';
+                ico.style.cssText = 'font-size:10px;margin-left:4px;';
+                th.appendChild(ico);
+            }
+            ico.textContent = nextDir === 'ASC' ? '▲' : '▼';
+            ico.style.color = '#3b82f6';
+        } else {
+            if (ico) ico.remove();
+        }
     });
+
+    const card = table.closest('.adm-card');
+    if (card) {
+        const resetBtn = card.querySelector('.js-dash-sort-reset');
+        if (resetBtn) resetBtn.style.display = '';
+    }
+}
+
+function resetDashboardSort(table) {
+    delete table.dataset.dashboardSortIndex;
+    delete table.dataset.dashboardSortDir;
+
+    const tbody = table.querySelector('tbody');
+    if (tbody) {
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.sort(function (a, b) {
+            return Number(a.dataset.origOrder || 0) - Number(b.dataset.origOrder || 0);
+        });
+        rows.forEach(function (row) { tbody.appendChild(row); });
+    }
+
+    table.querySelectorAll('thead th .sort-ico').forEach(function (ico) { ico.remove(); });
+
+    const card = table.closest('.adm-card');
+    if (card) {
+        const resetBtn = card.querySelector('.js-dash-sort-reset');
+        if (resetBtn) resetBtn.style.display = 'none';
+    }
 }
 
 function enhanceBlockLocalTables() {
