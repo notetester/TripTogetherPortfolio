@@ -599,13 +599,13 @@
               <textarea class="comment-textarea" id="commentText"
                         placeholder="<spring:message code='community.detail.comment.placeholder'/>" rows="3"
                         onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); submitComment(${post.postId});}"></textarea>
-              <button class="comment-submit-btn" onclick="submitComment(${post.postId})"><spring:message code="community.detail.reply.submit"/></button>
+              <button class="comment-submit-btn" onclick="submitComment(${post.postId})"><spring:message code="community.detail.submit"/></button>
             </div>
           </c:when>
           <c:otherwise>
             <div class="comment-login-notice">
               <p><spring:message code="community.detail.comment.loginRequiredPrefix"/>
-                <a href="${pageContext.request.contextPath}/auth/login" class="login-link"><spring:message code="auth.login.title"/></a><spring:message code="community.detail.comment.loginRequiredSuffix"/>
+                <a href="${pageContext.request.contextPath}/auth/login" class="login-link"><spring:message code="community.detail.comment.loginLink"/></a><spring:message code="community.detail.comment.loginRequiredSuffix"/>
               </p>
             </div>
           </c:otherwise>
