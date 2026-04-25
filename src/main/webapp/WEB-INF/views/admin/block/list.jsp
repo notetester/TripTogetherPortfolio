@@ -156,43 +156,43 @@
                 <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">
                     <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activeUserBlocks"/></span>
                     <strong>${activeUserBlockCount}</strong>
-                    <span class="adm-block-stat-note">회원 차단 현재 적용</span>
+                    <span class="adm-block-stat-note"><spring:message code="admin.blocks.dashboard.stat.userBlocks"/></span>
                     <span class="adm-block-stat-bar"><i style="width:${activeUserBlockCount > 0 ? '78' : '8'}%"></i></span>
                 </button>
                 <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">
                     <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activePolicies"/></span>
                     <strong>${activeIpBlockCount}</strong>
-                    <span class="adm-block-stat-note">IP/범위 정책 현재 적용</span>
+                    <span class="adm-block-stat-note"><spring:message code="admin.blocks.dashboard.stat.ipRules"/></span>
                     <span class="adm-block-stat-bar"><i style="width:${activeIpBlockCount > 0 ? '72' : '8'}%"></i></span>
                 </button>
                 <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('histories');renderLocalSection('histories');">
                     <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.history"/></span>
                     <strong>${blockHistoryCount}</strong>
-                    <span class="adm-block-stat-note">누적 차단/해제/정책 변경</span>
+                    <span class="adm-block-stat-note"><spring:message code="admin.blocks.dashboard.stat.history"/></span>
                     <span class="adm-block-stat-bar"><i style="width:${blockHistoryCount > 0 ? '88' : '8'}%"></i></span>
                 </button>
                 <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('batches');renderLocalSection('batches');">
                     <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activeBatches"/></span>
                     <strong>${activeBatchCount}</strong>
-                    <span class="adm-block-stat-note">활성 배치 정책 묶음</span>
+                    <span class="adm-block-stat-note"><spring:message code="admin.blocks.dashboard.stat.batches"/></span>
                     <span class="adm-block-stat-bar"><i style="width:${activeBatchCount > 0 ? '64' : '8'}%"></i></span>
                 </button>
             </div>
             <div class="adm-block-dashboard-grid">
                 <div class="adm-block-dashboard-insight">
-                    <div class="adm-block-insight-title">운영 우선순위</div>
+                    <div class="adm-block-insight-title"><spring:message code="admin.blocks.dashboard.insight.priorityTitle"/></div>
                     <div class="adm-block-insight-body">
-                        <span>① 최근 이력 확인</span>
-                        <span>② 만료 예정/비활성 규칙 점검</span>
-                        <span>③ 배치 정책 영향 범위 확인</span>
+                        <span><spring:message code="admin.blocks.dashboard.insight.priority1"/></span>
+                        <span><spring:message code="admin.blocks.dashboard.insight.priority2"/></span>
+                        <span><spring:message code="admin.blocks.dashboard.insight.priority3"/></span>
                     </div>
                 </div>
                 <div class="adm-block-dashboard-insight">
-                    <div class="adm-block-insight-title">빠른 이동</div>
+                    <div class="adm-block-insight-title"><spring:message code="admin.blocks.dashboard.insight.quickNavTitle"/></div>
                     <div class="adm-block-insight-actions">
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">회원 차단</button>
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">IP 규칙</button>
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('histories');renderLocalSection('histories');">최근 로그</button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');"><spring:message code="admin.blocks.dashboard.insight.userBlocksChip"/></button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');"><spring:message code="admin.blocks.dashboard.insight.ipRulesChip"/></button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('histories');renderLocalSection('histories');"><spring:message code="admin.blocks.dashboard.insight.historyChip"/></button>
                     </div>
                 </div>
             </div>
