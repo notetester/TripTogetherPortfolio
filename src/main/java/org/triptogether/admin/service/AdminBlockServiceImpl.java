@@ -43,6 +43,10 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         result.put("activeIpBlockCount", adminBlockMapper.countActiveIpBlocks());
         result.put("blockHistoryCount", adminBlockMapper.countBlockHistories());
         result.put("activeBatchCount", adminBlockMapper.countActiveBatches());
+        result.put("totalUserCount", adminBlockMapper.countTotalUsers());
+        result.put("totalIpRuleCount", adminBlockMapper.countTotalIpRules());
+        result.put("todayBlockCount", adminBlockMapper.countTodayBlockHistories());
+        result.put("totalBatchCount", adminBlockMapper.countTotalBatches());
         result.put("userBlocks", adminBlockMapper.findUserBlocks(search));
         result.put("ipBlocks", adminBlockMapper.findIpBlocks(search));
         result.put("histories", adminBlockMapper.findBlockHistories(search));

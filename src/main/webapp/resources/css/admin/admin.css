@@ -2387,6 +2387,44 @@ body.sa-light .adm-export-dropdown button:disabled {
     color: #f1f5f9;
     line-height: 1;
 }
+.adm-kpi-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    line-height: 1;
+}
+.adm-kpi-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: #f1f5f9;
+    cursor: help;
+}
+.adm-kpi-sep {
+    font-size: 18px;
+    color: #475569;
+    font-weight: 300;
+}
+.adm-kpi-den {
+    font-size: 15px;
+    color: #64748b;
+    font-weight: 600;
+    cursor: help;
+}
+.adm-kpi-bar-wrap {
+    height: 3px;
+    background: #1e2736;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 4px;
+    cursor: help;
+}
+.adm-kpi-bar-fill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 2px;
+    min-width: 0;
+    transition: width .4s ease;
+}
 
 /* ── stat 카드 그룹 (대시보드 상단 4개 클릭 카드) ── */
 .adm-block-dashboard-summary {
@@ -2530,6 +2568,10 @@ body.sa-light .adm-kpi-card {
 }
 body.sa-light .adm-kpi-label { color: #64748b; }
 body.sa-light .adm-kpi-value { color: #1e293b; }
+body.sa-light .adm-kpi-num   { color: #1e293b; }
+body.sa-light .adm-kpi-sep   { color: #94a3b8; }
+body.sa-light .adm-kpi-den   { color: #64748b; }
+body.sa-light .adm-kpi-bar-wrap { background: #e2e8f0; }
 body.sa-light .adm-kpi-sub   { color: #94a3b8; }
 body.sa-light .adm-kpi-card.adm-kpi-nav-btn:hover {
     background: #eff6ff;

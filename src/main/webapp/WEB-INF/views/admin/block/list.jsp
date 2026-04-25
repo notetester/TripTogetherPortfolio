@@ -19,24 +19,60 @@
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-body">
             <div class="adm-kpi-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));">
+                <c:set var="kpiPct1" value="${totalUserCount > 0 ? activeUserBlockCount * 100 / totalUserCount : 0}"/>
+                <c:if test="${kpiPct1 > 100}"><c:set var="kpiPct1" value="100"/></c:if>
                 <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activeUserBlocks"/></div>
-                    <div class="adm-kpi-value">${activeUserBlockCount}</div>
+                    <div class="adm-kpi-value-row">
+                        <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numUserBlocks' javaScriptEscape='true'/>">${activeUserBlockCount}</span>
+                        <span class="adm-kpi-sep">/</span>
+                        <span class="adm-kpi-den" title="<spring:message code='admin.blocks.kpi.tooltip.denTotalUsers' javaScriptEscape='true'/>">${totalUserCount}</span>
+                    </div>
+                    <div class="adm-kpi-bar-wrap" title="${kpiPct1}%">
+                        <div class="adm-kpi-bar-fill" style="width:${kpiPct1}%;"></div>
+                    </div>
                     <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.userBlocks"/></div>
                 </button>
+                <c:set var="kpiPct2" value="${totalIpRuleCount > 0 ? activeIpBlockCount * 100 / totalIpRuleCount : 0}"/>
+                <c:if test="${kpiPct2 > 100}"><c:set var="kpiPct2" value="100"/></c:if>
                 <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activePolicies"/></div>
-                    <div class="adm-kpi-value">${activeIpBlockCount}</div>
+                    <div class="adm-kpi-value-row">
+                        <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numActivePolicies' javaScriptEscape='true'/>">${activeIpBlockCount}</span>
+                        <span class="adm-kpi-sep">/</span>
+                        <span class="adm-kpi-den" title="<spring:message code='admin.blocks.kpi.tooltip.denTotalIpRules' javaScriptEscape='true'/>">${totalIpRuleCount}</span>
+                    </div>
+                    <div class="adm-kpi-bar-wrap" title="${kpiPct2}%">
+                        <div class="adm-kpi-bar-fill" style="width:${kpiPct2}%;"></div>
+                    </div>
                     <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.ipRules"/></div>
                 </button>
+                <c:set var="kpiPct3" value="${blockHistoryCount > 0 ? todayBlockCount * 100 / blockHistoryCount : 0}"/>
+                <c:if test="${kpiPct3 > 100}"><c:set var="kpiPct3" value="100"/></c:if>
                 <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('histories');renderLocalSection('histories');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.history"/></div>
-                    <div class="adm-kpi-value">${blockHistoryCount}</div>
+                    <div class="adm-kpi-value-row">
+                        <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numTodayBlocks' javaScriptEscape='true'/>">${todayBlockCount}</span>
+                        <span class="adm-kpi-sep">/</span>
+                        <span class="adm-kpi-den" title="<spring:message code='admin.blocks.kpi.tooltip.denTotalHistory' javaScriptEscape='true'/>">${blockHistoryCount}</span>
+                    </div>
+                    <div class="adm-kpi-bar-wrap" title="${kpiPct3}%">
+                        <div class="adm-kpi-bar-fill" style="width:${kpiPct3}%;"></div>
+                    </div>
                     <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.history"/></div>
                 </button>
+                <c:set var="kpiPct4" value="${totalBatchCount > 0 ? activeBatchCount * 100 / totalBatchCount : 0}"/>
+                <c:if test="${kpiPct4 > 100}"><c:set var="kpiPct4" value="100"/></c:if>
                 <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('batches');renderLocalSection('batches');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activeBatches"/></div>
-                    <div class="adm-kpi-value">${activeBatchCount}</div>
+                    <div class="adm-kpi-value-row">
+                        <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numActiveBatches' javaScriptEscape='true'/>">${activeBatchCount}</span>
+                        <span class="adm-kpi-sep">/</span>
+                        <span class="adm-kpi-den" title="<spring:message code='admin.blocks.kpi.tooltip.denTotalBatches' javaScriptEscape='true'/>">${totalBatchCount}</span>
+                    </div>
+                    <div class="adm-kpi-bar-wrap" title="${kpiPct4}%">
+                        <div class="adm-kpi-bar-fill" style="width:${kpiPct4}%;"></div>
+                    </div>
                     <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.batches"/></div>
                 </button>
             </div>

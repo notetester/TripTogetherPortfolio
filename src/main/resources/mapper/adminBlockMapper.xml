@@ -201,6 +201,22 @@
         SELECT COUNT(*) FROM IP_BLOCK_BATCH WHERE is_active = 1
     </select>
 
+    <select id="countTotalUsers" resultType="long">
+        SELECT COUNT(*) FROM USERS
+    </select>
+
+    <select id="countTotalIpRules" resultType="long">
+        SELECT COUNT(*) FROM IP_BLOCKLIST
+    </select>
+
+    <select id="countTodayBlockHistories" resultType="long">
+        SELECT COUNT(*) FROM USER_BLOCK_HISTORY WHERE DATE(blocked_at) = CURDATE()
+    </select>
+
+    <select id="countTotalBatches" resultType="long">
+        SELECT COUNT(*) FROM IP_BLOCK_BATCH
+    </select>
+
     <select id="findUserBlocks" resultMap="userBlockRM">
         SELECT
             x.block_idx,

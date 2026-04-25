@@ -12,6 +12,10 @@ public interface AdminBlockMapper {
     long countActiveIpBlocks();
     long countBlockHistories();
     long countActiveBatches();
+    long countTotalUsers();
+    long countTotalIpRules();
+    long countTodayBlockHistories();
+    long countTotalBatches();
 
     List<AdminUserBlockVO> findUserBlocks(AdminBlockSearchVO search);
     List<AdminIpBlockVO> findIpBlocks(AdminBlockSearchVO search);
