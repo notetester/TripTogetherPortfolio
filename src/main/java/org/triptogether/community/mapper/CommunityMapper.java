@@ -217,6 +217,19 @@ public interface CommunityMapper {
     // 최근 N분 내 해당 유저의 댓글/대댓글 작성 수 조회
     int countRecentCommentsByUser(@Param("userIdx") Long userIdx, @Param("minutes") int minutes);
 
+    // ===== 캐시 카운터 reconcile =====
+    /**
+     * 모든 활성 게시글의 like_count / comment_count / report_count 캐시를
+     * 실제 행 수로 일괄 동기화한다. (운영 안전망)
+     * @return 갱신된(값이 바뀐) 행 수
+     */
+    int reconcilePostCounts();
+    /**
+     * 모든 활성 댓글의 like_count / report_count 캐시를 실제 행 수로 일괄 동기화한다.
+     * @return 갱신된 행 수
+     */
+    int reconcileCommentCounts();
+
     // ===== 챗봇 컨텍스트 =====
     /**
      * 공개(ACTIVE, 신고 3회 미만) 게시글 중 다중 키워드 매칭 상위 N건.
