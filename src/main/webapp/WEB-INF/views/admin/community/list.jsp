@@ -144,7 +144,7 @@
                     <th style="width:80px;"><spring:message code="admin.community.column.type"/></th>
                     <th style="width:60px;"><spring:message code="admin.community.column.reportCount"/></th>
                     <th style="width:80px;"><spring:message code="admin.common.status"/></th>
-                    <th style="width:90px;"><spring:message code="admin.community.column.createdAt"/></th>
+                    <th style="width:130px;"><spring:message code="admin.community.column.createdAt"/></th>
                     <th style="width:100px;"><spring:message code="admin.common.action"/></th>
                 </tr>
                 </thead>
@@ -205,7 +205,7 @@
                         </td>
 
                         <%-- 유형 --%>
-                        <td style="font-size:12px;color:#94a3b8;">
+                        <td style="font-size:12px;color:#94a3b8;white-space:nowrap;">
                             <button type="button" class="adm-cell-link" data-param-name="postType" data-param-value="${p.postType}" onclick="applySelectFilter(this)">
                                 <span><c:choose>
                                     <c:when test="${p.postType == 'review'}"><spring:message code="admin.community.postType.review"/></c:when>
@@ -251,11 +251,10 @@
                         </td>
 
                         <%-- 등록일 --%>
-                        <td style="font-size:11px;color:#64748b;">
+                        <td style="font-size:11px;color:#64748b;white-space:nowrap;">
                             <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
                                class="adm-cell-link adm-cell-link--inline">
-                            <fmt:formatDate value="${p.createdAt}" pattern="yyyy.MM.dd"/>
-                            <div><fmt:formatDate value="${p.createdAt}" pattern="HH:mm"/></div>
+                                <fmt:formatDate value="${p.createdAt}" pattern="yyyy.MM.dd HH:mm"/>
                             </a>
                         </td>
 
