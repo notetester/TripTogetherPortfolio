@@ -105,8 +105,14 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 - dev 브랜치에서 직접 작업 절대 금지
 
 ## ⚠️ Git 작업 분담 규칙
-- Codex는 `git add` + `git commit`까지만 진행
-- `git pull`, `git push origin <branch>`, PR 생성(`gh pr create` 또는 GitHub UI)은 사용자가 직접 수행
+- Codex는 기본적으로 `git add` + `git commit`까지만 자동 진행
+- `git pull`, PR 생성(`gh pr create` 또는 GitHub UI)은 사용자가 직접 수행
+- **`git push origin <branch>`는 사용자가 명시적으로 push 요청한 경우에만 Codex가 진행**
+  - push 진행 전 반드시 다음 순서:
+    1. `git fetch origin` 실행 (원격 정보 갱신)
+    2. `git log --oneline Victor..origin/dev` 로 dev에 새 커밋이 있는지 확인
+    3. dev에 새 커밋이 있으면 사용자에게 보고 + 처리 방향(병합 / PR로 처리 / 그대로 push) 결정 받기
+    4. dev 새 커밋이 없거나 사용자가 진행 결정 시 `git push origin Victor`
 - 커밋 여러 개로 나눠야 할 땐 Codex가 단위 제안 → 사용자 승인 후 실행
 - **커밋 메시지는 Codex가 후보 제시 → 사용자 승인 후에만 실행**
   (메시지 내용이 중간에 바뀌면 새로 승인 요청)
