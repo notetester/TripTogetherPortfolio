@@ -187,9 +187,9 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-user-blocks">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-user-blocks',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/></th>
-                                    <th onclick="dashSortBy('dash-user-blocks',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
-                                    <th onclick="dashSortBy('dash-user-blocks',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -267,9 +267,9 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-ip-rules">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-ip-rules',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
-                                    <th onclick="dashSortBy('dash-ip-rules',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
-                                    <th onclick="dashSortBy('dash-ip-rules',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.effectiveState"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.effectiveState"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -353,9 +353,9 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-batches">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-batches',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/></th>
-                                    <th onclick="dashSortBy('dash-batches',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
-                                    <th onclick="dashSortBy('dash-batches',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.impact"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.impact"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -395,10 +395,10 @@
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-histories">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-histories',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/></th>
-                                    <th onclick="dashSortBy('dash-histories',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
-                                    <th onclick="dashSortBy('dash-histories',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/></th>
-                                    <th onclick="dashSortBy('dash-histories',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.result"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.result"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -2363,10 +2363,10 @@ function getSectionCard(section) {
 
 const BLOCK_SECTION_SORT_CONFIG = {
     'user-blocks': {
-        member: {cell: 0, label: '<spring:message code="admin.common.member" javaScriptEscape="true"/>'},
+        nickname: {cell: 0, label: '<spring:message code="admin.common.member" javaScriptEscape="true"/>'},
         blockType: {cell: 1, label: '<spring:message code="admin.blocks.filter.blockType" javaScriptEscape="true"/>'},
         target: {cell: 2, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
-        status: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
+        snapshotStatus: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
         reason: {cell: 4, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'},
         blockedAt: {cell: 5, label: '<spring:message code="admin.blocks.blockAndExpire" javaScriptEscape="true"/>'}
     },
@@ -2374,7 +2374,7 @@ const BLOCK_SECTION_SORT_CONFIG = {
         target: {cell: 0, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
         policy: {cell: 1, label: '<spring:message code="admin.blocks.actionControl" javaScriptEscape="true"/>'},
         batch: {cell: 2, label: '<spring:message code="admin.context.batch" javaScriptEscape="true"/>'},
-        status: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
+        finalState: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
         priority: {cell: 4, label: '<spring:message code="admin.context.priority" javaScriptEscape="true"/>', numeric: true},
         reason: {cell: 5, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'}
     },
