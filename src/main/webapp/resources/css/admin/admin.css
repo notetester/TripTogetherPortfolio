@@ -945,24 +945,21 @@ button.adm-inline-chip {
 .h-fail    { color: #f87171; font-weight: 600; }
 
 /* ── 탭 ── */
-.adm-tabs-scroll {
-    overflow-x: auto;
-    padding-bottom: 2px;
-    /* 스크롤바가 없어도 터치 스크롤 허용 */
-    -webkit-overflow-scrolling: touch;
-}
-.adm-tabs-scroll::-webkit-scrollbar { height: 4px; }
-.adm-tabs-scroll::-webkit-scrollbar-track { background: transparent; }
-.adm-tabs-scroll::-webkit-scrollbar-thumb {
-    background: rgba(100,116,139,.45);
-    border-radius: 999px;
+.adm-tabs-nav {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    margin-bottom: 16px;
+    min-width: 0;
+    position: relative;
 }
 .adm-tabs {
     display: flex;
     flex-wrap: nowrap;
     gap: 2px;
-    margin-bottom: 16px;
-    min-width: max-content;   /* 탭이 부모보다 넓어질 수 있도록 허용 */
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
 }
 .adm-tab {
     flex-shrink: 0;
@@ -973,6 +970,56 @@ button.adm-inline-chip {
 }
 .adm-tab.active { background: #1e2330; color: #93c5fd; }
 .adm-tab:hover:not(.active) { color: #94a3b8; background: #1e2330; }
+
+/* 더보기 버튼 */
+.adm-tabs-more {
+    flex-shrink: 0;
+    position: relative;
+}
+.adm-tabs-more-btn {
+    height: 100%;
+    padding: 7px 12px; border-radius: 7px; font-size: 12px; font-weight: 600;
+    color: #64748b; cursor: pointer; border: none; background: none;
+    font-family: inherit; transition: all .15s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 4px;
+}
+.adm-tabs-more-btn::after { content: '▾'; font-size: 10px; }
+.adm-tabs-more-btn:hover { color: #94a3b8; background: #1e2330; border-radius: 7px; }
+.adm-tabs-more-btn.has-active { background: #1e2330; color: #93c5fd; }
+
+/* 드롭다운 */
+.adm-tabs-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    background: #111827;
+    border: 1px solid #2d3748;
+    border-radius: 8px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px;
+    min-width: 130px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.45);
+}
+.adm-tabs-dropdown .adm-tab {
+    width: 100%;
+    text-align: left;
+    border-radius: 5px;
+}
+
+/* sa-light 테마 */
+body.sa-light .adm-tabs-more-btn { color: #64748b; }
+body.sa-light .adm-tabs-more-btn:hover { background: #f1f5f9; color: #475569; }
+body.sa-light .adm-tabs-more-btn.has-active { background: #e0e7ff; color: #3730a3; }
+body.sa-light .adm-tabs-dropdown { background: #ffffff; border-color: #e2e8f0; box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+
+@media (max-width: 600px) {
+    .adm-tab { padding: 6px 10px; font-size: 11px; }
+    .adm-tabs-more-btn { padding: 6px 8px; font-size: 11px; }
+}
 
 /* 챗봇 링크 필터 UI */
 .adm-chatbot-filter {

@@ -90,6 +90,13 @@ Files are stored at `${file.upload.path}` (default: `src/main/resources/upload/`
 
 Footer chatbot uses Gemini (`gemini-2.0-flash`). Uses `ChatbotService.ask(request, user, anonSessionId, ip)` with the pipeline: block check → quota check → conversation resolve/create → Gemini call → save messages → quota increment. Grade quota from `CHATBOT_GRADE_QUOTA` (ADMIN/SUPERADMIN bypass). Conversation ownership: either `user_idx` (logged-in) or `anon_session_id` (guest, sessionStorage-tracked). Admin page `/admin/ai-helper/chatbot` requires `AI_CHATBOT_ADMIN` permission (루트 `/admin/ai-helper`는 `ASSISTANT_ADMIN` — Claude 기반 assistant 모듈 담당). AdminInterceptor가 서브패스(`/chatbot`, `/conversations`, `/blocks`, `/quotas`)별로 분기하여 권한 체크. Do NOT confuse with `assistant` module (Claude-based, independent).
 
+### Jackson 3.x (Spring Boot 4.x) 주의사항
+
+Spring Boot 4.0.5는 Jackson 3.x (`tools.jackson.databind`)를 사용하며, Jackson 2.x와 다음 차이점이 있음:
+- `SerializationFeature.WRITE_DATES_AS_TIMESTAMPS` **제거됨** — `application.properties`에 `spring.jackson.serialization.write-dates-as-timestamps` 설정 불가 (기동 오류 발생)
+- Jackson 3.x + `JavaTimeModule`은 `LocalDateTime`을 **ISO-8601 문자열로 기본 직렬화** — 별도 설정 불필요
+- Jackson 2.x 레퍼런스를 그대로 적용하지 말 것. `tools.jackson.databind.SerializationFeature` enum 상수 목록을 반드시 확인
+
 ---
 
 ## Database Schema
@@ -164,9 +171,28 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 - 신고게시판: `rpt-`
 - 모듈 간 프리픽스 절대 섞지 말 것
 
+## ⚠️ 다국어(i18n) 규칙 (절대 규칙)
+- JSP/JSPF에 표시되는 **모든 사용자 노출 문자열은 반드시 언어팩(`.properties`)을 통해 출력**
+  - JSP 템플릿 직접 출력: `<spring:message code="..."/>`
+  - JS 변수에 주입: `const MSG = { key: '<spring:message code="..." javaScriptEscape="true"/>' }`
+  - **어떤 언어(한국어 포함)도 JSP/JS 코드에 직접 하드코딩 금지**
+- 언어팩 파일은 `ko / en / ja / zh` 4개를 **항상 동시에** 추가·수정
+  - 위치: `src/main/resources/messages/{module}_*.properties`
+  - 누락 언어팩은 기동 오류는 없지만 해당 로케일에서 키 코드가 그대로 노출됨
+- 잘못된 예 (절대 금지):
+  ```javascript
+  const label = '익명';           // ❌ 하드코딩
+  rows.innerHTML = '기록 없음';   // ❌ 하드코딩
+  ```
+- 올바른 예:
+  ```javascript
+  const label = MSG.anonymous;    // ✅ spring:message로 채워진 JS MSG 객체 참조
+  rows.innerHTML = MSG.emptyHistory;
+  ```
+
 ## JSP/EL 작성 규칙
 - `onclick` 안에 `${}` 직접 쓰지 말 것 → `data-id` 속성으로 분리 후 JS에서 처리
-- JS 정규식 안의 `{}` → 유니코드 `\u007B\u007D` 로 이스케이프 (JSP EL 충돌 방지)
+- JS 정규식 안의 `{}` → 유니코드 `{}` 로 이스케이프 (JSP EL 충돌 방지)
 - EL 삼항연산자 안에 EL 중첩 금지 → `<c:if>` 태그로 분리
 - 이미지 경로: `${pageContext.request.contextPath}/upload/community/UUID.jpg`
 
@@ -175,7 +201,7 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
   (`post_status='BLOCKED'`, `comment_status='BLOCKED'`, `account_status='BLOCKED'`)
 - `like_count`, `comment_count` 캐시 컬럼 항상 동기화 필수
 - MySQL `LIMIT`은 서브쿼리 안에 쓸 수 없음 → 서브쿼리 밖으로 빼기
-- `mybatis.type-aliases-package` 좁게 스캔 (`Temp.java` 별칭 충돌 주의)
+- `mybatis.type-aliases-package` 좁게 스캔 (`Temp.java` 별칭 충돌 방지)
 
 ## 권한 체크 패턴
 - 소유자 OR 어드민만 수정/삭제 가능

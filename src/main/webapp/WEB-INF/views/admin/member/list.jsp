@@ -630,10 +630,12 @@ const ADMIN_MEMBER_MSG = {
     chatbotFilterF5: '<spring:message code="admin.context.chatbotFilter.f5" javaScriptEscape="true"/>',
     chatbotFilterLoadFailed: '<spring:message code="admin.context.chatbotFilter.loadFailed" javaScriptEscape="true"/>',
     chatbotEmptyClicks: '<spring:message code="admin.context.empty.chatbotClicks" javaScriptEscape="true"/>',
-    anonymous: '<spring:message code="admin.common.anonymous" javaScriptEscape="true"/>'
+    anonymous: '<spring:message code="admin.common.anonymous" javaScriptEscape="true"/>',
+    tabMore: '<spring:message code="admin.context.tab.more" javaScriptEscape="true"/>'
 };
 
 let _chatbotDetailUserIdx = null;
+let _detailTabsRo = null;
 
 function escapeHtml(value) {
     if (value == null) return '';
@@ -1192,15 +1194,21 @@ async function openDetail(userIdx, defaultTab, focusSection) {
     document.getElementById('modalTitle').textContent = (m.nickname || ADMIN_MEMBER_MSG.memberDetailsTitle) + ' ' + ADMIN_MEMBER_MSG.memberDetailsSuffix;
 
     document.getElementById('modalBody').innerHTML = ''
-        + '<div class="adm-tabs adm-tabs-scroll">'
-        + '<button class="adm-tab ' + (activeTab === 'info' ? 'active' : '') + '" onclick="switchTab(\'info\', this)">' + ADMIN_MEMBER_MSG.infoTab + '</button>'
-        + '<button class="adm-tab ' + (activeTab === 'hist' ? 'active' : '') + '" onclick="switchTab(\'hist\', this)">' + ADMIN_MEMBER_MSG.loginTab + ' (' + h.length + ')</button>'
-        + '<button class="adm-tab ' + (activeTab === 'security' ? 'active' : '') + '" onclick="switchTab(\'security\', this)">' + ADMIN_MEMBER_MSG.securityTab + ' (' + securityAudits.length + ')</button>'
-        + '<button class="adm-tab ' + (activeTab === 'emails' ? 'active' : '') + '" onclick="switchTab(\'emails\', this)">' + ADMIN_MEMBER_MSG.emailHistoryTab + '</button>'
-        + '<button class="adm-tab ' + (activeTab === 'activity' ? 'active' : '') + '" onclick="switchTab(\'activity\', this)">' + ADMIN_MEMBER_MSG.activityTab + ' (' + activityLogs.length + ')</button>'
-        + '<button class="adm-tab ' + (activeTab === 'blocks' ? 'active' : '') + '" onclick="switchTab(\'blocks\', this)">' + ADMIN_MEMBER_MSG.blockTab + ' (' + recentBlocks.length + ')</button>'
-        + '<button class="adm-tab ' + (activeTab === 'chatbot' ? 'active' : '') + '" onclick="switchTab(\'chatbot\', this)">' + ADMIN_MEMBER_MSG.chatbotTab + ' (' + chatbotLinkClicks.length + ')</button>'
-        + '<button class="adm-tab ' + (activeTab === 'actions' ? 'active' : '') + '" onclick="switchTab(\'actions\', this)">' + ADMIN_MEMBER_MSG.actionsTab + '</button>'
+        + '<div class="adm-tabs-nav" id="detailTabsNav">'
+        + '<div class="adm-tabs">'
+        + '<button class="adm-tab ' + (activeTab === 'info' ? 'active' : '') + '" data-tab="info">' + escapeHtml(ADMIN_MEMBER_MSG.infoTab) + '</button>'
+        + '<button class="adm-tab ' + (activeTab === 'hist' ? 'active' : '') + '" data-tab="hist">' + escapeHtml(ADMIN_MEMBER_MSG.loginTab) + ' (' + h.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'security' ? 'active' : '') + '" data-tab="security">' + escapeHtml(ADMIN_MEMBER_MSG.securityTab) + ' (' + securityAudits.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'emails' ? 'active' : '') + '" data-tab="emails">' + escapeHtml(ADMIN_MEMBER_MSG.emailHistoryTab) + '</button>'
+        + '<button class="adm-tab ' + (activeTab === 'activity' ? 'active' : '') + '" data-tab="activity">' + escapeHtml(ADMIN_MEMBER_MSG.activityTab) + ' (' + activityLogs.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'blocks' ? 'active' : '') + '" data-tab="blocks">' + escapeHtml(ADMIN_MEMBER_MSG.blockTab) + ' (' + recentBlocks.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'chatbot' ? 'active' : '') + '" data-tab="chatbot">' + escapeHtml(ADMIN_MEMBER_MSG.chatbotTab) + ' (' + chatbotLinkClicks.length + ')</button>'
+        + '<button class="adm-tab ' + (activeTab === 'actions' ? 'active' : '') + '" data-tab="actions">' + escapeHtml(ADMIN_MEMBER_MSG.actionsTab) + '</button>'
+        + '</div>'
+        + '<div class="adm-tabs-more" id="detailTabsMore" style="display:none;">'
+        + '<button type="button" class="adm-tabs-more-btn" id="detailTabsMoreBtn">' + escapeHtml(ADMIN_MEMBER_MSG.tabMore) + '</button>'
+        + '<div class="adm-tabs-dropdown" id="detailTabsDropdown" style="display:none;"></div>'
+        + '</div>'
         + '</div>'
         + '<div id="tab-info" style="display:' + (activeTab === 'info' ? '' : 'none') + ';"></div>'
         + '<div id="tab-hist" style="display:' + (activeTab === 'hist' ? '' : 'none') + ';"></div>'
@@ -1223,6 +1231,7 @@ async function openDetail(userIdx, defaultTab, focusSection) {
     document.getElementById('tab-blocks').innerHTML = buildBlockRows(recentBlocks);
     document.getElementById('tab-chatbot').innerHTML = buildChatbotTab(chatbotLinkClicks, loginAudits, userIdx);
     document.getElementById('tab-actions').innerHTML = buildActionTab(m);
+    initDetailTabsNav(activeTab);
     const statusSelect = document.getElementById('memberStatusSelect');
     const roleSelect = document.getElementById('memberRoleSelect');
     if (statusSelect) statusSelect.value = m.accountStatus || 'ACTIVE';
@@ -1339,13 +1348,96 @@ function buildHistTab(history) {
         + '</div>';
 }
 
-function switchTab(tab, btn) {
-    document.querySelectorAll('#detailModal .adm-tab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'actions'].forEach(function(name) {
+const DETAIL_TAB_KEYS = ['info', 'hist', 'security', 'emails', 'activity', 'blocks', 'chatbot', 'actions'];
+
+function switchTab(tabKey) {
+    DETAIL_TAB_KEYS.forEach(function(name) {
         const el = document.getElementById('tab-' + name);
-        if (el) el.style.display = tab === name ? '' : 'none';
+        if (el) el.style.display = tabKey === name ? '' : 'none';
     });
+    const nav = document.getElementById('detailTabsNav');
+    if (!nav) return;
+    nav.querySelectorAll('.adm-tab').forEach(function(b) { b.classList.remove('active'); });
+    nav.querySelectorAll('.adm-tab[data-tab="' + tabKey + '"]').forEach(function(b) { b.classList.add('active'); });
+    const moreBtn = document.getElementById('detailTabsMoreBtn');
+    if (moreBtn) {
+        const inDropdown = !!document.querySelector('#detailTabsDropdown .adm-tab[data-tab="' + tabKey + '"]');
+        moreBtn.classList.toggle('has-active', inDropdown);
+    }
+}
+
+function initDetailTabsNav(activeTab) {
+    const nav = document.getElementById('detailTabsNav');
+    if (!nav) return;
+
+    const row = nav.querySelector('.adm-tabs');
+    const moreWrap = document.getElementById('detailTabsMore');
+    const moreBtn = document.getElementById('detailTabsMoreBtn');
+    const dropdown = document.getElementById('detailTabsDropdown');
+
+    // 이벤트 위임 — row와 dropdown 모두 커버
+    nav.addEventListener('click', function(e) {
+        const btn = e.target.closest('.adm-tab[data-tab]');
+        if (!btn) return;
+        dropdown.style.display = 'none';
+        switchTab(btn.dataset.tab);
+    });
+
+    moreBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.style.display = dropdown.style.display === 'none' ? '' : 'none';
+    });
+
+    document.addEventListener('click', function _closeDropdown() {
+        if (!dropdown) { document.removeEventListener('click', _closeDropdown); return; }
+        dropdown.style.display = 'none';
+    });
+
+    function reflow() {
+        const allTabs = Array.from(row.querySelectorAll(':scope > .adm-tab'));
+        // 전체 복원 후 측정
+        allTabs.forEach(function(t) { t.style.display = ''; });
+        moreWrap.style.display = 'none';
+        dropdown.innerHTML = '';
+
+        const navWidth = nav.offsetWidth;
+        const totalTabsWidth = allTabs.reduce(function(acc, t) { return acc + t.offsetWidth + 2; }, 0);
+
+        if (totalTabsWidth <= navWidth) {
+            if (moreBtn) moreBtn.classList.remove('has-active');
+            return;
+        }
+
+        // 더보기 버튼이 필요함 — 버튼 너비 확보
+        moreWrap.style.display = '';
+        const availWidth = navWidth - moreWrap.offsetWidth - 2;
+
+        // 앞에서부터 누적해서 자를 위치 결정
+        let acc = 0;
+        let cutAt = allTabs.length;
+        for (let i = 0; i < allTabs.length; i++) {
+            acc += allTabs[i].offsetWidth + 2;
+            if (acc > availWidth) { cutAt = i; break; }
+        }
+
+        // cutAt 이후 탭 → 숨기고 드롭다운에 복제
+        let hasActiveInDropdown = false;
+        for (let i = cutAt; i < allTabs.length; i++) {
+            const original = allTabs[i];
+            if (original.classList.contains('active')) hasActiveInDropdown = true;
+            original.style.display = 'none';
+            const clone = original.cloneNode(true);
+            clone.style.display = '';
+            dropdown.appendChild(clone);
+        }
+        moreBtn.classList.toggle('has-active', hasActiveInDropdown);
+    }
+
+    reflow();
+
+    if (_detailTabsRo) _detailTabsRo.disconnect();
+    _detailTabsRo = new ResizeObserver(reflow);
+    _detailTabsRo.observe(nav);
 }
 
 async function saveMemberProfile(userIdx, button) {
@@ -1449,6 +1541,7 @@ async function submitDetailBlock(userIdx, button) {
 }
 
 function closeDetail() {
+    if (_detailTabsRo) { _detailTabsRo.disconnect(); _detailTabsRo = null; }
     document.getElementById('detailModal').classList.remove('open');
     // 외부에서 ?detailUserIdx=N 으로 들어와 자동 오픈된 경우, 닫힘 후 파라미터 제거 (리프레시 재오픈 방지)
     try {
