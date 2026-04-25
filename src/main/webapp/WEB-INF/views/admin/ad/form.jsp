@@ -130,6 +130,20 @@
                     </select>
                 </div>
 
+                <%-- courses: 공개 여행 코스 드롭다운 --%>
+                <div id="coursesDropBox" style="display:none;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;">여행 코스 선택</label>
+                    <select name="linkTargetId" id="coursesSelect" class="adm-input" style="width:100%;padding:10px 12px;font-size:14px;" disabled>
+                        <option value="">공개 여행 코스 선택...</option>
+                        <c:forEach var="t" items="${publicTravelPlans}">
+                            <option value="${t.plan_id}"
+                                ${ad.linkTargetType eq 'courses' and ad.linkTargetId eq t.plan_id ? 'selected' : ''}>
+                                ${t.title}<c:if test="${not empty t.destination}"> — ${t.destination}</c:if> (#${t.plan_id})
+                            </option>
+                        </c:forEach>
+                    </select>
+                </div>
+
                 <%-- 목록만 이동하는 모듈(flight/shop/mypage): 입력 필드 없음 --%>
                 <div id="listOnlyBox" style="display:none;">
                     <div style="font-size:13px;color:#64748b;padding:10px 12px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0;">
@@ -137,11 +151,11 @@
                     </div>
                 </div>
 
-                <%-- courses/inquiry 등: ID 수동 입력 --%>
+                <%-- inquiry: ID 수동 입력 --%>
                 <div id="targetIdBox" style="display:none;">
                     <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;">대상 ID</label>
                     <input type="number" name="linkTargetId" id="targetIdInput" class="adm-input" style="width:100%;padding:10px 12px;font-size:14px;"
-                           value="${ad.linkTargetType eq 'courses' or ad.linkTargetType eq 'inquiry' ? ad.linkTargetId : ''}" placeholder="비우면 목록 페이지로 이동" disabled/>
+                           value="${ad.linkTargetType eq 'inquiry' ? ad.linkTargetId : ''}" placeholder="비우면 목록 페이지로 이동" disabled/>
                     <div style="font-size:11px;color:#94a3b8;margin-top:4px;">대상 컨텐츠 ID. 비우면 해당 모듈의 목록 페이지로 이동</div>
                 </div>
             </div>
@@ -258,18 +272,21 @@
         var isPackage   = (tt === 'package');
         var isCommunity = (tt === 'community');
         var isExplore   = (tt === 'explore');
+        var isCourses   = (tt === 'courses');
         var isListOnly  = (tt === 'flight' || tt === 'shop' || tt === 'mypage');
-        var isManualId  = (tt === 'courses' || tt === 'inquiry');
+        var isManualId  = (tt === 'inquiry');
 
         document.getElementById('packageDropBox').style.display   = isPackage   ? '' : 'none';
         document.getElementById('communityDropBox').style.display = isCommunity ? '' : 'none';
         document.getElementById('exploreDropBox').style.display   = isExplore   ? '' : 'none';
+        document.getElementById('coursesDropBox').style.display   = isCourses   ? '' : 'none';
         document.getElementById('listOnlyBox').style.display      = isListOnly  ? '' : 'none';
         document.getElementById('targetIdBox').style.display      = isManualId  ? '' : 'none';
 
         document.getElementById('packageSelect').disabled   = !isPackage;
         document.getElementById('communitySelect').disabled = !isCommunity;
         document.getElementById('exploreSelect').disabled   = !isExplore;
+        document.getElementById('coursesSelect').disabled   = !isCourses;
         document.getElementById('targetIdInput').disabled   = !isManualId;
     }
     document.querySelectorAll('input[name="linkType"]').forEach(function (r) {

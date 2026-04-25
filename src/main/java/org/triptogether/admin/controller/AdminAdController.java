@@ -17,6 +17,8 @@ import org.triptogether.cloudinary.CloudinaryService;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.CommunityPostDto;
 import org.triptogether.community.vo.CommunitySearchDto;
+import org.triptogether.courses.service.TravelPlanService;
+import org.triptogether.courses.vo.TravelPlanVO;
 import org.triptogether.explore.service.ExploreService;
 import org.triptogether.explore.vo.ExploreSearchDto;
 import org.triptogether.explore.vo.ExploreVO;
@@ -44,6 +46,7 @@ public class AdminAdController {
     private final TravelPackageService travelPackageService;
     private final CommunityService communityService;
     private final ExploreService exploreService;
+    private final TravelPlanService travelPlanService;
 
     /** 광고 목록 */
     @GetMapping
@@ -142,6 +145,14 @@ public class AdminAdController {
         } catch (Exception e) {
             log.warn("광고 폼 여행지 옵션 로드 실패: {}", e.getMessage());
             model.addAttribute("exploreSpots", List.of());
+        }
+        // 공개 여행 코스
+        try {
+            List<TravelPlanVO> publicPlans = travelPlanService.getPublicTravelList();
+            model.addAttribute("publicTravelPlans", publicPlans);
+        } catch (Exception e) {
+            log.warn("광고 폼 여행 코스 옵션 로드 실패: {}", e.getMessage());
+            model.addAttribute("publicTravelPlans", List.of());
         }
     }
 

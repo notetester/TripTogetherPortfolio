@@ -88,7 +88,7 @@ public class AdPublicController {
             case "community":
                 return (targetId != null) ? ("/community/" + targetId) : "/community";
             case "courses":
-                return "/courses";
+                return (targetId != null) ? ("/courses/detail?planId=" + targetId) : "/courses";
             case "explore":
                 return (targetId != null) ? ("/detail/" + targetId) : "/explore";
             case "flight":
