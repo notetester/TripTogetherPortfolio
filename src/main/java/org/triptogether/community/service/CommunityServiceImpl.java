@@ -661,9 +661,10 @@ public class CommunityServiceImpl implements CommunityService {
     public void updatePostReportCache(Long postId) {
         CommunityPostDto post = communityMapper.selectPost(postId);
         if (post == null) return;
-        boolean wasBlurred = (post.getReportCount() >= 3) || post.isAiFlagged();
+        int threshold = moderationPolicyService.getPolicy().getReportThreshold();
+        boolean wasBlurred = (post.getReportCount() >= threshold) || post.isAiFlagged();
         communityMapper.increasePostReportCount(postId);
-        boolean nowBlurred = ((post.getReportCount() + 1) >= 3) || post.isAiFlagged();
+        boolean nowBlurred = ((post.getReportCount() + 1) >= threshold) || post.isAiFlagged();
         if (!wasBlurred && nowBlurred) {
             notifyPostBlurred(post, "다수의 신고");
         }
@@ -675,9 +676,10 @@ public class CommunityServiceImpl implements CommunityService {
     public void updateCommentReportCache(Long commentId) {
         CommunityCommentDto comment = communityMapper.selectComment(commentId);
         if (comment == null) return;
-        boolean wasBlurred = (comment.getReportCount() >= 3) || comment.isAiFlagged();
+        int threshold = moderationPolicyService.getPolicy().getReportThreshold();
+        boolean wasBlurred = (comment.getReportCount() >= threshold) || comment.isAiFlagged();
         communityMapper.increaseCommentReportCount(commentId);
-        boolean nowBlurred = ((comment.getReportCount() + 1) >= 3) || comment.isAiFlagged();
+        boolean nowBlurred = ((comment.getReportCount() + 1) >= threshold) || comment.isAiFlagged();
         if (!wasBlurred && nowBlurred) {
             notifyCommentBlurred(comment, "다수의 신고");
         }
@@ -698,7 +700,8 @@ public class CommunityServiceImpl implements CommunityService {
     public void flagPostAsToxic(Long postId) {
         CommunityPostDto post = communityMapper.selectPost(postId);
         if (post == null) return;
-        boolean wasBlurred = (post.getReportCount() >= 3) || post.isAiFlagged();
+        int threshold = moderationPolicyService.getPolicy().getReportThreshold();
+        boolean wasBlurred = (post.getReportCount() >= threshold) || post.isAiFlagged();
 
         try {
             reportService.submitReport("post", postId, SystemUser.BOT_USER_IDX,
@@ -720,7 +723,8 @@ public class CommunityServiceImpl implements CommunityService {
     public void flagCommentAsToxic(Long commentId) {
         CommunityCommentDto comment = communityMapper.selectComment(commentId);
         if (comment == null) return;
-        boolean wasBlurred = (comment.getReportCount() >= 3) || comment.isAiFlagged();
+        int threshold = moderationPolicyService.getPolicy().getReportThreshold();
+        boolean wasBlurred = (comment.getReportCount() >= threshold) || comment.isAiFlagged();
 
         try {
             reportService.submitReport("comment", commentId, SystemUser.BOT_USER_IDX,

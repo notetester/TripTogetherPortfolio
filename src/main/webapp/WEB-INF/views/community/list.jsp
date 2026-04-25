@@ -49,7 +49,7 @@
                         <div class="comm-carousel-track" id="todayCarouselTrack">
                             <c:forEach var="post" items="${popularList}">
                                 <c:set var="isBlocked"    value="${post.postStatus eq 'BLOCKED' or post.accountStatus eq 'BLOCKED'}"/>
-                                <c:set var="isReportOrAi" value="${post.reportCount >= 3 or post.aiFlagged}"/>
+                                <c:set var="isReportOrAi" value="${post.reportCount >= reportThreshold or post.aiFlagged}"/>
                                 <c:if test="${(not isBlocked) or isReportOrAi or isAdminMode}">
                                 <c:set var="isBlurred" value="${isReportOrAi and !isAdminMode}"/>
                                 <div class="comm-today-card ${isBlurred ? 'report-blurred-wrap' : ''}" data-id="${post.postId}">
@@ -324,7 +324,7 @@
             <c:otherwise>
                 <c:forEach var="post" items="${postList}">
                     <c:if test="${!(post.accountStatus eq 'BLOCKED' or post.postStatus eq 'BLOCKED') or isAdminMode}">
-                        <c:set var="isBlurred" value="${(post.reportCount >= 3 or post.aiFlagged) and !isAdminMode}"/>
+                        <c:set var="isBlurred" value="${(post.reportCount >= reportThreshold or post.aiFlagged) and !isAdminMode}"/>
                         <div class="post-card-wrap ${isBlurred ? 'report-blurred-wrap' : ''}"
                              data-id="${post.postId}">
                             <c:if test="${isAdminMode}">
@@ -428,7 +428,7 @@
                                     <c:when test="${post.aiFlagged}">
                                         <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
                                     </c:when>
-                                    <c:when test="${post.postStatus eq 'ACTIVE' and post.reportCount >= 3}">
+                                    <c:when test="${post.postStatus eq 'ACTIVE' and post.reportCount >= reportThreshold}">
                                         <span class="blocked-badge"><spring:message code="community.badge.report"/></span>
                                     </c:when>
                                     <c:when test="${post.postStatus eq 'BLOCKED'}">
@@ -438,7 +438,7 @@
                                         <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
                                     </c:when>
                                 </c:choose>
-                                <c:if test="${post.aiFlagged or post.reportCount >= 3}">
+                                <c:if test="${post.aiFlagged or post.reportCount >= reportThreshold}">
                                     <button class="post-admin-clear-blur-btn" data-id="${post.postId}"
                                             onclick="adminClearPostBlur(event, ${post.postId})">
                                         <spring:message code="community.admin.clearBlur"/>
