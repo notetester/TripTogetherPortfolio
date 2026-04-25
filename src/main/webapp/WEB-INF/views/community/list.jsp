@@ -204,7 +204,7 @@
     <c:when test="${not empty currentAd}">
         <div class="comm-ad-banner" data-ad-id="${currentAd.adId}">
             <c:choose>
-                <c:when test="${not empty currentAd.linkUrl}">
+                <c:when test="${empty currentAd.linkType or currentAd.linkType ne 'NONE'}">
                     <a href="${pageContext.request.contextPath}/ad/${currentAd.adId}/click" class="comm-ad-link" target="_blank" rel="noopener sponsored">
                         <img src="${currentAd.imageUrl}" alt="${currentAd.title}" class="comm-ad-image"/>
                     </a>
