@@ -1357,7 +1357,7 @@
                     <thead><tr>
                         <th class="js-local-sort" data-section="histories" data-sort="blockedAt" onclick="blockSortBy('histories','blockedAt')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/> <span class="sort-ico">↕</span></th>
                         <th class="js-local-sort" data-section="histories" data-sort="target" onclick="blockSortBy('histories','target')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="histories" data-sort="change" onclick="blockSortBy('histories','change')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-section="histories" data-sort="policy" onclick="blockSortBy('histories','policy')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">↕</span></th>
                         <th class="js-local-sort" data-section="histories" data-sort="change" onclick="blockSortBy('histories','change')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/> <span class="sort-ico">↕</span></th>
                         <th><spring:message code="admin.blocks.result"/></th>
                         <th class="js-local-sort" data-section="histories" data-sort="reason" onclick="blockSortBy('histories','reason')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/> <span class="sort-ico">↕</span></th>
