@@ -113,6 +113,11 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 - 커밋 메시지는 기존 로그 스타일(짧은 한국어 요약) 유지
 - **커밋 메시지에 `Co-Authored-By: Codex` 절대 포함하지 말 것**
 - `--no-verify`, `--amend`, `git push --force` 등 위험 옵션은 사용자 명시 요청 시에만 사용
+- 다음 시점에 Codex는 커밋을 선제 제안해야 함:
+- 기능 단위 구현이 마무리됐을 때
+- 버그 수정이 확인됐을 때
+- 사용자가 다음 주제로 넘어가려 할 때 워킹트리에 미커밋 변경이 남아 있을 때
+- 제안 내용: 커밋 단위 분할안 + 메시지 후보 → 사용자 승인 후 실행
 
 ## Victor 담당 모듈
 - 모든 모듈 수정 가능
@@ -138,7 +143,7 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 
 ## DB/MyBatis 추가 규칙
 - 어드민 블로킹은 DELETE 아닌 status 값으로 처리
-  (`post_status='DORMANT'`, `comment_status='BLOCKED'`, `account_status='BLOCKED'`)
+  (`post_status='BLOCKED'`, `comment_status='BLOCKED'`, `account_status='BLOCKED'`)
 - `like_count`, `comment_count` 캐시 컬럼 항상 동기화 필수
 - MySQL `LIMIT`은 서브쿼리 안에 쓸 수 없음 → 서브쿼리 밖으로 빼기
 - `mybatis.type-aliases-package` 좁게 스캔 (`Temp.java` 별칭 충돌 주의)
@@ -149,12 +154,9 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 
 ## 커뮤니티 신고/차단 상태 규칙 (중요)
 - **신고 3회 이상 누적 (`report_count >= 3`)**:
-  - `post_status` / `comment_status`는 `'BLOCKED'`로 전환됨
-  - 그러나 일반 사용자 목록에 계속 표시됨 (리스트 쿼리 조건에 포함)
+  - 일반 사용자 목록에 계속 표시됨 (리스트 쿼리 조건에 포함) BLOCKED 되지 않음 매우 중요
   - 본문 BLUR 처리 + "⚠️ 신고된 콘텐츠입니다. 클릭하여 확인" 오버레이
   - 클릭하면 블러 벗겨져 내용 공개 (점진적 공개 UX)
 - **관리자 직접 차단 (`report_count < 3` + `status='BLOCKED'`)**:
   - 일반 사용자 목록에서 **완전 숨김** ("blind")
   - 관리자 모드에서만 표시
-- 즉, `BLOCKED` 상태값 자체는 같음. `report_count` 조건으로 렌더링 분기
-- "BLOCKED = 안 보임"이라고 단정 금지. 반드시 `report_count`까지 확인할 것

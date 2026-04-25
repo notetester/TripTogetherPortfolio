@@ -154,7 +154,7 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 
 ## DB/MyBatis 추가 규칙
 - 어드민 블로킹은 DELETE 아닌 status 값으로 처리
-  (`post_status='DORMANT'`, `comment_status='BLOCKED'`, `account_status='BLOCKED'`)
+  (`post_status='BLOCKED'`, `comment_status='BLOCKED'`, `account_status='BLOCKED'`)
 - `like_count`, `comment_count` 캐시 컬럼 항상 동기화 필수
 - MySQL `LIMIT`은 서브쿼리 안에 쓸 수 없음 → 서브쿼리 밖으로 빼기
 - `mybatis.type-aliases-package` 좁게 스캔 (`Temp.java` 별칭 충돌 주의)
