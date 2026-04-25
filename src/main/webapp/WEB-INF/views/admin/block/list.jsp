@@ -530,7 +530,7 @@
                         onclick="document.getElementById('ub-exportDropdown').style.display=(document.getElementById('ub-exportDropdown').style.display==='none'?'block':'none')">
                     <spring:message code="admin.common.export"/> ▾
                 </button>
-                <div id="ub-exportDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#1e293b;border:1px solid #334155;border-radius:8px;z-index:200;min-width:180px;padding:4px 0;">
+                <div id="ub-exportDropdown" class="adm-export-dropdown" style="display:none;">
                     <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','all')"><spring:message code="admin.common.exportAll"/></button>
                     <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
                     <button type="button" class="adm-export-item js-block-export-selected" data-section="user-blocks" id="ub-exportSelectedBtn" disabled onclick="exportBlockData('user-blocks','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="ub-selectedCount">0</span>)</button>
@@ -552,6 +552,7 @@
                     </select>
                     <input type="text" class="adm-input js-local-keyword" data-section="user-blocks" placeholder="<spring:message code='admin.blocks.userBlocks.searchPlaceholder'/>">
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="user-blocks"><spring:message code="admin.common.reset"/></button>
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="user-blocks" style="display:none;" onclick="sectionSortReset('user-blocks')"></button>
                 </div>
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-page-size" data-section="user-blocks">
@@ -839,7 +840,7 @@
                             onclick="document.getElementById('ipr-exportDropdown').style.display=(document.getElementById('ipr-exportDropdown').style.display==='none'?'block':'none')">
                         <spring:message code="admin.common.export"/> ▾
                     </button>
-                    <div id="ipr-exportDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#1e293b;border:1px solid #334155;border-radius:8px;z-index:200;min-width:180px;padding:4px 0;">
+                    <div id="ipr-exportDropdown" class="adm-export-dropdown" style="display:none;">
                         <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','all')"><spring:message code="admin.common.exportAll"/></button>
                         <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
                         <button type="button" class="adm-export-item js-block-export-selected" data-section="ip-rules" id="ipr-exportSelectedBtn" disabled onclick="exportBlockData('ip-rules','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="ipr-selectedCount">0</span>)</button>
@@ -862,6 +863,7 @@
                     </select>
                     <input type="text" class="adm-input js-local-keyword" data-section="ip-rules" placeholder="<spring:message code='admin.blocks.ipRules.searchPlaceholder'/>">
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="ip-rules"><spring:message code="admin.common.reset"/></button>
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="ip-rules" style="display:none;" onclick="sectionSortReset('ip-rules')"></button>
                 </div>
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-page-size" data-section="ip-rules">
@@ -1140,10 +1142,31 @@
 
     <div class="adm-card js-section-card" data-section="batches" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.blocks.section.batches"/></div>
-            <div class="adm-card-sub"><spring:message code="admin.blocks.batches.sub"/></div>
+            <div>
+                <div class="adm-card-title"><spring:message code="admin.blocks.section.batches"/></div>
+                <div class="adm-card-sub"><spring:message code="admin.blocks.batches.sub"/></div>
+            </div>
+            <div style="position:relative;display:flex;align-items:center;gap:8px;">
+                <select id="bat-exportFormat" class="adm-select js-block-export-format" data-section="batches" style="width:90px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-ghost"
+                        onclick="document.getElementById('bat-exportDropdown').style.display=(document.getElementById('bat-exportDropdown').style.display==='none'?'block':'none')">
+                    <spring:message code="admin.common.export"/> ▾
+                </button>
+                <div id="bat-exportDropdown" class="adm-export-dropdown" style="display:none;">
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('batches','all')"><spring:message code="admin.common.exportAll"/></button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('batches','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
+                    <button type="button" class="adm-export-item js-block-export-selected" data-section="batches" id="bat-exportSelectedBtn" disabled onclick="exportBlockData('batches','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="bat-selectedCount">0</span>)</button>
+                </div>
+            </div>
         </div>
         <div class="adm-card-body" style="padding:0;">
+            <div id="bat-bulkBar" class="js-block-bulkbar" data-section="batches" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
+                <span style="color:#93c5fd;font-size:13px;"><spring:message code="admin.common.selectedCount"/>: <strong id="bat-bulkCount" class="js-block-bulk-count">0</strong></span>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('batches')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
+            </div>
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="batches">
@@ -1157,6 +1180,7 @@
                     </select>
                     <input type="text" class="adm-input js-local-keyword" data-section="batches" placeholder="<spring:message code='admin.blocks.batches.searchPlaceholder'/>">
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="batches"><spring:message code="admin.common.reset"/></button>
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="batches" style="display:none;" onclick="sectionSortReset('batches')"></button>
                 </div>
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-page-size" data-section="batches">
@@ -1169,11 +1193,12 @@
             <div class="adm-table-wrap">
                 <table class="adm-table">
                     <thead><tr>
-                        <th class="js-local-sort" data-sort-index="0" onclick="sectionSort('batches',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.batch"/></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.basePolicy"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.currentState"/></th>
+                        <th style="width:36px;"><input type="checkbox" id="bat-checkAll" class="js-block-check-all" data-section="batches" onchange="blockToggleAll('batches')"></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.batch"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.basePolicy"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('batches',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.currentState"/></th>
                         <th><spring:message code="admin.blocks.ruleStats"/></th>
-                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('batches',4)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.description"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('batches',5)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.description"/></th>
                         <th><spring:message code="admin.common.action"/></th>
                     </tr></thead>
                     <tbody>
@@ -1189,6 +1214,7 @@
                             data-policy="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)} ${b.defaultRulePriority} ${fn:toLowerCase(empty b.defaultDisableStrategy ? '' : b.defaultDisableStrategy)} ${fn:toLowerCase(empty b.defaultEnableStrategy ? '' : b.defaultEnableStrategy)}"
                             data-status="${fn:toLowerCase(b.activeLabel)}"
                             data-updated-at="${fn:toLowerCase(batchUpdatedAtText)}">
+                            <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="${b.ipBlockBatchIdx}" value="${b.ipBlockBatchIdx}" onchange="updateBlockBulkBar('batches')"></td>
                             <td>
                                 <button type="button"
                                         class="adm-link-btn js-open-batch-editor"
@@ -1293,7 +1319,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty batches}">
-                        <tr><td colspan="6" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                        <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                     </c:if>
                     </tbody>
                 </table>
@@ -1361,10 +1387,31 @@
 
     <div class="adm-card js-section-card" data-section="histories" data-enhanced="true">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.blocks.section.histories"/></div>
-            <div class="adm-card-sub"><spring:message code="admin.blocks.histories.sub"/></div>
+            <div>
+                <div class="adm-card-title"><spring:message code="admin.blocks.section.histories"/></div>
+                <div class="adm-card-sub"><spring:message code="admin.blocks.histories.sub"/></div>
+            </div>
+            <div style="position:relative;display:flex;align-items:center;gap:8px;">
+                <select id="hist-exportFormat" class="adm-select js-block-export-format" data-section="histories" style="width:90px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-ghost"
+                        onclick="document.getElementById('hist-exportDropdown').style.display=(document.getElementById('hist-exportDropdown').style.display==='none'?'block':'none')">
+                    <spring:message code="admin.common.export"/> ▾
+                </button>
+                <div id="hist-exportDropdown" class="adm-export-dropdown" style="display:none;">
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('histories','all')"><spring:message code="admin.common.exportAll"/></button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('histories','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
+                    <button type="button" class="adm-export-item js-block-export-selected" data-section="histories" id="hist-exportSelectedBtn" disabled onclick="exportBlockData('histories','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="hist-selectedCount">0</span>)</button>
+                </div>
+            </div>
         </div>
         <div class="adm-card-body" style="padding:0;">
+            <div id="hist-bulkBar" class="js-block-bulkbar" data-section="histories" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
+                <span style="color:#93c5fd;font-size:13px;"><spring:message code="admin.common.selectedCount"/>: <strong id="hist-bulkCount" class="js-block-bulk-count">0</strong></span>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('histories')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
+            </div>
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="histories">
@@ -1379,6 +1426,7 @@
                     </select>
                     <input type="text" class="adm-input js-local-keyword" data-section="histories" placeholder="<spring:message code='admin.blocks.histories.searchPlaceholder'/>">
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="histories"><spring:message code="admin.common.reset"/></button>
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="histories" style="display:none;" onclick="sectionSortReset('histories')"></button>
                 </div>
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-page-size" data-section="histories">
@@ -1391,12 +1439,13 @@
             <div class="adm-table-wrap">
                 <table class="adm-table">
                     <thead><tr>
-                        <th class="js-local-sort" data-sort-index="0" onclick="sectionSort('histories',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('histories',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('histories',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
-                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('histories',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/></th>
+                        <th style="width:36px;"><input type="checkbox" id="hist-checkAll" class="js-block-check-all" data-section="histories" onchange="blockToggleAll('histories')"></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('histories',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('histories',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('histories',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('histories',4)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/></th>
                         <th><spring:message code="admin.blocks.result"/></th>
-                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('histories',5)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/></th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('histories',6)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/></th>
                         <th><spring:message code="admin.common.action"/></th>
                     </tr></thead>
                     <tbody>
@@ -1423,6 +1472,7 @@
                             data-batch="${fn:toLowerCase(empty h.batchName ? '' : h.batchName)} ${fn:toLowerCase(empty h.batchCode ? '' : h.batchCode)}"
                             data-blocked-at="${fn:toLowerCase(historyBlockedAtText)}"
                             data-expires-at="${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}">
+                            <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="histories" data-id="${h.blockIdx}" value="${h.blockIdx}" onchange="updateBlockBulkBar('histories')"></td>
                             <td>
                                 <button type="button"
                                         class="adm-cell-link js-open-block-detail"
@@ -1543,7 +1593,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty histories}">
-                        <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                        <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                     </c:if>
                     </tbody>
                 </table>
@@ -2440,6 +2490,15 @@ function updateLocalSortIndicators(section) {
             if (ico) ico.remove();
         }
     });
+    const resetBtn = card.querySelector('.js-section-sort-reset');
+    if (resetBtn) {
+        if (activeCellIndex >= 0) {
+            resetBtn.textContent = ADMIN_BLOCK_MSG.dashSortReset;
+            resetBtn.style.display = '';
+        } else {
+            resetBtn.style.display = 'none';
+        }
+    }
 }
 
 function sectionSort(section, cellIndex) {
@@ -2448,6 +2507,14 @@ function sectionSort(section, cellIndex) {
     const nextDir = (prevCell === cellIndex && state.sortDir === 'ASC') ? 'DESC' : 'ASC';
     state.sectionSortCell = cellIndex;
     state.sortDir = nextDir;
+    state.page = 1;
+    renderLocalSection(section);
+}
+
+function sectionSortReset(section) {
+    const state = getLocalState(section);
+    state.sectionSortCell = null;
+    state.sortDir = 'ASC';
     state.page = 1;
     renderLocalSection(section);
 }
@@ -2896,7 +2963,7 @@ function applyBlockLocalFilter(section, field, keyword) {
 
 function blockSortBy(section, field) { /* deprecated — use sectionSort */ }
 function blockToggleAll(section) {
-    const checkAll = section === 'user-blocks' ? document.getElementById('ub-checkAll') : document.getElementById('ipr-checkAll');
+    const checkAll = document.querySelector('.js-block-check-all[data-section="' + section + '"]');
     const checked = checkAll ? checkAll.checked : false;
     getLocalRows(section).forEach(function(row) {
         if (row.style.display === 'none') return;
