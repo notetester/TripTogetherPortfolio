@@ -1409,6 +1409,18 @@ html { scrollbar-gutter: stable; }
         });
       });
 
+      // 광고에서 ?openPackage={pkgId}로 진입 시 해당 패키지 모달 자동 오픈
+      try {
+        var pkgIdParam = new URLSearchParams(window.location.search).get('openPackage');
+        if (pkgIdParam) {
+          var targetCard = rail.querySelector('.detail-package-card[data-package-idx="' + pkgIdParam + '"]');
+          if (targetCard) {
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(function () { openPackageModal(targetCard); }, 250);
+          }
+        }
+      } catch (e) { /* URL 파싱 실패는 조용히 무시 */ }
+
       if (modalCloseBtn) {
         modalCloseBtn.addEventListener('click', closePackageModal);
       }
