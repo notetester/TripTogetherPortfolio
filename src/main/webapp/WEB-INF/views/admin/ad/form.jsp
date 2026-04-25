@@ -87,7 +87,7 @@
                     <option value="inquiry"   ${ad.linkTargetType eq 'inquiry'   ? 'selected' : ''}>문의</option>
                 </select>
 
-                <%-- package: 패키지 드롭다운 (저장 시 자동 explore + spot_idx 변환) --%>
+                <%-- package: 패키지 드롭다운 --%>
                 <div id="packageDropBox" style="display:none;">
                     <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;">패키지 선택</label>
                     <select name="linkTargetId" id="packageSelect" class="adm-input" style="width:100%;padding:10px 12px;font-size:14px;" disabled>
@@ -99,14 +99,49 @@
                             </option>
                         </c:forEach>
                     </select>
-                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">패키지 선택 시 저장 시점에 해당 여행지(spot)로 자동 매핑됩니다.</div>
+                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">패키지 클릭 시 해당 여행지로 이동하면서 패키지 모달이 자동 오픈됩니다.</div>
                 </div>
 
-                <%-- 그 외 타입: ID 수동 입력 --%>
+                <%-- community: 게시글 드롭다운 --%>
+                <div id="communityDropBox" style="display:none;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;">게시글 선택</label>
+                    <select name="linkTargetId" id="communitySelect" class="adm-input" style="width:100%;padding:10px 12px;font-size:14px;" disabled>
+                        <option value="">게시글 선택...</option>
+                        <c:forEach var="p" items="${communityPosts}">
+                            <option value="${p.postId}"
+                                ${ad.linkTargetType eq 'community' and ad.linkTargetId eq p.postId ? 'selected' : ''}>
+                                ${p.title} — ${p.nickname} (#${p.postId})
+                            </option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <%-- explore: 여행지 드롭다운 --%>
+                <div id="exploreDropBox" style="display:none;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;">여행지 선택</label>
+                    <select name="linkTargetId" id="exploreSelect" class="adm-input" style="width:100%;padding:10px 12px;font-size:14px;" disabled>
+                        <option value="">여행지 선택...</option>
+                        <c:forEach var="s" items="${exploreSpots}">
+                            <option value="${s.spotIdx}"
+                                ${ad.linkTargetType eq 'explore' and ad.linkTargetId eq s.spotIdx ? 'selected' : ''}>
+                                ${s.name} — ${s.region} (#${s.spotIdx})
+                            </option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <%-- 목록만 이동하는 모듈(flight/shop/mypage): 입력 필드 없음 --%>
+                <div id="listOnlyBox" style="display:none;">
+                    <div style="font-size:13px;color:#64748b;padding:10px 12px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0;">
+                        ⓘ 이 컨텐츠 종류는 해당 모듈의 메인/목록 페이지로 이동합니다. (대상 ID 입력 불필요)
+                    </div>
+                </div>
+
+                <%-- courses/inquiry 등: ID 수동 입력 --%>
                 <div id="targetIdBox" style="display:none;">
                     <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:6px;">대상 ID</label>
                     <input type="number" name="linkTargetId" id="targetIdInput" class="adm-input" style="width:100%;padding:10px 12px;font-size:14px;"
-                           value="${ad.linkTargetType ne 'package' ? ad.linkTargetId : ''}" placeholder="비우면 목록 페이지로 이동" disabled/>
+                           value="${ad.linkTargetType eq 'courses' or ad.linkTargetType eq 'inquiry' ? ad.linkTargetId : ''}" placeholder="비우면 목록 페이지로 이동" disabled/>
                     <div style="font-size:11px;color:#94a3b8;margin-top:4px;">대상 컨텐츠 ID. 비우면 해당 모듈의 목록 페이지로 이동</div>
                 </div>
             </div>
@@ -220,12 +255,22 @@
     }
     function toggleTargetType() {
         var tt = document.getElementById('linkTargetTypeSelect').value;
-        var isPackage = (tt === 'package');
-        var hasType   = !!tt;
-        document.getElementById('packageDropBox').style.display = isPackage ? '' : 'none';
-        document.getElementById('targetIdBox').style.display    = (hasType && !isPackage) ? '' : 'none';
-        document.getElementById('packageSelect').disabled = !isPackage;
-        document.getElementById('targetIdInput').disabled = !(hasType && !isPackage);
+        var isPackage   = (tt === 'package');
+        var isCommunity = (tt === 'community');
+        var isExplore   = (tt === 'explore');
+        var isListOnly  = (tt === 'flight' || tt === 'shop' || tt === 'mypage');
+        var isManualId  = (tt === 'courses' || tt === 'inquiry');
+
+        document.getElementById('packageDropBox').style.display   = isPackage   ? '' : 'none';
+        document.getElementById('communityDropBox').style.display = isCommunity ? '' : 'none';
+        document.getElementById('exploreDropBox').style.display   = isExplore   ? '' : 'none';
+        document.getElementById('listOnlyBox').style.display      = isListOnly  ? '' : 'none';
+        document.getElementById('targetIdBox').style.display      = isManualId  ? '' : 'none';
+
+        document.getElementById('packageSelect').disabled   = !isPackage;
+        document.getElementById('communitySelect').disabled = !isCommunity;
+        document.getElementById('exploreSelect').disabled   = !isExplore;
+        document.getElementById('targetIdInput').disabled   = !isManualId;
     }
     document.querySelectorAll('input[name="linkType"]').forEach(function (r) {
         r.addEventListener('change', toggleLinkType);

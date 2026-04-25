@@ -14,6 +14,12 @@ import org.triptogether.admin.service.AdCampaignService;
 import org.triptogether.admin.vo.AdCampaignVO;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.cloudinary.CloudinaryService;
+import org.triptogether.community.service.CommunityService;
+import org.triptogether.community.vo.CommunityPostDto;
+import org.triptogether.community.vo.CommunitySearchDto;
+import org.triptogether.explore.service.ExploreService;
+import org.triptogether.explore.vo.ExploreSearchDto;
+import org.triptogether.explore.vo.ExploreVO;
 import org.triptogether.travelPackage.service.TravelPackageService;
 import org.triptogether.travelPackage.vo.TravelPackageVO;
 
@@ -36,6 +42,8 @@ public class AdminAdController {
     private final AdCampaignService adCampaignService;
     private final CloudinaryService cloudinaryService;
     private final TravelPackageService travelPackageService;
+    private final CommunityService communityService;
+    private final ExploreService exploreService;
 
     /** 광고 목록 */
     @GetMapping
@@ -100,8 +108,9 @@ public class AdminAdController {
         return "admin/ad/form";
     }
 
-    /** 폼 드롭다운 옵션(승인된 패키지 목록 등) 주입. */
+    /** 폼 드롭다운 옵션(승인된 패키지 / 게시글 / 여행지 목록) 주입. */
     private void injectTargetOptions(Model model) {
+        // 승인된 패키지
         try {
             List<TravelPackageVO> approvedPackages =
                     travelPackageService.getApprovedPackages(null, 0, 1000);
@@ -109,6 +118,30 @@ public class AdminAdController {
         } catch (Exception e) {
             log.warn("광고 폼 패키지 옵션 로드 실패: {}", e.getMessage());
             model.addAttribute("approvedPackages", List.of());
+        }
+        // 활성 커뮤니티 게시글 (최근 500개)
+        try {
+            CommunitySearchDto postSearch = new CommunitySearchDto();
+            postSearch.setPageSize(500);
+            postSearch.setPage(1);
+            postSearch.calcOffset();
+            List<CommunityPostDto> posts = communityService.getPostList(postSearch);
+            model.addAttribute("communityPosts", posts);
+        } catch (Exception e) {
+            log.warn("광고 폼 게시글 옵션 로드 실패: {}", e.getMessage());
+            model.addAttribute("communityPosts", List.of());
+        }
+        // 활성 여행지
+        try {
+            ExploreSearchDto spotSearch = new ExploreSearchDto();
+            spotSearch.setPageSize(500);
+            spotSearch.setPage(1);
+            spotSearch.calcOffset();
+            List<ExploreVO> spots = exploreService.getSpotList(spotSearch);
+            model.addAttribute("exploreSpots", spots);
+        } catch (Exception e) {
+            log.warn("광고 폼 여행지 옵션 로드 실패: {}", e.getMessage());
+            model.addAttribute("exploreSpots", List.of());
         }
     }
 
