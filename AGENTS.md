@@ -108,11 +108,23 @@ DB 스키마가 필요할 때는 TripTogetherDB.sql 파일을 직접 읽어서 �
 - Codex는 기본적으로 `git add` + `git commit`까지만 자동 진행
 - `git pull`, PR 생성(`gh pr create` 또는 GitHub UI)은 사용자가 직접 수행
 - **`git push origin <branch>`는 사용자가 명시적으로 push 요청한 경우에만 Codex가 진행**
-  - push 진행 전 반드시 다음 순서:
-    1. `git fetch origin` 실행 (원격 정보 갱신)
-    2. `git log --oneline Victor..origin/dev` 로 dev에 새 커밋이 있는지 확인
-    3. dev에 새 커밋이 있으면 사용자에게 보고 + 처리 방향(병합 / PR로 처리 / 그대로 push) 결정 받기
-    4. dev 새 커밋이 없거나 사용자가 진행 결정 시 `git push origin Victor`
+- 사용자는 **merge 방식 선호** — rebase는 사용자 명시 요청 시에만 사용
+- push 진행 전 반드시 다음 순서:
+  1. `git fetch origin` 실행 (원격 정보 갱신, 로컬 변경 없음)
+  2. `git log --oneline Victor..origin/dev` 로 dev에 새 커밋이 있는지 확인
+  3. dev에 새 커밋이 있으면 다음 사전 분석을 사용자에게 보고:
+     - dev의 변경 파일 리스트 (`git diff --name-only Victor...origin/dev`)
+     - Victor가 건드린 파일과 비교해 잠재적 충돌 가능성
+  4. 사용자가 진행 방향 결정:
+     - **그대로 push** (Victor만 푸시) — 통합은 PR 시점에 GitHub에서
+     - **merge 후 push** — `git merge origin/dev` 시도 (사용자 선호)
+  5. merge 진행 중 conflict 발생 시 Codex가 해결 지원:
+     - `git status`로 충돌 파일 목록 확보
+     - 각 충돌 파일을 Read로 분석 (충돌 마커 양쪽 의미 파악)
+     - 사용자에게 보고: "X 파일 N줄: dev는 A, Victor는 B. 어느 쪽 우선 / 어떻게 통합?"
+     - 사용자 결정 후 Edit로 충돌 마커 제거 + 통합 코드 작성
+     - 모든 충돌 해결되면 `git add` + `git commit` (merge commit)
+  6. `git push origin Victor` 실행
 - 커밋 여러 개로 나눠야 할 땐 Codex가 단위 제안 → 사용자 승인 후 실행
 - **커밋 메시지는 Codex가 후보 제시 → 사용자 승인 후에만 실행**
   (메시지 내용이 중간에 바뀌면 새로 승인 요청)
