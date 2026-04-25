@@ -16,6 +16,9 @@
         <result property="title"      column="title"/>
         <result property="imageUrl"   column="image_url"/>
         <result property="linkUrl"    column="link_url"/>
+        <result property="linkType"       column="link_type"/>
+        <result property="linkTargetType" column="link_target_type"/>
+        <result property="linkTargetId"   column="link_target_id"/>
         <result property="startAt"    column="start_at"/>
         <result property="endAt"      column="end_at"/>
         <result property="isActive"   column="is_active"/>
@@ -31,6 +34,7 @@
     <sql id="adBaseSelect">
         SELECT
             a.ad_id, a.slot_code, a.title, a.image_url, a.link_url,
+            a.link_type, a.link_target_type, a.link_target_id,
             a.start_at, a.end_at, a.is_active, a.sort_order,
             a.view_count, a.click_count,
             a.created_at, a.updated_at, a.created_by,
@@ -69,10 +73,16 @@
     <insert id="insertAd" useGeneratedKeys="true" keyProperty="adId">
         INSERT INTO AD_CAMPAIGN (
             slot_code, title, image_url, link_url,
+            link_type, link_target_type, link_target_id,
             start_at, end_at, is_active, sort_order,
             view_count, click_count, created_by
         ) VALUES (
             #{slotCode}, #{title}, #{imageUrl}, #{linkUrl},
+            <choose>
+                <when test="linkType != null and linkType != ''">#{linkType}</when>
+                <otherwise>'EXTERNAL'</otherwise>
+            </choose>,
+            #{linkTargetType}, #{linkTargetId},
             #{startAt}, #{endAt},
             <choose>
                 <when test="isActive != null">#{isActive}</when>
@@ -88,14 +98,17 @@
 
     <update id="updateAd">
         UPDATE AD_CAMPAIGN
-        SET slot_code  = #{slotCode},
-            title      = #{title},
-            image_url  = #{imageUrl},
-            link_url   = #{linkUrl},
-            start_at   = #{startAt},
-            end_at     = #{endAt},
-            is_active  = #{isActive},
-            sort_order = #{sortOrder}
+        SET slot_code         = #{slotCode},
+            title             = #{title},
+            image_url         = #{imageUrl},
+            link_url          = #{linkUrl},
+            link_type         = #{linkType},
+            link_target_type  = #{linkTargetType},
+            link_target_id    = #{linkTargetId},
+            start_at          = #{startAt},
+            end_at            = #{endAt},
+            is_active         = #{isActive},
+            sort_order        = #{sortOrder}
         WHERE ad_id = #{adId}
     </update>
 

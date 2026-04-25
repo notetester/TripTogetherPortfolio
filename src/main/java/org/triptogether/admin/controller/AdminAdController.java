@@ -14,6 +14,8 @@ import org.triptogether.admin.service.AdCampaignService;
 import org.triptogether.admin.vo.AdCampaignVO;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.cloudinary.CloudinaryService;
+import org.triptogether.travelPackage.service.TravelPackageService;
+import org.triptogether.travelPackage.vo.TravelPackageVO;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ public class AdminAdController {
 
     private final AdCampaignService adCampaignService;
     private final CloudinaryService cloudinaryService;
+    private final TravelPackageService travelPackageService;
 
     /** 광고 목록 */
     @GetMapping
@@ -51,10 +54,13 @@ public class AdminAdController {
     /** 등록 폼 */
     @GetMapping("/new")
     public String createForm(Model model) {
-        model.addAttribute("ad", new AdCampaignVO());
+        AdCampaignVO blank = new AdCampaignVO();
+        blank.setLinkType("EXTERNAL");
+        model.addAttribute("ad", blank);
         model.addAttribute("mode", "new");
         model.addAttribute("activeMenu", "ads");
         model.addAttribute("pageTitle", "광고 등록");
+        injectTargetOptions(model);
         return "admin/ad/form";
     }
 
@@ -90,7 +96,20 @@ public class AdminAdController {
         model.addAttribute("mode", "edit");
         model.addAttribute("activeMenu", "ads");
         model.addAttribute("pageTitle", "광고 수정");
+        injectTargetOptions(model);
         return "admin/ad/form";
+    }
+
+    /** 폼 드롭다운 옵션(승인된 패키지 목록 등) 주입. */
+    private void injectTargetOptions(Model model) {
+        try {
+            List<TravelPackageVO> approvedPackages =
+                    travelPackageService.getApprovedPackages(null, 0, 1000);
+            model.addAttribute("approvedPackages", approvedPackages);
+        } catch (Exception e) {
+            log.warn("광고 폼 패키지 옵션 로드 실패: {}", e.getMessage());
+            model.addAttribute("approvedPackages", List.of());
+        }
     }
 
     /** 수정 */
