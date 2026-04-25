@@ -573,12 +573,12 @@
                     <thead>
                     <tr>
                         <th style="width:36px;"><input type="checkbox" id="ub-checkAll" class="js-block-check-all" data-section="user-blocks" onchange="blockToggleAll('user-blocks')"></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="nickname" onclick="blockSortBy('user-blocks','nickname')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="blockType" onclick="blockSortBy('user-blocks','blockType')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.filter.blockType"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="target" onclick="blockSortBy('user-blocks','target')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="snapshotStatus" onclick="blockSortBy('user-blocks','snapshotStatus')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="reason" onclick="blockSortBy('user-blocks','reason')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="blockedAt" onclick="blockSortBy('user-blocks','blockedAt')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.blockAndExpire"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('user-blocks',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('user-blocks',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.filter.blockType"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('user-blocks',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('user-blocks',4)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('user-blocks',5)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/></th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('user-blocks',6)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.blockAndExpire"/></th>
                         <th><spring:message code="admin.common.action"/></th>
                     </tr>
                     </thead>
@@ -884,12 +884,12 @@
                     <thead>
                     <tr>
                         <th style="width:36px;"><input type="checkbox" id="ipr-checkAll" class="js-block-check-all" data-section="ip-rules" onchange="blockToggleAll('ip-rules')"></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="target" onclick="blockSortBy('ip-rules','target')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="policy" onclick="blockSortBy('ip-rules','policy')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.actionControl"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="batch" onclick="blockSortBy('ip-rules','batch')" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="finalState" onclick="blockSortBy('ip-rules','finalState')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="priority" onclick="blockSortBy('ip-rules','priority')" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.priority"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="reason" onclick="blockSortBy('ip-rules','reason')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('ip-rules',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('ip-rules',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.actionControl"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('ip-rules',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('ip-rules',4)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('ip-rules',5)" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.priority"/></th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('ip-rules',6)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/></th>
                         <th><spring:message code="admin.common.action"/></th>
                     </tr>
                     </thead>
@@ -1169,11 +1169,11 @@
             <div class="adm-table-wrap">
                 <table class="adm-table">
                     <thead><tr>
-                        <th class="js-local-sort" data-section="batches" data-sort="batch" onclick="blockSortBy('batches','batch')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.batch"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="batches" data-sort="policy" onclick="blockSortBy('batches','policy')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.basePolicy"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="batches" data-sort="status" onclick="blockSortBy('batches','status')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.currentState"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-sort-index="0" onclick="sectionSort('batches',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.batch"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.basePolicy"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.currentState"/></th>
                         <th><spring:message code="admin.blocks.ruleStats"/></th>
-                        <th class="js-local-sort" data-section="batches" data-sort="description" onclick="blockSortBy('batches','description')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.description"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('batches',4)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.description"/></th>
                         <th><spring:message code="admin.common.action"/></th>
                     </tr></thead>
                     <tbody>
@@ -1391,12 +1391,12 @@
             <div class="adm-table-wrap">
                 <table class="adm-table">
                     <thead><tr>
-                        <th class="js-local-sort" data-section="histories" data-sort="blockedAt" onclick="blockSortBy('histories','blockedAt')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="histories" data-sort="target" onclick="blockSortBy('histories','target')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="histories" data-sort="policy" onclick="blockSortBy('histories','policy')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="histories" data-sort="change" onclick="blockSortBy('histories','change')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-sort-index="0" onclick="sectionSort('histories',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('histories',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('histories',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('histories',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/></th>
                         <th><spring:message code="admin.blocks.result"/></th>
-                        <th class="js-local-sort" data-section="histories" data-sort="reason" onclick="blockSortBy('histories','reason')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/> <span class="sort-ico">↕</span></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('histories',5)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/></th>
                         <th><spring:message code="admin.common.action"/></th>
                     </tr></thead>
                     <tbody>
@@ -2397,71 +2397,23 @@ function getSectionCard(section) {
     return document.querySelector('.js-section-card[data-section="' + section + '"]');
 }
 
-const BLOCK_SECTION_SORT_CONFIG = {
-    'user-blocks': {
-        nickname: {cell: 0, label: '<spring:message code="admin.common.member" javaScriptEscape="true"/>'},
-        blockType: {cell: 1, label: '<spring:message code="admin.blocks.filter.blockType" javaScriptEscape="true"/>'},
-        target: {cell: 2, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
-        snapshotStatus: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
-        reason: {cell: 4, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'},
-        blockedAt: {cell: 5, label: '<spring:message code="admin.blocks.blockAndExpire" javaScriptEscape="true"/>'}
-    },
-    'ip-rules': {
-        target: {cell: 0, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
-        policy: {cell: 1, label: '<spring:message code="admin.blocks.actionControl" javaScriptEscape="true"/>'},
-        batch: {cell: 2, label: '<spring:message code="admin.context.batch" javaScriptEscape="true"/>'},
-        finalState: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
-        priority: {cell: 4, label: '<spring:message code="admin.context.priority" javaScriptEscape="true"/>', numeric: true},
-        reason: {cell: 5, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'}
-    },
-    'batches': {
-        batch: {cell: 0, label: '<spring:message code="admin.blocks.batch" javaScriptEscape="true"/>'},
-        policy: {cell: 1, label: '<spring:message code="admin.blocks.basePolicy" javaScriptEscape="true"/>'},
-        status: {cell: 2, label: '<spring:message code="admin.blocks.currentState" javaScriptEscape="true"/>'},
-        stats: {cell: 3, label: '<spring:message code="admin.blocks.ruleStats" javaScriptEscape="true"/>'},
-        description: {cell: 4, label: '<spring:message code="admin.blocks.description" javaScriptEscape="true"/>'}
-    },
-    'histories': {
-        blockedAt: {cell: 0, label: '<spring:message code="admin.common.time" javaScriptEscape="true"/>'},
-        target: {cell: 1, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
-        policy: {cell: 2, label: '<spring:message code="admin.common.actionLabel" javaScriptEscape="true"/>'},
-        change: {cell: 3, label: '<spring:message code="admin.blocks.changeKind" javaScriptEscape="true"/>'},
-        result: {cell: 4, label: '<spring:message code="admin.blocks.result" javaScriptEscape="true"/>'},
-        reason: {cell: 5, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'}
-    }
-};
-
-function getSortableCells(row) {
-    return Array.from(row.children).filter(function (cell) {
-        return !cell.classList.contains('js-block-check-cell');
-    });
-}
-
-function localSortValue(row, section, sortKey) {
-    const config = BLOCK_SECTION_SORT_CONFIG[section] && BLOCK_SECTION_SORT_CONFIG[section][sortKey];
-    if (!config) return '';
-    const dataValue = row.dataset[sortKey] || row.dataset[sortKey.replace(/-([a-z])/g, function (_, c) { return c.toUpperCase(); })];
-    if (dataValue != null && dataValue !== '') return dataValue;
-    const cells = getSortableCells(row);
-    return cells[config.cell] ? cells[config.cell].innerText.trim() : '';
-}
-
 function sortLocalRows(section, rows) {
     const state = getLocalState(section);
-    const sortKey = state.sortKey;
-    if (!sortKey) return rows;
-    const config = BLOCK_SECTION_SORT_CONFIG[section] && BLOCK_SECTION_SORT_CONFIG[section][sortKey];
-    if (!config) return rows;
+    const cellIndex = (state.sectionSortCell != null) ? state.sectionSortCell : -1;
+    if (cellIndex < 0) return rows;
     const dir = state.sortDir === 'DESC' ? -1 : 1;
     return rows.slice().sort(function (a, b) {
-        let av = localSortValue(a, section, sortKey);
-        let bv = localSortValue(b, section, sortKey);
-        if (config.numeric) {
-            av = Number(String(av).replace(/[^0-9.-]/g, '')) || 0;
-            bv = Number(String(bv).replace(/[^0-9.-]/g, '')) || 0;
-            return (av - bv) * dir;
+        const av = (a.children[cellIndex] ? a.children[cellIndex].innerText : '').replace(/\s+/g, ' ').trim();
+        const bv = (b.children[cellIndex] ? b.children[cellIndex].innerText : '').replace(/\s+/g, ' ').trim();
+        const an = Number(av.replace(/[^0-9.-]/g, ''));
+        const bn = Number(bv.replace(/[^0-9.-]/g, ''));
+        let cmp;
+        if (!Number.isNaN(an) && !Number.isNaN(bn) && av.match(/\d/) && bv.match(/\d/)) {
+            cmp = an - bn;
+        } else {
+            cmp = av.localeCompare(bv, ADMIN_BLOCK_LOCALE || undefined, {numeric: true, sensitivity: 'base'});
         }
-        return String(av).localeCompare(String(bv), ADMIN_BLOCK_LOCALE || undefined, {numeric: true, sensitivity: 'base'}) * dir;
+        return cmp * dir;
     });
 }
 
@@ -2469,22 +2421,33 @@ function updateLocalSortIndicators(section) {
     const state = getLocalState(section);
     const card = getSectionCard(section);
     if (!card) return;
-    card.querySelectorAll('.js-local-sort').forEach(function (th) {
-        const active = th.dataset.sort === state.sortKey;
+    const activeCellIndex = (state.sectionSortCell != null) ? state.sectionSortCell : -1;
+    card.querySelectorAll('th[data-sort-index]').forEach(function (th) {
+        const thIndex = Number(th.dataset.sortIndex);
+        const active = (activeCellIndex >= 0 && thIndex === activeCellIndex);
         th.classList.toggle('sorted', active);
-        const ico = th.querySelector('.sort-ico');
-        if (ico) ico.textContent = active ? (state.sortDir === 'DESC' ? '▼' : '▲') : '↕';
+        let ico = th.querySelector('.sort-ico');
+        if (active) {
+            if (!ico) {
+                ico = document.createElement('span');
+                ico.className = 'sort-ico';
+                ico.style.cssText = 'font-size:10px;margin-left:4px;';
+                th.appendChild(ico);
+            }
+            ico.textContent = state.sortDir === 'DESC' ? '▼' : '▲';
+            ico.style.color = state.sortDir === 'DESC' ? '#3b82f6' : '#ef4444';
+        } else {
+            if (ico) ico.remove();
+        }
     });
 }
 
-function setLocalSort(section, sortKey) {
+function sectionSort(section, cellIndex) {
     const state = getLocalState(section);
-    if (state.sortKey === sortKey) {
-        state.sortDir = state.sortDir === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-        state.sortKey = sortKey;
-        state.sortDir = 'ASC';
-    }
+    const prevCell = (state.sectionSortCell != null) ? state.sectionSortCell : -1;
+    const nextDir = (prevCell === cellIndex && state.sortDir === 'ASC') ? 'DESC' : 'ASC';
+    state.sectionSortCell = cellIndex;
+    state.sortDir = nextDir;
     state.page = 1;
     renderLocalSection(section);
 }
@@ -2601,7 +2564,7 @@ function sortDashboardTable(table, cellIndex) {
                 th.appendChild(ico);
             }
             ico.textContent = nextDir === 'ASC' ? '▲' : '▼';
-            ico.style.color = '#3b82f6';
+            ico.style.color = nextDir === 'ASC' ? '#ef4444' : '#3b82f6';
         } else {
             if (ico) ico.remove();
         }
@@ -2671,18 +2634,7 @@ function enhanceBlockLocalTables() {
             headRow.insertBefore(checkTh, headRow.firstElementChild);
         }
 
-        const sortConfig = BLOCK_SECTION_SORT_CONFIG[section] || {};
-        Object.keys(sortConfig).forEach(function (key) {
-            const cellIndex = sortConfig[key].cell + 1;
-            const th = headRow ? headRow.children[cellIndex] : null;
-            if (!th || th.classList.contains('js-local-sort')) return;
-            th.classList.add('js-local-sort');
-            th.dataset.section = section;
-            th.dataset.sort = key;
-            th.style.cursor = 'pointer';
-            th.style.userSelect = 'none';
-            th.innerHTML = th.innerHTML + ' <span class="sort-ico" style="font-size:10px;color:#94a3b8;">↕</span>';
-        });
+        /* sort enhancement is handled by data-sort-index + sectionSort inline onclick */
 
         getLocalRows(section).forEach(function (row) {
             if (row.querySelector('.js-block-row-check')) return;
@@ -2942,7 +2894,7 @@ function applyBlockLocalFilter(section, field, keyword) {
     renderLocalSection(section);
 }
 
-function blockSortBy(section, field) { setLocalSort(section, field); }
+function blockSortBy(section, field) { /* deprecated — use sectionSort */ }
 function blockToggleAll(section) {
     const checkAll = section === 'user-blocks' ? document.getElementById('ub-checkAll') : document.getElementById('ipr-checkAll');
     const checked = checkAll ? checkAll.checked : false;
@@ -3823,11 +3775,7 @@ document.addEventListener('click', function (e) {
         return;
     }
 
-    const sortBtn = e.target.closest('.js-local-sort');
-    if (sortBtn) {
-        setLocalSort(sortBtn.dataset.section, sortBtn.dataset.sort);
-        return;
-    }
+    /* js-local-sort click is handled by each th's inline onclick → sectionSort() */
 
     const checkAll = e.target.closest('.js-block-check-all');
     if (checkAll) {
