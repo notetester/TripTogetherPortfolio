@@ -2183,7 +2183,28 @@ const ADMIN_BLOCK_MSG = {
     expired: '<spring:message code="admin.blocks.effective.expired" javaScriptEscape="true"/>',
     individualRule: '<spring:message code="admin.blocks.individualRule" javaScriptEscape="true"/>',
     ruleOn: '<spring:message code="admin.blocks.ruleOn" javaScriptEscape="true"/>',
-    pagePrefix: '<spring:message code="admin.common.pagePrefix" javaScriptEscape="true"/>'
+    pagePrefix: '<spring:message code="admin.common.pagePrefix" javaScriptEscape="true"/>',
+    export: '<spring:message code="admin.common.export" javaScriptEscape="true"/>',
+    exportAll: '<spring:message code="admin.common.exportAll" javaScriptEscape="true"/>',
+    exportFiltered: '<spring:message code="admin.common.exportFiltered" javaScriptEscape="true"/>',
+    exportSelected: '<spring:message code="admin.common.exportSelected" javaScriptEscape="true"/>',
+    selectedCount: '<spring:message code="admin.common.selectedCount" javaScriptEscape="true"/>',
+    bulkRelease: '<spring:message code="admin.common.bulkRelease" javaScriptEscape="true"/>',
+    clearSelection: '<spring:message code="admin.common.clearSelection" javaScriptEscape="true"/>',
+    processError: '<spring:message code="admin.common.processError" javaScriptEscape="true"/>',
+    dashViewUserBlocks: '<spring:message code="admin.blocks.js.dashViewUserBlocks" javaScriptEscape="true"/>',
+    dashViewIpRules: '<spring:message code="admin.blocks.js.dashViewIpRules" javaScriptEscape="true"/>',
+    dashViewBatches: '<spring:message code="admin.blocks.js.dashViewBatches" javaScriptEscape="true"/>',
+    dashViewHistories: '<spring:message code="admin.blocks.js.dashViewHistories" javaScriptEscape="true"/>',
+    dashViewAll: '<spring:message code="admin.blocks.js.dashViewAll" javaScriptEscape="true"/>',
+    dashSortTip: '<spring:message code="admin.blocks.js.dashSortTip" javaScriptEscape="true"/>',
+    bulkActivate: '<spring:message code="admin.blocks.js.bulkActivate" javaScriptEscape="true"/>',
+    bulkDeactivate: '<spring:message code="admin.blocks.js.bulkDeactivate" javaScriptEscape="true"/>',
+    noSelection: '<spring:message code="admin.blocks.js.noSelection" javaScriptEscape="true"/>',
+    confirmBulkRelease: '<spring:message code="admin.blocks.js.confirmBulkRelease" javaScriptEscape="true"/>',
+    confirmBulkActivate: '<spring:message code="admin.blocks.js.confirmBulkActivate" javaScriptEscape="true"/>',
+    confirmBulkDeactivate: '<spring:message code="admin.blocks.js.confirmBulkDeactivate" javaScriptEscape="true"/>',
+    done: '<spring:message code="admin.blocks.js.done" javaScriptEscape="true"/>'
 };
 const BLOCK_SECTION_CONFIG = {
     'user-blocks': {
@@ -2464,7 +2485,7 @@ function blockRowKey(row, section) {
 
 function enhanceBlockDashboardTables() {
     const sections = ['user-blocks', 'ip-rules', 'batches', 'histories'];
-    const titles = ['회원 차단 전체 보기', 'IP 규칙 전체 보기', '배치 전체 보기', '최근 로그 전체 보기'];
+    const titles = [ADMIN_BLOCK_MSG.dashViewUserBlocks, ADMIN_BLOCK_MSG.dashViewIpRules, ADMIN_BLOCK_MSG.dashViewBatches, ADMIN_BLOCK_MSG.dashViewHistories];
 
     document.querySelectorAll('.js-dashboard-panel table.adm-table').forEach(function (table, tableIndex) {
         const targetSection = sections[tableIndex] || 'all';
@@ -2475,7 +2496,7 @@ function enhanceBlockDashboardTables() {
             btn.type = 'button';
             btn.className = 'adm-btn adm-btn-ghost js-dashboard-open-section';
             btn.style.fontSize = '12px';
-            btn.textContent = titles[tableIndex] || '전체 보기';
+            btn.textContent = titles[tableIndex] || ADMIN_BLOCK_MSG.dashViewAll;
             btn.addEventListener('click', function () {
                 activateBlockTab(targetSection);
                 renderLocalSection(targetSection);
@@ -2489,7 +2510,7 @@ function enhanceBlockDashboardTables() {
             th.dataset.sortIndex = String(idx);
             th.style.cursor = 'pointer';
             th.style.userSelect = 'none';
-            th.title = '현재 5개 행을 이 컬럼 기준으로 정렬합니다.';
+            th.title = ADMIN_BLOCK_MSG.dashSortTip;
             th.insertAdjacentHTML('beforeend', ' <span class="sort-ico" style="font-size:10px;color:#94a3b8;">↕</span>');
             th.addEventListener('click', function () {
                 sortDashboardTable(table, idx);
@@ -2549,11 +2570,11 @@ function enhanceBlockLocalTables() {
                 '<div class="adm-export-control">'
                 + '<select class="adm-select js-block-export-format" data-section="' + section + '"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
                 + '<div class="adm-export-menu">'
-                + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ 내보내기 ▾</button>'
+                + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ ' + ADMIN_BLOCK_MSG.export + ' ▾</button>'
                 + '<div class="adm-export-dropdown">'
-                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="all">📋 전체 내보내기</button>'
-                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="search">🔍 검색결과 내보내기</button>'
-                + '<button type="button" class="js-block-export js-block-export-selected" data-section="' + section + '" data-scope="selected" disabled>☑ 선택 내보내기 (0)</button>'
+                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="all">📋 ' + ADMIN_BLOCK_MSG.exportAll + '</button>'
+                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="search">🔍 ' + ADMIN_BLOCK_MSG.exportFiltered + '</button>'
+                + '<button type="button" class="js-block-export js-block-export-selected" data-section="' + section + '" data-scope="selected" disabled>☑ ' + ADMIN_BLOCK_MSG.exportSelected + ' (0)</button>'
                 + '</div></div></div>';
             toolbar.appendChild(group);
         }
@@ -2600,14 +2621,14 @@ function enhanceBlockLocalTables() {
                 bar.dataset.section = section;
                 bar.style.cssText = 'display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 14px;margin:0 16px 12px;align-items:center;gap:10px;flex-wrap:wrap;';
                 if (section === 'user-blocks') {
-                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>개 선택됨</span>'
-                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-release-user-blocks">선택 차단 해제</button>'
-                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">선택 해제</button>';
+                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>' + ADMIN_BLOCK_MSG.selectedCount + '</span>'
+                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-release-user-blocks">' + ADMIN_BLOCK_MSG.bulkRelease + '</button>'
+                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">' + ADMIN_BLOCK_MSG.clearSelection + '</button>';
                 } else {
-                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>개 선택됨</span>'
-                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-toggle-ip-rules" data-active="true">선택 활성화</button>'
-                        + '<button type="button" class="adm-btn adm-btn-danger js-bulk-toggle-ip-rules" data-active="false">선택 비활성화</button>'
-                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">선택 해제</button>';
+                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>' + ADMIN_BLOCK_MSG.selectedCount + '</span>'
+                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-toggle-ip-rules" data-active="true">' + ADMIN_BLOCK_MSG.bulkActivate + '</button>'
+                        + '<button type="button" class="adm-btn adm-btn-danger js-bulk-toggle-ip-rules" data-active="false">' + ADMIN_BLOCK_MSG.bulkDeactivate + '</button>'
+                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">' + ADMIN_BLOCK_MSG.clearSelection + '</button>';
                 }
                 wrap.parentElement.insertBefore(bar, wrap);
             }
@@ -2658,8 +2679,8 @@ function clearBlockSelection(section) {
 
 async function bulkReleaseSelectedUserBlocks() {
     const keys = selectedBlockChecks('user-blocks').map(cb => cb.value).filter(Boolean);
-    if (!keys.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
-    if (!confirm(keys.length + '개의 회원 차단을 해제하시겠습니까?')) return;
+    if (!keys.length) { adm_toast(ADMIN_BLOCK_MSG.noSelection, 'error'); return; }
+    if (!confirm(ADMIN_BLOCK_MSG.confirmBulkRelease.replace('{0}', keys.length))) return;
     const params = new URLSearchParams();
     keys.forEach(key => params.append('blockTargetKeys', key));
     const res = await fetch(CTX + '/admin/blocks/user-blocks/bulk-release', {
@@ -2668,14 +2689,14 @@ async function bulkReleaseSelectedUserBlocks() {
         body: params
     });
     const data = await res.json();
-    if (res.ok && data.success) { adm_toast(data.message || '처리되었습니다.'); location.reload(); }
-    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+    if (res.ok && data.success) { adm_toast(data.message || ADMIN_BLOCK_MSG.done); location.reload(); }
+    else { adm_toast(data.message || ADMIN_BLOCK_MSG.processError, 'error'); }
 }
 
 async function bulkToggleSelectedIpRules(active) {
     const ids = selectedBlockChecks('ip-rules').map(cb => cb.value).filter(Boolean);
-    if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
-    if (!confirm(ids.length + '개의 IP 규칙을 ' + (active ? '활성화' : '비활성화') + '하시겠습니까?')) return;
+    if (!ids.length) { adm_toast(ADMIN_BLOCK_MSG.noSelection, 'error'); return; }
+    if (!confirm(active ? ADMIN_BLOCK_MSG.confirmBulkActivate.replace('{0}', ids.length) : ADMIN_BLOCK_MSG.confirmBulkDeactivate.replace('{0}', ids.length))) return;
     const params = new URLSearchParams();
     ids.forEach(id => params.append('ipBlocklistIdxList', id));
     params.append('active', active ? 'true' : 'false');
@@ -2685,8 +2706,8 @@ async function bulkToggleSelectedIpRules(active) {
         body: params
     });
     const data = await res.json();
-    if (res.ok && data.success) { adm_toast(data.message || '처리되었습니다.'); location.reload(); }
-    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+    if (res.ok && data.success) { adm_toast(data.message || ADMIN_BLOCK_MSG.done); location.reload(); }
+    else { adm_toast(data.message || ADMIN_BLOCK_MSG.processError, 'error'); }
 }
 
 function exportBlockSection(section, scope) {
@@ -2698,7 +2719,7 @@ function exportBlockSection(section, scope) {
     let rows;
     if (scope === 'selected') {
         rows = selectedBlockChecks(section).map(cb => cb.closest('tr')).filter(Boolean);
-        if (!rows.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+        if (!rows.length) { adm_toast(ADMIN_BLOCK_MSG.noSelection, 'error'); return; }
     } else if (scope === 'search') {
         rows = sortLocalRows(section, filterLocalRows(section));
     } else {
