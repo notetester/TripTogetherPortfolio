@@ -52,7 +52,7 @@
 
 ### 사용 패턴
 
-```java
+```text
 // 어떤 모듈에서든 동일하게:
 ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
 if (countRecent(...) >= policy.getInquiryMaxCount()) {

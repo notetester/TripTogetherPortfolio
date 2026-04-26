@@ -64,7 +64,7 @@ JSP 만 i18n 적용하고 백엔드 응답 메시지는 한국어 노출 → **�
 
 ### 인프라 (`MessageUtil`)
 
-```java
+```text
 @Component @RequiredArgsConstructor
 public class MessageUtil {
     private final MessageSource messageSource;
@@ -80,7 +80,7 @@ public class MessageUtil {
 ### 사용 패턴 (Before/After)
 
 **Before**:
-```java
+```text
 result.put("message", "로그인이 필요합니다.");
 throw new IllegalStateException(
     policy.getCommentWindowMinutes() + "분 내 댓글을 "
@@ -88,7 +88,7 @@ throw new IllegalStateException(
 ```
 
 **After**:
-```java
+```text
 result.put("message", msg.get("community.api.error.loginRequired"));
 throw new IllegalStateException(msg.get("community.service.error.commentRateLimit",
     policy.getCommentWindowMinutes(), policy.getCommentMaxCount()));

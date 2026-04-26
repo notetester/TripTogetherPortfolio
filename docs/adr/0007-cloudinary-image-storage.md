@@ -71,7 +71,7 @@ Phase 2 에서 정식 이미지 스토리지가 필요했습니다.
 
 본문 HTML 안에 `<img src>` 로 박혀 있어, 글 작성 도중 업로드만 하고 글을 안 올리면 Cloudinary 에 고아 이미지 누적됩니다. 이를 정리하는 별도 스케줄러 운영:
 
-```java
+```text
 // CommunityImageScheduler
 @Scheduled(cron = "0 0 3 * * *")  // 매일 새벽 3시
 public void cleanupOrphanImages() {

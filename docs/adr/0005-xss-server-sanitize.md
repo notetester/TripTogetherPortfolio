@@ -41,7 +41,7 @@ ADR-0002 에서 Summernote WYSIWYG 에디터를 채택하면서 사용자 입력
 
 ### 정화 정책
 
-```java
+```text
 // CommunityServiceImpl.java L48
 private static final Safelist COMMUNITY_SAFELIST = Safelist.basicWithImages()
         .addTags(...)        // 추가 허용 태그

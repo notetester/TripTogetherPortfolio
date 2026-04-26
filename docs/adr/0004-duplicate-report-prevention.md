@@ -50,7 +50,7 @@ ADD UNIQUE KEY uq_report (user_idx, target_type, target_id);
 
 #### Layer 2: 서비스 사전 SELECT 체크 (사용자 친화 응답)
 
-```java
+```text
 ReportDto existing = reportMapper.selectReportByUserAndTarget(userIdx, targetType, targetId);
 if (existing != null) {
     if ("CANCELLED".equals(existing.getStatus())) {
@@ -65,7 +65,7 @@ if (existing != null) {
 
 #### Layer 3: CANCELLED 재활성화 분기 (사용자 의도 변경)
 
-```java
+```text
 if ("CANCELLED".equals(existing.getStatus())) {
     reportMapper.reactivateCancelledReport(existing.getReportId(), reason, description, ...);
     return true;

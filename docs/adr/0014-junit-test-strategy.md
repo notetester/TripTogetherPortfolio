@@ -45,7 +45,7 @@
 
 ### 작성 패턴 (표준)
 
-```java
+```text
 @ExtendWith(MockitoExtension.class)
 class XxxServiceTest {
     @Mock XxxMapper xxxMapper;

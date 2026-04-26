@@ -65,7 +65,7 @@ WHERE post_status != 'DELETED'
 
 ### 캐시 컬럼 정합성
 
-```java
+```text
 // 댓글 삭제 시
 updateCommentStatus("DELETED");
 decrementPostCommentCount();  // 글의 comment_count 감소
