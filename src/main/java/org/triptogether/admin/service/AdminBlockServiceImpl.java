@@ -69,6 +69,41 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     }
 
     @Override
+    public Map<String, Object> getIpBlocksPaged(AdminBlockSearchVO search) {
+        int page = Math.max(1, search.getPage());
+        int size = Math.max(1, Math.min(200, search.getSize()));
+        int offset = (page - 1) * size;
+
+        java.util.Map<String, Object> params = new HashMap<>();
+        params.put("status", search.getStatus());
+        params.put("scope", search.getScope());
+        params.put("matchType", search.getMatchType());
+        params.put("blockType", search.getBlockType());
+        params.put("ruleAction", search.getRuleAction());
+        params.put("controlMode", search.getControlMode());
+        params.put("category", search.getCategory());
+        params.put("effectiveStatus", search.getEffectiveStatus());
+        params.put("batchId", search.getBatchId());
+        params.put("keyword", search.getKeyword());
+        params.put("field", search.getField());
+        params.put("sortBy", search.getSortBy());
+        params.put("sortDir", "ASC".equalsIgnoreCase(search.getSortDir()) ? "ASC" : "DESC");
+        params.put("size", size);
+        params.put("offset", offset);
+
+        java.util.List<AdminIpBlockVO> rows = adminBlockMapper.findIpBlocksPaged(params);
+        long total = adminBlockMapper.countIpBlocksFiltered(params);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("rows", rows);
+        result.put("total", total);
+        result.put("page", page);
+        result.put("size", size);
+        result.put("totalPages", (int) Math.max(1, Math.ceil(total / (double) size)));
+        return result;
+    }
+
+    @Override
     public Map<String, Object> getBlockDashboard(AdminBlockSearchVO search) {
         Map<String, Object> result = new HashMap<>();
         result.put("search", search);

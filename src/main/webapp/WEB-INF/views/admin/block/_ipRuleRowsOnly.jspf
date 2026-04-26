@@ -1,0 +1,162 @@
+<c:forEach var="r" items="${ipBlocks}">
+    <fmt:formatDate var="ipRuleBlockedAtText" value="${r.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+    <c:set var="ipRuleExpiresText" value=""/>
+    <c:if test="${r.expiresAtDate != null}">
+        <fmt:formatDate var="ipRuleExpiresText" value="${r.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+    </c:if>
+    <tr class="js-local-row"
+        data-section="ip-rules"
+        data-search="${fn:toLowerCase(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)} ${fn:toLowerCase(r.blockTargetKey)} ${fn:toLowerCase(empty r.batchName ? '' : r.batchName)} ${fn:toLowerCase(empty r.batchCode ? '' : r.batchCode)} ${fn:toLowerCase(empty r.reason ? '' : r.reason)} ${fn:toLowerCase(empty r.detailMessage ? '' : r.detailMessage)} ${fn:toLowerCase(empty r.blockCategory ? '' : r.blockCategory)} ${fn:toLowerCase(empty r.controlMode ? '' : r.controlMode)} ${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)} ${r.priority}"
+        data-target="${fn:toLowerCase(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)} ${fn:toLowerCase(r.blockTargetKey)}"
+        data-batch="${fn:toLowerCase(empty r.batchName ? '' : r.batchName)} ${fn:toLowerCase(empty r.batchCode ? '' : r.batchCode)}"
+        data-reason="${fn:toLowerCase(empty r.reason ? '' : r.reason)} ${fn:toLowerCase(empty r.detailMessage ? '' : r.detailMessage)}"
+        data-priority="${r.priority}"
+        data-policy="${fn:toLowerCase(empty r.blockCategory ? '' : r.blockCategory)} ${fn:toLowerCase(empty r.controlMode ? '' : r.controlMode)} ${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)} ${fn:toLowerCase(empty r.effectiveStatus ? '' : r.effectiveStatus)}"
+        data-blocked-at="${fn:toLowerCase(ipRuleBlockedAtText)}"
+        data-expires-at="${fn:toLowerCase(empty ipRuleExpiresText ? '' : ipRuleExpiresText)}"
+        data-final-state="${fn:toLowerCase(empty r.finalStateLabel ? '' : r.finalStateLabel)}">
+        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="ip-rules" data-id="${r.ipBlocklistIdx}" value="${r.ipBlocklistIdx}" onchange="updateBlockBulkBar('ip-rules')"></td>
+        <td data-sort-value="${fn:toLowerCase(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}">
+            <button type="button"
+                    class="adm-link-btn js-open-ip-rule-editor"
+                    data-id="${r.ipBlocklistIdx}"
+                    data-template-id="detail-ip-${r.ipBlocklistIdx}"
+                    data-target-display="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}"
+                    data-target-key="${fn:escapeXml(r.blockTargetKey)}"
+                    data-rule-action="${r.ruleAction}"
+                    data-control-mode="${r.controlMode}"
+                    data-block-category="${r.blockCategory}"
+                    data-priority="${r.priority}"
+                    data-reason="${fn:escapeXml(empty r.reason ? '' : r.reason)}"
+                    data-detail-message="${fn:escapeXml(empty r.detailMessage ? '' : r.detailMessage)}"
+                    data-expires-at="${r.expiresAtInputValue}"
+                    data-effective-status-label="${fn:escapeXml(r.effectiveStatusLabel)}"
+                    data-final-state-label="${fn:escapeXml(r.finalStateLabel)}"
+                    data-rule-state-label="${fn:escapeXml(r.ruleStateLabel)}"
+                    data-batch-status-label="${fn:escapeXml(r.batchStatusLabel)}"
+                    data-batch-name="${fn:escapeXml(empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName)}"
+                    data-batch-code="${fn:escapeXml(empty r.batchCode ? '' : r.batchCode)}"
+                    data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
+                    data-blocked-at="${ipRuleBlockedAtText}"
+                    data-expires-display="${fn:escapeXml(empty ipRuleExpiresText ? adminBlocksNoneLabel : ipRuleExpiresText)}"
+                    data-active="${r.active ? 'true' : 'false'}">
+                <span style="font-weight:700;color:#e2e8f0;">${empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue}</span>
+                <span style="display:block;font-size:12px;color:#94a3b8;">${r.blockTargetKey}</span>
+                <span style="display:block;font-size:11px;color:#64748b;">${r.matchType}</span>
+            </button>
+            <div class="adm-inline-actions">
+                <button type="button"
+                        class="adm-inline-chip js-apply-block-filter"
+                        data-section="ip-rules"
+                        data-field="target"
+                        data-keyword="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}">
+                    <spring:message code="admin.common.sameTarget"/>
+                </button>
+                <c:if test="${not empty r.ipBlockBatchIdx}">
+                    <button type="button"
+                            class="adm-inline-chip js-apply-block-filter"
+                            data-section="ip-rules"
+                            data-field="batch"
+                            data-keyword="${fn:escapeXml(empty r.batchCode ? r.batchName : r.batchCode)}">
+                        <spring:message code="admin.common.sameBatch"/>
+                    </button>
+                </c:if>
+            </div>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)}">
+            <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
+                <span><span class="status-badge ${r.ruleAction == 'ALLOW' ? 'ACTIVE' : 'DORMANT'}">${r.ruleActionLabel}</span></span>
+                <span style="font-size:12px;color:#94a3b8;">${r.controlModeLabel}</span>
+                <span class="adm-cell-link-note">${r.blockCategory}</span>
+            </button>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty r.batchName ? '' : r.batchName)}">
+            <button type="button"
+                    class="adm-cell-link ${not empty r.ipBlockBatchIdx ? 'js-open-batch-editor' : 'js-open-ip-rule-editor'}"
+                    data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
+                    data-id="${r.ipBlocklistIdx}">
+                <span>${empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName}</span>
+                <span style="font-size:12px;color:#94a3b8;">${empty r.batchCode ? r.batchStatusLabel : fn:escapeXml(r.batchCode)}</span>
+                <span class="adm-cell-link-note">${r.batchStatusLabel}</span>
+            </button>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty r.effectiveStatus ? '' : r.effectiveStatus)}">
+            <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
+                <span><span class="status-badge ${r.effectiveStatusBadgeClass}">${r.finalStateLabel}</span></span>
+                <span style="font-size:12px;color:#94a3b8;">${r.effectiveStatusLabel}</span>
+                <span class="adm-cell-link-note">${r.ruleStateLabel} / ${r.batchStatusLabel}</span>
+            </button>
+        </td>
+        <td data-sort-value="${r.priority}">
+            <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
+                <span>${r.priority}</span>
+                <span class="adm-cell-link-note">${empty r.ruleOriginType ? '-' : r.ruleOriginType}</span>
+            </button>
+        </td>
+        <td style="max-width:280px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty r.reason ? '' : r.reason)}">
+            <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
+                <span>${empty r.reason ? '-' : r.reason}</span>
+                <span class="adm-cell-link-note">${empty r.effectiveStatusReason ? '-' : r.effectiveStatusReason}</span>
+            </button>
+        </td>
+        <td>
+            <div class="adm-row-actions">
+                <button type="button"
+                        class="adm-row-btn detail js-open-ip-rule-editor"
+                        data-id="${r.ipBlocklistIdx}"
+                        data-template-id="detail-ip-${r.ipBlocklistIdx}"
+                        data-target-display="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}"
+                        data-target-key="${fn:escapeXml(r.blockTargetKey)}"
+                        data-rule-action="${r.ruleAction}"
+                        data-control-mode="${r.controlMode}"
+                        data-block-category="${r.blockCategory}"
+                        data-priority="${r.priority}"
+                        data-reason="${fn:escapeXml(empty r.reason ? '' : r.reason)}"
+                        data-detail-message="${fn:escapeXml(empty r.detailMessage ? '' : r.detailMessage)}"
+                        data-expires-at="${r.expiresAtInputValue}"
+                        data-effective-status-label="${fn:escapeXml(r.effectiveStatusLabel)}"
+                        data-final-state-label="${fn:escapeXml(r.finalStateLabel)}"
+                        data-rule-state-label="${fn:escapeXml(r.ruleStateLabel)}"
+                        data-batch-status-label="${fn:escapeXml(r.batchStatusLabel)}"
+                        data-batch-name="${fn:escapeXml(empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName)}"
+                        data-batch-code="${fn:escapeXml(empty r.batchCode ? '' : r.batchCode)}"
+                        data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
+                        data-blocked-at="${ipRuleBlockedAtText}"
+                        data-expires-display="${fn:escapeXml(empty ipRuleExpiresText ? adminBlocksNoneLabel : ipRuleExpiresText)}"
+                        data-active="${r.active ? 'true' : 'false'}">${adminBlocksSettingsLabel}</button>
+                <div class="action-menu-wrap">
+                    <button type="button"
+                            class="adm-row-btn detail adm-row-btn-more"
+                            onclick="admToggleActionMenu(this)">&hellip;</button>
+                    <div class="action-menu">
+                        <c:if test="${not empty r.ipAddress}">
+                            <button type="button"
+                                    class="action-menu-item js-open-ip-context"
+                                    data-ip-address="${r.ipAddress}"
+                                    data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
+                        </c:if>
+                        <button type="button"
+                                class="action-menu-item js-open-block-detail"
+                                data-template-id="detail-ip-${r.ipBlocklistIdx}"
+                                data-detail-title="${fn:escapeXml(adminBlocksHistoryLabel)}">${adminBlocksHistoryLabel}</button>
+                        <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
+                            <div class="action-menu-sep"></div>
+                            <button type="button"
+                                    class="action-menu-item ${r.active ? 'danger' : ''} js-toggle-ip-rule"
+                                    data-id="${r.ipBlocklistIdx}"
+                                    data-active="${r.active ? 'false' : 'true'}">${r.active ? adminBlocksRuleOffLabel : adminBlocksRuleOnLabel}</button>
+                            <c:if test="${r.ipBlockBatchIdx != null and r.controlMode == 'MANUAL_OVERRIDE'}">
+                                <button type="button"
+                                        class="action-menu-item js-return-to-batch"
+                                        data-id="${r.ipBlocklistIdx}">${adminBlocksReturnToBatchLabel}</button>
+                            </c:if>
+                        </c:if>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</c:forEach>
+<c:if test="${empty ipBlocks}">
+    <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+</c:if>

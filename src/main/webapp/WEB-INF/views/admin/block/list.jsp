@@ -866,6 +866,10 @@
                 </div>
                 <div class="adm-local-toolbar-group">
                     <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="ip-rules" style="display:none;" onclick="sectionSortReset('ip-rules')"></button>
+                    <select class="adm-select js-section-mode" data-section="ip-rules" title="<spring:message code='admin.blocks.mode.label'/>">
+                        <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
+                        <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                    </select>
                     <select class="adm-select js-local-page-size" data-section="ip-rules">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -914,7 +918,7 @@
                             data-expires-at="${fn:toLowerCase(empty ipRuleExpiresText ? '' : ipRuleExpiresText)}"
                             data-final-state="${fn:toLowerCase(empty r.finalStateLabel ? '' : r.finalStateLabel)}">
                             <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="ip-rules" data-id="${r.ipBlocklistIdx}" value="${r.ipBlocklistIdx}" onchange="updateBlockBulkBar('ip-rules')"></td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}">
                                 <button type="button"
                                         class="adm-link-btn js-open-ip-rule-editor"
                                         data-id="${r.ipBlocklistIdx}"
@@ -961,14 +965,14 @@
                                     </c:if>
                                 </div>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)}">
                                 <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
                                     <span><span class="status-badge ${r.ruleAction == 'ALLOW' ? 'ACTIVE' : 'DORMANT'}">${r.ruleActionLabel}</span></span>
                                     <span style="font-size:12px;color:#94a3b8;">${r.controlModeLabel}</span>
                                     <span class="adm-cell-link-note">${r.blockCategory}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty r.batchName ? '' : r.batchName)}">
                                 <button type="button"
                                         class="adm-cell-link ${not empty r.ipBlockBatchIdx ? 'js-open-batch-editor' : 'js-open-ip-rule-editor'}"
                                         data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
@@ -978,20 +982,20 @@
                                     <span class="adm-cell-link-note">${r.batchStatusLabel}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty r.effectiveStatus ? '' : r.effectiveStatus)}">
                                 <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
                                     <span><span class="status-badge ${r.effectiveStatusBadgeClass}">${r.finalStateLabel}</span></span>
                                     <span style="font-size:12px;color:#94a3b8;">${r.effectiveStatusLabel}</span>
                                     <span class="adm-cell-link-note">${r.ruleStateLabel} / ${r.batchStatusLabel}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${r.priority}">
                                 <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
                                     <span>${r.priority}</span>
                                     <span class="adm-cell-link-note">${empty r.ruleOriginType ? '-' : r.ruleOriginType}</span>
                                 </button>
                             </td>
-                            <td style="max-width:280px;white-space:normal;">
+                            <td style="max-width:280px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty r.reason ? '' : r.reason)}">
                                 <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
                                     <span>${empty r.reason ? '-' : r.reason}</span>
                                     <span class="adm-cell-link-note">${empty r.effectiveStatusReason ? '-' : r.effectiveStatusReason}</span>
@@ -1072,6 +1076,7 @@
         </div>
     </div>
 
+    <div id="iprDetailArea">
     <c:forEach var="r" items="${ipBlocks}">
         <template id="detail-ip-${r.ipBlocklistIdx}">
             <div class="detail-grid">
@@ -1139,6 +1144,7 @@
             </table>
         </template>
     </c:forEach>
+    </div>
 
     <div class="adm-card js-section-card" data-section="batches" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
@@ -2615,14 +2621,32 @@ function sortKeyForCellIndex(section, cellIndex) {
         const map = {1:'time', 2:'target', 3:'actionLabel', 4:'changeKind', 5:'result', 6:'reason'};
         return map[cellIndex] || '';
     }
+    if (section === 'ip-rules') {
+        // 인덱스: 0=checkbox, 1=target, 2=actionControl, 3=batch, 4=status, 5=priority, 6=reason, 7=action
+        const map = {1:'target', 2:'actionControl', 3:'batch', 4:'status', 5:'priority', 6:'reason'};
+        return map[cellIndex] || '';
+    }
     return '';
 }
 
-async function renderServerSection(section) {
-    if (section !== 'histories') {
-        // 1차 라운드는 histories만 SERVER 모드 지원. 다른 섹션은 추후 확장.
-        return;
+const SECTION_FETCH_CONFIG = {
+    'histories': {
+        fragmentUrl: '/admin/blocks/api/histories/fragment',
+        metaUrl: '/admin/blocks/api/histories',
+        splitMarker: '<!--HISTORY-FRAGMENT-SPLIT-->',
+        detailAreaId: 'histDetailArea'
+    },
+    'ip-rules': {
+        fragmentUrl: '/admin/blocks/api/ip-rules/fragment',
+        metaUrl: '/admin/blocks/api/ip-rules',
+        splitMarker: '<!--IPRULE-FRAGMENT-SPLIT-->',
+        detailAreaId: 'iprDetailArea'
     }
+};
+
+async function renderServerSection(section) {
+    const cfg = SECTION_FETCH_CONFIG[section];
+    if (!cfg) return; // 아직 SERVER 모드 미지원 섹션
     const state = getLocalState(section);
     const card = getSectionCard(section);
     if (!card) return;
@@ -2641,23 +2665,23 @@ async function renderServerSection(section) {
     if (keywordEl && keywordEl.value) params.set('keyword', keywordEl.value);
 
     try {
-        const res = await fetch(CTX + '/admin/blocks/api/histories/fragment?' + params.toString(), {
+        const res = await fetch(CTX + cfg.fragmentUrl + '?' + params.toString(), {
             credentials: 'same-origin',
             headers: {'Accept': 'text/html'}
         });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const html = await res.text();
-        const split = html.split('<!--HISTORY-FRAGMENT-SPLIT-->');
+        const split = html.split(cfg.splitMarker);
         const rowsHtml = (split[0] || '').trim();
         const detailsHtml = (split[1] || '').trim();
 
         const tbody = card.querySelector('tbody');
         if (tbody) tbody.innerHTML = rowsHtml;
-        const detailArea = document.getElementById('histDetailArea');
+        const detailArea = document.getElementById(cfg.detailAreaId);
         if (detailArea) detailArea.innerHTML = detailsHtml;
 
-        // 메타 정보를 JSON API로 별도 호출하지 않고, 같은 파라미터로 JSON을 한 번 더 받아 페이지 정보 갱신
-        const metaRes = await fetch(CTX + '/admin/blocks/api/histories?' + params.toString(), {
+        // 페이지 메타는 같은 파라미터로 JSON 호출 (페이지 정보만 가져오기)
+        const metaRes = await fetch(CTX + cfg.metaUrl + '?' + params.toString(), {
             credentials: 'same-origin',
             headers: {'Accept': 'application/json'}
         });

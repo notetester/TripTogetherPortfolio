@@ -8,6 +8,7 @@ import java.util.Map;
 public interface AdminBlockService {
     Map<String, Object> getBlockDashboard(AdminBlockSearchVO search);
     Map<String, Object> getBlockHistoriesPaged(AdminBlockSearchVO search);
+    Map<String, Object> getIpBlocksPaged(AdminBlockSearchVO search);
     void createIpBlockBatch(String batchCode, String batchName, String sourceType, String sourceName,
                             String batchRuleAction, Integer defaultRulePriority,
                             String defaultDisableStrategy, String defaultEnableStrategy,
