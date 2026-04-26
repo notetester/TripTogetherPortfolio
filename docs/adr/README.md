@@ -41,6 +41,7 @@
 | [ADR-0011](./0011-authorization-aop-and-global-exception-handler.md) | 어노테이션 기반 권한 체크(AOP) + 글로벌 예외 처리 | Accepted |
 | [ADR-0012](./0012-spring-security-csrf-partial-adoption.md) | Spring Security CSRF 부분 도입 + 점진적 확장 | Accepted |
 | [ADR-0013](./0013-i18n-api-message-coverage.md) | API 응답 메시지 i18n 적용 — JSP 외 컨트롤러/서비스까지 4개 언어 | Accepted |
+| [ADR-0014](./0014-junit-test-strategy.md) | JUnit 테스트 전략 — Service 단위 + ADR 정책 검증 | Accepted |
 
 ### 인프라
 
