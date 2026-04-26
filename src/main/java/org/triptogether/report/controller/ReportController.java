@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.triptogether.common.util.MessageUtil;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.CommunityCommentDto;
 import org.triptogether.community.vo.CommunityPostDto;
@@ -48,6 +49,7 @@ public class ReportController {
     private final ReportService reportService;
     private final CommunityService communityService;
     private final ExploreService exploreService;
+    private final MessageUtil msg;
     private final ReportMapper reportMapper;
 
     /* =============================================
@@ -236,7 +238,7 @@ public class ReportController {
         // 비로그인 체크
         if (session.getAttribute("loginUser") == null) {
             result.put("success", false);
-            result.put("message", "로그인이 필요합니다.");
+            result.put("message", msg.get("report.api.error.loginRequired"));
             return ResponseEntity.status(401).body(result);
         }
 
@@ -244,7 +246,7 @@ public class ReportController {
         if (!"post".equals(targetType) && !"comment".equals(targetType)
                 && !"review".equals(targetType) && !"user".equals(targetType)) {
             result.put("success", false);
-            result.put("message", "잘못된 신고 대상입니다.");
+            result.put("message", msg.get("report.api.error.invalidTarget"));
             return ResponseEntity.status(400).body(result);
         }
 
@@ -257,7 +259,7 @@ public class ReportController {
 
             if (!submitted) {
                 result.put("success", false);
-                result.put("message", "이미 신고하셨습니다.");
+                result.put("message", msg.get("report.api.error.alreadyReported"));
                 return ResponseEntity.status(409).body(result);
             }
 
@@ -269,7 +271,7 @@ public class ReportController {
             }
 
             result.put("success", true);
-            result.put("message", "신고가 접수되었습니다.");
+            result.put("message", msg.get("report.api.success.submitted"));
 
         } catch (Exception e) {
             log.error("신고 접수 오류", e);
@@ -304,7 +306,7 @@ public class ReportController {
         // 비로그인 체크
         if (session.getAttribute("loginUser") == null) {
             result.put("success", false);
-            result.put("message", "로그인이 필요합니다.");
+            result.put("message", msg.get("report.api.error.loginRequired"));
             return ResponseEntity.status(401).body(result);
         }
 
@@ -313,7 +315,7 @@ public class ReportController {
         // 자기 자신 신고 방지
         if (loginUserIdx.equals(targetUserIdx)) {
             result.put("success", false);
-            result.put("message", "자기 자신은 신고할 수 없습니다.");
+            result.put("message", msg.get("report.api.error.selfReportNotAllowed"));
             return ResponseEntity.status(400).body(result);
         }
 
@@ -322,12 +324,12 @@ public class ReportController {
 
             if (!submitted) {
                 result.put("success", false);
-                result.put("message", "이미 신고하셨습니다.");
+                result.put("message", msg.get("report.api.error.alreadyReported"));
                 return ResponseEntity.status(409).body(result);
             }
 
             result.put("success", true);
-            result.put("message", "신고가 접수되었습니다.");
+            result.put("message", msg.get("report.api.success.submitted"));
 
         } catch (Exception e) {
             log.error("유저 신고 접수 오류", e);
@@ -376,7 +378,7 @@ public class ReportController {
         }
         if (!"IN_REVIEW".equals(report.getStatus())) {
             result.put("success", false);
-            result.put("message", "수정할 수 없는 상태입니다.");
+            result.put("message", msg.get("report.api.error.cannotEdit"));
             return ResponseEntity.status(400).body(result);
         }
 
@@ -460,7 +462,7 @@ public class ReportController {
         }
         if (!"IN_REVIEW".equals(report.getStatus())) {
             result.put("success", false);
-            result.put("message", "취소할 수 없는 상태입니다.");
+            result.put("message", msg.get("report.api.error.cannotCancel"));
             return ResponseEntity.status(400).body(result);
         }
 
@@ -489,13 +491,13 @@ public class ReportController {
 
         if (!isAdmin(session)) {
             result.put("success", false);
-            result.put("message", "관리자만 신고 상태를 변경할 수 있습니다.");
+            result.put("message", msg.get("report.api.error.adminOnlyStatusChange"));
             return ResponseEntity.status(403).body(result);
         }
 
         if (!"RESOLVED".equals(status) && !"DISMISSED".equals(status)) {
             result.put("success", false);
-            result.put("message", "유효하지 않은 상태값입니다.");
+            result.put("message", msg.get("report.api.error.invalidStatus"));
             return ResponseEntity.status(400).body(result);
         }
 

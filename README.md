@@ -68,6 +68,7 @@
 | [ADR-0010](./docs/adr/0010-ai-moderation-pipeline.md) | AI 모더레이션 풀 스택 파이프라인 |
 | [ADR-0011](./docs/adr/0011-authorization-aop-and-global-exception-handler.md) | 어노테이션 기반 권한 체크(AOP) + 글로벌 예외 처리 |
 | [ADR-0012](./docs/adr/0012-spring-security-csrf-partial-adoption.md) | Spring Security CSRF 부분 도입 |
+| [ADR-0013](./docs/adr/0013-i18n-api-message-coverage.md) | API 응답 메시지 i18n 적용 (4개 언어) |
 
 → 전체 인덱스 및 작성 가이드: [`docs/adr/README.md`](./docs/adr/README.md)
 

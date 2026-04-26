@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.admin.service.AdCampaignService;
+import org.triptogether.common.util.MessageUtil;
 import org.triptogether.community.service.CommunityService;
 import org.triptogether.community.vo.*;
 import org.triptogether.auth.vo.UserRole;
@@ -58,6 +59,7 @@ public class CommunityController {
     private final IpBlockMapper ipBlockMapper;
     private final ViewHistoryService viewHistoryService;
     private final AdCampaignService adCampaignService;
+    private final MessageUtil msg;
 
     /* =============================================
        GET /community, /community/ - 루트 리다이렉트
@@ -226,12 +228,12 @@ public class CommunityController {
 
         if (session.getAttribute("loginUser") == null) {
             result.put("success", false);
-            result.put("message", "로그인이 필요합니다.");
+            result.put("message", msg.get("community.api.error.loginRequired"));
             return ResponseEntity.status(401).body(result);
         }
         if (isBlocked(session)) {
             result.put("success", false);
-            result.put("message", "차단된 계정은 글을 작성할 수 없습니다.");
+            result.put("message", msg.get("community.api.error.blockedWritePost"));
             return ResponseEntity.status(403).body(result);
         }
 
@@ -256,7 +258,7 @@ public class CommunityController {
         } catch (Exception e) {
             log.error("글쓰기 오류", e);
             result.put("success", false);
-            result.put("message", "등록 중 오류가 발생했습니다.");
+            result.put("message", msg.get("community.api.error.writeServerError"));
             return ResponseEntity.status(500).body(result);
         }
 
@@ -283,17 +285,17 @@ public class CommunityController {
 
         if (session.getAttribute("loginUser") == null) {
             result.put("success", false);
-            result.put("message", "로그인이 필요합니다.");
+            result.put("message", msg.get("community.api.error.loginRequired"));
             return ResponseEntity.status(401).body(result);
         }
         if (isBlocked(session)) {
             result.put("success", false);
-            result.put("message", "차단된 계정은 이미지를 업로드할 수 없습니다.");
+            result.put("message", msg.get("community.api.error.blockedWriteImage"));
             return ResponseEntity.status(403).body(result);
         }
         if (file == null || file.isEmpty()) {
             result.put("success", false);
-            result.put("message", "파일이 비어있습니다.");
+            result.put("message", msg.get("community.api.error.fileEmpty"));
             return ResponseEntity.badRequest().body(result);
         }
 
@@ -302,7 +304,7 @@ public class CommunityController {
         String contentType = file.getContentType();
         if (contentType == null || !contentType.toLowerCase().startsWith("image/")) {
             result.put("success", false);
-            result.put("message", "이미지 파일만 업로드할 수 있습니다.");
+            result.put("message", msg.get("community.api.error.imageOnly"));
             return ResponseEntity.badRequest().body(result);
         }
         String originalName = file.getOriginalFilename();
@@ -310,12 +312,12 @@ public class CommunityController {
         String ext = dotIdx >= 0 ? originalName.substring(dotIdx + 1).toLowerCase() : "";
         if (!java.util.Set.of("jpg", "jpeg", "png", "gif", "webp").contains(ext)) {
             result.put("success", false);
-            result.put("message", "허용되지 않는 파일 형식입니다. (jpg/jpeg/png/gif/webp 만 허용)");
+            result.put("message", msg.get("community.api.error.imageExtNotAllowed"));
             return ResponseEntity.badRequest().body(result);
         }
         if (file.getSize() > 5L * 1024 * 1024) {
             result.put("success", false);
-            result.put("message", "파일 크기는 5MB 를 초과할 수 없습니다.");
+            result.put("message", msg.get("community.api.error.imageSizeExceeded"));
             return ResponseEntity.status(413).body(result);
         }
 
@@ -323,7 +325,7 @@ public class CommunityController {
             String url = communityService.uploadInlineImage(file);
             if (url == null || url.isBlank()) {
                 result.put("success", false);
-                result.put("message", "이미지 업로드에 실패했습니다. 허용되지 않는 파일 형식일 수 있습니다.");
+                result.put("message", msg.get("community.api.error.imageUploadFailed"));
                 return ResponseEntity.status(500).body(result);
             }
             result.put("success", true);
@@ -331,7 +333,7 @@ public class CommunityController {
         } catch (Exception e) {
             log.error("인라인 이미지 업로드 오류", e);
             result.put("success", false);
-            result.put("message", "업로드 중 오류가 발생했습니다.");
+            result.put("message", msg.get("community.api.error.uploadServerError"));
             return ResponseEntity.status(500).body(result);
         }
 
@@ -385,7 +387,7 @@ public class CommunityController {
 
         if (session.getAttribute("loginUser") == null) {
             result.put("success", false);
-            result.put("message", "로그인이 필요합니다.");
+            result.put("message", msg.get("community.api.error.loginRequired"));
             return ResponseEntity.status(401).body(result);
         }
 
@@ -403,7 +405,7 @@ public class CommunityController {
         } catch (Exception e) {
             log.error("수정 오류", e);
             result.put("success", false);
-            result.put("message", "수정 중 오류가 발생했습니다.");
+            result.put("message", msg.get("community.api.error.editServerError"));
             return ResponseEntity.status(500).body(result);
         }
 
@@ -498,7 +500,7 @@ public class CommunityController {
         }
         if (isBlocked(session)) {
             result.put("success", false);
-            result.put("message", "차단된 계정은 댓글을 작성할 수 없습니다.");
+            result.put("message", msg.get("community.api.error.blockedWriteComment"));
             return ResponseEntity.status(403).body(result);
         }
 
@@ -577,7 +579,7 @@ public class CommunityController {
         }
         if (isBlocked(session)) {
             result.put("success", false);
-            result.put("message", "차단된 계정은 댓글을 작성할 수 없습니다.");
+            result.put("message", msg.get("community.api.error.blockedWriteComment"));
             return ResponseEntity.status(403).body(result);
         }
 
@@ -633,7 +635,7 @@ public class CommunityController {
             CommunityPostDto post = communityService.getPost(postId);
             if (!loginUserIdx.equals(post.getUserIdx())) {
                 result.put("success", false);
-                result.put("message", "작성자만 채택할 수 있어요.");
+                result.put("message", msg.get("community.api.error.acceptOwnerOnly"));
                 return ResponseEntity.status(403).body(result);
             }
 
@@ -709,7 +711,7 @@ public class CommunityController {
 
         if (!isAdminUser(session)) {
             result.put("success", false);
-            result.put("message", "관리자만 차단할 수 있습니다.");
+            result.put("message", msg.get("community.api.error.blockAdminOnly"));
             return ResponseEntity.status(403).body(result);
         }
 
@@ -739,7 +741,7 @@ public class CommunityController {
 
         if (!isAdminUser(session)) {
             result.put("success", false);
-            result.put("message", "관리자만 차단 해제할 수 있습니다.");
+            result.put("message", msg.get("community.api.error.unblockAdminOnly"));
             return ResponseEntity.status(403).body(result);
         }
 
@@ -923,7 +925,7 @@ public class CommunityController {
         }
         if (postIds == null || postIds.isEmpty()) {
             result.put("success", false);
-            result.put("message", "선택된 게시글이 없습니다.");
+            result.put("message", msg.get("community.api.error.bulkPostEmpty"));
             return ResponseEntity.badRequest().body(result);
         }
 
@@ -957,7 +959,7 @@ public class CommunityController {
                     break;
                 default:
                     result.put("success", false);
-                    result.put("message", "알 수 없는 액션입니다.");
+                    result.put("message", msg.get("community.api.error.unknownAction"));
                     return ResponseEntity.badRequest().body(result);
             }
             result.put("success", true);
@@ -992,7 +994,7 @@ public class CommunityController {
         }
         if (commentIds == null || commentIds.isEmpty()) {
             result.put("success", false);
-            result.put("message", "선택된 댓글이 없습니다.");
+            result.put("message", msg.get("community.api.error.bulkCommentEmpty"));
             return ResponseEntity.badRequest().body(result);
         }
 
@@ -1026,7 +1028,7 @@ public class CommunityController {
                     break;
                 default:
                     result.put("success", false);
-                    result.put("message", "알 수 없는 액션입니다.");
+                    result.put("message", msg.get("community.api.error.unknownAction"));
                     return ResponseEntity.badRequest().body(result);
             }
             result.put("success", true);

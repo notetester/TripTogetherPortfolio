@@ -20,6 +20,7 @@ import org.triptogether.auth.vo.UserRole;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.common.annotation.LoginUser;
 import org.triptogether.common.annotation.RequireAdmin;
+import org.triptogether.common.util.MessageUtil;
 import org.triptogether.perspective.PerspectiveService;
 
 import java.lang.reflect.Method;
@@ -56,6 +57,7 @@ public class InquiryController {
     private final MyPageService myPageService;
     private final PerspectiveService perspectiveService;
     private final InquiryAiService inquiryAiService;
+    private final MessageUtil msg;
 
     /* =============================================
        유틸 메서드
@@ -247,7 +249,7 @@ public class InquiryController {
         // 운영진 권한 체크
         if (!isAdmin(session)) {
             result.put("success", false);
-            result.put("message", "운영진만 답변할 수 있어요.");
+            result.put("message", msg.get("inquiry.api.error.adminAnswerOnly"));
             return ResponseEntity.status(403).body(result);
         }
 
@@ -315,7 +317,7 @@ public class InquiryController {
         // PENDING 상태일 때만 수정 가능
         if (!"PENDING".equals(inquiry.getStatus())) {
             result.put("success", false);
-            result.put("message", "답변이 완료된 글은 수정할 수 없습니다.");
+            result.put("message", msg.get("inquiry.api.error.cannotEditAfterAnswer"));
             return ResponseEntity.status(400).body(result);
         }
 
@@ -374,7 +376,7 @@ public class InquiryController {
         String st = inquiry.getStatus();
         if (!"PENDING".equals(st) && !"CANCELLED".equals(st)) {
             result.put("success", false);
-            result.put("message", "삭제할 수 없는 상태입니다.");
+            result.put("message", msg.get("inquiry.api.error.cannotDelete"));
             return ResponseEntity.status(400).body(result);
         }
 
@@ -400,7 +402,7 @@ public class InquiryController {
         Map<String, Object> result = new HashMap<>();
         if (!isAdmin(session)) {
             result.put("success", false);
-            result.put("message", "운영진만 상태를 변경할 수 있어요.");
+            result.put("message", msg.get("inquiry.api.error.adminStatusChangeOnly"));
             return ResponseEntity.status(403).body(result);
         }
         try {
@@ -481,7 +483,7 @@ public class InquiryController {
         String st = inquiry.getStatus();
         if (!"IN_PROGRESS".equals(st) && !"COMPLETED".equals(st)) {
             result.put("success", false);
-            result.put("message", "처리중 또는 답변완료 상태에서만 완료 처리할 수 있습니다.");
+            result.put("message", msg.get("inquiry.api.error.userCompleteInvalidState"));
             return ResponseEntity.status(400).body(result);
         }
         inquiryService.updateStatusWithTime(inquiryId, "USER_COMPLETED");
@@ -514,7 +516,7 @@ public class InquiryController {
         }
         if (!"PENDING".equals(inquiry.getStatus()) && !"IN_PROGRESS".equals(inquiry.getStatus())) {
             result.put("success", false);
-            result.put("message", "취소할 수 없는 상태입니다.");
+            result.put("message", msg.get("inquiry.api.error.cannotCancel"));
             return ResponseEntity.status(400).body(result);
         }
         inquiryService.updateStatusWithTime(inquiryId, "CANCELLED");
@@ -547,7 +549,7 @@ public class InquiryController {
         }
         if (!"COMPLETED".equals(inquiry.getStatus())) {
             result.put("success", false);
-            result.put("message", "답변완료 상태에서만 삭제 요청이 가능합니다.");
+            result.put("message", msg.get("inquiry.api.error.deleteRequestInvalidState"));
             return ResponseEntity.status(400).body(result);
         }
         inquiryService.updateStatusWithTime(inquiryId, "DELETE_REQUESTED");
@@ -581,7 +583,7 @@ public class InquiryController {
         }
         if (!"DELETE_REQUESTED".equals(inquiry.getStatus())) {
             result.put("success", false);
-            result.put("message", "삭제 요청 상태에서만 취소할 수 있습니다.");
+            result.put("message", msg.get("inquiry.api.error.deleteRequestCancelInvalidState"));
             return ResponseEntity.status(400).body(result);
         }
         inquiryService.updateStatusWithTime(inquiryId, "COMPLETED");
@@ -634,7 +636,7 @@ public class InquiryController {
         Map<String, Object> result = new HashMap<>();
         if (!isAdmin(session)) {
             result.put("success", false);
-            result.put("message", "운영진만 수락할 수 있어요.");
+            result.put("message", msg.get("inquiry.api.error.adminApproveOnly"));
             return ResponseEntity.status(403).body(result);
         }
         InquiryPostDto inquiry = inquiryService.getInquiry(inquiryId);
@@ -644,7 +646,7 @@ public class InquiryController {
         }
         if (!"DELETE_REQUESTED".equals(inquiry.getStatus())) {
             result.put("success", false);
-            result.put("message", "삭제 요청 상태가 아닙니다.");
+            result.put("message", msg.get("inquiry.api.error.notDeleteRequested"));
             return ResponseEntity.status(400).body(result);
         }
         try {
@@ -676,7 +678,7 @@ public class InquiryController {
 
         if (!isAdmin(session)) {
             result.put("success", false);
-            result.put("message", "관리자만 사용할 수 있습니다.");
+            result.put("message", msg.get("inquiry.api.error.adminOnly"));
             return ResponseEntity.status(403).body(result);
         }
 
@@ -694,7 +696,7 @@ public class InquiryController {
 
         if (draft == null || draft.isBlank()) {
             result.put("success", false);
-            result.put("message", "AI 초안 생성에 실패했습니다. 잠시 후 다시 시도해주세요.");
+            result.put("message", msg.get("inquiry.api.error.aiDraftFailed"));
             return ResponseEntity.status(500).body(result);
         }
 
@@ -719,7 +721,7 @@ public class InquiryController {
         Map<String, Object> result = new HashMap<>();
         if (!isAdmin(session)) {
             result.put("success", false);
-            result.put("message", "운영진만 수락할 수 있어요.");
+            result.put("message", msg.get("inquiry.api.error.adminApproveOnly"));
             return ResponseEntity.status(403).body(result);
         }
         try {

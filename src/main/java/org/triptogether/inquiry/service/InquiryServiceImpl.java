@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.cloudinary.CloudinaryService;
+import org.triptogether.common.util.MessageUtil;
 import org.triptogether.inquiry.mapper.InquiryMapper;
 import org.triptogether.inquiry.vo.InquiryAnswerDto;
 import org.triptogether.inquiry.vo.InquiryAnswerHistoryDto;
@@ -25,6 +26,7 @@ public class InquiryServiceImpl implements InquiryService {
     private final InquiryMapper inquiryMapper;
     private final CloudinaryService cloudinaryService;
     private final ModerationPolicyService moderationPolicyService;
+    private final MessageUtil msg;
 
     // ===== 목록 조회 =====
 
@@ -84,8 +86,8 @@ public class InquiryServiceImpl implements InquiryService {
     public Long writeInquiry(InquiryPostDto inquiry, List<MultipartFile> images) {
         ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
         if (inquiryMapper.countRecentInquiriesByUser(inquiry.getUserIdx(), policy.getInquiryWindowMinutes()) >= policy.getInquiryMaxCount()) {
-            throw new IllegalStateException(
-                    policy.getInquiryWindowMinutes() + "분 내 문의를 " + policy.getInquiryMaxCount() + "개 이상 작성할 수 없습니다.");
+            throw new IllegalStateException(msg.get("inquiry.service.error.rateLimit",
+                    policy.getInquiryWindowMinutes(), policy.getInquiryMaxCount()));
         }
         inquiryMapper.insertInquiry(inquiry);
         Long inquiryId = inquiry.getInquiryId(); // useGeneratedKeys로 자동 주입

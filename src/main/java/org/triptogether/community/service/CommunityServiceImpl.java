@@ -41,6 +41,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final RewardService rewardService;
     private final ModerationPolicyService moderationPolicyService;
     private final ReportService reportService;
+    private final org.triptogether.common.util.MessageUtil msg;
 
     // 정책: ADR-0005 (XSS 방지 - jsoup Safelist 서버측 sanitize)
     // Summernote 본문 XSS 정화용 화이트리스트
@@ -247,8 +248,8 @@ public class CommunityServiceImpl implements CommunityService {
 
         ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
         if (communityMapper.countRecentPostsByUser(userIdx, policy.getPostWindowMinutes()) >= policy.getPostMaxCount()) {
-            throw new IllegalStateException(
-                    policy.getPostWindowMinutes() + "분 내 게시글을 " + policy.getPostMaxCount() + "개 이상 작성할 수 없습니다.");
+            throw new IllegalStateException(msg.get("community.service.error.postRateLimit",
+                    policy.getPostWindowMinutes(), policy.getPostMaxCount()));
         }
 
         // 1. 본문 XSS 정화
@@ -261,7 +262,7 @@ public class CommunityServiceImpl implements CommunityService {
             // photo 는 목록 갤러리 표시를 위해 최소 3장 필수
             int totalImgs = Jsoup.parse(sanitizedContent).select("img[src]").size();
             if (totalImgs < 3) {
-                throw new IllegalStateException("사진 유형은 본문에 이미지 3장 이상 첨부해야 합니다.");
+                throw new IllegalStateException(msg.get("community.service.error.photoMinImages"));
             }
         }
 
@@ -353,7 +354,7 @@ public class CommunityServiceImpl implements CommunityService {
         if ("photo".equals(postType)) {
             int totalImgs = Jsoup.parse(sanitizedContent).select("img[src]").size();
             if (totalImgs < 3) {
-                throw new IllegalStateException("사진 유형은 본문에 이미지 3장 이상 첨부해야 합니다.");
+                throw new IllegalStateException(msg.get("community.service.error.photoMinImages"));
             }
         }
 
@@ -485,8 +486,8 @@ public class CommunityServiceImpl implements CommunityService {
     public Long addComment(Long postId, Long userIdx, String content) {
         ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
         if (communityMapper.countRecentCommentsByUser(userIdx, policy.getCommentWindowMinutes()) >= policy.getCommentMaxCount()) {
-            throw new IllegalStateException(
-                    policy.getCommentWindowMinutes() + "분 내 댓글을 " + policy.getCommentMaxCount() + "개 이상 작성할 수 없습니다.");
+            throw new IllegalStateException(msg.get("community.service.error.commentRateLimit",
+                    policy.getCommentWindowMinutes(), policy.getCommentMaxCount()));
         }
         CommunityCommentDto dto = new CommunityCommentDto();
         dto.setPostId(postId);
@@ -538,8 +539,8 @@ public class CommunityServiceImpl implements CommunityService {
     public Long addReply(Long postId, Long userIdx, String content, Long parentCommentId) {
         ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
         if (communityMapper.countRecentCommentsByUser(userIdx, policy.getCommentWindowMinutes()) >= policy.getCommentMaxCount()) {
-            throw new IllegalStateException(
-                    policy.getCommentWindowMinutes() + "분 내 댓글을 " + policy.getCommentMaxCount() + "개 이상 작성할 수 없습니다.");
+            throw new IllegalStateException(msg.get("community.service.error.commentRateLimit",
+                    policy.getCommentWindowMinutes(), policy.getCommentMaxCount()));
         }
         CommunityCommentDto dto = new CommunityCommentDto();
         dto.setPostId(postId);
