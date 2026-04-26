@@ -42,7 +42,7 @@
                 <tr>
                     <th style="width:88px;">이미지</th>
                     <th>제목</th>
-                    <th>슬롯</th>
+                    <th style="width:140px;">슬롯</th>
                     <th>링크</th>
                     <th>기간</th>
                     <th>노출 / 클릭</th>
@@ -72,13 +72,13 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${ad.slotCode eq 'community_list_top'}">
-                                            <span style="font-size:11px;color:#1d4ed8;background:#dbeafe;padding:2px 8px;border-radius:999px;">커뮤니티 목록 상단</span>
+                                            <span style="font-size:11px;color:#1d4ed8;background:#dbeafe;padding:2px 8px;border-radius:999px;white-space:nowrap;">커뮤니티 목록 상단</span>
                                         </c:when>
                                         <c:when test="${ad.slotCode eq 'community_detail_bottom'}">
-                                            <span style="font-size:11px;color:#6d28d9;background:#ede9fe;padding:2px 8px;border-radius:999px;">커뮤니티 상세 하단</span>
+                                            <span style="font-size:11px;color:#6d28d9;background:#ede9fe;padding:2px 8px;border-radius:999px;white-space:nowrap;">커뮤니티 상세 하단</span>
                                         </c:when>
                                         <c:otherwise>
-                                            <span style="font-size:11px;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:999px;">${ad.slotCode}</span>
+                                            <span style="font-size:11px;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:999px;white-space:nowrap;">${ad.slotCode}</span>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
