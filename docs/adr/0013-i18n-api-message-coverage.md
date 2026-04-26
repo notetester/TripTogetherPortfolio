@@ -169,9 +169,13 @@ throw new IllegalStateException(msg.get("community.service.error.commentRateLimi
 * [Spring i18n / MessageSource 공식 문서](https://docs.spring.io/spring-framework/reference/core/beans/context-introduction.html#context-functionality-messagesource)
 * [CLAUDE.md "다국어(i18n) 규칙" 섹션](../../CLAUDE.md) — notetester 작성, 본 ADR 의 정신적 토대
 
-### 면접 어필 포인트
+### 본 ADR 의 위치 — 신규 도입이 아닌 협업 일관성 보강
 
-* **다국어 일관성 의식** — JSP 외 API 응답까지 i18n 적용
-* **협업 컨텍스트 존중** — 신성륜의 패턴, notetester 의 인프라와 호환
-* **점진적 확장 전략** — 본인 영역부터 시작해 회귀 위험 관리
-* **placeholder 메시지** — `{0}, {1}` 인자로 동적 메시지 (rate limit 같이 정책 값을 본문에 노출)
+본 ADR 의 i18n 인프라(`messages/*.properties`, Spring `MessageSource`) 는 **팀 공통 자산**으로, 신성륜(번역 담당) 및 notetester(`community/inquiry/report` messages 인프라 작성) 의 작업으로 이미 마련되어 있었다.
+
+본인의 기여 범위:
+- 본인 담당 컨트롤러/서비스의 한국어 하드코딩 응답 메시지를 4개 언어 i18n 키로 일관 적용 (47 + 6곳)
+- `MessageUtil` 호출 패턴 헬퍼 추가
+- 협업 컨텍스트(신성륜 패턴 / notetester 인프라와의 호환) 를 ADR 로 명시
+
+즉 **인프라 신규 도입이 아니라 "기존 팀 인프라를 본인 영역에 일관 적용" 한 작업**이다. 신규 도입 사례는 [ADR-0011 (AOP 권한 체크)](./0011-authorization-aop-and-global-exception-handler.md) / [ADR-0012 (Spring Security CSRF)](./0012-spring-security-csrf-partial-adoption.md) 등을 참조.
