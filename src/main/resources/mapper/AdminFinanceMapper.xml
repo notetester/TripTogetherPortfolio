@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    AdminFinanceMapper.xml - 어드민 내지갑 관리 (read-only)
+    FINANCE_ADMIN 권한 영역. 자산 조정/환불 쿼리는 의도적으로 미포함.
+-->
+<mapper namespace="org.triptogether.admin.mapper.AdminFinanceMapper">
+
+    <!-- 대시보드 집계 -->
+    <select id="selectFinanceStats" resultType="org.triptogether.admin.vo.AdminFinanceStatsDto">
+        SELECT
+            (SELECT COALESCE(SUM(cash_balance), 0)    FROM USERS) AS totalCashBalance,
+            (SELECT COALESCE(SUM(mileage_balance), 0) FROM USERS) AS totalMileageBalance,
+            (SELECT COALESCE(SUM(point_balance), 0)   FROM USERS) AS totalPointBalance,
+            (SELECT COUNT(*) FROM USERS)                                AS totalUsers,
+            (SELECT COUNT(*) FROM USERS WHERE account_status = 'ACTIVE')  AS activeUsers,
+            (SELECT COUNT(*) FROM USERS WHERE account_status = 'BLOCKED') AS blockedUsers,
+            (SELECT COALESCE(SUM(amount), 0) FROM USER_WALLET_HISTORY
+                WHERE asset_type = 'CASH' AND change_type = 'CHARGE' AND amount &gt; 0
+                  AND DATE(created_at) = CURDATE())                       AS todayChargeTotal,
+            (SELECT COALESCE(SUM(amount), 0) FROM USER_WALLET_HISTORY
+                WHERE asset_type = 'CASH' AND change_type = 'CHARGE' AND amount &gt; 0
+                  AND created_at &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY))  AS lastMonthChargeTotal
+    </select>
+
+    <!-- 사용자 목록 (자산 + 등급) -->
+    <select id="selectFinanceUserList" resultType="org.triptogether.auth.vo.UsersVO">
+        SELECT
+            u.user_idx, u.user_id, u.user_email, u.nickname, u.account_status,
+            u.member_grade, u.cash_balance, u.mileage_balance, u.point_balance,
+            u.created_at, u.last_login_at
+        FROM USERS u
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                     OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
+                     OR u.user_id LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="memberGrade != null and memberGrade != ''">
+                AND u.member_grade = #{memberGrade}
+            </if>
+        </where>
+        ORDER BY
+        <choose>
+            <when test="sort == 'cash'">u.cash_balance DESC</when>
+            <when test="sort == 'mileage'">u.mileage_balance DESC</when>
+            <when test="sort == 'grade'">FIELD(u.member_grade, 'PLATINUM','DIAMOND','GOLD','SILVER','BRONZE'), u.user_idx DESC</when>
+            <otherwise>u.created_at DESC</otherwise>
+        </choose>
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="selectFinanceTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM USERS u
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                     OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
+                     OR u.user_id LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="memberGrade != null and memberGrade != ''">
+                AND u.member_grade = #{memberGrade}
+            </if>
+        </where>
+    </select>
+
+</mapper>

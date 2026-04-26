@@ -27,6 +27,7 @@ public class CommunityCacheReconcileScheduler {
 
     private final CommunityMapper communityMapper;
 
+    // 정책: ADR-0006 (캐시 컬럼 + Reconcile 스케줄러 - Eventually Consistent 정합성 안전망)
     @Scheduled(cron = "0 30 4 ? * *", zone = "Asia/Seoul")
     @Transactional
     public void reconcile() {

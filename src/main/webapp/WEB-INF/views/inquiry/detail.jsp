@@ -110,7 +110,7 @@
         </div>
 
         <%-- 제목 (BLUR 대상 아님 — 본문만 블러) --%>
-        <h1 class="inq-detail-title">${inquiry.title}</h1>
+        <h1 class="inq-detail-title"><c:out value="${inquiry.title}"/></h1>
 
         <%-- 관리자 전용 AI 감지 배지 + BLUR 해제 버튼 --%>
         <c:if test="${isAdmin and inquiry.aiFlagged}">
@@ -129,7 +129,7 @@
             <%-- 비공개 글이고 어드민이 아니면 익명 표시 --%>
             <c:choose>
               <c:when test="${inquiry.isPrivate == 1 and !isAdmin}">${inquiryAnonymousLabel}</c:when>
-              <c:otherwise>${inquiry.nickname}</c:otherwise>
+              <c:otherwise><c:out value="${inquiry.nickname}"/></c:otherwise>
             </c:choose>
           </span>
           <span class="inq-detail-divider">·</span>
@@ -147,7 +147,7 @@
 
       <%-- 카드 본문: 문의 내용 (목록에서 BLUR 오버레이로 권한 확인 완료 → 상세는 일반 노출) --%>
       <div class="inq-detail-body">
-        <pre class="inq-detail-content">${inquiry.content}</pre>
+        <pre class="inq-detail-content"><c:out value="${inquiry.content}"/></pre>
       </div>
 
       <%-- 첨부파일 목록 --%>
@@ -158,10 +158,10 @@
             <div class="inq-attachment-item">
               <a href="${att.fileUrl}" target="_blank">
                 <img src="${att.fileUrl}"
-                     alt="${att.fileName}"
+                     alt="<c:out value='${att.fileName}'/>"
                      class="inq-attachment-img"/>
               </a>
-              <span class="inq-attachment-name">${att.fileName}</span>
+              <span class="inq-attachment-name"><c:out value="${att.fileName}"/></span>
             </div>
           </c:forEach>
         </div>
@@ -183,7 +183,7 @@
             <div>
               <div class="inq-answer-title">${inquiryAnswerTitleLabel}</div>
               <div class="inq-answer-meta">
-                ${answer.adminNickname} ·
+                <c:out value="${answer.adminNickname}"/> ·
                 <fmt:formatDate value="${answer.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
                 <c:if test="${answer.updatedAt != null and answer.updatedAt.time != answer.createdAt.time}">
                   · <span class="inq-detail-edited">${inquiryEditedLabel} <fmt:formatDate value="${answer.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></span>
@@ -192,8 +192,19 @@
             </div>
           </div>
           <div class="inq-answer-body">
-            <pre class="inq-detail-content">${answer.content}</pre>
+            <pre class="inq-detail-content"><c:out value="${answer.content}"/></pre>
           </div>
+          <%-- 어드민 전용: 답변 수정/삭제 이력 토글 --%>
+          <c:if test="${isAdmin}">
+            <div class="inq-answer-history-section">
+              <button type="button" class="inq-btn-cancel"
+                      id="answerHistoryToggleBtn"
+                      data-id="${inquiry.inquiryId}">
+                <spring:message code="inquiry.answer.history.toggle"/>
+              </button>
+              <div class="inq-answer-history-list" id="answerHistoryList" hidden></div>
+            </div>
+          </c:if>
         </div>
       </c:when>
 
@@ -251,7 +262,7 @@
         <textarea class="inq-form-textarea" id="adminContent" rows="6"
                   placeholder="${inquiryAdminAnswerPlaceholder}"
                   <c:if test="${not empty answer}">disabled</c:if>
-        ><c:if test="${not empty answer}">${answer.content}</c:if></textarea>
+        ><c:if test="${not empty answer}"><c:out value="${answer.content}"/></c:if></textarea>
         <div class="inq-admin-form-actions">
           <c:choose>
             <%-- 답변 있을 때: 답변 수정 버튼 --%>
@@ -293,12 +304,12 @@
           <%-- 제목 --%>
           <div class="inq-form-group">
             <label class="inq-form-label"><spring:message code="inquiry.write.subject"/></label>
-            <input class="inq-form-input" type="text" id="editTitle" value="${inquiry.title}">
+            <input class="inq-form-input" type="text" id="editTitle" value="<c:out value='${inquiry.title}'/>">
           </div>
           <%-- 내용 --%>
           <div class="inq-form-group">
             <label class="inq-form-label"><spring:message code="inquiry.write.content"/></label>
-            <textarea class="inq-form-textarea" id="editContent" rows="10">${inquiry.content}</textarea>
+            <textarea class="inq-form-textarea" id="editContent" rows="10"><c:out value="${inquiry.content}"/></textarea>
           </div>
           <%-- 비공개 여부 --%>
           <div class="inq-form-group">
@@ -317,7 +328,7 @@
               <div class="inq-attachment-edit-list">
                 <c:forEach var="att" items="${attachmentList}">
                   <div class="inq-attachment-edit-item" data-id="${att.attachmentId}">
-                    <span>${att.fileName}</span>
+                    <span><c:out value="${att.fileName}"/></span>
                     <button type="button" class="inq-attach-delete-btn"
                             data-id="${att.attachmentId}">✕</button>
                   </div>
@@ -473,7 +484,15 @@ function goBackToList() {
     publicRequestConfirm: '<spring:message code="inquiry.detail.user.publicRequestConfirm" javaScriptEscape="true"/>',
     publicRequestFail: '<spring:message code="inquiry.detail.user.publicRequestFail" javaScriptEscape="true"/>',
     titleRequired: '<spring:message code="inquiry.write.error.title" javaScriptEscape="true"/>',
-    contentRequired: '<spring:message code="inquiry.write.error.content" javaScriptEscape="true"/>'
+    contentRequired: '<spring:message code="inquiry.write.error.content" javaScriptEscape="true"/>',
+    historyToggle: '<spring:message code="inquiry.answer.history.toggle" javaScriptEscape="true"/>',
+    historyTitle: '<spring:message code="inquiry.answer.history.title" javaScriptEscape="true"/>',
+    historyEmpty: '<spring:message code="inquiry.answer.history.empty" javaScriptEscape="true"/>',
+    historyTypeUpdate: '<spring:message code="inquiry.answer.history.type.UPDATE" javaScriptEscape="true"/>',
+    historyTypeDelete: '<spring:message code="inquiry.answer.history.type.DELETE" javaScriptEscape="true"/>',
+    historyChangedBy: '<spring:message code="inquiry.answer.history.changedBy" javaScriptEscape="true"/>',
+    historyPrevContent: '<spring:message code="inquiry.answer.history.prevContent" javaScriptEscape="true"/>',
+    historyLoadFail: '<spring:message code="inquiry.answer.history.loadFail" javaScriptEscape="true"/>'
   };
 
   /* =============================================
@@ -486,6 +505,70 @@ function goBackToList() {
       body: new URLSearchParams(params)
     });
     return res.json();
+  }
+
+  /* =============================================
+     어드민: 답변 수정/삭제 이력 토글
+     - 정책: ADR-0008 / answer 변경 추적 (INQUIRY_ANSWER_HISTORY)
+     ============================================= */
+  var historyBtn = document.getElementById('answerHistoryToggleBtn');
+  var historyList = document.getElementById('answerHistoryList');
+  if (historyBtn && historyList) {
+    historyBtn.addEventListener('click', async function () {
+      if (!historyList.hidden) {
+        historyList.hidden = true;
+        return;
+      }
+      try {
+        var res = await fetch(ctx + '/inquiry/' + inquiryId + '/answer/history');
+        var data = await res.json();
+        if (!data.success) { alert(inquiryMessages.historyLoadFail); return; }
+        renderAnswerHistory(historyList, data.list);
+        historyList.hidden = false;
+      } catch (e) {
+        alert(inquiryMessages.historyLoadFail);
+      }
+    });
+  }
+
+  function inqEscape(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function inqFormatDate(s) {
+    if (!s) return '';
+    var d = new Date(s);
+    if (isNaN(d.getTime())) return s;
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+        + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function renderAnswerHistory(target, list) {
+    if (!list || list.length === 0) {
+      target.innerHTML = '<div class="inq-answer-history-empty">'
+          + inqEscape(inquiryMessages.historyEmpty) + '</div>';
+      return;
+    }
+    var html = '<div class="inq-answer-history-title">' + inqEscape(inquiryMessages.historyTitle) + '</div>';
+    list.forEach(function (item) {
+      var typeLabel = item.changeType === 'UPDATE'
+          ? inquiryMessages.historyTypeUpdate
+          : inquiryMessages.historyTypeDelete;
+      html += '<div class="inq-answer-history-item">'
+          + '<div class="inq-answer-history-meta">'
+          + '<span class="inq-answer-history-type inq-answer-history-type-' + inqEscape(item.changeType) + '">'
+          + inqEscape(typeLabel) + '</span> · '
+          + inqEscape(inquiryMessages.historyChangedBy) + ': ' + inqEscape(item.changedByNickname) + ' · '
+          + inqEscape(inqFormatDate(item.changedAt))
+          + '</div>'
+          + '<div class="inq-answer-history-prev-label">' + inqEscape(inquiryMessages.historyPrevContent) + '</div>'
+          + '<pre class="inq-answer-history-prev">' + inqEscape(item.prevContent) + '</pre>'
+          + '</div>';
+    });
+    target.innerHTML = html;
   }
 
   /* =============================================

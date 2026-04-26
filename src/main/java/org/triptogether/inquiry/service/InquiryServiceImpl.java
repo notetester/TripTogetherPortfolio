@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.cloudinary.CloudinaryService;
+import org.triptogether.common.util.MessageUtil;
 import org.triptogether.inquiry.mapper.InquiryMapper;
 import org.triptogether.inquiry.vo.InquiryAnswerDto;
+import org.triptogether.inquiry.vo.InquiryAnswerHistoryDto;
 import org.triptogether.inquiry.vo.InquiryAttachmentDto;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
@@ -24,6 +26,7 @@ public class InquiryServiceImpl implements InquiryService {
     private final InquiryMapper inquiryMapper;
     private final CloudinaryService cloudinaryService;
     private final ModerationPolicyService moderationPolicyService;
+    private final MessageUtil msg;
 
     // ===== 목록 조회 =====
 
@@ -83,8 +86,8 @@ public class InquiryServiceImpl implements InquiryService {
     public Long writeInquiry(InquiryPostDto inquiry, List<MultipartFile> images) {
         ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
         if (inquiryMapper.countRecentInquiriesByUser(inquiry.getUserIdx(), policy.getInquiryWindowMinutes()) >= policy.getInquiryMaxCount()) {
-            throw new IllegalStateException(
-                    policy.getInquiryWindowMinutes() + "분 내 문의를 " + policy.getInquiryMaxCount() + "개 이상 작성할 수 없습니다.");
+            throw new IllegalStateException(msg.get("inquiry.service.error.rateLimit",
+                    policy.getInquiryWindowMinutes(), policy.getInquiryMaxCount()));
         }
         inquiryMapper.insertInquiry(inquiry);
         Long inquiryId = inquiry.getInquiryId(); // useGeneratedKeys로 자동 주입
@@ -146,10 +149,14 @@ public class InquiryServiceImpl implements InquiryService {
 
     // ===== 답변 수정 =====
 
-    // 답변 내용 수정함 (어드민 전용)
+    // 답변 내용 수정함 (어드민 전용). 수정 전 본문은 INQUIRY_ANSWER_HISTORY 에 보존
     @Override
     @Transactional
-    public void updateAnswer(Long inquiryId, String content) {
+    public void updateAnswer(Long inquiryId, String content, Long changedBy) {
+        InquiryAnswerDto existing = inquiryMapper.selectAnswer(inquiryId);
+        if (existing != null) {
+            archiveAnswer(existing, changedBy, "UPDATE");
+        }
         InquiryAnswerDto answer = new InquiryAnswerDto();
         answer.setInquiryId(inquiryId);
         answer.setContent(content);
@@ -158,12 +165,35 @@ public class InquiryServiceImpl implements InquiryService {
 
     // ===== 답변 삭제 =====
 
-    // 답변 삭제함. 삭제 후 문의 status → IN_PROGRESS로 되돌림
+    // 답변 삭제함. 삭제 전 본문은 INQUIRY_ANSWER_HISTORY 에 보존. 삭제 후 status → IN_PROGRESS
     @Override
     @Transactional
-    public void deleteAnswer(Long inquiryId) {
+    public void deleteAnswer(Long inquiryId, Long changedBy) {
+        InquiryAnswerDto existing = inquiryMapper.selectAnswer(inquiryId);
+        if (existing != null) {
+            archiveAnswer(existing, changedBy, "DELETE");
+        }
         inquiryMapper.deleteAnswer(inquiryId);
         inquiryMapper.updateStatus(inquiryId, "IN_PROGRESS");
+    }
+
+    // ===== 답변 수정/삭제 이력 조회 =====
+
+    @Override
+    public List<InquiryAnswerHistoryDto> getAnswerHistoryByInquiry(Long inquiryId) {
+        return inquiryMapper.selectAnswerHistoryByInquiry(inquiryId);
+    }
+
+    // 답변 변경 이력 보존 (UPDATE/DELETE 공통)
+    private void archiveAnswer(InquiryAnswerDto existing, Long changedBy, String changeType) {
+        InquiryAnswerHistoryDto history = new InquiryAnswerHistoryDto();
+        history.setAnswerId(existing.getAnswerId());
+        history.setInquiryId(existing.getInquiryId());
+        history.setPrevContent(existing.getContent());
+        history.setPrevAdminUserIdx(existing.getAdminUserIdx());
+        history.setChangedBy(changedBy);
+        history.setChangeType(changeType);
+        inquiryMapper.insertAnswerHistory(history);
     }
 
     // ===== 상태 변경 =====
@@ -198,10 +228,14 @@ public class InquiryServiceImpl implements InquiryService {
         inquiryMapper.insertAttachment(attachment);
     }
 
+    // 정책: ADR-0007 TODO (파일 검증 - 확장자/MIME/크기 화이트리스트)
     // 첨부파일 추가함 (MultipartFile 업로드)
     @Override
     @Transactional
     public void addAttachment(Long inquiryId, MultipartFile file) {
+        if (!isValidImageFile(file)) {
+            return;  // 잘못된 파일은 무시 (운영자 인지 위해 warn 로그)
+        }
         String savedUrl = saveFile(file);
         if (savedUrl != null) {
             InquiryAttachmentDto attachment = new InquiryAttachmentDto();
@@ -210,6 +244,28 @@ public class InquiryServiceImpl implements InquiryService {
             attachment.setFileName(file.getOriginalFilename());
             inquiryMapper.insertAttachment(attachment);
         }
+    }
+
+    // 이미지 파일 검증 - 확장자/MIME/크기 화이트리스트 (공통 유틸 추출 대상)
+    private boolean isValidImageFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) return false;
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.toLowerCase().startsWith("image/")) {
+            log.warn("invalid file type rejected: contentType={}", contentType);
+            return false;
+        }
+        String name = file.getOriginalFilename();
+        int dotIdx = name == null ? -1 : name.lastIndexOf('.');
+        String ext = dotIdx >= 0 ? name.substring(dotIdx + 1).toLowerCase() : "";
+        if (!java.util.Set.of("jpg", "jpeg", "png", "gif", "webp").contains(ext)) {
+            log.warn("invalid file ext rejected: name={}", name);
+            return false;
+        }
+        if (file.getSize() > 5L * 1024 * 1024) {
+            log.warn("file too large rejected: size={}", file.getSize());
+            return false;
+        }
+        return true;
     }
 
     // 첨부파일 목록 가져옴
