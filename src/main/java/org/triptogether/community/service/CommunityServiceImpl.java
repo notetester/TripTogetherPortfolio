@@ -42,6 +42,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final ModerationPolicyService moderationPolicyService;
     private final ReportService reportService;
 
+    // 정책: ADR-0005 (XSS 방지 - jsoup Safelist 서버측 sanitize)
     // Summernote 본문 XSS 정화용 화이트리스트
     // basicWithImages 기반 + 서식/이미지/인라인스타일 허용, img src 프로토콜은 http/https/data 허용
     // data: 는 Phase 1 base64 인라인 이미지용. Phase 2(Cloudinary) 이후 재검토 예정
@@ -402,6 +403,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 삭제 =====
 
+    // 정책: ADR-0008 (Soft Delete - status='DELETED' 마킹, 실제 row 유지)
     // 게시글 삭제함. 실제 삭제가 아니라 status를 'DELETED'로 바꿈 (소프트 딜리트)
     @Override
     @Transactional
@@ -507,6 +509,7 @@ public class CommunityServiceImpl implements CommunityService {
         return dto.getCommentId();
     }
 
+    // 정책: ADR-0008 (Soft Delete - comment_status='DELETED' + 캐시 카운트 동기화)
     // 댓글 삭제함. 소프트 딜리트 + 댓글 수 캐시 감소
     @Override
     @Transactional
@@ -655,6 +658,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 신고 =====
 
+    // 정책: ADR-0001(자동제재 BLUR까지), ADR-0003(BLUR vs BLOCKED 분기), ADR-0006(캐시 컬럼)
     // 게시글 신고 횟수 캐시 업데이트함. 3회 이상이면 리스트/상세에서 BLUR 처리됨 (post_status 는 ACTIVE 유지)
     @Override
     @Transactional
@@ -670,6 +674,7 @@ public class CommunityServiceImpl implements CommunityService {
         }
     }
 
+    // 정책: ADR-0001(자동제재 BLUR까지), ADR-0003(BLUR vs BLOCKED 분기), ADR-0006(캐시 컬럼)
     // 댓글 신고 횟수 캐시 업데이트함. 3회 이상이면 리스트/상세에서 BLUR 처리됨 (comment_status 는 ACTIVE 유지)
     @Override
     @Transactional
@@ -761,6 +766,7 @@ public class CommunityServiceImpl implements CommunityService {
         myPageService.addNotification(notification);
     }
 
+    // 정책: ADR-0003 (BLUR vs BLOCKED - 어드민 오신고 판정 시 BLUR 해제)
     // 게시글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
     @Override
     @Transactional
@@ -799,6 +805,7 @@ public class CommunityServiceImpl implements CommunityService {
         notifyAccountAction(userIdx, "계정 차단이 해제되었어요.");
     }
 
+    // 정책: ADR-0003 (BLUR vs BLOCKED - 어드민 직접 차단은 BLOCKED + 일반 사용자 완전 숨김)
     // 게시글 차단함 (post_status = 'BLOCKED')
     @Override
     public void blockPost(Long postId) {

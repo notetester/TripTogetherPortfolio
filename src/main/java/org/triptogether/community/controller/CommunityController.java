@@ -270,6 +270,8 @@ public class CommunityController {
      * Summernote 에디터 내부(본문)에 삽입할 이미지 1개를 Cloudinary에 업로드하고 URL을 반환한다.
      * - 비로그인 시 401, 차단된 계정 시 403 반환
      * - 업로드 폴더: community/inline (대표이미지용 community/ 와 분리)
+     *
+     * 정책: ADR-0007(Cloudinary 외부 CDN), ADR-0002(Summernote onImageUpload 후크)
      */
     @PostMapping("/inline-image")
     @ResponseBody

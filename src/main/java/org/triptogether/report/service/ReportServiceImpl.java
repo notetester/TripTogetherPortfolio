@@ -67,6 +67,7 @@ public class ReportServiceImpl implements ReportService {
 
     // ===== 신고 접수 =====
 
+    // 정책: ADR-0001(신고는 어드민 판단 큐), ADR-0004(중복 방지 3중 방어 - DB UNIQUE + 사전 SELECT + CANCELLED 재활성화)
     // 신고 접수함. 기존 CANCELLED 신고면 재활성화, 이미 처리 중이면 false 반환, 신규면 INSERT
     @Override
     @Transactional
