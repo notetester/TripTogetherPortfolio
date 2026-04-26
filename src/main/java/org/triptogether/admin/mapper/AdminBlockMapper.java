@@ -20,6 +20,8 @@ public interface AdminBlockMapper {
     List<AdminUserBlockVO> findUserBlocks(AdminBlockSearchVO search);
     List<AdminIpBlockVO> findIpBlocks(AdminBlockSearchVO search);
     List<AdminBlockHistoryVO> findBlockHistories(AdminBlockSearchVO search);
+    List<AdminBlockHistoryVO> findBlockHistoriesPaged(java.util.Map<String, Object> params);
+    long countBlockHistoriesFiltered(java.util.Map<String, Object> params);
     List<AdminIpBlockBatchVO> findIpBlockBatches(AdminBlockSearchVO search);
     List<AdminIpBlockBatchOperationVO> findRecentBatchOperations(AdminBlockSearchVO search);
 

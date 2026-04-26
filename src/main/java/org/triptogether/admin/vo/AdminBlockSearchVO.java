@@ -15,4 +15,11 @@ public class AdminBlockSearchVO {
     private String effectiveStatus = "ALL"; // ALL / EFFECTIVE / RULE_INACTIVE / BATCH_INACTIVE / EXPIRED
     private Long batchId;
     private int limit = 100;
+
+    // 서버사이드 페이징/정렬 (B안 모드 전용)
+    private int page = 1;          // 1-based
+    private int size = 20;         // page size
+    private String sortBy;         // whitelist key, null이면 기본 정렬
+    private String sortDir = "DESC"; // ASC | DESC
+    private String field;          // 검색 필드 (all/target/member/...)
 }

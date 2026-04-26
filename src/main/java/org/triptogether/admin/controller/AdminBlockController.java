@@ -30,6 +30,31 @@ public class AdminBlockController {
     }
 
 
+    @GetMapping("/api/histories")
+    @ResponseBody
+    public Map<String, Object> apiBlockHistories(AdminBlockSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminBlockService.getBlockHistoriesPaged(search));
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/api/histories/fragment")
+    public String apiBlockHistoriesFragment(AdminBlockSearchVO search, Model model) {
+        Map<String, Object> data = adminBlockService.getBlockHistoriesPaged(search);
+        model.addAttribute("histories", data.get("rows"));
+        model.addAttribute("totalCount", data.get("total"));
+        model.addAttribute("currentPage", data.get("page"));
+        model.addAttribute("pageSize", data.get("size"));
+        model.addAttribute("totalPages", data.get("totalPages"));
+        return "admin/block/_historyRowsFragment";
+    }
+
     @GetMapping("/histories/{historyBlockIdx}/current-setting")
     @ResponseBody
     public Map<String, Object> findCurrentSettingByHistory(@PathVariable Long historyBlockIdx) {

@@ -507,6 +507,120 @@
         LIMIT #{limit}
     </select>
 
+    <sql id="blockHistoryWhere">
+        WHERE 1=1
+        <if test="status != null and status != '' and status != 'ALL'">
+            <choose>
+                <when test="status == 'ACTIVE'">AND h.is_active = 1</when>
+                <otherwise>AND h.is_active = 0</otherwise>
+            </choose>
+        </if>
+        <if test="scope != null and scope != '' and scope != 'ALL'">
+            AND h.block_scope = #{scope}
+        </if>
+        <if test="matchType != null and matchType != '' and matchType != 'ALL'">
+            AND COALESCE(h.ip_match_type, 'SINGLE_IP') = #{matchType}
+        </if>
+        <if test="blockType != null and blockType != '' and blockType != 'ALL'">
+            AND h.block_type = #{blockType}
+        </if>
+        <if test="ruleAction != null and ruleAction != '' and ruleAction != 'ALL'">
+            AND h.rule_action = #{ruleAction}
+        </if>
+        <if test="controlMode != null and controlMode != '' and controlMode != 'ALL'">
+            AND h.control_mode = #{controlMode}
+        </if>
+        <if test="batchId != null">
+            AND h.ip_block_batch_idx = #{batchId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            <choose>
+                <when test="field == 'target'">
+                    AND (h.block_target_key LIKE CONCAT('%', #{keyword}, '%')
+                         OR h.blocked_ip LIKE CONCAT('%', #{keyword}, '%'))
+                </when>
+                <when test="field == 'member'">
+                    AND (u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                         OR u.nickname LIKE CONCAT('%', #{keyword}, '%'))
+                </when>
+                <when test="field == 'reason'">
+                    AND (h.reason LIKE CONCAT('%', #{keyword}, '%')
+                         OR h.control_reason LIKE CONCAT('%', #{keyword}, '%'))
+                </when>
+                <when test="field == 'change'">
+                    AND (h.history_kind LIKE CONCAT('%', #{keyword}, '%')
+                         OR h.control_mode LIKE CONCAT('%', #{keyword}, '%')
+                         OR h.operation_source LIKE CONCAT('%', #{keyword}, '%'))
+                </when>
+                <when test="field == 'batch'">
+                    AND (b.batch_name LIKE CONCAT('%', #{keyword}, '%')
+                         OR b.batch_code LIKE CONCAT('%', #{keyword}, '%'))
+                </when>
+                <otherwise>
+                    AND (
+                        u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                        OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                        OR h.blocked_ip LIKE CONCAT('%', #{keyword}, '%')
+                        OR h.reason LIKE CONCAT('%', #{keyword}, '%')
+                        OR h.control_reason LIKE CONCAT('%', #{keyword}, '%')
+                        OR h.block_target_key LIKE CONCAT('%', #{keyword}, '%')
+                        OR h.cidr_notation LIKE CONCAT('%', #{keyword}, '%')
+                        OR h.range_start_ip LIKE CONCAT('%', #{keyword}, '%')
+                        OR h.range_end_ip LIKE CONCAT('%', #{keyword}, '%')
+                        OR b.batch_name LIKE CONCAT('%', #{keyword}, '%')
+                        OR b.batch_code LIKE CONCAT('%', #{keyword}, '%')
+                    )
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <select id="findBlockHistoriesPaged" resultMap="blockHistoryRM">
+        SELECT
+            h.block_idx, h.rule_action, h.control_mode, h.operation_source,
+            h.user_idx, u.user_id, u.nickname,
+            h.block_type, h.blocked_ip, h.is_active AS active, h.reason,
+            h.blocked_by_user_idx, bu.nickname AS blocked_by_nickname,
+            h.released_by_user_idx, ru.nickname AS released_by_nickname,
+            h.blocked_at, h.released_at, h.expires_at,
+            h.block_request_id, h.block_target_key,
+            h.user_blocklist_idx, h.ip_blocklist_idx,
+            h.history_kind, h.block_scope, h.ip_match_type,
+            h.cidr_notation, h.range_start_ip, h.range_end_ip,
+            h.ip_block_batch_idx, h.batch_operation_idx,
+            b.batch_code, b.batch_name,
+            h.list_synced_at,
+            h.before_rule_is_active, h.after_rule_is_active,
+            h.before_batch_is_active, h.after_batch_is_active,
+            h.before_effective_active, h.after_effective_active,
+            h.before_effective_status, h.after_effective_status,
+            h.effective_result, h.control_reason
+        FROM USER_BLOCK_HISTORY h
+        LEFT JOIN USERS u ON u.user_idx = h.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = h.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = h.released_by_user_idx
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = h.ip_block_batch_idx
+        <include refid="blockHistoryWhere"/>
+        <choose>
+            <when test="sortBy == 'time'">           ORDER BY h.blocked_at <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, h.block_idx DESC</when>
+            <when test="sortBy == 'target'">         ORDER BY h.block_target_key <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, h.block_idx DESC</when>
+            <when test="sortBy == 'actionLabel'">    ORDER BY h.rule_action <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, h.block_idx DESC</when>
+            <when test="sortBy == 'changeKind'">     ORDER BY h.history_kind <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, h.block_idx DESC</when>
+            <when test="sortBy == 'result'">         ORDER BY h.effective_result <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, h.block_idx DESC</when>
+            <when test="sortBy == 'reason'">         ORDER BY COALESCE(h.control_reason, h.reason) <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, h.block_idx DESC</when>
+            <otherwise>ORDER BY h.blocked_at DESC, h.block_idx DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countBlockHistoriesFiltered" resultType="long">
+        SELECT COUNT(*)
+        FROM USER_BLOCK_HISTORY h
+        LEFT JOIN USERS u ON u.user_idx = h.user_idx
+        LEFT JOIN IP_BLOCK_BATCH b ON b.ip_block_batch_idx = h.ip_block_batch_idx
+        <include refid="blockHistoryWhere"/>
+    </select>
+
 
     <select id="findBlockHistoryById" resultMap="blockHistoryRM">
         SELECT
