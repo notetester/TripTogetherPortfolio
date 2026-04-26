@@ -297,6 +297,28 @@ public class CommunityController {
             return ResponseEntity.badRequest().body(result);
         }
 
+        // 정책: ADR-0007 TODO (파일 검증 - 확장자/MIME/크기 화이트리스트)
+        // 공통 유틸 추출 대상 (현재는 ADR-0005 의 댓글 sanitize 와 같이 P0 단계 인라인 처리)
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.toLowerCase().startsWith("image/")) {
+            result.put("success", false);
+            result.put("message", "이미지 파일만 업로드할 수 있습니다.");
+            return ResponseEntity.badRequest().body(result);
+        }
+        String originalName = file.getOriginalFilename();
+        int dotIdx = originalName == null ? -1 : originalName.lastIndexOf('.');
+        String ext = dotIdx >= 0 ? originalName.substring(dotIdx + 1).toLowerCase() : "";
+        if (!java.util.Set.of("jpg", "jpeg", "png", "gif", "webp").contains(ext)) {
+            result.put("success", false);
+            result.put("message", "허용되지 않는 파일 형식입니다. (jpg/jpeg/png/gif/webp 만 허용)");
+            return ResponseEntity.badRequest().body(result);
+        }
+        if (file.getSize() > 5L * 1024 * 1024) {
+            result.put("success", false);
+            result.put("message", "파일 크기는 5MB 를 초과할 수 없습니다.");
+            return ResponseEntity.status(413).body(result);
+        }
+
         try {
             String url = communityService.uploadInlineImage(file);
             if (url == null || url.isBlank()) {

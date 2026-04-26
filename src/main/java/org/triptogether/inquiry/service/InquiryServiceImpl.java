@@ -198,10 +198,14 @@ public class InquiryServiceImpl implements InquiryService {
         inquiryMapper.insertAttachment(attachment);
     }
 
+    // 정책: ADR-0007 TODO (파일 검증 - 확장자/MIME/크기 화이트리스트)
     // 첨부파일 추가함 (MultipartFile 업로드)
     @Override
     @Transactional
     public void addAttachment(Long inquiryId, MultipartFile file) {
+        if (!isValidImageFile(file)) {
+            return;  // 잘못된 파일은 무시 (운영자 인지 위해 warn 로그)
+        }
         String savedUrl = saveFile(file);
         if (savedUrl != null) {
             InquiryAttachmentDto attachment = new InquiryAttachmentDto();
@@ -210,6 +214,28 @@ public class InquiryServiceImpl implements InquiryService {
             attachment.setFileName(file.getOriginalFilename());
             inquiryMapper.insertAttachment(attachment);
         }
+    }
+
+    // 이미지 파일 검증 - 확장자/MIME/크기 화이트리스트 (공통 유틸 추출 대상)
+    private boolean isValidImageFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) return false;
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.toLowerCase().startsWith("image/")) {
+            log.warn("invalid file type rejected: contentType={}", contentType);
+            return false;
+        }
+        String name = file.getOriginalFilename();
+        int dotIdx = name == null ? -1 : name.lastIndexOf('.');
+        String ext = dotIdx >= 0 ? name.substring(dotIdx + 1).toLowerCase() : "";
+        if (!java.util.Set.of("jpg", "jpeg", "png", "gif", "webp").contains(ext)) {
+            log.warn("invalid file ext rejected: name={}", name);
+            return false;
+        }
+        if (file.getSize() > 5L * 1024 * 1024) {
+            log.warn("file too large rejected: size={}", file.getSize());
+            return false;
+        }
+        return true;
     }
 
     // 첨부파일 목록 가져옴

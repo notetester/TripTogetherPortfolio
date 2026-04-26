@@ -179,7 +179,7 @@
                                                     <c:if test="${inq.isPrivate == 1}">
                                                         <span class="inq-private-tag"><spring:message code="inquiry.private.tag"/></span>
                                                     </c:if>
-                                                    ${inq.title}
+                                                    <c:out value="${inq.title}"/>
                                                 </span>
                                                 <%-- 상태 뱃지 --%>
                                                 <span class="inq-status-badge ${inq.status}">
@@ -228,7 +228,7 @@
                                 <td class="inq-nick">
                                     <c:choose>
                                         <c:when test="${inq.isPrivate == 1 and !isMyPost and !isAdmin}"><spring:message code="inquiry.anonymous"/></c:when>
-                                        <c:otherwise>${inq.nickname}</c:otherwise>
+                                        <c:otherwise><c:out value="${inq.nickname}"/></c:otherwise>
                                     </c:choose>
                                 </td>
 

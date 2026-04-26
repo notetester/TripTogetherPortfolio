@@ -64,6 +64,14 @@ public class CommunityServiceImpl implements CommunityService {
                 new Document.OutputSettings().prettyPrint(false));
     }
 
+    // 정책: ADR-0005 (XSS 방지 - 댓글은 plain textarea 입력이므로 모든 HTML 제거)
+    // 댓글/대댓글용 plain text 정화 — 모든 태그 제거, 개행만 보존
+    private String sanitizeCommentText(String text) {
+        if (text == null || text.isBlank()) return "";
+        return Jsoup.clean(text, "", Safelist.none(),
+                new Document.OutputSettings().prettyPrint(false));
+    }
+
     // 목록 카드용 본문 HTML → plain text 요약
     // - 태그 제거, 공백 정리, maxLen 초과 시 "..." 붙임
     private String htmlToPlainTextSummary(String html, int maxLen) {
@@ -483,7 +491,7 @@ public class CommunityServiceImpl implements CommunityService {
         CommunityCommentDto dto = new CommunityCommentDto();
         dto.setPostId(postId);
         dto.setUserIdx(userIdx);
-        dto.setContent(content);
+        dto.setContent(sanitizeCommentText(content));
         communityMapper.insertComment(dto);
         communityMapper.increaseCommentCount(postId);
 
@@ -536,7 +544,7 @@ public class CommunityServiceImpl implements CommunityService {
         CommunityCommentDto dto = new CommunityCommentDto();
         dto.setPostId(postId);
         dto.setUserIdx(userIdx);
-        dto.setContent(content);
+        dto.setContent(sanitizeCommentText(content));
         dto.setParentCommentId(parentCommentId);
         communityMapper.insertReply(dto);
         communityMapper.increaseCommentCount(postId);
