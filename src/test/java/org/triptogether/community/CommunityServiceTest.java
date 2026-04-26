@@ -8,19 +8,27 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.triptogether.cloudinary.CloudinaryService;
+import org.triptogether.common.util.MessageUtil;
 import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.community.service.CommunityImageScheduler;
 import org.triptogether.community.service.CommunityServiceImpl;
 import org.triptogether.community.vo.CommunityPostDto;
 import org.triptogether.config.IpBlockMapper;
 import org.triptogether.explore.service.SpotTextTranslationService;
+import org.triptogether.moderation.service.ModerationPolicyService;
+import org.triptogether.moderation.vo.ContentModerationPolicyVO;
 import org.triptogether.myPage.service.MyPageService;
+import org.triptogether.report.service.ReportService;
+import org.triptogether.reward.service.RewardService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -33,11 +41,38 @@ class CommunityServiceTest {
     @Mock MyPageService myPageService;
     @Mock IpBlockMapper ipBlockMapper;
     @Mock SpotTextTranslationService spotTextTranslationService;
+    @Mock ModerationPolicyService moderationPolicyService;
+    @Mock RewardService rewardService;
+    @Mock ReportService reportService;
+    @Mock MessageUtil msg;
 
     @InjectMocks CommunityServiceImpl communityService;
 
     private static final Long USER_IDX = 1L;
     private static final Long POST_ID  = 100L;
+
+    /**
+     * 정책 객체 stub + i18n 메시지 stub.
+     * 정책: ADR-0009 (정책 외부화) — moderationPolicyService 가 제공하는 값 기준
+     * 정책: ADR-0013 (i18n) — msg.get(...) 이 실제 메시지 문자열 반환하도록 stub
+     */
+    @BeforeEach
+    void setUp() {
+        ContentModerationPolicyVO policy = new ContentModerationPolicyVO();
+        policy.setPostWindowMinutes(5);
+        policy.setPostMaxCount(3);
+        policy.setCommentWindowMinutes(1);
+        policy.setCommentMaxCount(5);
+        policy.setReportThreshold(3);
+        lenient().when(moderationPolicyService.getPolicy()).thenReturn(policy);
+
+        // i18n 메시지 stub - placeholder 메시지 반환 (테스트는 메시지 type 위주로 검증)
+        lenient().when(msg.get(eq("community.service.error.postRateLimit"), any(), any()))
+                .thenReturn("5분 내 게시글을 3개 이상 작성할 수 없습니다.");
+        lenient().when(msg.get(eq("community.service.error.commentRateLimit"), any(), any()))
+                .thenReturn("1분 내 댓글을 5개 이상 작성할 수 없습니다.");
+        lenient().when(msg.get(anyString())).thenReturn("");
+    }
 
     // ===== 도배 방지: 게시글 =====
 
