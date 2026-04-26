@@ -46,7 +46,7 @@
             </a>
 
             <%-- 회원 관리 --%>
-            <c:if test="${hasMemberAdmin or hasAnyBlockAdmin}">
+            <c:if test="${hasMemberAdmin or hasAnyBlockAdmin or hasFinanceAdmin}">
             <div class="adm-nav-group" data-group="members">
                 <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('members')">
                     <span class="adm-nav-group-caret">▸</span>
@@ -64,6 +64,11 @@
                     <c:if test="${hasAnyBlockAdmin}">
                     <a class="adm-nav-item ${activeMenu=='blocks'?'active':''}" href="${pageContext.request.contextPath}/admin/blocks">
                         <span class="adm-nav-icon">⛔</span> <spring:message code="admin.layout.menu.blocks"/>
+                    </a>
+                    </c:if>
+                    <c:if test="${hasFinanceAdmin}">
+                    <a class="adm-nav-item ${activeMenu=='finance'?'active':''}" href="${pageContext.request.contextPath}/admin/finance">
+                        <span class="adm-nav-icon">💰</span> <spring:message code="admin.layout.menu.finance"/>
                     </a>
                     </c:if>
                 </div>
