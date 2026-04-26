@@ -52,26 +52,26 @@
 
 ## 아키텍처 결정 기록 (ADR)
 
-주요 설계 결정은 [`docs/adr/`](./docs/adr/) 에 [MADR 0.6](https://adr.github.io/madr/) 표준 양식으로 기록되어 있습니다.
+주요 설계 결정은 [`docs/adr/`](../adr/) 에 [MADR 0.6](https://adr.github.io/madr/) 표준 양식으로 기록되어 있습니다.
 
 | ID | 제목 |
 |---|---|
-| [ADR-0001](./docs/adr/0001-report-no-auto-user-block.md) | 신고 누적 자동 제재 범위 — BLUR 까지, 그 외 어드민 수동 판단 |
-| [ADR-0002](./docs/adr/0002-summernote-editor.md) | 커뮤니티 글쓰기 WYSIWYG — Summernote 채택 |
-| [ADR-0003](./docs/adr/0003-blur-vs-blocked-policy.md) | BLUR vs BLOCKED 분기 정책 |
-| [ADR-0004](./docs/adr/0004-duplicate-report-prevention.md) | 중복 신고 방지 — 3중 방어 |
-| [ADR-0005](./docs/adr/0005-xss-server-sanitize.md) | XSS 방지 — jsoup Safelist 서버측 sanitize |
-| [ADR-0006](./docs/adr/0006-counter-cache-reconcile.md) | 캐시 컬럼 + Reconcile 스케줄러 |
-| [ADR-0007](./docs/adr/0007-cloudinary-image-storage.md) | 이미지 스토리지 — Cloudinary 외부 CDN |
-| [ADR-0008](./docs/adr/0008-soft-delete-pattern.md) | Soft Delete 패턴 — `status='DELETED'` |
-| [ADR-0009](./docs/adr/0009-moderation-policy-externalization.md) | 모더레이션 정책 외부화 — `ContentModerationPolicyVO` |
-| [ADR-0010](./docs/adr/0010-ai-moderation-pipeline.md) | AI 모더레이션 풀 스택 파이프라인 |
-| [ADR-0011](./docs/adr/0011-authorization-aop-and-global-exception-handler.md) | 어노테이션 기반 권한 체크(AOP) + 글로벌 예외 처리 |
-| [ADR-0012](./docs/adr/0012-spring-security-csrf-partial-adoption.md) | Spring Security CSRF 부분 도입 |
-| [ADR-0013](./docs/adr/0013-i18n-api-message-coverage.md) | API 응답 메시지 i18n 적용 (4개 언어) |
-| [ADR-0014](./docs/adr/0014-junit-test-strategy.md) | JUnit 테스트 전략 — Service 단위 + ADR 검증 |
+| [ADR-0001](../adr/0001-report-no-auto-user-block.md) | 신고 누적 자동 제재 범위 — BLUR 까지, 그 외 어드민 수동 판단 |
+| [ADR-0002](../adr/0002-summernote-editor.md) | 커뮤니티 글쓰기 WYSIWYG — Summernote 채택 |
+| [ADR-0003](../adr/0003-blur-vs-blocked-policy.md) | BLUR vs BLOCKED 분기 정책 |
+| [ADR-0004](../adr/0004-duplicate-report-prevention.md) | 중복 신고 방지 — 3중 방어 |
+| [ADR-0005](../adr/0005-xss-server-sanitize.md) | XSS 방지 — jsoup Safelist 서버측 sanitize |
+| [ADR-0006](../adr/0006-counter-cache-reconcile.md) | 캐시 컬럼 + Reconcile 스케줄러 |
+| [ADR-0007](../adr/0007-cloudinary-image-storage.md) | 이미지 스토리지 — Cloudinary 외부 CDN |
+| [ADR-0008](../adr/0008-soft-delete-pattern.md) | Soft Delete 패턴 — `status='DELETED'` |
+| [ADR-0009](../adr/0009-moderation-policy-externalization.md) | 모더레이션 정책 외부화 — `ContentModerationPolicyVO` |
+| [ADR-0010](../adr/0010-ai-moderation-pipeline.md) | AI 모더레이션 풀 스택 파이프라인 |
+| [ADR-0011](../adr/0011-authorization-aop-and-global-exception-handler.md) | 어노테이션 기반 권한 체크(AOP) + 글로벌 예외 처리 |
+| [ADR-0012](../adr/0012-spring-security-csrf-partial-adoption.md) | Spring Security CSRF 부분 도입 |
+| [ADR-0013](../adr/0013-i18n-api-message-coverage.md) | API 응답 메시지 i18n 적용 (4개 언어) |
+| [ADR-0014](../adr/0014-junit-test-strategy.md) | JUnit 테스트 전략 — Service 단위 + ADR 검증 |
 
-→ 전체 인덱스 및 작성 가이드: [`docs/adr/README.md`](./docs/adr/README.md)
+→ 전체 인덱스 및 작성 가이드: [`docs/adr/README.md`](../adr/README.md)
 
 ---
 
@@ -83,19 +83,19 @@
 
 **의도된 정책입니다.** 자동 제재는 콘텐츠 BLUR 까지만 수행하고, 콘텐츠 삭제·유저 차단은 어드민 수동 결정으로 둡니다. 사용자들이 단순한 불편/취향 차이만으로도 신고할 수 있어서 자동 제재의 false positive 비용이 매우 크기 때문입니다. Reddit AutoModerator, Discord AutoMod, YouTube Trust & Safety 가 사용하는 **Human-in-the-Loop Moderation** 표준 패턴과 일치합니다.
 
-→ 상세: [ADR-0001](./docs/adr/0001-report-no-auto-user-block.md)
+→ 상세: [ADR-0001](../adr/0001-report-no-auto-user-block.md)
 
 ### Q2. 중복 신고 방지가 보이지 않는데요?
 
 **3중 방어로 구현되어 있습니다.** ① DB UNIQUE 제약(`REPORT.uq_report`) ② 서비스 사전 SELECT 체크(`selectReportByUserAndTarget`) ③ CANCELLED 재활성화 분기. 동시성 이슈와 사용자 의도 변경(취소 → 재신고) 시나리오를 모두 커버합니다.
 
-→ 상세: [ADR-0004](./docs/adr/0004-duplicate-report-prevention.md)
+→ 상세: [ADR-0004](../adr/0004-duplicate-report-prevention.md)
 
 ### Q3. `post_status='BLOCKED'` 와 `report_count>=3` 가 다른 의미인가요?
 
 **예, 명확히 분리되어 있습니다.** 자동 BLUR(신고 누적, ACTIVE 유지)와 어드민 직접 차단(BLOCKED, 완전 숨김)은 다른 신뢰 신호를 표현합니다. 같은 status 컬럼에 합치면 의미 모순(BLOCKED 면 blind 되어야 하는데 BLUR 오버레이는 사용자 펼침을 전제) 이 발생하므로 분리했습니다.
 
-→ 상세: [ADR-0003](./docs/adr/0003-blur-vs-blocked-policy.md)
+→ 상세: [ADR-0003](../adr/0003-blur-vs-blocked-policy.md)
 
 ### Q4. 도배 방지 정책의 시간/횟수 제한이 하드코딩 아닌가요?
 
@@ -106,7 +106,7 @@ ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
 if (countRecent(...) >= policy.getInquiryMaxCount()) { ... }
 ```
 
-→ 상세: [ADR-0009](./docs/adr/0009-moderation-policy-externalization.md)
+→ 상세: [ADR-0009](../adr/0009-moderation-policy-externalization.md)
 
 ### Q5. AI 독성 감지 BLUR 이 화면에 반영 안 되는 거 아닌가요?
 
@@ -120,7 +120,7 @@ if (countRecent(...) >= policy.getInquiryMaxCount()) { ... }
 | JSP | `list.jsp` `<c:set var="isBlurred" .../>` + `detail.jsp` 어드민 배지 |
 | JS | 어드민 BLUR 해제 fetch 핸들러 |
 
-→ 상세: [ADR-0010](./docs/adr/0010-ai-moderation-pipeline.md)
+→ 상세: [ADR-0010](../adr/0010-ai-moderation-pipeline.md)
 
 ---
 
