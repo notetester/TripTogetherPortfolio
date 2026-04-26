@@ -26,6 +26,7 @@ public class AdminBlockController {
                                   @CookieValue(name = "admBlockHistMode", defaultValue = "server") String histMode,
                                   @CookieValue(name = "admBlockIprMode", defaultValue = "server") String iprMode,
                                   @CookieValue(name = "admBlockBatMode", defaultValue = "server") String batMode,
+                                  @CookieValue(name = "admBlockUbMode", defaultValue = "server") String ubMode,
                                   Model model) {
         Map<String, Object> data = adminBlockService.getBlockDashboard(search);
         // SERVER 모드면 첫 진입 비용 절감 — JSP forEach가 빈 결과로 빠르게 렌더, JS가 진입 직후 첫 페이지 fetch
@@ -38,13 +39,42 @@ public class AdminBlockController {
         if ("server".equalsIgnoreCase(batMode)) {
             data.put("batches", java.util.Collections.emptyList());
         }
+        if ("server".equalsIgnoreCase(ubMode)) {
+            data.put("userBlocks", java.util.Collections.emptyList());
+        }
         model.addAllAttributes(data);
         model.addAttribute("histMode", histMode);
         model.addAttribute("iprMode", iprMode);
         model.addAttribute("batMode", batMode);
+        model.addAttribute("ubMode", ubMode);
         model.addAttribute("activeMenu", "blocks");
         model.addAttribute("pageTitle", "차단 관리");
         return "admin/block/list";
+    }
+
+    @GetMapping("/api/user-blocks")
+    @ResponseBody
+    public Map<String, Object> apiUserBlocks(AdminBlockSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminBlockService.getUserBlocksPaged(search));
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/api/user-blocks/fragment")
+    public String apiUserBlocksFragment(AdminBlockSearchVO search, Model model) {
+        Map<String, Object> data = adminBlockService.getUserBlocksPaged(search);
+        model.addAttribute("userBlocks", data.get("rows"));
+        model.addAttribute("totalCount", data.get("total"));
+        model.addAttribute("currentPage", data.get("page"));
+        model.addAttribute("pageSize", data.get("size"));
+        model.addAttribute("totalPages", data.get("totalPages"));
+        return "admin/block/_userBlockRowsFragment";
     }
 
     @GetMapping("/api/batches")

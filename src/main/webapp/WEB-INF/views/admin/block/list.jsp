@@ -555,6 +555,10 @@
                 </div>
                 <div class="adm-local-toolbar-group">
                     <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="user-blocks" style="display:none;" onclick="sectionSortReset('user-blocks')"></button>
+                    <select class="adm-select js-section-mode" data-section="user-blocks" title="<spring:message code='admin.blocks.mode.label'/>">
+                        <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
+                        <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                    </select>
                     <select class="adm-select js-local-page-size" data-section="user-blocks">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -606,7 +610,7 @@
                             data-blocked-at="${fn:toLowerCase(userBlockBlockedAtText)}"
                             data-expires-at="${fn:toLowerCase(empty b.expiresAtInputValue ? '' : b.expiresAtInputValue)}">
                             <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="user-blocks" data-target-key="${fn:escapeXml(b.blockTargetKey)}" value="${fn:escapeXml(b.blockTargetKey)}" onchange="updateBlockBulkBar('user-blocks')"></td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)}">
                                 <c:choose>
                                     <c:when test="${b.userIdx != null}">
                                         <button type="button"
@@ -630,7 +634,7 @@
                             </c:otherwise>
                         </c:choose>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty b.blockType ? '' : b.blockType)}">
                                 <button type="button"
                                         class="adm-inline-chip js-apply-block-filter"
                                         data-section="user-blocks"
@@ -639,7 +643,7 @@
                                     <c:out value="${b.blockType}"/>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)}">
                                 <button type="button"
                                         class="adm-link-btn js-open-user-block-editor"
                                         data-block-idx="${b.blockIdx}"
@@ -671,12 +675,12 @@
                                     </button>
                                 </div>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}">
                                 <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
                                     <span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span>
                                 </button>
                             </td>
-                            <td style="max-width:260px;white-space:normal;">
+                            <td style="max-width:260px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty b.reason ? '' : b.reason)}">
                                 <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
                                     <span><c:out value="${empty b.reason ? '-' : b.reason}"/></span>
                                 </button>
@@ -690,7 +694,7 @@
                                          data-source-text="${fn:escapeXml(b.reason)}"></div>
                                 </c:if>
                             </td>
-                            <td style="font-size:12px;">
+                            <td style="font-size:12px;" data-sort-value="${userBlockBlockedAtText}">
                                 <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
                                     <span><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
                                     <span class="adm-cell-link-note"><spring:message code="admin.context.expiresAt"/>:
@@ -765,6 +769,7 @@
         </div>
     </div>
 
+    <div id="ubDetailArea">
     <c:forEach var="b" items="${userBlocks}">
         <template id="detail-user-${b.blockIdx}">
             <div class="detail-grid">
@@ -817,6 +822,7 @@
             </table>
         </template>
     </c:forEach>
+    </div>
 
     <div class="adm-card js-section-card" data-section="ip-rules" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
@@ -2637,6 +2643,11 @@ function sortKeyForCellIndex(section, cellIndex) {
         const map = {1:'batch', 2:'basePolicy', 3:'currentState', 4:'ruleStats', 5:'description'};
         return map[cellIndex] || '';
     }
+    if (section === 'user-blocks') {
+        // 인덱스: 0=checkbox, 1=member, 2=blockType, 3=target, 4=status, 5=reason, 6=blockedAt, 7=action
+        const map = {1:'member', 2:'blockType', 3:'target', 4:'status', 5:'reason', 6:'blockedAt'};
+        return map[cellIndex] || '';
+    }
     return '';
 }
 
@@ -2658,6 +2669,12 @@ const SECTION_FETCH_CONFIG = {
         metaUrl: '/admin/blocks/api/batches',
         splitMarker: '<!--BATCH-FRAGMENT-SPLIT-->',
         detailAreaId: 'batDetailArea'
+    },
+    'user-blocks': {
+        fragmentUrl: '/admin/blocks/api/user-blocks/fragment',
+        metaUrl: '/admin/blocks/api/user-blocks',
+        splitMarker: '<!--USERBLOCK-FRAGMENT-SPLIT-->',
+        detailAreaId: 'ubDetailArea'
     }
 };
 

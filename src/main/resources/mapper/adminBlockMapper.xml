@@ -279,6 +279,94 @@
         LIMIT #{limit}
     </select>
 
+    <sql id="userBlocksWhere">
+        WHERE 1=1
+        <if test="status != null and status != '' and status != 'ALL'">
+            <choose>
+                <when test="status == 'ACTIVE'">AND x.is_active = 1</when>
+                <otherwise>AND x.is_active = 0</otherwise>
+            </choose>
+        </if>
+        <if test="scope != null and scope != '' and scope != 'ALL'">
+            AND COALESCE(h.block_scope, 'USER_ACTION') = #{scope}
+        </if>
+        <if test="blockType != null and blockType != '' and blockType != 'ALL'">
+            AND x.block_type = #{blockType}
+        </if>
+        <if test="batchId != null">
+            AND h.ip_block_batch_idx = #{batchId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            <choose>
+                <when test="field == 'nickname'">
+                    AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="field == 'userId'">
+                    AND u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="field == 'target'">
+                    AND (x.block_target_key LIKE CONCAT('%', #{keyword}, '%')
+                         OR x.blocked_ip LIKE CONCAT('%', #{keyword}, '%'))
+                </when>
+                <when test="field == 'reason'">
+                    AND x.reason LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="field == 'blockType'">
+                    AND x.block_type LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <otherwise>
+                    AND (
+                        u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                        OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                        OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
+                        OR x.blocked_ip LIKE CONCAT('%', #{keyword}, '%')
+                        OR x.reason LIKE CONCAT('%', #{keyword}, '%')
+                        OR x.block_target_key LIKE CONCAT('%', #{keyword}, '%')
+                    )
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <select id="findUserBlocksPaged" resultMap="userBlockRM">
+        SELECT
+            x.block_idx, x.source_history_block_idx, x.user_idx,
+            u.user_id, u.nickname, u.user_email,
+            x.block_type, x.blocked_ip, x.is_active AS active, x.reason,
+            x.blocked_by_user_idx, bu.nickname AS blocked_by_nickname,
+            x.released_by_user_idx, ru.nickname AS released_by_nickname,
+            x.blocked_at, x.released_at, x.expires_at,
+            x.block_request_id, x.block_target_key,
+            x.snapshot_status, x.last_history_at, x.synced_at, x.updated_by_user_idx,
+            h.block_scope, h.ip_match_type
+        FROM USER_BLOCKLIST x
+        LEFT JOIN USERS u ON u.user_idx = x.user_idx
+        LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
+        LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
+        <include refid="userBlocksWhere"/>
+        <choose>
+            <when test="sortBy == 'member'">    ORDER BY u.nickname <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, x.block_idx DESC</when>
+            <when test="sortBy == 'blockType'"> ORDER BY x.block_type <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, x.block_idx DESC</when>
+            <when test="sortBy == 'target'">    ORDER BY x.block_target_key <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, x.block_idx DESC</when>
+            <when test="sortBy == 'status'">    ORDER BY x.snapshot_status <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, x.is_active DESC, x.block_idx DESC</when>
+            <when test="sortBy == 'reason'">    ORDER BY x.reason <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, x.block_idx DESC</when>
+            <when test="sortBy == 'blockedAt'"> ORDER BY x.blocked_at <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, x.block_idx DESC</when>
+            <otherwise>
+                ORDER BY x.is_active DESC, x.blocked_at DESC, x.block_idx DESC
+            </otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countUserBlocksFiltered" resultType="long">
+        SELECT COUNT(*)
+        FROM USER_BLOCKLIST x
+        LEFT JOIN USERS u ON u.user_idx = x.user_idx
+        LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
+        <include refid="userBlocksWhere"/>
+    </select>
+
     <sql id="ipRuleSelectColumns">
         ip.ip_blocklist_idx,
         ip.ip_address,

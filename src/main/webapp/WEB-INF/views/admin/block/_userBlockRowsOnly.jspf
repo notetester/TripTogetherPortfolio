@@ -1,0 +1,167 @@
+<c:forEach var="b" items="${userBlocks}">
+    <fmt:formatDate var="userBlockBlockedAtText" value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+    <c:set var="userBlockLastHistoryText" value="-"/>
+    <c:if test="${b.lastHistoryAtDate != null}">
+        <fmt:formatDate var="userBlockLastHistoryText" value="${b.lastHistoryAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+    </c:if>
+    <c:set var="userBlockSyncText" value="-"/>
+    <c:if test="${b.syncedAtDate != null}">
+        <fmt:formatDate var="userBlockSyncText" value="${b.syncedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+    </c:if>
+    <tr class="js-local-row"
+        data-section="user-blocks"
+        data-search="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)} ${fn:toLowerCase(empty b.userId ? '' : b.userId)} ${fn:toLowerCase(empty b.userEmail ? '' : b.userEmail)} ${fn:toLowerCase(empty b.blockedIp ? '' : b.blockedIp)} ${fn:toLowerCase(empty b.reason ? '' : b.reason)} ${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)} ${fn:toLowerCase(empty b.blockType ? '' : b.blockType)} ${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}"
+        data-nickname="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)}"
+        data-user-id="${fn:toLowerCase(empty b.userId ? '' : b.userId)}"
+        data-target="${fn:toLowerCase(empty b.blockedIp ? '' : b.blockedIp)} ${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)}"
+        data-reason="${fn:toLowerCase(empty b.reason ? '' : b.reason)}"
+        data-block-type="${fn:toLowerCase(empty b.blockType ? '' : b.blockType)}"
+        data-snapshot-status="${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}"
+        data-blocked-at="${fn:toLowerCase(userBlockBlockedAtText)}"
+        data-expires-at="${fn:toLowerCase(empty b.expiresAtInputValue ? '' : b.expiresAtInputValue)}">
+        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="user-blocks" data-target-key="${fn:escapeXml(b.blockTargetKey)}" value="${fn:escapeXml(b.blockTargetKey)}" onchange="updateBlockBulkBar('user-blocks')"></td>
+        <td data-sort-value="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)}">
+            <c:choose>
+                <c:when test="${b.userIdx != null}">
+                    <button type="button"
+                            class="adm-inline-link js-open-member-detail"
+                            data-user-idx="${b.userIdx}"
+                            style="font-weight:700;color:#93c5fd;">
+                        ${empty b.nickname ? '-' : b.nickname}
+                    </button>
+                    <div style="font-size:12px;color:#94a3b8;">
+                        <button type="button"
+                                class="adm-inline-link js-open-member-detail"
+                                data-user-idx="${b.userIdx}"
+                                style="color:#94a3b8;font-size:12px;">
+                            ${empty b.userId ? '-' : b.userId}
+                        </button>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div style="font-weight:700;color:#e2e8f0;">${empty b.nickname ? '-' : b.nickname}</div>
+                    <div style="font-size:12px;color:#94a3b8;">${empty b.userId ? '-' : b.userId}</div>
+                </c:otherwise>
+            </c:choose>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty b.blockType ? '' : b.blockType)}">
+            <button type="button"
+                    class="adm-inline-chip js-apply-block-filter"
+                    data-section="user-blocks"
+                    data-field="blockType"
+                    data-keyword="${fn:escapeXml(b.blockType)}">
+                <c:out value="${b.blockType}"/>
+            </button>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)}">
+            <button type="button"
+                    class="adm-link-btn js-open-user-block-editor"
+                    data-block-idx="${b.blockIdx}"
+                    data-template-id="detail-user-${b.blockIdx}"
+                    data-user-idx="${empty b.userIdx ? '' : b.userIdx}"
+                    data-display-name="${fn:escapeXml(empty b.nickname ? b.userId : b.nickname)}"
+                    data-user-id="${fn:escapeXml(empty b.userId ? '' : b.userId)}"
+                    data-user-email="${fn:escapeXml(empty b.userEmail ? '' : b.userEmail)}"
+                    data-block-type="${b.blockType}"
+                    data-blocked-ip="${fn:escapeXml(empty b.blockedIp ? '' : b.blockedIp)}"
+                    data-target-key="${fn:escapeXml(b.blockTargetKey)}"
+                    data-active="${b.active ? 'true' : 'false'}"
+                    data-snapshot-status="${fn:escapeXml(b.snapshotStatus)}"
+                    data-reason="${fn:escapeXml(empty b.reason ? '' : b.reason)}"
+                    data-expires-at="${b.expiresAtInputValue}"
+                    data-blocked-at="${userBlockBlockedAtText}"
+                    data-last-history-at="${userBlockLastHistoryText}"
+                    data-sync-at="${userBlockSyncText}">
+                <span>${empty b.blockedIp ? '-' : b.blockedIp}</span>
+                <span style="display:block;font-size:11px;color:#64748b;">${b.blockTargetKey}</span>
+            </button>
+            <div class="adm-inline-actions">
+                <button type="button"
+                        class="adm-inline-chip js-apply-block-filter"
+                        data-section="user-blocks"
+                        data-field="target"
+                        data-keyword="${fn:escapeXml(empty b.blockedIp ? b.blockTargetKey : b.blockedIp)}">
+                    <spring:message code="admin.common.sameTarget"/>
+                </button>
+            </div>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}">
+            <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
+                <span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span>
+            </button>
+        </td>
+        <td style="max-width:260px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty b.reason ? '' : b.reason)}">
+            <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
+                <span><c:out value="${empty b.reason ? '-' : b.reason}"/></span>
+            </button>
+            <c:if test="${not empty b.reason}">
+                <div class="adm-tr-inline js-admin-translation-widget"
+                     data-label="<spring:message code='admin.common.reason'/>"
+                     data-source-type="USER_BLOCK"
+                     data-source-idx="${b.blockIdx}"
+                     data-field-name="reason"
+                     data-default-source-lang="ko"
+                     data-source-text="${fn:escapeXml(b.reason)}"></div>
+            </c:if>
+        </td>
+        <td style="font-size:12px;" data-sort-value="${userBlockBlockedAtText}">
+            <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
+                <span><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
+                <span class="adm-cell-link-note"><spring:message code="admin.context.expiresAt"/>:
+                    <c:choose>
+                        <c:when test="${b.expiresAtDate != null}"><fmt:formatDate value="${b.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when>
+                        <c:otherwise><spring:message code="admin.members.none"/></c:otherwise>
+                    </c:choose>
+                </span>
+            </button>
+        </td>
+        <td>
+            <div class="adm-row-actions">
+                <button type="button"
+                        class="adm-row-btn detail js-open-user-block-editor"
+                        data-block-idx="${b.blockIdx}"
+                        data-template-id="detail-user-${b.blockIdx}"
+                        data-user-idx="${empty b.userIdx ? '' : b.userIdx}"
+                        data-display-name="${fn:escapeXml(empty b.nickname ? b.userId : b.nickname)}"
+                        data-user-id="${fn:escapeXml(empty b.userId ? '' : b.userId)}"
+                        data-user-email="${fn:escapeXml(empty b.userEmail ? '' : b.userEmail)}"
+                        data-block-type="${b.blockType}"
+                        data-blocked-ip="${fn:escapeXml(empty b.blockedIp ? '' : b.blockedIp)}"
+                        data-target-key="${fn:escapeXml(b.blockTargetKey)}"
+                        data-active="${b.active ? 'true' : 'false'}"
+                        data-snapshot-status="${fn:escapeXml(b.snapshotStatus)}"
+                        data-reason="${fn:escapeXml(empty b.reason ? '' : b.reason)}"
+                        data-expires-at="${b.expiresAtInputValue}"
+                        data-blocked-at="${userBlockBlockedAtText}"
+                        data-last-history-at="${userBlockLastHistoryText}"
+                        data-sync-at="${userBlockSyncText}"><spring:message code="admin.common.settings"/></button>
+                <div class="action-menu-wrap">
+                    <button type="button"
+                            class="adm-row-btn detail adm-row-btn-more"
+                            onclick="admToggleActionMenu(this)">&hellip;</button>
+                    <div class="action-menu">
+                        <c:if test="${not empty b.blockedIp}">
+                            <button type="button"
+                                    class="action-menu-item js-open-ip-context"
+                                    data-ip-address="${b.blockedIp}"
+                                    data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
+                        </c:if>
+                        <button type="button"
+                                class="action-menu-item js-open-block-detail"
+                                data-template-id="detail-user-${b.blockIdx}"
+                                data-detail-title="${fn:escapeXml(adminBlocksHistoryLabel)}"><spring:message code="admin.common.history"/></button>
+                        <c:if test="${hasUserBlockAdmin and b.active}">
+                            <div class="action-menu-sep"></div>
+                            <button type="button"
+                                    class="action-menu-item danger js-release-user-block"
+                                    data-target-key="${fn:escapeXml(b.blockTargetKey)}"><spring:message code="admin.common.release"/></button>
+                        </c:if>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</c:forEach>
+<c:if test="${empty userBlocks}">
+    <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+</c:if>

@@ -18,6 +18,8 @@ public interface AdminBlockMapper {
     long countTotalBatches();
 
     List<AdminUserBlockVO> findUserBlocks(AdminBlockSearchVO search);
+    List<AdminUserBlockVO> findUserBlocksPaged(java.util.Map<String, Object> params);
+    long countUserBlocksFiltered(java.util.Map<String, Object> params);
     List<AdminIpBlockVO> findIpBlocks(AdminBlockSearchVO search);
     List<AdminIpBlockVO> findIpBlocksPaged(java.util.Map<String, Object> params);
     long countIpBlocksFiltered(java.util.Map<String, Object> params);
