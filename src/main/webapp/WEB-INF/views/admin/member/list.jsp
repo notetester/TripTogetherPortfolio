@@ -625,9 +625,15 @@ const ADMIN_MEMBER_MSG = {
     chatbotTab: '<spring:message code="admin.context.tab.chatbot" javaScriptEscape="true"/>',
     chatbotFilterSelectIp: '<spring:message code="admin.context.chatbotFilter.selectIp" javaScriptEscape="true"/>',
     chatbotFilterF1: '<spring:message code="admin.context.chatbotFilter.f1" javaScriptEscape="true"/>',
+    chatbotFilterF1Tip: '<spring:message code="admin.context.chatbotFilter.f1.tip" javaScriptEscape="true"/>',
+    chatbotFilterF2: '<spring:message code="admin.context.chatbotFilter.f2" javaScriptEscape="true"/>',
+    chatbotFilterF2Tip: '<spring:message code="admin.context.chatbotFilter.f2.tip" javaScriptEscape="true"/>',
     chatbotFilterF3: '<spring:message code="admin.context.chatbotFilter.f3" javaScriptEscape="true"/>',
+    chatbotFilterF3Tip: '<spring:message code="admin.context.chatbotFilter.f3.tip" javaScriptEscape="true"/>',
     chatbotFilterF4: '<spring:message code="admin.context.chatbotFilter.f4" javaScriptEscape="true"/>',
+    chatbotFilterF4Tip: '<spring:message code="admin.context.chatbotFilter.f4.tip" javaScriptEscape="true"/>',
     chatbotFilterF5: '<spring:message code="admin.context.chatbotFilter.f5" javaScriptEscape="true"/>',
+    chatbotFilterF5Tip: '<spring:message code="admin.context.chatbotFilter.f5.tip" javaScriptEscape="true"/>',
     chatbotFilterLoadFailed: '<spring:message code="admin.context.chatbotFilter.loadFailed" javaScriptEscape="true"/>',
     chatbotEmptyClicks: '<spring:message code="admin.context.empty.chatbotClicks" javaScriptEscape="true"/>',
     anonymous: '<spring:message code="admin.common.anonymous" javaScriptEscape="true"/>',
@@ -1064,10 +1070,11 @@ function buildChatbotTab(initialClicks, loginAudits, userIdx) {
         + ipOptions
         + '</select>'
         + '<div class="adm-chatbot-mode-group" id="chatbotModeGroup">'
-        + '<button type="button" class="adm-chatbot-mode-btn active" data-mode="1" onclick="chatbotOnModeClick(this)">' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF1) + '</button>'
-        + '<button type="button" class="adm-chatbot-mode-btn" data-mode="3" onclick="chatbotOnModeClick(this)" disabled>' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF3) + '</button>'
-        + '<button type="button" class="adm-chatbot-mode-btn" data-mode="4" onclick="chatbotOnModeClick(this)" disabled>' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF4) + '</button>'
-        + '<button type="button" class="adm-chatbot-mode-btn" data-mode="5" onclick="chatbotOnModeClick(this)" disabled>' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF5) + '</button>'
+        + '<button type="button" class="adm-chatbot-mode-btn active" data-mode="1" title="' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF1Tip) + '" onclick="chatbotOnModeClick(this)">' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF1) + '</button>'
+        + '<button type="button" class="adm-chatbot-mode-btn" data-mode="2" title="' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF2Tip) + '" onclick="chatbotOnModeClick(this)" disabled>' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF2) + '</button>'
+        + '<button type="button" class="adm-chatbot-mode-btn" data-mode="3" title="' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF3Tip) + '" onclick="chatbotOnModeClick(this)" disabled>' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF3) + '</button>'
+        + '<button type="button" class="adm-chatbot-mode-btn" data-mode="4" title="' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF4Tip) + '" onclick="chatbotOnModeClick(this)" disabled>' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF4) + '</button>'
+        + '<button type="button" class="adm-chatbot-mode-btn" data-mode="5" title="' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF5Tip) + '" onclick="chatbotOnModeClick(this)" disabled>' + escapeHtml(ADMIN_MEMBER_MSG.chatbotFilterF5) + '</button>'
         + '</div>'
         + '</div>'
         + '<div id="chatbotClickRows">' + buildChatbotLinkClickRows(initialClicks) + '</div>';

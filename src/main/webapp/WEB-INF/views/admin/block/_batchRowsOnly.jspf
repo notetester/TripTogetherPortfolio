@@ -1,0 +1,119 @@
+<c:forEach var="b" items="${batches}">
+    <fmt:formatDate var="batchCreatedAtText" value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+    <fmt:formatDate var="batchUpdatedAtText" value="${b.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+    <tr class="js-local-row"
+        data-section="batches"
+        data-search="${fn:toLowerCase(b.batchName)} ${fn:toLowerCase(b.batchCode)} ${fn:toLowerCase(empty b.sourceType ? '' : b.sourceType)} ${fn:toLowerCase(empty b.sourceName ? '' : b.sourceName)} ${fn:toLowerCase(empty b.description ? '' : b.description)} ${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)} ${fn:toLowerCase(empty b.defaultDisableStrategy ? '' : b.defaultDisableStrategy)} ${fn:toLowerCase(empty b.defaultEnableStrategy ? '' : b.defaultEnableStrategy)} ${fn:toLowerCase(b.activeLabel)} ${fn:toLowerCase(batchUpdatedAtText)}"
+        data-batch="${fn:toLowerCase(b.batchName)} ${fn:toLowerCase(b.batchCode)}"
+        data-source="${fn:toLowerCase(empty b.sourceType ? '' : b.sourceType)} ${fn:toLowerCase(empty b.sourceName ? '' : b.sourceName)}"
+        data-description="${fn:toLowerCase(empty b.description ? '' : b.description)}"
+        data-policy="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)} ${b.defaultRulePriority} ${fn:toLowerCase(empty b.defaultDisableStrategy ? '' : b.defaultDisableStrategy)} ${fn:toLowerCase(empty b.defaultEnableStrategy ? '' : b.defaultEnableStrategy)}"
+        data-status="${fn:toLowerCase(b.activeLabel)}"
+        data-updated-at="${fn:toLowerCase(batchUpdatedAtText)}">
+        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="${b.ipBlockBatchIdx}" value="${b.ipBlockBatchIdx}" onchange="updateBlockBulkBar('batches')"></td>
+        <td data-sort-value="${fn:toLowerCase(b.batchName)}">
+            <button type="button"
+                    class="adm-link-btn js-open-batch-editor"
+                    data-batch-id="${b.ipBlockBatchIdx}"
+                    data-batch-code="${fn:escapeXml(b.batchCode)}"
+                    data-batch-name="${fn:escapeXml(b.batchName)}"
+                    data-source-type="${fn:escapeXml(b.sourceType)}"
+                    data-source-name="${fn:escapeXml(empty b.sourceName ? '' : b.sourceName)}"
+                    data-batch-rule-action="${fn:escapeXml(b.batchRuleAction)}"
+                    data-default-priority="${b.defaultRulePriority}"
+                    data-default-disable-strategy="${fn:escapeXml(b.defaultDisableStrategy)}"
+                    data-default-enable-strategy="${fn:escapeXml(b.defaultEnableStrategy)}"
+                    data-description="${fn:escapeXml(empty b.description ? '' : b.description)}"
+                    data-status-label="${fn:escapeXml(b.activeLabel)}"
+                    data-created-at="${batchCreatedAtText}"
+                    data-updated-at="${batchUpdatedAtText}"
+                    data-total-rules="${b.totalRuleCount}"
+                    data-active-rules="${b.activeRuleCount}"
+                    data-effective-rules="${b.effectiveRuleCount}"
+                    data-expired-rules="${b.expiredRuleCount}">
+                <span style="font-weight:700;color:#e2e8f0;">${b.batchName}</span>
+                <span style="display:block;font-size:12px;color:#94a3b8;">${b.batchCode}</span>
+                <span style="display:block;font-size:11px;color:#64748b;">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</span>
+            </button>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)}">
+            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
+                <span>${b.batchRuleActionLabel}</span>
+                <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</span>
+                <span class="adm-cell-link-note">OFF: ${b.defaultDisableStrategyLabel}</span>
+                <span class="adm-cell-link-note">ON: ${b.defaultEnableStrategyLabel}</span>
+            </button>
+        </td>
+        <td data-sort-value="${b.active ? '1' : '0'}">
+            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
+                <span><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.activeLabel}</span></span>
+                <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</span>
+            </button>
+        </td>
+        <td data-sort-value="${b.totalRuleCount}">
+            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
+                <span><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</span>
+                <span class="adm-cell-link-note"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount} / <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</span>
+                <span class="adm-cell-link-note"><spring:message code="admin.blocks.effectiveState"/> ${b.effectiveRuleCount} / <spring:message code="admin.blocks.effective.expired"/> ${b.expiredRuleCount}</span>
+            </button>
+        </td>
+        <td style="max-width:260px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty b.description ? '' : b.description)}">
+            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
+                <span>${empty b.description ? '-' : b.description}</span>
+            </button>
+        </td>
+        <td>
+            <div class="adm-row-actions">
+                <button type="button"
+                        class="adm-row-btn detail js-open-batch-editor"
+                        data-batch-id="${b.ipBlockBatchIdx}"
+                        data-batch-code="${fn:escapeXml(b.batchCode)}"
+                        data-batch-name="${fn:escapeXml(b.batchName)}"
+                        data-source-type="${fn:escapeXml(b.sourceType)}"
+                        data-source-name="${fn:escapeXml(empty b.sourceName ? '' : b.sourceName)}"
+                        data-batch-rule-action="${fn:escapeXml(b.batchRuleAction)}"
+                        data-default-priority="${b.defaultRulePriority}"
+                        data-default-disable-strategy="${fn:escapeXml(b.defaultDisableStrategy)}"
+                        data-default-enable-strategy="${fn:escapeXml(b.defaultEnableStrategy)}"
+                        data-description="${fn:escapeXml(empty b.description ? '' : b.description)}"
+                        data-status-label="${fn:escapeXml(b.activeLabel)}"
+                        data-created-at="${batchCreatedAtText}"
+                        data-updated-at="${batchUpdatedAtText}"
+                        data-total-rules="${b.totalRuleCount}"
+                        data-active-rules="${b.activeRuleCount}"
+                        data-effective-rules="${b.effectiveRuleCount}"
+                        data-expired-rules="${b.expiredRuleCount}"><spring:message code="admin.common.settings"/></button>
+                <div class="action-menu-wrap">
+                    <button type="button"
+                            class="adm-row-btn detail adm-row-btn-more"
+                            onclick="admToggleActionMenu(this)">&hellip;</button>
+                    <div class="action-menu">
+                        <button type="button"
+                                class="action-menu-item js-open-block-detail"
+                                data-template-id="detail-batch-${b.ipBlockBatchIdx}"><spring:message code="admin.common.detail"/></button>
+                        <c:if test="${hasBlockPolicyAdmin}">
+                            <div class="action-menu-sep"></div>
+                            <button type="button"
+                                    class="action-menu-item ${b.active ? 'danger' : ''} js-open-batch-toggle"
+                                    data-id="${b.ipBlockBatchIdx}"
+                                    data-active="${b.active ? 'false' : 'true'}"
+                                    data-batch-name="${fn:escapeXml(b.batchName)}"
+                                    data-active-rules="${b.activeRuleCount}"
+                                    data-effective-rules="${b.effectiveRuleCount}"
+                                    data-default-disable-strategy="${b.defaultDisableStrategy}"
+                                    data-default-enable-strategy="${b.defaultEnableStrategy}">
+                                <c:choose>
+                                    <c:when test="${b.active}"><spring:message code="admin.blocks.batchDeactivate"/></c:when>
+                                    <c:otherwise><spring:message code="admin.blocks.batchReactivate"/></c:otherwise>
+                                </c:choose>
+                            </button>
+                        </c:if>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</c:forEach>
+<c:if test="${empty batches}">
+    <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+</c:if>

@@ -19,22 +19,62 @@
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-body">
             <div class="adm-kpi-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));">
-                <div class="adm-kpi-card">
+                <c:set var="kpiPct1" value="${totalUserCount > 0 ? activeUserBlockCount * 100 / totalUserCount : 0}"/>
+                <c:if test="${kpiPct1 > 100}"><c:set var="kpiPct1" value="100"/></c:if>
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activeUserBlocks"/></div>
-                    <div class="adm-kpi-value">${activeUserBlockCount}</div>
-                </div>
-                <div class="adm-kpi-card">
+                    <div class="adm-kpi-value-row">
+                        <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numUserBlocks' javaScriptEscape='true'/>">${activeUserBlockCount}</span>
+                        <span class="adm-kpi-sep">/</span>
+                        <span class="adm-kpi-den" title="<spring:message code='admin.blocks.kpi.tooltip.denTotalUsers' javaScriptEscape='true'/>">${totalUserCount}</span>
+                    </div>
+                    <div class="adm-kpi-bar-wrap" title="${kpiPct1}%">
+                        <div class="adm-kpi-bar-fill" style="width:${kpiPct1}%;"></div>
+                    </div>
+                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.userBlocks"/></div>
+                </button>
+                <c:set var="kpiPct2" value="${totalIpRuleCount > 0 ? activeIpBlockCount * 100 / totalIpRuleCount : 0}"/>
+                <c:if test="${kpiPct2 > 100}"><c:set var="kpiPct2" value="100"/></c:if>
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activePolicies"/></div>
-                    <div class="adm-kpi-value">${activeIpBlockCount}</div>
-                </div>
-                <div class="adm-kpi-card">
+                    <div class="adm-kpi-value-row">
+                        <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numActivePolicies' javaScriptEscape='true'/>">${activeIpBlockCount}</span>
+                        <span class="adm-kpi-sep">/</span>
+                        <span class="adm-kpi-den" title="<spring:message code='admin.blocks.kpi.tooltip.denTotalIpRules' javaScriptEscape='true'/>">${totalIpRuleCount}</span>
+                    </div>
+                    <div class="adm-kpi-bar-wrap" title="${kpiPct2}%">
+                        <div class="adm-kpi-bar-fill" style="width:${kpiPct2}%;"></div>
+                    </div>
+                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.ipRules"/></div>
+                </button>
+                <c:set var="kpiPct3" value="${blockHistoryCount > 0 ? todayBlockCount * 100 / blockHistoryCount : 0}"/>
+                <c:if test="${kpiPct3 > 100}"><c:set var="kpiPct3" value="100"/></c:if>
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('histories');renderLocalSection('histories');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.history"/></div>
-                    <div class="adm-kpi-value">${blockHistoryCount}</div>
-                </div>
-                <div class="adm-kpi-card">
+                    <div class="adm-kpi-value-row">
+                        <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numTodayBlocks' javaScriptEscape='true'/>">${todayBlockCount}</span>
+                        <span class="adm-kpi-sep">/</span>
+                        <span class="adm-kpi-den" title="<spring:message code='admin.blocks.kpi.tooltip.denTotalHistory' javaScriptEscape='true'/>">${blockHistoryCount}</span>
+                    </div>
+                    <div class="adm-kpi-bar-wrap" title="${kpiPct3}%">
+                        <div class="adm-kpi-bar-fill" style="width:${kpiPct3}%;"></div>
+                    </div>
+                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.history"/></div>
+                </button>
+                <c:set var="kpiPct4" value="${totalBatchCount > 0 ? activeBatchCount * 100 / totalBatchCount : 0}"/>
+                <c:if test="${kpiPct4 > 100}"><c:set var="kpiPct4" value="100"/></c:if>
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('batches');renderLocalSection('batches');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activeBatches"/></div>
-                    <div class="adm-kpi-value">${activeBatchCount}</div>
-                </div>
+                    <div class="adm-kpi-value-row">
+                        <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numActiveBatches' javaScriptEscape='true'/>">${activeBatchCount}</span>
+                        <span class="adm-kpi-sep">/</span>
+                        <span class="adm-kpi-den" title="<spring:message code='admin.blocks.kpi.tooltip.denTotalBatches' javaScriptEscape='true'/>">${totalBatchCount}</span>
+                    </div>
+                    <div class="adm-kpi-bar-wrap" title="${kpiPct4}%">
+                        <div class="adm-kpi-bar-fill" style="width:${kpiPct4}%;"></div>
+                    </div>
+                    <div class="adm-kpi-sub"><spring:message code="admin.blocks.dashboard.stat.batches"/></div>
+                </button>
             </div>
         </div>
     </div>
@@ -152,47 +192,21 @@
             <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.sub"/></div>
         </div>
         <div class="adm-card-body">
-            <div class="adm-block-dashboard-summary">
-                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">
-                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activeUserBlocks"/></span>
-                    <strong>${activeUserBlockCount}</strong>
-                    <span class="adm-block-stat-note">회원 차단 현재 적용</span>
-                    <span class="adm-block-stat-bar"><i style="width:${activeUserBlockCount > 0 ? '78' : '8'}%"></i></span>
-                </button>
-                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">
-                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activePolicies"/></span>
-                    <strong>${activeIpBlockCount}</strong>
-                    <span class="adm-block-stat-note">IP/범위 정책 현재 적용</span>
-                    <span class="adm-block-stat-bar"><i style="width:${activeIpBlockCount > 0 ? '72' : '8'}%"></i></span>
-                </button>
-                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('histories');renderLocalSection('histories');">
-                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.history"/></span>
-                    <strong>${blockHistoryCount}</strong>
-                    <span class="adm-block-stat-note">누적 차단/해제/정책 변경</span>
-                    <span class="adm-block-stat-bar"><i style="width:${blockHistoryCount > 0 ? '88' : '8'}%"></i></span>
-                </button>
-                <button type="button" class="adm-block-stat-card" onclick="activateBlockTab('batches');renderLocalSection('batches');">
-                    <span class="adm-block-stat-label"><spring:message code="admin.blocks.kpi.activeBatches"/></span>
-                    <strong>${activeBatchCount}</strong>
-                    <span class="adm-block-stat-note">활성 배치 정책 묶음</span>
-                    <span class="adm-block-stat-bar"><i style="width:${activeBatchCount > 0 ? '64' : '8'}%"></i></span>
-                </button>
-            </div>
             <div class="adm-block-dashboard-grid">
                 <div class="adm-block-dashboard-insight">
-                    <div class="adm-block-insight-title">운영 우선순위</div>
+                    <div class="adm-block-insight-title"><spring:message code="admin.blocks.dashboard.insight.priorityTitle"/></div>
                     <div class="adm-block-insight-body">
-                        <span>① 최근 이력 확인</span>
-                        <span>② 만료 예정/비활성 규칙 점검</span>
-                        <span>③ 배치 정책 영향 범위 확인</span>
+                        <span><spring:message code="admin.blocks.dashboard.insight.priority1"/></span>
+                        <span><spring:message code="admin.blocks.dashboard.insight.priority2"/></span>
+                        <span><spring:message code="admin.blocks.dashboard.insight.priority3"/></span>
                     </div>
                 </div>
                 <div class="adm-block-dashboard-insight">
-                    <div class="adm-block-insight-title">빠른 이동</div>
+                    <div class="adm-block-insight-title"><spring:message code="admin.blocks.dashboard.insight.quickNavTitle"/></div>
                     <div class="adm-block-insight-actions">
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">회원 차단</button>
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">IP 규칙</button>
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('histories');renderLocalSection('histories');">최근 로그</button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');"><spring:message code="admin.blocks.dashboard.insight.userBlocksChip"/></button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');"><spring:message code="admin.blocks.dashboard.insight.ipRulesChip"/></button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('histories');renderLocalSection('histories');"><spring:message code="admin.blocks.dashboard.insight.historyChip"/></button>
                     </div>
                 </div>
             </div>
@@ -200,15 +214,18 @@
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
                         <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentUserBlocks"/></div>
-                        <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.topFive"/></div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.topFive"/></div>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-user-blocks" style="display:none;"></button>
+                        </div>
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-user-blocks">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-user-blocks',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-user-blocks',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-user-blocks',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/> <span class="sort-ico">▼</span></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -277,15 +294,18 @@
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
                         <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentIpRules"/></div>
-                        <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.ipRulesSub"/></div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.ipRulesSub"/></div>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-ip-rules" style="display:none;"></button>
+                        </div>
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-ip-rules">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-ip-rules',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-ip-rules',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-ip-rules',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.effectiveState"/> <span class="sort-ico">▼</span></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.effectiveState"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -360,15 +380,18 @@
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
                         <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentBatchOps"/></div>
-                        <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.batchOpsSub"/></div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.batchOpsSub"/></div>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-batches" style="display:none;"></button>
+                        </div>
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-batches">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-batches',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-batches',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-batches',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.impact"/> <span class="sort-ico">▼</span></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.impact"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -399,16 +422,19 @@
                 <div class="adm-card" style="margin:0;">
                     <div class="adm-card-head">
                         <div class="adm-card-title" style="font-size:15px;"><spring:message code="admin.blocks.dashboard.recentHistory"/></div>
-                        <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.historySub"/></div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div class="adm-card-sub"><spring:message code="admin.blocks.dashboard.historySub"/></div>
+                            <button type="button" class="adm-dash-sort-reset js-dash-sort-reset" data-table="dash-histories" style="display:none;"></button>
+                        </div>
                     </div>
                     <div class="adm-card-body" style="padding:0;">
                         <div class="adm-table-wrap">
                             <table class="adm-table" id="dash-histories">
                                 <thead><tr>
-                                    <th onclick="dashSortBy('dash-histories',0)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-histories',1)" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-histories',2)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/> <span class="sort-ico">▼</span></th>
-                                    <th onclick="dashSortBy('dash-histories',3)" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.result"/> <span class="sort-ico">▼</span></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/></th>
+                                    <th style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.result"/></th>
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
@@ -504,7 +530,7 @@
                         onclick="document.getElementById('ub-exportDropdown').style.display=(document.getElementById('ub-exportDropdown').style.display==='none'?'block':'none')">
                     <spring:message code="admin.common.export"/> ▾
                 </button>
-                <div id="ub-exportDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#1e293b;border:1px solid #334155;border-radius:8px;z-index:200;min-width:180px;padding:4px 0;">
+                <div id="ub-exportDropdown" class="adm-export-dropdown" style="display:none;">
                     <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','all')"><spring:message code="admin.common.exportAll"/></button>
                     <button type="button" class="adm-export-item" onclick="exportBlockData('user-blocks','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
                     <button type="button" class="adm-export-item js-block-export-selected" data-section="user-blocks" id="ub-exportSelectedBtn" disabled onclick="exportBlockData('user-blocks','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="ub-selectedCount">0</span>)</button>
@@ -528,6 +554,11 @@
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="user-blocks"><spring:message code="admin.common.reset"/></button>
                 </div>
                 <div class="adm-local-toolbar-group">
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="user-blocks" style="display:none;" onclick="sectionSortReset('user-blocks')"></button>
+                    <select class="adm-select js-section-mode" data-section="user-blocks" title="<spring:message code='admin.blocks.mode.label'/>">
+                        <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
+                        <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                    </select>
                     <select class="adm-select js-local-page-size" data-section="user-blocks">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -543,17 +574,17 @@
                 <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('user-blocks')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
             </div>
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-section-table-fixed">
                     <thead>
                     <tr>
                         <th style="width:36px;"><input type="checkbox" id="ub-checkAll" class="js-block-check-all" data-section="user-blocks" onchange="blockToggleAll('user-blocks')"></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="nickname" onclick="blockSortBy('user-blocks','nickname')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.member"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="blockType" onclick="blockSortBy('user-blocks','blockType')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.filter.blockType"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="target" onclick="blockSortBy('user-blocks','target')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="snapshotStatus" onclick="blockSortBy('user-blocks','snapshotStatus')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="reason" onclick="blockSortBy('user-blocks','reason')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="user-blocks" data-sort="blockedAt" onclick="blockSortBy('user-blocks','blockedAt')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.blockAndExpire"/> <span class="sort-ico">↕</span></th>
-                        <th><spring:message code="admin.common.action"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('user-blocks',1)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.common.member"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('user-blocks',2)" style="cursor:pointer;user-select:none;width:12%;"><spring:message code="admin.blocks.filter.blockType"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('user-blocks',3)" style="cursor:pointer;user-select:none;width:17%;"><spring:message code="admin.common.target"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('user-blocks',4)" style="cursor:pointer;user-select:none;width:9%;"><spring:message code="admin.common.status"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('user-blocks',5)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.common.reason"/></th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('user-blocks',6)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.blockAndExpire"/></th>
+                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -579,7 +610,7 @@
                             data-blocked-at="${fn:toLowerCase(userBlockBlockedAtText)}"
                             data-expires-at="${fn:toLowerCase(empty b.expiresAtInputValue ? '' : b.expiresAtInputValue)}">
                             <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="user-blocks" data-target-key="${fn:escapeXml(b.blockTargetKey)}" value="${fn:escapeXml(b.blockTargetKey)}" onchange="updateBlockBulkBar('user-blocks')"></td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)}">
                                 <c:choose>
                                     <c:when test="${b.userIdx != null}">
                                         <button type="button"
@@ -603,7 +634,7 @@
                             </c:otherwise>
                         </c:choose>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty b.blockType ? '' : b.blockType)}">
                                 <button type="button"
                                         class="adm-inline-chip js-apply-block-filter"
                                         data-section="user-blocks"
@@ -612,7 +643,7 @@
                                     <c:out value="${b.blockType}"/>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)}">
                                 <button type="button"
                                         class="adm-link-btn js-open-user-block-editor"
                                         data-block-idx="${b.blockIdx}"
@@ -644,12 +675,12 @@
                                     </button>
                                 </div>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}">
                                 <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
                                     <span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span>
                                 </button>
                             </td>
-                            <td style="max-width:260px;white-space:normal;">
+                            <td style="max-width:260px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty b.reason ? '' : b.reason)}">
                                 <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
                                     <span><c:out value="${empty b.reason ? '-' : b.reason}"/></span>
                                 </button>
@@ -663,7 +694,7 @@
                                          data-source-text="${fn:escapeXml(b.reason)}"></div>
                                 </c:if>
                             </td>
-                            <td style="font-size:12px;">
+                            <td style="font-size:12px;" data-sort-value="${userBlockBlockedAtText}">
                                 <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
                                     <span><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
                                     <span class="adm-cell-link-note"><spring:message code="admin.context.expiresAt"/>:
@@ -738,6 +769,7 @@
         </div>
     </div>
 
+    <div id="ubDetailArea">
     <c:forEach var="b" items="${userBlocks}">
         <template id="detail-user-${b.blockIdx}">
             <div class="detail-grid">
@@ -790,6 +822,7 @@
             </table>
         </template>
     </c:forEach>
+    </div>
 
     <div class="adm-card js-section-card" data-section="ip-rules" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
@@ -813,7 +846,7 @@
                             onclick="document.getElementById('ipr-exportDropdown').style.display=(document.getElementById('ipr-exportDropdown').style.display==='none'?'block':'none')">
                         <spring:message code="admin.common.export"/> ▾
                     </button>
-                    <div id="ipr-exportDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#1e293b;border:1px solid #334155;border-radius:8px;z-index:200;min-width:180px;padding:4px 0;">
+                    <div id="ipr-exportDropdown" class="adm-export-dropdown" style="display:none;">
                         <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','all')"><spring:message code="admin.common.exportAll"/></button>
                         <button type="button" class="adm-export-item" onclick="exportBlockData('ip-rules','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
                         <button type="button" class="adm-export-item js-block-export-selected" data-section="ip-rules" id="ipr-exportSelectedBtn" disabled onclick="exportBlockData('ip-rules','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="ipr-selectedCount">0</span>)</button>
@@ -838,6 +871,11 @@
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="ip-rules"><spring:message code="admin.common.reset"/></button>
                 </div>
                 <div class="adm-local-toolbar-group">
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="ip-rules" style="display:none;" onclick="sectionSortReset('ip-rules')"></button>
+                    <select class="adm-select js-section-mode" data-section="ip-rules" title="<spring:message code='admin.blocks.mode.label'/>">
+                        <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
+                        <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                    </select>
                     <select class="adm-select js-local-page-size" data-section="ip-rules">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -854,17 +892,17 @@
                 <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('ip-rules')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
             </div>
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-section-table-fixed">
                     <thead>
                     <tr>
                         <th style="width:36px;"><input type="checkbox" id="ipr-checkAll" class="js-block-check-all" data-section="ip-rules" onchange="blockToggleAll('ip-rules')"></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="target" onclick="blockSortBy('ip-rules','target')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="policy" onclick="blockSortBy('ip-rules','policy')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.actionControl"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="batch" onclick="blockSortBy('ip-rules','batch')" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.batch"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="finalState" onclick="blockSortBy('ip-rules','finalState')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="priority" onclick="blockSortBy('ip-rules','priority')" style="cursor:pointer;user-select:none;"><spring:message code="admin.context.priority"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="ip-rules" data-sort="reason" onclick="blockSortBy('ip-rules','reason')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/> <span class="sort-ico">↕</span></th>
-                        <th><spring:message code="admin.common.action"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('ip-rules',1)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.common.target"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('ip-rules',2)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.actionControl"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('ip-rules',3)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.context.batch"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('ip-rules',4)" style="cursor:pointer;user-select:none;width:11%;"><spring:message code="admin.common.status"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('ip-rules',5)" style="cursor:pointer;user-select:none;width:9%;"><spring:message code="admin.context.priority"/></th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('ip-rules',6)" style="cursor:pointer;user-select:none;width:20%;"><spring:message code="admin.common.reason"/></th>
+                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -886,7 +924,7 @@
                             data-expires-at="${fn:toLowerCase(empty ipRuleExpiresText ? '' : ipRuleExpiresText)}"
                             data-final-state="${fn:toLowerCase(empty r.finalStateLabel ? '' : r.finalStateLabel)}">
                             <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="ip-rules" data-id="${r.ipBlocklistIdx}" value="${r.ipBlocklistIdx}" onchange="updateBlockBulkBar('ip-rules')"></td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}">
                                 <button type="button"
                                         class="adm-link-btn js-open-ip-rule-editor"
                                         data-id="${r.ipBlocklistIdx}"
@@ -933,14 +971,14 @@
                                     </c:if>
                                 </div>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)}">
                                 <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
                                     <span><span class="status-badge ${r.ruleAction == 'ALLOW' ? 'ACTIVE' : 'DORMANT'}">${r.ruleActionLabel}</span></span>
                                     <span style="font-size:12px;color:#94a3b8;">${r.controlModeLabel}</span>
                                     <span class="adm-cell-link-note">${r.blockCategory}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty r.batchName ? '' : r.batchName)}">
                                 <button type="button"
                                         class="adm-cell-link ${not empty r.ipBlockBatchIdx ? 'js-open-batch-editor' : 'js-open-ip-rule-editor'}"
                                         data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
@@ -950,20 +988,20 @@
                                     <span class="adm-cell-link-note">${r.batchStatusLabel}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty r.effectiveStatus ? '' : r.effectiveStatus)}">
                                 <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
                                     <span><span class="status-badge ${r.effectiveStatusBadgeClass}">${r.finalStateLabel}</span></span>
                                     <span style="font-size:12px;color:#94a3b8;">${r.effectiveStatusLabel}</span>
                                     <span class="adm-cell-link-note">${r.ruleStateLabel} / ${r.batchStatusLabel}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${r.priority}">
                                 <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
                                     <span>${r.priority}</span>
                                     <span class="adm-cell-link-note">${empty r.ruleOriginType ? '-' : r.ruleOriginType}</span>
                                 </button>
                             </td>
-                            <td style="max-width:280px;white-space:normal;">
+                            <td style="max-width:280px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty r.reason ? '' : r.reason)}">
                                 <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
                                     <span>${empty r.reason ? '-' : r.reason}</span>
                                     <span class="adm-cell-link-note">${empty r.effectiveStatusReason ? '-' : r.effectiveStatusReason}</span>
@@ -1044,6 +1082,7 @@
         </div>
     </div>
 
+    <div id="iprDetailArea">
     <c:forEach var="r" items="${ipBlocks}">
         <template id="detail-ip-${r.ipBlocklistIdx}">
             <div class="detail-grid">
@@ -1111,13 +1150,35 @@
             </table>
         </template>
     </c:forEach>
+    </div>
 
     <div class="adm-card js-section-card" data-section="batches" data-enhanced="true" style="margin-bottom:20px;">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.blocks.section.batches"/></div>
-            <div class="adm-card-sub"><spring:message code="admin.blocks.batches.sub"/></div>
+            <div>
+                <div class="adm-card-title"><spring:message code="admin.blocks.section.batches"/></div>
+                <div class="adm-card-sub"><spring:message code="admin.blocks.batches.sub"/></div>
+            </div>
+            <div style="position:relative;display:flex;align-items:center;gap:8px;">
+                <select id="bat-exportFormat" class="adm-select js-block-export-format" data-section="batches" style="width:90px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-ghost"
+                        onclick="document.getElementById('bat-exportDropdown').style.display=(document.getElementById('bat-exportDropdown').style.display==='none'?'block':'none')">
+                    <spring:message code="admin.common.export"/> ▾
+                </button>
+                <div id="bat-exportDropdown" class="adm-export-dropdown" style="display:none;">
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('batches','all')"><spring:message code="admin.common.exportAll"/></button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('batches','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
+                    <button type="button" class="adm-export-item js-block-export-selected" data-section="batches" id="bat-exportSelectedBtn" disabled onclick="exportBlockData('batches','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="bat-selectedCount">0</span>)</button>
+                </div>
+            </div>
         </div>
         <div class="adm-card-body" style="padding:0;">
+            <div id="bat-bulkBar" class="js-block-bulkbar" data-section="batches" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
+                <span style="color:#93c5fd;font-size:13px;"><spring:message code="admin.common.selectedCount"/>: <strong id="bat-bulkCount" class="js-block-bulk-count">0</strong></span>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('batches')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
+            </div>
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="batches">
@@ -1133,6 +1194,11 @@
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="batches"><spring:message code="admin.common.reset"/></button>
                 </div>
                 <div class="adm-local-toolbar-group">
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="batches" style="display:none;" onclick="sectionSortReset('batches')"></button>
+                    <select class="adm-select js-section-mode" data-section="batches" title="<spring:message code='admin.blocks.mode.label'/>">
+                        <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
+                        <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                    </select>
                     <select class="adm-select js-local-page-size" data-section="batches">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -1141,14 +1207,15 @@
                 </div>
             </div>
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-section-table-fixed">
                     <thead><tr>
-                        <th class="js-local-sort" data-section="batches" data-sort="batch" onclick="blockSortBy('batches','batch')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.batch"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="batches" data-sort="policy" onclick="blockSortBy('batches','policy')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.basePolicy"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="batches" data-sort="status" onclick="blockSortBy('batches','status')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.currentState"/> <span class="sort-ico">↕</span></th>
-                        <th><spring:message code="admin.blocks.ruleStats"/></th>
-                        <th class="js-local-sort" data-section="batches" data-sort="description" onclick="blockSortBy('batches','description')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.description"/> <span class="sort-ico">↕</span></th>
-                        <th><spring:message code="admin.common.action"/></th>
+                        <th style="width:36px;"><input type="checkbox" id="bat-checkAll" class="js-block-check-all" data-section="batches" onchange="blockToggleAll('batches')"></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;width:22%;"><spring:message code="admin.blocks.batch"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.basePolicy"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('batches',3)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.currentState"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('batches',4)" style="cursor:pointer;user-select:none;width:18%;"><spring:message code="admin.blocks.ruleStats"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('batches',5)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.description"/></th>
+                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr></thead>
                     <tbody>
                     <c:forEach var="b" items="${batches}">
@@ -1163,7 +1230,8 @@
                             data-policy="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)} ${b.defaultRulePriority} ${fn:toLowerCase(empty b.defaultDisableStrategy ? '' : b.defaultDisableStrategy)} ${fn:toLowerCase(empty b.defaultEnableStrategy ? '' : b.defaultEnableStrategy)}"
                             data-status="${fn:toLowerCase(b.activeLabel)}"
                             data-updated-at="${fn:toLowerCase(batchUpdatedAtText)}">
-                            <td>
+                            <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="${b.ipBlockBatchIdx}" value="${b.ipBlockBatchIdx}" onchange="updateBlockBulkBar('batches')"></td>
+                            <td data-sort-value="${fn:toLowerCase(b.batchName)}">
                                 <button type="button"
                                         class="adm-link-btn js-open-batch-editor"
                                         data-batch-id="${b.ipBlockBatchIdx}"
@@ -1188,7 +1256,7 @@
                                     <span style="display:block;font-size:11px;color:#64748b;">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)}">
                                 <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                                     <span>${b.batchRuleActionLabel}</span>
                                     <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</span>
@@ -1196,20 +1264,20 @@
                                     <span class="adm-cell-link-note">ON: ${b.defaultEnableStrategyLabel}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${b.active ? '1' : '0'}">
                                 <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                                     <span><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.activeLabel}</span></span>
                                     <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${b.totalRuleCount}">
                                 <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                                     <span><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</span>
                                     <span class="adm-cell-link-note"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount} / <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</span>
                                     <span class="adm-cell-link-note"><spring:message code="admin.blocks.effectiveState"/> ${b.effectiveRuleCount} / <spring:message code="admin.blocks.effective.expired"/> ${b.expiredRuleCount}</span>
                                 </button>
                             </td>
-                            <td style="max-width:260px;white-space:normal;">
+                            <td style="max-width:260px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty b.description ? '' : b.description)}">
                                 <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                                     <span>${empty b.description ? '-' : b.description}</span>
                                 </button>
@@ -1267,7 +1335,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty batches}">
-                        <tr><td colspan="6" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                        <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                     </c:if>
                     </tbody>
                 </table>
@@ -1283,6 +1351,7 @@
         </div>
     </div>
 
+    <div id="batDetailArea">
     <c:forEach var="b" items="${batches}">
         <template id="detail-batch-${b.ipBlockBatchIdx}">
             <div class="detail-grid">
@@ -1332,13 +1401,35 @@
             </table>
         </template>
     </c:forEach>
+    </div>
 
     <div class="adm-card js-section-card" data-section="histories" data-enhanced="true">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.blocks.section.histories"/></div>
-            <div class="adm-card-sub"><spring:message code="admin.blocks.histories.sub"/></div>
+            <div>
+                <div class="adm-card-title"><spring:message code="admin.blocks.section.histories"/></div>
+                <div class="adm-card-sub"><spring:message code="admin.blocks.histories.sub"/></div>
+            </div>
+            <div style="position:relative;display:flex;align-items:center;gap:8px;">
+                <select id="hist-exportFormat" class="adm-select js-block-export-format" data-section="histories" style="width:90px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-ghost"
+                        onclick="document.getElementById('hist-exportDropdown').style.display=(document.getElementById('hist-exportDropdown').style.display==='none'?'block':'none')">
+                    <spring:message code="admin.common.export"/> ▾
+                </button>
+                <div id="hist-exportDropdown" class="adm-export-dropdown" style="display:none;">
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('histories','all')"><spring:message code="admin.common.exportAll"/></button>
+                    <button type="button" class="adm-export-item" onclick="exportBlockData('histories','filtered')"><spring:message code="admin.common.exportFiltered"/></button>
+                    <button type="button" class="adm-export-item js-block-export-selected" data-section="histories" id="hist-exportSelectedBtn" disabled onclick="exportBlockData('histories','selected')"><spring:message code="admin.common.exportSelected"/> (<span id="hist-selectedCount">0</span>)</button>
+                </div>
+            </div>
         </div>
         <div class="adm-card-body" style="padding:0;">
+            <div id="hist-bulkBar" class="js-block-bulkbar" data-section="histories" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
+                <span style="color:#93c5fd;font-size:13px;"><spring:message code="admin.common.selectedCount"/>: <strong id="hist-bulkCount" class="js-block-bulk-count">0</strong></span>
+                <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('histories')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
+            </div>
             <div class="adm-local-toolbar">
                 <div class="adm-local-toolbar-group">
                     <select class="adm-select js-local-field" data-section="histories">
@@ -1355,6 +1446,11 @@
                     <button type="button" class="adm-btn adm-btn-ghost js-local-reset" data-section="histories"><spring:message code="admin.common.reset"/></button>
                 </div>
                 <div class="adm-local-toolbar-group">
+                    <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="histories" style="display:none;" onclick="sectionSortReset('histories')"></button>
+                    <select class="adm-select js-section-mode" data-section="histories" title="<spring:message code='admin.blocks.mode.label'/>">
+                        <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
+                        <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                    </select>
                     <select class="adm-select js-local-page-size" data-section="histories">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -1363,15 +1459,16 @@
                 </div>
             </div>
             <div class="adm-table-wrap">
-                <table class="adm-table">
+                <table class="adm-table adm-section-table-fixed">
                     <thead><tr>
-                        <th class="js-local-sort" data-section="histories" data-sort="blockedAt" onclick="blockSortBy('histories','blockedAt')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.time"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="histories" data-sort="target" onclick="blockSortBy('histories','target')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.target"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="histories" data-sort="change" onclick="blockSortBy('histories','change')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.actionLabel"/> <span class="sort-ico">↕</span></th>
-                        <th class="js-local-sort" data-section="histories" data-sort="change" onclick="blockSortBy('histories','change')" style="cursor:pointer;user-select:none;"><spring:message code="admin.blocks.changeKind"/> <span class="sort-ico">↕</span></th>
-                        <th><spring:message code="admin.blocks.result"/></th>
-                        <th class="js-local-sort" data-section="histories" data-sort="reason" onclick="blockSortBy('histories','reason')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.reason"/> <span class="sort-ico">↕</span></th>
-                        <th><spring:message code="admin.common.action"/></th>
+                        <th style="width:36px;"><input type="checkbox" id="hist-checkAll" class="js-block-check-all" data-section="histories" onchange="blockToggleAll('histories')"></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('histories',1)" style="cursor:pointer;user-select:none;width:12%;"><spring:message code="admin.common.time"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('histories',2)" style="cursor:pointer;user-select:none;width:18%;"><spring:message code="admin.common.target"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('histories',3)" style="cursor:pointer;user-select:none;width:12%;"><spring:message code="admin.common.actionLabel"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('histories',4)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.changeKind"/></th>
+                        <th style="width:13%;"><spring:message code="admin.blocks.result"/></th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('histories',6)" style="cursor:pointer;user-select:none;width:17%;"><spring:message code="admin.common.reason"/></th>
+                        <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr></thead>
                     <tbody>
                     <c:forEach var="h" items="${histories}">
@@ -1397,14 +1494,15 @@
                             data-batch="${fn:toLowerCase(empty h.batchName ? '' : h.batchName)} ${fn:toLowerCase(empty h.batchCode ? '' : h.batchCode)}"
                             data-blocked-at="${fn:toLowerCase(historyBlockedAtText)}"
                             data-expires-at="${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}">
-                            <td>
+                            <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="histories" data-id="${h.blockIdx}" value="${h.blockIdx}" onchange="updateBlockBulkBar('histories')"></td>
+                            <td data-sort-value="${historyBlockedAtText}">
                                 <button type="button"
                                         class="adm-cell-link js-open-block-detail"
                                         data-template-id="detail-history-${h.blockIdx}">
                                     <span><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty h.blockTargetKey ? '' : h.blockTargetKey)}">
                                 <button type="button"
                                         class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
@@ -1435,7 +1533,7 @@
                                     </c:if>
                                 </div>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty h.ruleAction ? '' : h.ruleAction)}">
                                 <button type="button"
                                         class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
@@ -1448,7 +1546,7 @@
                                     <span style="font-size:12px;color:#94a3b8;">${empty h.blockType ? '-' : h.blockType}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)}">
                                 <button type="button"
                                         class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
@@ -1461,7 +1559,7 @@
                                     <span style="font-size:12px;color:#94a3b8;">${empty h.controlMode ? '-' : h.controlMode} / ${empty h.operationSource ? '-' : h.operationSource}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty h.effectiveResult ? '' : h.effectiveResult)}">
                                 <button type="button"
                                         class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
@@ -1474,7 +1572,7 @@
                                     <span class="adm-cell-link-note">${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus} → ${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</span>
                                 </button>
                             </td>
-                            <td style="max-width:320px;white-space:normal;">
+                            <td style="max-width:320px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty h.controlReason ? (empty h.reason ? '' : h.reason) : h.controlReason)}">
                                 <button type="button"
                                         class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
@@ -1517,7 +1615,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty histories}">
-                        <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+                        <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                     </c:if>
                     </tbody>
                 </table>
@@ -1534,6 +1632,7 @@
     </div>
 </div>
 
+<div id="histDetailArea">
 <c:forEach var="h" items="${histories}">
     <template id="detail-history-${h.blockIdx}">
         <div class="detail-grid">
@@ -1564,6 +1663,7 @@
         </table>
     </template>
 </c:forEach>
+</div>
 
 <div class="adm-modal-overlay" id="blockDetailModal">
     <div class="adm-modal" style="max-width:860px;">
@@ -2183,7 +2283,30 @@ const ADMIN_BLOCK_MSG = {
     expired: '<spring:message code="admin.blocks.effective.expired" javaScriptEscape="true"/>',
     individualRule: '<spring:message code="admin.blocks.individualRule" javaScriptEscape="true"/>',
     ruleOn: '<spring:message code="admin.blocks.ruleOn" javaScriptEscape="true"/>',
-    pagePrefix: '<spring:message code="admin.common.pagePrefix" javaScriptEscape="true"/>'
+    pagePrefix: '<spring:message code="admin.common.pagePrefix" javaScriptEscape="true"/>',
+    export: '<spring:message code="admin.common.export" javaScriptEscape="true"/>',
+    exportAll: '<spring:message code="admin.common.exportAll" javaScriptEscape="true"/>',
+    exportFiltered: '<spring:message code="admin.common.exportFiltered" javaScriptEscape="true"/>',
+    exportSelected: '<spring:message code="admin.common.exportSelected" javaScriptEscape="true"/>',
+    selectedCount: '<spring:message code="admin.common.selectedCount" javaScriptEscape="true"/>',
+    bulkRelease: '<spring:message code="admin.common.bulkRelease" javaScriptEscape="true"/>',
+    clearSelection: '<spring:message code="admin.common.clearSelection" javaScriptEscape="true"/>',
+    processError: '<spring:message code="admin.common.processError" javaScriptEscape="true"/>',
+    dashViewUserBlocks: '<spring:message code="admin.blocks.js.dashViewUserBlocks" javaScriptEscape="true"/>',
+    dashViewIpRules: '<spring:message code="admin.blocks.js.dashViewIpRules" javaScriptEscape="true"/>',
+    dashViewBatches: '<spring:message code="admin.blocks.js.dashViewBatches" javaScriptEscape="true"/>',
+    dashViewHistories: '<spring:message code="admin.blocks.js.dashViewHistories" javaScriptEscape="true"/>',
+    dashViewAll: '<spring:message code="admin.blocks.js.dashViewAll" javaScriptEscape="true"/>',
+    dashSortTip: '<spring:message code="admin.blocks.js.dashSortTip" javaScriptEscape="true"/>',
+    dashSortReset: '<spring:message code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>',
+    serverFetchError: '<spring:message code="admin.blocks.js.serverFetchError" javaScriptEscape="true"/>',
+    bulkActivate: '<spring:message code="admin.blocks.js.bulkActivate" javaScriptEscape="true"/>',
+    bulkDeactivate: '<spring:message code="admin.blocks.js.bulkDeactivate" javaScriptEscape="true"/>',
+    noSelection: '<spring:message code="admin.blocks.js.noSelection" javaScriptEscape="true"/>',
+    confirmBulkRelease: '<spring:message code="admin.blocks.js.confirmBulkRelease" javaScriptEscape="true"/>',
+    confirmBulkActivate: '<spring:message code="admin.blocks.js.confirmBulkActivate" javaScriptEscape="true"/>',
+    confirmBulkDeactivate: '<spring:message code="admin.blocks.js.confirmBulkDeactivate" javaScriptEscape="true"/>',
+    done: '<spring:message code="admin.blocks.js.done" javaScriptEscape="true"/>'
 };
 const BLOCK_SECTION_CONFIG = {
     'user-blocks': {
@@ -2349,71 +2472,33 @@ function getSectionCard(section) {
     return document.querySelector('.js-section-card[data-section="' + section + '"]');
 }
 
-const BLOCK_SECTION_SORT_CONFIG = {
-    'user-blocks': {
-        member: {cell: 0, label: '<spring:message code="admin.common.member" javaScriptEscape="true"/>'},
-        blockType: {cell: 1, label: '<spring:message code="admin.blocks.filter.blockType" javaScriptEscape="true"/>'},
-        target: {cell: 2, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
-        status: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
-        reason: {cell: 4, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'},
-        blockedAt: {cell: 5, label: '<spring:message code="admin.blocks.blockAndExpire" javaScriptEscape="true"/>'}
-    },
-    'ip-rules': {
-        target: {cell: 0, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
-        policy: {cell: 1, label: '<spring:message code="admin.blocks.actionControl" javaScriptEscape="true"/>'},
-        batch: {cell: 2, label: '<spring:message code="admin.context.batch" javaScriptEscape="true"/>'},
-        status: {cell: 3, label: '<spring:message code="admin.common.status" javaScriptEscape="true"/>'},
-        priority: {cell: 4, label: '<spring:message code="admin.context.priority" javaScriptEscape="true"/>', numeric: true},
-        reason: {cell: 5, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'}
-    },
-    'batches': {
-        batch: {cell: 0, label: '<spring:message code="admin.blocks.batch" javaScriptEscape="true"/>'},
-        policy: {cell: 1, label: '<spring:message code="admin.blocks.basePolicy" javaScriptEscape="true"/>'},
-        status: {cell: 2, label: '<spring:message code="admin.blocks.currentState" javaScriptEscape="true"/>'},
-        stats: {cell: 3, label: '<spring:message code="admin.blocks.ruleStats" javaScriptEscape="true"/>'},
-        description: {cell: 4, label: '<spring:message code="admin.blocks.description" javaScriptEscape="true"/>'}
-    },
-    'histories': {
-        blockedAt: {cell: 0, label: '<spring:message code="admin.common.time" javaScriptEscape="true"/>'},
-        target: {cell: 1, label: '<spring:message code="admin.common.target" javaScriptEscape="true"/>'},
-        policy: {cell: 2, label: '<spring:message code="admin.common.actionLabel" javaScriptEscape="true"/>'},
-        change: {cell: 3, label: '<spring:message code="admin.blocks.changeKind" javaScriptEscape="true"/>'},
-        result: {cell: 4, label: '<spring:message code="admin.blocks.result" javaScriptEscape="true"/>'},
-        reason: {cell: 5, label: '<spring:message code="admin.common.reason" javaScriptEscape="true"/>'}
-    }
-};
-
-function getSortableCells(row) {
-    return Array.from(row.children).filter(function (cell) {
-        return !cell.classList.contains('js-block-check-cell');
-    });
-}
-
-function localSortValue(row, section, sortKey) {
-    const config = BLOCK_SECTION_SORT_CONFIG[section] && BLOCK_SECTION_SORT_CONFIG[section][sortKey];
-    if (!config) return '';
-    const dataValue = row.dataset[sortKey] || row.dataset[sortKey.replace(/-([a-z])/g, function (_, c) { return c.toUpperCase(); })];
-    if (dataValue != null && dataValue !== '') return dataValue;
-    const cells = getSortableCells(row);
-    return cells[config.cell] ? cells[config.cell].innerText.trim() : '';
+function getCellSortKey(td) {
+    if (!td) return '';
+    if (td.dataset && td.dataset.sortValue != null) return td.dataset.sortValue;
+    return (td.innerText || '').replace(/\s+/g, ' ').trim();
 }
 
 function sortLocalRows(section, rows) {
     const state = getLocalState(section);
-    const sortKey = state.sortKey;
-    if (!sortKey) return rows;
-    const config = BLOCK_SECTION_SORT_CONFIG[section] && BLOCK_SECTION_SORT_CONFIG[section][sortKey];
-    if (!config) return rows;
+    const cellIndex = (state.sectionSortCell != null) ? state.sectionSortCell : -1;
+    if (cellIndex < 0) {
+        return rows.slice().sort(function (a, b) {
+            return Number(a.dataset.originalIndex || 0) - Number(b.dataset.originalIndex || 0);
+        });
+    }
     const dir = state.sortDir === 'DESC' ? -1 : 1;
     return rows.slice().sort(function (a, b) {
-        let av = localSortValue(a, section, sortKey);
-        let bv = localSortValue(b, section, sortKey);
-        if (config.numeric) {
-            av = Number(String(av).replace(/[^0-9.-]/g, '')) || 0;
-            bv = Number(String(bv).replace(/[^0-9.-]/g, '')) || 0;
-            return (av - bv) * dir;
+        const av = getCellSortKey(a.children[cellIndex]);
+        const bv = getCellSortKey(b.children[cellIndex]);
+        const an = Number(av.replace(/[^0-9.-]/g, ''));
+        const bn = Number(bv.replace(/[^0-9.-]/g, ''));
+        let cmp;
+        if (!Number.isNaN(an) && !Number.isNaN(bn) && av.match(/\d/) && bv.match(/\d/)) {
+            cmp = an - bn;
+        } else {
+            cmp = av.localeCompare(bv, ADMIN_BLOCK_LOCALE || undefined, {numeric: true, sensitivity: 'base'});
         }
-        return String(av).localeCompare(String(bv), ADMIN_BLOCK_LOCALE || undefined, {numeric: true, sensitivity: 'base'}) * dir;
+        return cmp * dir;
     });
 }
 
@@ -2421,24 +2506,246 @@ function updateLocalSortIndicators(section) {
     const state = getLocalState(section);
     const card = getSectionCard(section);
     if (!card) return;
-    card.querySelectorAll('.js-local-sort').forEach(function (th) {
-        const active = th.dataset.sort === state.sortKey;
+    const activeCellIndex = (state.sectionSortCell != null) ? state.sectionSortCell : -1;
+    card.querySelectorAll('th[data-sort-index]').forEach(function (th) {
+        const thIndex = Number(th.dataset.sortIndex);
+        const active = (activeCellIndex >= 0 && thIndex === activeCellIndex);
         th.classList.toggle('sorted', active);
-        const ico = th.querySelector('.sort-ico');
-        if (ico) ico.textContent = active ? (state.sortDir === 'DESC' ? '▼' : '▲') : '↕';
+        let ico = th.querySelector('.sort-ico');
+        if (active) {
+            if (!ico) {
+                ico = document.createElement('span');
+                ico.className = 'sort-ico';
+                ico.style.cssText = 'font-size:10px;margin-left:4px;';
+                th.appendChild(ico);
+            }
+            ico.textContent = state.sortDir === 'DESC' ? '▼' : '▲';
+            ico.style.color = state.sortDir === 'DESC' ? '#3b82f6' : '#ef4444';
+        } else {
+            if (ico) ico.remove();
+        }
+    });
+    const resetBtn = card.querySelector('.js-section-sort-reset');
+    if (resetBtn) {
+        if (activeCellIndex >= 0) {
+            resetBtn.textContent = ADMIN_BLOCK_MSG.dashSortReset;
+            resetBtn.style.display = '';
+        } else {
+            resetBtn.style.display = 'none';
+        }
+    }
+}
+
+function sectionSort(section, cellIndex) {
+    const state = getLocalState(section);
+    const prevCell = (state.sectionSortCell != null) ? state.sectionSortCell : -1;
+    const nextDir = (prevCell === cellIndex && state.sortDir === 'ASC') ? 'DESC' : 'ASC';
+    state.sectionSortCell = cellIndex;
+    state.sortDir = nextDir;
+    state.page = 1;
+    renderSectionByMode(section);
+}
+
+function sectionSortReset(section) {
+    const state = getLocalState(section);
+    state.sectionSortCell = null;
+    state.sortDir = 'ASC';
+    state.page = 1;
+    renderSectionByMode(section);
+}
+
+function ensureOriginalIndices() {
+    ['user-blocks', 'ip-rules', 'batches', 'histories'].forEach(function (section) {
+        getLocalRows(section).forEach(function (row, idx) {
+            if (row.dataset.originalIndex == null) {
+                row.dataset.originalIndex = String(idx);
+            }
+        });
     });
 }
 
-function setLocalSort(section, sortKey) {
+// ================ 모드 토글 (CLIENT 전체 로드 / SERVER 페이지 단위) ================
+// 디폴트는 SERVER — 첫 진입 비용을 LIMIT만큼만으로 절감.
+// 모드는 쿠키(서버 인식용) + localStorage(미러) 양쪽에 저장.
+const SECTION_MODE_STORAGE = 'admBlockSectionMode';
+const SECTION_COOKIE_NAME = {
+    'histories':   'admBlockHistMode',
+    'ip-rules':    'admBlockIprMode',
+    'user-blocks': 'admBlockUbMode',
+    'batches':     'admBlockBatMode'
+};
+
+function setSectionCookie(section, mode) {
+    const name = SECTION_COOKIE_NAME[section];
+    if (!name) return;
+    document.cookie = name + '=' + (mode === 'SERVER' ? 'server' : 'client') + ';path=' + (CTX || '/') + ';max-age=31536000;samesite=lax';
+}
+
+function loadStoredSectionModes() {
+    try {
+        const raw = localStorage.getItem(SECTION_MODE_STORAGE);
+        if (!raw) return {};
+        return JSON.parse(raw) || {};
+    } catch (e) { return {}; }
+}
+
+function saveSectionMode(section, mode) {
+    try {
+        const stored = loadStoredSectionModes();
+        stored[section] = mode;
+        localStorage.setItem(SECTION_MODE_STORAGE, JSON.stringify(stored));
+    } catch (e) {}
+    setSectionCookie(section, mode);
+}
+
+function getSectionMode(section) {
     const state = getLocalState(section);
-    if (state.sortKey === sortKey) {
-        state.sortDir = state.sortDir === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-        state.sortKey = sortKey;
-        state.sortDir = 'ASC';
+    return state.mode === 'SERVER' ? 'SERVER' : 'CLIENT';
+}
+
+function initSectionModes() {
+    const stored = loadStoredSectionModes();
+    ['user-blocks', 'ip-rules', 'batches', 'histories'].forEach(function (section) {
+        const state = getLocalState(section);
+        // 명시적으로 CLIENT가 저장된 경우만 CLIENT, 그 외(미설정 포함) SERVER가 디폴트
+        state.mode = stored[section] === 'CLIENT' ? 'CLIENT' : 'SERVER';
+        // 쿠키도 동기화 (서버가 인식할 수 있도록)
+        setSectionCookie(section, state.mode);
+    });
+    document.querySelectorAll('.js-section-mode').forEach(function (sel) {
+        const section = sel.dataset.section;
+        const state = getLocalState(section);
+        sel.value = state.mode === 'SERVER' ? 'server' : 'client';
+        sel.addEventListener('change', function () {
+            const mode = sel.value === 'server' ? 'SERVER' : 'CLIENT';
+            state.mode = mode;
+            saveSectionMode(section, mode);
+            // 모드 전환은 페이지 새로고침으로 단순화 (서버는 쿠키 보고 데이터 분기)
+            location.reload();
+        });
+    });
+}
+
+function sortKeyForCellIndex(section, cellIndex) {
+    if (cellIndex == null || cellIndex < 0) return '';
+    if (section === 'histories') {
+        // 인덱스: 0=checkbox, 1=time, 2=target, 3=actionLabel, 4=changeKind, 5=result, 6=reason, 7=action
+        const map = {1:'time', 2:'target', 3:'actionLabel', 4:'changeKind', 5:'result', 6:'reason'};
+        return map[cellIndex] || '';
     }
-    state.page = 1;
-    renderLocalSection(section);
+    if (section === 'ip-rules') {
+        // 인덱스: 0=checkbox, 1=target, 2=actionControl, 3=batch, 4=status, 5=priority, 6=reason, 7=action
+        const map = {1:'target', 2:'actionControl', 3:'batch', 4:'status', 5:'priority', 6:'reason'};
+        return map[cellIndex] || '';
+    }
+    if (section === 'batches') {
+        // 인덱스: 0=checkbox, 1=batch, 2=basePolicy, 3=currentState, 4=ruleStats, 5=description, 6=action
+        const map = {1:'batch', 2:'basePolicy', 3:'currentState', 4:'ruleStats', 5:'description'};
+        return map[cellIndex] || '';
+    }
+    if (section === 'user-blocks') {
+        // 인덱스: 0=checkbox, 1=member, 2=blockType, 3=target, 4=status, 5=reason, 6=blockedAt, 7=action
+        const map = {1:'member', 2:'blockType', 3:'target', 4:'status', 5:'reason', 6:'blockedAt'};
+        return map[cellIndex] || '';
+    }
+    return '';
+}
+
+const SECTION_FETCH_CONFIG = {
+    'histories': {
+        fragmentUrl: '/admin/blocks/api/histories/fragment',
+        metaUrl: '/admin/blocks/api/histories',
+        splitMarker: '<!--HISTORY-FRAGMENT-SPLIT-->',
+        detailAreaId: 'histDetailArea'
+    },
+    'ip-rules': {
+        fragmentUrl: '/admin/blocks/api/ip-rules/fragment',
+        metaUrl: '/admin/blocks/api/ip-rules',
+        splitMarker: '<!--IPRULE-FRAGMENT-SPLIT-->',
+        detailAreaId: 'iprDetailArea'
+    },
+    'batches': {
+        fragmentUrl: '/admin/blocks/api/batches/fragment',
+        metaUrl: '/admin/blocks/api/batches',
+        splitMarker: '<!--BATCH-FRAGMENT-SPLIT-->',
+        detailAreaId: 'batDetailArea'
+    },
+    'user-blocks': {
+        fragmentUrl: '/admin/blocks/api/user-blocks/fragment',
+        metaUrl: '/admin/blocks/api/user-blocks',
+        splitMarker: '<!--USERBLOCK-FRAGMENT-SPLIT-->',
+        detailAreaId: 'ubDetailArea'
+    }
+};
+
+async function renderServerSection(section) {
+    const cfg = SECTION_FETCH_CONFIG[section];
+    if (!cfg) return; // 아직 SERVER 모드 미지원 섹션
+    const state = getLocalState(section);
+    const card = getSectionCard(section);
+    if (!card) return;
+
+    const fieldEl = card.querySelector('.js-local-field');
+    const keywordEl = card.querySelector('.js-local-keyword');
+    const sortBy = sortKeyForCellIndex(section, state.sectionSortCell);
+    const params = new URLSearchParams();
+    params.set('page', String(state.page || 1));
+    params.set('size', String(state.pageSize || 20));
+    if (sortBy) {
+        params.set('sortBy', sortBy);
+        params.set('sortDir', state.sortDir === 'ASC' ? 'ASC' : 'DESC');
+    }
+    if (fieldEl && fieldEl.value) params.set('field', fieldEl.value);
+    if (keywordEl && keywordEl.value) params.set('keyword', keywordEl.value);
+
+    try {
+        const res = await fetch(CTX + cfg.fragmentUrl + '?' + params.toString(), {
+            credentials: 'same-origin',
+            headers: {'Accept': 'text/html'}
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const html = await res.text();
+        const split = html.split(cfg.splitMarker);
+        const rowsHtml = (split[0] || '').trim();
+        const detailsHtml = (split[1] || '').trim();
+
+        const tbody = card.querySelector('tbody');
+        if (tbody) tbody.innerHTML = rowsHtml;
+        const detailArea = document.getElementById(cfg.detailAreaId);
+        if (detailArea) detailArea.innerHTML = detailsHtml;
+
+        // 페이지 메타는 같은 파라미터로 JSON 호출 (페이지 정보만 가져오기)
+        const metaRes = await fetch(CTX + cfg.metaUrl + '?' + params.toString(), {
+            credentials: 'same-origin',
+            headers: {'Accept': 'application/json'}
+        });
+        if (metaRes.ok) {
+            const meta = await metaRes.json();
+            const total = Number(meta.total || 0);
+            const totalPages = Math.max(1, Number(meta.totalPages || 1));
+            updateServerPageMeta(section, state.page, totalPages, total);
+        }
+        updateLocalSortIndicators(section);
+    } catch (e) {
+        if (typeof notice === 'function') notice(ADMIN_BLOCK_MSG.serverFetchError);
+    }
+}
+
+function updateServerPageMeta(section, page, totalPages, total) {
+    const card = getSectionCard(section);
+    if (!card) return;
+    const pageInfo = card.querySelector('.js-local-page-info[data-section="' + section + '"]');
+    if (pageInfo) pageInfo.textContent = String(total);
+    const pageState = card.querySelector('.js-local-page-state[data-section="' + section + '"]');
+    if (pageState) pageState.textContent = page + ' / ' + totalPages;
+}
+
+function renderSectionByMode(section) {
+    if (getSectionMode(section) === 'SERVER') {
+        renderServerSection(section);
+    } else {
+        renderLocalSection(section);
+    }
 }
 
 function blockRowKey(row, section) {
@@ -2464,7 +2771,7 @@ function blockRowKey(row, section) {
 
 function enhanceBlockDashboardTables() {
     const sections = ['user-blocks', 'ip-rules', 'batches', 'histories'];
-    const titles = ['회원 차단 전체 보기', 'IP 규칙 전체 보기', '배치 전체 보기', '최근 로그 전체 보기'];
+    const titles = [ADMIN_BLOCK_MSG.dashViewUserBlocks, ADMIN_BLOCK_MSG.dashViewIpRules, ADMIN_BLOCK_MSG.dashViewBatches, ADMIN_BLOCK_MSG.dashViewHistories];
 
     document.querySelectorAll('.js-dashboard-panel table.adm-table').forEach(function (table, tableIndex) {
         const targetSection = sections[tableIndex] || 'all';
@@ -2475,12 +2782,27 @@ function enhanceBlockDashboardTables() {
             btn.type = 'button';
             btn.className = 'adm-btn adm-btn-ghost js-dashboard-open-section';
             btn.style.fontSize = '12px';
-            btn.textContent = titles[tableIndex] || '전체 보기';
+            btn.textContent = titles[tableIndex] || ADMIN_BLOCK_MSG.dashViewAll;
             btn.addEventListener('click', function () {
                 activateBlockTab(targetSection);
                 renderLocalSection(targetSection);
             });
             head.appendChild(btn);
+        }
+
+        const resetBtn = head ? head.querySelector('.js-dash-sort-reset') : null;
+        if (resetBtn) {
+            resetBtn.textContent = ADMIN_BLOCK_MSG.dashSortReset;
+            resetBtn.addEventListener('click', function () {
+                resetDashboardSort(table);
+            });
+        }
+
+        const tbody = table.querySelector('tbody');
+        if (tbody) {
+            Array.from(tbody.querySelectorAll('tr')).forEach(function (row, i) {
+                row.dataset.origOrder = String(i);
+            });
         }
 
         table.querySelectorAll('thead th').forEach(function (th, idx, arr) {
@@ -2489,8 +2811,7 @@ function enhanceBlockDashboardTables() {
             th.dataset.sortIndex = String(idx);
             th.style.cursor = 'pointer';
             th.style.userSelect = 'none';
-            th.title = '현재 5개 행을 이 컬럼 기준으로 정렬합니다.';
-            th.insertAdjacentHTML('beforeend', ' <span class="sort-ico" style="font-size:10px;color:#94a3b8;">↕</span>');
+            th.title = ADMIN_BLOCK_MSG.dashSortTip;
             th.addEventListener('click', function () {
                 sortDashboardTable(table, idx);
             });
@@ -2529,10 +2850,49 @@ function sortDashboardTable(table, cellIndex) {
     rows.forEach(function (row) { tbody.appendChild(row); });
 
     table.querySelectorAll('thead th').forEach(function (th) {
-        const ico = th.querySelector('.sort-ico');
         const active = Number(th.dataset.sortIndex || -1) === cellIndex;
-        if (ico) ico.textContent = active ? (nextDir === 'ASC' ? '▲' : '▼') : '↕';
+        let ico = th.querySelector('.sort-ico');
+        if (active) {
+            if (!ico) {
+                ico = document.createElement('span');
+                ico.className = 'sort-ico';
+                ico.style.cssText = 'font-size:10px;margin-left:4px;';
+                th.appendChild(ico);
+            }
+            ico.textContent = nextDir === 'ASC' ? '▲' : '▼';
+            ico.style.color = nextDir === 'ASC' ? '#ef4444' : '#3b82f6';
+        } else {
+            if (ico) ico.remove();
+        }
     });
+
+    const card = table.closest('.adm-card');
+    if (card) {
+        const resetBtn = card.querySelector('.js-dash-sort-reset');
+        if (resetBtn) resetBtn.style.display = '';
+    }
+}
+
+function resetDashboardSort(table) {
+    delete table.dataset.dashboardSortIndex;
+    delete table.dataset.dashboardSortDir;
+
+    const tbody = table.querySelector('tbody');
+    if (tbody) {
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.sort(function (a, b) {
+            return Number(a.dataset.origOrder || 0) - Number(b.dataset.origOrder || 0);
+        });
+        rows.forEach(function (row) { tbody.appendChild(row); });
+    }
+
+    table.querySelectorAll('thead th .sort-ico').forEach(function (ico) { ico.remove(); });
+
+    const card = table.closest('.adm-card');
+    if (card) {
+        const resetBtn = card.querySelector('.js-dash-sort-reset');
+        if (resetBtn) resetBtn.style.display = 'none';
+    }
 }
 
 function enhanceBlockLocalTables() {
@@ -2549,11 +2909,11 @@ function enhanceBlockLocalTables() {
                 '<div class="adm-export-control">'
                 + '<select class="adm-select js-block-export-format" data-section="' + section + '"><option value="csv">CSV</option><option value="excel">Excel</option></select>'
                 + '<div class="adm-export-menu">'
-                + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ 내보내기 ▾</button>'
+                + '<button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ ' + ADMIN_BLOCK_MSG.export + ' ▾</button>'
                 + '<div class="adm-export-dropdown">'
-                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="all">📋 전체 내보내기</button>'
-                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="search">🔍 검색결과 내보내기</button>'
-                + '<button type="button" class="js-block-export js-block-export-selected" data-section="' + section + '" data-scope="selected" disabled>☑ 선택 내보내기 (0)</button>'
+                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="all">📋 ' + ADMIN_BLOCK_MSG.exportAll + '</button>'
+                + '<button type="button" class="js-block-export" data-section="' + section + '" data-scope="search">🔍 ' + ADMIN_BLOCK_MSG.exportFiltered + '</button>'
+                + '<button type="button" class="js-block-export js-block-export-selected" data-section="' + section + '" data-scope="selected" disabled>☑ ' + ADMIN_BLOCK_MSG.exportSelected + ' (0)</button>'
                 + '</div></div></div>';
             toolbar.appendChild(group);
         }
@@ -2570,18 +2930,7 @@ function enhanceBlockLocalTables() {
             headRow.insertBefore(checkTh, headRow.firstElementChild);
         }
 
-        const sortConfig = BLOCK_SECTION_SORT_CONFIG[section] || {};
-        Object.keys(sortConfig).forEach(function (key) {
-            const cellIndex = sortConfig[key].cell + 1;
-            const th = headRow ? headRow.children[cellIndex] : null;
-            if (!th || th.classList.contains('js-local-sort')) return;
-            th.classList.add('js-local-sort');
-            th.dataset.section = section;
-            th.dataset.sort = key;
-            th.style.cursor = 'pointer';
-            th.style.userSelect = 'none';
-            th.innerHTML = th.innerHTML + ' <span class="sort-ico" style="font-size:10px;color:#94a3b8;">↕</span>';
-        });
+        /* sort enhancement is handled by data-sort-index + sectionSort inline onclick */
 
         getLocalRows(section).forEach(function (row) {
             if (row.querySelector('.js-block-row-check')) return;
@@ -2600,14 +2949,14 @@ function enhanceBlockLocalTables() {
                 bar.dataset.section = section;
                 bar.style.cssText = 'display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 14px;margin:0 16px 12px;align-items:center;gap:10px;flex-wrap:wrap;';
                 if (section === 'user-blocks') {
-                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>개 선택됨</span>'
-                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-release-user-blocks">선택 차단 해제</button>'
-                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">선택 해제</button>';
+                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>' + ADMIN_BLOCK_MSG.selectedCount + '</span>'
+                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-release-user-blocks">' + ADMIN_BLOCK_MSG.bulkRelease + '</button>'
+                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">' + ADMIN_BLOCK_MSG.clearSelection + '</button>';
                 } else {
-                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>개 선택됨</span>'
-                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-toggle-ip-rules" data-active="true">선택 활성화</button>'
-                        + '<button type="button" class="adm-btn adm-btn-danger js-bulk-toggle-ip-rules" data-active="false">선택 비활성화</button>'
-                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">선택 해제</button>';
+                    bar.innerHTML = '<span style="color:#93c5fd;font-size:13px;font-weight:700;"><span class="js-block-bulk-count">0</span>' + ADMIN_BLOCK_MSG.selectedCount + '</span>'
+                        + '<button type="button" class="adm-btn adm-btn-primary js-bulk-toggle-ip-rules" data-active="true">' + ADMIN_BLOCK_MSG.bulkActivate + '</button>'
+                        + '<button type="button" class="adm-btn adm-btn-danger js-bulk-toggle-ip-rules" data-active="false">' + ADMIN_BLOCK_MSG.bulkDeactivate + '</button>'
+                        + '<button type="button" class="adm-btn adm-btn-ghost js-block-clear-selection" data-section="' + section + '">' + ADMIN_BLOCK_MSG.clearSelection + '</button>';
                 }
                 wrap.parentElement.insertBefore(bar, wrap);
             }
@@ -2658,8 +3007,8 @@ function clearBlockSelection(section) {
 
 async function bulkReleaseSelectedUserBlocks() {
     const keys = selectedBlockChecks('user-blocks').map(cb => cb.value).filter(Boolean);
-    if (!keys.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
-    if (!confirm(keys.length + '개의 회원 차단을 해제하시겠습니까?')) return;
+    if (!keys.length) { adm_toast(ADMIN_BLOCK_MSG.noSelection, 'error'); return; }
+    if (!confirm(ADMIN_BLOCK_MSG.confirmBulkRelease.replace('{0}', keys.length))) return;
     const params = new URLSearchParams();
     keys.forEach(key => params.append('blockTargetKeys', key));
     const res = await fetch(CTX + '/admin/blocks/user-blocks/bulk-release', {
@@ -2668,14 +3017,14 @@ async function bulkReleaseSelectedUserBlocks() {
         body: params
     });
     const data = await res.json();
-    if (res.ok && data.success) { adm_toast(data.message || '처리되었습니다.'); location.reload(); }
-    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+    if (res.ok && data.success) { adm_toast(data.message || ADMIN_BLOCK_MSG.done); location.reload(); }
+    else { adm_toast(data.message || ADMIN_BLOCK_MSG.processError, 'error'); }
 }
 
 async function bulkToggleSelectedIpRules(active) {
     const ids = selectedBlockChecks('ip-rules').map(cb => cb.value).filter(Boolean);
-    if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
-    if (!confirm(ids.length + '개의 IP 규칙을 ' + (active ? '활성화' : '비활성화') + '하시겠습니까?')) return;
+    if (!ids.length) { adm_toast(ADMIN_BLOCK_MSG.noSelection, 'error'); return; }
+    if (!confirm(active ? ADMIN_BLOCK_MSG.confirmBulkActivate.replace('{0}', ids.length) : ADMIN_BLOCK_MSG.confirmBulkDeactivate.replace('{0}', ids.length))) return;
     const params = new URLSearchParams();
     ids.forEach(id => params.append('ipBlocklistIdxList', id));
     params.append('active', active ? 'true' : 'false');
@@ -2685,8 +3034,8 @@ async function bulkToggleSelectedIpRules(active) {
         body: params
     });
     const data = await res.json();
-    if (res.ok && data.success) { adm_toast(data.message || '처리되었습니다.'); location.reload(); }
-    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+    if (res.ok && data.success) { adm_toast(data.message || ADMIN_BLOCK_MSG.done); location.reload(); }
+    else { adm_toast(data.message || ADMIN_BLOCK_MSG.processError, 'error'); }
 }
 
 function exportBlockSection(section, scope) {
@@ -2698,7 +3047,7 @@ function exportBlockSection(section, scope) {
     let rows;
     if (scope === 'selected') {
         rows = selectedBlockChecks(section).map(cb => cb.closest('tr')).filter(Boolean);
-        if (!rows.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
+        if (!rows.length) { adm_toast(ADMIN_BLOCK_MSG.noSelection, 'error'); return; }
     } else if (scope === 'search') {
         rows = sortLocalRows(section, filterLocalRows(section));
     } else {
@@ -2803,19 +3152,19 @@ function initializeLocalSections() {
             pageSizeSelect.addEventListener('change', function () {
                 state.pageSize = Number(pageSizeSelect.value || 20);
                 state.page = 1;
-                renderLocalSection(section);
+                renderSectionByMode(section);
             });
         }
         if (fieldSelect) {
             fieldSelect.addEventListener('change', function () {
                 state.page = 1;
-                renderLocalSection(section);
+                renderSectionByMode(section);
             });
         }
         if (keywordInput) {
             keywordInput.addEventListener('input', function () {
                 state.page = 1;
-                renderLocalSection(section);
+                renderSectionByMode(section);
             });
         }
         if (resetButton) {
@@ -2823,10 +3172,10 @@ function initializeLocalSections() {
                 if (fieldSelect) fieldSelect.value = 'all';
                 if (keywordInput) keywordInput.value = '';
                 state.page = 1;
-                renderLocalSection(section);
+                renderSectionByMode(section);
             });
         }
-        renderLocalSection(section);
+        renderSectionByMode(section);
     });
 }
 
@@ -2841,9 +3190,9 @@ function applyBlockLocalFilter(section, field, keyword) {
     renderLocalSection(section);
 }
 
-function blockSortBy(section, field) { setLocalSort(section, field); }
+function blockSortBy(section, field) { /* deprecated — use sectionSort */ }
 function blockToggleAll(section) {
-    const checkAll = section === 'user-blocks' ? document.getElementById('ub-checkAll') : document.getElementById('ipr-checkAll');
+    const checkAll = document.querySelector('.js-block-check-all[data-section="' + section + '"]');
     const checked = checkAll ? checkAll.checked : false;
     getLocalRows(section).forEach(function(row) {
         if (row.style.display === 'none') return;
@@ -3722,11 +4071,7 @@ document.addEventListener('click', function (e) {
         return;
     }
 
-    const sortBtn = e.target.closest('.js-local-sort');
-    if (sortBtn) {
-        setLocalSort(sortBtn.dataset.section, sortBtn.dataset.sort);
-        return;
-    }
+    /* js-local-sort click is handled by each th's inline onclick → sectionSort() */
 
     const checkAll = e.target.closest('.js-block-check-all');
     if (checkAll) {
@@ -3774,8 +4119,8 @@ document.addEventListener('click', function (e) {
     if (prevBtn) {
         const section = prevBtn.dataset.section;
         const state = getLocalState(section);
-        state.page -= 1;
-        renderLocalSection(section);
+        state.page = Math.max(1, (state.page || 1) - 1);
+        renderSectionByMode(section);
         return;
     }
 
@@ -3783,8 +4128,8 @@ document.addEventListener('click', function (e) {
     if (nextBtn) {
         const section = nextBtn.dataset.section;
         const state = getLocalState(section);
-        state.page += 1;
-        renderLocalSection(section);
+        state.page = (state.page || 1) + 1;
+        renderSectionByMode(section);
     }
 });
 
@@ -3798,6 +4143,8 @@ document.querySelectorAll('.adm-modal-overlay').forEach(function (overlay) {
 
 enhanceBlockLocalTables();
 enhanceBlockDashboardTables();
+ensureOriginalIndices();
+initSectionModes();
 initializeLocalSections();
 activateBlockTab(new URLSearchParams(window.location.search).get('tab') || 'dashboard');
 </script>

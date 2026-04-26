@@ -229,6 +229,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<ChatbotLinkClickVO> getChatbotLinkClicks(Long userIdx, String ip, int mode) {
         switch (mode) {
+            case 2: return chatbotLinkClickMapper.selectClicksByIp(ip, 30);
             case 3: return chatbotLinkClickMapper.selectClicksByUserAndIp(userIdx, ip, 30);
             case 4: return chatbotLinkClickMapper.selectClicksByUserOrIp(userIdx, ip, 30);
             case 5: return chatbotLinkClickMapper.selectClicksByIpExcludeOtherUsers(userIdx, ip, 30);

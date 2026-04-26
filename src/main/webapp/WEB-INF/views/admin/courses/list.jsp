@@ -118,12 +118,12 @@
                     <th><spring:message code="admin.courses.list.table.author"/></th>
                     <th><spring:message code="admin.courses.list.table.title"/></th>
                     <th><spring:message code="admin.courses.list.table.destination"/></th>
-                    <th style="width:120px;"><spring:message code="admin.courses.list.table.period"/></th>
+                    <th style="width:145px;"><spring:message code="admin.courses.list.table.period"/></th>
                     <th style="width:50px;"><spring:message code="admin.courses.list.table.spots"/></th>
                     <th style="width:60px;"><spring:message code="admin.courses.list.table.source"/></th>
                     <th style="width:60px;"><spring:message code="admin.courses.list.table.visibility"/></th>
                     <th style="width:70px;"><spring:message code="admin.common.accountStatus"/></th>
-                    <th style="width:90px;"><spring:message code="admin.courses.list.table.createdAt"/></th>
+                    <th style="width:130px;"><spring:message code="admin.courses.list.table.createdAt"/></th>
                     <th style="width:120px;"><spring:message code="admin.common.action"/></th>
                 </tr>
                 </thead>
@@ -176,13 +176,12 @@
                         </td>
 
                         <%-- 일정 --%>
-                        <td style="font-size:11px;color:#94a3b8;">
+                        <td style="font-size:11px;color:#94a3b8;white-space:nowrap;">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
                             <c:choose>
                                 <c:when test="${not empty p.startDate}">
-                                    <fmt:formatDate value="${p.startDate}" pattern="yyyy.MM.dd"/>
-                                    <div>~ <fmt:formatDate value="${p.endDate}" pattern="MM.dd"/></div>
+                                    <fmt:formatDate value="${p.startDate}" pattern="yyyy.MM.dd"/> ~ <fmt:formatDate value="${p.endDate}" pattern="MM.dd"/>
                                 </c:when>
                                 <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
                             </c:choose>
@@ -248,11 +247,10 @@
                         </td>
 
                         <%-- 등록일 --%>
-                        <td style="font-size:11px;color:#64748b;">
+                        <td style="font-size:11px;color:#64748b;white-space:nowrap;">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/courses/${p.planId}">
-                            <fmt:formatDate value="${p.createdAt}" pattern="yyyy.MM.dd"/>
-                            <div><fmt:formatDate value="${p.createdAt}" pattern="HH:mm"/></div>
+                                <fmt:formatDate value="${p.createdAt}" pattern="yyyy.MM.dd HH:mm"/>
                             </a>
                         </td>
 

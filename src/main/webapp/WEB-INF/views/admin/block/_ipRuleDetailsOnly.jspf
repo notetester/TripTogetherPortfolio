@@ -1,0 +1,67 @@
+<c:forEach var="r" items="${ipBlocks}">
+    <template id="detail-ip-${r.ipBlocklistIdx}">
+        <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.targetKey"/></div><div class="detail-value">${r.blockTargetKey}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.displayValue"/></div><div class="detail-value">${empty r.targetDisplayValue ? '-' : r.targetDisplayValue}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.ruleAction"/></div><div class="detail-value">${r.ruleActionLabel}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.controlMode"/></div><div class="detail-value">${r.controlModeLabel}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.ruleState"/></div><div class="detail-value">${r.ruleStateLabel}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.effectiveState"/></div><div class="detail-value">${r.finalStateLabel} / ${r.effectiveStatusLabel}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.effectiveStatusReason"/></div><div class="detail-value">${empty r.effectiveStatusReason ? '-' : fn:escapeXml(r.effectiveStatusReason)}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.syncedAt"/></div><div class="detail-value"><c:choose><c:when test="${r.effectiveSyncedAtDate != null}"><fmt:formatDate value="${r.effectiveSyncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose> / ${empty r.effectiveSyncedBySource ? '-' : r.effectiveSyncedBySource}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.matchType"/></div><div class="detail-value">${r.matchType}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.cidrRange"/></div><div class="detail-value">${empty r.cidrNotation ? '-' : r.cidrNotation} <c:if test="${not empty r.rangeStartIp}">${r.rangeStartIp} ~ ${r.rangeEndIp}</c:if></div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.countryAsn"/></div><div class="detail-value">${empty r.countryCode ? '-' : r.countryCode} / ${empty r.asn ? '-' : r.asn}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.batch"/></div><div class="detail-value">${empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName} <c:if test="${not empty r.batchCode}">(${r.batchCode})</c:if> / ${r.batchStatusLabel}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.priority"/></div><div class="detail-value">${r.priority}</div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.blockedAt"/></div><div class="detail-value"><fmt:formatDate value="${r.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.expiresAt"/></div><div class="detail-value"><c:choose><c:when test="${r.expiresAtDate != null}"><fmt:formatDate value="${r.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>${adminBlocksNoneLabel}</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.manualOverride"/></div><div class="detail-value">${empty r.manualOverrideReason ? '-' : fn:escapeXml(r.manualOverrideReason)} <c:if test="${r.manualOverrideAtDate != null}">/ <fmt:formatDate value="${r.manualOverrideAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:if></div></div>
+            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.lastControl"/></div><div class="detail-value">${empty r.lastControlAction ? '-' : r.lastControlAction} <c:if test="${r.lastControlAtDate != null}">/ <fmt:formatDate value="${r.lastControlAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:if></div></div>
+        </div>
+        <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.policyReason"/></div><div class="detail-value">${empty r.reason ? '-' : fn:escapeXml(r.reason)}</div></div>
+        <c:if test="${not empty r.reason}">
+            <div class="adm-tr-inline js-admin-translation-widget"
+                 data-label="<spring:message code='admin.translation.label.ipRuleReason'/>"
+                 data-source-type="IP_BLOCK_RULE"
+                 data-source-idx="${r.ipBlocklistIdx}"
+                 data-field-name="reason"
+                 data-default-source-lang="ko"
+                 data-source-text="${fn:escapeXml(r.reason)}"></div>
+        </c:if>
+        <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.context.detailMemo"/></div><div class="detail-value">${empty r.detailMessage ? '-' : fn:escapeXml(r.detailMessage)}</div></div>
+        <c:if test="${not empty r.detailMessage}">
+            <div class="adm-tr-inline js-admin-translation-widget"
+                 data-label="<spring:message code='admin.translation.label.ipRuleDetailNote'/>"
+                 data-source-type="IP_BLOCK_RULE"
+                 data-source-idx="${r.ipBlocklistIdx}"
+                 data-field-name="detail_message"
+                 data-default-source-lang="ko"
+                 data-source-text="${fn:escapeXml(r.detailMessage)}"></div>
+        </c:if>
+        <table class="history-table" style="margin-top:14px;">
+            <thead><tr><th><spring:message code="admin.common.item"/></th><th><spring:message code="admin.common.value"/></th></tr></thead>
+            <tbody>
+            <tr><td><spring:message code="admin.context.requestId"/></td><td>${empty r.blockRequestId ? '-' : r.blockRequestId}</td></tr>
+            <tr><td><spring:message code="admin.blocks.autoBlock"/></td><td>${r.autoBlock ? 'Y' : 'N'} / ${empty r.autoBlockSource ? '-' : r.autoBlockSource}</td></tr>
+            <tr><td><spring:message code="admin.blocks.riskScore"/></td><td>${empty r.riskScore ? '-' : r.riskScore}</td></tr>
+            <tr><td><spring:message code="admin.blocks.userBinding"/></td><td>${empty r.userIdx ? '-' : r.userIdx} / ${empty r.blockType ? '-' : r.blockType}</td></tr>
+            </tbody>
+        </table>
+        <table class="history-table" style="margin-top:14px;">
+            <thead><tr><th><spring:message code="admin.common.relatedHistory"/></th><th><spring:message code="admin.blocks.beforeAfterState"/></th><th><spring:message code="admin.common.time"/></th><th><spring:message code="admin.blocks.description"/></th></tr></thead>
+            <tbody>
+            <c:forEach var="rel" items="${histories}">
+                <c:if test="${rel.blockTargetKey == r.blockTargetKey}">
+                    <tr>
+                        <td>${rel.historyKind}</td>
+                        <td>${empty rel.beforeEffectiveStatus ? '-' : rel.beforeEffectiveStatus} &rarr; ${empty rel.afterEffectiveStatus ? '-' : rel.afterEffectiveStatus}</td>
+                        <td><fmt:formatDate value="${rel.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></td>
+                        <td>${empty rel.controlReason ? (empty rel.reason ? '-' : fn:escapeXml(rel.reason)) : fn:escapeXml(rel.controlReason)}</td>
+                    </tr>
+                </c:if>
+            </c:forEach>
+            </tbody>
+        </table>
+    </template>
+</c:forEach>

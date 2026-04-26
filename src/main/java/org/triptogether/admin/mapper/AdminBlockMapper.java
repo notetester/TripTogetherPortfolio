@@ -12,11 +12,23 @@ public interface AdminBlockMapper {
     long countActiveIpBlocks();
     long countBlockHistories();
     long countActiveBatches();
+    long countTotalUsers();
+    long countTotalIpRules();
+    long countTodayBlockHistories();
+    long countTotalBatches();
 
     List<AdminUserBlockVO> findUserBlocks(AdminBlockSearchVO search);
+    List<AdminUserBlockVO> findUserBlocksPaged(java.util.Map<String, Object> params);
+    long countUserBlocksFiltered(java.util.Map<String, Object> params);
     List<AdminIpBlockVO> findIpBlocks(AdminBlockSearchVO search);
+    List<AdminIpBlockVO> findIpBlocksPaged(java.util.Map<String, Object> params);
+    long countIpBlocksFiltered(java.util.Map<String, Object> params);
     List<AdminBlockHistoryVO> findBlockHistories(AdminBlockSearchVO search);
+    List<AdminBlockHistoryVO> findBlockHistoriesPaged(java.util.Map<String, Object> params);
+    long countBlockHistoriesFiltered(java.util.Map<String, Object> params);
     List<AdminIpBlockBatchVO> findIpBlockBatches(AdminBlockSearchVO search);
+    List<AdminIpBlockBatchVO> findIpBlockBatchesPaged(java.util.Map<String, Object> params);
+    long countIpBlockBatchesFiltered(java.util.Map<String, Object> params);
     List<AdminIpBlockBatchOperationVO> findRecentBatchOperations(AdminBlockSearchVO search);
 
     void insertIpBlockBatch(AdminIpBlockBatchVO batch);
