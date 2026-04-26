@@ -279,7 +279,7 @@
                     <div class="home-grid">
                         <c:forEach var="post" items="${popularPosts}">
                             <c:set var="isBlocked" value="${post.postStatus == 'BLOCKED' or post.accountStatus == 'BLOCKED'}"/>
-                                    <c:set var="isReportOrAi" value="${post.reportCount >= 3 or post.aiFlagged}"/>
+                                    <c:set var="isReportOrAi" value="${post.reportCount >= reportThreshold or post.aiFlagged}"/>
                                     <c:if test="${not isBlocked or isReportOrAi or isAdminMode}">
                                         <c:set var="isReportBlur" value="${isReportOrAi and not isAdminMode}"/>
                                         <c:set var="wrapClass" value="cc-wrap"/>
@@ -340,7 +340,7 @@
                                                     <c:when test="${post.aiFlagged}">
                                                         <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
                                                     </c:when>
-                                                    <c:when test="${post.postStatus == 'BLOCKED' and post.reportCount >= 3}">
+                                                    <c:when test="${post.postStatus == 'BLOCKED' and post.reportCount >= reportThreshold}">
                                                         <span class="blocked-badge"><spring:message code="home.blocked.report"/></span>
                                                     </c:when>
                                                     <c:when test="${post.postStatus == 'BLOCKED'}">

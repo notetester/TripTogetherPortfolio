@@ -705,6 +705,39 @@
         SELECT post_id FROM COMMUNITY_COMMENT WHERE comment_id = #{commentId}
     </select>
 
+    <!-- ===== 캐시 카운터 reconcile (운영 안전망) ===== -->
+    <!-- 게시글 캐시 일괄 동기화: 실제 행 수로 like_count / comment_count / report_count 재계산 -->
+    <update id="reconcilePostCounts">
+        UPDATE COMMUNITY_POST cp
+        SET cp.like_count = (
+                SELECT COUNT(*) FROM COMMUNITY_POST_LIKE WHERE post_id = cp.post_id
+            ),
+            cp.comment_count = (
+                SELECT COUNT(*) FROM COMMUNITY_COMMENT
+                WHERE post_id = cp.post_id AND comment_status != 'DELETED'
+            ),
+            cp.report_count = (
+                SELECT COUNT(*) FROM REPORT
+                WHERE target_type = 'post' AND target_id = cp.post_id
+                  AND status != 'CANCELLED'
+            )
+        WHERE cp.post_status IN ('ACTIVE', 'BLOCKED')
+    </update>
+
+    <!-- 댓글 캐시 일괄 동기화: 실제 행 수로 like_count / report_count 재계산 -->
+    <update id="reconcileCommentCounts">
+        UPDATE COMMUNITY_COMMENT cc
+        SET cc.like_count = (
+                SELECT COUNT(*) FROM COMMUNITY_COMMENT_LIKE WHERE comment_id = cc.comment_id
+            ),
+            cc.report_count = (
+                SELECT COUNT(*) FROM REPORT
+                WHERE target_type = 'comment' AND target_id = cc.comment_id
+                  AND status != 'CANCELLED'
+            )
+        WHERE cc.comment_status IN ('ACTIVE', 'BLOCKED')
+    </update>
+
     <!-- 게시글 댓글 수 캐시 +1 -->
     <update id="increaseCommentCount">
         UPDATE COMMUNITY_POST

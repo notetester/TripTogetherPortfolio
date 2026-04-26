@@ -1974,6 +1974,7 @@ CREATE TABLE IF NOT EXISTS `CONTENT_MODERATION_POLICY` (
   `comment_max_count` int NOT NULL DEFAULT '5' COMMENT '댓글 도배 차단 허용 개수',
   `inquiry_window_minutes` int NOT NULL DEFAULT '10' COMMENT '문의 도배 차단 시간창(분)',
   `inquiry_max_count` int NOT NULL DEFAULT '3' COMMENT '문의 도배 차단 허용 개수',
+  `report_threshold` int NOT NULL DEFAULT '3' COMMENT '신고 누적 BLUR 임계값 (이 값 이상이면 일반 사용자에게 BLUR 처리)',
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '최종 수정 시각',
   `updated_by_user_idx` bigint DEFAULT NULL COMMENT '최종 수정한 관리자 PK',
   PRIMARY KEY (`id`),
@@ -1981,8 +1982,8 @@ CREATE TABLE IF NOT EXISTS `CONTENT_MODERATION_POLICY` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='콘텐츠 검열 정책 (단일 행)';
 
 -- 테이블 데이터 team1_db.CONTENT_MODERATION_POLICY:~1 rows (대략적) 내보내기
-INSERT INTO `CONTENT_MODERATION_POLICY` (`id`, `toxicity_level`, `post_window_minutes`, `post_max_count`, `comment_window_minutes`, `comment_max_count`, `inquiry_window_minutes`, `inquiry_max_count`, `updated_at`, `updated_by_user_idx`) VALUES
-	(1, 'STRICT', 3, 3, 1, 5, 10, 3, '2026-04-20 08:54:52', 6);
+INSERT INTO `CONTENT_MODERATION_POLICY` (`id`, `toxicity_level`, `post_window_minutes`, `post_max_count`, `comment_window_minutes`, `comment_max_count`, `inquiry_window_minutes`, `inquiry_max_count`, `report_threshold`, `updated_at`, `updated_by_user_idx`) VALUES
+	(1, 'STRICT', 3, 3, 1, 5, 10, 3, 3, '2026-04-20 08:54:52', 6);
 
 -- 테이블 team1_db.EMAIL_VERIFICATION 구조 내보내기
 CREATE TABLE IF NOT EXISTS `EMAIL_VERIFICATION` (

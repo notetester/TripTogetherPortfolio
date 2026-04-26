@@ -48,6 +48,7 @@ public class ModerationPolicyServiceImpl implements ModerationPolicyService {
         p.setCommentMaxCount(5);
         p.setInquiryWindowMinutes(10);
         p.setInquiryMaxCount(3);
+        p.setReportThreshold(3);
         return p;
     }
 }

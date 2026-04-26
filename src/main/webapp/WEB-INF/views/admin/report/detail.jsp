@@ -299,11 +299,12 @@
                             </c:choose>
                         </div>
 
-                        <div class="adm-inline-actions">
+                        <div class="adm-meta-actions" style="margin-top:8px;">
                             <button type="button"
-                                    class="adm-inline-chip"
+                                    class="adm-btn adm-btn-ghost"
                                     data-keyword="${report.userId}"
-                                    onclick="openReportFilter(this)">
+                                    onclick="openReportFilter(this)"
+                                    style="width:100%;text-align:center;font-size:12px;">
                                 <spring:message code="admin.common.sameReporter"/>
                             </button>
                         </div>

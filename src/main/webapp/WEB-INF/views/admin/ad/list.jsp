@@ -83,9 +83,19 @@
                                     </c:choose>
                                 </td>
                                 <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:#475569;">
-                                    <c:if test="${not empty ad.linkUrl}">
-                                        <a href="${ad.linkUrl}" target="_blank" rel="noopener" style="color:#2563eb;">${ad.linkUrl}</a>
-                                    </c:if>
+                                    <c:choose>
+                                        <c:when test="${ad.linkType eq 'INTERNAL'}">
+                                            <span style="color:#0d9488;">(내부) ${ad.linkTargetType}<c:if test="${not empty ad.linkTargetId}"> #${ad.linkTargetId}</c:if></span>
+                                        </c:when>
+                                        <c:when test="${ad.linkType eq 'NONE'}">
+                                            <span style="color:#94a3b8;">(액션 없음)</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:if test="${not empty ad.linkUrl}">
+                                                <a href="${ad.linkUrl}" target="_blank" rel="noopener" style="color:#2563eb;">${ad.linkUrl}</a>
+                                            </c:if>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </td>
                                 <td style="font-size:12px;color:#475569;">
                                     <c:choose>
