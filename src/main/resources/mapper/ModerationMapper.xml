@@ -14,6 +14,7 @@
         <result property="commentMaxCount"       column="comment_max_count"/>
         <result property="inquiryWindowMinutes"  column="inquiry_window_minutes"/>
         <result property="inquiryMaxCount"       column="inquiry_max_count"/>
+        <result property="reportThreshold"       column="report_threshold"/>
         <result property="updatedAt"             column="updated_at"/>
         <result property="updatedByUserIdx"      column="updated_by_user_idx"/>
     </resultMap>
@@ -23,6 +24,7 @@
                post_window_minutes, post_max_count,
                comment_window_minutes, comment_max_count,
                inquiry_window_minutes, inquiry_max_count,
+               report_threshold,
                updated_at, updated_by_user_idx
           FROM CONTENT_MODERATION_POLICY
          WHERE id = 1
@@ -37,6 +39,7 @@
                comment_max_count      = #{commentMaxCount},
                inquiry_window_minutes = #{inquiryWindowMinutes},
                inquiry_max_count      = #{inquiryMaxCount},
+               report_threshold       = #{reportThreshold},
                updated_by_user_idx    = #{updatedByUserIdx}
          WHERE id = 1
     </update>

@@ -24,6 +24,9 @@ public class ContentModerationPolicyVO {
     private int inquiryWindowMinutes;
     private int inquiryMaxCount;
 
+    /** 신고 누적 BLUR 임계값 (이 값 이상이면 일반 사용자에게 BLUR 처리) */
+    private int reportThreshold;
+
     private Date updatedAt;
     private Long updatedByUserIdx;
 

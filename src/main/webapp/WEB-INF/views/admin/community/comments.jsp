@@ -218,7 +218,7 @@
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/community/posts/${comment.postId}">
                             <c:choose>
-                                <c:when test="${comment.reportCount >= 3}">
+                                <c:when test="${comment.reportCount >= reportThreshold}">
                                     <span style="color:#f87171;font-weight:700;">🔴 ${comment.reportCount}</span>
                                 </c:when>
                                 <c:when test="${comment.reportCount > 0}">

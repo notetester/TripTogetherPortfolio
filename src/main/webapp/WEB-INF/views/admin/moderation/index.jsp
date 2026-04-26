@@ -81,6 +81,16 @@
                     </div>
                 </div>
 
+                <%-- ▸ 신고 누적 BLUR 임계값 --%>
+                <div>
+                    <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><spring:message code="admin.moderation.reportThresholdTitle"/></div>
+                    <div style="display:flex;gap:8px;align-items:center;font-size:13px;">
+                        <input type="number" name="reportThreshold" min="1" max="100"
+                               value="${policy.reportThreshold}" class="adm-input" style="width:80px;"/>
+                        <spring:message code="admin.moderation.blurAfterCount"/>
+                    </div>
+                </div>
+
                 <div style="display:flex;gap:8px;border-top:1px solid #1e2736;padding-top:16px;">
                     <button type="button" class="adm-btn adm-btn-primary" onclick="saveModeration()"><spring:message code="admin.common.save"/></button>
                     <button type="button" class="adm-btn adm-btn-ghost" onclick="resetDefaults()"><spring:message code="admin.moderation.resetDefaults"/></button>
@@ -127,6 +137,7 @@ function resetDefaults() {
     form.commentMaxCount.value      = 5;
     form.inquiryWindowMinutes.value = 10;
     form.inquiryMaxCount.value      = 3;
+    form.reportThreshold.value      = 3;
 }
 var adminModerationSaved = '${fn:escapeXml(adminModerationSaved)}';
 var adminModerationSaveFailed = '${fn:escapeXml(adminModerationSaveFailed)}';

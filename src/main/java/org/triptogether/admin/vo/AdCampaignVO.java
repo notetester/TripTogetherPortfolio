@@ -15,6 +15,12 @@ public class AdCampaignVO {
     private String  title;
     private String  imageUrl;
     private String  linkUrl;
+    /** NONE / EXTERNAL / INTERNAL — 클릭 시 동작 분기 */
+    private String  linkType;
+    /** package / community / courses / explore / flight / shop / mypage / inquiry */
+    private String  linkTargetType;
+    /** 대상 리소스 ID (목록 페이지처럼 ID 불필요한 액션은 NULL) */
+    private Long    linkTargetId;
     private Date    startAt;       // null = 즉시
     private Date    endAt;         // null = 무기한
     private Boolean isActive;

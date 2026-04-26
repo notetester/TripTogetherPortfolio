@@ -46,6 +46,7 @@ public class AdminModerationController {
             @RequestParam int commentMaxCount,
             @RequestParam int inquiryWindowMinutes,
             @RequestParam int inquiryMaxCount,
+            @RequestParam int reportThreshold,
             HttpSession session) {
 
         Map<String, Object> res = new HashMap<>();
@@ -57,7 +58,8 @@ public class AdminModerationController {
         }
         if (postWindowMinutes < 1 || postMaxCount < 1
                 || commentWindowMinutes < 1 || commentMaxCount < 1
-                || inquiryWindowMinutes < 1 || inquiryMaxCount < 1) {
+                || inquiryWindowMinutes < 1 || inquiryMaxCount < 1
+                || reportThreshold < 1) {
             res.put("success", false);
             res.put("message", "모든 숫자는 1 이상이어야 합니다.");
             return ResponseEntity.badRequest().body(res);
@@ -74,6 +76,7 @@ public class AdminModerationController {
         policy.setCommentMaxCount(commentMaxCount);
         policy.setInquiryWindowMinutes(inquiryWindowMinutes);
         policy.setInquiryMaxCount(inquiryMaxCount);
+        policy.setReportThreshold(reportThreshold);
         policy.setUpdatedByUserIdx(updatedBy);
 
         moderationPolicyService.updatePolicy(policy);

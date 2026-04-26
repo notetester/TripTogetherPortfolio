@@ -224,7 +224,7 @@
                                class="adm-cell-link adm-cell-link--inline"
                                onclick="event.stopPropagation();">
                                 <c:choose>
-                                    <c:when test="${p.reportCount >= 3}">
+                                    <c:when test="${p.reportCount >= reportThreshold}">
                                         <span style="color:#f87171;font-weight:700;">🔴 ${p.reportCount}</span>
                                     </c:when>
                                     <c:when test="${p.reportCount > 0}">
