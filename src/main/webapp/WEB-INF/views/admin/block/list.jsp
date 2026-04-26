@@ -1477,14 +1477,14 @@
                             data-blocked-at="${fn:toLowerCase(historyBlockedAtText)}"
                             data-expires-at="${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}">
                             <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="histories" data-id="${h.blockIdx}" value="${h.blockIdx}" onchange="updateBlockBulkBar('histories')"></td>
-                            <td>
+                            <td data-sort-value="${historyBlockedAtText}">
                                 <button type="button"
                                         class="adm-cell-link js-open-block-detail"
                                         data-template-id="detail-history-${h.blockIdx}">
                                     <span><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty h.blockTargetKey ? '' : h.blockTargetKey)}">
                                 <button type="button"
                                         class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
@@ -1515,7 +1515,7 @@
                                     </c:if>
                                 </div>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty h.ruleAction ? '' : h.ruleAction)}">
                                 <button type="button"
                                         class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
@@ -1528,7 +1528,7 @@
                                     <span style="font-size:12px;color:#94a3b8;">${empty h.blockType ? '-' : h.blockType}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)}">
                                 <button type="button"
                                         class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
@@ -1541,7 +1541,7 @@
                                     <span style="font-size:12px;color:#94a3b8;">${empty h.controlMode ? '-' : h.controlMode} / ${empty h.operationSource ? '-' : h.operationSource}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty h.effectiveResult ? '' : h.effectiveResult)}">
                                 <button type="button"
                                         class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
@@ -1554,7 +1554,7 @@
                                     <span class="adm-cell-link-note">${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus} → ${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</span>
                                 </button>
                             </td>
-                            <td style="max-width:320px;white-space:normal;">
+                            <td style="max-width:320px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty h.controlReason ? (empty h.reason ? '' : h.reason) : h.controlReason)}">
                                 <button type="button"
                                         class="adm-cell-link js-open-history-current"
                                         data-history-id="${h.blockIdx}"
@@ -2454,6 +2454,12 @@ function getSectionCard(section) {
     return document.querySelector('.js-section-card[data-section="' + section + '"]');
 }
 
+function getCellSortKey(td) {
+    if (!td) return '';
+    if (td.dataset && td.dataset.sortValue != null) return td.dataset.sortValue;
+    return (td.innerText || '').replace(/\s+/g, ' ').trim();
+}
+
 function sortLocalRows(section, rows) {
     const state = getLocalState(section);
     const cellIndex = (state.sectionSortCell != null) ? state.sectionSortCell : -1;
@@ -2464,8 +2470,8 @@ function sortLocalRows(section, rows) {
     }
     const dir = state.sortDir === 'DESC' ? -1 : 1;
     return rows.slice().sort(function (a, b) {
-        const av = (a.children[cellIndex] ? a.children[cellIndex].innerText : '').replace(/\s+/g, ' ').trim();
-        const bv = (b.children[cellIndex] ? b.children[cellIndex].innerText : '').replace(/\s+/g, ' ').trim();
+        const av = getCellSortKey(a.children[cellIndex]);
+        const bv = getCellSortKey(b.children[cellIndex]);
         const an = Number(av.replace(/[^0-9.-]/g, ''));
         const bn = Number(bv.replace(/[^0-9.-]/g, ''));
         let cmp;
@@ -2541,7 +2547,21 @@ function ensureOriginalIndices() {
 }
 
 // ================ 모드 토글 (CLIENT 전체 로드 / SERVER 페이지 단위) ================
+// 디폴트는 SERVER — 첫 진입 비용을 LIMIT만큼만으로 절감.
+// 모드는 쿠키(서버 인식용) + localStorage(미러) 양쪽에 저장.
 const SECTION_MODE_STORAGE = 'admBlockSectionMode';
+const SECTION_COOKIE_NAME = {
+    'histories':   'admBlockHistMode',
+    'ip-rules':    'admBlockIprMode',
+    'user-blocks': 'admBlockUbMode',
+    'batches':     'admBlockBatMode'
+};
+
+function setSectionCookie(section, mode) {
+    const name = SECTION_COOKIE_NAME[section];
+    if (!name) return;
+    document.cookie = name + '=' + (mode === 'SERVER' ? 'server' : 'client') + ';path=' + (CTX || '/') + ';max-age=31536000;samesite=lax';
+}
 
 function loadStoredSectionModes() {
     try {
@@ -2557,6 +2577,7 @@ function saveSectionMode(section, mode) {
         stored[section] = mode;
         localStorage.setItem(SECTION_MODE_STORAGE, JSON.stringify(stored));
     } catch (e) {}
+    setSectionCookie(section, mode);
 }
 
 function getSectionMode(section) {
@@ -2568,7 +2589,10 @@ function initSectionModes() {
     const stored = loadStoredSectionModes();
     ['user-blocks', 'ip-rules', 'batches', 'histories'].forEach(function (section) {
         const state = getLocalState(section);
-        state.mode = stored[section] === 'SERVER' ? 'SERVER' : 'CLIENT';
+        // 명시적으로 CLIENT가 저장된 경우만 CLIENT, 그 외(미설정 포함) SERVER가 디폴트
+        state.mode = stored[section] === 'CLIENT' ? 'CLIENT' : 'SERVER';
+        // 쿠키도 동기화 (서버가 인식할 수 있도록)
+        setSectionCookie(section, state.mode);
     });
     document.querySelectorAll('.js-section-mode').forEach(function (sel) {
         const section = sel.dataset.section;
@@ -2578,7 +2602,7 @@ function initSectionModes() {
             const mode = sel.value === 'server' ? 'SERVER' : 'CLIENT';
             state.mode = mode;
             saveSectionMode(section, mode);
-            // 모드 전환은 페이지 새로고침으로 단순화 (CLIENT 모드는 forEach 전체 데이터, SERVER는 진입 시 fetch)
+            // 모드 전환은 페이지 새로고침으로 단순화 (서버는 쿠키 보고 데이터 분기)
             location.reload();
         });
     });

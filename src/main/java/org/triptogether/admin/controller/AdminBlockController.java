@@ -22,8 +22,16 @@ public class AdminBlockController {
     private final AdminBlockService adminBlockService;
 
     @GetMapping
-    public String blockDashboard(AdminBlockSearchVO search, Model model) {
-        model.addAllAttributes(adminBlockService.getBlockDashboard(search));
+    public String blockDashboard(AdminBlockSearchVO search,
+                                  @CookieValue(name = "admBlockHistMode", defaultValue = "server") String histMode,
+                                  Model model) {
+        Map<String, Object> data = adminBlockService.getBlockDashboard(search);
+        // SERVER 모드면 첫 진입 비용 절감 — JSP forEach가 빈 결과로 빠르게 렌더, JS가 진입 직후 첫 페이지 fetch
+        if ("server".equalsIgnoreCase(histMode)) {
+            data.put("histories", java.util.Collections.emptyList());
+        }
+        model.addAllAttributes(data);
+        model.addAttribute("histMode", histMode);
         model.addAttribute("activeMenu", "blocks");
         model.addAttribute("pageTitle", "차단 관리");
         return "admin/block/list";

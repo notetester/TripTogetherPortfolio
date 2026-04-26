@@ -22,14 +22,14 @@
         data-blocked-at="${fn:toLowerCase(historyBlockedAtText)}"
         data-expires-at="${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}">
         <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="histories" data-id="${h.blockIdx}" value="${h.blockIdx}" onchange="updateBlockBulkBar('histories')"></td>
-        <td>
+        <td data-sort-value="${historyBlockedAtText}">
             <button type="button"
                     class="adm-cell-link js-open-block-detail"
                     data-template-id="detail-history-${h.blockIdx}">
                 <span><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
             </button>
         </td>
-        <td>
+        <td data-sort-value="${fn:toLowerCase(empty h.blockTargetKey ? '' : h.blockTargetKey)}">
             <button type="button"
                     class="adm-cell-link js-open-history-current"
                     data-history-id="${h.blockIdx}"
@@ -60,7 +60,7 @@
                 </c:if>
             </div>
         </td>
-        <td>
+        <td data-sort-value="${fn:toLowerCase(empty h.ruleAction ? '' : h.ruleAction)}">
             <button type="button"
                     class="adm-cell-link js-open-history-current"
                     data-history-id="${h.blockIdx}"
@@ -73,7 +73,7 @@
                 <span style="font-size:12px;color:#94a3b8;">${empty h.blockType ? '-' : h.blockType}</span>
             </button>
         </td>
-        <td>
+        <td data-sort-value="${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)}">
             <button type="button"
                     class="adm-cell-link js-open-history-current"
                     data-history-id="${h.blockIdx}"
@@ -86,7 +86,7 @@
                 <span style="font-size:12px;color:#94a3b8;">${empty h.controlMode ? '-' : h.controlMode} / ${empty h.operationSource ? '-' : h.operationSource}</span>
             </button>
         </td>
-        <td>
+        <td data-sort-value="${fn:toLowerCase(empty h.effectiveResult ? '' : h.effectiveResult)}">
             <button type="button"
                     class="adm-cell-link js-open-history-current"
                     data-history-id="${h.blockIdx}"
@@ -99,7 +99,7 @@
                 <span class="adm-cell-link-note">${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus} &rarr; ${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</span>
             </button>
         </td>
-        <td style="max-width:320px;white-space:normal;">
+        <td style="max-width:320px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty h.controlReason ? (empty h.reason ? '' : h.reason) : h.controlReason)}">
             <button type="button"
                     class="adm-cell-link js-open-history-current"
                     data-history-id="${h.blockIdx}"
