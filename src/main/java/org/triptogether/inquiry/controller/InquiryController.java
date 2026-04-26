@@ -418,27 +418,18 @@ public class InquiryController {
      * 관리자가 기존 답변 내용을 수정한다.
      * - 운영진이 아니면 403 반환
      */
+    // 정책: ADR-0011 (어노테이션 기반 권한 체크 + 글로벌 예외 핸들러)
     @PostMapping("/{inquiryId}/answer/edit")
     @ResponseBody
+    @RequireAdmin
     public ResponseEntity<Map<String, Object>> editAnswer(
             @PathVariable Long inquiryId,
             @RequestParam String content,
-            HttpSession session) {
+            @LoginUser UsersVO user) {
+        // 정책: 수정 전 본문은 INQUIRY_ANSWER_HISTORY 에 보존 (답변 변경 추적)
+        inquiryService.updateAnswer(inquiryId, content, user.getUserIdx());
         Map<String, Object> result = new HashMap<>();
-        if (!isAdmin(session)) {
-            result.put("success", false);
-            result.put("message", "운영진만 답변을 수정할 수 있어요.");
-            return ResponseEntity.status(403).body(result);
-        }
-        try {
-            // 정책: 수정 전 본문은 INQUIRY_ANSWER_HISTORY 에 보존 (답변 변경 추적)
-            inquiryService.updateAnswer(inquiryId, content, getLoginUserIdx(session));
-            result.put("success", true);
-        } catch (Exception e) {
-            log.error("답변 수정 오류", e);
-            result.put("success", false);
-            return ResponseEntity.status(500).body(result);
-        }
+        result.put("success", true);
         return ResponseEntity.ok(result);
     }
 
@@ -452,14 +443,10 @@ public class InquiryController {
      */
     @GetMapping("/{inquiryId}/answer/history")
     @ResponseBody
+    @RequireAdmin
     public ResponseEntity<Map<String, Object>> getAnswerHistory(
-            @PathVariable Long inquiryId,
-            HttpSession session) {
+            @PathVariable Long inquiryId) {
         Map<String, Object> result = new HashMap<>();
-        if (!isAdmin(session)) {
-            result.put("success", false);
-            return ResponseEntity.status(403).body(result);
-        }
         result.put("success", true);
         result.put("list", inquiryService.getAnswerHistoryByInquiry(inquiryId));
         return ResponseEntity.ok(result);
@@ -747,25 +734,15 @@ public class InquiryController {
        POST /inquiry/{inquiryId}/clear-blur - 관리자 BLUR 해제
        ai_flagged=0 처리 (신고 3회 누적이 아니므로 report_count는 없음)
        ============================================= */
+    // 정책: ADR-0011 (어노테이션 기반 권한 체크)
     @PostMapping("/{inquiryId}/clear-blur")
     @ResponseBody
+    @RequireAdmin
     public ResponseEntity<Map<String, Object>> clearBlur(
-            @PathVariable Long inquiryId,
-            HttpSession session) {
+            @PathVariable Long inquiryId) {
+        inquiryService.clearInquiryBlur(inquiryId);
         Map<String, Object> result = new HashMap<>();
-        if (!isAdmin(session)) {
-            result.put("success", false);
-            result.put("message", "운영진만 해제할 수 있어요.");
-            return ResponseEntity.status(403).body(result);
-        }
-        try {
-            inquiryService.clearInquiryBlur(inquiryId);
-            result.put("success", true);
-        } catch (Exception e) {
-            log.error("BLUR 해제 오류", e);
-            result.put("success", false);
-            return ResponseEntity.status(500).body(result);
-        }
+        result.put("success", true);
         return ResponseEntity.ok(result);
     }
 }

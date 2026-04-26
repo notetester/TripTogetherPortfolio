@@ -38,6 +38,7 @@
 | [ADR-0008](./0008-soft-delete-pattern.md) | Soft Delete 패턴 — `status='DELETED'` 상태 컬럼 활용 | Accepted |
 | [ADR-0009](./0009-moderation-policy-externalization.md) | 모더레이션 정책 외부화 — `ContentModerationPolicyVO` 패턴 | Accepted |
 | [ADR-0010](./0010-ai-moderation-pipeline.md) | AI 모더레이션 풀 스택 파이프라인 — Perspective + ai_flagged + JSP BLUR | Accepted |
+| [ADR-0011](./0011-authorization-aop-and-global-exception-handler.md) | 어노테이션 기반 권한 체크(AOP) + 글로벌 예외 처리 | Accepted |
 
 ### 인프라
 

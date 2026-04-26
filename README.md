@@ -66,6 +66,7 @@
 | [ADR-0008](./docs/adr/0008-soft-delete-pattern.md) | Soft Delete 패턴 — `status='DELETED'` |
 | [ADR-0009](./docs/adr/0009-moderation-policy-externalization.md) | 모더레이션 정책 외부화 — `ContentModerationPolicyVO` |
 | [ADR-0010](./docs/adr/0010-ai-moderation-pipeline.md) | AI 모더레이션 풀 스택 파이프라인 |
+| [ADR-0011](./docs/adr/0011-authorization-aop-and-global-exception-handler.md) | 어노테이션 기반 권한 체크(AOP) + 글로벌 예외 처리 |
 
 → 전체 인덱스 및 작성 가이드: [`docs/adr/README.md`](./docs/adr/README.md)
 
