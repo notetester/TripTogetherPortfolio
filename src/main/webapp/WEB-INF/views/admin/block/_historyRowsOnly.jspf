@@ -1,0 +1,146 @@
+<c:forEach var="h" items="${histories}">
+    <c:set var="historyCurrentType" value="IP_RULE"/>
+    <c:if test="${h.blockScope == 'USER_ACTION'}">
+        <c:set var="historyCurrentType" value="USER_BLOCK"/>
+    </c:if>
+    <c:if test="${not empty h.batchOperationIdx and not empty h.ipBlockBatchIdx}">
+        <c:set var="historyCurrentType" value="BATCH"/>
+    </c:if>
+    <fmt:formatDate var="historyBlockedAtText" value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+    <c:set var="historyExpiresText" value=""/>
+    <c:if test="${h.expiresAtDate != null}">
+        <fmt:formatDate var="historyExpiresText" value="${h.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/>
+    </c:if>
+    <tr class="js-local-row"
+        data-section="histories"
+        data-search="${fn:toLowerCase(h.blockTargetKey)} ${fn:toLowerCase(empty h.nickname ? '' : h.nickname)} ${fn:toLowerCase(empty h.userId ? '' : h.userId)} ${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)} ${fn:toLowerCase(empty h.controlReason ? '' : h.controlReason)} ${fn:toLowerCase(empty h.reason ? '' : h.reason)} ${fn:toLowerCase(empty h.batchName ? '' : h.batchName)} ${fn:toLowerCase(empty h.batchCode ? '' : h.batchCode)} ${fn:toLowerCase(historyBlockedAtText)} ${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}"
+        data-target="${fn:toLowerCase(h.blockTargetKey)} ${fn:toLowerCase(empty h.blockedIp ? '' : h.blockedIp)}"
+        data-member="${fn:toLowerCase(empty h.nickname ? '' : h.nickname)} ${fn:toLowerCase(empty h.userId ? '' : h.userId)}"
+        data-change="${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)} ${fn:toLowerCase(empty h.controlMode ? '' : h.controlMode)} ${fn:toLowerCase(empty h.operationSource ? '' : h.operationSource)}"
+        data-reason="${fn:toLowerCase(empty h.controlReason ? '' : h.controlReason)} ${fn:toLowerCase(empty h.reason ? '' : h.reason)}"
+        data-batch="${fn:toLowerCase(empty h.batchName ? '' : h.batchName)} ${fn:toLowerCase(empty h.batchCode ? '' : h.batchCode)}"
+        data-blocked-at="${fn:toLowerCase(historyBlockedAtText)}"
+        data-expires-at="${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}">
+        <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="histories" data-id="${h.blockIdx}" value="${h.blockIdx}" onchange="updateBlockBulkBar('histories')"></td>
+        <td data-sort-value="${historyBlockedAtText}">
+            <button type="button"
+                    class="adm-cell-link js-open-block-detail"
+                    data-template-id="detail-history-${h.blockIdx}">
+                <span><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
+            </button>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty h.blockTargetKey ? '' : h.blockTargetKey)}">
+            <button type="button"
+                    class="adm-cell-link js-open-history-current"
+                    data-history-id="${h.blockIdx}"
+                    data-current-type="${historyCurrentType}"
+                    data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                    data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                    data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                    data-template-id="detail-history-${h.blockIdx}">
+                <span style="font-weight:700;color:#e2e8f0;">${h.blockTargetKey}</span>
+                <span style="font-size:12px;color:#94a3b8;">${empty h.nickname ? '-' : h.nickname}</span>
+            </button>
+            <div class="adm-inline-actions">
+                <button type="button"
+                        class="adm-inline-chip js-apply-block-filter"
+                        data-section="histories"
+                        data-field="target"
+                        data-keyword="${fn:escapeXml(h.blockTargetKey)}">
+                    <spring:message code="admin.common.sameTarget"/>
+                </button>
+                <c:if test="${not empty h.ipBlockBatchIdx}">
+                    <button type="button"
+                            class="adm-inline-chip js-apply-block-filter"
+                            data-section="histories"
+                            data-field="batch"
+                            data-keyword="${fn:escapeXml(empty h.batchCode ? h.batchName : h.batchCode)}">
+                        <spring:message code="admin.common.sameBatch"/>
+                    </button>
+                </c:if>
+            </div>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty h.ruleAction ? '' : h.ruleAction)}">
+            <button type="button"
+                    class="adm-cell-link js-open-history-current"
+                    data-history-id="${h.blockIdx}"
+                    data-current-type="${historyCurrentType}"
+                    data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                    data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                    data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                    data-template-id="detail-history-${h.blockIdx}">
+                <span>${empty h.ruleAction ? '-' : h.ruleAction}</span>
+                <span style="font-size:12px;color:#94a3b8;">${empty h.blockType ? '-' : h.blockType}</span>
+            </button>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)}">
+            <button type="button"
+                    class="adm-cell-link js-open-history-current"
+                    data-history-id="${h.blockIdx}"
+                    data-current-type="${historyCurrentType}"
+                    data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                    data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                    data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                    data-template-id="detail-history-${h.blockIdx}">
+                <span>${h.historyKind}</span>
+                <span style="font-size:12px;color:#94a3b8;">${empty h.controlMode ? '-' : h.controlMode} / ${empty h.operationSource ? '-' : h.operationSource}</span>
+            </button>
+        </td>
+        <td data-sort-value="${fn:toLowerCase(empty h.effectiveResult ? '' : h.effectiveResult)}">
+            <button type="button"
+                    class="adm-cell-link js-open-history-current"
+                    data-history-id="${h.blockIdx}"
+                    data-current-type="${historyCurrentType}"
+                    data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                    data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                    data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                    data-template-id="detail-history-${h.blockIdx}">
+                <span>${empty h.effectiveResult ? '-' : h.effectiveResult}</span>
+                <span class="adm-cell-link-note">${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus} &rarr; ${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</span>
+            </button>
+        </td>
+        <td style="max-width:320px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty h.controlReason ? (empty h.reason ? '' : h.reason) : h.controlReason)}">
+            <button type="button"
+                    class="adm-cell-link js-open-history-current"
+                    data-history-id="${h.blockIdx}"
+                    data-current-type="${historyCurrentType}"
+                    data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                    data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                    data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                    data-template-id="detail-history-${h.blockIdx}">
+                <span>${empty h.controlReason ? (empty h.reason ? '-' : h.reason) : h.controlReason}</span>
+            </button>
+        </td>
+        <td>
+            <div class="adm-row-actions">
+                <button type="button"
+                        class="adm-row-btn detail js-open-history-current"
+                        data-history-id="${h.blockIdx}"
+                        data-current-type="${historyCurrentType}"
+                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
+                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
+                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
+                        data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.blocks.currentSetting"/></button>
+                <div class="action-menu-wrap">
+                    <button type="button"
+                            class="adm-row-btn detail adm-row-btn-more"
+                            onclick="admToggleActionMenu(this)">&hellip;</button>
+                    <div class="action-menu">
+                        <c:if test="${not empty h.blockedIp}">
+                            <button type="button"
+                                    class="action-menu-item js-open-ip-context"
+                                    data-ip-address="${h.blockedIp}"
+                                    data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
+                        </c:if>
+                        <button type="button"
+                                class="action-menu-item js-open-block-detail"
+                                data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.common.detail"/></button>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</c:forEach>
+<c:if test="${empty histories}">
+    <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+</c:if>

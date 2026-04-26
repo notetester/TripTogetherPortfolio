@@ -22,13 +22,136 @@ public class AdminBlockController {
     private final AdminBlockService adminBlockService;
 
     @GetMapping
-    public String blockDashboard(AdminBlockSearchVO search, Model model) {
-        model.addAllAttributes(adminBlockService.getBlockDashboard(search));
+    public String blockDashboard(AdminBlockSearchVO search,
+                                  @CookieValue(name = "admBlockHistMode", defaultValue = "server") String histMode,
+                                  @CookieValue(name = "admBlockIprMode", defaultValue = "server") String iprMode,
+                                  @CookieValue(name = "admBlockBatMode", defaultValue = "server") String batMode,
+                                  @CookieValue(name = "admBlockUbMode", defaultValue = "server") String ubMode,
+                                  Model model) {
+        Map<String, Object> data = adminBlockService.getBlockDashboard(search);
+        // SERVER 모드면 첫 진입 비용 절감 — JSP forEach가 빈 결과로 빠르게 렌더, JS가 진입 직후 첫 페이지 fetch
+        if ("server".equalsIgnoreCase(histMode)) {
+            data.put("histories", java.util.Collections.emptyList());
+        }
+        if ("server".equalsIgnoreCase(iprMode)) {
+            data.put("ipBlocks", java.util.Collections.emptyList());
+        }
+        if ("server".equalsIgnoreCase(batMode)) {
+            data.put("batches", java.util.Collections.emptyList());
+        }
+        if ("server".equalsIgnoreCase(ubMode)) {
+            data.put("userBlocks", java.util.Collections.emptyList());
+        }
+        model.addAllAttributes(data);
+        model.addAttribute("histMode", histMode);
+        model.addAttribute("iprMode", iprMode);
+        model.addAttribute("batMode", batMode);
+        model.addAttribute("ubMode", ubMode);
         model.addAttribute("activeMenu", "blocks");
         model.addAttribute("pageTitle", "차단 관리");
         return "admin/block/list";
     }
 
+    @GetMapping("/api/user-blocks")
+    @ResponseBody
+    public Map<String, Object> apiUserBlocks(AdminBlockSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminBlockService.getUserBlocksPaged(search));
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/api/user-blocks/fragment")
+    public String apiUserBlocksFragment(AdminBlockSearchVO search, Model model) {
+        Map<String, Object> data = adminBlockService.getUserBlocksPaged(search);
+        model.addAttribute("userBlocks", data.get("rows"));
+        model.addAttribute("totalCount", data.get("total"));
+        model.addAttribute("currentPage", data.get("page"));
+        model.addAttribute("pageSize", data.get("size"));
+        model.addAttribute("totalPages", data.get("totalPages"));
+        return "admin/block/_userBlockRowsFragment";
+    }
+
+    @GetMapping("/api/batches")
+    @ResponseBody
+    public Map<String, Object> apiBatches(AdminBlockSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminBlockService.getIpBlockBatchesPaged(search));
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/api/batches/fragment")
+    public String apiBatchesFragment(AdminBlockSearchVO search, Model model) {
+        Map<String, Object> data = adminBlockService.getIpBlockBatchesPaged(search);
+        model.addAttribute("batches", data.get("rows"));
+        model.addAttribute("totalCount", data.get("total"));
+        model.addAttribute("currentPage", data.get("page"));
+        model.addAttribute("pageSize", data.get("size"));
+        model.addAttribute("totalPages", data.get("totalPages"));
+        return "admin/block/_batchRowsFragment";
+    }
+
+    @GetMapping("/api/ip-rules")
+    @ResponseBody
+    public Map<String, Object> apiIpRules(AdminBlockSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminBlockService.getIpBlocksPaged(search));
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/api/ip-rules/fragment")
+    public String apiIpRulesFragment(AdminBlockSearchVO search, Model model) {
+        Map<String, Object> data = adminBlockService.getIpBlocksPaged(search);
+        model.addAttribute("ipBlocks", data.get("rows"));
+        model.addAttribute("totalCount", data.get("total"));
+        model.addAttribute("currentPage", data.get("page"));
+        model.addAttribute("pageSize", data.get("size"));
+        model.addAttribute("totalPages", data.get("totalPages"));
+        return "admin/block/_ipRuleRowsFragment";
+    }
+
+
+    @GetMapping("/api/histories")
+    @ResponseBody
+    public Map<String, Object> apiBlockHistories(AdminBlockSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminBlockService.getBlockHistoriesPaged(search));
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/api/histories/fragment")
+    public String apiBlockHistoriesFragment(AdminBlockSearchVO search, Model model) {
+        Map<String, Object> data = adminBlockService.getBlockHistoriesPaged(search);
+        model.addAttribute("histories", data.get("rows"));
+        model.addAttribute("totalCount", data.get("total"));
+        model.addAttribute("currentPage", data.get("page"));
+        model.addAttribute("pageSize", data.get("size"));
+        model.addAttribute("totalPages", data.get("totalPages"));
+        return "admin/block/_historyRowsFragment";
+    }
 
     @GetMapping("/histories/{historyBlockIdx}/current-setting")
     @ResponseBody
