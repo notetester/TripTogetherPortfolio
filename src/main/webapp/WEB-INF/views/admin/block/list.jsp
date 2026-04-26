@@ -1189,6 +1189,10 @@
                 </div>
                 <div class="adm-local-toolbar-group">
                     <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="batches" style="display:none;" onclick="sectionSortReset('batches')"></button>
+                    <select class="adm-select js-section-mode" data-section="batches" title="<spring:message code='admin.blocks.mode.label'/>">
+                        <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
+                        <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                    </select>
                     <select class="adm-select js-local-page-size" data-section="batches">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -1203,7 +1207,7 @@
                         <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;width:22%;"><spring:message code="admin.blocks.batch"/></th>
                         <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.basePolicy"/></th>
                         <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('batches',3)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.currentState"/></th>
-                        <th style="width:18%;"><spring:message code="admin.blocks.ruleStats"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('batches',4)" style="cursor:pointer;user-select:none;width:18%;"><spring:message code="admin.blocks.ruleStats"/></th>
                         <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('batches',5)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.description"/></th>
                         <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr></thead>
@@ -1221,7 +1225,7 @@
                             data-status="${fn:toLowerCase(b.activeLabel)}"
                             data-updated-at="${fn:toLowerCase(batchUpdatedAtText)}">
                             <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="${b.ipBlockBatchIdx}" value="${b.ipBlockBatchIdx}" onchange="updateBlockBulkBar('batches')"></td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(b.batchName)}">
                                 <button type="button"
                                         class="adm-link-btn js-open-batch-editor"
                                         data-batch-id="${b.ipBlockBatchIdx}"
@@ -1246,7 +1250,7 @@
                                     <span style="display:block;font-size:11px;color:#64748b;">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)}">
                                 <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                                     <span>${b.batchRuleActionLabel}</span>
                                     <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</span>
@@ -1254,20 +1258,20 @@
                                     <span class="adm-cell-link-note">ON: ${b.defaultEnableStrategyLabel}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${b.active ? '1' : '0'}">
                                 <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                                     <span><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.activeLabel}</span></span>
                                     <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</span>
                                 </button>
                             </td>
-                            <td>
+                            <td data-sort-value="${b.totalRuleCount}">
                                 <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                                     <span><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</span>
                                     <span class="adm-cell-link-note"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount} / <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</span>
                                     <span class="adm-cell-link-note"><spring:message code="admin.blocks.effectiveState"/> ${b.effectiveRuleCount} / <spring:message code="admin.blocks.effective.expired"/> ${b.expiredRuleCount}</span>
                                 </button>
                             </td>
-                            <td style="max-width:260px;white-space:normal;">
+                            <td style="max-width:260px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty b.description ? '' : b.description)}">
                                 <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                                     <span>${empty b.description ? '-' : b.description}</span>
                                 </button>
@@ -1341,6 +1345,7 @@
         </div>
     </div>
 
+    <div id="batDetailArea">
     <c:forEach var="b" items="${batches}">
         <template id="detail-batch-${b.ipBlockBatchIdx}">
             <div class="detail-grid">
@@ -1390,6 +1395,7 @@
             </table>
         </template>
     </c:forEach>
+    </div>
 
     <div class="adm-card js-section-card" data-section="histories" data-enhanced="true">
         <div class="adm-card-head">
@@ -2626,6 +2632,11 @@ function sortKeyForCellIndex(section, cellIndex) {
         const map = {1:'target', 2:'actionControl', 3:'batch', 4:'status', 5:'priority', 6:'reason'};
         return map[cellIndex] || '';
     }
+    if (section === 'batches') {
+        // 인덱스: 0=checkbox, 1=batch, 2=basePolicy, 3=currentState, 4=ruleStats, 5=description, 6=action
+        const map = {1:'batch', 2:'basePolicy', 3:'currentState', 4:'ruleStats', 5:'description'};
+        return map[cellIndex] || '';
+    }
     return '';
 }
 
@@ -2641,6 +2652,12 @@ const SECTION_FETCH_CONFIG = {
         metaUrl: '/admin/blocks/api/ip-rules',
         splitMarker: '<!--IPRULE-FRAGMENT-SPLIT-->',
         detailAreaId: 'iprDetailArea'
+    },
+    'batches': {
+        fragmentUrl: '/admin/blocks/api/batches/fragment',
+        metaUrl: '/admin/blocks/api/batches',
+        splitMarker: '<!--BATCH-FRAGMENT-SPLIT-->',
+        detailAreaId: 'batDetailArea'
     }
 };
 

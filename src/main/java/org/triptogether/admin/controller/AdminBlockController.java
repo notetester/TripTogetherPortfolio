@@ -25,6 +25,7 @@ public class AdminBlockController {
     public String blockDashboard(AdminBlockSearchVO search,
                                   @CookieValue(name = "admBlockHistMode", defaultValue = "server") String histMode,
                                   @CookieValue(name = "admBlockIprMode", defaultValue = "server") String iprMode,
+                                  @CookieValue(name = "admBlockBatMode", defaultValue = "server") String batMode,
                                   Model model) {
         Map<String, Object> data = adminBlockService.getBlockDashboard(search);
         // SERVER 모드면 첫 진입 비용 절감 — JSP forEach가 빈 결과로 빠르게 렌더, JS가 진입 직후 첫 페이지 fetch
@@ -34,12 +35,41 @@ public class AdminBlockController {
         if ("server".equalsIgnoreCase(iprMode)) {
             data.put("ipBlocks", java.util.Collections.emptyList());
         }
+        if ("server".equalsIgnoreCase(batMode)) {
+            data.put("batches", java.util.Collections.emptyList());
+        }
         model.addAllAttributes(data);
         model.addAttribute("histMode", histMode);
         model.addAttribute("iprMode", iprMode);
+        model.addAttribute("batMode", batMode);
         model.addAttribute("activeMenu", "blocks");
         model.addAttribute("pageTitle", "차단 관리");
         return "admin/block/list";
+    }
+
+    @GetMapping("/api/batches")
+    @ResponseBody
+    public Map<String, Object> apiBatches(AdminBlockSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminBlockService.getIpBlockBatchesPaged(search));
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/api/batches/fragment")
+    public String apiBatchesFragment(AdminBlockSearchVO search, Model model) {
+        Map<String, Object> data = adminBlockService.getIpBlockBatchesPaged(search);
+        model.addAttribute("batches", data.get("rows"));
+        model.addAttribute("totalCount", data.get("total"));
+        model.addAttribute("currentPage", data.get("page"));
+        model.addAttribute("pageSize", data.get("size"));
+        model.addAttribute("totalPages", data.get("totalPages"));
+        return "admin/block/_batchRowsFragment";
     }
 
     @GetMapping("/api/ip-rules")

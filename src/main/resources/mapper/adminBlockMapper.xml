@@ -832,6 +832,84 @@
         LIMIT #{limit}
     </select>
 
+    <sql id="ipBlockBatchesWhere">
+        WHERE 1=1
+        <if test="status != null and status != '' and status != 'ALL'">
+            <choose>
+                <when test="status == 'ACTIVE'">AND b.is_active = 1</when>
+                <otherwise>AND b.is_active = 0</otherwise>
+            </choose>
+        </if>
+        <if test="keyword != null and keyword != ''">
+            <choose>
+                <when test="field == 'batch'">
+                    AND (b.batch_code LIKE CONCAT('%', #{keyword}, '%')
+                         OR b.batch_name LIKE CONCAT('%', #{keyword}, '%'))
+                </when>
+                <when test="field == 'source'">
+                    AND (b.source_type LIKE CONCAT('%', #{keyword}, '%')
+                         OR b.source_name LIKE CONCAT('%', #{keyword}, '%'))
+                </when>
+                <when test="field == 'description'">
+                    AND b.description LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="field == 'policy'">
+                    AND (b.batch_rule_action LIKE CONCAT('%', #{keyword}, '%')
+                         OR b.default_disable_strategy LIKE CONCAT('%', #{keyword}, '%')
+                         OR b.default_enable_strategy LIKE CONCAT('%', #{keyword}, '%'))
+                </when>
+                <otherwise>
+                    AND (
+                        b.batch_code LIKE CONCAT('%', #{keyword}, '%')
+                        OR b.batch_name LIKE CONCAT('%', #{keyword}, '%')
+                        OR b.source_name LIKE CONCAT('%', #{keyword}, '%')
+                        OR b.source_type LIKE CONCAT('%', #{keyword}, '%')
+                        OR b.description LIKE CONCAT('%', #{keyword}, '%')
+                    )
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <select id="findIpBlockBatchesPaged" resultMap="batchRM">
+        SELECT
+            b.ip_block_batch_idx, b.batch_code, b.batch_name, b.source_type, b.source_name,
+            b.batch_rule_action, b.default_rule_priority, b.is_active AS active, b.description,
+            b.default_disable_strategy, b.default_enable_strategy,
+            b.created_by_user_idx, cu.nickname AS created_by_nickname,
+            b.updated_by_user_idx, uu.nickname AS updated_by_nickname,
+            b.created_at, b.updated_at,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx) AS total_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.is_active = 1) AS active_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.is_effective_active = 1) AS effective_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.effective_status = 'EXPIRED') AS expired_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.control_mode = 'BATCH') AS batch_managed_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.control_mode = 'MANUAL_OVERRIDE') AS manual_override_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.rule_action = 'ALLOW') AS allow_rule_count,
+            (SELECT COUNT(*) FROM IP_BLOCKLIST ip WHERE ip.ip_block_batch_idx = b.ip_block_batch_idx AND ip.rule_action = 'BLOCK') AS block_rule_count
+        FROM IP_BLOCK_BATCH b
+        LEFT JOIN USERS cu ON cu.user_idx = b.created_by_user_idx
+        LEFT JOIN USERS uu ON uu.user_idx = b.updated_by_user_idx
+        <include refid="ipBlockBatchesWhere"/>
+        <choose>
+            <when test="sortBy == 'batch'">       ORDER BY b.batch_name <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.ip_block_batch_idx DESC</when>
+            <when test="sortBy == 'basePolicy'">  ORDER BY b.batch_rule_action <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.default_rule_priority DESC, b.ip_block_batch_idx DESC</when>
+            <when test="sortBy == 'currentState'">ORDER BY b.is_active <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.ip_block_batch_idx DESC</when>
+            <when test="sortBy == 'ruleStats'">   ORDER BY (SELECT COUNT(*) FROM IP_BLOCKLIST ip2 WHERE ip2.ip_block_batch_idx = b.ip_block_batch_idx) <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.ip_block_batch_idx DESC</when>
+            <when test="sortBy == 'description'"> ORDER BY b.description <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.ip_block_batch_idx DESC</when>
+            <otherwise>
+                ORDER BY b.is_active DESC, b.updated_at DESC, b.ip_block_batch_idx DESC
+            </otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countIpBlockBatchesFiltered" resultType="long">
+        SELECT COUNT(*)
+        FROM IP_BLOCK_BATCH b
+        <include refid="ipBlockBatchesWhere"/>
+    </select>
+
     <select id="findRecentBatchOperations" resultMap="batchOperationRM">
         SELECT
             o.ip_block_batch_operation_idx,
