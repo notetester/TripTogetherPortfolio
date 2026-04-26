@@ -1429,6 +1429,10 @@
                 </div>
                 <div class="adm-local-toolbar-group">
                     <button type="button" class="adm-dash-sort-reset js-section-sort-reset" data-section="histories" style="display:none;" onclick="sectionSortReset('histories')"></button>
+                    <select class="adm-select js-section-mode" data-section="histories" title="<spring:message code='admin.blocks.mode.label'/>">
+                        <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
+                        <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                    </select>
                     <select class="adm-select js-local-page-size" data-section="histories">
                         <option value="10"><spring:message code="admin.common.pageSize" arguments="10"/></option>
                         <option value="20" selected><spring:message code="admin.common.pageSize" arguments="20"/></option>
@@ -1610,6 +1614,7 @@
     </div>
 </div>
 
+<div id="histDetailArea">
 <c:forEach var="h" items="${histories}">
     <template id="detail-history-${h.blockIdx}">
         <div class="detail-grid">
@@ -1640,6 +1645,7 @@
         </table>
     </template>
 </c:forEach>
+</div>
 
 <div class="adm-modal-overlay" id="blockDetailModal">
     <div class="adm-modal" style="max-width:860px;">
@@ -2275,6 +2281,7 @@ const ADMIN_BLOCK_MSG = {
     dashViewAll: '<spring:message code="admin.blocks.js.dashViewAll" javaScriptEscape="true"/>',
     dashSortTip: '<spring:message code="admin.blocks.js.dashSortTip" javaScriptEscape="true"/>',
     dashSortReset: '<spring:message code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>',
+    serverFetchError: '<spring:message code="admin.blocks.js.serverFetchError" javaScriptEscape="true"/>',
     bulkActivate: '<spring:message code="admin.blocks.js.bulkActivate" javaScriptEscape="true"/>',
     bulkDeactivate: '<spring:message code="admin.blocks.js.bulkDeactivate" javaScriptEscape="true"/>',
     noSelection: '<spring:message code="admin.blocks.js.noSelection" javaScriptEscape="true"/>',
@@ -2512,7 +2519,7 @@ function sectionSort(section, cellIndex) {
     state.sectionSortCell = cellIndex;
     state.sortDir = nextDir;
     state.page = 1;
-    renderLocalSection(section);
+    renderSectionByMode(section);
 }
 
 function sectionSortReset(section) {
@@ -2520,7 +2527,7 @@ function sectionSortReset(section) {
     state.sectionSortCell = null;
     state.sortDir = 'ASC';
     state.page = 1;
-    renderLocalSection(section);
+    renderSectionByMode(section);
 }
 
 function ensureOriginalIndices() {
@@ -2531,6 +2538,132 @@ function ensureOriginalIndices() {
             }
         });
     });
+}
+
+// ================ 모드 토글 (CLIENT 전체 로드 / SERVER 페이지 단위) ================
+const SECTION_MODE_STORAGE = 'admBlockSectionMode';
+
+function loadStoredSectionModes() {
+    try {
+        const raw = localStorage.getItem(SECTION_MODE_STORAGE);
+        if (!raw) return {};
+        return JSON.parse(raw) || {};
+    } catch (e) { return {}; }
+}
+
+function saveSectionMode(section, mode) {
+    try {
+        const stored = loadStoredSectionModes();
+        stored[section] = mode;
+        localStorage.setItem(SECTION_MODE_STORAGE, JSON.stringify(stored));
+    } catch (e) {}
+}
+
+function getSectionMode(section) {
+    const state = getLocalState(section);
+    return state.mode === 'SERVER' ? 'SERVER' : 'CLIENT';
+}
+
+function initSectionModes() {
+    const stored = loadStoredSectionModes();
+    ['user-blocks', 'ip-rules', 'batches', 'histories'].forEach(function (section) {
+        const state = getLocalState(section);
+        state.mode = stored[section] === 'SERVER' ? 'SERVER' : 'CLIENT';
+    });
+    document.querySelectorAll('.js-section-mode').forEach(function (sel) {
+        const section = sel.dataset.section;
+        const state = getLocalState(section);
+        sel.value = state.mode === 'SERVER' ? 'server' : 'client';
+        sel.addEventListener('change', function () {
+            const mode = sel.value === 'server' ? 'SERVER' : 'CLIENT';
+            state.mode = mode;
+            saveSectionMode(section, mode);
+            // 모드 전환은 페이지 새로고침으로 단순화 (CLIENT 모드는 forEach 전체 데이터, SERVER는 진입 시 fetch)
+            location.reload();
+        });
+    });
+}
+
+function sortKeyForCellIndex(section, cellIndex) {
+    if (cellIndex == null || cellIndex < 0) return '';
+    if (section === 'histories') {
+        // 인덱스: 0=checkbox, 1=time, 2=target, 3=actionLabel, 4=changeKind, 5=result, 6=reason, 7=action
+        const map = {1:'time', 2:'target', 3:'actionLabel', 4:'changeKind', 5:'result', 6:'reason'};
+        return map[cellIndex] || '';
+    }
+    return '';
+}
+
+async function renderServerSection(section) {
+    if (section !== 'histories') {
+        // 1차 라운드는 histories만 SERVER 모드 지원. 다른 섹션은 추후 확장.
+        return;
+    }
+    const state = getLocalState(section);
+    const card = getSectionCard(section);
+    if (!card) return;
+
+    const fieldEl = card.querySelector('.js-local-field');
+    const keywordEl = card.querySelector('.js-local-keyword');
+    const sortBy = sortKeyForCellIndex(section, state.sectionSortCell);
+    const params = new URLSearchParams();
+    params.set('page', String(state.page || 1));
+    params.set('size', String(state.pageSize || 20));
+    if (sortBy) {
+        params.set('sortBy', sortBy);
+        params.set('sortDir', state.sortDir === 'ASC' ? 'ASC' : 'DESC');
+    }
+    if (fieldEl && fieldEl.value) params.set('field', fieldEl.value);
+    if (keywordEl && keywordEl.value) params.set('keyword', keywordEl.value);
+
+    try {
+        const res = await fetch(CTX + '/admin/blocks/api/histories/fragment?' + params.toString(), {
+            credentials: 'same-origin',
+            headers: {'Accept': 'text/html'}
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const html = await res.text();
+        const split = html.split('<!--HISTORY-FRAGMENT-SPLIT-->');
+        const rowsHtml = (split[0] || '').trim();
+        const detailsHtml = (split[1] || '').trim();
+
+        const tbody = card.querySelector('tbody');
+        if (tbody) tbody.innerHTML = rowsHtml;
+        const detailArea = document.getElementById('histDetailArea');
+        if (detailArea) detailArea.innerHTML = detailsHtml;
+
+        // 메타 정보를 JSON API로 별도 호출하지 않고, 같은 파라미터로 JSON을 한 번 더 받아 페이지 정보 갱신
+        const metaRes = await fetch(CTX + '/admin/blocks/api/histories?' + params.toString(), {
+            credentials: 'same-origin',
+            headers: {'Accept': 'application/json'}
+        });
+        if (metaRes.ok) {
+            const meta = await metaRes.json();
+            const total = Number(meta.total || 0);
+            const totalPages = Math.max(1, Number(meta.totalPages || 1));
+            updateServerPageMeta(section, state.page, totalPages, total);
+        }
+        updateLocalSortIndicators(section);
+    } catch (e) {
+        if (typeof notice === 'function') notice(ADMIN_BLOCK_MSG.serverFetchError);
+    }
+}
+
+function updateServerPageMeta(section, page, totalPages, total) {
+    const card = getSectionCard(section);
+    if (!card) return;
+    const pageInfo = card.querySelector('.js-local-page-info[data-section="' + section + '"]');
+    if (pageInfo) pageInfo.textContent = String(total);
+    const pageState = card.querySelector('.js-local-page-state[data-section="' + section + '"]');
+    if (pageState) pageState.textContent = page + ' / ' + totalPages;
+}
+
+function renderSectionByMode(section) {
+    if (getSectionMode(section) === 'SERVER') {
+        renderServerSection(section);
+    } else {
+        renderLocalSection(section);
+    }
 }
 
 function blockRowKey(row, section) {
@@ -2937,19 +3070,19 @@ function initializeLocalSections() {
             pageSizeSelect.addEventListener('change', function () {
                 state.pageSize = Number(pageSizeSelect.value || 20);
                 state.page = 1;
-                renderLocalSection(section);
+                renderSectionByMode(section);
             });
         }
         if (fieldSelect) {
             fieldSelect.addEventListener('change', function () {
                 state.page = 1;
-                renderLocalSection(section);
+                renderSectionByMode(section);
             });
         }
         if (keywordInput) {
             keywordInput.addEventListener('input', function () {
                 state.page = 1;
-                renderLocalSection(section);
+                renderSectionByMode(section);
             });
         }
         if (resetButton) {
@@ -2957,10 +3090,10 @@ function initializeLocalSections() {
                 if (fieldSelect) fieldSelect.value = 'all';
                 if (keywordInput) keywordInput.value = '';
                 state.page = 1;
-                renderLocalSection(section);
+                renderSectionByMode(section);
             });
         }
-        renderLocalSection(section);
+        renderSectionByMode(section);
     });
 }
 
@@ -3904,8 +4037,8 @@ document.addEventListener('click', function (e) {
     if (prevBtn) {
         const section = prevBtn.dataset.section;
         const state = getLocalState(section);
-        state.page -= 1;
-        renderLocalSection(section);
+        state.page = Math.max(1, (state.page || 1) - 1);
+        renderSectionByMode(section);
         return;
     }
 
@@ -3913,8 +4046,8 @@ document.addEventListener('click', function (e) {
     if (nextBtn) {
         const section = nextBtn.dataset.section;
         const state = getLocalState(section);
-        state.page += 1;
-        renderLocalSection(section);
+        state.page = (state.page || 1) + 1;
+        renderSectionByMode(section);
     }
 });
 
@@ -3929,6 +4062,7 @@ document.querySelectorAll('.adm-modal-overlay').forEach(function (overlay) {
 enhanceBlockLocalTables();
 enhanceBlockDashboardTables();
 ensureOriginalIndices();
+initSectionModes();
 initializeLocalSections();
 activateBlockTab(new URLSearchParams(window.location.search).get('tab') || 'dashboard');
 </script>
