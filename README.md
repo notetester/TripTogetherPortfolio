@@ -64,6 +64,8 @@
 | [ADR-0006](./docs/adr/0006-counter-cache-reconcile.md) | 캐시 컬럼 + Reconcile 스케줄러 |
 | [ADR-0007](./docs/adr/0007-cloudinary-image-storage.md) | 이미지 스토리지 — Cloudinary 외부 CDN |
 | [ADR-0008](./docs/adr/0008-soft-delete-pattern.md) | Soft Delete 패턴 — `status='DELETED'` |
+| [ADR-0009](./docs/adr/0009-moderation-policy-externalization.md) | 모더레이션 정책 외부화 — `ContentModerationPolicyVO` |
+| [ADR-0010](./docs/adr/0010-ai-moderation-pipeline.md) | AI 모더레이션 풀 스택 파이프라인 |
 
 → 전체 인덱스 및 작성 가이드: [`docs/adr/README.md`](./docs/adr/README.md)
 
@@ -90,6 +92,31 @@
 **예, 명확히 분리되어 있습니다.** 자동 BLUR(신고 누적, ACTIVE 유지)와 어드민 직접 차단(BLOCKED, 완전 숨김)은 다른 신뢰 신호를 표현합니다. 같은 status 컬럼에 합치면 의미 모순(BLOCKED 면 blind 되어야 하는데 BLUR 오버레이는 사용자 펼침을 전제) 이 발생하므로 분리했습니다.
 
 → 상세: [ADR-0003](./docs/adr/0003-blur-vs-blocked-policy.md)
+
+### Q4. 도배 방지 정책의 시간/횟수 제한이 하드코딩 아닌가요?
+
+**아닙니다, 정책 객체로 외부화되어 있습니다.** `ContentModerationPolicyVO` (`moderation` 모듈) 가 시간 윈도우/최대 횟수를 보유하며, 커뮤니티·문의 등 모든 모듈이 `ModerationPolicyService.getPolicy()` 로 가져와 사용합니다. 코드의 숫자 리터럴은 정책 객체 주입 결과이지 magic number 가 아닙니다.
+
+```java
+ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
+if (countRecent(...) >= policy.getInquiryMaxCount()) { ... }
+```
+
+→ 상세: [ADR-0009](./docs/adr/0009-moderation-policy-externalization.md)
+
+### Q5. AI 독성 감지 BLUR 이 화면에 반영 안 되는 거 아닌가요?
+
+**풀 스택 구현 완료입니다.** Perspective API 비동기 호출 → `ai_flagged` 컬럼 → JSP `isBlurred` 조건 → 어드민 배지 / 일반 사용자 BLUR 오버레이 / 어드민 해제 버튼까지 전체 파이프라인이 동작합니다. Java 코드만 보면 보이지 않으므로 JSP/CSS 까지 함께 보아야 합니다.
+
+| 레이어 | 위치 |
+|---|---|
+| API 호출 | `PerspectiveService` (비동기) |
+| 서비스 | `flagInquiryAsToxic()`, `clearInquiryBlur()` |
+| DB | `inquiry.ai_flagged` 컬럼 |
+| JSP | `list.jsp` `<c:set var="isBlurred" .../>` + `detail.jsp` 어드민 배지 |
+| JS | 어드민 BLUR 해제 fetch 핸들러 |
+
+→ 상세: [ADR-0010](./docs/adr/0010-ai-moderation-pipeline.md)
 
 ---
 

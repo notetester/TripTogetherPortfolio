@@ -36,6 +36,8 @@
 |---|---|---|
 | [ADR-0005](./0005-xss-server-sanitize.md) | XSS 방지 — jsoup Safelist 서버측 sanitize | Accepted |
 | [ADR-0008](./0008-soft-delete-pattern.md) | Soft Delete 패턴 — `status='DELETED'` 상태 컬럼 활용 | Accepted |
+| [ADR-0009](./0009-moderation-policy-externalization.md) | 모더레이션 정책 외부화 — `ContentModerationPolicyVO` 패턴 | Accepted |
+| [ADR-0010](./0010-ai-moderation-pipeline.md) | AI 모더레이션 풀 스택 파이프라인 — Perspective + ai_flagged + JSP BLUR | Accepted |
 
 ### 인프라
 
