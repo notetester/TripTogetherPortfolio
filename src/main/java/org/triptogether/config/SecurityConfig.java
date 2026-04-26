@@ -5,8 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
@@ -48,18 +46,23 @@ public class SecurityConfig {
     /**
      * CSRF 검증 대상 매처: Victor 담당 모듈의 변경 요청.
      * GET 은 본질적으로 CSRF 무관하므로 제외.
+     *
+     * Spring Security 7+ 에서 AntPathRequestMatcher 가 제거되어 람다(RequestMatcher functional interface) 사용.
+     * URI 는 contextPath 를 포함하므로 contains() 로 매칭한다.
      */
     private RequestMatcher victorModuleMatcher() {
-        return new OrRequestMatcher(
-                new AntPathRequestMatcher("/community/**", "POST"),
-                new AntPathRequestMatcher("/community/**", "PUT"),
-                new AntPathRequestMatcher("/community/**", "DELETE"),
-                new AntPathRequestMatcher("/report/**",    "POST"),
-                new AntPathRequestMatcher("/report/**",    "PUT"),
-                new AntPathRequestMatcher("/report/**",    "DELETE"),
-                new AntPathRequestMatcher("/inquiry/**",   "POST"),
-                new AntPathRequestMatcher("/inquiry/**",   "PUT"),
-                new AntPathRequestMatcher("/inquiry/**",   "DELETE")
-        );
+        return request -> {
+            String method = request.getMethod();
+            if (!"POST".equalsIgnoreCase(method)
+                    && !"PUT".equalsIgnoreCase(method)
+                    && !"DELETE".equalsIgnoreCase(method)) {
+                return false;
+            }
+            String uri = request.getRequestURI();
+            if (uri == null) return false;
+            return uri.contains("/community/")
+                    || uri.contains("/report/")
+                    || uri.contains("/inquiry/");
+        };
     }
 }

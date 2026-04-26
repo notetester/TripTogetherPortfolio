@@ -17,6 +17,9 @@ import org.triptogether.myPage.function.NotificationUrlBuilder;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.auth.vo.UserRole;
+import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.common.annotation.LoginUser;
+import org.triptogether.common.annotation.RequireAdmin;
 import org.triptogether.perspective.PerspectiveService;
 
 import java.lang.reflect.Method;

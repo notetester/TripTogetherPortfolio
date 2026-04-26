@@ -36,7 +36,7 @@ public class AuthorizationAspect {
         if (user == null) {
             throw new UnauthorizedException();
         }
-        if (!user.isAdminLike()) {
+        if (!user.hasAdminRole()) {
             throw new ForbiddenException("운영진만 접근할 수 있습니다.");
         }
     }
