@@ -175,4 +175,96 @@ class CommunityServiceTest {
 
         verify(myPageService, never()).addNotification(any());
     }
+
+    // ===== XSS sanitize (ADR-0005) =====
+
+    @Test
+    @DisplayName("댓글 sanitize - <script> 태그가 본문에 저장되지 않음")
+    void addComment_sanitize_removesScriptTag() {
+        given(communityMapper.countRecentCommentsByUser(USER_IDX, 1)).willReturn(0);
+        given(communityMapper.selectPost(POST_ID)).willReturn(null);
+
+        communityService.addComment(POST_ID, USER_IDX, "안녕<script>alert(1)</script>하세요");
+
+        org.mockito.ArgumentCaptor<org.triptogether.community.vo.CommunityCommentDto> captor =
+                org.mockito.ArgumentCaptor.forClass(org.triptogether.community.vo.CommunityCommentDto.class);
+        verify(communityMapper).insertComment(captor.capture());
+        String savedContent = captor.getValue().getContent();
+        assertThat(savedContent).doesNotContain("<script>");
+        assertThat(savedContent).contains("안녕");
+        assertThat(savedContent).contains("하세요");
+    }
+
+    // ===== updatePostReportCache - BLUR 임계값 (ADR-0001 + 0003 + 0006) =====
+
+    @Test
+    @DisplayName("신고 누적 BLUR 트리거 - 임계값 도달 직전→직후 전이 시에만 알림 발송")
+    void updatePostReportCache_atThreshold_sendsBlurNotification() {
+        CommunityPostDto post = new CommunityPostDto();
+        post.setPostId(POST_ID);
+        post.setUserIdx(USER_IDX);
+        post.setReportCount(2);    // 이전 = 2 (BLUR 아님)
+        post.setAiFlagged(false);
+        given(communityMapper.selectPost(POST_ID)).willReturn(post);
+
+        communityService.updatePostReportCache(POST_ID);
+
+        verify(communityMapper).increasePostReportCount(POST_ID);
+        // 2 → 3 으로 임계값 도달 → 알림 1회 발송
+        verify(myPageService).addNotification(any());
+    }
+
+    @Test
+    @DisplayName("신고 누적 BLUR 미트리거 - 임계값 미만이면 알림 미발송")
+    void updatePostReportCache_belowThreshold_noNotification() {
+        CommunityPostDto post = new CommunityPostDto();
+        post.setPostId(POST_ID);
+        post.setUserIdx(USER_IDX);
+        post.setReportCount(0);
+        post.setAiFlagged(false);
+        given(communityMapper.selectPost(POST_ID)).willReturn(post);
+
+        communityService.updatePostReportCache(POST_ID);
+
+        verify(communityMapper).increasePostReportCount(POST_ID);
+        verify(myPageService, never()).addNotification(any());
+    }
+
+    // ===== clearPostBlur - 어드민 BLUR 해제 (ADR-0003) =====
+
+    @Test
+    @DisplayName("어드민 BLUR 해제 - mapper 호출 + 작성자에게 알림")
+    void clearPostBlur_callsMapperAndNotifies() {
+        CommunityPostDto post = new CommunityPostDto();
+        post.setPostId(POST_ID);
+        post.setUserIdx(USER_IDX);
+        given(communityMapper.selectPost(POST_ID)).willReturn(post);
+
+        communityService.clearPostBlur(POST_ID);
+
+        verify(communityMapper).clearPostBlur(POST_ID);
+        verify(myPageService).addNotification(any());
+    }
+
+    // ===== Soft Delete (ADR-0008) =====
+
+    @Test
+    @DisplayName("게시글 삭제 - hard delete 아닌 status='DELETED' 마킹")
+    void deletePost_softDelete_setsStatusDeleted() {
+        communityService.deletePost(POST_ID);
+
+        verify(communityMapper).updatePostStatus(POST_ID, "DELETED");
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 - status='DELETED' + 부모 글 comment_count 감소 (캐시 정합성)")
+    void deleteComment_softDeleteAndDecrement() {
+        Long commentId = 555L;
+        given(communityMapper.selectPostIdByCommentId(commentId)).willReturn(POST_ID);
+
+        communityService.deleteComment(commentId);
+
+        verify(communityMapper).updateCommentStatus(commentId, "DELETED");
+        verify(communityMapper).decreaseCommentCount(POST_ID);
+    }
 }
