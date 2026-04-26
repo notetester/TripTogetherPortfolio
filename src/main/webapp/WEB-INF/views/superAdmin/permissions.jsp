@@ -38,11 +38,6 @@
                         </div>
                         <div class="sa-group-cnt"><spring:message code="superAdmin.permissions.list.usageCount" arguments="${p.usageCount}"/></div>
                         <div style="display:flex;gap:6px;align-items:center;">
-                            <c:if test="${p.permissionCode == 'FINANCE_ADMIN'}">
-                                <span class="adm-badge"
-                                      style="background:#f59e0b20;color:#fbbf24;border:1px solid #f59e0b;"
-                                      title="<spring:message code='superAdmin.permissions.badge.unimplementedTitle'/>"><spring:message code="superAdmin.permissions.badge.unimplemented"/></span>
-                            </c:if>
                             <c:choose>
                                 <c:when test="${p.active}"><span class="adm-badge adm-badge-green"><spring:message code="superAdmin.permissions.status.active"/></span></c:when>
                                 <c:otherwise><span class="adm-badge"><spring:message code="superAdmin.permissions.status.inactive"/></span></c:otherwise>
