@@ -431,13 +431,37 @@ public class InquiryController {
             return ResponseEntity.status(403).body(result);
         }
         try {
-            inquiryService.updateAnswer(inquiryId, content);
+            // 정책: 수정 전 본문은 INQUIRY_ANSWER_HISTORY 에 보존 (답변 변경 추적)
+            inquiryService.updateAnswer(inquiryId, content, getLoginUserIdx(session));
             result.put("success", true);
         } catch (Exception e) {
             log.error("답변 수정 오류", e);
             result.put("success", false);
             return ResponseEntity.status(500).body(result);
         }
+        return ResponseEntity.ok(result);
+    }
+
+    /* =============================================
+       GET /inquiry/{inquiryId}/answer/history - 답변 수정 이력 조회 (어드민 전용)
+       ============================================= */
+    /**
+     * 특정 문의의 답변 변경 이력을 반환한다.
+     * - 운영진이 아니면 403 반환
+     * - 응답: { success: true, list: [{prevContent, prevAdminNickname, changedAt, changedByNickname, changeType}, ...] }
+     */
+    @GetMapping("/{inquiryId}/answer/history")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getAnswerHistory(
+            @PathVariable Long inquiryId,
+            HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isAdmin(session)) {
+            result.put("success", false);
+            return ResponseEntity.status(403).body(result);
+        }
+        result.put("success", true);
+        result.put("list", inquiryService.getAnswerHistoryByInquiry(inquiryId));
         return ResponseEntity.ok(result);
     }
 
