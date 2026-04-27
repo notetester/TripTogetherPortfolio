@@ -2815,3 +2815,89 @@ body.sa-light .adm-member-local-toolbar {
 body.sa-light .adm-member-section-table th.js-member-sort.sorted {
     color: #2563eb;
 }
+
+/* 운영 게시판 서버 섹션: 차단/회원 관리형 툴바·페이징·정렬 표시 */
+.adm-managed-section-card .adm-managed-local-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-top: 1px solid #1e293b;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.42);
+}
+.adm-managed-section-card .adm-managed-toolbar-actions {
+    margin-left: auto;
+    justify-content: flex-end;
+}
+.adm-managed-section-card .adm-local-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px 16px;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.42);
+    font-size: 13px;
+    color: #cbd5e1;
+}
+.adm-managed-section-card .adm-local-page-info {
+    min-width: 0;
+    color: #cbd5e1;
+}
+.adm-managed-section-card .adm-local-page-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-left: auto;
+    white-space: nowrap;
+}
+.adm-managed-section-card .js-business-page-state {
+    min-width: 48px;
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+.adm-business-section-table th.js-business-sort.sorted {
+    color: #93c5fd;
+}
+.adm-business-section-table th.js-business-sort .sort-ico {
+    margin-left: 4px;
+    opacity: 1;
+    font-size: 10px;
+    font-weight: 900;
+}
+.adm-business-section-table tbody.is-loading {
+    opacity: .55;
+    pointer-events: none;
+}
+body.sa-light .adm-managed-section-card .adm-managed-local-toolbar,
+body.sa-light .adm-managed-section-card .adm-local-pagination {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+body.sa-light .adm-managed-section-card .adm-local-page-info,
+body.sa-light .adm-managed-section-card .js-business-page-state {
+    color: #475569;
+}
+body.sa-light .adm-business-section-table th.js-business-sort.sorted {
+    color: #2563eb;
+}
+@media (max-width: 767px) {
+    .adm-managed-section-card .adm-managed-local-toolbar,
+    .adm-managed-section-card .adm-local-pagination {
+        align-items: stretch;
+        padding: 14px 16px;
+    }
+    .adm-managed-section-card .adm-managed-toolbar-actions,
+    .adm-managed-section-card .adm-local-page-actions {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-end;
+    }
+    .adm-managed-section-card .adm-local-page-info {
+        width: 100%;
+    }
+}

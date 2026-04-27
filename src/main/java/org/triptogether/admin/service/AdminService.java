@@ -35,9 +35,14 @@ public interface AdminService {
     Long getCommentAuthorIdx(Long commentId);
 
     // ===== 기업 회원 신청 =====
+    Map<String, Object> getBusinessApplicationList(BusinessApplicationSearchVO search);
     List<BusinessAccountApplicationVO> getBusinessApplications(String status);
+    List<BusinessAccountApplicationVO> getBusinessApplicationsForExport(BusinessApplicationSearchVO search);
+    List<BusinessAccountApplicationVO> getBusinessApplicationsByIds(List<Long> ids);
     void approveBusinessApplication(Long applicationIdx, Long reviewerUserIdx);
     void rejectBusinessApplication(Long applicationIdx, String rejectReason, Long reviewerUserIdx);
+    void bulkApproveBusinessApplications(List<Long> applicationIdxList, Long reviewerUserIdx);
+    void bulkRejectBusinessApplications(List<Long> applicationIdxList, String rejectReason, Long reviewerUserIdx);
 
     // ===== 문의 관리 =====
     Map<String, Object> getInquiryList(AdminInquirySearchVO search);

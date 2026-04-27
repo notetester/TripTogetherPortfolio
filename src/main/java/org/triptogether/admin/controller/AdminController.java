@@ -116,12 +116,33 @@ public class AdminController {
     }
 
     @GetMapping("/business-applications")
-    public String businessApplicationList(@RequestParam(defaultValue = "PENDING") String status,
-                                          Model model) {
-        model.addAttribute("applicationList", adminService.getBusinessApplications(status));
-        model.addAttribute("status", status == null || status.isBlank() ? "PENDING" : status);
+    public String businessApplicationList(BusinessApplicationSearchVO search, Model model) {
+        model.addAllAttributes(adminService.getBusinessApplicationList(search));
         model.addAttribute("activeMenu", "businessApplications");
         return "admin/member/business-applications";
+    }
+
+    @GetMapping("/business-applications/api")
+    @ResponseBody
+    public Map<String, Object> businessApplicationListApi(BusinessApplicationSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminService.getBusinessApplicationList(search));
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("기업 신청 목록 API 조회 실패", e);
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/business-applications/fragment")
+    public String businessApplicationRowsFragment(BusinessApplicationSearchVO search, Model model, HttpServletResponse response) {
+        Map<String, Object> data = adminService.getBusinessApplicationList(search);
+        model.addAllAttributes(data);
+        writeAdminListHeaders(response, data);
+        return "admin/member/_businessApplicationRowsFragment";
     }
 
     @GetMapping("/packages")
@@ -233,6 +254,78 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("businessApplicationError", e.getMessage());
         }
         return "redirect:/admin/business-applications";
+    }
+
+    @PostMapping("/business-applications/bulk/approve")
+    @ResponseBody
+    public Map<String, Object> bulkApproveBusinessApplications(@RequestParam(required = false) List<Long> applicationIdxList,
+                                                               HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+            Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+            List<Long> targetIds = applicationIdxList != null ? applicationIdxList : Collections.emptyList();
+            adminService.bulkApproveBusinessApplications(targetIds, reviewerUserIdx);
+            result.put("success", true);
+            result.put("message", targetIds.size() + "건의 기업 신청을 승인했습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/business-applications/bulk/reject")
+    @ResponseBody
+    public Map<String, Object> bulkRejectBusinessApplications(@RequestParam(required = false) List<Long> applicationIdxList,
+                                                              @RequestParam String rejectReason,
+                                                              HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
+            Long reviewerUserIdx = loginUser != null ? loginUser.getUserIdx() : null;
+            List<Long> targetIds = applicationIdxList != null ? applicationIdxList : Collections.emptyList();
+            adminService.bulkRejectBusinessApplications(targetIds, rejectReason, reviewerUserIdx);
+            result.put("success", true);
+            result.put("message", targetIds.size() + "건의 기업 신청을 반려했습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/business-applications/export")
+    public ResponseEntity<byte[]> exportBusinessApplications(BusinessApplicationSearchVO search,
+                                                             @RequestParam(defaultValue = "search") String scope,
+                                                             @RequestParam(required = false) String selectedIds,
+                                                             @RequestParam(defaultValue = "csv") String format) {
+        try {
+            List<BusinessAccountApplicationVO> data;
+            if ("all".equals(scope)) {
+                data = adminService.getBusinessApplicationsForExport(new BusinessApplicationSearchVO());
+            } else if ("selected".equals(scope)) {
+                data = adminService.getBusinessApplicationsByIds(parseSelectedBusinessApplicationIds(selectedIds));
+            } else {
+                data = adminService.getBusinessApplicationsForExport(search);
+            }
+
+            if ("excel".equals(format)) {
+                byte[] bytes = buildBusinessApplicationExcel(data);
+                return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"business-applications.xlsx\"")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(bytes);
+            }
+            byte[] bytes = buildBusinessApplicationCsv(data);
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"business-applications.csv\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(bytes);
+        } catch (Exception e) {
+            log.error("기업 신청 내보내기 실패", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/members/{userIdx}")
@@ -399,6 +492,78 @@ public class AdminController {
         response.setHeader("X-Section-Page", paging != null ? String.valueOf(paging.getCurrentPage()) : "1");
         response.setHeader("X-Section-Size", paging != null ? String.valueOf(paging.getPageSize()) : "20");
         response.setHeader("X-Section-Pages", paging != null ? String.valueOf(paging.getTotalPage()) : "1");
+    }
+
+    private List<Long> parseSelectedBusinessApplicationIds(String selectedIds) {
+        if (selectedIds == null || selectedIds.isBlank()) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(selectedIds.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .filter(s -> s.matches("\\d+"))
+            .map(Long::parseLong)
+            .distinct()
+            .collect(Collectors.toList());
+    }
+
+    private byte[] buildBusinessApplicationCsv(List<BusinessAccountApplicationVO> data) {
+        StringBuilder sb = new StringBuilder("﻿");
+        sb.append("신청번호,회원번호,신청자,아이디,이메일,현재권한,요청권한,회사명,사업자번호,담당자,담당자연락처,상태,반려사유,검토자,신청일,검토일\n");
+        for (BusinessAccountApplicationVO app : data) {
+            sb.append(csvVal(app.getApplicationIdx())).append(',')
+              .append(csvVal(app.getUserIdx())).append(',')
+              .append(csvVal(app.getNickname())).append(',')
+              .append(csvVal(app.getUserId())).append(',')
+              .append(csvVal(app.getUserEmail())).append(',')
+              .append(csvVal(app.getCurrentUserRole())).append(',')
+              .append(csvVal(app.getRequestedRole())).append(',')
+              .append(csvVal(app.getCompanyName())).append(',')
+              .append(csvVal(app.getBusinessNumber())).append(',')
+              .append(csvVal(app.getManagerName())).append(',')
+              .append(csvVal(app.getManagerPhone())).append(',')
+              .append(csvVal(app.getApplicationStatus())).append(',')
+              .append(csvVal(app.getRejectReason())).append(',')
+              .append(csvVal(app.getReviewerNickname())).append(',')
+              .append(csvVal(formatBusinessDate(app.getCreatedAt()))).append(',')
+              .append(csvVal(formatBusinessDate(app.getReviewedAt()))).append('\n');
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private byte[] buildBusinessApplicationExcel(List<BusinessAccountApplicationVO> data) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            var sheet = wb.createSheet("기업신청");
+            String[] headers = {"신청번호","회원번호","신청자","아이디","이메일","현재권한","요청권한","회사명","사업자번호","담당자","담당자연락처","상태","반려사유","검토자","신청일","검토일"};
+            var hRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) hRow.createCell(i).setCellValue(headers[i]);
+            int r = 1;
+            for (BusinessAccountApplicationVO app : data) {
+                var row = sheet.createRow(r++);
+                row.createCell(0).setCellValue(app.getApplicationIdx() != null ? app.getApplicationIdx() : 0);
+                row.createCell(1).setCellValue(app.getUserIdx() != null ? app.getUserIdx() : 0);
+                row.createCell(2).setCellValue(safe(app.getNickname()));
+                row.createCell(3).setCellValue(safe(app.getUserId()));
+                row.createCell(4).setCellValue(safe(app.getUserEmail()));
+                row.createCell(5).setCellValue(safe(app.getCurrentUserRole()));
+                row.createCell(6).setCellValue(safe(app.getRequestedRole()));
+                row.createCell(7).setCellValue(safe(app.getCompanyName()));
+                row.createCell(8).setCellValue(safe(app.getBusinessNumber()));
+                row.createCell(9).setCellValue(safe(app.getManagerName()));
+                row.createCell(10).setCellValue(safe(app.getManagerPhone()));
+                row.createCell(11).setCellValue(safe(app.getApplicationStatus()));
+                row.createCell(12).setCellValue(safe(app.getRejectReason()));
+                row.createCell(13).setCellValue(safe(app.getReviewerNickname()));
+                row.createCell(14).setCellValue(formatBusinessDate(app.getCreatedAt()));
+                row.createCell(15).setCellValue(formatBusinessDate(app.getReviewedAt()));
+            }
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private String formatBusinessDate(LocalDateTime value) {
+        return value != null ? value.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : "";
     }
 
     private List<Long> parseSelectedMemberIds(String selectedIds) {
