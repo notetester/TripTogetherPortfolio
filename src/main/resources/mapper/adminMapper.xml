@@ -1727,6 +1727,12 @@
             <if test="eventStage != null and eventStage != 'ALL'">
                 AND s.event_stage = #{eventStage}
             </if>
+            <if test="requestKey != null and requestKey != ''">
+                AND (
+                    s.request_id = #{requestKey}
+                    OR s.flow_trace_id = #{requestKey}
+                )
+            </if>
             <if test="keyword != null and keyword != ''">
                 AND (
                     IFNULL(u.user_id, '') LIKE CONCAT('%', #{keyword}, '%')

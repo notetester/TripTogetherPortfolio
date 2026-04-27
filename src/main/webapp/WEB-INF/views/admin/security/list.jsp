@@ -58,6 +58,7 @@
                     <input type="hidden" id="securitySortFieldInput" name="sortField" value="${fn:escapeXml(search.sortField)}">
                     <input type="hidden" id="securitySortDirInput" name="sortDir" value="${fn:escapeXml(search.sortDir)}">
                     <input type="hidden" id="securityDateFilterInput" name="dateFilter" value="${fn:escapeXml(search.dateFilter)}">
+                    <input type="hidden" id="securityRequestKeyFilterInput" name="requestKey" value="${fn:escapeXml(search.requestKey)}">
                 </div>
             </form>
         </div>
@@ -435,6 +436,10 @@ function resetSecuritySort() {
     securitySectionState.page = 1;
     renderSecurityByMode(1);
 }
+function clearSecurityRequestKeyFilter() {
+    const requestKeyInput = document.getElementById('securityRequestKeyFilterInput');
+    if (requestKeyInput) requestKeyInput.value = '';
+}
 function resetSecurityFilters() {
     const form = getSecuritySearchForm();
     if (form) {
@@ -447,6 +452,7 @@ function resetSecurityFilters() {
         setValue('eventType', 'ALL');
         setValue('eventStage', 'ALL');
         setValue('dateFilter', '');
+        setValue('requestKey', '');
     }
     securitySectionState.page = 1;
     securitySectionState.sortBy = '';
@@ -467,6 +473,7 @@ function changeSecuritySize(size) {
 function filterSecurityByDate(dateStr) {
     const dateInput = document.getElementById('securityDateFilterInput');
     if (dateInput) dateInput.value = dateStr || '';
+    clearSecurityRequestKeyFilter();
     securitySectionState.page = 1;
     securitySectionState.clientRows = null;
     renderSecurityByMode(1);
@@ -477,6 +484,7 @@ function applySecurityKeywordFilter(button) {
     const form = getSecuritySearchForm();
     const input = form ? form.querySelector('[name=keyword]') : null;
     if (input) input.value = keyword;
+    clearSecurityRequestKeyFilter();
     securitySectionState.page = 1;
     securitySectionState.clientRows = null;
     renderSecurityByMode(1);
@@ -488,17 +496,31 @@ function applySecuritySelectFilter(button) {
     const form = getSecuritySearchForm();
     const input = form ? form.querySelector('[name=' + paramName + ']') : null;
     if (input) input.value = paramValue;
+    clearSecurityRequestKeyFilter();
     securitySectionState.page = 1;
     securitySectionState.clientRows = null;
     renderSecurityByMode(1);
 }
-function openSecurityRelatedActivity(button) {
-    const keyword = button.getAttribute('data-keyword');
-    if (!keyword) return;
-    const params = new URLSearchParams();
-    params.set('keyword', keyword);
-    params.set('page', '1');
-    location.href = SECURITY_CTX + '/admin/activity-logs?' + params.toString();
+function applySecurityRequestFlowFilter(button) {
+    const requestKey = button.getAttribute('data-request-key') || button.getAttribute('data-keyword');
+    if (!requestKey) return;
+    const form = getSecuritySearchForm();
+    if (form) {
+        const setValue = function (name, value) {
+            const el = form.querySelector('[name=' + name + ']');
+            if (el) el.value = value;
+        };
+        // 요청/흐름 ID 클릭은 다른 검색 조건을 유지하지 않고 해당 흐름 전체를 보이게 한다.
+        setValue('keyword', '');
+        setValue('success', 'ALL');
+        setValue('eventType', 'ALL');
+        setValue('eventStage', 'ALL');
+        setValue('dateFilter', '');
+        setValue('requestKey', requestKey);
+    }
+    securitySectionState.page = 1;
+    securitySectionState.clientRows = null;
+    renderSecurityByMode(1);
 }
 function closeSecurityDetailModal() {
     const modal = document.getElementById('securityDetailModal');
@@ -691,6 +713,7 @@ function initSecuritySection() {
     if (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
+            clearSecurityRequestKeyFilter();
             securitySectionState.page = 1;
             securitySectionState.clientRows = null;
             renderSecurityByMode(1);

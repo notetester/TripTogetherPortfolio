@@ -175,8 +175,8 @@
                 <c:when test="${not empty item.requestId or not empty item.flowTraceId}">
                     <button type="button"
                             class="adm-cell-link"
-                            data-keyword="${fn:escapeXml(securityRequestKey)}"
-                            onclick="openSecurityRelatedActivity(this)">
+                            data-request-key="${fn:escapeXml(securityRequestKey)}"
+                            onclick="applySecurityRequestFlowFilter(this)">
                         <span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;"><c:out value="${securityRequestKey}"/></span>
                         <c:choose>
                             <c:when test="${empty item.requestId and not empty item.flowTraceId}">
