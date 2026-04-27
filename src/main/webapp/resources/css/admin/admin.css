@@ -2627,8 +2627,6 @@ body.sa-light .adm-dash-sort-reset:hover {
     border-color: #94a3b8;
 }
 
-
-
 /* 회원 관리: 차단 관리 섹션과 동일한 툴바/페이징 레이아웃 */
 .js-member-section-card .adm-member-local-toolbar {
     display: flex;
@@ -2815,3 +2813,9 @@ body.sa-light .adm-member-local-toolbar {
 body.sa-light .adm-member-section-table th.js-member-sort.sorted {
     color: #2563eb;
 }
+
+/* finance dashboard - 텍스트 색상만 다크/라이트 분기 (인라인 specificity 회피용) */
+.adm-fin-num   { color: #f1f5f9; }
+.adm-fin-guide { color: #94a3b8; }
+body.sa-light .adm-fin-num   { color: #0f172a; }
+body.sa-light .adm-fin-guide { color: #475569; }

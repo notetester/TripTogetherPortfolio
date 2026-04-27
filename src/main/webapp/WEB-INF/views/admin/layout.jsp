@@ -46,7 +46,7 @@
             </a>
 
             <%-- 회원 관리 --%>
-            <c:if test="${hasMemberAdmin or hasAnyBlockAdmin or hasFinanceAdmin}">
+            <c:if test="${hasMemberAdmin or hasAnyBlockAdmin or hasFinanceAdmin or hasFinanceOperator or hasFinancePolicyAdmin}">
             <div class="adm-nav-group" data-group="members">
                 <button type="button" class="adm-nav-group-head" onclick="admToggleNavGroup('members')">
                     <span class="adm-nav-group-caret">▸</span>
@@ -67,8 +67,18 @@
                     </a>
                     </c:if>
                     <c:if test="${hasFinanceAdmin}">
-                    <a class="adm-nav-item ${activeMenu=='finance'?'active':''}" href="${pageContext.request.contextPath}/admin/finance">
+                    <a class="adm-nav-item ${activeMenu=='finance' and section ne 'policy' and section ne 'refund' ?'active':''}" href="${pageContext.request.contextPath}/admin/finance">
                         <span class="adm-nav-icon">💰</span> <spring:message code="admin.layout.menu.finance"/>
+                    </a>
+                    </c:if>
+                    <c:if test="${hasFinanceOperator}">
+                    <a class="adm-nav-item ${activeMenu=='finance' and section eq 'refund'?'active':''}" href="${pageContext.request.contextPath}/admin/finance/refund">
+                        <span class="adm-nav-icon">↩️</span> <spring:message code="admin.layout.menu.financeRefund"/>
+                    </a>
+                    </c:if>
+                    <c:if test="${hasFinancePolicyAdmin}">
+                    <a class="adm-nav-item ${activeMenu=='finance' and section eq 'policy'?'active':''}" href="${pageContext.request.contextPath}/admin/finance/policy">
+                        <span class="adm-nav-icon">⚙️</span> <spring:message code="admin.layout.menu.financePolicy"/>
                     </a>
                     </c:if>
                 </div>
