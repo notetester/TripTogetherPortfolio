@@ -70,11 +70,12 @@ body.sa-light .sa-org-tree::-webkit-scrollbar-thumb:hover { background: #94a3b8;
     flex-direction: row;
     align-items: flex-start;
     flex-wrap: nowrap;
-    gap: 16px;
+    gap: 0;                  /* gap 대신 자식 wrap 의 좌우 padding 으로 간격 — 가로선 끊김 방지 */
     margin-top: 0;
     padding-top: 32px;       /* 16px 부모-가로선 + 16px 가로선-자식카드 */
     position: relative;
 }
+.sa-org-children > .sa-org-node-wrap { padding: 0 8px; }
 
 /* 부모 카드 → 가로 연결선 사이의 수직선 (16px) */
 .sa-org-children::before {
@@ -130,10 +131,9 @@ body.sa-light .sa-org-tree::-webkit-scrollbar-thumb:hover { background: #94a3b8;
 /* top-down 모드의 부모-가로선 사이 메인 수직선 비활성화 */
 .sa-org-children.sa-org-children-indent::before { display: none; }
 
-/* 자식 wrap 내부 패딩 */
+/* 자식 wrap 내부 패딩 (top-down 의 좌우 padding 무효화) */
 .sa-org-children.sa-org-children-indent > .sa-org-node-wrap {
-    padding-top: 6px;
-    padding-bottom: 6px;
+    padding: 6px 0;
     align-items: flex-start;
 }
 /* 위쪽 수직선: wrap top → 카드 중앙 (모든 자식) */
