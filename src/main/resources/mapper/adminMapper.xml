@@ -1657,6 +1657,12 @@
                     OR IFNULL(u.nickname, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(h.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(h.request_uri, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(h.fail_reason, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(h.event_type, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(h.auth_type, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(h.auth_provider, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(h.login_method, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(h.auth_flow, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(h.request_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(h.flow_trace_id, '') LIKE CONCAT('%', #{keyword}, '%')
                 )
@@ -1678,18 +1684,18 @@
         <include refid="loginAuditSearchBase"/>
         ORDER BY
         <choose>
-            <when test="sortField == 'time'">h.login_at ${sortDir}</when>
-            <when test="sortField == 'member'">COALESCE(u.nickname, u.user_id, CAST(h.user_idx AS CHAR)) ${sortDir}, h.login_at DESC</when>
-            <when test="sortField == 'eventType'">h.event_type ${sortDir}, h.login_at DESC</when>
-            <when test="sortField == 'authType'">h.auth_type ${sortDir}, h.login_at DESC</when>
-            <when test="sortField == 'provider'">h.auth_provider ${sortDir}, h.login_at DESC</when>
-            <when test="sortField == 'loginMethod'">h.login_method ${sortDir}, h.login_at DESC</when>
-            <when test="sortField == 'input'">h.login_identifier ${sortDir}, h.login_at DESC</when>
-            <when test="sortField == 'success'">h.is_success ${sortDir}, h.login_at DESC</when>
-            <when test="sortField == 'reason'">h.fail_reason ${sortDir}, h.login_at DESC</when>
-            <when test="sortField == 'ip'">h.ip_address ${sortDir}, h.login_at DESC</when>
-            <when test="sortField == 'requestId'">h.request_id ${sortDir}, h.login_at DESC</when>
-            <otherwise>h.login_at DESC</otherwise>
+            <when test="sortField == 'time'">h.login_at ${sortDir}, h.login_idx ${sortDir}</when>
+            <when test="sortField == 'member'">COALESCE(NULLIF(u.nickname, ''), NULLIF(u.user_id, ''), CAST(h.user_idx AS CHAR), '') ${sortDir}, h.login_idx ${sortDir}</when>
+            <when test="sortField == 'eventType'">COALESCE(NULLIF(h.event_type, ''), '') ${sortDir}, h.login_idx ${sortDir}</when>
+            <when test="sortField == 'authType'">COALESCE(NULLIF(h.auth_type, ''), '') ${sortDir}, h.login_idx ${sortDir}</when>
+            <when test="sortField == 'provider'">COALESCE(NULLIF(h.auth_provider, ''), '') ${sortDir}, h.login_idx ${sortDir}</when>
+            <when test="sortField == 'loginMethod'">COALESCE(NULLIF(h.auth_flow, ''), NULLIF(h.login_method, ''), '') ${sortDir}, h.login_idx ${sortDir}</when>
+            <when test="sortField == 'input'">COALESCE(NULLIF(h.login_identifier, ''), '') ${sortDir}, h.login_idx ${sortDir}</when>
+            <when test="sortField == 'success'">h.is_success ${sortDir}, h.login_idx ${sortDir}</when>
+            <when test="sortField == 'reason'">COALESCE(NULLIF(h.fail_reason, ''), '') ${sortDir}, h.login_idx ${sortDir}</when>
+            <when test="sortField == 'ip'">COALESCE(NULLIF(h.ip_address, ''), '') ${sortDir}, h.login_idx ${sortDir}</when>
+            <when test="sortField == 'requestId'">COALESCE(NULLIF(h.request_id, ''), NULLIF(h.flow_trace_id, ''), '') ${sortDir}, h.login_idx ${sortDir}</when>
+            <otherwise>h.login_at DESC, h.login_idx DESC</otherwise>
         </choose>
         LIMIT #{size} OFFSET #{offset}
     </select>

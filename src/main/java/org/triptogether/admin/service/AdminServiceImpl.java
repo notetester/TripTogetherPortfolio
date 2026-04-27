@@ -961,15 +961,18 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Map<String, Object> getLoginAuditList(AdminLoginAuditSearchVO search) {
-        List<AdminLoginAuditVO> list = adminMapper.findLoginAudits(search);
-        int total = adminMapper.countLoginAudits(search);
-        AdminPageVO paging = AdminPageVO.of(total, search.getPage(), search.getSize(), 10);
+        AdminLoginAuditSearchVO normalized = search != null ? search : new AdminLoginAuditSearchVO();
+        int total = adminMapper.countLoginAudits(normalized);
+        AdminPageVO paging = AdminPageVO.of(total, normalized.getPage(), normalized.getSize(), 10);
+        normalized.setPage(paging.getCurrentPage());
+
+        List<AdminLoginAuditVO> list = adminMapper.findLoginAudits(normalized);
 
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
         result.put("paging", paging);
         result.put("total", total);
-        result.put("search", search);
+        result.put("search", normalized);
         return result;
     }
 
