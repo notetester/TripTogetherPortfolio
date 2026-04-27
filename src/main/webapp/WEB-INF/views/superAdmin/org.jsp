@@ -56,8 +56,10 @@ function buildTree(nodes) {
     return roots;
 }
 
-// 모든 깊이 들여쓰기 트리 (├─ └─). connecting line 일관성 + 가로 폭 안정.
-function renderNode(node) {
+// depth 0 (root) 와 1 (root 의 자식) 까지는 클래식 top-down,
+// depth 2+ (본부장의 자식 = 부서장 부터) 는 들여쓰기 트리로 전환해 가로 폭 절약.
+function renderNode(node, depth) {
+    depth = depth || 0;
     var permLabel = (node.permCode && permCodeMap[node.permCode]) || node.permCode;
     var permBadge = node.permCode
         ? '<span class="sa-org-badge" title="' + node.permCode + '">' + permLabel + '</span>' : '';
@@ -66,9 +68,13 @@ function renderNode(node) {
     var title = node.title
         ? '<div class="sa-org-title">' + node.title + '</div>' : '';
 
+    var childrenClass = (depth >= 1)
+        ? 'sa-org-children sa-org-children-indent'
+        : 'sa-org-children';
+
     var childrenHtml = node.children.length > 0
-        ? '<div class="sa-org-children sa-org-children-indent">'
-            + node.children.map(renderNode).join('')
+        ? '<div class="' + childrenClass + '">'
+            + node.children.map(function(c) { return renderNode(c, depth + 1); }).join('')
             + '</div>'
         : '';
 
@@ -92,7 +98,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     var tree = buildTree(admins);
     document.getElementById('org-chart').innerHTML =
-        '<div class="sa-org-tree">' + tree.map(renderNode).join('') + '</div>';
+        '<div class="sa-org-tree">' + tree.map(function(r) { return renderNode(r, 0); }).join('') + '</div>';
 });
 </script>
 
