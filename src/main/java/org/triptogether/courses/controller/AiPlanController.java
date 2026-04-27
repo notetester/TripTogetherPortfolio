@@ -53,7 +53,7 @@ public class AiPlanController {
             aiPlanService.generateAndSavePlan(requestDTO, loginUser.getUserIdx());
 
             redirectAttributes.addFlashAttribute("successMessage", msg("course.message.aiCreateSuccess"));
-            return "redirect:/courses/list";
+            return "redirect:/courses/my";
 
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
