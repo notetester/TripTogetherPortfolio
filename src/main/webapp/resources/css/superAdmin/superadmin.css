@@ -42,7 +42,16 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-full-select { width:100%; }
 
 /* ── 조직도 (클래식 top-down 트리: 부모 아래 자식들 가로 정렬 + ┴ 분기) ── */
-.sa-org-tree         { display:flex; flex-direction:column; align-items:center; overflow-x:auto; padding:16px 24px; gap:0; }
+.sa-org-tree         { display:flex; flex-direction:column; align-items:center; overflow-x:auto; padding:16px 24px; gap:0;
+                       scrollbar-color: #475569 #131826; scrollbar-width: thin; }
+.sa-org-tree::-webkit-scrollbar              { height: 10px; }
+.sa-org-tree::-webkit-scrollbar-track        { background: #131826; }
+.sa-org-tree::-webkit-scrollbar-thumb        { background: #475569; border-radius: 4px; }
+.sa-org-tree::-webkit-scrollbar-thumb:hover  { background: #64748b; }
+body.sa-light .sa-org-tree                   { scrollbar-color: #cbd5e1 #f1f5f9; }
+body.sa-light .sa-org-tree::-webkit-scrollbar-track { background: #f1f5f9; }
+body.sa-light .sa-org-tree::-webkit-scrollbar-thumb { background: #cbd5e1; }
+body.sa-light .sa-org-tree::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 .sa-org-node-wrap    { display:flex; flex-direction:column; align-items:center; position:relative; flex:0 0 auto; }
 .sa-org-node         { display:flex; align-items:center; gap:10px; background:#1e2330; border:1px solid #2d3748; border-radius:10px; padding:10px 14px; min-width:200px; max-width:240px; position:relative; z-index:1; }
 .sa-org-node:hover   { border-color:#6366f1; background:#1a2035; }
