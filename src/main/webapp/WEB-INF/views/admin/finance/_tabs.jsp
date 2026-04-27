@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%-- finance 모듈 공통 탭 fragment.
      모델 속성 ${subTab} 으로 active 결정.
      권한별 노출:
