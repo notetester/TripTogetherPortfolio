@@ -980,15 +980,26 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Map<String, Object> getSecurityAuditList(AdminSecurityAuditSearchVO search) {
-        List<AdminSecurityAuditVO> list = adminMapper.findSecurityAudits(search);
-        int total = adminMapper.countSecurityAudits(search);
-        AdminPageVO paging = AdminPageVO.of(total, search.getPage(), search.getSize(), 10);
+        AdminSecurityAuditSearchVO normalized = search != null ? search : new AdminSecurityAuditSearchVO();
+        int requestedSize = normalized.getSize();
+        if (requestedSize != 30 && requestedSize != 50 && requestedSize != 100 && requestedSize != 10000) {
+            normalized.setSize(30);
+        }
+        if (normalized.getPage() < 1) {
+            normalized.setPage(1);
+        }
+
+        int total = adminMapper.countSecurityAudits(normalized);
+        AdminPageVO paging = AdminPageVO.of(total, normalized.getPage(), normalized.getSize(), 10);
+        normalized.setPage(paging.getCurrentPage());
+
+        List<AdminSecurityAuditVO> list = adminMapper.findSecurityAudits(normalized);
 
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
         result.put("paging", paging);
         result.put("total", total);
-        result.put("search", search);
+        result.put("search", normalized);
         return result;
     }
 

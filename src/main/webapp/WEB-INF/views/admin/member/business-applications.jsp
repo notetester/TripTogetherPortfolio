@@ -408,14 +408,41 @@ function businessEscapeHtml(value) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 }
+function businessRoleLabel(value) {
+    if (value === 'BUSINESS') return '기업회원';
+    if (value === 'PARTNER') return '파트너';
+    if (value === 'ADMIN') return '관리자';
+    if (value === 'USER') return '일반회원';
+    return businessDash(value);
+}
+function businessStatusLabel(value) {
+    if (value === 'PENDING') return '대기';
+    if (value === 'APPROVED') return '승인';
+    if (value === 'REJECTED') return '반려';
+    return businessDash(value);
+}
+function businessBadge(value, type) {
+    const raw = businessDash(value);
+    if (raw === '-') return '<span class="adm-business-detail-muted">-</span>';
+    return '<span class="adm-business-detail-badge ' + businessEscapeHtml(type || '') + ' ' + businessEscapeHtml(raw) + '">' + businessEscapeHtml(type === 'status' ? businessStatusLabel(raw) : businessRoleLabel(raw)) + '</span>';
+}
 function businessDetailField(label, value, options) {
     const opts = options || {};
-    const safeValue = businessEscapeHtml(value);
-    const pre = opts.pre ? 'white-space:pre-wrap;' : '';
-    return '<div class="adm-context-field ' + (opts.focus ? 'is-focus-target" data-focus-key="' + opts.focus : '') + '">'
-        + '<div class="adm-context-label">' + businessEscapeHtml(label) + '</div>'
-        + '<div class="adm-context-value" style="' + pre + '">' + safeValue + '</div>'
+    const focusAttr = opts.focus ? ' data-focus-key="' + businessEscapeHtml(opts.focus) + '"' : '';
+    const focusClass = opts.focus ? ' is-focus-target' : '';
+    const valueClass = opts.pre ? ' adm-business-prevalue' : '';
+    const rendered = opts.html ? (value || '<span class="adm-business-detail-muted">-</span>') : businessEscapeHtml(value);
+    return '<div class="adm-business-detail-field' + focusClass + '"' + focusAttr + '>'
+        + '<div class="adm-business-detail-label">' + businessEscapeHtml(label) + '</div>'
+        + '<div class="adm-business-detail-value' + valueClass + '">' + rendered + '</div>'
         + '</div>';
+}
+function businessDetailSection(title, fields, options) {
+    const opts = options || {};
+    return '<section class="adm-business-detail-section ' + businessEscapeHtml(opts.className || '') + '">'
+        + '<div class="adm-business-detail-section-title">' + businessEscapeHtml(title) + '</div>'
+        + '<div class="adm-business-detail-grid">' + fields.join('') + '</div>'
+        + '</section>';
 }
 function closeBusinessApplicationDetailModal() {
     const modal = document.getElementById('businessApplicationDetailModal');
@@ -432,23 +459,41 @@ function openBusinessApplicationDetail(trigger) {
 
     title.textContent = '#' + businessDash(d.applicationIdx) + ' · ' + businessDash(d.companyName);
     const applicant = businessDash(d.nickname) + (d.userId ? ' (@' + d.userId + ')' : '');
+    const statusHtml = businessBadge(d.status, 'status');
+    const requestedRoleHtml = businessBadge(d.requestedRole, 'role');
+    const currentRoleHtml = businessBadge(d.currentRole, 'role');
     body.innerHTML =
-        '<div class="adm-context-grid">'
-        + businessDetailField('신청 번호', d.applicationIdx)
-        + businessDetailField('신청자', applicant)
-        + businessDetailField('회원 이메일', d.userEmail)
-        + businessDetailField('현재 권한', d.currentRole)
-        + businessDetailField('요청 권한', d.requestedRole, {focus:'role'})
-        + businessDetailField('회사명', d.companyName, {focus:'company'})
-        + businessDetailField('사업자번호', d.businessNumber, {focus:'company'})
-        + businessDetailField('담당자', d.managerName, {focus:'company'})
-        + businessDetailField('담당자 연락처', d.managerPhone, {focus:'company'})
-        + businessDetailField('상태', d.status, {focus:'status'})
-        + businessDetailField('신청일시', d.createdAtDisplay || d.createdAt, {focus:'date'})
-        + businessDetailField('검토자', d.reviewer)
-        + businessDetailField('검토일시', d.reviewedAtDisplay || d.reviewedAt)
-        + businessDetailField('반려 사유', d.rejectReason, {pre:true, focus:'status'})
-        + businessDetailField('신청 설명', d.description, {pre:true, focus:'company'})
+        '<div class="adm-business-detail-shell">'
+        + '<div class="adm-business-detail-hero">'
+        + '  <div>'
+        + '    <div class="adm-business-detail-kicker">기업 회원 신청</div>'
+        + '    <div class="adm-business-detail-company">' + businessEscapeHtml(d.companyName) + '</div>'
+        + '    <div class="adm-business-detail-sub">신청번호 #' + businessEscapeHtml(d.applicationIdx) + ' · ' + businessEscapeHtml(d.createdAtDisplay || d.createdAt) + '</div>'
+        + '  </div>'
+        + '  <div class="adm-business-detail-hero-badges">' + statusHtml + requestedRoleHtml + '</div>'
+        + '</div>'
+        + businessDetailSection('신청자 / 회원 정보', [
+            businessDetailField('신청자', applicant),
+            businessDetailField('회원 이메일', d.userEmail),
+            businessDetailField('현재 권한', currentRoleHtml, {html:true}),
+            businessDetailField('요청 권한', requestedRoleHtml, {html:true, focus:'role'})
+        ])
+        + businessDetailSection('회사 정보', [
+            businessDetailField('회사명', d.companyName, {focus:'company'}),
+            businessDetailField('사업자번호', d.businessNumber, {focus:'company'}),
+            businessDetailField('담당자', d.managerName, {focus:'company'}),
+            businessDetailField('담당자 연락처', d.managerPhone, {focus:'company'})
+        ])
+        + businessDetailSection('검토 정보', [
+            businessDetailField('상태', statusHtml, {html:true, focus:'status'}),
+            businessDetailField('신청일시', d.createdAtDisplay || d.createdAt, {focus:'date'}),
+            businessDetailField('검토자', d.reviewer),
+            businessDetailField('검토일시', d.reviewedAtDisplay || d.reviewedAt)
+        ])
+        + businessDetailSection('신청/반려 메모', [
+            businessDetailField('신청 설명', d.description, {pre:true, focus:'company'}),
+            businessDetailField('반려 사유', d.rejectReason, {pre:true, focus:'status'})
+        ], {className:'is-wide'})
         + '</div>';
 
     const memberBtn = document.getElementById('businessApplicationDetailMemberBtn');

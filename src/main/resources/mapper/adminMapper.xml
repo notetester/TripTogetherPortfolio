@@ -1738,6 +1738,11 @@
                     OR IFNULL(s.ip_address, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(s.request_id, '') LIKE CONCAT('%', #{keyword}, '%')
                     OR IFNULL(s.flow_trace_id, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(s.event_type, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(s.event_stage, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(s.fail_reason, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(s.detail_message, '') LIKE CONCAT('%', #{keyword}, '%')
+                    OR IFNULL(s.user_agent, '') LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
             <if test="dateFilter != null and dateFilter != ''">
@@ -1760,16 +1765,16 @@
         ORDER BY
         <choose>
             <when test="sortField == 'time'">s.occurred_at ${sortDir}, s.security_idx ${sortDir}</when>
-            <when test="sortField == 'targetMember'">COALESCE(u.nickname, u.user_id, CAST(s.user_idx AS CHAR)) ${sortDir}, s.occurred_at DESC</when>
-            <when test="sortField == 'actor'">COALESCE(au.nickname, au.user_id, CAST(s.actor_user_idx AS CHAR)) ${sortDir}, s.occurred_at DESC</when>
-            <when test="sortField == 'eventType'">s.event_type ${sortDir}, s.occurred_at DESC</when>
-            <when test="sortField == 'eventStage'">s.event_stage ${sortDir}, s.occurred_at DESC</when>
-            <when test="sortField == 'input'">s.input_identifier ${sortDir}, s.occurred_at DESC</when>
-            <when test="sortField == 'targetEmail'">s.target_email ${sortDir}, s.occurred_at DESC</when>
-            <when test="sortField == 'success'">s.is_success ${sortDir}, s.occurred_at DESC</when>
-            <when test="sortField == 'reason'">s.fail_reason ${sortDir}, s.occurred_at DESC</when>
-            <when test="sortField == 'ip'">s.ip_address ${sortDir}, s.occurred_at DESC</when>
-            <when test="sortField == 'requestId'">s.request_id ${sortDir}, s.occurred_at DESC</when>
+            <when test="sortField == 'targetMember'">COALESCE(NULLIF(u.nickname, ''), NULLIF(u.user_id, ''), CAST(s.user_idx AS CHAR), '') ${sortDir}, s.occurred_at DESC, s.security_idx DESC</when>
+            <when test="sortField == 'actor'">COALESCE(NULLIF(au.nickname, ''), NULLIF(au.user_id, ''), CAST(s.actor_user_idx AS CHAR), 'SYSTEM') ${sortDir}, s.occurred_at DESC, s.security_idx DESC</when>
+            <when test="sortField == 'eventType'">COALESCE(NULLIF(s.event_type, ''), '') ${sortDir}, s.occurred_at DESC, s.security_idx DESC</when>
+            <when test="sortField == 'eventStage'">COALESCE(NULLIF(s.event_stage, ''), '') ${sortDir}, s.occurred_at DESC, s.security_idx DESC</when>
+            <when test="sortField == 'input'">COALESCE(NULLIF(s.input_identifier, ''), '') ${sortDir}, s.occurred_at DESC, s.security_idx DESC</when>
+            <when test="sortField == 'targetEmail'">COALESCE(NULLIF(s.target_email, ''), '') ${sortDir}, s.occurred_at DESC, s.security_idx DESC</when>
+            <when test="sortField == 'success'">s.is_success ${sortDir}, s.occurred_at DESC, s.security_idx DESC</when>
+            <when test="sortField == 'reason'">COALESCE(NULLIF(s.fail_reason, ''), '') ${sortDir}, s.occurred_at DESC, s.security_idx DESC</when>
+            <when test="sortField == 'ip'">COALESCE(NULLIF(s.ip_address, ''), '') ${sortDir}, s.occurred_at DESC, s.security_idx DESC</when>
+            <when test="sortField == 'requestId'">COALESCE(NULLIF(s.request_id, ''), NULLIF(s.flow_trace_id, ''), '') ${sortDir}, s.occurred_at DESC, s.security_idx DESC</when>
             <otherwise>s.occurred_at DESC, s.security_idx DESC</otherwise>
         </choose>
         LIMIT #{size} OFFSET #{offset}

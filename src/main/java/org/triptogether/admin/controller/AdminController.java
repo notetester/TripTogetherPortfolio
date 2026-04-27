@@ -1055,6 +1055,14 @@ public class AdminController {
         return "admin/security/list";
     }
 
+    @GetMapping("/security/fragment")
+    public String securityAuditRowsFragment(AdminSecurityAuditSearchVO search, Model model, HttpServletResponse response) {
+        Map<String, Object> data = adminService.getSecurityAuditList(search);
+        model.addAllAttributes(data);
+        writeAdminListHeaders(response, data);
+        return "admin/security/_securityAuditRowsFragment";
+    }
+
     @GetMapping("/email-verifications")
     public String emailVerificationRequests(AdminEmailVerificationRequestSearchVO search, Model model) {
         model.addAllAttributes(adminService.getEmailVerificationRequestList(search));
