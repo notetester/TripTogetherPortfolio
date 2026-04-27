@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="88" height="88" viewBox="0 0 88 88" fill="none">
+  <defs>
+    <linearGradient id="bronzeBg" x1="14" y1="10" x2="72" y2="78" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FDE7D5"/>
+      <stop offset="1" stop-color="#C9733D"/>
+    </linearGradient>
+    <linearGradient id="bronzeCore" x1="28" y1="22" x2="60" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF5EB"/>
+      <stop offset="1" stop-color="#E9A97D"/>
+    </linearGradient>
+  </defs>
+  <circle cx="44" cy="44" r="36" fill="url(#bronzeBg)"/>
+  <circle cx="44" cy="44" r="31" stroke="#7C3A17" stroke-opacity=".18" stroke-width="2"/>
+  <path d="M28 13L34 29L22 36L18 21L28 13Z" fill="#8B5A2B"/>
+  <path d="M60 13L54 29L66 36L70 21L60 13Z" fill="#8B5A2B"/>
+  <circle cx="44" cy="40" r="18" fill="url(#bronzeCore)"/>
+  <circle cx="44" cy="40" r="15.5" stroke="#8B5A2B" stroke-opacity=".28"/>
+  <path d="M44 28L47.2 36.1H56L48.9 41L51.6 49L44 44.3L36.4 49L39.1 41L32 36.1H40.8L44 28Z" fill="#8B5A2B"/>
+  <path d="M35 56H53L58 70H30L35 56Z" fill="#8B5A2B"/>
+  <text x="44" y="66" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-weight="700" fill="#FFF4E8">Lv10</text>
+</svg>

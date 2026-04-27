@@ -3,11 +3,14 @@ package org.triptogether.reward.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.myPage.vo.WalletHistoryDto;
 import org.triptogether.reward.vo.ExpHistoryCreateDto;
 import org.triptogether.reward.vo.LevelOverrideDto;
 import org.triptogether.reward.vo.LevelPolicyDto;
+import org.triptogether.reward.vo.LevelUpRewardPolicyDto;
 import org.triptogether.reward.vo.PointHistoryCreateDto;
 import org.triptogether.reward.vo.RewardPolicyDto;
+import org.triptogether.reward.vo.UserLevelUpRewardHistoryCreateDto;
 
 import java.util.List;
 
@@ -31,7 +34,9 @@ public interface RewardMapper {
     void updateUserRewardState(@Param("userIdx") Long userIdx,
                                @Param("pointBalance") long pointBalance,
                                @Param("expPoints") long expPoints,
-                               @Param("levelNo") int levelNo);
+                               @Param("levelNo") int levelNo,
+                               @Param("cashBalance") long cashBalance,
+                               @Param("mileageBalance") long mileageBalance);
 
     List<UsersVO> selectUsersForLevelSync(@Param("onlyActiveMembers") boolean onlyActiveMembers);
 
@@ -45,4 +50,17 @@ public interface RewardMapper {
     LevelPolicyDto selectActiveLevelPolicy();
 
     List<LevelOverrideDto> selectActiveLevelOverrides();
+
+    List<LevelUpRewardPolicyDto> selectActiveLevelUpRewardPoliciesBetween(@Param("fromLevelExclusive") int fromLevelExclusive,
+                                                                          @Param("toLevelInclusive") int toLevelInclusive);
+
+    int countLevelUpRewardHistory(@Param("userIdx") Long userIdx,
+                                  @Param("levelUpRewardPolicyIdx") Long levelUpRewardPolicyIdx);
+
+    void insertLevelUpRewardHistory(UserLevelUpRewardHistoryCreateDto history);
+
+    void upsertLevelRewardInventoryItem(@Param("userIdx") Long userIdx,
+                                        @Param("itemCode") String itemCode);
+
+    void insertWalletHistory(WalletHistoryDto history);
 }

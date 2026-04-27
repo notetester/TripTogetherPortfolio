@@ -36,7 +36,18 @@
                       <div class="comment-top">
                         <span class="comment-author tt-nickname ${comment.nicknameColorClass} ${comment.nicknameEffectClass}"><c:out value="${comment.nickname}"/></span>
                         <c:if test="${not empty comment.profileBadgeLabel}">
-                          <span class="tt-profile-badge ${comment.profileBadgeClass}">${comment.profileBadgeLabel}</span>
+                          <c:choose>
+                            <c:when test="${fn:startsWith(comment.profileBadgeClass, 'badge-level-')}">
+                              <c:set var="lvlTier" value="${fn:substringAfter(comment.profileBadgeClass, 'badge-level-')}"/>
+                              <img src="${pageContext.request.contextPath}/resources/data/level-badge-${lvlTier}-sm.svg"
+                                   alt="${comment.profileBadgeLabel}"
+                                   title="${comment.profileBadgeLabel}"
+                                   class="tt-level-badge-img"/>
+                            </c:when>
+                            <c:otherwise>
+                              <span class="tt-profile-badge ${comment.profileBadgeClass}">${comment.profileBadgeLabel}</span>
+                            </c:otherwise>
+                          </c:choose>
                         </c:if>
                         <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
                           <c:choose>
@@ -160,7 +171,18 @@
                                 <div class="comment-top">
                                   <span class="comment-author tt-nickname ${reply.nicknameColorClass} ${reply.nicknameEffectClass}"><c:out value="${reply.nickname}"/></span>
                                   <c:if test="${not empty reply.profileBadgeLabel}">
-                                    <span class="tt-profile-badge ${reply.profileBadgeClass}">${reply.profileBadgeLabel}</span>
+                                    <c:choose>
+                                      <c:when test="${fn:startsWith(reply.profileBadgeClass, 'badge-level-')}">
+                                        <c:set var="rplTier" value="${fn:substringAfter(reply.profileBadgeClass, 'badge-level-')}"/>
+                                        <img src="${pageContext.request.contextPath}/resources/data/level-badge-${rplTier}-sm.svg"
+                                             alt="${reply.profileBadgeLabel}"
+                                             title="${reply.profileBadgeLabel}"
+                                             class="tt-level-badge-img"/>
+                                      </c:when>
+                                      <c:otherwise>
+                                        <span class="tt-profile-badge ${reply.profileBadgeClass}">${reply.profileBadgeLabel}</span>
+                                      </c:otherwise>
+                                    </c:choose>
                                   </c:if>
                                   <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
                                     <c:choose>

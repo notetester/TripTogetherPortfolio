@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="3.8" y1="2.7" x2="19.6" y2="21.3" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF4BF"/>
+      <stop offset="1" stop-color="#D9A305"/>
+    </linearGradient>
+    <linearGradient id="core" x1="7.6" y1="6" x2="16.4" y2="15.8" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFDF5"/>
+      <stop offset="1" stop-color="#FDE68A"/>
+    </linearGradient>
+  </defs>
+  <circle cx="12" cy="12" r="9.8" fill="url(#bg)"/>
+  <circle cx="12" cy="12" r="8.5" stroke="#92400E" stroke-opacity=".2" stroke-width=".5" fill="none"/>
+  <path d="M7.6 3.5L9.3 7.9L6 9.8L4.9 5.7Z" fill="#B45309"/>
+  <path d="M16.4 3.5L14.7 7.9L18 9.8L19.1 5.7Z" fill="#B45309"/>
+  <circle cx="12" cy="10.9" r="4.9" fill="url(#core)"/>
+  <circle cx="12" cy="10.9" r="4.2" stroke="#B45309" stroke-opacity=".28" stroke-width=".5" fill="none"/>
+  <path d="M9.3,12.3 L10.2,8.5 H13.9 L14.7,12.3 L12,13.9 Z" fill="#B45309"/>
+  <path d="M10.4,7.1 H13.6 L13.2,8.5 H10.8 Z" fill="#F59E0B"/>
+  <path d="M9.5,15.3 H14.5 L15.8,19.1 H8.2 Z" fill="#B45309"/>
+</svg>

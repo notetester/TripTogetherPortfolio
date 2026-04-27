@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="88" height="88" viewBox="0 0 88 88" fill="none">
+  <defs>
+    <linearGradient id="masterBg" x1="14" y1="10" x2="72" y2="78" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F3E8FF"/>
+      <stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+    <linearGradient id="masterCore" x1="28" y1="22" x2="60" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCF7FF"/>
+      <stop offset="1" stop-color="#DDD6FE"/>
+    </linearGradient>
+  </defs>
+  <circle cx="44" cy="44" r="36" fill="url(#masterBg)"/>
+  <circle cx="44" cy="44" r="31" stroke="#312E81" stroke-opacity=".2" stroke-width="2"/>
+  <path d="M23 24L30 16L37 24L44 16L51 24L58 16L65 24L60 34H28L23 24Z" fill="#4C1D95"/>
+  <circle cx="44" cy="42" r="18" fill="url(#masterCore)"/>
+  <circle cx="44" cy="42" r="15.5" stroke="#4C1D95" stroke-opacity=".28"/>
+  <path d="M44 29L47.2 38.1H57L49 43.6L52.1 53L44 47.9L35.9 53L39 43.6L31 38.1H40.8L44 29Z" fill="#6D28D9"/>
+  <path d="M35 58H53L58 72H30L35 58Z" fill="#4C1D95"/>
+  <text x="44" y="68" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-weight="700" fill="#F5F3FF">Lv50</text>
+</svg>
