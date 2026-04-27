@@ -1,16 +1,23 @@
 package org.triptogether.admin.service;
 
-import org.triptogether.admin.vo.AdminBlockSearchVO;
+import org.triptogether.admin.vo.*;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
 public interface AdminBlockService {
     Map<String, Object> getBlockDashboard(AdminBlockSearchVO search);
+    Map<String, Object> getBlockDashboard(AdminBlockSearchVO search, boolean loadUserBlocks, boolean loadIpBlocks, boolean loadBatches, boolean loadHistories);
     Map<String, Object> getBlockHistoriesPaged(AdminBlockSearchVO search);
     Map<String, Object> getIpBlocksPaged(AdminBlockSearchVO search);
     Map<String, Object> getIpBlockBatchesPaged(AdminBlockSearchVO search);
     Map<String, Object> getUserBlocksPaged(AdminBlockSearchVO search);
+    AdminUserBlockVO getUserBlockDetail(Long blockIdx);
+    AdminIpBlockVO getIpRuleDetail(Long ipBlocklistIdx);
+    Map<String, Object> getIpRuleDetailData(Long ipBlocklistIdx);
+    AdminIpBlockBatchVO getBatchDetail(Long ipBlockBatchIdx);
+    Map<String, Object> getBatchDetailData(Long ipBlockBatchIdx);
+    AdminBlockHistoryVO getHistoryDetail(Long historyBlockIdx);
     void createIpBlockBatch(String batchCode, String batchName, String sourceType, String sourceName,
                             String batchRuleAction, Integer defaultRulePriority,
                             String defaultDisableStrategy, String defaultEnableStrategy,

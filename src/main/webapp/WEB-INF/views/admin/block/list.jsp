@@ -21,7 +21,7 @@
             <div class="adm-kpi-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));">
                 <c:set var="kpiPct1" value="${totalUserCount > 0 ? activeUserBlockCount * 100 / totalUserCount : 0}"/>
                 <c:if test="${kpiPct1 > 100}"><c:set var="kpiPct1" value="100"/></c:if>
-                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');">
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('user-blocks');renderSectionByMode('user-blocks');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activeUserBlocks"/></div>
                     <div class="adm-kpi-value-row">
                         <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numUserBlocks' javaScriptEscape='true'/>">${activeUserBlockCount}</span>
@@ -35,7 +35,7 @@
                 </button>
                 <c:set var="kpiPct2" value="${totalIpRuleCount > 0 ? activeIpBlockCount * 100 / totalIpRuleCount : 0}"/>
                 <c:if test="${kpiPct2 > 100}"><c:set var="kpiPct2" value="100"/></c:if>
-                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');">
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('ip-rules');renderSectionByMode('ip-rules');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activePolicies"/></div>
                     <div class="adm-kpi-value-row">
                         <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numActivePolicies' javaScriptEscape='true'/>">${activeIpBlockCount}</span>
@@ -49,7 +49,7 @@
                 </button>
                 <c:set var="kpiPct3" value="${blockHistoryCount > 0 ? todayBlockCount * 100 / blockHistoryCount : 0}"/>
                 <c:if test="${kpiPct3 > 100}"><c:set var="kpiPct3" value="100"/></c:if>
-                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('histories');renderLocalSection('histories');">
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('histories');renderSectionByMode('histories');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.history"/></div>
                     <div class="adm-kpi-value-row">
                         <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numTodayBlocks' javaScriptEscape='true'/>">${todayBlockCount}</span>
@@ -63,7 +63,7 @@
                 </button>
                 <c:set var="kpiPct4" value="${totalBatchCount > 0 ? activeBatchCount * 100 / totalBatchCount : 0}"/>
                 <c:if test="${kpiPct4 > 100}"><c:set var="kpiPct4" value="100"/></c:if>
-                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('batches');renderLocalSection('batches');">
+                <button type="button" class="adm-kpi-card adm-kpi-nav-btn" onclick="activateBlockTab('batches');renderSectionByMode('batches');">
                     <div class="adm-kpi-label"><spring:message code="admin.blocks.kpi.activeBatches"/></div>
                     <div class="adm-kpi-value-row">
                         <span class="adm-kpi-num" title="<spring:message code='admin.blocks.kpi.tooltip.numActiveBatches' javaScriptEscape='true'/>">${activeBatchCount}</span>
@@ -163,7 +163,7 @@
                         <div class="adm-filter-label"><spring:message code="admin.context.batch"/></div>
                         <select class="adm-select" name="batchId">
                             <option value=""><spring:message code="admin.common.all"/></option>
-                            <c:forEach var="bt" items="${batches}">
+                            <c:forEach var="bt" items="${batchFilterOptions}">
                                 <option value="${bt.ipBlockBatchIdx}" ${search.batchId == bt.ipBlockBatchIdx ? 'selected' : ''}>${bt.batchName} (${bt.batchCode})</option>
                             </c:forEach>
                         </select>
@@ -204,9 +204,9 @@
                 <div class="adm-block-dashboard-insight">
                     <div class="adm-block-insight-title"><spring:message code="admin.blocks.dashboard.insight.quickNavTitle"/></div>
                     <div class="adm-block-insight-actions">
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('user-blocks');renderLocalSection('user-blocks');"><spring:message code="admin.blocks.dashboard.insight.userBlocksChip"/></button>
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('ip-rules');renderLocalSection('ip-rules');"><spring:message code="admin.blocks.dashboard.insight.ipRulesChip"/></button>
-                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('histories');renderLocalSection('histories');"><spring:message code="admin.blocks.dashboard.insight.historyChip"/></button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('user-blocks');renderSectionByMode('user-blocks');"><spring:message code="admin.blocks.dashboard.insight.userBlocksChip"/></button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('ip-rules');renderSectionByMode('ip-rules');"><spring:message code="admin.blocks.dashboard.insight.ipRulesChip"/></button>
+                        <button type="button" class="adm-inline-chip" onclick="activateBlockTab('histories');renderSectionByMode('histories');"><spring:message code="admin.blocks.dashboard.insight.historyChip"/></button>
                     </div>
                 </div>
             </div>
@@ -229,7 +229,7 @@
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
-                                <c:forEach var="b" items="${userBlocks}" begin="0" end="4">
+                                <c:forEach var="b" items="${dashboardUserBlocks}">
                                     <tr>
                                         <td>${empty b.nickname ? '-' : b.nickname}</td>
                                         <td>
@@ -283,7 +283,7 @@
                                         </td>
                                     </tr>
                                 </c:forEach>
-                                <c:if test="${empty userBlocks}">
+                                <c:if test="${empty dashboardUserBlocks}">
                                     <tr><td colspan="4" style="text-align:center;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                                 </c:if>
                                 </tbody>
@@ -309,7 +309,7 @@
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
-                                <c:forEach var="r" items="${ipBlocks}" begin="0" end="4">
+                                <c:forEach var="r" items="${dashboardIpBlocks}">
                                     <tr>
                                         <td>
                                             <div>${empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue}</div>
@@ -369,7 +369,7 @@
                                         </td>
                                     </tr>
                                 </c:forEach>
-                                <c:if test="${empty ipBlocks}">
+                                <c:if test="${empty dashboardIpBlocks}">
                                     <tr><td colspan="4" style="text-align:center;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                                 </c:if>
                                 </tbody>
@@ -438,7 +438,7 @@
                                     <th><spring:message code="admin.common.action"/></th>
                                 </tr></thead>
                                 <tbody>
-                                <c:forEach var="h" items="${histories}" begin="0" end="4">
+                                <c:forEach var="h" items="${dashboardHistories}">
                                     <c:set var="historyDashboardAt" value="${h.blockedAtDate}"/>
                                     <c:if test="${not empty h.releasedAtDate}">
                                         <c:set var="historyDashboardAt" value="${h.releasedAtDate}"/>
@@ -503,7 +503,7 @@
                                         </td>
                                     </tr>
                                 </c:forEach>
-                                <c:if test="${empty histories}">
+                                <c:if test="${empty dashboardHistories}">
                                     <tr><td colspan="5" style="text-align:center;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
                                 </c:if>
                                 </tbody>
@@ -588,173 +588,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach var="b" items="${userBlocks}">
-                        <fmt:formatDate var="userBlockBlockedAtText" value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
-                        <c:set var="userBlockLastHistoryText" value="-"/>
-                        <c:if test="${b.lastHistoryAtDate != null}">
-                            <fmt:formatDate var="userBlockLastHistoryText" value="${b.lastHistoryAtDate}" pattern="yyyy.MM.dd HH:mm"/>
-                        </c:if>
-                        <c:set var="userBlockSyncText" value="-"/>
-                        <c:if test="${b.syncedAtDate != null}">
-                            <fmt:formatDate var="userBlockSyncText" value="${b.syncedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
-                        </c:if>
-                        <tr class="js-local-row"
-                            data-section="user-blocks"
-                            data-search="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)} ${fn:toLowerCase(empty b.userId ? '' : b.userId)} ${fn:toLowerCase(empty b.userEmail ? '' : b.userEmail)} ${fn:toLowerCase(empty b.blockedIp ? '' : b.blockedIp)} ${fn:toLowerCase(empty b.reason ? '' : b.reason)} ${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)} ${fn:toLowerCase(empty b.blockType ? '' : b.blockType)} ${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}"
-                            data-nickname="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)}"
-                            data-user-id="${fn:toLowerCase(empty b.userId ? '' : b.userId)}"
-                            data-target="${fn:toLowerCase(empty b.blockedIp ? '' : b.blockedIp)} ${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)}"
-                            data-reason="${fn:toLowerCase(empty b.reason ? '' : b.reason)}"
-                            data-block-type="${fn:toLowerCase(empty b.blockType ? '' : b.blockType)}"
-                            data-snapshot-status="${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}"
-                            data-blocked-at="${fn:toLowerCase(userBlockBlockedAtText)}"
-                            data-expires-at="${fn:toLowerCase(empty b.expiresAtInputValue ? '' : b.expiresAtInputValue)}">
-                            <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="user-blocks" data-target-key="${fn:escapeXml(b.blockTargetKey)}" value="${fn:escapeXml(b.blockTargetKey)}" onchange="updateBlockBulkBar('user-blocks')"></td>
-                            <td data-sort-value="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)}">
-                                <c:choose>
-                                    <c:when test="${b.userIdx != null}">
-                                        <button type="button"
-                                                class="adm-inline-link js-open-member-detail"
-                                                data-user-idx="${b.userIdx}"
-                                                style="font-weight:700;color:#93c5fd;">
-                                            ${empty b.nickname ? '-' : b.nickname}
-                                        </button>
-                                        <div style="font-size:12px;color:#94a3b8;">
-                                            <button type="button"
-                                                    class="adm-inline-link js-open-member-detail"
-                                                    data-user-idx="${b.userIdx}"
-                                                    style="color:#94a3b8;font-size:12px;">
-                                                ${empty b.userId ? '-' : b.userId}
-                                            </button>
-                                        </div>
-                                    </c:when>
-                                    <c:otherwise>
-                                <div style="font-weight:700;color:#e2e8f0;">${empty b.nickname ? '-' : b.nickname}</div>
-                                <div style="font-size:12px;color:#94a3b8;">${empty b.userId ? '-' : b.userId}</div>
-                            </c:otherwise>
-                        </c:choose>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty b.blockType ? '' : b.blockType)}">
-                                <button type="button"
-                                        class="adm-inline-chip js-apply-block-filter"
-                                        data-section="user-blocks"
-                                        data-field="blockType"
-                                        data-keyword="${fn:escapeXml(b.blockType)}">
-                                    <c:out value="${b.blockType}"/>
-                                </button>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)}">
-                                <button type="button"
-                                        class="adm-link-btn js-open-user-block-editor"
-                                        data-block-idx="${b.blockIdx}"
-                                        data-template-id="detail-user-${b.blockIdx}"
-                                        data-user-idx="${empty b.userIdx ? '' : b.userIdx}"
-                                        data-display-name="${fn:escapeXml(empty b.nickname ? b.userId : b.nickname)}"
-                                        data-user-id="${fn:escapeXml(empty b.userId ? '' : b.userId)}"
-                                        data-user-email="${fn:escapeXml(empty b.userEmail ? '' : b.userEmail)}"
-                                        data-block-type="${b.blockType}"
-                                        data-blocked-ip="${fn:escapeXml(empty b.blockedIp ? '' : b.blockedIp)}"
-                                        data-target-key="${fn:escapeXml(b.blockTargetKey)}"
-                                        data-active="${b.active ? 'true' : 'false'}"
-                                        data-snapshot-status="${fn:escapeXml(b.snapshotStatus)}"
-                                        data-reason="${fn:escapeXml(empty b.reason ? '' : b.reason)}"
-                                        data-expires-at="${b.expiresAtInputValue}"
-                                        data-blocked-at="${userBlockBlockedAtText}"
-                                        data-last-history-at="${userBlockLastHistoryText}"
-                                        data-sync-at="${userBlockSyncText}">
-                                    <span>${empty b.blockedIp ? '-' : b.blockedIp}</span>
-                                    <span style="display:block;font-size:11px;color:#64748b;">${b.blockTargetKey}</span>
-                                </button>
-                                <div class="adm-inline-actions">
-                                    <button type="button"
-                                            class="adm-inline-chip js-apply-block-filter"
-                                            data-section="user-blocks"
-                                            data-field="target"
-                                            data-keyword="${fn:escapeXml(empty b.blockedIp ? b.blockTargetKey : b.blockedIp)}">
-                                        <spring:message code="admin.common.sameTarget"/>
-                                    </button>
-                                </div>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}">
-                                <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
-                                    <span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span>
-                                </button>
-                            </td>
-                            <td style="max-width:260px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty b.reason ? '' : b.reason)}">
-                                <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
-                                    <span><c:out value="${empty b.reason ? '-' : b.reason}"/></span>
-                                </button>
-                                <c:if test="${not empty b.reason}">
-                                    <div class="adm-tr-inline js-admin-translation-widget"
-                                         data-label="<spring:message code='admin.common.reason'/>"
-                                         data-source-type="USER_BLOCK"
-                                         data-source-idx="${b.blockIdx}"
-                                         data-field-name="reason"
-                                         data-default-source-lang="ko"
-                                         data-source-text="${fn:escapeXml(b.reason)}"></div>
-                                </c:if>
-                            </td>
-                            <td style="font-size:12px;" data-sort-value="${userBlockBlockedAtText}">
-                                <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
-                                    <span><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
-                                    <span class="adm-cell-link-note"><spring:message code="admin.context.expiresAt"/>:
-                                        <c:choose>
-                                            <c:when test="${b.expiresAtDate != null}"><fmt:formatDate value="${b.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when>
-                                            <c:otherwise><spring:message code="admin.members.none"/></c:otherwise>
-                                        </c:choose>
-                                    </span>
-                                </button>
-                            </td>
-                            <td>
-                                <div class="adm-row-actions">
-                                    <button type="button"
-                                            class="adm-row-btn detail js-open-user-block-editor"
-                                            data-block-idx="${b.blockIdx}"
-                                            data-template-id="detail-user-${b.blockIdx}"
-                                            data-user-idx="${empty b.userIdx ? '' : b.userIdx}"
-                                            data-display-name="${fn:escapeXml(empty b.nickname ? b.userId : b.nickname)}"
-                                            data-user-id="${fn:escapeXml(empty b.userId ? '' : b.userId)}"
-                                            data-user-email="${fn:escapeXml(empty b.userEmail ? '' : b.userEmail)}"
-                                            data-block-type="${b.blockType}"
-                                            data-blocked-ip="${fn:escapeXml(empty b.blockedIp ? '' : b.blockedIp)}"
-                                            data-target-key="${fn:escapeXml(b.blockTargetKey)}"
-                                            data-active="${b.active ? 'true' : 'false'}"
-                                            data-snapshot-status="${fn:escapeXml(b.snapshotStatus)}"
-                                            data-reason="${fn:escapeXml(empty b.reason ? '' : b.reason)}"
-                                            data-expires-at="${b.expiresAtInputValue}"
-                                            data-blocked-at="${userBlockBlockedAtText}"
-                                            data-last-history-at="${userBlockLastHistoryText}"
-                                            data-sync-at="${userBlockSyncText}"><spring:message code="admin.common.settings"/></button>
-                                    <div class="action-menu-wrap">
-                                        <button type="button"
-                                                class="adm-row-btn detail adm-row-btn-more"
-                                                onclick="admToggleActionMenu(this)">⋯</button>
-                                        <div class="action-menu">
-                                            <c:if test="${not empty b.blockedIp}">
-                                                <button type="button"
-                                                        class="action-menu-item js-open-ip-context"
-                                                        data-ip-address="${b.blockedIp}"
-                                                        data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
-                                            </c:if>
-                                            <button type="button"
-                                                    class="action-menu-item js-open-block-detail"
-                                                    data-template-id="detail-user-${b.blockIdx}"
-                                                    data-detail-title="${fn:escapeXml(adminBlocksHistoryLabel)}"><spring:message code="admin.common.history"/></button>
-                                            <c:if test="${hasUserBlockAdmin and b.active}">
-                                                <div class="action-menu-sep"></div>
-                                                <button type="button"
-                                                        class="action-menu-item danger js-release-user-block"
-                                                        data-target-key="${fn:escapeXml(b.blockTargetKey)}"><spring:message code="admin.common.release"/></button>
-                                            </c:if>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    <c:if test="${empty userBlocks}">
-                        <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
-                    </c:if>
+                    <%@ include file="_userBlockRowsOnly.jspf" %>
                     </tbody>
                 </table>
             </div>
@@ -770,58 +604,7 @@
     </div>
 
     <div id="ubDetailArea">
-    <c:forEach var="b" items="${userBlocks}">
-        <template id="detail-user-${b.blockIdx}">
-            <div class="detail-grid">
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.member"/></div><div class="detail-value">${empty b.nickname ? '-' : b.nickname} / ${empty b.userId ? '-' : b.userId}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.email"/></div><div class="detail-value">${empty b.userEmail ? '-' : b.userEmail}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.filter.blockType"/></div><div class="detail-value">${b.blockType}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.targetKey"/></div><div class="detail-value">${b.blockTargetKey}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.blockedIp"/></div><div class="detail-value">${empty b.blockedIp ? '-' : b.blockedIp}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.status"/></div><div class="detail-value">${b.active ? 'ACTIVE' : 'INACTIVE'} / ${b.snapshotStatus}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.operator"/></div><div class="detail-value">${empty b.blockedByNickname ? '-' : b.blockedByNickname}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.releasedBy"/></div><div class="detail-value">${empty b.releasedByNickname ? '-' : b.releasedByNickname}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.blockedAt"/></div><div class="detail-value"><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.expiresAt"/></div><div class="detail-value"><c:choose><c:when test="${b.expiresAtDate != null}"><fmt:formatDate value="${b.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise><spring:message code="admin.members.none"/></c:otherwise></c:choose></div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.releasedAt"/></div><div class="detail-value"><c:choose><c:when test="${b.releasedAtDate != null}"><fmt:formatDate value="${b.releasedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.syncedAt"/></div><div class="detail-value"><c:choose><c:when test="${b.syncedAtDate != null}"><fmt:formatDate value="${b.syncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
-            </div>
-            <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.detailReason"/></div><div class="detail-value">${empty b.reason ? '-' : fn:escapeXml(b.reason)}</div></div>
-            <c:if test="${not empty b.reason}">
-                <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="<spring:message code='admin.translation.label.userBlockReason'/>"
-                     data-source-type="USER_BLOCK"
-                     data-source-idx="${b.blockIdx}"
-                     data-field-name="reason"
-                     data-default-source-lang="ko"
-                     data-source-text="${fn:escapeXml(b.reason)}"></div>
-            </c:if>
-            <table class="history-table" style="margin-top:14px;">
-                <thead><tr><th><spring:message code="admin.common.item"/></th><th><spring:message code="admin.common.value"/></th></tr></thead>
-                <tbody>
-                <tr><td><spring:message code="admin.context.requestId"/></td><td>${empty b.blockRequestId ? '-' : b.blockRequestId}</td></tr>
-                <tr><td><spring:message code="admin.blocks.scope"/></td><td>${empty b.blockScope ? '-' : b.blockScope}</td></tr>
-                <tr><td><spring:message code="admin.blocks.ipMatch"/></td><td>${empty b.ipMatchType ? '-' : b.ipMatchType}</td></tr>
-                <tr><td><spring:message code="admin.blocks.lastHistory"/></td><td><c:choose><c:when test="${b.lastHistoryAtDate != null}"><fmt:formatDate value="${b.lastHistoryAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></td></tr>
-                </tbody>
-            </table>
-            <table class="history-table" style="margin-top:14px;">
-                <thead><tr><th><spring:message code="admin.common.history"/></th><th><spring:message code="admin.common.status"/></th><th><spring:message code="admin.common.time"/></th><th><spring:message code="admin.common.reason"/></th></tr></thead>
-                <tbody>
-                <c:forEach var="rel" items="${histories}">
-                    <c:if test="${rel.blockTargetKey == b.blockTargetKey}">
-                        <tr>
-                            <td>${rel.historyKind}</td>
-                            <td>${rel.active ? 'ACTIVE' : 'INACTIVE'}</td>
-                            <td><fmt:formatDate value="${rel.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></td>
-                            <td>${empty rel.controlReason ? (empty rel.reason ? '-' : fn:escapeXml(rel.reason)) : fn:escapeXml(rel.controlReason)}</td>
-                        </tr>
-                    </c:if>
-                </c:forEach>
-                </tbody>
-            </table>
-        </template>
-    </c:forEach>
+    <%@ include file="_userBlockDetailsOnly.jspf" %>
     </div>
 
     <div class="adm-card js-section-card" data-section="ip-rules" data-enhanced="true" style="margin-bottom:20px;">
@@ -906,168 +689,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach var="r" items="${ipBlocks}">
-                        <fmt:formatDate var="ipRuleBlockedAtText" value="${r.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
-                        <c:set var="ipRuleExpiresText" value=""/>
-                        <c:if test="${r.expiresAtDate != null}">
-                            <fmt:formatDate var="ipRuleExpiresText" value="${r.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/>
-                        </c:if>
-                        <tr class="js-local-row"
-                            data-section="ip-rules"
-                            data-search="${fn:toLowerCase(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)} ${fn:toLowerCase(r.blockTargetKey)} ${fn:toLowerCase(empty r.batchName ? '' : r.batchName)} ${fn:toLowerCase(empty r.batchCode ? '' : r.batchCode)} ${fn:toLowerCase(empty r.reason ? '' : r.reason)} ${fn:toLowerCase(empty r.detailMessage ? '' : r.detailMessage)} ${fn:toLowerCase(empty r.blockCategory ? '' : r.blockCategory)} ${fn:toLowerCase(empty r.controlMode ? '' : r.controlMode)} ${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)} ${r.priority}"
-                            data-target="${fn:toLowerCase(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)} ${fn:toLowerCase(r.blockTargetKey)}"
-                            data-batch="${fn:toLowerCase(empty r.batchName ? '' : r.batchName)} ${fn:toLowerCase(empty r.batchCode ? '' : r.batchCode)}"
-                            data-reason="${fn:toLowerCase(empty r.reason ? '' : r.reason)} ${fn:toLowerCase(empty r.detailMessage ? '' : r.detailMessage)}"
-                            data-priority="${r.priority}"
-                            data-policy="${fn:toLowerCase(empty r.blockCategory ? '' : r.blockCategory)} ${fn:toLowerCase(empty r.controlMode ? '' : r.controlMode)} ${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)} ${fn:toLowerCase(empty r.effectiveStatus ? '' : r.effectiveStatus)}"
-                            data-blocked-at="${fn:toLowerCase(ipRuleBlockedAtText)}"
-                            data-expires-at="${fn:toLowerCase(empty ipRuleExpiresText ? '' : ipRuleExpiresText)}"
-                            data-final-state="${fn:toLowerCase(empty r.finalStateLabel ? '' : r.finalStateLabel)}">
-                            <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="ip-rules" data-id="${r.ipBlocklistIdx}" value="${r.ipBlocklistIdx}" onchange="updateBlockBulkBar('ip-rules')"></td>
-                            <td data-sort-value="${fn:toLowerCase(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}">
-                                <button type="button"
-                                        class="adm-link-btn js-open-ip-rule-editor"
-                                        data-id="${r.ipBlocklistIdx}"
-                                        data-template-id="detail-ip-${r.ipBlocklistIdx}"
-                                        data-target-display="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}"
-                                        data-target-key="${fn:escapeXml(r.blockTargetKey)}"
-                                        data-rule-action="${r.ruleAction}"
-                                        data-control-mode="${r.controlMode}"
-                                        data-block-category="${r.blockCategory}"
-                                        data-priority="${r.priority}"
-                                        data-reason="${fn:escapeXml(empty r.reason ? '' : r.reason)}"
-                                        data-detail-message="${fn:escapeXml(empty r.detailMessage ? '' : r.detailMessage)}"
-                                        data-expires-at="${r.expiresAtInputValue}"
-                                        data-effective-status-label="${fn:escapeXml(r.effectiveStatusLabel)}"
-                                        data-final-state-label="${fn:escapeXml(r.finalStateLabel)}"
-                                        data-rule-state-label="${fn:escapeXml(r.ruleStateLabel)}"
-                                        data-batch-status-label="${fn:escapeXml(r.batchStatusLabel)}"
-                                        data-batch-name="${fn:escapeXml(empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName)}"
-                                        data-batch-code="${fn:escapeXml(empty r.batchCode ? '' : r.batchCode)}"
-                                        data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
-                                        data-blocked-at="${ipRuleBlockedAtText}"
-                                        data-expires-display="${fn:escapeXml(empty ipRuleExpiresText ? adminBlocksNoneLabel : ipRuleExpiresText)}"
-                                        data-active="${r.active ? 'true' : 'false'}">
-                                    <span style="font-weight:700;color:#e2e8f0;">${empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue}</span>
-                                    <span style="display:block;font-size:12px;color:#94a3b8;">${r.blockTargetKey}</span>
-                                    <span style="display:block;font-size:11px;color:#64748b;">${r.matchType}</span>
-                                </button>
-                                <div class="adm-inline-actions">
-                                    <button type="button"
-                                            class="adm-inline-chip js-apply-block-filter"
-                                            data-section="ip-rules"
-                                            data-field="target"
-                                            data-keyword="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}">
-                                        <spring:message code="admin.common.sameTarget"/>
-                                    </button>
-                                    <c:if test="${not empty r.ipBlockBatchIdx}">
-                                        <button type="button"
-                                                class="adm-inline-chip js-apply-block-filter"
-                                                data-section="ip-rules"
-                                                data-field="batch"
-                                                data-keyword="${fn:escapeXml(empty r.batchCode ? r.batchName : r.batchCode)}">
-                                            <spring:message code="admin.common.sameBatch"/>
-                                        </button>
-                                    </c:if>
-                                </div>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty r.ruleAction ? '' : r.ruleAction)}">
-                                <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
-                                    <span><span class="status-badge ${r.ruleAction == 'ALLOW' ? 'ACTIVE' : 'DORMANT'}">${r.ruleActionLabel}</span></span>
-                                    <span style="font-size:12px;color:#94a3b8;">${r.controlModeLabel}</span>
-                                    <span class="adm-cell-link-note">${r.blockCategory}</span>
-                                </button>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty r.batchName ? '' : r.batchName)}">
-                                <button type="button"
-                                        class="adm-cell-link ${not empty r.ipBlockBatchIdx ? 'js-open-batch-editor' : 'js-open-ip-rule-editor'}"
-                                        data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
-                                        data-id="${r.ipBlocklistIdx}">
-                                    <span>${empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName}</span>
-                                    <span style="font-size:12px;color:#94a3b8;">${empty r.batchCode ? r.batchStatusLabel : fn:escapeXml(r.batchCode)}</span>
-                                    <span class="adm-cell-link-note">${r.batchStatusLabel}</span>
-                                </button>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty r.effectiveStatus ? '' : r.effectiveStatus)}">
-                                <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
-                                    <span><span class="status-badge ${r.effectiveStatusBadgeClass}">${r.finalStateLabel}</span></span>
-                                    <span style="font-size:12px;color:#94a3b8;">${r.effectiveStatusLabel}</span>
-                                    <span class="adm-cell-link-note">${r.ruleStateLabel} / ${r.batchStatusLabel}</span>
-                                </button>
-                            </td>
-                            <td data-sort-value="${r.priority}">
-                                <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
-                                    <span>${r.priority}</span>
-                                    <span class="adm-cell-link-note">${empty r.ruleOriginType ? '-' : r.ruleOriginType}</span>
-                                </button>
-                            </td>
-                            <td style="max-width:280px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty r.reason ? '' : r.reason)}">
-                                <button type="button" class="adm-cell-link js-open-ip-rule-editor" data-id="${r.ipBlocklistIdx}">
-                                    <span>${empty r.reason ? '-' : r.reason}</span>
-                                    <span class="adm-cell-link-note">${empty r.effectiveStatusReason ? '-' : r.effectiveStatusReason}</span>
-                                </button>
-                            </td>
-                            <td>
-                                <div class="adm-row-actions">
-                                    <button type="button"
-                                            class="adm-row-btn detail js-open-ip-rule-editor"
-                                            data-id="${r.ipBlocklistIdx}"
-                                            data-template-id="detail-ip-${r.ipBlocklistIdx}"
-                                            data-target-display="${fn:escapeXml(empty r.targetDisplayValue ? r.blockTargetKey : r.targetDisplayValue)}"
-                                            data-target-key="${fn:escapeXml(r.blockTargetKey)}"
-                                            data-rule-action="${r.ruleAction}"
-                                            data-control-mode="${r.controlMode}"
-                                            data-block-category="${r.blockCategory}"
-                                            data-priority="${r.priority}"
-                                            data-reason="${fn:escapeXml(empty r.reason ? '' : r.reason)}"
-                                            data-detail-message="${fn:escapeXml(empty r.detailMessage ? '' : r.detailMessage)}"
-                                            data-expires-at="${r.expiresAtInputValue}"
-                                            data-effective-status-label="${fn:escapeXml(r.effectiveStatusLabel)}"
-                                            data-final-state-label="${fn:escapeXml(r.finalStateLabel)}"
-                                            data-rule-state-label="${fn:escapeXml(r.ruleStateLabel)}"
-                                            data-batch-status-label="${fn:escapeXml(r.batchStatusLabel)}"
-                                            data-batch-name="${fn:escapeXml(empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName)}"
-                                            data-batch-code="${fn:escapeXml(empty r.batchCode ? '' : r.batchCode)}"
-                                            data-batch-id="${empty r.ipBlockBatchIdx ? '' : r.ipBlockBatchIdx}"
-                                            data-blocked-at="${ipRuleBlockedAtText}"
-                                            data-expires-display="${fn:escapeXml(empty ipRuleExpiresText ? adminBlocksNoneLabel : ipRuleExpiresText)}"
-                                            data-active="${r.active ? 'true' : 'false'}">${adminBlocksSettingsLabel}</button>
-                                    <div class="action-menu-wrap">
-                                        <button type="button"
-                                                class="adm-row-btn detail adm-row-btn-more"
-                                                onclick="admToggleActionMenu(this)">⋯</button>
-                                        <div class="action-menu">
-                                            <c:if test="${not empty r.ipAddress}">
-                                                <button type="button"
-                                                        class="action-menu-item js-open-ip-context"
-                                                        data-ip-address="${r.ipAddress}"
-                                                        data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
-                                            </c:if>
-                                            <button type="button"
-                                                    class="action-menu-item js-open-block-detail"
-                                                    data-template-id="detail-ip-${r.ipBlocklistIdx}"
-                                                    data-detail-title="${fn:escapeXml(adminBlocksHistoryLabel)}">${adminBlocksHistoryLabel}</button>
-                                            <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
-                                                <div class="action-menu-sep"></div>
-                                                <button type="button"
-                                                        class="action-menu-item ${r.active ? 'danger' : ''} js-toggle-ip-rule"
-                                                        data-id="${r.ipBlocklistIdx}"
-                                                        data-active="${r.active ? 'false' : 'true'}">${r.active ? adminBlocksRuleOffLabel : adminBlocksRuleOnLabel}</button>
-                                                <c:if test="${r.ipBlockBatchIdx != null and r.controlMode == 'MANUAL_OVERRIDE'}">
-                                                    <button type="button"
-                                                            class="action-menu-item js-return-to-batch"
-                                                            data-id="${r.ipBlocklistIdx}">${adminBlocksReturnToBatchLabel}</button>
-                                                </c:if>
-                                            </c:if>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    <c:if test="${empty ipBlocks}">
-                        <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
-                    </c:if>
+                    <%@ include file="_ipRuleRowsOnly.jspf" %>
                     </tbody>
                 </table>
             </div>
@@ -1083,73 +705,7 @@
     </div>
 
     <div id="iprDetailArea">
-    <c:forEach var="r" items="${ipBlocks}">
-        <template id="detail-ip-${r.ipBlocklistIdx}">
-            <div class="detail-grid">
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.targetKey"/></div><div class="detail-value">${r.blockTargetKey}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.displayValue"/></div><div class="detail-value">${empty r.targetDisplayValue ? '-' : r.targetDisplayValue}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.ruleAction"/></div><div class="detail-value">${r.ruleActionLabel}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.controlMode"/></div><div class="detail-value">${r.controlModeLabel}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.ruleState"/></div><div class="detail-value">${r.ruleStateLabel}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.effectiveState"/></div><div class="detail-value">${r.finalStateLabel} / ${r.effectiveStatusLabel}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.effectiveStatusReason"/></div><div class="detail-value">${empty r.effectiveStatusReason ? '-' : fn:escapeXml(r.effectiveStatusReason)}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.syncedAt"/></div><div class="detail-value"><c:choose><c:when test="${r.effectiveSyncedAtDate != null}"><fmt:formatDate value="${r.effectiveSyncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose> / ${empty r.effectiveSyncedBySource ? '-' : r.effectiveSyncedBySource}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.matchType"/></div><div class="detail-value">${r.matchType}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.cidrRange"/></div><div class="detail-value">${empty r.cidrNotation ? '-' : r.cidrNotation} <c:if test="${not empty r.rangeStartIp}">${r.rangeStartIp} ~ ${r.rangeEndIp}</c:if></div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.countryAsn"/></div><div class="detail-value">${empty r.countryCode ? '-' : r.countryCode} / ${empty r.asn ? '-' : r.asn}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.batch"/></div><div class="detail-value">${empty r.batchName ? adminBlocksIndividualRuleLabel : r.batchName} <c:if test="${not empty r.batchCode}">(${r.batchCode})</c:if> / ${r.batchStatusLabel}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.priority"/></div><div class="detail-value">${r.priority}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.blockedAt"/></div><div class="detail-value"><fmt:formatDate value="${r.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.expiresAt"/></div><div class="detail-value"><c:choose><c:when test="${r.expiresAtDate != null}"><fmt:formatDate value="${r.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>${adminBlocksNoneLabel}</c:otherwise></c:choose></div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.manualOverride"/></div><div class="detail-value">${empty r.manualOverrideReason ? '-' : fn:escapeXml(r.manualOverrideReason)} <c:if test="${r.manualOverrideAtDate != null}">/ <fmt:formatDate value="${r.manualOverrideAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:if></div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.lastControl"/></div><div class="detail-value">${empty r.lastControlAction ? '-' : r.lastControlAction} <c:if test="${r.lastControlAtDate != null}">/ <fmt:formatDate value="${r.lastControlAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:if></div></div>
-            </div>
-            <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.policyReason"/></div><div class="detail-value">${empty r.reason ? '-' : fn:escapeXml(r.reason)}</div></div>
-            <c:if test="${not empty r.reason}">
-                <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="<spring:message code='admin.translation.label.ipRuleReason'/>"
-                     data-source-type="IP_BLOCK_RULE"
-                     data-source-idx="${r.ipBlocklistIdx}"
-                     data-field-name="reason"
-                     data-default-source-lang="ko"
-                     data-source-text="${fn:escapeXml(r.reason)}"></div>
-            </c:if>
-            <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.context.detailMemo"/></div><div class="detail-value">${empty r.detailMessage ? '-' : fn:escapeXml(r.detailMessage)}</div></div>
-            <c:if test="${not empty r.detailMessage}">
-                <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="<spring:message code='admin.translation.label.ipRuleDetailNote'/>"
-                     data-source-type="IP_BLOCK_RULE"
-                     data-source-idx="${r.ipBlocklistIdx}"
-                     data-field-name="detail_message"
-                     data-default-source-lang="ko"
-                     data-source-text="${fn:escapeXml(r.detailMessage)}"></div>
-            </c:if>
-            <table class="history-table" style="margin-top:14px;">
-                <thead><tr><th><spring:message code="admin.common.item"/></th><th><spring:message code="admin.common.value"/></th></tr></thead>
-                <tbody>
-                <tr><td><spring:message code="admin.context.requestId"/></td><td>${empty r.blockRequestId ? '-' : r.blockRequestId}</td></tr>
-                <tr><td><spring:message code="admin.blocks.autoBlock"/></td><td>${r.autoBlock ? 'Y' : 'N'} / ${empty r.autoBlockSource ? '-' : r.autoBlockSource}</td></tr>
-                <tr><td><spring:message code="admin.blocks.riskScore"/></td><td>${empty r.riskScore ? '-' : r.riskScore}</td></tr>
-                <tr><td><spring:message code="admin.blocks.userBinding"/></td><td>${empty r.userIdx ? '-' : r.userIdx} / ${empty r.blockType ? '-' : r.blockType}</td></tr>
-                </tbody>
-            </table>
-            <table class="history-table" style="margin-top:14px;">
-                <thead><tr><th><spring:message code="admin.common.relatedHistory"/></th><th><spring:message code="admin.blocks.beforeAfterState"/></th><th><spring:message code="admin.common.time"/></th><th><spring:message code="admin.blocks.description"/></th></tr></thead>
-                <tbody>
-                <c:forEach var="rel" items="${histories}">
-                    <c:if test="${rel.blockTargetKey == r.blockTargetKey}">
-                        <tr>
-                            <td>${rel.historyKind}</td>
-                            <td>${empty rel.beforeEffectiveStatus ? '-' : rel.beforeEffectiveStatus} → ${empty rel.afterEffectiveStatus ? '-' : rel.afterEffectiveStatus}</td>
-                            <td><fmt:formatDate value="${rel.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></td>
-                            <td>${empty rel.controlReason ? (empty rel.reason ? '-' : fn:escapeXml(rel.reason)) : fn:escapeXml(rel.controlReason)}</td>
-                        </tr>
-                    </c:if>
-                </c:forEach>
-                </tbody>
-            </table>
-        </template>
-    </c:forEach>
+    <%@ include file="_ipRuleDetailsOnly.jspf" %>
     </div>
 
     <div class="adm-card js-section-card" data-section="batches" data-enhanced="true" style="margin-bottom:20px;">
@@ -1187,6 +743,7 @@
                         <option value="source"><spring:message code="admin.blocks.filter.source"/></option>
                         <option value="description"><spring:message code="admin.blocks.description"/></option>
                         <option value="policy"><spring:message code="admin.blocks.filter.basePolicy"/></option>
+                        <option value="priority"><spring:message code="admin.context.priority"/></option>
                         <option value="status"><spring:message code="admin.common.status"/></option>
                         <option value="updatedAt"><spring:message code="admin.blocks.filter.recentUpdated"/></option>
                     </select>
@@ -1210,133 +767,16 @@
                 <table class="adm-table adm-section-table-fixed">
                     <thead><tr>
                         <th style="width:36px;"><input type="checkbox" id="bat-checkAll" class="js-block-check-all" data-section="batches" onchange="blockToggleAll('batches')"></th>
-                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;width:22%;"><spring:message code="admin.blocks.batch"/></th>
-                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.basePolicy"/></th>
-                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('batches',3)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.currentState"/></th>
-                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('batches',4)" style="cursor:pointer;user-select:none;width:18%;"><spring:message code="admin.blocks.ruleStats"/></th>
-                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('batches',5)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.description"/></th>
+                        <th class="js-local-sort" data-sort-index="1" onclick="sectionSort('batches',1)" style="cursor:pointer;user-select:none;width:20%;"><spring:message code="admin.blocks.batch"/></th>
+                        <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('batches',2)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.basePolicy"/></th>
+                        <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('batches',3)" style="cursor:pointer;user-select:none;width:9%;"><spring:message code="admin.context.priority"/></th>
+                        <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('batches',4)" style="cursor:pointer;user-select:none;width:13%;"><spring:message code="admin.blocks.currentState"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('batches',5)" style="cursor:pointer;user-select:none;width:16%;"><spring:message code="admin.blocks.ruleStats"/></th>
+                        <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('batches',6)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.description"/></th>
                         <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr></thead>
                     <tbody>
-                    <c:forEach var="b" items="${batches}">
-                        <fmt:formatDate var="batchCreatedAtText" value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
-                        <fmt:formatDate var="batchUpdatedAtText" value="${b.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
-                        <tr class="js-local-row"
-                            data-section="batches"
-                            data-search="${fn:toLowerCase(b.batchName)} ${fn:toLowerCase(b.batchCode)} ${fn:toLowerCase(empty b.sourceType ? '' : b.sourceType)} ${fn:toLowerCase(empty b.sourceName ? '' : b.sourceName)} ${fn:toLowerCase(empty b.description ? '' : b.description)} ${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)} ${fn:toLowerCase(empty b.defaultDisableStrategy ? '' : b.defaultDisableStrategy)} ${fn:toLowerCase(empty b.defaultEnableStrategy ? '' : b.defaultEnableStrategy)} ${fn:toLowerCase(b.activeLabel)} ${fn:toLowerCase(batchUpdatedAtText)}"
-                            data-batch="${fn:toLowerCase(b.batchName)} ${fn:toLowerCase(b.batchCode)}"
-                            data-source="${fn:toLowerCase(empty b.sourceType ? '' : b.sourceType)} ${fn:toLowerCase(empty b.sourceName ? '' : b.sourceName)}"
-                            data-description="${fn:toLowerCase(empty b.description ? '' : b.description)}"
-                            data-policy="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)} ${b.defaultRulePriority} ${fn:toLowerCase(empty b.defaultDisableStrategy ? '' : b.defaultDisableStrategy)} ${fn:toLowerCase(empty b.defaultEnableStrategy ? '' : b.defaultEnableStrategy)}"
-                            data-status="${fn:toLowerCase(b.activeLabel)}"
-                            data-updated-at="${fn:toLowerCase(batchUpdatedAtText)}">
-                            <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="${b.ipBlockBatchIdx}" value="${b.ipBlockBatchIdx}" onchange="updateBlockBulkBar('batches')"></td>
-                            <td data-sort-value="${fn:toLowerCase(b.batchName)}">
-                                <button type="button"
-                                        class="adm-link-btn js-open-batch-editor"
-                                        data-batch-id="${b.ipBlockBatchIdx}"
-                                        data-batch-code="${fn:escapeXml(b.batchCode)}"
-                                        data-batch-name="${fn:escapeXml(b.batchName)}"
-                                        data-source-type="${fn:escapeXml(b.sourceType)}"
-                                        data-source-name="${fn:escapeXml(empty b.sourceName ? '' : b.sourceName)}"
-                                        data-batch-rule-action="${fn:escapeXml(b.batchRuleAction)}"
-                                        data-default-priority="${b.defaultRulePriority}"
-                                        data-default-disable-strategy="${fn:escapeXml(b.defaultDisableStrategy)}"
-                                        data-default-enable-strategy="${fn:escapeXml(b.defaultEnableStrategy)}"
-                                        data-description="${fn:escapeXml(empty b.description ? '' : b.description)}"
-                                        data-status-label="${fn:escapeXml(b.activeLabel)}"
-                                        data-created-at="${batchCreatedAtText}"
-                                        data-updated-at="${batchUpdatedAtText}"
-                                        data-total-rules="${b.totalRuleCount}"
-                                        data-active-rules="${b.activeRuleCount}"
-                                        data-effective-rules="${b.effectiveRuleCount}"
-                                        data-expired-rules="${b.expiredRuleCount}">
-                                    <span style="font-weight:700;color:#e2e8f0;">${b.batchName}</span>
-                                    <span style="display:block;font-size:12px;color:#94a3b8;">${b.batchCode}</span>
-                                    <span style="display:block;font-size:11px;color:#64748b;">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</span>
-                                </button>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)}">
-                                <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
-                                    <span>${b.batchRuleActionLabel}</span>
-                                    <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</span>
-                                    <span class="adm-cell-link-note">OFF: ${b.defaultDisableStrategyLabel}</span>
-                                    <span class="adm-cell-link-note">ON: ${b.defaultEnableStrategyLabel}</span>
-                                </button>
-                            </td>
-                            <td data-sort-value="${b.active ? '1' : '0'}">
-                                <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
-                                    <span><span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.activeLabel}</span></span>
-                                    <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</span>
-                                </button>
-                            </td>
-                            <td data-sort-value="${b.totalRuleCount}">
-                                <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
-                                    <span><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</span>
-                                    <span class="adm-cell-link-note"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount} / <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</span>
-                                    <span class="adm-cell-link-note"><spring:message code="admin.blocks.effectiveState"/> ${b.effectiveRuleCount} / <spring:message code="admin.blocks.effective.expired"/> ${b.expiredRuleCount}</span>
-                                </button>
-                            </td>
-                            <td style="max-width:260px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty b.description ? '' : b.description)}">
-                                <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
-                                    <span>${empty b.description ? '-' : b.description}</span>
-                                </button>
-                            </td>
-                            <td>
-                                <div class="adm-row-actions">
-                                    <button type="button"
-                                            class="adm-row-btn detail js-open-batch-editor"
-                                            data-batch-id="${b.ipBlockBatchIdx}"
-                                            data-batch-code="${fn:escapeXml(b.batchCode)}"
-                                            data-batch-name="${fn:escapeXml(b.batchName)}"
-                                            data-source-type="${fn:escapeXml(b.sourceType)}"
-                                            data-source-name="${fn:escapeXml(empty b.sourceName ? '' : b.sourceName)}"
-                                            data-batch-rule-action="${fn:escapeXml(b.batchRuleAction)}"
-                                            data-default-priority="${b.defaultRulePriority}"
-                                            data-default-disable-strategy="${fn:escapeXml(b.defaultDisableStrategy)}"
-                                            data-default-enable-strategy="${fn:escapeXml(b.defaultEnableStrategy)}"
-                                            data-description="${fn:escapeXml(empty b.description ? '' : b.description)}"
-                                            data-status-label="${fn:escapeXml(b.activeLabel)}"
-                                            data-created-at="${batchCreatedAtText}"
-                                            data-updated-at="${batchUpdatedAtText}"
-                                            data-total-rules="${b.totalRuleCount}"
-                                            data-active-rules="${b.activeRuleCount}"
-                                            data-effective-rules="${b.effectiveRuleCount}"
-                                            data-expired-rules="${b.expiredRuleCount}"><spring:message code="admin.common.settings"/></button>
-                                    <div class="action-menu-wrap">
-                                        <button type="button"
-                                                class="adm-row-btn detail adm-row-btn-more"
-                                                onclick="admToggleActionMenu(this)">⋯</button>
-                                        <div class="action-menu">
-                                            <button type="button"
-                                                    class="action-menu-item js-open-block-detail"
-                                                    data-template-id="detail-batch-${b.ipBlockBatchIdx}"><spring:message code="admin.common.detail"/></button>
-                                            <c:if test="${hasBlockPolicyAdmin}">
-                                                <div class="action-menu-sep"></div>
-                                                <button type="button"
-                                                        class="action-menu-item ${b.active ? 'danger' : ''} js-open-batch-toggle"
-                                                        data-id="${b.ipBlockBatchIdx}"
-                                                        data-active="${b.active ? 'false' : 'true'}"
-                                                        data-batch-name="${fn:escapeXml(b.batchName)}"
-                                                        data-active-rules="${b.activeRuleCount}"
-                                                        data-effective-rules="${b.effectiveRuleCount}"
-                                                        data-default-disable-strategy="${b.defaultDisableStrategy}"
-                                                        data-default-enable-strategy="${b.defaultEnableStrategy}">
-                                                    <c:choose>
-                                                        <c:when test="${b.active}"><spring:message code="admin.blocks.batchDeactivate"/></c:when>
-                                                        <c:otherwise><spring:message code="admin.blocks.batchReactivate"/></c:otherwise>
-                                                    </c:choose>
-                                                </button>
-                                            </c:if>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    <c:if test="${empty batches}">
-                        <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
-                    </c:if>
+                    <%@ include file="_batchRowsOnly.jspf" %>
                     </tbody>
                 </table>
             </div>
@@ -1352,55 +792,7 @@
     </div>
 
     <div id="batDetailArea">
-    <c:forEach var="b" items="${batches}">
-        <template id="detail-batch-${b.ipBlockBatchIdx}">
-            <div class="detail-grid">
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.batchName"/></div><div class="detail-value">${b.batchName}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.batchCode"/></div><div class="detail-value">${b.batchCode}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.status"/></div><div class="detail-value">${b.activeLabel}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.source"/></div><div class="detail-value">${b.sourceType} / ${empty b.sourceName ? '-' : b.sourceName}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.baseAction"/></div><div class="detail-value">${b.batchRuleActionLabel} / <spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.baseStrategy"/></div><div class="detail-value">OFF: ${b.defaultDisableStrategyLabel} / ON: ${b.defaultEnableStrategyLabel}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.ruleCount"/></div><div class="detail-value"><spring:message code="admin.common.totalCountFormat" arguments="${b.totalRuleCount}"/> / <spring:message code="admin.blocks.ruleOn"/> ${b.activeRuleCount}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.controlComposition"/></div><div class="detail-value"><spring:message code="admin.blocks.control.batch"/> ${b.batchManagedRuleCount}, <spring:message code="admin.blocks.control.override"/> ${b.manualOverrideRuleCount}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.effectiveState"/></div><div class="detail-value">${b.effectiveRuleCount}<spring:message code="admin.common.countSuffix"/> <spring:message code="admin.blocks.effective.effective"/> / ${b.expiredRuleCount}<spring:message code="admin.common.countSuffix"/> <spring:message code="admin.blocks.effective.expired"/></div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.actionComposition"/></div><div class="detail-value"><spring:message code="admin.context.ruleAction.block"/> ${b.blockRuleCount} / <spring:message code="admin.context.ruleAction.allow"/> ${b.allowRuleCount}</div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.createdAt"/></div><div class="detail-value">${empty b.createdByNickname ? '-' : b.createdByNickname} / <fmt:formatDate value="${b.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
-                <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.updatedAt"/></div><div class="detail-value">${empty b.updatedByNickname ? '-' : b.updatedByNickname} / <fmt:formatDate value="${b.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
-            </div>
-            <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.detailDescription"/></div><div class="detail-value">${empty b.description ? '-' : fn:escapeXml(b.description)}</div></div>
-            <table class="history-table" style="margin-top:14px;">
-                <thead><tr><th><spring:message code="admin.blocks.recentBatchOperation"/></th><th><spring:message code="admin.blocks.option"/></th><th><spring:message code="admin.blocks.impact"/></th><th><spring:message code="admin.common.time"/></th></tr></thead>
-                <tbody>
-                <c:forEach var="op" items="${batchOperations}">
-                    <c:if test="${op.ipBlockBatchIdx == b.ipBlockBatchIdx}">
-                        <tr>
-                            <td>${op.operationTypeLabel}</td>
-                            <td>${op.operationOptionLabel}</td>
-                            <td>${op.affectedRuleCount} / ${op.requestedRuleCount}</td>
-                            <td><fmt:formatDate value="${op.requestedAtDate}" pattern="yyyy.MM.dd HH:mm"/></td>
-                        </tr>
-                    </c:if>
-                </c:forEach>
-                </tbody>
-            </table>
-            <table class="history-table" style="margin-top:14px;">
-                <thead><tr><th><spring:message code="admin.blocks.connectedRule"/></th><th><spring:message code="admin.common.actionLabel"/></th><th><spring:message code="admin.blocks.controlMode"/></th><th><spring:message code="admin.common.status"/></th></tr></thead>
-                <tbody>
-                <c:forEach var="rule" items="${ipBlocks}">
-                    <c:if test="${rule.ipBlockBatchIdx == b.ipBlockBatchIdx}">
-                        <tr>
-                            <td>${rule.blockTargetKey}</td>
-                            <td>${rule.ruleActionLabel}</td>
-                            <td>${rule.controlModeLabel}</td>
-                            <td>${rule.finalStateLabel} / ${rule.effectiveStatusLabel}</td>
-                        </tr>
-                    </c:if>
-                </c:forEach>
-                </tbody>
-            </table>
-        </template>
-    </c:forEach>
+<%@ include file="_batchDetailsOnly.jspf" %>
     </div>
 
     <div class="adm-card js-section-card" data-section="histories" data-enhanced="true">
@@ -1466,157 +858,12 @@
                         <th class="js-local-sort" data-sort-index="2" onclick="sectionSort('histories',2)" style="cursor:pointer;user-select:none;width:18%;"><spring:message code="admin.common.target"/></th>
                         <th class="js-local-sort" data-sort-index="3" onclick="sectionSort('histories',3)" style="cursor:pointer;user-select:none;width:12%;"><spring:message code="admin.common.actionLabel"/></th>
                         <th class="js-local-sort" data-sort-index="4" onclick="sectionSort('histories',4)" style="cursor:pointer;user-select:none;width:14%;"><spring:message code="admin.blocks.changeKind"/></th>
-                        <th style="width:13%;"><spring:message code="admin.blocks.result"/></th>
+                        <th class="js-local-sort" data-sort-index="5" onclick="sectionSort('histories',5)" style="cursor:pointer;user-select:none;width:13%;"><spring:message code="admin.blocks.result"/></th>
                         <th class="js-local-sort" data-sort-index="6" onclick="sectionSort('histories',6)" style="cursor:pointer;user-select:none;width:17%;"><spring:message code="admin.common.reason"/></th>
                         <th style="width:14%;"><spring:message code="admin.common.action"/></th>
                     </tr></thead>
                     <tbody>
-                    <c:forEach var="h" items="${histories}">
-                        <c:set var="historyCurrentType" value="IP_RULE"/>
-                        <c:if test="${h.blockScope == 'USER_ACTION'}">
-                            <c:set var="historyCurrentType" value="USER_BLOCK"/>
-                        </c:if>
-                        <c:if test="${not empty h.batchOperationIdx and not empty h.ipBlockBatchIdx}">
-                            <c:set var="historyCurrentType" value="BATCH"/>
-                        </c:if>
-                        <fmt:formatDate var="historyBlockedAtText" value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
-                        <c:set var="historyExpiresText" value=""/>
-                        <c:if test="${h.expiresAtDate != null}">
-                            <fmt:formatDate var="historyExpiresText" value="${h.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/>
-                        </c:if>
-                        <tr class="js-local-row"
-                            data-section="histories"
-                            data-search="${fn:toLowerCase(h.blockTargetKey)} ${fn:toLowerCase(empty h.nickname ? '' : h.nickname)} ${fn:toLowerCase(empty h.userId ? '' : h.userId)} ${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)} ${fn:toLowerCase(empty h.controlReason ? '' : h.controlReason)} ${fn:toLowerCase(empty h.reason ? '' : h.reason)} ${fn:toLowerCase(empty h.batchName ? '' : h.batchName)} ${fn:toLowerCase(empty h.batchCode ? '' : h.batchCode)} ${fn:toLowerCase(historyBlockedAtText)} ${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}"
-                            data-target="${fn:toLowerCase(h.blockTargetKey)} ${fn:toLowerCase(empty h.blockedIp ? '' : h.blockedIp)}"
-                            data-member="${fn:toLowerCase(empty h.nickname ? '' : h.nickname)} ${fn:toLowerCase(empty h.userId ? '' : h.userId)}"
-                            data-change="${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)} ${fn:toLowerCase(empty h.controlMode ? '' : h.controlMode)} ${fn:toLowerCase(empty h.operationSource ? '' : h.operationSource)}"
-                            data-reason="${fn:toLowerCase(empty h.controlReason ? '' : h.controlReason)} ${fn:toLowerCase(empty h.reason ? '' : h.reason)}"
-                            data-batch="${fn:toLowerCase(empty h.batchName ? '' : h.batchName)} ${fn:toLowerCase(empty h.batchCode ? '' : h.batchCode)}"
-                            data-blocked-at="${fn:toLowerCase(historyBlockedAtText)}"
-                            data-expires-at="${fn:toLowerCase(empty historyExpiresText ? '' : historyExpiresText)}">
-                            <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="histories" data-id="${h.blockIdx}" value="${h.blockIdx}" onchange="updateBlockBulkBar('histories')"></td>
-                            <td data-sort-value="${historyBlockedAtText}">
-                                <button type="button"
-                                        class="adm-cell-link js-open-block-detail"
-                                        data-template-id="detail-history-${h.blockIdx}">
-                                    <span><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></span>
-                                </button>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty h.blockTargetKey ? '' : h.blockTargetKey)}">
-                                <button type="button"
-                                        class="adm-cell-link js-open-history-current"
-                                        data-history-id="${h.blockIdx}"
-                                        data-current-type="${historyCurrentType}"
-                                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
-                                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
-                                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
-                                        data-template-id="detail-history-${h.blockIdx}">
-                                    <span style="font-weight:700;color:#e2e8f0;">${h.blockTargetKey}</span>
-                                    <span style="font-size:12px;color:#94a3b8;">${empty h.nickname ? '-' : h.nickname}</span>
-                                </button>
-                                <div class="adm-inline-actions">
-                                    <button type="button"
-                                            class="adm-inline-chip js-apply-block-filter"
-                                            data-section="histories"
-                                            data-field="target"
-                                            data-keyword="${fn:escapeXml(h.blockTargetKey)}">
-                                        <spring:message code="admin.common.sameTarget"/>
-                                    </button>
-                                    <c:if test="${not empty h.ipBlockBatchIdx}">
-                                        <button type="button"
-                                                class="adm-inline-chip js-apply-block-filter"
-                                                data-section="histories"
-                                                data-field="batch"
-                                                data-keyword="${fn:escapeXml(empty h.batchCode ? h.batchName : h.batchCode)}">
-                                            <spring:message code="admin.common.sameBatch"/>
-                                        </button>
-                                    </c:if>
-                                </div>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty h.ruleAction ? '' : h.ruleAction)}">
-                                <button type="button"
-                                        class="adm-cell-link js-open-history-current"
-                                        data-history-id="${h.blockIdx}"
-                                        data-current-type="${historyCurrentType}"
-                                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
-                                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
-                                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
-                                        data-template-id="detail-history-${h.blockIdx}">
-                                    <span>${empty h.ruleAction ? '-' : h.ruleAction}</span>
-                                    <span style="font-size:12px;color:#94a3b8;">${empty h.blockType ? '-' : h.blockType}</span>
-                                </button>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty h.historyKind ? '' : h.historyKind)}">
-                                <button type="button"
-                                        class="adm-cell-link js-open-history-current"
-                                        data-history-id="${h.blockIdx}"
-                                        data-current-type="${historyCurrentType}"
-                                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
-                                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
-                                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
-                                        data-template-id="detail-history-${h.blockIdx}">
-                                    <span>${h.historyKind}</span>
-                                    <span style="font-size:12px;color:#94a3b8;">${empty h.controlMode ? '-' : h.controlMode} / ${empty h.operationSource ? '-' : h.operationSource}</span>
-                                </button>
-                            </td>
-                            <td data-sort-value="${fn:toLowerCase(empty h.effectiveResult ? '' : h.effectiveResult)}">
-                                <button type="button"
-                                        class="adm-cell-link js-open-history-current"
-                                        data-history-id="${h.blockIdx}"
-                                        data-current-type="${historyCurrentType}"
-                                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
-                                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
-                                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
-                                        data-template-id="detail-history-${h.blockIdx}">
-                                    <span>${empty h.effectiveResult ? '-' : h.effectiveResult}</span>
-                                    <span class="adm-cell-link-note">${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus} → ${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</span>
-                                </button>
-                            </td>
-                            <td style="max-width:320px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty h.controlReason ? (empty h.reason ? '' : h.reason) : h.controlReason)}">
-                                <button type="button"
-                                        class="adm-cell-link js-open-history-current"
-                                        data-history-id="${h.blockIdx}"
-                                        data-current-type="${historyCurrentType}"
-                                        data-target-key="${fn:escapeXml(h.blockTargetKey)}"
-                                        data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
-                                        data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
-                                        data-template-id="detail-history-${h.blockIdx}">
-                                    <span>${empty h.controlReason ? (empty h.reason ? '-' : h.reason) : h.controlReason}</span>
-                                </button>
-                            </td>
-                            <td>
-                                <div class="adm-row-actions">
-                                    <button type="button"
-                                            class="adm-row-btn detail js-open-history-current"
-                                            data-history-id="${h.blockIdx}"
-                                            data-current-type="${historyCurrentType}"
-                                            data-target-key="${fn:escapeXml(h.blockTargetKey)}"
-                                            data-rule-action="${fn:escapeXml(empty h.ruleAction ? '' : h.ruleAction)}"
-                                            data-batch-id="${empty h.ipBlockBatchIdx ? '' : h.ipBlockBatchIdx}"
-                                            data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.blocks.currentSetting"/></button>
-                                    <div class="action-menu-wrap">
-                                        <button type="button"
-                                                class="adm-row-btn detail adm-row-btn-more"
-                                                onclick="admToggleActionMenu(this)">⋯</button>
-                                        <div class="action-menu">
-                                            <c:if test="${not empty h.blockedIp}">
-                                                <button type="button"
-                                                        class="action-menu-item js-open-ip-context"
-                                                        data-ip-address="${h.blockedIp}"
-                                                        data-default-tab="blocks"><spring:message code="admin.common.viewDetail"/></button>
-                                            </c:if>
-                                            <button type="button"
-                                                    class="action-menu-item js-open-block-detail"
-                                                    data-template-id="detail-history-${h.blockIdx}"><spring:message code="admin.common.detail"/></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                    <c:if test="${empty histories}">
-                        <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
-                    </c:if>
+                    <%@ include file="_historyRowsOnly.jspf" %>
                     </tbody>
                 </table>
             </div>
@@ -1633,36 +880,7 @@
 </div>
 
 <div id="histDetailArea">
-<c:forEach var="h" items="${histories}">
-    <template id="detail-history-${h.blockIdx}">
-        <div class="detail-grid">
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.targetKey"/></div><div class="detail-value">${h.blockTargetKey}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.historyKind"/></div><div class="detail-value">${h.historyKind}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.ruleAction"/></div><div class="detail-value">${empty h.ruleAction ? '-' : h.ruleAction}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.controlMode"/></div><div class="detail-value">${empty h.controlMode ? '-' : h.controlMode}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.common.member"/></div><div class="detail-value">${empty h.nickname ? '-' : h.nickname} / ${empty h.userId ? '-' : h.userId}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.filter.blockType"/></div><div class="detail-value">${h.blockType}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.blockedIp"/></div><div class="detail-value">${empty h.blockedIp ? '-' : h.blockedIp}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.sourceMatch"/></div><div class="detail-value">${h.blockScope} / ${empty h.ipMatchType ? '-' : h.ipMatchType}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.batch"/></div><div class="detail-value">${empty h.batchName ? '-' : h.batchName} <c:if test="${not empty h.batchCode}">(${h.batchCode})</c:if></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.batchOperation"/></div><div class="detail-value">${empty h.batchOperationIdx ? '-' : h.batchOperationIdx}</div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.blockedAt"/></div><div class="detail-value"><fmt:formatDate value="${h.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.expiresAt"/></div><div class="detail-value"><c:choose><c:when test="${h.expiresAtDate != null}"><fmt:formatDate value="${h.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>${adminBlocksNoneLabel}</c:otherwise></c:choose></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.releasedAt"/></div><div class="detail-value"><c:choose><c:when test="${h.releasedAtDate != null}"><fmt:formatDate value="${h.releasedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
-            <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.syncedAt"/></div><div class="detail-value"><c:choose><c:when test="${h.listSyncedAtDate != null}"><fmt:formatDate value="${h.listSyncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
-        </div>
-        <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.changeDescription"/></div><div class="detail-value">${empty h.controlReason ? '-' : fn:escapeXml(h.controlReason)}</div></div>
-        <table class="history-table" style="margin-top:14px;">
-            <thead><tr><th><spring:message code="admin.blocks.snapshot"/></th><th><spring:message code="admin.context.before"/></th><th><spring:message code="admin.context.after"/></th></tr></thead>
-            <tbody>
-            <tr><td><spring:message code="admin.blocks.ruleState"/></td><td>${empty h.beforeRuleIsActive ? '-' : (h.beforeRuleIsActive ? 'ON' : 'OFF')}</td><td>${empty h.afterRuleIsActive ? '-' : (h.afterRuleIsActive ? 'ON' : 'OFF')}</td></tr>
-            <tr><td><spring:message code="admin.blocks.batchState"/></td><td>${empty h.beforeBatchIsActive ? '-' : (h.beforeBatchIsActive ? 'ON' : 'OFF')}</td><td>${empty h.afterBatchIsActive ? '-' : (h.afterBatchIsActive ? 'ON' : 'OFF')}</td></tr>
-            <tr><td><spring:message code="admin.blocks.effectiveState"/></td><td>${empty h.beforeEffectiveStatus ? '-' : h.beforeEffectiveStatus}</td><td>${empty h.afterEffectiveStatus ? '-' : h.afterEffectiveStatus}</td></tr>
-            <tr><td><spring:message code="admin.blocks.resultCode"/></td><td colspan="2">${empty h.effectiveResult ? '-' : h.effectiveResult}</td></tr>
-            </tbody>
-        </table>
-    </template>
-</c:forEach>
+<%@ include file="_historyDetailsOnly.jspf" %>
 </div>
 
 <div class="adm-modal-overlay" id="blockDetailModal">
@@ -1886,7 +1104,7 @@
                     <label class="sa-form-label"><spring:message code="admin.context.batch"/></label>
                     <select id="ipBatchIdx" class="adm-select" onchange="handleIpBatchChange()">
                         <option value="">${adminBlocksNoneLabel}</option>
-                        <c:forEach var="b" items="${batches}">
+                        <c:forEach var="b" items="${batchFilterOptions}">
                             <option value="${b.ipBlockBatchIdx}">${b.batchName} (${b.batchCode})</option>
                         </c:forEach>
                     </select>
@@ -2205,10 +1423,23 @@ window.TripAdminBlockDetailFallback = window.TripAdminBlockDetailFallback || (fu
     function handleButtonClick(button) {
         var resolvedButton = resolveDetailButton(button);
         if (!resolvedButton) return false;
-        return open(
-            resolvedButton.getAttribute('data-template-id'),
-            resolvedButton.getAttribute('data-detail-title')
-        );
+        var templateId = resolvedButton.getAttribute('data-template-id');
+        var title = resolvedButton.getAttribute('data-detail-title');
+
+        var section = (typeof window.sectionFromDetailTemplateId === 'function') ? window.sectionFromDetailTemplateId(templateId) : '';
+        var forceDetailFetch = section && typeof window.getSectionMode === 'function' && window.getSectionMode(section) === 'SERVER';
+        if (templateId && (forceDetailFetch || !getElement(templateId)) && typeof window.fetchBlockDetailTemplate === 'function') {
+            window.fetchBlockDetailTemplate(templateId, forceDetailFetch).then(function (loaded) {
+                if (loaded) {
+                    open(templateId, title);
+                } else {
+                    notice((window.ADMIN_BLOCK_MSG && window.ADMIN_BLOCK_MSG.fetchError) || 'Failed to open detail modal.');
+                }
+            });
+            return false;
+        }
+
+        return open(templateId, title);
     }
 
     function bindDirect() {
@@ -2340,6 +1571,7 @@ const BLOCK_SECTION_CONFIG = {
             source: ['source'],
             description: ['description'],
             policy: ['policy'],
+            priority: ['priority'],
             status: ['status'],
             updatedAt: ['updatedAt']
         }
@@ -2603,6 +1835,8 @@ function getSectionMode(section) {
     return state.mode === 'SERVER' ? 'SERVER' : 'CLIENT';
 }
 
+window.getSectionMode = getSectionMode;
+
 function initSectionModes() {
     const stored = loadStoredSectionModes();
     ['user-blocks', 'ip-rules', 'batches', 'histories'].forEach(function (section) {
@@ -2639,8 +1873,8 @@ function sortKeyForCellIndex(section, cellIndex) {
         return map[cellIndex] || '';
     }
     if (section === 'batches') {
-        // 인덱스: 0=checkbox, 1=batch, 2=basePolicy, 3=currentState, 4=ruleStats, 5=description, 6=action
-        const map = {1:'batch', 2:'basePolicy', 3:'currentState', 4:'ruleStats', 5:'description'};
+        // 인덱스: 0=checkbox, 1=batch, 2=basePolicy, 3=priority, 4=currentState, 5=ruleStats, 6=description, 7=action
+        const map = {1:'batch', 2:'basePolicy', 3:'priority', 4:'currentState', 5:'ruleStats', 6:'description'};
         return map[cellIndex] || '';
     }
     if (section === 'user-blocks') {
@@ -2654,27 +1888,27 @@ function sortKeyForCellIndex(section, cellIndex) {
 const SECTION_FETCH_CONFIG = {
     'histories': {
         fragmentUrl: '/admin/blocks/api/histories/fragment',
-        metaUrl: '/admin/blocks/api/histories',
         splitMarker: '<!--HISTORY-FRAGMENT-SPLIT-->',
-        detailAreaId: 'histDetailArea'
+        detailAreaId: 'histDetailArea',
+        detailUrlPrefix: '/admin/blocks/api/histories/'
     },
     'ip-rules': {
         fragmentUrl: '/admin/blocks/api/ip-rules/fragment',
-        metaUrl: '/admin/blocks/api/ip-rules',
         splitMarker: '<!--IPRULE-FRAGMENT-SPLIT-->',
-        detailAreaId: 'iprDetailArea'
+        detailAreaId: 'iprDetailArea',
+        detailUrlPrefix: '/admin/blocks/api/ip-rules/'
     },
     'batches': {
         fragmentUrl: '/admin/blocks/api/batches/fragment',
-        metaUrl: '/admin/blocks/api/batches',
         splitMarker: '<!--BATCH-FRAGMENT-SPLIT-->',
-        detailAreaId: 'batDetailArea'
+        detailAreaId: 'batDetailArea',
+        detailUrlPrefix: '/admin/blocks/api/batches/'
     },
     'user-blocks': {
         fragmentUrl: '/admin/blocks/api/user-blocks/fragment',
-        metaUrl: '/admin/blocks/api/user-blocks',
         splitMarker: '<!--USERBLOCK-FRAGMENT-SPLIT-->',
-        detailAreaId: 'ubDetailArea'
+        detailAreaId: 'ubDetailArea',
+        detailUrlPrefix: '/admin/blocks/api/user-blocks/'
     }
 };
 
@@ -2714,17 +1948,11 @@ async function renderServerSection(section) {
         const detailArea = document.getElementById(cfg.detailAreaId);
         if (detailArea) detailArea.innerHTML = detailsHtml;
 
-        // 페이지 메타는 같은 파라미터로 JSON 호출 (페이지 정보만 가져오기)
-        const metaRes = await fetch(CTX + cfg.metaUrl + '?' + params.toString(), {
-            credentials: 'same-origin',
-            headers: {'Accept': 'application/json'}
-        });
-        if (metaRes.ok) {
-            const meta = await metaRes.json();
-            const total = Number(meta.total || 0);
-            const totalPages = Math.max(1, Number(meta.totalPages || 1));
-            updateServerPageMeta(section, state.page, totalPages, total);
-        }
+        const total = Number(res.headers.get('X-Section-Total') || 0);
+        const currentPage = Number(res.headers.get('X-Section-Page') || state.page || 1);
+        const totalPages = Math.max(1, Number(res.headers.get('X-Section-Pages') || 1));
+        state.page = currentPage;
+        updateServerPageMeta(section, currentPage, totalPages, total);
         updateLocalSortIndicators(section);
     } catch (e) {
         if (typeof notice === 'function') notice(ADMIN_BLOCK_MSG.serverFetchError);
@@ -2734,10 +1962,15 @@ async function renderServerSection(section) {
 function updateServerPageMeta(section, page, totalPages, total) {
     const card = getSectionCard(section);
     if (!card) return;
+    const renderedCount = card.querySelectorAll('tbody .js-local-row').length;
     const pageInfo = card.querySelector('.js-local-page-info[data-section="' + section + '"]');
-    if (pageInfo) pageInfo.textContent = String(total);
+    if (pageInfo) pageInfo.textContent = '총 ' + total + '건 / 현재 ' + renderedCount + '건';
     const pageState = card.querySelector('.js-local-page-state[data-section="' + section + '"]');
     if (pageState) pageState.textContent = page + ' / ' + totalPages;
+    const prevBtn = card.querySelector('.js-local-prev[data-section="' + section + '"]');
+    const nextBtn = card.querySelector('.js-local-next[data-section="' + section + '"]');
+    if (prevBtn) prevBtn.disabled = page <= 1;
+    if (nextBtn) nextBtn.disabled = page >= totalPages;
 }
 
 function renderSectionByMode(section) {
@@ -2785,7 +2018,7 @@ function enhanceBlockDashboardTables() {
             btn.textContent = titles[tableIndex] || ADMIN_BLOCK_MSG.dashViewAll;
             btn.addEventListener('click', function () {
                 activateBlockTab(targetSection);
-                renderLocalSection(targetSection);
+                renderSectionByMode(targetSection);
             });
             head.appendChild(btn);
         }
@@ -3187,7 +2420,7 @@ function applyBlockLocalFilter(section, field, keyword) {
     const state = getLocalState(section);
     state.page = 1;
     activateBlockTab(section);
-    renderLocalSection(section);
+    renderSectionByMode(section);
 }
 
 function blockSortBy(section, field) { /* deprecated — use sectionSort */ }
@@ -3534,6 +2767,50 @@ function handleIpBatchChange() {
     }
 }
 
+
+function sectionFromDetailTemplateId(templateId) {
+    if (!templateId) return '';
+    if (templateId.indexOf('detail-user-') === 0) return 'user-blocks';
+    if (templateId.indexOf('detail-ip-') === 0) return 'ip-rules';
+    if (templateId.indexOf('detail-batch-') === 0) return 'batches';
+    if (templateId.indexOf('detail-history-') === 0) return 'histories';
+    return '';
+}
+
+function idFromDetailTemplateId(templateId) {
+    return String(templateId || '').replace(/^detail-(user|ip|batch|history)-/, '');
+}
+
+async function fetchBlockDetailTemplate(templateId, force) {
+    const existing = templateId ? document.getElementById(templateId) : null;
+    if (!templateId) return false;
+    if (existing && !force) return true;
+    if (existing && force) existing.remove();
+    const section = sectionFromDetailTemplateId(templateId);
+    const cfg = SECTION_FETCH_CONFIG[section];
+    if (!cfg || !cfg.detailUrlPrefix) return false;
+    const id = idFromDetailTemplateId(templateId);
+    if (!id) return false;
+    try {
+        const res = await fetch(CTX + cfg.detailUrlPrefix + encodeURIComponent(id) + '/detail', {
+            credentials: 'same-origin',
+            headers: {'Accept': 'text/html'}
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const html = (await res.text()).trim();
+        if (!html) return false;
+        const detailArea = document.getElementById(cfg.detailAreaId);
+        if (!detailArea) return false;
+        detailArea.insertAdjacentHTML('beforeend', html);
+        return !!document.getElementById(templateId);
+    } catch (e) {
+        console.error('block detail fetch failed', e);
+        return false;
+    }
+}
+window.sectionFromDetailTemplateId = sectionFromDetailTemplateId;
+window.fetchBlockDetailTemplate = fetchBlockDetailTemplate;
+
 function openBlockDetail(templateId, title) {
     if (window.TripAdminBlockDetailFallback && typeof window.TripAdminBlockDetailFallback.open === 'function') {
         return window.TripAdminBlockDetailFallback.open(templateId, title);
@@ -3565,15 +2842,23 @@ function openBlockDetail(templateId, title) {
     }
 }
 
-function openBlockDetailFromButton(button) {
-    if (window.TripAdminBlockDetailFallback && typeof window.TripAdminBlockDetailFallback.handleButtonClick === 'function') {
-        return window.TripAdminBlockDetailFallback.handleButtonClick(button);
-    }
+async function openBlockDetailFromButton(button) {
     if (!button) {
         adm_toast(ADMIN_BLOCK_MSG.fetchError, 'error');
-        return;
+        return false;
     }
-    openBlockDetail(button.dataset.templateId, button.dataset.detailTitle || ADMIN_BLOCK_MSG.blockDetailTitle);
+    const templateId = button.dataset.templateId;
+    const section = sectionFromDetailTemplateId(templateId);
+    const forceDetailFetch = section && getSectionMode(section) === 'SERVER';
+    if (templateId && (forceDetailFetch || !document.getElementById(templateId))) {
+        const loaded = await fetchBlockDetailTemplate(templateId, forceDetailFetch);
+        if (!loaded) {
+            adm_toast(ADMIN_BLOCK_MSG.fetchError, 'error');
+            return false;
+        }
+    }
+    openBlockDetail(templateId, button.dataset.detailTitle || ADMIN_BLOCK_MSG.blockDetailTitle);
+    return false;
 }
 
 function applyExpiryPreset(targetId, days) {

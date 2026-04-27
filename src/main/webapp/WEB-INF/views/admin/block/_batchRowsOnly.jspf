@@ -8,6 +8,7 @@
         data-source="${fn:toLowerCase(empty b.sourceType ? '' : b.sourceType)} ${fn:toLowerCase(empty b.sourceName ? '' : b.sourceName)}"
         data-description="${fn:toLowerCase(empty b.description ? '' : b.description)}"
         data-policy="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)} ${b.defaultRulePriority} ${fn:toLowerCase(empty b.defaultDisableStrategy ? '' : b.defaultDisableStrategy)} ${fn:toLowerCase(empty b.defaultEnableStrategy ? '' : b.defaultEnableStrategy)}"
+        data-priority="${b.defaultRulePriority}"
         data-status="${fn:toLowerCase(b.activeLabel)}"
         data-updated-at="${fn:toLowerCase(batchUpdatedAtText)}">
         <td style="width:36px;"><input type="checkbox" class="js-block-row-check" data-section="batches" data-id="${b.ipBlockBatchIdx}" value="${b.ipBlockBatchIdx}" onchange="updateBlockBulkBar('batches')"></td>
@@ -39,9 +40,14 @@
         <td data-sort-value="${fn:toLowerCase(empty b.batchRuleAction ? '' : b.batchRuleAction)}">
             <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
                 <span>${b.batchRuleActionLabel}</span>
-                <span style="font-size:12px;color:#94a3b8;"><spring:message code="admin.blocks.defaultPriority"/> ${b.defaultRulePriority}</span>
                 <span class="adm-cell-link-note">OFF: ${b.defaultDisableStrategyLabel}</span>
                 <span class="adm-cell-link-note">ON: ${b.defaultEnableStrategyLabel}</span>
+            </button>
+        </td>
+        <td data-sort-value="${b.defaultRulePriority}">
+            <button type="button" class="adm-cell-link js-open-batch-editor" data-batch-id="${b.ipBlockBatchIdx}">
+                <span>${b.defaultRulePriority}</span>
+                <span class="adm-cell-link-note"><spring:message code="admin.blocks.defaultPriority"/></span>
             </button>
         </td>
         <td data-sort-value="${b.active ? '1' : '0'}">
@@ -115,5 +121,5 @@
     </tr>
 </c:forEach>
 <c:if test="${empty batches}">
-    <tr><td colspan="7" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
+    <tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><spring:message code="admin.common.noData"/></td></tr>
 </c:if>

@@ -1,12 +1,13 @@
 package org.triptogether.admin.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.triptogether.admin.service.AdminBlockService;
-import org.triptogether.admin.vo.AdminBlockSearchVO;
+import org.triptogether.admin.vo.*;
 import org.triptogether.auth.vo.UsersVO;
 
 import java.time.LocalDateTime;
@@ -28,20 +29,13 @@ public class AdminBlockController {
                                   @CookieValue(name = "admBlockBatMode", defaultValue = "server") String batMode,
                                   @CookieValue(name = "admBlockUbMode", defaultValue = "server") String ubMode,
                                   Model model) {
-        Map<String, Object> data = adminBlockService.getBlockDashboard(search);
-        // SERVER 모드면 첫 진입 비용 절감 — JSP forEach가 빈 결과로 빠르게 렌더, JS가 진입 직후 첫 페이지 fetch
-        if ("server".equalsIgnoreCase(histMode)) {
-            data.put("histories", java.util.Collections.emptyList());
-        }
-        if ("server".equalsIgnoreCase(iprMode)) {
-            data.put("ipBlocks", java.util.Collections.emptyList());
-        }
-        if ("server".equalsIgnoreCase(batMode)) {
-            data.put("batches", java.util.Collections.emptyList());
-        }
-        if ("server".equalsIgnoreCase(ubMode)) {
-            data.put("userBlocks", java.util.Collections.emptyList());
-        }
+        boolean loadHistories = !"server".equalsIgnoreCase(histMode);
+        boolean loadIpRules = !"server".equalsIgnoreCase(iprMode);
+        boolean loadBatches = !"server".equalsIgnoreCase(batMode);
+        boolean loadUserBlocks = !"server".equalsIgnoreCase(ubMode);
+
+        // SERVER 모드는 진입 시 전건 조회를 하지 않고, JS가 LIMIT/OFFSET 기반 첫 페이지를 fetch한다.
+        Map<String, Object> data = adminBlockService.getBlockDashboard(search, loadUserBlocks, loadIpRules, loadBatches, loadHistories);
         model.addAllAttributes(data);
         model.addAttribute("histMode", histMode);
         model.addAttribute("iprMode", iprMode);
@@ -67,8 +61,9 @@ public class AdminBlockController {
     }
 
     @GetMapping("/api/user-blocks/fragment")
-    public String apiUserBlocksFragment(AdminBlockSearchVO search, Model model) {
+    public String apiUserBlocksFragment(AdminBlockSearchVO search, Model model, HttpServletResponse response) {
         Map<String, Object> data = adminBlockService.getUserBlocksPaged(search);
+        writeSectionHeaders(response, data);
         model.addAttribute("userBlocks", data.get("rows"));
         model.addAttribute("totalCount", data.get("total"));
         model.addAttribute("currentPage", data.get("page"));
@@ -92,8 +87,9 @@ public class AdminBlockController {
     }
 
     @GetMapping("/api/batches/fragment")
-    public String apiBatchesFragment(AdminBlockSearchVO search, Model model) {
+    public String apiBatchesFragment(AdminBlockSearchVO search, Model model, HttpServletResponse response) {
         Map<String, Object> data = adminBlockService.getIpBlockBatchesPaged(search);
+        writeSectionHeaders(response, data);
         model.addAttribute("batches", data.get("rows"));
         model.addAttribute("totalCount", data.get("total"));
         model.addAttribute("currentPage", data.get("page"));
@@ -117,8 +113,9 @@ public class AdminBlockController {
     }
 
     @GetMapping("/api/ip-rules/fragment")
-    public String apiIpRulesFragment(AdminBlockSearchVO search, Model model) {
+    public String apiIpRulesFragment(AdminBlockSearchVO search, Model model, HttpServletResponse response) {
         Map<String, Object> data = adminBlockService.getIpBlocksPaged(search);
+        writeSectionHeaders(response, data);
         model.addAttribute("ipBlocks", data.get("rows"));
         model.addAttribute("totalCount", data.get("total"));
         model.addAttribute("currentPage", data.get("page"));
@@ -143,14 +140,55 @@ public class AdminBlockController {
     }
 
     @GetMapping("/api/histories/fragment")
-    public String apiBlockHistoriesFragment(AdminBlockSearchVO search, Model model) {
+    public String apiBlockHistoriesFragment(AdminBlockSearchVO search, Model model, HttpServletResponse response) {
         Map<String, Object> data = adminBlockService.getBlockHistoriesPaged(search);
+        writeSectionHeaders(response, data);
         model.addAttribute("histories", data.get("rows"));
         model.addAttribute("totalCount", data.get("total"));
         model.addAttribute("currentPage", data.get("page"));
         model.addAttribute("pageSize", data.get("size"));
         model.addAttribute("totalPages", data.get("totalPages"));
         return "admin/block/_historyRowsFragment";
+    }
+
+    private void writeSectionHeaders(HttpServletResponse response, Map<String, Object> data) {
+        response.setHeader("X-Section-Total", String.valueOf(data.getOrDefault("total", 0)));
+        response.setHeader("X-Section-Page", String.valueOf(data.getOrDefault("page", 1)));
+        response.setHeader("X-Section-Size", String.valueOf(data.getOrDefault("size", 20)));
+        response.setHeader("X-Section-Pages", String.valueOf(data.getOrDefault("totalPages", 1)));
+    }
+
+    @GetMapping("/api/user-blocks/{blockIdx}/detail")
+    public String userBlockDetailFragment(@PathVariable Long blockIdx, Model model) {
+        AdminUserBlockVO block = adminBlockService.getUserBlockDetail(blockIdx);
+        model.addAttribute("userBlocks", block == null ? java.util.Collections.emptyList() : java.util.Collections.singletonList(block));
+        return "admin/block/_userBlockDetailFragment";
+    }
+
+    @GetMapping("/api/ip-rules/{ipBlocklistIdx}/detail")
+    public String ipRuleDetailFragment(@PathVariable Long ipBlocklistIdx, Model model) {
+        Map<String, Object> data = adminBlockService.getIpRuleDetailData(ipBlocklistIdx);
+        Object rule = data.get("rule");
+        model.addAttribute("ipBlocks", rule == null ? java.util.Collections.emptyList() : java.util.Collections.singletonList(rule));
+        model.addAttribute("histories", data.getOrDefault("histories", java.util.Collections.emptyList()));
+        return "admin/block/_ipRuleDetailFragment";
+    }
+
+    @GetMapping("/api/batches/{ipBlockBatchIdx}/detail")
+    public String batchDetailFragment(@PathVariable Long ipBlockBatchIdx, Model model) {
+        Map<String, Object> data = adminBlockService.getBatchDetailData(ipBlockBatchIdx);
+        Object batch = data.get("batch");
+        model.addAttribute("batches", batch == null ? java.util.Collections.emptyList() : java.util.Collections.singletonList(batch));
+        model.addAttribute("batchDetailRules", data.get("rules"));
+        model.addAttribute("batchDetailOperations", data.get("operations"));
+        return "admin/block/_batchDetailFragment";
+    }
+
+    @GetMapping("/api/histories/{historyBlockIdx}/detail")
+    public String historyDetailFragment(@PathVariable Long historyBlockIdx, Model model) {
+        AdminBlockHistoryVO history = adminBlockService.getHistoryDetail(historyBlockIdx);
+        model.addAttribute("histories", history == null ? java.util.Collections.emptyList() : java.util.Collections.singletonList(history));
+        return "admin/block/_historyDetailFragment";
     }
 
     @GetMapping("/histories/{historyBlockIdx}/current-setting")
