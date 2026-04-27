@@ -5,6 +5,7 @@ import org.triptogether.admin.vo.BusinessAccountApplicationVO;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
 import org.triptogether.myPage.vo.MyPageFlightBookingDto;
+import org.triptogether.myPage.vo.MyPageLevelRewardDto;
 import org.triptogether.myPage.vo.MyPagePackageBookingDto;
 import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
@@ -38,6 +39,7 @@ public interface MyPageService {
 
     List<MyPagePlanDto> getMyPlanList(Long userIdx);
     int getMyPlanCount(Long userIdx);
+    List<MyPageLevelRewardDto> getMyLevelRewardList(Long userIdx);
 
     // ===== 항공권 예매 =====
 

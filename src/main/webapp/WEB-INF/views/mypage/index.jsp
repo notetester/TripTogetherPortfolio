@@ -20,6 +20,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="mypage/mypage.css"/>
+<c:set var="currentLang" value="${pageContext.response.locale.language}"/>
 <%@ include file="../common/header.jsp" %>
 <body>
 <spring:message code="mypage.common.close" var="mypageCloseLabel"/>
@@ -408,6 +409,140 @@
                     <div class="mp-stats-label"><spring:message code="mypage.stats.travelCourses"/></div>
                 </div>
             </div>
+        </div>
+
+        <%-- Level-up reward policy section --%>
+        <div class="mp-card mp-level-reward-card">
+            <div class="mp-card-head">
+                <div class="mp-card-title">
+                    <span class="mp-card-icon">&#127942;</span>
+                    <c:choose>
+                        <c:when test="${currentLang eq 'en'}">Level-Up Rewards</c:when>
+                        <c:when test="${currentLang eq 'ja'}">レベルアップ報酬</c:when>
+                        <c:when test="${currentLang eq 'zh'}">升级奖励</c:when>
+                        <c:otherwise>레벨업 보상</c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+            <p class="mp-level-reward-subtitle">
+                <c:choose>
+                    <c:when test="${currentLang eq 'en'}">Growth rewards are granted automatically when you reach each level.</c:when>
+                    <c:when test="${currentLang eq 'ja'}">各レベルを達成すると、成長報酬が自動で支給されます。</c:when>
+                    <c:when test="${currentLang eq 'zh'}">达到对应等级时，将自动发放成长奖励。</c:when>
+                    <c:otherwise>레벨을 달성하면 활동 기반 성장 보상이 자동으로 지급됩니다.</c:otherwise>
+                </c:choose>
+            </p>
+
+            <div class="mp-level-reward-overview">
+                <div class="mp-level-reward-stat">
+                    <span class="mp-level-reward-stat__label">
+                        <c:choose>
+                            <c:when test="${currentLang eq 'en'}">Current Level</c:when>
+                            <c:when test="${currentLang eq 'ja'}">現在レベル</c:when>
+                            <c:when test="${currentLang eq 'zh'}">当前等级</c:when>
+                            <c:otherwise>현재 레벨</c:otherwise>
+                        </c:choose>
+                    </span>
+                    <strong>Lv.${user.levelNo}</strong>
+                </div>
+                <div class="mp-level-reward-stat">
+                    <span class="mp-level-reward-stat__label">
+                        <c:choose>
+                            <c:when test="${currentLang eq 'en'}">Rewards Claimed</c:when>
+                            <c:when test="${currentLang eq 'ja'}">受取完了報酬</c:when>
+                            <c:when test="${currentLang eq 'zh'}">已领取奖励</c:when>
+                            <c:otherwise>수령 완료 보상</c:otherwise>
+                        </c:choose>
+                    </span>
+                    <strong>${claimedLevelRewardCount} / ${totalLevelRewardCount}</strong>
+                </div>
+                <c:if test="${not empty nextLevelReward}">
+                    <div class="mp-level-reward-next-card">
+                        <div class="mp-level-reward-next-card__head">
+                            <span class="mp-level-reward-next-kicker">
+                                <c:choose>
+                                    <c:when test="${currentLang eq 'en'}">Next Reward</c:when>
+                                    <c:when test="${currentLang eq 'ja'}">次の報酬</c:when>
+                                    <c:when test="${currentLang eq 'zh'}">下一奖励</c:when>
+                                    <c:otherwise>다음 보상</c:otherwise>
+                                </c:choose>
+                            </span>
+                            <strong>Lv.${nextLevelReward.levelNo}</strong>
+                        </div>
+                        <div class="mp-level-reward-next-body">
+                            <c:if test="${not empty nextLevelReward.rewardImagePath}">
+                                <img class="mp-level-reward-next-image"
+                                     src="${pageContext.request.contextPath}${nextLevelReward.rewardImagePath}"
+                                     alt="${nextLevelReward.rewardDisplayText}">
+                            </c:if>
+                            <div>
+                                <div class="mp-level-reward-next-text">${nextLevelReward.rewardDisplayText}</div>
+                                <span class="mp-level-reward-status is-${nextLevelReward.rewardStatusCode}">
+                                    <c:choose>
+                                        <c:when test="${nextLevelReward.rewardStatusCode eq 'claimed'}">
+                                            <c:choose>
+                                                <c:when test="${currentLang eq 'en'}">Claimed</c:when>
+                                                <c:when test="${currentLang eq 'ja'}">受取完了</c:when>
+                                                <c:when test="${currentLang eq 'zh'}">已领取</c:when>
+                                                <c:otherwise>수령 완료</c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:when test="${nextLevelReward.rewardStatusCode eq 'pending'}">
+                                            <c:choose>
+                                                <c:when test="${currentLang eq 'en'}">Reward Ready</c:when>
+                                                <c:when test="${currentLang eq 'ja'}">지급 가능</c:when>
+                                                <c:when test="${currentLang eq 'zh'}">可发放</c:when>
+                                                <c:otherwise>지급 가능</c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:choose>
+                                                <c:when test="${currentLang eq 'en'}">Locked</c:when>
+                                                <c:when test="${currentLang eq 'ja'}">達成前</c:when>
+                                                <c:when test="${currentLang eq 'zh'}">未达成</c:when>
+                                                <c:otherwise>달성 전</c:otherwise>
+                                            </c:choose>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </c:if>
+            </div>
+
+            <c:choose>
+                <c:when test="${not empty levelRewardList}">
+                    <div class="mp-level-reward-grid">
+                        <c:forEach var="reward" items="${levelRewardList}">
+                            <div class="mp-level-reward-item is-${reward.rewardStatusCode}">
+                                <span class="mp-level-reward-item__lv">Lv.${reward.levelNo}</span>
+                                <div class="mp-level-reward-item__content">
+                                    <c:if test="${not empty reward.rewardImagePath}">
+                                        <img class="mp-level-reward-item__img"
+                                             src="${pageContext.request.contextPath}${reward.rewardImagePath}"
+                                             alt="${reward.rewardDisplayText}">
+                                    </c:if>
+                                    <span>${reward.rewardDisplayText}</span>
+                                </div>
+                                <span class="mp-level-reward-status is-${reward.rewardStatusCode}">
+                                    <c:choose>
+                                        <c:when test="${reward.rewardStatusCode eq 'claimed'}"><spring:message code="mypage.reward.status.claimed"/></c:when>
+                                        <c:when test="${reward.rewardStatusCode eq 'pending'}"><spring:message code="mypage.reward.status.pending"/></c:when>
+                                        <c:otherwise><spring:message code="mypage.reward.status.locked"/></c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="mp-level-reward-empty">
+                        <span class="mp-level-reward-empty-icon">&#127919;</span>
+                        <p><spring:message code="mypage.reward.empty"/></p>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <%-- Profile information section --%>

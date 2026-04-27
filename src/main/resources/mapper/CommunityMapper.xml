@@ -89,14 +89,12 @@
          JOIN POINT_SHOP_ITEM psi ON psi.item_code = equip.item_code
          WHERE equip.user_idx = cp.user_idx
            AND equip.equip_slot = 'PROFILE_BADGE'
-           AND psi.is_active = 1
          LIMIT 1) AS profile_badge_class,
         (SELECT JSON_UNQUOTE(JSON_EXTRACT(psi.item_payload_json, '$.label'))
          FROM USER_POINT_ITEM_EQUIP equip
          JOIN POINT_SHOP_ITEM psi ON psi.item_code = equip.item_code
          WHERE equip.user_idx = cp.user_idx
            AND equip.equip_slot = 'PROFILE_BADGE'
-           AND psi.is_active = 1
          LIMIT 1) AS profile_badge_label,
         (SELECT JSON_UNQUOTE(JSON_EXTRACT(psi.item_payload_json, '$.cssClass'))
          FROM USER_POINT_ITEM_EQUIP equip
@@ -130,14 +128,12 @@
          JOIN POINT_SHOP_ITEM psi ON psi.item_code = equip.item_code
          WHERE equip.user_idx = cc.user_idx
            AND equip.equip_slot = 'PROFILE_BADGE'
-           AND psi.is_active = 1
          LIMIT 1) AS profile_badge_class,
         (SELECT JSON_UNQUOTE(JSON_EXTRACT(psi.item_payload_json, '$.label'))
          FROM USER_POINT_ITEM_EQUIP equip
          JOIN POINT_SHOP_ITEM psi ON psi.item_code = equip.item_code
          WHERE equip.user_idx = cc.user_idx
            AND equip.equip_slot = 'PROFILE_BADGE'
-           AND psi.is_active = 1
          LIMIT 1) AS profile_badge_label,
         (SELECT JSON_UNQUOTE(JSON_EXTRACT(psi.item_payload_json, '$.cssClass'))
          FROM USER_POINT_ITEM_EQUIP equip

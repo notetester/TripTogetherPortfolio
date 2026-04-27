@@ -8,6 +8,8 @@
     <resultMap id="RewardUserMap" type="org.triptogether.auth.vo.UsersVO">
         <id property="userIdx" column="user_idx"/>
         <result property="memberGrade" column="member_grade"/>
+        <result property="cashBalance" column="cash_balance"/>
+        <result property="mileageBalance" column="mileage_balance"/>
         <result property="pointBalance" column="point_balance"/>
         <result property="levelNo" column="level_no"/>
         <result property="expPoints" column="exp_points"/>
@@ -48,8 +50,23 @@
         <result property="priority" column="priority"/>
     </resultMap>
 
+    <resultMap id="LevelUpRewardPolicyMap" type="org.triptogether.reward.vo.LevelUpRewardPolicyDto">
+        <id property="levelUpRewardPolicyIdx" column="level_up_reward_policy_idx"/>
+        <result property="rewardCode" column="reward_code"/>
+        <result property="policyName" column="policy_name"/>
+        <result property="levelNo" column="level_no"/>
+        <result property="rewardType" column="reward_type"/>
+        <result property="rewardAmount" column="reward_amount"/>
+        <result property="itemCode" column="item_code"/>
+        <result property="repeatable" column="is_repeatable"/>
+        <result property="active" column="is_active"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="description" column="description"/>
+        <result property="priority" column="priority"/>
+    </resultMap>
+
     <select id="selectUserByIdxForUpdate" resultMap="RewardUserMap">
-        SELECT user_idx, member_grade, point_balance, level_no, exp_points
+        SELECT user_idx, member_grade, cash_balance, mileage_balance, point_balance, level_no, exp_points
         FROM USERS
         WHERE user_idx = #{userIdx}
         FOR UPDATE
@@ -110,14 +127,16 @@
 
     <update id="updateUserRewardState">
         UPDATE USERS
-        SET point_balance = #{pointBalance},
+        SET cash_balance = #{cashBalance},
+            mileage_balance = #{mileageBalance},
+            point_balance = #{pointBalance},
             exp_points = #{expPoints},
             level_no = #{levelNo}
         WHERE user_idx = #{userIdx}
     </update>
 
     <select id="selectUsersForLevelSync" resultMap="RewardUserMap">
-        SELECT user_idx, member_grade, point_balance, level_no, exp_points
+        SELECT user_idx, member_grade, cash_balance, mileage_balance, point_balance, level_no, exp_points
         FROM USERS
         <where>
             <if test="onlyActiveMembers">
@@ -181,5 +200,71 @@
         WHERE is_active = 1
         ORDER BY level_no ASC, priority ASC, exp_level_override_idx ASC
     </select>
+
+    <select id="selectActiveLevelUpRewardPoliciesBetween" resultMap="LevelUpRewardPolicyMap">
+        SELECT
+            level_up_reward_policy_idx,
+            reward_code,
+            policy_name,
+            level_no,
+            reward_type,
+            reward_amount,
+            item_code,
+            is_repeatable,
+            is_active,
+            sort_order,
+            description,
+            priority
+        FROM LEVEL_UP_REWARD_POLICY
+        WHERE is_active = 1
+          AND level_no &gt; #{fromLevelExclusive}
+          AND level_no &lt;= #{toLevelInclusive}
+        ORDER BY level_no ASC, sort_order ASC, priority ASC, level_up_reward_policy_idx ASC
+    </select>
+
+    <select id="countLevelUpRewardHistory" resultType="int">
+        SELECT COUNT(*)
+        FROM USER_LEVEL_UP_REWARD_HISTORY
+        WHERE user_idx = #{userIdx}
+          AND level_up_reward_policy_idx = #{levelUpRewardPolicyIdx}
+          AND grant_status = 'GRANTED'
+    </select>
+
+    <insert id="insertLevelUpRewardHistory"
+            useGeneratedKeys="true"
+            keyProperty="userLevelUpRewardHistoryIdx"
+            keyColumn="user_level_up_reward_history_idx">
+        INSERT INTO USER_LEVEL_UP_REWARD_HISTORY (
+            user_idx, level_up_reward_policy_idx, level_no, reward_type, reward_amount,
+            item_code, point_inventory_idx, grant_status, granted_at, granted_by_user_idx, note, created_at
+        ) VALUES (
+            #{userIdx}, #{levelUpRewardPolicyIdx}, #{levelNo}, #{rewardType}, #{rewardAmount},
+            #{itemCode}, #{pointInventoryIdx}, #{grantStatus}, NOW(), #{grantedByUserIdx}, #{note}, NOW()
+        )
+    </insert>
+
+    <insert id="upsertLevelRewardInventoryItem">
+        INSERT INTO USER_POINT_ITEM_INVENTORY (
+            user_idx, item_code, quantity, is_active, acquired_at,
+            last_used_at, related_purchase_idx, created_at, updated_at
+        ) VALUES (
+            #{userIdx}, #{itemCode}, 1, 1, NOW(),
+            NULL, NULL, NOW(), NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+            quantity = quantity + 1,
+            is_active = 1,
+            updated_at = NOW()
+    </insert>
+
+    <insert id="insertWalletHistory">
+        INSERT INTO USER_WALLET_HISTORY (
+            user_idx, asset_type, change_type, amount, balance_after,
+            related_payment_idx, detail_message, actor_user_idx, created_at
+        ) VALUES (
+            #{userIdx}, #{assetType}, #{changeType}, #{amount}, #{balanceAfter},
+            #{relatedPaymentIdx}, #{detailMessage}, #{actorUserIdx}, NOW()
+        )
+    </insert>
 
 </mapper>

@@ -11,6 +11,7 @@ import org.triptogether.auth.service.AuthServiceImpl;
 import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.admin.vo.BusinessAccountApplicationVO;
+import org.triptogether.common.util.MessageUtil;
 import org.triptogether.explore.service.SpotTextTranslationService;
 import org.triptogether.myPage.service.MyPageService;
 import org.triptogether.myPage.service.ViewHistoryService;
@@ -19,6 +20,7 @@ import org.triptogether.myPage.vo.ViewHistoryItemDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageFlightBookingDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
+import org.triptogether.myPage.vo.MyPageLevelRewardDto;
 import org.triptogether.myPage.vo.MyPagePackageBookingDto;
 import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReviewDto;
@@ -49,6 +51,7 @@ public class ProfileController {
     private final WalletService walletService;
     private final SpotTextTranslationService translationService;
     private final ViewHistoryService viewHistoryService;
+    private final MessageUtil msg;
 
     // ── 수정 전 비밀번호 확인 페이지 ──────────────
     @GetMapping("/edit-confirm")
@@ -308,6 +311,16 @@ public class ProfileController {
             session.invalidate();
             return "redirect:/auth/login";
         }
+
+        // 레벨업 보상 정책이 뒤늦게 추가된 경우를 대비해, 현재 레벨까지의 미지급 보상을
+        // 마이페이지 진입 시 한 번 자동 정산한다.
+        if (rewardService.grantMissingLevelUpRewards(freshUser.getUserIdx())) {
+            freshUser = authService.getUserByIdx(freshUser.getUserIdx());
+            if (freshUser == null) {
+                session.invalidate();
+                return "redirect:/auth/login";
+            }
+        }
         session.setAttribute("loginUser", freshUser);
 
         List<MyPageCommunityDto> communityList = myPageService.getMyCommunityList(freshUser.getUserIdx());
@@ -318,11 +331,13 @@ public class ProfileController {
         List<ShopInventoryItemDto> inventoryItems = shopService.getInventoryItems(freshUser.getUserIdx());
         List<MyPageFlightBookingDto> flightBookingList = myPageService.getMyFlightBookingList(freshUser.getUserIdx());
         List<MyPagePackageBookingDto> packageBookingList = myPageService.getMyPackageBookingList(freshUser.getUserIdx());
+        List<MyPageLevelRewardDto> levelRewardList = myPageService.getMyLevelRewardList(freshUser.getUserIdx());
 
         translateMyPageDynamicTexts(
                 communityList, inquiryList, reviewList, planList,
                 notifications, inventoryItems, flightBookingList, packageBookingList
         );
+        prepareLevelRewards(levelRewardList, freshUser);
 
         model.addAttribute("user",           freshUser);
         model.addAttribute("communityList",  communityList);
@@ -344,6 +359,10 @@ public class ProfileController {
         model.addAttribute("notifications", notifications);
         model.addAttribute("totalNotificationCount", myPageService.getNotificationCount(freshUser.getUserIdx()));
         model.addAttribute("inventoryItems", inventoryItems);
+        model.addAttribute("levelRewardList", levelRewardList);
+        model.addAttribute("nextLevelReward", findNextLevelReward(levelRewardList));
+        model.addAttribute("claimedLevelRewardCount", countClaimedLevelRewards(levelRewardList));
+        model.addAttribute("totalLevelRewardCount", levelRewardList == null ? 0 : levelRewardList.size());
         model.addAttribute("businessApplication", myPageService.getLatestBusinessApplication(freshUser.getUserIdx()));
 
         // ── 경험치 바 렌더링용 데이터 ──
@@ -451,6 +470,196 @@ public class ProfileController {
 
         translateFlightBookings(flightBookingList, targetLang);
         translatePackageBookings(packageBookingList, targetLang);
+    }
+
+    /**
+     * 레벨업 보상 정책 목록을 현재 로그인 유저 기준의 화면 표시값으로 가공한다.
+     *
+     * <p>JSP에서 레벨 비교와 상태 계산을 반복하지 않도록
+     * 달성 여부, 수령 상태 코드, 보상 표시 문구를 컨트롤러에서 미리 채워 넣는다.</p>
+     */
+    private void prepareLevelRewards(List<MyPageLevelRewardDto> rewards, UsersVO user) {
+        if (rewards == null || user == null) {
+            return;
+        }
+
+        int currentLevel = user.getLevelNo();
+        String targetLang = resolveTargetLanguage();
+
+        for (MyPageLevelRewardDto reward : rewards) {
+            if (reward == null) {
+                continue;
+            }
+
+            boolean achieved = reward.getLevelNo() != null && currentLevel >= reward.getLevelNo();
+            reward.setAchieved(achieved);
+
+            if (reward.isClaimed()) {
+                reward.setRewardStatusCode("claimed");
+            } else if (achieved) {
+                reward.setRewardStatusCode("pending");
+            } else {
+                reward.setRewardStatusCode("locked");
+            }
+
+            reward.setRewardDisplayText(buildLevelRewardDisplayText(reward, targetLang));
+            reward.setRewardImagePath(resolveLevelRewardImagePath(reward));
+        }
+    }
+
+    private MyPageLevelRewardDto findNextLevelReward(List<MyPageLevelRewardDto> rewards) {
+        if (rewards == null) {
+            return null;
+        }
+
+        for (MyPageLevelRewardDto reward : rewards) {
+            if (reward != null && !reward.isClaimed()) {
+                return reward;
+            }
+        }
+        return null;
+    }
+
+    private int countClaimedLevelRewards(List<MyPageLevelRewardDto> rewards) {
+        if (rewards == null) {
+            return 0;
+        }
+
+        int count = 0;
+        for (MyPageLevelRewardDto reward : rewards) {
+            if (reward != null && reward.isClaimed()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 정책 데이터를 현재 언어 기준의 읽기 쉬운 보상 문구로 변환한다.
+     */
+    private String buildLevelRewardDisplayText(MyPageLevelRewardDto reward, String targetLang) {
+        if (reward == null || reward.getRewardType() == null) {
+            return localizeLevelRewardText(targetLang, "표시할 레벨업 보상 정보가 없습니다.",
+                    "No level-up reward information is available.",
+                    "表示できるレベルアップ報酬情報はありません。",
+                    "没有可显示的升级奖励信息。");
+        }
+
+        return switch (reward.getRewardType()) {
+            case "POINT" -> localizeLevelRewardText(
+                    targetLang,
+                    "포인트 " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount()),
+                    "Points " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount()),
+                    "ポイント " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount()),
+                    "积分 " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount())
+            );
+            case "MILEAGE" -> localizeLevelRewardText(
+                    targetLang,
+                    "마일리지 " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount()),
+                    "Mileage " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount()),
+                    "マイレージ " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount()),
+                    "里程 " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount())
+            );
+            case "CASH" -> localizeLevelRewardText(
+                    targetLang,
+                    "캐시 " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount()),
+                    "Cash " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount()),
+                    "キャッシュ " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount()),
+                    "现金 " + (reward.getRewardAmount() == null ? 0 : reward.getRewardAmount())
+            );
+            case "ITEM" -> resolveLevelRewardItemName(reward, targetLang);
+            default -> localizeLevelRewardText(targetLang, "표시할 레벨업 보상 정보가 없습니다.",
+                    "No level-up reward information is available.",
+                    "表示できるレベルアップ報酬情報はありません。",
+                    "没有可显示的升级奖励信息。");
+        };
+    }
+
+    /**
+     * 레벨 보상 전용 아이템 코드를 다국어 라벨로 변환한다.
+     *
+     * <p>상점 비노출 전용 아이템은 코드별 메시지 키를 우선 사용하고,
+     * 알 수 없는 코드는 DB 이름과 번역 캐시를 보조적으로 사용한다.</p>
+     */
+    private String resolveLevelRewardItemName(MyPageLevelRewardDto reward, String targetLang) {
+        if (reward == null) {
+            return localizeLevelRewardText(targetLang, "표시할 레벨업 보상 정보가 없습니다.",
+                    "No level-up reward information is available.",
+                    "表示できるレベルアップ報酬情報はありません。",
+                    "没有可显示的升级奖励信息。");
+        }
+
+        String itemCode = reward.getItemCode();
+        if (itemCode != null) {
+            switch (itemCode) {
+                case "LEVEL_BADGE_BRONZE_10":
+                    return localizeLevelRewardText(targetLang, "Lv.10 브론즈 성장 뱃지",
+                            "Lv.10 Bronze Growth Badge",
+                            "Lv.10 ブロンズ成長バッジ",
+                            "Lv.10 青铜成长徽章");
+                case "LEVEL_BADGE_SILVER_20":
+                    return localizeLevelRewardText(targetLang, "Lv.20 실버 성장 뱃지",
+                            "Lv.20 Silver Growth Badge",
+                            "Lv.20 シルバー成長バッジ",
+                            "Lv.20 白银成长徽章");
+                case "LEVEL_BADGE_GOLD_30":
+                    return localizeLevelRewardText(targetLang, "Lv.30 골드 성장 뱃지",
+                            "Lv.30 Gold Growth Badge",
+                            "Lv.30 ゴールド成長バッジ",
+                            "Lv.30 黄金成长徽章");
+                case "LEVEL_BADGE_MASTER_50":
+                    return localizeLevelRewardText(targetLang, "Lv.50 마스터 성장 뱃지",
+                            "Lv.50 Master Growth Badge",
+                            "Lv.50 マスター成長バッジ",
+                            "Lv.50 大师成长徽章");
+                default:
+                    break;
+            }
+        }
+
+        String fallbackName = reward.getItemName();
+        if (fallbackName == null || fallbackName.isBlank()) {
+            return localizeLevelRewardText(targetLang, "표시할 레벨업 보상 정보가 없습니다.",
+                    "No level-up reward information is available.",
+                    "表示できるレベルアップ報酬情報はありません。",
+                    "没有可显示的升级奖励信息。");
+        }
+
+        if (targetLang == null) {
+            return fallbackName;
+        }
+
+        return translate("POINT_SHOP_ITEM", 0L, "item_name", fallbackName, targetLang);
+    }
+
+    /**
+     * 현재 언어 코드에 맞는 레벨 보상 전용 문구를 고른다.
+     */
+    private String localizeLevelRewardText(String targetLang, String ko, String en, String ja, String zh) {
+        if ("en".equals(targetLang)) {
+            return en;
+        }
+        if ("ja".equals(targetLang)) {
+            return ja;
+        }
+        if ("zh".equals(targetLang)) {
+            return zh;
+        }
+        return ko;
+    }
+
+    private String resolveLevelRewardImagePath(MyPageLevelRewardDto reward) {
+        if (reward == null || reward.getItemCode() == null || !"ITEM".equalsIgnoreCase(reward.getRewardType())) {
+            return null;
+        }
+
+        return switch (reward.getItemCode()) {
+            case "LEVEL_BADGE_BRONZE_10" -> "/resources/data/level-badge-bronze.svg";
+            case "LEVEL_BADGE_SILVER_20" -> "/resources/data/level-badge-silver.svg";
+            case "LEVEL_BADGE_GOLD_30" -> "/resources/data/level-badge-gold.svg";
+            case "LEVEL_BADGE_MASTER_50" -> "/resources/data/level-badge-master.svg";
+            default -> null;
+        };
     }
 
     private void translateFlightBookings(List<MyPageFlightBookingDto> flightBookingList, String targetLang) {

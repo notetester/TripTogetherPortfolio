@@ -83,6 +83,34 @@
     border-color: #e9d5ff;
 }
 
+.badge-level-bronze {
+    color: #7c3a17;
+    background: linear-gradient(135deg, #fef3e2, #f4c7a3);
+    border-color: #d6a27c;
+    box-shadow: 0 0 0 1px rgba(124, 58, 23, .06);
+}
+
+.badge-level-silver {
+    color: #334155;
+    background: linear-gradient(135deg, #f8fbff, #d9e4f5);
+    border-color: #b7c6da;
+    box-shadow: 0 0 0 1px rgba(51, 65, 85, .05);
+}
+
+.badge-level-gold {
+    color: #92400e;
+    background: linear-gradient(135deg, #fff9d9, #f8df7a);
+    border-color: #f0bf3c;
+    box-shadow: 0 0 0 1px rgba(146, 64, 14, .05);
+}
+
+.badge-level-master {
+    color: #4c1d95;
+    background: linear-gradient(135deg, #f5edff, #d9c8ff);
+    border-color: #b799ff;
+    box-shadow: 0 0 0 1px rgba(76, 29, 149, .05);
+}
+
 .bubble-pastel {
     background: linear-gradient(135deg, #fff7ed, #fdf2f8) !important;
     border-color: #fed7aa !important;
@@ -102,4 +130,13 @@
     background: linear-gradient(135deg, #eff6ff, #ecfeff) !important;
     border-color: #93c5fd !important;
     box-shadow: 0 12px 30px rgba(37, 99, 235, .14) !important;
+}
+
+.tt-level-badge-img {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,.18));
 }

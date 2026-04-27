@@ -7,6 +7,7 @@ import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
 import org.triptogether.myPage.vo.MyPageFlightBookingDto;
+import org.triptogether.myPage.vo.MyPageLevelRewardDto;
 import org.triptogether.myPage.vo.MyPagePackageBookingDto;
 import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
@@ -41,6 +42,7 @@ public interface MyPageMapper {
 
     List<MyPagePlanDto> selectMyPlanList(@Param("userIdx") Long userIdx);
     int selectMyPlanCount(@Param("userIdx") Long userIdx);
+    List<MyPageLevelRewardDto> selectMyLevelRewardList(@Param("userIdx") Long userIdx);
 
     // ===== 항공권 예매 =====
 

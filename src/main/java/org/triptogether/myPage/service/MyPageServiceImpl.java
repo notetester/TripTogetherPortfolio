@@ -11,6 +11,7 @@ import org.triptogether.myPage.vo.FeedNotificationDto;
 import org.triptogether.myPage.vo.MyPageCommunityDto;
 import org.triptogether.myPage.vo.MyPageInquiryDto;
 import org.triptogether.myPage.vo.MyPageFlightBookingDto;
+import org.triptogether.myPage.vo.MyPageLevelRewardDto;
 import org.triptogether.myPage.vo.MyPagePackageBookingDto;
 import org.triptogether.myPage.vo.MyPagePlanDto;
 import org.triptogether.myPage.vo.MyPageReportDto;
@@ -84,6 +85,11 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public int getMyPlanCount(Long userIdx) {
         return myPageMapper.selectMyPlanCount(userIdx);
+    }
+
+    @Override
+    public List<MyPageLevelRewardDto> getMyLevelRewardList(Long userIdx) {
+        return myPageMapper.selectMyLevelRewardList(userIdx);
     }
 
     // ===== 항공권 예매 =====

@@ -293,6 +293,16 @@
         <result property="createdAt"   column="created_at"/>
     </resultMap>
 
+    <resultMap id="LevelRewardResultMap" type="org.triptogether.myPage.vo.MyPageLevelRewardDto">
+        <id     property="levelUpRewardPolicyIdx" column="level_up_reward_policy_idx"/>
+        <result property="levelNo"                column="level_no"/>
+        <result property="rewardType"             column="reward_type"/>
+        <result property="rewardAmount"           column="reward_amount"/>
+        <result property="itemCode"               column="item_code"/>
+        <result property="itemName"               column="item_name"/>
+        <result property="claimed"                column="claimed"/>
+    </resultMap>
+
     <!-- 항공권 예매 매핑 -->
     <resultMap id="FlightBookingResultMap" type="org.triptogether.myPage.vo.MyPageFlightBookingDto">
         <id     property="flightPurchaseIdx"    column="flight_purchase_idx"/>
@@ -410,6 +420,29 @@
         SELECT COUNT(*)
         FROM TRAVEL_PLAN
         WHERE user_idx = #{userIdx}
+    </select>
+
+    <select id="selectMyLevelRewardList" resultMap="LevelRewardResultMap">
+        SELECT
+            lurp.level_up_reward_policy_idx,
+            lurp.level_no,
+            lurp.reward_type,
+            lurp.reward_amount,
+            lurp.item_code,
+            psi.item_name,
+            CASE
+                WHEN ulurh.user_level_up_reward_history_idx IS NOT NULL THEN 1
+                ELSE 0
+            END AS claimed
+        FROM LEVEL_UP_REWARD_POLICY lurp
+        LEFT JOIN POINT_SHOP_ITEM psi
+               ON lurp.item_code = psi.item_code
+        LEFT JOIN USER_LEVEL_UP_REWARD_HISTORY ulurh
+               ON ulurh.level_up_reward_policy_idx = lurp.level_up_reward_policy_idx
+              AND ulurh.user_idx = #{userIdx}
+              AND ulurh.grant_status = 'GRANTED'
+        WHERE lurp.is_active = 1
+        ORDER BY lurp.level_no ASC, lurp.sort_order ASC, lurp.priority ASC, lurp.level_up_reward_policy_idx ASC
     </select>
 
     <!-- =============================================

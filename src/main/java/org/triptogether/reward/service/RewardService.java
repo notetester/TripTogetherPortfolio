@@ -32,4 +32,13 @@ public interface RewardService {
      * @return 실제로 레벨이 변경된 회원 수
      */
     int synchronizeUserLevels(boolean onlyActiveMembers);
+
+    /**
+     * 이미 높은 레벨에 도달해 있지만 정책 추가 시점 이후라 아직 받지 못한
+     * 레벨업 보상을 현재 레벨 기준으로 소급 정산한다.
+     *
+     * @param userIdx 보상을 정산할 회원 PK
+     * @return 실제로 새로 지급된 보상이 하나라도 있으면 true
+     */
+    boolean grantMissingLevelUpRewards(Long userIdx);
 }

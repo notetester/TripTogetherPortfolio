@@ -1540,6 +1540,14 @@
 .mp-item-preview.preview-badge-navy span { background: linear-gradient(135deg, #0f172a, #38bdf8); }
 .mp-item-preview.preview-badge-purple span { background: linear-gradient(135deg, #7c3aed, #f0abfc); }
 
+.mp-item-preview.preview-badge-level { background: #f1f5f9; }
+.mp-item-preview-level-img {
+  width: 48px;
+  height: 48px;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .18));
+}
+
 .mp-item-preview.preview-bubble-pastel span,
 .mp-item-preview.preview-bubble-map span,
 .mp-item-preview.preview-bubble-sky span {
@@ -1847,9 +1855,10 @@
   margin-bottom: 0;
 }
 
-/* 상단 핵심 요약과 꾸미기 아이템은 가로 전체를 사용합니다. */
+/* 상단 핵심 요약, 레벨업 보상, 프로필 정보는 가로 전체를 사용합니다. */
 .mp-inner > .mp-card:nth-of-type(1),
 .mp-inner > .mp-card:nth-of-type(2),
+.mp-inner > .mp-level-reward-card,
 .mp-inner > .mp-card:last-of-type {
   grid-column: 1 / -1;
 }
@@ -2523,3 +2532,274 @@ html.dark .mp-history-clear-btn:hover {
 html.dark .mp-history-row-delete { color: #9ca3af; }
 html.dark .mp-history-row-delete:hover { background: rgba(248, 113, 113, .15); color: #f87171; }
 html.dark .mp-history-empty { color: #94a3b8; }
+
+/* 레벨업 보상 섹션 */
+.mp-level-reward-card {
+    margin-top: 24px;
+}
+
+.mp-level-reward-subtitle {
+    margin: 0 24px 16px;
+    color: var(--gray-500);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.mp-level-reward-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 180px)) minmax(0, 1fr);
+    gap: 14px;
+    padding: 0 24px 18px;
+}
+
+.mp-level-reward-stat,
+.mp-level-reward-next-card {
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+}
+
+.mp-level-reward-stat {
+    padding: 16px 18px;
+}
+
+.mp-level-reward-stat__label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mp-level-reward-stat strong {
+    color: var(--gray-800);
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.mp-level-reward-next-card {
+    padding: 16px 18px;
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.06);
+}
+
+.mp-level-reward-next-card__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.mp-level-reward-next-kicker {
+    color: #7c3aed;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.mp-level-reward-next-card__head strong {
+    color: var(--gray-800);
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.mp-level-reward-next-body,
+.mp-level-reward-content-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mp-level-reward-next-image,
+.mp-level-reward-image {
+    flex: 0 0 auto;
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(15, 23, 42, .12));
+}
+
+.mp-level-reward-next-text {
+    margin-bottom: 8px;
+    color: var(--gray-800);
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+.mp-level-reward-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 10px;
+    padding: 0 24px 24px;
+}
+
+.mp-level-reward-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--gray-100);
+    background: #fafafa;
+    min-height: 52px;
+}
+
+.mp-level-reward-item.is-claimed {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.mp-level-reward-item.is-pending {
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.mp-level-reward-item.is-locked {
+    opacity: 0.62;
+}
+
+.mp-level-reward-item__lv {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--gray-700);
+    min-width: 38px;
+    flex-shrink: 0;
+}
+
+.mp-level-reward-item__content {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--gray-700);
+    font-weight: 600;
+}
+
+.mp-level-reward-item__img {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.mp-level-reward-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 86px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.mp-level-reward-status.is-claimed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.mp-level-reward-status.is-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.mp-level-reward-status.is-locked {
+    background: #e5e7eb;
+    color: #6b7280;
+}
+
+.mp-level-reward-empty {
+    padding: 16px 24px 24px;
+    text-align: center;
+    color: var(--gray-400);
+}
+
+.mp-level-reward-empty-icon {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 28px;
+}
+
+@media (max-width: 767px) {
+    .mp-level-reward-subtitle {
+        margin: 0 18px 14px;
+    }
+
+    .mp-level-reward-overview {
+        grid-template-columns: 1fr;
+        padding: 0 18px 18px;
+    }
+
+    .mp-level-reward-grid {
+        padding: 0 18px 20px;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+html.dark .mp-level-reward-subtitle {
+    color: #94a3b8;
+}
+
+html.dark .mp-level-reward-stat,
+html.dark .mp-level-reward-next-card {
+    background: linear-gradient(180deg, #151922, #111827);
+    border-color: #232935;
+}
+
+html.dark .mp-level-reward-stat__label {
+    color: #94a3b8;
+}
+
+html.dark .mp-level-reward-stat strong,
+html.dark .mp-level-reward-next-card__head strong,
+html.dark .mp-level-reward-next-text {
+    color: #f1f5f9;
+}
+
+html.dark .mp-level-reward-next-kicker {
+    color: #c4b5fd;
+}
+
+html.dark .mp-level-reward-item {
+    background: #0f1115;
+    border-color: #232935;
+}
+
+html.dark .mp-level-reward-item.is-claimed {
+    background: rgba(34, 197, 94, .07);
+    border-color: rgba(34, 197, 94, .22);
+}
+
+html.dark .mp-level-reward-item.is-pending {
+    background: rgba(245, 158, 11, .07);
+    border-color: rgba(245, 158, 11, .22);
+}
+
+html.dark .mp-level-reward-item__lv,
+html.dark .mp-level-reward-item__content {
+    color: #e2e8f0;
+}
+
+html.dark .mp-level-reward-status.is-claimed {
+    background: rgba(34, 197, 94, .18);
+    color: #86efac;
+}
+
+html.dark .mp-level-reward-status.is-pending {
+    background: rgba(245, 158, 11, .18);
+    color: #fde68a;
+}
+
+html.dark .mp-level-reward-status.is-locked {
+    background: rgba(148, 163, 184, .18);
+    color: #cbd5e1;
+}
+
+html.dark .mp-level-reward-empty {
+    color: #94a3b8;
+}
