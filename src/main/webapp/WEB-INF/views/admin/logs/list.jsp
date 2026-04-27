@@ -115,7 +115,7 @@
             </div>
         </div>
         <div id="loginBulkBar" class="adm-audit-bulk-bar" style="display:none;">
-            <span><spring:message code="admin.common.selectedCount"/>: <strong id="loginBulkCount">0</strong></span>
+            <span><strong id="loginBulkCount">0</strong><spring:message code="admin.common.selectedCount"/></span>
             <button type="button" class="adm-btn adm-btn-ghost" onclick="clearLoginSelection()"><spring:message code="admin.common.clearSelection"/></button>
         </div>
 

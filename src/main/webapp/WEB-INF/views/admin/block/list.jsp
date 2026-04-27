@@ -567,7 +567,7 @@
                 </div>
             </div>
             <div id="ub-bulkBar" class="js-block-bulkbar" data-section="user-blocks" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
-                <span style="color:#93c5fd;font-size:13px;"><spring:message code="admin.common.selectedCount"/>: <strong id="ub-bulkCount" class="js-block-bulk-count">0</strong></span>
+                <span style="color:#93c5fd;font-size:13px;"><strong id="ub-bulkCount" class="js-block-bulk-count">0</strong><spring:message code="admin.common.selectedCount"/></span>
                 <c:if test="${hasUserBlockAdmin}">
                     <button type="button" class="adm-btn adm-btn-danger" onclick="bulkReleaseUserBlocks()"><spring:message code="admin.common.bulkRelease"/></button>
                 </c:if>
@@ -667,7 +667,7 @@
                 </div>
             </div>
             <div id="ipr-bulkBar" class="js-block-bulkbar" data-section="ip-rules" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
-                <span style="color:#93c5fd;font-size:13px;"><spring:message code="admin.common.selectedCount"/>: <strong id="ipr-bulkCount" class="js-block-bulk-count">0</strong></span>
+                <span style="color:#93c5fd;font-size:13px;"><strong id="ipr-bulkCount" class="js-block-bulk-count">0</strong><spring:message code="admin.common.selectedCount"/></span>
                 <c:if test="${hasIpBlockAdmin or hasBlockPolicyAdmin}">
                     <button type="button" class="adm-btn adm-btn-primary" onclick="bulkToggleIpRules(true)"><spring:message code="admin.blocks.ruleOn"/></button>
                     <button type="button" class="adm-btn adm-btn-danger" onclick="bulkToggleIpRules(false)"><spring:message code="admin.blocks.ruleOff"/></button>
@@ -732,7 +732,7 @@
         </div>
         <div class="adm-card-body" style="padding:0;">
             <div id="bat-bulkBar" class="js-block-bulkbar" data-section="batches" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
-                <span style="color:#93c5fd;font-size:13px;"><spring:message code="admin.common.selectedCount"/>: <strong id="bat-bulkCount" class="js-block-bulk-count">0</strong></span>
+                <span style="color:#93c5fd;font-size:13px;"><strong id="bat-bulkCount" class="js-block-bulk-count">0</strong><spring:message code="admin.common.selectedCount"/></span>
                 <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('batches')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
             </div>
             <div class="adm-local-toolbar">
@@ -819,7 +819,7 @@
         </div>
         <div class="adm-card-body" style="padding:0;">
             <div id="hist-bulkBar" class="js-block-bulkbar" data-section="histories" style="display:none;align-items:center;gap:10px;padding:8px 16px;background:#1e3a5f;border-bottom:1px solid #334155;">
-                <span style="color:#93c5fd;font-size:13px;"><spring:message code="admin.common.selectedCount"/>: <strong id="hist-bulkCount" class="js-block-bulk-count">0</strong></span>
+                <span style="color:#93c5fd;font-size:13px;"><strong id="hist-bulkCount" class="js-block-bulk-count">0</strong><spring:message code="admin.common.selectedCount"/></span>
                 <button type="button" class="adm-btn adm-btn-ghost" onclick="blockClearSelection('histories')" style="margin-left:auto;"><spring:message code="admin.common.clearSelection"/></button>
             </div>
             <div class="adm-local-toolbar">

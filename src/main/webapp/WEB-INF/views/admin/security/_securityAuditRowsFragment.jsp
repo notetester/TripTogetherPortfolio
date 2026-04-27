@@ -177,10 +177,15 @@
                             class="adm-cell-link"
                             data-keyword="${fn:escapeXml(securityRequestKey)}"
                             onclick="openSecurityRelatedActivity(this)">
-                        <span class="adm-ellipsis-line" style="font-size:12px;color:#94a3b8;"><c:out value="${empty item.requestId ? '-' : item.requestId}"/></span>
-                        <c:if test="${not empty item.flowTraceId}">
-                            <span class="adm-cell-link-note adm-ellipsis-line"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
-                        </c:if>
+                        <span class="adm-ellipsis-line" style="font-size:12px;color:#cbd5e1;"><c:out value="${securityRequestKey}"/></span>
+                        <c:choose>
+                            <c:when test="${empty item.requestId and not empty item.flowTraceId}">
+                                <span class="adm-cell-link-note adm-ellipsis-line"><spring:message code="admin.common.trace"/></span>
+                            </c:when>
+                            <c:when test="${not empty item.requestId and not empty item.flowTraceId and item.requestId ne item.flowTraceId}">
+                                <span class="adm-cell-link-note adm-ellipsis-line"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
+                            </c:when>
+                        </c:choose>
                     </button>
                 </c:when>
                 <c:otherwise><div style="font-size:12px;color:#64748b;">-</div></c:otherwise>
@@ -200,6 +205,7 @@
                     data-detail-msg="${fn:escapeXml(item.detailMessage)}"
                     data-ip="${fn:escapeXml(item.ipAddress)}"
                     data-request-id="${fn:escapeXml(item.requestId)}"
+                    data-request-key="${fn:escapeXml(securityRequestKey)}"
                     data-flow-trace="${fn:escapeXml(item.flowTraceId)}"
                     data-user-agent="${fn:escapeXml(item.userAgent)}"
                     onclick="openSecurityDetail(this)">

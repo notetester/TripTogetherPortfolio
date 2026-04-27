@@ -147,7 +147,7 @@
 
         <%-- 일괄 처리 바 --%>
         <div id="bulkBar" style="display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 16px;margin:0 0 12px;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><spring:message code="admin.common.selectedCount"/>: <strong id="bulkCount">0</strong></span>
+            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><strong id="bulkCount">0</strong><spring:message code="admin.common.selectedCount"/></span>
             <div style="display:flex;align-items:center;gap:6px;">
                 <select class="adm-select" id="bulkStatusSelect" style="width:130px;">
                     <option value="">상태 선택</option>

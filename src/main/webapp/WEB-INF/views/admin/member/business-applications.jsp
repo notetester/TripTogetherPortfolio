@@ -123,7 +123,7 @@
         </div>
 
         <div id="businessBulkBar" style="display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 16px;margin:0 0 12px;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><spring:message code="admin.common.selectedCount"/>: <strong id="businessBulkCount">0</strong></span>
+            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><strong id="businessBulkCount">0</strong><spring:message code="admin.common.selectedCount"/></span>
             <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="bulkApproveBusiness()"><spring:message code="admin.business.status.approved"/></button>
             <input class="adm-input" id="businessBulkRejectReason" maxlength="500" style="max-width:260px;" placeholder="<spring:message code='admin.business.rejectReasonPlaceholder'/>">
             <button type="button" class="adm-btn adm-btn-danger" style="font-size:12px;" onclick="bulkRejectBusiness()"><spring:message code="admin.business.status.rejected"/></button>

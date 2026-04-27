@@ -101,7 +101,7 @@
         </div>
 
         <div id="securityBulkBar" class="adm-audit-bulk-bar" style="display:none;">
-            <span><spring:message code="admin.common.selectedCount"/>: <strong id="securityBulkCount">0</strong></span>
+            <span><strong id="securityBulkCount">0</strong><spring:message code="admin.common.selectedCount"/></span>
             <button type="button" class="adm-btn adm-btn-ghost" onclick="clearSecuritySelection()"><spring:message code="admin.common.clearSelection"/></button>
         </div>
 
@@ -135,7 +135,7 @@
                     <th class="js-security-sort" data-sort="success" onclick="securitySortBy('success')"><spring:message code="admin.common.result"/></th>
                     <th class="js-security-sort" data-sort="reason" onclick="securitySortBy('reason')"><spring:message code="admin.common.reason"/></th>
                     <th class="js-security-sort" data-sort="ip" onclick="securitySortBy('ip')"><spring:message code="admin.common.ip"/></th>
-                    <th class="js-security-sort" data-sort="requestId" onclick="securitySortBy('requestId')"><spring:message code="admin.context.requestId"/></th>
+                    <th class="js-security-sort" data-sort="requestId" onclick="securitySortBy('requestId')"><spring:message code="admin.security.correlationId"/></th>
                     <th></th>
                 </tr>
                 </thead>
@@ -658,7 +658,7 @@ function openSecurityDetail(btn) {
         ])
         + securityDetailSection('요청 컨텍스트', [
             securityDetailField('IP', d.ip),
-            securityDetailField('요청 ID', d.requestId),
+            securityDetailField('요청/흐름 ID', d.requestKey || d.requestId || d.flowTrace),
             securityDetailField('흐름 추적 ID', d.flowTrace),
             securityDetailField('User-Agent', d.userAgent, {pre:true})
         ])
