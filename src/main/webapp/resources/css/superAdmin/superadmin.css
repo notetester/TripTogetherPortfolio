@@ -108,6 +108,61 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 /* 자식이 1명뿐이면 가로선 자체가 의미 없음 (수직선만으로 충분) */
 .sa-org-children > .sa-org-node-wrap:only-child::after  { display: none; }
 
+/* ── indent 모드: depth 2+ 부터 들여쓰기 트리 (├─ └─) — 가로 폭 절약 ── */
+.sa-org-children.sa-org-children-indent {
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 0;
+    padding-top: 4px;
+    margin-left: 32px;
+    padding-left: 32px;
+}
+/* top-down 모드의 부모-가로선 사이 메인 수직선 비활성화 */
+.sa-org-children.sa-org-children-indent::before { display: none; }
+
+/* 자식 wrap 내부 패딩 */
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    align-items: flex-start;
+}
+/* 위쪽 수직선: wrap top → 카드 중앙 (모든 자식) */
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap::before {
+    top: 0;
+    left: -32px;
+    transform: none;
+    width: 2px;
+    height: 36px;       /* padding 6 + 카드 절반 ≈ 30 */
+    background: #475569;
+}
+/* 아래쪽 수직선: 카드 중앙 → wrap bottom (마지막 자식 제외) */
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap::after {
+    top: 36px;
+    left: -32px;
+    right: auto;
+    bottom: 0;
+    width: 2px;
+    height: auto;
+    background: #475569;
+}
+/* 가장자리 가림 / only-child 처리 무효화 */
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap:first-child::after { left: -32px; }
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap:last-child::after  { display: none; }
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap:only-child::after  { display: none; }
+/* only-child 인 경우 위쪽 수직선만 카드 중앙까지 (그 위 가로선 부모 효과는 부모 수직선이 담당) */
+
+/* 카드 옆 가로 가지선 (├─ 또는 └─ 의 가로 부분, 32px) */
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap > .sa-org-node::before {
+    content: '';
+    position: absolute;
+    left: -32px;
+    top: 50%;
+    width: 32px;
+    height: 2px;
+    background: #475569;
+}
+
 /* ── 급여/역량 현황 일람표 ── */
 .sa-salary-toolbar { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid #2d3748; }
 .sa-salary-table   { width:100%; border-collapse:collapse; font-size:13px; }
@@ -348,7 +403,8 @@ body.sa-light .sa-org-dept          { color:#94a3b8; }
 body.sa-light .sa-org-badge         { background:#ede9fe; color:#7c3aed; }
 body.sa-light .sa-org-children::before,
 body.sa-light .sa-org-children > .sa-org-node-wrap::before,
-body.sa-light .sa-org-children > .sa-org-node-wrap::after {
+body.sa-light .sa-org-children > .sa-org-node-wrap::after,
+body.sa-light .sa-org-children.sa-org-children-indent > .sa-org-node-wrap > .sa-org-node::before {
     background: #cbd5e1;
 }
 body.sa-light .sa-group-row         { border-bottom-color:#f1f5f9; }
