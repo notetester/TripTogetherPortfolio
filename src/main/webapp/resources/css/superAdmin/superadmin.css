@@ -41,10 +41,10 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-form-label { font-size:13px; color:#64748b; font-weight:500; }
 .sa-full-select { width:100%; }
 
-/* ── 조직도 ── */
-.sa-org-tree         { display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start; }
-.sa-org-node-wrap    { display:flex; flex-direction:column; align-items:center; }
-.sa-org-node         { display:flex; align-items:center; gap:12px; background:#1e2330; border:1px solid #2d3748; border-radius:10px; padding:12px 16px; min-width:220px; position:relative; }
+/* ── 조직도 (들여쓰기 트리 + ├─ └─ 분기선) ── */
+.sa-org-tree         { display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
+.sa-org-node-wrap    { display:flex; flex-direction:column; align-items:flex-start; position:relative; }
+.sa-org-node         { display:flex; align-items:center; gap:12px; background:#1e2330; border:1px solid #2d3748; border-radius:10px; padding:12px 16px; min-width:280px; position:relative; }
 .sa-org-node:hover   { border-color:#6366f1; background:#1a2035; }
 .sa-org-avatar       { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; flex-shrink:0; }
 .sa-org-info         { flex:1; min-width:0; }
@@ -55,8 +55,44 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-org-edit         { font-size:11px; color:#94a3b8; text-decoration:none; flex-shrink:0; }
 .sa-org-edit:hover   { color:#6366f1; }
 
-/* 자식 노드 연결선 */
-.sa-org-children     { display:flex; flex-wrap:wrap; gap:16px; margin-top:0; padding-top:20px; padding-left:20px; border-left:2px solid #2d3748; margin-left:20px; align-items:flex-start; }
+/* 자식 그룹: 들여쓰기 + 세로 나열 */
+.sa-org-children     { display:flex; flex-direction:column; gap:0; margin-top:0; margin-left:32px; padding-left:32px; align-items:flex-start; }
+
+/* 각 자식 wrap: 위쪽 수직선 (모든 자식 / 카드 중앙까지) */
+.sa-org-children > .sa-org-node-wrap {
+    position: relative;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+.sa-org-children > .sa-org-node-wrap::before {
+    content: '';
+    position: absolute;
+    left: -32px;
+    top: 0;
+    height: calc(50% + 1px);
+    width: 2px;
+    background: #475569;
+}
+/* 마지막 자식 제외 — 카드 중앙부터 아래까지 수직선 (다음 형제로 이어줌) */
+.sa-org-children > .sa-org-node-wrap:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: -32px;
+    top: calc(50% + 1px);
+    bottom: 0;
+    width: 2px;
+    background: #475569;
+}
+/* 카드 옆 수평 분기선 (├─ 또는 └─ 의 가로 부분) */
+.sa-org-children > .sa-org-node-wrap > .sa-org-node::before {
+    content: '';
+    position: absolute;
+    left: -32px;
+    top: 50%;
+    width: 32px;
+    height: 2px;
+    background: #475569;
+}
 
 /* ── 급여/역량 현황 일람표 ── */
 .sa-salary-toolbar { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid #2d3748; }
@@ -296,7 +332,11 @@ body.sa-light .sa-org-name          { color:#1e293b; }
 body.sa-light .sa-org-title         { color:#64748b; }
 body.sa-light .sa-org-dept          { color:#94a3b8; }
 body.sa-light .sa-org-badge         { background:#ede9fe; color:#7c3aed; }
-body.sa-light .sa-org-children      { border-left-color:#e2e8f0; }
+body.sa-light .sa-org-children > .sa-org-node-wrap::before,
+body.sa-light .sa-org-children > .sa-org-node-wrap:not(:last-child)::after,
+body.sa-light .sa-org-children > .sa-org-node-wrap > .sa-org-node::before {
+    background: #cbd5e1;
+}
 body.sa-light .sa-group-row         { border-bottom-color:#f1f5f9; }
 body.sa-light .sa-group-row:hover   { background:#f8fafc; }
 body.sa-light .sa-group-code        { background:#e0e7ff; color:#4338ca; }
