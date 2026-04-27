@@ -197,7 +197,8 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
     .sa-stats-grid { grid-template-columns:1fr; }
     .sa-stats-exception-grid { grid-template-columns:1fr; }
     .sa-profile-wrap { flex-direction: column; min-height: auto; }
-    .sa-profile-nav  { width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; }
+    .sa-profile-nav  { width: 100%; border-right: none; border-bottom: 1px solid #2d3748; }
+    body.sa-light .sa-profile-nav { border-bottom-color: #e2e8f0; }
     .sa-profile-avatar-wrap { padding: 16px; }
 }
 
@@ -325,15 +326,24 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 
 /* ── 프로필 편집 페이지 (OrangeHRM 스타일) ── */
 .sa-profile-wrap        { display:flex; min-height:calc(100vh - 60px); }
-.sa-profile-nav         { width:220px; flex-shrink:0; border-right:1px solid #e2e8f0; background:#f8fafc; display:flex; flex-direction:column; }
-.sa-profile-avatar-wrap { padding:24px 16px; text-align:center; border-bottom:1px solid #e2e8f0; }
+/* ── 프로필 편집 사이드바 (default = 다크) ── */
+.sa-profile-nav         { width:220px; flex-shrink:0; border-right:1px solid #2d3748; background:#131826; display:flex; flex-direction:column; }
+.sa-profile-avatar-wrap { padding:24px 16px; text-align:center; border-bottom:1px solid #2d3748; }
 .sa-profile-avatar      { width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; font-size:24px; font-weight:700; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; }
-.sa-profile-name        { font-size:15px; font-weight:700; color:#1e293b; }
+.sa-profile-name        { font-size:15px; font-weight:700; color:#e2e8f0; }
 .sa-profile-sub         { font-size:12px; color:#94a3b8; margin-top:3px; }
 .sa-profile-menu        { flex:1; padding:8px 0; }
-.sa-profile-menu-item   { display:block; padding:10px 20px; font-size:13px; color:#64748b; cursor:pointer; border-left:3px solid transparent; text-decoration:none; background:none; border-top:none; border-right:none; border-bottom:none; width:100%; text-align:left; }
-.sa-profile-menu-item:hover             { background:#f1f5f9; color:#334155; }
-.sa-profile-menu-item.active            { color:#6366f1; border-left-color:#6366f1; background:#eff6ff; font-weight:600; }
+.sa-profile-menu-item   { display:block; padding:10px 20px; font-size:13px; color:#94a3b8; cursor:pointer; border-left:3px solid transparent; text-decoration:none; background:none; border-top:none; border-right:none; border-bottom:none; width:100%; text-align:left; }
+.sa-profile-menu-item:hover             { background:#1a2035; color:#e2e8f0; }
+.sa-profile-menu-item.active            { color:#a5b4fc; border-left-color:#6366f1; background:rgba(99,102,241,.12); font-weight:600; }
+
+/* ── 프로필 편집 사이드바 (sa-light = 라이트) ── */
+body.sa-light .sa-profile-nav         { border-right-color:#e2e8f0; background:#f8fafc; }
+body.sa-light .sa-profile-avatar-wrap { border-bottom-color:#e2e8f0; }
+body.sa-light .sa-profile-name        { color:#1e293b; }
+body.sa-light .sa-profile-menu-item   { color:#64748b; }
+body.sa-light .sa-profile-menu-item:hover  { background:#f1f5f9; color:#334155; }
+body.sa-light .sa-profile-menu-item.active { color:#6366f1; background:#eff6ff; }
 .sa-profile-back        { display:block; padding:12px 20px; font-size:12px; color:#94a3b8; text-decoration:none; border-top:1px solid #e2e8f0; }
 .sa-profile-back:hover  { color:#6366f1; }
 .sa-profile-content     { flex:1; overflow-y:auto; }
