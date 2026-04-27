@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `WALLET_LIMIT_POLICY` (
     `single_limit`         BIGINT       DEFAULT NULL COMMENT '1회 충전 한도 (NULL = 무제한)',
     `daily_limit`          BIGINT       DEFAULT NULL COMMENT '일일 충전 한도',
     `monthly_limit`        BIGINT       DEFAULT NULL COMMENT '월 충전 한도',
-    `is_active`            TINYINT(1)   NOT NULL DEFAULT 1,
+    `is_active`            TINYINT      NOT NULL DEFAULT 1,
     `created_by_user_idx`  BIGINT       DEFAULT NULL,
     `created_at`           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_by_user_idx`  BIGINT       DEFAULT NULL,

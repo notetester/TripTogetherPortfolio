@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `WALLET_REWARD_POLICY` (
     `reward_rate`          DECIMAL(5,2) DEFAULT NULL COMMENT '적립률(%) — 비율형',
     `reward_fixed`         BIGINT       DEFAULT NULL COMMENT '고정 적립량 — 정액형',
     `description`          VARCHAR(255) DEFAULT NULL,
-    `is_active`            TINYINT(1)   NOT NULL DEFAULT 1,
+    `is_active`            TINYINT      NOT NULL DEFAULT 1,
     `created_by_user_idx`  BIGINT       DEFAULT NULL,
     `created_at`           DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_by_user_idx`  BIGINT       DEFAULT NULL,
