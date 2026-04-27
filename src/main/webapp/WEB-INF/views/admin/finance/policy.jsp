@@ -125,7 +125,7 @@
             <table class="adm-table" style="width:100%;">
                 <thead>
                 <tr>
-                    <th style="width:100px;"><spring:message code="admin.finance.policy.reward.col.event"/></th>
+                    <th style="width:200px;white-space:nowrap;"><spring:message code="admin.finance.policy.reward.col.event"/></th>
                     <th style="width:90px;"><spring:message code="admin.finance.policy.reward.col.grade"/></th>
                     <th style="width:90px;"><spring:message code="admin.finance.policy.reward.col.rewardType"/></th>
                     <th style="width:110px;text-align:right;"><spring:message code="admin.finance.policy.reward.col.rate"/></th>
@@ -144,7 +144,7 @@
                     <c:otherwise>
                         <c:forEach var="r" items="${rewardPolicies}">
                             <tr>
-                                <td>
+                                <td style="white-space:nowrap;">
                                     <span style="font-size:13px;">
                                         <spring:message code="admin.finance.rewardEvent.${r.eventType}" text="${r.eventType}"/>
                                     </span>
