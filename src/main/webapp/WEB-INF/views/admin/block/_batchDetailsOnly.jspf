@@ -15,5 +15,45 @@
             <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.updatedAt"/></div><div class="detail-value">${empty b.updatedByNickname ? '-' : b.updatedByNickname} / <fmt:formatDate value="${b.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/></div></div>
         </div>
         <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.detailDescription"/></div><div class="detail-value">${empty b.description ? '-' : fn:escapeXml(b.description)}</div></div>
+        <c:if test="${not empty batchDetailRules}">
+            <table class="history-table" style="margin-top:14px;">
+                <thead><tr>
+                    <th><spring:message code="admin.blocks.connectedRule"/></th>
+                    <th><spring:message code="admin.common.actionLabel"/></th>
+                    <th><spring:message code="admin.blocks.controlMode"/></th>
+                    <th><spring:message code="admin.common.status"/></th>
+                </tr></thead>
+                <tbody>
+                <c:forEach var="rule" items="${batchDetailRules}">
+                    <tr>
+                        <td>${rule.blockTargetKey}</td>
+                        <td>${rule.ruleActionLabel}</td>
+                        <td>${rule.controlModeLabel}</td>
+                        <td>${rule.finalStateLabel} / ${rule.effectiveStatusLabel}</td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </c:if>
+        <c:if test="${not empty batchDetailOperations}">
+            <table class="history-table" style="margin-top:14px;">
+                <thead><tr>
+                    <th><spring:message code="admin.blocks.batchOperation"/></th>
+                    <th><spring:message code="admin.common.actionLabel"/></th>
+                    <th><spring:message code="admin.common.description"/></th>
+                    <th><spring:message code="admin.common.time"/></th>
+                </tr></thead>
+                <tbody>
+                <c:forEach var="op" items="${batchDetailOperations}">
+                    <tr>
+                        <td>${op.operationTypeLabel}</td>
+                        <td>${op.operationOptionLabel} / ${op.affectedRuleCount}</td>
+                        <td>${empty op.description ? '-' : fn:escapeXml(op.description)}</td>
+                        <td><fmt:formatDate value="${op.requestedAtDate}" pattern="yyyy.MM.dd HH:mm"/></td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </c:if>
     </template>
 </c:forEach>

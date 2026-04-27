@@ -314,6 +314,12 @@
                 <when test="field == 'blockType'">
                     AND x.block_type LIKE CONCAT('%', #{keyword}, '%')
                 </when>
+                <when test="field == 'blockedAt'">
+                    AND DATE_FORMAT(x.blocked_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="field == 'expiresAt'">
+                    AND DATE_FORMAT(x.expires_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
+                </when>
                 <otherwise>
                     AND (
                         u.user_id LIKE CONCAT('%', #{keyword}, '%')
@@ -322,6 +328,8 @@
                         OR x.blocked_ip LIKE CONCAT('%', #{keyword}, '%')
                         OR x.reason LIKE CONCAT('%', #{keyword}, '%')
                         OR x.block_target_key LIKE CONCAT('%', #{keyword}, '%')
+                        OR DATE_FORMAT(x.blocked_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
+                        OR DATE_FORMAT(x.expires_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
                     )
                 </otherwise>
             </choose>
@@ -561,6 +569,12 @@
                          OR ip.rule_action LIKE CONCAT('%', #{keyword}, '%')
                          OR ip.effective_status LIKE CONCAT('%', #{keyword}, '%'))
                 </when>
+                <when test="field == 'blockedAt'">
+                    AND DATE_FORMAT(ip.blocked_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="field == 'expiresAt'">
+                    AND DATE_FORMAT(ip.expires_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
+                </when>
                 <otherwise>
                     AND (
                         ip.ip_address LIKE CONCAT('%', #{keyword}, '%')
@@ -572,6 +586,8 @@
                         OR ip.asn LIKE CONCAT('%', #{keyword}, '%')
                         OR ip.reason LIKE CONCAT('%', #{keyword}, '%')
                         OR ip.detail_message LIKE CONCAT('%', #{keyword}, '%')
+                        OR DATE_FORMAT(ip.blocked_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
+                        OR DATE_FORMAT(ip.expires_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
                         OR b.batch_name LIKE CONCAT('%', #{keyword}, '%')
                         OR b.batch_code LIKE CONCAT('%', #{keyword}, '%')
                     )
@@ -757,6 +773,12 @@
                     AND (b.batch_name LIKE CONCAT('%', #{keyword}, '%')
                          OR b.batch_code LIKE CONCAT('%', #{keyword}, '%'))
                 </when>
+                <when test="field == 'blockedAt'">
+                    AND DATE_FORMAT(h.blocked_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="field == 'expiresAt'">
+                    AND DATE_FORMAT(h.expires_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
+                </when>
                 <otherwise>
                     AND (
                         u.user_id LIKE CONCAT('%', #{keyword}, '%')
@@ -765,6 +787,8 @@
                         OR h.reason LIKE CONCAT('%', #{keyword}, '%')
                         OR h.control_reason LIKE CONCAT('%', #{keyword}, '%')
                         OR h.block_target_key LIKE CONCAT('%', #{keyword}, '%')
+                        OR DATE_FORMAT(h.blocked_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
+                        OR DATE_FORMAT(h.expires_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
                         OR h.cidr_notation LIKE CONCAT('%', #{keyword}, '%')
                         OR h.range_start_ip LIKE CONCAT('%', #{keyword}, '%')
                         OR h.range_end_ip LIKE CONCAT('%', #{keyword}, '%')
@@ -946,6 +970,16 @@
                          OR b.default_disable_strategy LIKE CONCAT('%', #{keyword}, '%')
                          OR b.default_enable_strategy LIKE CONCAT('%', #{keyword}, '%'))
                 </when>
+                <when test="field == 'priority'">
+                    AND b.default_rule_priority = #{keyword}
+                </when>
+                <when test="field == 'status'">
+                    AND (CASE WHEN b.is_active = 1 THEN 'active' ELSE 'inactive' END LIKE CONCAT('%', LOWER(#{keyword}), '%')
+                         OR CASE WHEN b.is_active = 1 THEN '활성' ELSE '비활성' END LIKE CONCAT('%', #{keyword}, '%'))
+                </when>
+                <when test="field == 'updatedAt'">
+                    AND DATE_FORMAT(b.updated_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
+                </when>
                 <otherwise>
                     AND (
                         b.batch_code LIKE CONCAT('%', #{keyword}, '%')
@@ -953,6 +987,10 @@
                         OR b.source_name LIKE CONCAT('%', #{keyword}, '%')
                         OR b.source_type LIKE CONCAT('%', #{keyword}, '%')
                         OR b.description LIKE CONCAT('%', #{keyword}, '%')
+                        OR b.batch_rule_action LIKE CONCAT('%', #{keyword}, '%')
+                        OR CASE WHEN b.is_active = 1 THEN 'active' ELSE 'inactive' END LIKE CONCAT('%', LOWER(#{keyword}), '%')
+                        OR CASE WHEN b.is_active = 1 THEN '활성' ELSE '비활성' END LIKE CONCAT('%', #{keyword}, '%')
+                        OR DATE_FORMAT(b.updated_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
                     )
                 </otherwise>
             </choose>
@@ -981,7 +1019,8 @@
         <include refid="ipBlockBatchesWhere"/>
         <choose>
             <when test="sortBy == 'batch'">       ORDER BY b.batch_name <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.ip_block_batch_idx DESC</when>
-            <when test="sortBy == 'basePolicy'">  ORDER BY b.batch_rule_action <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.default_rule_priority DESC, b.ip_block_batch_idx DESC</when>
+            <when test="sortBy == 'basePolicy'">  ORDER BY b.batch_rule_action <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.ip_block_batch_idx DESC</when>
+            <when test="sortBy == 'priority'">    ORDER BY b.default_rule_priority <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.ip_block_batch_idx DESC</when>
             <when test="sortBy == 'currentState'">ORDER BY b.is_active <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.ip_block_batch_idx DESC</when>
             <when test="sortBy == 'ruleStats'">   ORDER BY (SELECT COUNT(*) FROM IP_BLOCKLIST ip2 WHERE ip2.ip_block_batch_idx = b.ip_block_batch_idx) <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.ip_block_batch_idx DESC</when>
             <when test="sortBy == 'description'"> ORDER BY b.description <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, b.ip_block_batch_idx DESC</when>

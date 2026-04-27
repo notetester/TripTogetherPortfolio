@@ -160,8 +160,81 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         return result;
     }
 
+
+    @Override
+    public AdminUserBlockVO getUserBlockDetail(Long blockIdx) {
+        if (blockIdx == null) {
+            return null;
+        }
+        return adminBlockMapper.findUserBlockById(blockIdx);
+    }
+
+    @Override
+    public AdminIpBlockVO getIpRuleDetail(Long ipBlocklistIdx) {
+        if (ipBlocklistIdx == null) {
+            return null;
+        }
+        return adminBlockMapper.findIpBlockById(ipBlocklistIdx);
+    }
+
+    @Override
+    public Map<String, Object> getIpRuleDetailData(Long ipBlocklistIdx) {
+        Map<String, Object> result = new HashMap<>();
+        AdminIpBlockVO rule = getIpRuleDetail(ipBlocklistIdx);
+        result.put("rule", rule);
+        if (rule == null || rule.getBlockTargetKey() == null || rule.getBlockTargetKey().isBlank()) {
+            result.put("histories", java.util.Collections.emptyList());
+            return result;
+        }
+        AdminBlockSearchVO historySearch = new AdminBlockSearchVO();
+        historySearch.setField("target");
+        historySearch.setKeyword(rule.getBlockTargetKey());
+        historySearch.setLimit(20);
+        result.put("histories", adminBlockMapper.findBlockHistories(historySearch));
+        return result;
+    }
+
+    @Override
+    public AdminIpBlockBatchVO getBatchDetail(Long ipBlockBatchIdx) {
+        if (ipBlockBatchIdx == null) {
+            return null;
+        }
+        return adminBlockMapper.findIpBlockBatchById(ipBlockBatchIdx);
+    }
+
+    @Override
+    public Map<String, Object> getBatchDetailData(Long ipBlockBatchIdx) {
+        Map<String, Object> result = new HashMap<>();
+        AdminIpBlockBatchVO batch = getBatchDetail(ipBlockBatchIdx);
+        result.put("batch", batch);
+        if (ipBlockBatchIdx == null || batch == null) {
+            result.put("rules", java.util.Collections.emptyList());
+            result.put("operations", java.util.Collections.emptyList());
+            return result;
+        }
+        result.put("rules", adminBlockMapper.findIpRulesByBatchId(ipBlockBatchIdx));
+        AdminBlockSearchVO operationSearch = new AdminBlockSearchVO();
+        operationSearch.setBatchId(ipBlockBatchIdx);
+        operationSearch.setLimit(10);
+        result.put("operations", adminBlockMapper.findRecentBatchOperations(operationSearch));
+        return result;
+    }
+
+    @Override
+    public AdminBlockHistoryVO getHistoryDetail(Long historyBlockIdx) {
+        if (historyBlockIdx == null) {
+            return null;
+        }
+        return adminBlockMapper.findBlockHistoryById(historyBlockIdx);
+    }
+
     @Override
     public Map<String, Object> getBlockDashboard(AdminBlockSearchVO search) {
+        return getBlockDashboard(search, true, true, true, true);
+    }
+
+    @Override
+    public Map<String, Object> getBlockDashboard(AdminBlockSearchVO search, boolean loadUserBlocks, boolean loadIpBlocks, boolean loadBatches, boolean loadHistories) {
         Map<String, Object> result = new HashMap<>();
         result.put("search", search);
         result.put("activeUserBlockCount", adminBlockMapper.countActiveUserBlocks());
@@ -172,12 +245,31 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         result.put("totalIpRuleCount", adminBlockMapper.countTotalIpRules());
         result.put("todayBlockCount", adminBlockMapper.countTodayBlockHistories());
         result.put("totalBatchCount", adminBlockMapper.countTotalBatches());
-        result.put("userBlocks", adminBlockMapper.findUserBlocks(search));
-        result.put("ipBlocks", adminBlockMapper.findIpBlocks(search));
-        result.put("histories", adminBlockMapper.findBlockHistories(search));
-        result.put("batches", adminBlockMapper.findIpBlockBatches(search));
+
+        result.put("userBlocks", loadUserBlocks ? adminBlockMapper.findUserBlocks(search) : java.util.Collections.emptyList());
+        result.put("ipBlocks", loadIpBlocks ? adminBlockMapper.findIpBlocks(search) : java.util.Collections.emptyList());
+        result.put("histories", loadHistories ? adminBlockMapper.findBlockHistories(search) : java.util.Collections.emptyList());
+        result.put("batches", loadBatches ? adminBlockMapper.findIpBlockBatches(search) : java.util.Collections.emptyList());
+
+        AdminBlockSearchVO recentSearch = copySearchWithLimit(search, 5);
+        result.put("dashboardUserBlocks", adminBlockMapper.findUserBlocks(recentSearch));
+        result.put("dashboardIpBlocks", adminBlockMapper.findIpBlocks(recentSearch));
+        result.put("dashboardHistories", adminBlockMapper.findBlockHistories(recentSearch));
+
+        AdminBlockSearchVO batchFilterSearch = new AdminBlockSearchVO();
+        batchFilterSearch.setLimit(1000);
+        result.put("batchFilterOptions", adminBlockMapper.findIpBlockBatches(batchFilterSearch));
         result.put("batchOperations", adminBlockMapper.findRecentBatchOperations(search));
         return result;
+    }
+
+    private AdminBlockSearchVO copySearchWithLimit(AdminBlockSearchVO source, int limit) {
+        AdminBlockSearchVO copied = new AdminBlockSearchVO();
+        if (source != null) {
+            BeanUtils.copyProperties(source, copied);
+        }
+        copied.setLimit(limit);
+        return copied;
     }
 
     @Override
