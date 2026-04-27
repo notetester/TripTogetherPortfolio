@@ -66,19 +66,9 @@
                         <span class="adm-nav-icon">⛔</span> <spring:message code="admin.layout.menu.blocks"/>
                     </a>
                     </c:if>
-                    <c:if test="${hasFinanceAdmin}">
-                    <a class="adm-nav-item ${activeMenu=='finance' and section ne 'policy' and section ne 'refund' ?'active':''}" href="${pageContext.request.contextPath}/admin/finance">
+                    <c:if test="${hasFinanceAdmin or hasFinanceOperator or hasFinancePolicyAdmin}">
+                    <a class="adm-nav-item ${activeMenu=='finance'?'active':''}" href="${pageContext.request.contextPath}/admin/finance">
                         <span class="adm-nav-icon">💰</span> <spring:message code="admin.layout.menu.finance"/>
-                    </a>
-                    </c:if>
-                    <c:if test="${hasFinanceOperator}">
-                    <a class="adm-nav-item ${activeMenu=='finance' and section eq 'refund'?'active':''}" href="${pageContext.request.contextPath}/admin/finance/refund">
-                        <span class="adm-nav-icon">↩️</span> <spring:message code="admin.layout.menu.financeRefund"/>
-                    </a>
-                    </c:if>
-                    <c:if test="${hasFinancePolicyAdmin}">
-                    <a class="adm-nav-item ${activeMenu=='finance' and section eq 'policy'?'active':''}" href="${pageContext.request.contextPath}/admin/finance/policy">
-                        <span class="adm-nav-icon">⚙️</span> <spring:message code="admin.layout.menu.financePolicy"/>
                     </a>
                     </c:if>
                 </div>

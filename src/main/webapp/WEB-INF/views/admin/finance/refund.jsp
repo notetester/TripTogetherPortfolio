@@ -8,6 +8,9 @@
 
 <div class="adm-content">
 
+    <%-- 공통 탭바 --%>
+    <%@ include file="_tabs.jsp" %>
+
     <c:if test="${not empty refundMessage}">
         <div class="adm-card" style="padding:12px 16px;margin-bottom:12px;border-left:4px solid #22c55e;">
             <c:out value="${refundMessage}"/>

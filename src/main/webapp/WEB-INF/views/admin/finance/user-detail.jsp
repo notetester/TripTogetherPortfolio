@@ -9,7 +9,10 @@
 
 <div class="adm-content">
 
-    <a href="${pageContext.request.contextPath}/admin/finance/users" class="adm-btn adm-btn-ghost"
+    <%-- 공통 탭바 --%>
+    <%@ include file="_tabs.jsp" %>
+
+    <a href="${pageContext.request.contextPath}/admin/finance" class="adm-btn adm-btn-ghost"
        style="margin-bottom:16px;display:inline-block;">
         ← <spring:message code="admin.finance.userDetail.backToList"/>
     </a>
@@ -44,7 +47,7 @@
             <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
                 💰 <spring:message code="admin.finance.userDetail.cash"/>
             </div>
-            <div style="font-size:22px;font-weight:700;color:#0f172a;">
+            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
                 <fmt:formatNumber value="${user.cashBalance}" pattern="#,###"/>
             </div>
         </div>
@@ -52,7 +55,7 @@
             <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
                 ✈️ <spring:message code="admin.finance.userDetail.mileage"/>
             </div>
-            <div style="font-size:22px;font-weight:700;color:#0f172a;">
+            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
                 <fmt:formatNumber value="${user.mileageBalance}" pattern="#,###"/>
             </div>
         </div>
@@ -60,7 +63,7 @@
             <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
                 ⭐ <spring:message code="admin.finance.userDetail.point"/>
             </div>
-            <div style="font-size:22px;font-weight:700;color:#0f172a;">
+            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
                 <fmt:formatNumber value="${user.pointBalance}" pattern="#,###"/>
             </div>
         </div>
