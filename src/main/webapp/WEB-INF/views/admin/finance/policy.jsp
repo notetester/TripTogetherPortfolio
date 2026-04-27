@@ -210,12 +210,12 @@
                     <input type="number" name="rewardFixed" step="1" min="0"
                            class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;text-align:right;"/>
                 </div>
-                <div style="display:flex;align-items:end;gap:8px;">
-                    <label style="display:inline-flex;align-items:center;gap:4px;font-size:12px;flex:0 0 auto;">
+                <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
+                    <label style="display:inline-flex;align-items:center;gap:4px;font-size:12px;">
                         <input type="checkbox" name="isActive" value="true" checked/>
                         <spring:message code="admin.finance.policy.reward.active.on"/>
                     </label>
-                    <button type="submit" class="adm-btn adm-btn-primary" style="padding:6px 12px;font-size:12px;flex:1 1 auto;">
+                    <button type="submit" class="adm-btn adm-btn-primary" style="padding:6px 18px;font-size:12px;">
                         <spring:message code="admin.finance.policy.reward.upsert.button"/>
                     </button>
                 </div>
