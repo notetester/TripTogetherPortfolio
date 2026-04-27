@@ -2626,3 +2626,192 @@ body.sa-light .adm-dash-sort-reset:hover {
     color: #334155;
     border-color: #94a3b8;
 }
+
+
+
+/* 회원 관리: 차단 관리 섹션과 동일한 툴바/페이징 레이아웃 */
+.js-member-section-card .adm-member-local-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.42);
+}
+
+.js-member-section-card .adm-member-toolbar-actions {
+    margin-left: auto;
+    justify-content: flex-end;
+}
+
+.js-member-section-card .adm-local-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px 16px;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.42);
+    font-size: 13px;
+    color: #cbd5e1;
+}
+
+.js-member-section-card .adm-local-page-info {
+    min-width: 0;
+    color: #cbd5e1;
+}
+
+.js-member-section-card .adm-local-page-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.js-member-section-card .js-member-page-state {
+    min-width: 48px;
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+body.sa-light .js-member-section-card .adm-member-local-toolbar,
+body.sa-light .js-member-section-card .adm-local-pagination {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+body.sa-light .js-member-section-card .adm-local-page-info,
+body.sa-light .js-member-section-card .js-member-page-state {
+    color: #475569;
+}
+
+@media (max-width: 767px) {
+    .js-member-section-card .adm-member-local-toolbar,
+    .js-member-section-card .adm-local-pagination {
+        align-items: stretch;
+        padding: 14px 16px;
+    }
+    .js-member-section-card .adm-member-toolbar-actions,
+    .js-member-section-card .adm-local-page-actions {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-end;
+    }
+    .js-member-section-card .adm-local-page-info {
+        width: 100%;
+    }
+}
+
+/* 공통 관리자 목록 도구 */
+.adm-admin-list-check-cell {
+    width: 42px;
+    min-width: 42px;
+    text-align: center !important;
+}
+.adm-admin-list-selection {
+    padding: 6px 10px;
+    border: 1px solid rgba(59,130,246,.28);
+    border-radius: 10px;
+    background: rgba(30,58,95,.45);
+}
+body.sa-light .adm-admin-list-selection {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+
+/* 공통 관리자 섹션 목록 도구 — 차단 관리 로컬 섹션 UX 확장 */
+.adm-section-list-toolbar {
+    border-top: 1px solid rgba(30, 41, 59, .86);
+    border-bottom: 1px solid rgba(30, 41, 59, .86);
+    background: rgba(15, 23, 42, .22);
+}
+.adm-section-list-filter {
+    flex: 1 1 520px;
+    min-width: 280px;
+}
+.adm-section-list-filter .adm-select {
+    width: auto;
+    min-width: 128px;
+}
+.adm-section-list-search {
+    flex: 1 1 220px;
+    min-width: 180px;
+}
+.adm-section-list-size {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+.adm-section-list-size .adm-select {
+    width: 86px;
+    min-width: 86px;
+}
+.adm-section-list-actions {
+    justify-content: flex-end;
+}
+.adm-section-list-page-info {
+    font-size: 12px;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+body.sa-light .adm-section-list-toolbar {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+body.sa-light .adm-section-list-size,
+body.sa-light .adm-section-list-page-info {
+    color: #64748b;
+}
+@media (max-width: 900px) {
+    .adm-section-list-toolbar {
+        align-items: stretch;
+    }
+    .adm-section-list-filter,
+    .adm-section-list-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+/* Admin member server-fragment loading */
+.adm-table tbody.is-loading {
+    opacity: 0.55;
+    pointer-events: none;
+}
+.adm-table th.sorted {
+    color: #93c5fd;
+}
+
+/* ── 회원 관리: 차단 관리형 섹션 도구 보강 ── */
+.adm-member-local-toolbar {
+    border-top: 1px solid #1e293b;
+    border-bottom: 1px solid #1e293b;
+}
+.adm-member-section-table th.js-member-sort.sorted {
+    color: #93c5fd;
+}
+.adm-member-section-table th.js-member-sort .sort-ico {
+    margin-left: 4px;
+    opacity: 1;
+    font-size: 10px;
+    font-weight: 900;
+}
+.adm-member-section-table tbody.is-loading {
+    opacity: .55;
+    pointer-events: none;
+}
+body.sa-light .adm-member-local-toolbar {
+    border-top-color: #e2e8f0;
+    border-bottom-color: #e2e8f0;
+}
+body.sa-light .adm-member-section-table th.js-member-sort.sorted {
+    color: #2563eb;
+}

@@ -1,5 +1,6 @@
 package org.triptogether.admin.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,6 @@ import java.util.stream.Collectors;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.triptogether.admin.vo.AdminMemberVO;
 
 /**
  * 관리자 화면 컨트롤러.
@@ -90,6 +90,29 @@ public class AdminController {
         model.addAllAttributes(adminService.getMemberList(search));
         model.addAttribute("activeMenu", "members");
         return "admin/member/list";
+    }
+
+    @GetMapping("/members/api")
+    @ResponseBody
+    public Map<String, Object> memberListApi(AdminSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminService.getMemberList(search));
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("회원 목록 API 조회 실패", e);
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/members/fragment")
+    public String memberRowsFragment(AdminSearchVO search, Model model, HttpServletResponse response) {
+        Map<String, Object> data = adminService.getMemberList(search);
+        model.addAllAttributes(data);
+        writeAdminListHeaders(response, data);
+        return "admin/member/_memberRowsFragment";
     }
 
     @GetMapping("/business-applications")
@@ -312,20 +335,21 @@ public class AdminController {
 
     @PostMapping("/members/bulk/status")
     @ResponseBody
-    public Map<String, Object> bulkMemberStatus(@RequestParam List<Long> userIdxList,
+    public Map<String, Object> bulkMemberStatus(@RequestParam(required = false) List<Long> userIdxList,
                                                 @RequestParam String status,
                                                 HttpSession session) {
         Map<String, Object> result = new HashMap<>();
         try {
             var loginUser = (org.triptogether.auth.vo.UsersVO) session.getAttribute("loginUser");
-            if (loginUser != null && userIdxList.contains(loginUser.getUserIdx())) {
+            List<Long> targetIds = userIdxList != null ? userIdxList : Collections.emptyList();
+            if (loginUser != null && targetIds.contains(loginUser.getUserIdx())) {
                 result.put("success", false);
                 result.put("message", "자신의 계정 상태는 변경할 수 없습니다.");
                 return result;
             }
-            adminService.bulkChangeMemberStatus(userIdxList, status);
+            adminService.bulkChangeMemberStatus(targetIds, status);
             result.put("success", true);
-            result.put("message", userIdxList.size() + "명의 상태가 변경되었습니다.");
+            result.put("message", targetIds.size() + "명의 상태가 변경되었습니다.");
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -343,11 +367,7 @@ public class AdminController {
             if ("all".equals(scope)) {
                 data = adminService.getMembersForExport(new AdminSearchVO());
             } else if ("selected".equals(scope)) {
-                List<Long> ids = (selectedIds == null || selectedIds.isBlank())
-                    ? Collections.emptyList()
-                    : Arrays.stream(selectedIds.split(","))
-                        .map(String::trim).filter(s -> !s.isEmpty())
-                        .map(Long::parseLong).collect(Collectors.toList());
+                List<Long> ids = parseSelectedMemberIds(selectedIds);
                 data = adminService.getMembersByIds(ids);
             } else {
                 data = adminService.getMembersForExport(search);
@@ -370,6 +390,28 @@ public class AdminController {
             log.error("회원 내보내기 실패", e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    private void writeAdminListHeaders(HttpServletResponse response, Map<String, Object> data) {
+        Object pagingObj = data.get("paging");
+        AdminPageVO paging = pagingObj instanceof AdminPageVO ? (AdminPageVO) pagingObj : null;
+        response.setHeader("X-Section-Total", String.valueOf(data.getOrDefault("total", 0)));
+        response.setHeader("X-Section-Page", paging != null ? String.valueOf(paging.getCurrentPage()) : "1");
+        response.setHeader("X-Section-Size", paging != null ? String.valueOf(paging.getPageSize()) : "20");
+        response.setHeader("X-Section-Pages", paging != null ? String.valueOf(paging.getTotalPage()) : "1");
+    }
+
+    private List<Long> parseSelectedMemberIds(String selectedIds) {
+        if (selectedIds == null || selectedIds.isBlank()) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(selectedIds.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .filter(s -> s.matches("\\d+"))
+            .map(Long::parseLong)
+            .distinct()
+            .collect(Collectors.toList());
     }
 
     private byte[] buildMemberCsv(List<AdminMemberVO> data) {

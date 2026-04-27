@@ -19,9 +19,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import org.triptogether.common.vo.ChatbotLinkClickVO;
@@ -38,6 +41,16 @@ import org.triptogether.common.vo.ChatbotLinkClickVO;
 public class AdminServiceImpl implements AdminService {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    private static final Set<String> MEMBER_VALID_SEARCH_TYPES = Set.of("all", "userId", "nickname", "email");
+    private static final Set<String> MEMBER_VALID_STATUS = Set.of("ALL", "ACTIVE", "DORMANT", "BLOCKED", "DELETED");
+    private static final Set<String> MEMBER_MUTABLE_STATUS = Set.of("ACTIVE", "DORMANT", "BLOCKED", "DELETED");
+    private static final Set<String> MEMBER_VALID_ROLE = Set.of("ALL", "USER", "BUSINESS", "PARTNER", "BOT", "ADMIN", "SUPERADMIN", "SYSTEM");
+    private static final Set<String> MEMBER_VALID_PROVIDER = Set.of("ALL", "KAKAO", "NAVER", "GOOGLE", "NONE");
+    private static final Set<String> MEMBER_VALID_SORT = Set.of(
+            "createdAt", "lastLoginAt", "nickname", "email", "status", "role",
+            "userIdx", "memberGrade", "levelNo", "loginSuccessCount", "loginFailCount", "social", "socialCount"
+    );
+    private static final Set<String> MEMBER_VALID_MODE = Set.of("SERVER", "CLIENT");
 
     private final AdminMapper adminMapper;
     private final IpBlockMapper ipBlockMapper;
@@ -140,40 +153,175 @@ public class AdminServiceImpl implements AdminService {
         try { return Long.parseLong(v.toString()); } catch (Exception e) { return 0L; }
     }
 
+    private AdminSearchVO normalizeMemberSearch(AdminSearchVO source) {
+        AdminSearchVO search = source != null ? source : new AdminSearchVO();
+
+        search.setKeyword(trimToNull(search.getKeyword()));
+        search.setSearchType(normalizeMemberSearchType(search.getSearchType()));
+        search.setStatus(normalizeMemberFilter(search.getStatus(), MEMBER_VALID_STATUS, "ALL", true));
+        search.setRole(normalizeMemberFilter(search.getRole(), MEMBER_VALID_ROLE, "ALL", true));
+        search.setProvider(normalizeMemberFilter(search.getProvider(), MEMBER_VALID_PROVIDER, "ALL", true));
+
+        LocalDate from = parseMemberDate(search.getDateFrom());
+        LocalDate to = parseMemberDate(search.getDateTo());
+        if (from != null && to != null && from.isAfter(to)) {
+            LocalDate tmp = from;
+            from = to;
+            to = tmp;
+        }
+        search.setDateFrom(from != null ? from.toString() : null);
+        search.setDateTo(to != null ? to.toString() : null);
+
+        search.setSortBy(normalizeMemberSortBy(search.getSortBy()));
+        search.setSortDir(normalizeMemberSortDir(search.getSortDir()));
+        search.setMode(normalizeMemberMode(search.getMode()));
+        search.setPage(Math.max(1, search.getPage()));
+        search.setSize(normalizeMemberPageSize(search.getSize()));
+        return search;
+    }
+
+    private Map<String, Object> buildMemberQueryParams(AdminSearchVO search, boolean paged) {
+        AdminSearchVO normalized = normalizeMemberSearch(search);
+        Map<String, Object> params = new HashMap<>();
+        params.put("keyword", normalized.getKeyword());
+        params.put("searchType", normalized.getSearchType());
+        params.put("status", normalized.getStatus());
+        params.put("role", normalized.getRole());
+        params.put("provider", normalized.getProvider());
+        params.put("dateFrom", normalized.getDateFrom());
+        params.put("dateTo", normalized.getDateTo());
+        params.put("sortBy", normalized.getSortBy());
+        params.put("sortDir", normalized.getSortDir());
+        params.put("mode", normalized.getMode());
+        params.put("page", normalized.getPage());
+        params.put("size", normalized.getSize());
+        params.put("offset", normalized.getOffset());
+        params.put("paged", paged);
+        return params;
+    }
+
+    private String normalizeMemberSearchType(String value) {
+        String text = trimToNull(value);
+        return text != null && MEMBER_VALID_SEARCH_TYPES.contains(text) ? text : "all";
+    }
+
+    private String normalizeMemberSortBy(String value) {
+        String text = trimToNull(value);
+        return text != null && MEMBER_VALID_SORT.contains(text) ? text : "createdAt";
+    }
+
+    private String normalizeMemberSortDir(String value) {
+        return "ASC".equalsIgnoreCase(trimToNull(value)) ? "ASC" : "DESC";
+    }
+
+    private String normalizeMemberMode(String value) {
+        String text = trimToNull(value);
+        if (text == null) return "SERVER";
+        text = text.toUpperCase();
+        return MEMBER_VALID_MODE.contains(text) ? text : "SERVER";
+    }
+
+    private String normalizeMemberStatus(String value) {
+        String text = trimToNull(value);
+        if (text == null) return null;
+        text = text.toUpperCase();
+        return MEMBER_MUTABLE_STATUS.contains(text) ? text : null;
+    }
+
+    private String normalizeMemberFilter(String value, Set<String> validValues, String defaultValue, boolean upper) {
+        String text = trimToNull(value);
+        if (text == null) return defaultValue;
+        if (upper) text = text.toUpperCase();
+        return validValues.contains(text) ? text : defaultValue;
+    }
+
+    private int normalizeMemberPageSize(int size) {
+        return (size == 10 || size == 20 || size == 50 || size == 100) ? size : 20;
+    }
+
+    private LocalDate parseMemberDate(String value) {
+        String text = trimToNull(value);
+        if (text == null) return null;
+        try {
+            return LocalDate.parse(text);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private List<Long> normalizeMemberIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return Collections.emptyList();
+        return ids.stream()
+                .filter(id -> id != null && id > 0)
+                .collect(java.util.stream.Collectors.collectingAndThen(
+                        java.util.stream.Collectors.toCollection(LinkedHashSet::new),
+                        ArrayList::new
+                ));
+    }
+
+    private String trimToNull(String value) {
+        if (value == null) return null;
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
     // ===== 회원 관리 =====
 
     @Override
     public Map<String, Object> getMemberList(AdminSearchVO search) {
-        List<AdminMemberVO> list = adminMapper.findMembers(search);
-        int total = adminMapper.countMembers(search);
-        AdminPageVO paging = AdminPageVO.of(total, search.getPage(), search.getSize(), 10);
+        AdminSearchVO normalizedSearch = normalizeMemberSearch(search);
+        Map<String, Object> params = buildMemberQueryParams(normalizedSearch, true);
+
+        int total = adminMapper.countMembers(params);
+        boolean clientMode = "CLIENT".equals(normalizedSearch.getMode());
+        AdminPageVO paging = clientMode
+                ? AdminPageVO.of(total, 1, Math.max(total, 1), 10)
+                : AdminPageVO.of(total, normalizedSearch.getPage(), normalizedSearch.getSize(), 10);
+
+        // 검색 조건 변경 후 요청 page가 총 페이지를 넘어가면 보정된 마지막 페이지 기준으로 조회한다.
+        normalizedSearch.setPage(paging.getCurrentPage());
+        normalizedSearch.setSize(clientMode ? Math.max(total, 1) : paging.getPageSize());
+        params = buildMemberQueryParams(normalizedSearch, !clientMode);
+
+        List<AdminMemberVO> list = clientMode
+                ? adminMapper.findMembersForExport(params)
+                : adminMapper.findMembers(params);
 
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
+        result.put("rows", list);
         result.put("paging", paging);
         result.put("total", total);
-        result.put("search", search);
+        result.put("page", paging.getCurrentPage());
+        result.put("size", paging.getPageSize());
+        result.put("totalPages", paging.getTotalPage());
+        result.put("search", normalizedSearch);
         return result;
     }
 
     @Override
     @Transactional
     public void bulkChangeMemberStatus(List<Long> userIdxList, String status) {
-        if (userIdxList == null || userIdxList.isEmpty()) return;
-        java.util.Set<String> valid = java.util.Set.of("ACTIVE", "DORMANT", "BLOCKED", "DELETED");
-        if (status == null || !valid.contains(status)) throw new IllegalArgumentException("허용되지 않는 상태값입니다.");
-        adminMapper.bulkChangeMemberStatus(userIdxList, status);
+        String normalizedStatus = normalizeMemberStatus(status);
+        if (normalizedStatus == null) {
+            throw new IllegalArgumentException("허용되지 않는 상태값입니다.");
+        }
+        List<Long> ids = normalizeMemberIds(userIdxList);
+        if (ids.isEmpty()) return;
+        adminMapper.bulkChangeMemberStatus(ids, normalizedStatus);
     }
 
     @Override
     public List<AdminMemberVO> getMembersForExport(AdminSearchVO search) {
-        return adminMapper.findMembersForExport(search);
+        AdminSearchVO normalizedSearch = normalizeMemberSearch(search);
+        return adminMapper.findMembersForExport(buildMemberQueryParams(normalizedSearch, false));
     }
 
     @Override
     public List<AdminMemberVO> getMembersByIds(List<Long> ids) {
-        if (ids == null || ids.isEmpty()) return java.util.Collections.emptyList();
-        return adminMapper.findMembersByIds(ids);
+        List<Long> normalizedIds = normalizeMemberIds(ids);
+        if (normalizedIds.isEmpty()) return Collections.emptyList();
+        return adminMapper.findMembersByIds(normalizedIds);
     }
 
     @Override
@@ -277,11 +425,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void changeMemberStatus(Long userIdx, String status) {
-        List<String> allowed = List.of("ACTIVE", "DORMANT", "DELETED", "BLOCKED");
-        if (status == null || !allowed.contains(status)) {
+        if (userIdx == null || userIdx <= 0) {
+            throw new IllegalArgumentException("유효하지 않은 회원 번호입니다.");
+        }
+        String normalizedStatus = normalizeMemberStatus(status);
+        if (normalizedStatus == null) {
             throw new IllegalArgumentException("유효하지 않은 상태값: " + status);
         }
-        switch (status) {
+        switch (normalizedStatus) {
             case "ACTIVE" -> {
                 // 이전 상태 조회 (BLOCKED → ACTIVE 전환 감지용)
                 AdminMemberVO prev = adminMapper.findMemberDetail(userIdx);
