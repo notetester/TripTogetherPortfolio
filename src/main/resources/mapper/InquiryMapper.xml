@@ -254,6 +254,49 @@
     </delete>
 
     <!-- =============================================
+         11-A. 답변 수정/삭제 이력
+         정책: 답변 UPDATE/DELETE 직전 호출되어 이전 본문/변경자/시각 보존
+         ============================================= -->
+    <resultMap id="AnswerHistoryResultMap" type="org.triptogether.inquiry.vo.InquiryAnswerHistoryDto">
+        <id     property="historyIdx"        column="history_idx"/>
+        <result property="answerId"          column="answer_id"/>
+        <result property="inquiryId"         column="inquiry_id"/>
+        <result property="prevContent"       column="prev_content"/>
+        <result property="prevAdminUserIdx"  column="prev_admin_user_idx"/>
+        <result property="prevAdminNickname" column="prev_admin_nickname"/>
+        <result property="changedAt"         column="changed_at"/>
+        <result property="changedBy"         column="changed_by"/>
+        <result property="changedByNickname" column="changed_by_nickname"/>
+        <result property="changeType"        column="change_type"/>
+    </resultMap>
+
+    <insert id="insertAnswerHistory">
+        INSERT INTO INQUIRY_ANSWER_HISTORY
+            (answer_id, inquiry_id, prev_content, prev_admin_user_idx, changed_by, change_type)
+        VALUES
+            (#{answerId}, #{inquiryId}, #{prevContent}, #{prevAdminUserIdx}, #{changedBy}, #{changeType})
+    </insert>
+
+    <select id="selectAnswerHistoryByInquiry" resultMap="AnswerHistoryResultMap">
+        SELECT
+            h.history_idx,
+            h.answer_id,
+            h.inquiry_id,
+            h.prev_content,
+            h.prev_admin_user_idx,
+            pu.nickname AS prev_admin_nickname,
+            h.changed_at,
+            h.changed_by,
+            cu.nickname AS changed_by_nickname,
+            h.change_type
+        FROM INQUIRY_ANSWER_HISTORY h
+        LEFT JOIN USERS pu ON pu.user_idx = h.prev_admin_user_idx
+        LEFT JOIN USERS cu ON cu.user_idx = h.changed_by
+        WHERE h.inquiry_id = #{inquiryId}
+        ORDER BY h.changed_at DESC
+    </select>
+
+    <!-- =============================================
          12. 상태 변경
          - status 값: PENDING(대기중) / IN_PROGRESS(처리중) / COMPLETED(완료)
          - 답변 등록 시 COMPLETED로 변경하는 데 주로 사용

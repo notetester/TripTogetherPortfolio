@@ -92,8 +92,7 @@
                     <%-- 버튼 --%>
                     <div style="display:flex;gap:6px;align-items:flex-end;">
                         <button type="submit" class="adm-btn adm-btn-primary">🔍 <spring:message code="admin.common.searchButton"/></button>
-                        <a href="${pageContext.request.contextPath}/admin/members"
-                           class="adm-btn adm-btn-ghost"><spring:message code="admin.members.reset"/></a>
+                        <button type="button" class="adm-btn adm-btn-ghost" onclick="resetMemberFilters()"><spring:message code="admin.members.reset"/></button>
                     </div>
 
                     <input type="hidden" name="page" value="1">
@@ -108,44 +107,47 @@
     <%-- ══════════════════════════════════════════
          회원 목록 테이블
     ══════════════════════════════════════════ --%>
-    <div class="adm-card" style="overflow:visible;">
+    <div class="adm-card js-member-section-card" data-section="members" data-enhanced="true" style="overflow:visible;">
         <div class="adm-card-head">
             <div class="adm-card-title">
                 👥 <spring:message code="admin.members.listTitle"/>
-                <span style="font-size:12px;font-weight:400;color:#475569;">
+                <span id="memberTotalLabel" style="font-size:12px;font-weight:400;color:#475569;">
                     <spring:message code="admin.members.totalMembers" arguments="${total}"/>
                 </span>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-                <%-- 내보내기 --%>
-                <div class="adm-export-control">
-                    <select class="adm-select" id="exportFormat">
-                        <option value="csv">CSV</option>
-                        <option value="excel">Excel</option>
-                    </select>
-                    <div class="adm-export-menu">
-                        <button type="button" class="adm-btn adm-btn-ghost js-export-toggle">⬇ 내보내기 ▾</button>
-                        <div id="exportDropdown" class="adm-export-dropdown">
-                            <button type="button" onclick="exportData('all')">📋 전체 내보내기</button>
-                            <button type="button" onclick="exportData('search')">🔍 검색결과 내보내기</button>
-                            <button type="button" id="exportSelectedBtn" disabled onclick="exportData('selected')">☑ 선택 내보내기 (0)</button>
-                        </div>
-                    </div>
+            <div style="position:relative;display:flex;align-items:center;gap:8px;">
+                <select class="adm-select" id="exportFormat" style="width:90px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <button type="button" class="adm-btn adm-btn-ghost js-export-toggle"><spring:message code="admin.common.export"/> ▾</button>
+                <div id="exportDropdown" class="adm-export-dropdown">
+                    <button type="button" class="adm-export-item" onclick="exportData('all')"><spring:message code="admin.common.exportAll"/></button>
+                    <button type="button" class="adm-export-item" onclick="exportData('search')"><spring:message code="admin.common.exportFiltered"/></button>
+                    <button type="button" class="adm-export-item" id="exportSelectedBtn" disabled onclick="exportData('selected')"><spring:message code="admin.common.exportSelected"/> (0)</button>
                 </div>
-                <%-- 페이지 크기 --%>
-                <select class="adm-select" style="width:80px;" id="sizeSelect"
-                        onchange="changeSize(this.value)">
-                    <option value="10"  ${search.size==10  ? 'selected' : ''}>10</option>
-                    <option value="20"  ${search.size==20  ? 'selected' : ''}>20</option>
-                    <option value="50"  ${search.size==50  ? 'selected' : ''}>50</option>
-                    <option value="100" ${search.size==100 ? 'selected' : ''}>100</option>
+            </div>
+        </div>
+
+        <div class="adm-local-toolbar adm-member-local-toolbar">
+            <div class="adm-local-toolbar-group adm-member-toolbar-actions">
+                <button type="button" class="adm-dash-sort-reset js-member-sort-reset" style="display:none;" onclick="resetMemberSort()"></button>
+                <select class="adm-select js-member-section-mode" id="memberModeSelect" title="<spring:message code='admin.blocks.mode.label'/>">
+                    <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
+                    <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                </select>
+                <select class="adm-select js-member-page-size" style="width:90px;" id="sizeSelect" onchange="changeSize(this.value)">
+                    <option value="10"  ${search.size==10  ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="10"/></option>
+                    <option value="20"  ${search.size==20  ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="20"/></option>
+                    <option value="50"  ${search.size==50  ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="50"/></option>
+                    <option value="100" ${search.size==100 ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="100"/></option>
                 </select>
             </div>
         </div>
 
         <%-- 일괄 처리 바 --%>
         <div id="bulkBar" style="display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 16px;margin:0 0 12px;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><span id="bulkCount">0</span>명 선택됨</span>
+            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><spring:message code="admin.common.selectedCount"/>: <strong id="bulkCount">0</strong></span>
             <div style="display:flex;align-items:center;gap:6px;">
                 <select class="adm-select" id="bulkStatusSelect" style="width:130px;">
                     <option value="">상태 선택</option>
@@ -156,302 +158,55 @@
                 </select>
                 <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="applyBulkStatus()">적용</button>
             </div>
-            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;margin-left:auto;" onclick="clearSelection()">선택 해제</button>
+            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;margin-left:auto;" onclick="clearSelection()"><spring:message code="admin.common.clearSelection"/></button>
         </div>
 
         <div class="adm-table-wrap" style="overflow:visible;">
-            <table class="adm-table">
+            <table class="adm-table adm-section-table-fixed adm-member-section-table" data-admin-list-ignore="true" data-section="members">
                 <thead>
                 <tr>
                     <th style="width:40px;text-align:center;">
                         <input type="checkbox" id="checkAll" class="adm-check" onchange="toggleAll(this)">
                     </th>
-                    <th data-sort="nickname" onclick="memberSortBy('nickname')" style="cursor:pointer;user-select:none;">
-                        <spring:message code="admin.common.member"/> <span class="sort-ico">▼</span>
+                    <th class="js-member-sort" data-sort="nickname" onclick="memberSortBy('nickname')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.common.member"/>
                     </th>
-                    <th data-sort="email" onclick="memberSortBy('email')" style="cursor:pointer;user-select:none;">
-                        <spring:message code="admin.context.email"/> <span class="sort-ico">▼</span>
+                    <th class="js-member-sort" data-sort="email" onclick="memberSortBy('email')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.context.email"/>
                     </th>
-                    <th data-sort="status" onclick="memberSortBy('status')" style="cursor:pointer;user-select:none;">
-                        <spring:message code="admin.common.status"/> <span class="sort-ico">▼</span>
+                    <th class="js-member-sort" data-sort="status" onclick="memberSortBy('status')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.common.status"/>
                     </th>
-                    <th data-sort="role" onclick="memberSortBy('role')" style="cursor:pointer;user-select:none;">
-                        <spring:message code="admin.common.role"/> <span class="sort-ico">▼</span>
+                    <th class="js-member-sort" data-sort="role" onclick="memberSortBy('role')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.common.role"/>
                     </th>
-                    <th><spring:message code="admin.members.social"/></th>
-                    <th data-sort="lastLoginAt" onclick="memberSortBy('lastLoginAt')" style="cursor:pointer;user-select:none;">
-                        <spring:message code="admin.members.login"/> <span class="sort-ico">▼</span>
+                    <th class="js-member-sort" data-sort="social" onclick="memberSortBy('social')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.members.social"/>
                     </th>
-                    <th data-sort="createdAt" onclick="memberSortBy('createdAt')" style="cursor:pointer;user-select:none;">
-                        <spring:message code="admin.context.createdAt"/> <span class="sort-ico">▼</span>
+                    <th class="js-member-sort" data-sort="lastLoginAt" onclick="memberSortBy('lastLoginAt')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.members.login"/>
+                    </th>
+                    <th class="js-member-sort" data-sort="createdAt" onclick="memberSortBy('createdAt')" style="cursor:pointer;user-select:none;">
+                        <spring:message code="admin.context.createdAt"/>
                     </th>
                     <th></th>
                 </tr>
                 </thead>
-                <tbody>
-                <c:forEach items="${list}" var="m">
-                    <tr>
-                        <%-- 체크박스 --%>
-                        <td style="text-align:center;">
-                            <input type="checkbox" class="js-row-check adm-check" value="${m.userIdx}" onchange="updateBulkBar()">
-                        </td>
-                        <%-- 회원 정보 --%>
-                        <td>
-                            <div class="mem-id-cell">
-                                <div class="mem-av ${m.accountStatus == 'DORMANT' ? 'dormant' : m.accountStatus == 'DELETED' ? 'deleted' : ''}">
-                                    ${m.nickname.substring(0,1)}
-                                </div>
-                                <div>
-                                    <div class="mem-name">
-                                        <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'info')" style="font-weight:700;color:#93c5fd;">
-                                            ${m.nickname}
-                                        </button>
-                                    </div>
-                                    <div style="font-size:10px;color:#94a3b8;margin-top:2px;">${m.memberGrade} · Lv.${m.levelNo}</div>
-                                    <div class="mem-uid">
-                                        <c:choose>
-                                            <c:when test="${not empty m.userId}">
-                                                <button type="button" class="adm-inline-link" onclick="openDetail(${m.userIdx}, 'info')" style="color:#94a3b8;">
-                                                    @${m.userId}
-                                                </button>
-                                            </c:when>
-                                            <c:otherwise><span style="color:#475569;"><spring:message code="admin.context.socialOnly"/></span></c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-
-                        <%-- 이메일 --%>
-                        <td>
-                            <button type="button"
-                                    class="adm-cell-link js-member-open-detail"
-                                    data-user-idx="${m.userIdx}"
-                                    data-default-tab="actions"
-                                    data-focus-section="email">
-                                <c:choose>
-                                    <c:when test="${not empty m.userEmail}">
-                                        <span style="font-size:12px;">${m.userEmail}</span>
-                                        <c:if test="${m.emailVerified}">
-                                            <span style="color:#4ade80;font-size:10px;">✓ <spring:message code="admin.members.emailVerified"/></span>
-                                        </c:if>
-                                    </c:when>
-                                    <c:otherwise><span style="color:#475569;font-size:12px;">—</span></c:otherwise>
-                                </c:choose>
-                                <span class="adm-cell-link-note">
-                                    <c:choose>
-                                        <c:when test="${m.verifiedMember}"><spring:message code="admin.members.verifiedMember"/></c:when>
-                                        <c:otherwise><spring:message code="admin.members.unverifiedMember"/></c:otherwise>
-                                    </c:choose>
-                                </span>
-                            </button>
-                        </td>
-
-                        <%-- 상태 --%>
-                        <td>
-                            <button type="button"
-                                    class="adm-inline-link js-member-open-detail"
-                                    data-user-idx="${m.userIdx}"
-                                    data-default-tab="actions"
-                                    data-focus-section="statusRole"
-                                    style="padding:0;">
-                                <span class="status-badge ${m.accountStatus}">${m.accountStatus}</span>
-                            </button>
-                        </td>
-
-                        <%-- 권한 --%>
-                        <td>
-                            <button type="button"
-                                    class="adm-cell-link js-member-open-detail"
-                                    data-user-idx="${m.userIdx}"
-                                    data-default-tab="actions"
-                                    data-focus-section="statusRole">
-                                <span class="role-badge ${m.userRole}">
-                                    <c:choose>
-                                        <c:when test="${m.userRole eq 'USER'}"><spring:message code="admin.role.USER"/></c:when>
-                                        <c:when test="${m.userRole eq 'BUSINESS'}"><spring:message code="admin.role.BUSINESS"/></c:when>
-                                        <c:when test="${m.userRole eq 'PARTNER'}"><spring:message code="admin.role.PARTNER"/></c:when>
-                                        <c:when test="${m.userRole eq 'BOT'}"><spring:message code="admin.role.BOT"/></c:when>
-                                        <c:when test="${m.userRole eq 'ADMIN'}"><spring:message code="admin.role.ADMIN"/></c:when>
-                                        <c:when test="${m.userRole eq 'SUPERADMIN'}"><spring:message code="admin.role.SUPERADMIN"/></c:when>
-                                        <c:when test="${m.userRole eq 'SYSTEM'}"><spring:message code="admin.role.SYSTEM"/></c:when>
-                                        <c:otherwise>${m.userRole}</c:otherwise>
-                                    </c:choose>
-                                </span>
-                                <c:if test="${not empty m.adminPositionCode}">
-                                    <span class="adm-cell-link-note">${m.adminPositionCode}</span>
-                                </c:if>
-                            </button>
-                        </td>
-
-                        <%-- 소셜 연동 --%>
-                        <td>
-                            <button type="button"
-                                    class="adm-cell-link js-member-open-detail"
-                                    data-user-idx="${m.userIdx}"
-                                    data-default-tab="info"
-                                    data-focus-section="social">
-                                <div class="adm-social-list is-compact">
-                                    <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('KAKAO')}">
-                                        <span class="adm-social-pill kakao" title="<spring:message code='admin.social.kakao'/>">
-                                            <span class="adm-social-icon kakao-mark">k</span>
-                                            <span class="adm-social-label"><spring:message code="admin.social.kakao"/></span>
-                                        </span>
-                                    </c:if>
-                                    <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('NAVER')}">
-                                        <span class="adm-social-pill naver" title="<spring:message code='admin.social.naver'/>">
-                                            <span class="adm-social-icon naver-mark">N</span>
-                                            <span class="adm-social-label"><spring:message code="admin.social.naver"/></span>
-                                        </span>
-                                    </c:if>
-                                    <c:if test="${m.linkedProviders != null && m.linkedProviders.contains('GOOGLE')}">
-                                        <span class="adm-social-pill google" title="<spring:message code='admin.social.google'/>">
-                                            <span class="adm-social-icon google-mark">
-                                                <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-                                                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                                                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                                                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                                                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                                                </svg>
-                                            </span>
-                                            <span class="adm-social-label"><spring:message code="admin.social.google"/></span>
-                                        </span>
-                                    </c:if>
-                                    <c:if test="${empty m.linkedProviders}">
-                                        <span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider"/></span>
-                                    </c:if>
-                                </div>
-                            </button>
-                        </td>
-
-                        <%-- 로그인 이력 --%>
-                        <td>
-                            <button type="button"
-                                    class="adm-cell-link js-member-open-detail"
-                                    data-user-idx="${m.userIdx}"
-                                    data-default-tab="hist"
-                                    data-focus-section="loginHistory">
-                                <span style="font-size:12px;">
-                                    <c:choose>
-                                        <c:when test="${m.lastLoginAt != null}">
-                                            <fmt:formatDate value="${m.lastLoginAt}" pattern="MM.dd HH:mm"/>
-                                        </c:when>
-                                        <c:otherwise><span style="color:#475569;"><spring:message code="admin.members.none"/></span></c:otherwise>
-                                    </c:choose>
-                                </span>
-                                <span class="adm-cell-link-note">✅${m.loginSuccessCount} / ❌${m.loginFailCount}</span>
-                            </button>
-                        </td>
-
-                        <%-- 가입일 --%>
-                        <td>
-                            <button type="button"
-                                    class="adm-cell-link js-member-open-detail"
-                                    data-user-idx="${m.userIdx}"
-                                    data-default-tab="info"
-                                    data-focus-section="createdMeta"
-                                    style="font-size:12px;color:#64748b;">
-                                <fmt:formatDate value="${m.createdAt}" pattern="yyyy.MM.dd"/>
-                            </button>
-                        </td>
-
-                        <%-- 액션 --%>
-                        <td>
-                            <div class="adm-row-actions">
-                                <button class="adm-row-btn detail"
-                                        onclick="openDetail(${m.userIdx})"><spring:message code="admin.members.detail"/></button>
-                                <c:if test="${m.userRole != 'SYSTEM' and m.userRole != 'SUPERADMIN'}">
-                                <div class="action-menu-wrap">
-                                    <button class="adm-row-btn detail adm-row-btn-more"
-                                            type="button"
-                                            onclick="admToggleActionMenu(this)">⋯</button>
-                                    <div class="action-menu">
-                                        <div class="action-menu-head">
-                                            <spring:message code="admin.members.action.changeStatus"/>
-                                        </div>
-                                        <c:if test="${m.accountStatus != 'ACTIVE'}">
-                                            <button class="action-menu-item"
-                                                    onclick="changeStatus(${m.userIdx}, 'ACTIVE', this)">
-                                                ✅ ${memberStatusActive}
-                                            </button>
-                                        </c:if>
-                                        <c:if test="${m.accountStatus != 'DORMANT'}">
-                                            <button class="action-menu-item"
-                                                    onclick="changeStatus(${m.userIdx}, 'DORMANT', this)">
-                                                😴 ${memberStatusDormant}
-                                            </button>
-                                        </c:if>
-                                        <c:if test="${m.accountStatus != 'BLOCKED'}">
-                                            <button class="action-menu-item"
-                                                    data-user-idx="${m.userIdx}"
-                                                    data-nickname="${fn:escapeXml(m.nickname)}"
-                                                    onclick="openBlockModal(this)">
-                                                ⛔ ${memberStatusBlocked}
-                                            </button>
-                                        </c:if>
-                                        <c:if test="${m.accountStatus != 'DELETED'}">
-                                            <button class="action-menu-item danger"
-                                                    onclick="changeStatus(${m.userIdx}, 'DELETED', this)">
-                                                🗑️ ${memberStatusDeleted}
-                                            </button>
-                                        </c:if>
-                                        <div class="action-menu-sep"></div>
-                                        <div class="action-menu-head">
-                                            <spring:message code="admin.members.action.changeRole"/>
-                                        </div>
-                                        <div class="role-change-box">
-                                            <select class="adm-select role-change-select" data-current-role="${m.userRole}">
-                                                <option value="USER" ${m.userRole == 'USER' ? 'selected' : ''}><spring:message code="admin.role.USER"/></option>
-                                                <option value="BUSINESS" ${m.userRole == 'BUSINESS' ? 'selected' : ''}><spring:message code="admin.role.BUSINESS"/></option>
-                                                <option value="PARTNER" ${m.userRole == 'PARTNER' ? 'selected' : ''}><spring:message code="admin.role.PARTNER"/></option>
-                                                <option value="BOT" ${m.userRole == 'BOT' ? 'selected' : ''}><spring:message code="admin.role.BOT"/></option>
-                                                <option value="ADMIN" ${m.userRole == 'ADMIN' ? 'selected' : ''}><spring:message code="admin.role.ADMIN"/></option>
-                                            </select>
-                                            <input class="adm-input role-change-reason"
-                                                   type="text"
-                                                   maxlength="500"
-                                                   placeholder="<spring:message code='admin.context.action.roleReasonPlaceholder'/>">
-                                            <button class="action-menu-item role-change-submit"
-                                                    data-user-idx="${m.userIdx}"
-                                                    onclick="changeRoleFromMenu(this)">
-                                                <spring:message code="admin.members.action.applyRoleChange"/>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                </c:if>
-                            </div>
-                        </td>
-                    </tr>
-                </c:forEach>
-
-                <c:if test="${empty list}">
-                    <tr>
-                        <td colspan="9" style="text-align:center;padding:40px;color:#475569;">
-                            <spring:message code="admin.common.noResults"/>
-                        </td>
-                    </tr>
-                </c:if>
+                <tbody id="memberRowsBody">
+                <%@ include file="_memberRowsFragment.jsp" %>
                 </tbody>
             </table>
         </div>
 
         <%-- 페이징 --%>
-        <c:if test="${paging.totalPage > 1}">
-            <div class="adm-paging">
-                <c:if test="${paging.prev}">
-                    <button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button>
-                </c:if>
-                <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p">
-                    <button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}"
-                            onclick="goPage(${p})">${p}</button>
-                </c:forEach>
-                <c:if test="${paging.next}">
-                    <button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button>
-                </c:if>
-                <span class="adm-page-info"><spring:message code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/></span>
+        <div class="adm-local-pagination" data-section="members" id="memberPaging">
+            <div class="adm-local-page-info js-member-page-info" data-section="members">총 ${total}건 / 현재 ${fn:length(list)}건</div>
+            <div class="adm-local-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost js-member-prev" onclick="goPage(memberSectionState.page - 1)"><spring:message code="admin.common.prev"/></button>
+                <span class="js-member-page-state" data-section="members">${paging.currentPage} / ${paging.totalPage}</span>
+                <button type="button" class="adm-btn adm-btn-ghost js-member-next" onclick="goPage(memberSectionState.page + 1)"><spring:message code="admin.common.next"/></button>
             </div>
-        </c:if>
+        </div>
     </div>
 </div>
 
@@ -513,35 +268,372 @@
 <script>
 const ctx = '${pageContext.request.contextPath}';
 
-/* ── 정렬 ── */
+/* ── 회원 목록: 차단 관리형 서버/클라이언트 섹션 로직 ── */
+const MEMBER_DEFAULT_SORT_BY = 'createdAt';
+const MEMBER_DEFAULT_SORT_DIR = 'DESC';
+const MEMBER_MODE_STORAGE = 'admMemberSectionMode';
+const MEMBER_MODE_COOKIE = 'admMemberMode';
+const MEMBER_CLIENT_MAX_SIZE = 10000;
+
+var memberSectionState = {
+    page: 1,
+    pageSize: 20,
+    sortBy: '',
+    sortDir: 'ASC',
+    mode: 'SERVER',
+    clientRows: null,
+    clientFilterKey: '',
+    clientTotal: 0
+};
+
+function getSearchForm() {
+    return document.getElementById('searchForm');
+}
+
+function getMemberTbody() {
+    return document.getElementById('memberRowsBody');
+}
+
+function getMemberSearchFilterKey() {
+    const form = getSearchForm();
+    if (!form) return '';
+    const params = new URLSearchParams();
+    new FormData(form).forEach(function (val, key) {
+        if (['page', 'size', 'sortBy', 'sortDir', 'mode'].includes(key)) return;
+        if (val != null && String(val).trim().length > 0) params.append(key, String(val).trim());
+    });
+    return params.toString();
+}
+
+function buildMemberParams(pageOverride, options) {
+    options = options || {};
+    const form = getSearchForm();
+    const params = new URLSearchParams();
+    if (form) {
+        new FormData(form).forEach(function (val, key) {
+            if (['page', 'size', 'sortBy', 'sortDir', 'mode'].includes(key)) return;
+            if (val != null && String(val).trim().length > 0) params.append(key, String(val).trim());
+        });
+    }
+    const targetPage = pageOverride != null ? Number(pageOverride) : Number(memberSectionState.page || 1);
+    params.set('page', String(Math.max(1, targetPage || 1)));
+    params.set('size', String(options.clientFetch ? MEMBER_CLIENT_MAX_SIZE : (memberSectionState.pageSize || 20)));
+    params.set('mode', options.clientFetch ? 'CLIENT' : memberSectionState.mode);
+    if (options.includeSort !== false && memberSectionState.sortBy) {
+        params.set('sortBy', memberSectionState.sortBy);
+        params.set('sortDir', memberSectionState.sortDir === 'DESC' ? 'DESC' : 'ASC');
+    }
+    return params;
+}
+
+function syncMemberHiddenInputs() {
+    const form = getSearchForm();
+    if (!form) return;
+    const pageInput = form.querySelector('[name=page]');
+    const sizeInput = form.querySelector('[name=size]');
+    const sortByInput = document.getElementById('sortByInput');
+    const sortDirInput = document.getElementById('sortDirInput');
+    if (pageInput) pageInput.value = String(memberSectionState.page || 1);
+    if (sizeInput) sizeInput.value = String(memberSectionState.pageSize || 20);
+    if (sortByInput) sortByInput.value = memberSectionState.sortBy || '';
+    if (sortDirInput) sortDirInput.value = memberSectionState.sortBy ? memberSectionState.sortDir : '';
+}
+
+function setMemberModeCookie(mode) {
+    document.cookie = MEMBER_MODE_COOKIE + '=' + (mode === 'CLIENT' ? 'client' : 'server') + ';path=' + (ctx || '/') + ';max-age=31536000;samesite=lax';
+}
+
+function loadStoredMemberMode() {
+    try {
+        const stored = localStorage.getItem(MEMBER_MODE_STORAGE);
+        return stored === 'CLIENT' ? 'CLIENT' : 'SERVER';
+    } catch (e) {
+        return 'SERVER';
+    }
+}
+
+function saveMemberMode(mode) {
+    memberSectionState.mode = mode === 'CLIENT' ? 'CLIENT' : 'SERVER';
+    try { localStorage.setItem(MEMBER_MODE_STORAGE, memberSectionState.mode); } catch (e) {}
+    setMemberModeCookie(memberSectionState.mode);
+    const select = document.getElementById('memberModeSelect');
+    if (select) select.value = memberSectionState.mode === 'CLIENT' ? 'client' : 'server';
+}
+
+function updateMemberSortIndicators() {
+    document.querySelectorAll('th[data-sort]').forEach(function (th) {
+        const active = !!memberSectionState.sortBy && th.dataset.sort === memberSectionState.sortBy;
+        th.classList.toggle('sorted', active);
+        let ico = th.querySelector('.sort-ico');
+        if (active) {
+            if (!ico) {
+                ico = document.createElement('span');
+                ico.className = 'sort-ico';
+                ico.style.cssText = 'font-size:10px;margin-left:4px;font-weight:900;';
+                th.appendChild(ico);
+            }
+            ico.textContent = memberSectionState.sortDir === 'DESC' ? '▼' : '▲';
+            ico.style.color = memberSectionState.sortDir === 'DESC' ? '#3b82f6' : '#ef4444';
+        } else if (ico) {
+            ico.remove();
+        }
+    });
+    const resetBtn = document.querySelector('.js-member-sort-reset');
+    if (resetBtn) {
+        resetBtn.textContent = ADMIN_MEMBER_MSG.dashSortReset;
+        resetBtn.style.display = memberSectionState.sortBy ? '' : 'none';
+    }
+}
+
+function updateMemberTotal(total) {
+    const totalLabel = document.getElementById('memberTotalLabel');
+    if (totalLabel) totalLabel.textContent = '총 ' + Number(total || 0).toLocaleString() + '명';
+}
+
+function updateMemberPaginationMeta(page, totalPages, total, renderedCount) {
+    const safePages = Math.max(1, Number(totalPages || 1));
+    const safePage = Math.min(Math.max(1, Number(page || 1)), safePages);
+    memberSectionState.page = safePage;
+    const pageInfo = document.querySelector('.js-member-page-info');
+    if (pageInfo) {
+        const totalText = ADMIN_MEMBER_MSG.totalCountFormat.replace('{0}', Number(total || 0).toLocaleString());
+        const currentText = ADMIN_MEMBER_MSG.currentCountFormat.replace('{0}', Number(renderedCount || 0).toLocaleString());
+        pageInfo.textContent = totalText + ' / ' + currentText;
+    }
+    const pageState = document.querySelector('.js-member-page-state');
+    if (pageState) pageState.textContent = safePage + ' / ' + safePages;
+    const prevBtn = document.querySelector('.js-member-prev');
+    const nextBtn = document.querySelector('.js-member-next');
+    if (prevBtn) prevBtn.disabled = safePage <= 1;
+    if (nextBtn) nextBtn.disabled = safePage >= safePages;
+    updateMemberTotal(total);
+    syncMemberHiddenInputs();
+}
+
+function memberSortValue(row, field) {
+    if (!row || !field) return '';
+    if (field === 'email') return row.dataset.email || '';
+    if (field === 'status') return row.dataset.status || '';
+    if (field === 'role') return row.dataset.role || '';
+    if (field === 'lastLoginAt') return row.dataset.lastLoginAt || '0';
+    if (field === 'createdAt') return row.dataset.createdAt || '0';
+    if (field === 'social' || field === 'socialCount') {
+        const count = Number(row.dataset.socialCount || '0');
+        const rank = Number(row.dataset.socialRank || '0');
+        return String((Number.isFinite(count) ? count : 0) * 100 + (Number.isFinite(rank) ? rank : 0));
+    }
+    return row.dataset.nickname || '';
+}
+
+function compareMemberRows(a, b) {
+    const field = memberSectionState.sortBy;
+    if (!field) {
+        return Number(a.dataset.originalIndex || 0) - Number(b.dataset.originalIndex || 0);
+    }
+    const av = memberSortValue(a, field);
+    const bv = memberSortValue(b, field);
+    const an = Number(av);
+    const bn = Number(bv);
+    let cmp;
+    if (!Number.isNaN(an) && !Number.isNaN(bn) && /^-?\d+(\.\d+)?$/.test(String(av)) && /^-?\d+(\.\d+)?$/.test(String(bv))) {
+        cmp = an - bn;
+    } else {
+        cmp = String(av).localeCompare(String(bv), ADMIN_MEMBER_LOCALE || undefined, {numeric: true, sensitivity: 'base'});
+    }
+    return cmp * (memberSectionState.sortDir === 'DESC' ? -1 : 1);
+}
+
+function markOriginalIndices(rows) {
+    rows.forEach(function (row, idx) {
+        if (row.dataset.originalIndex == null) row.dataset.originalIndex = String(idx);
+    });
+}
+
+function renderMemberEmptyRow() {
+    return '<tr class="adm-local-empty"><td colspan="9" style="text-align:center;color:#64748b;padding:32px;">' + escapeHtml(ADMIN_MEMBER_MSG.noResults) + '</td></tr>';
+}
+
+async function renderServerMembers(pageOverride) {
+    memberSectionState.mode = 'SERVER';
+    const params = buildMemberParams(pageOverride, {includeSort: true});
+    const tbody = getMemberTbody();
+    if (!tbody) return;
+    tbody.classList.add('is-loading');
+    try {
+        const res = await fetch(ctx + '/admin/members/fragment?' + params.toString(), {
+            credentials: 'same-origin',
+            headers: {'Accept': 'text/html', 'X-Requested-With': 'XMLHttpRequest'}
+        });
+        const html = await res.text();
+        if (!res.ok) throw new Error(html || '목록을 불러오지 못했습니다.');
+        tbody.innerHTML = html.trim() || renderMemberEmptyRow();
+        const rows = Array.from(tbody.querySelectorAll('.js-member-row'));
+        markOriginalIndices(rows);
+        const total = Number(res.headers.get('X-Section-Total') || rows.length || 0);
+        const page = Number(res.headers.get('X-Section-Page') || params.get('page') || 1);
+        const size = Number(res.headers.get('X-Section-Size') || memberSectionState.pageSize || 20);
+        const pages = Number(res.headers.get('X-Section-Pages') || 1);
+        memberSectionState.pageSize = [10,20,50,100].includes(size) ? size : memberSectionState.pageSize;
+        const sizeSelect = document.getElementById('sizeSelect');
+        if (sizeSelect) sizeSelect.value = String(memberSectionState.pageSize);
+        updateMemberPaginationMeta(page, pages, total, rows.length);
+        updateMemberSortIndicators();
+        clearSelection();
+    } catch (e) {
+        adm_toast(e.message || '목록을 불러오지 못했습니다.', 'error');
+    } finally {
+        tbody.classList.remove('is-loading');
+    }
+}
+
+async function ensureClientMemberRows() {
+    const filterKey = getMemberSearchFilterKey();
+    if (memberSectionState.clientRows && memberSectionState.clientFilterKey === filterKey) return;
+    const params = buildMemberParams(1, {clientFetch: true, includeSort: false});
+    const res = await fetch(ctx + '/admin/members/fragment?' + params.toString(), {
+        credentials: 'same-origin',
+        headers: {'Accept': 'text/html', 'X-Requested-With': 'XMLHttpRequest'}
+    });
+    const html = await res.text();
+    if (!res.ok) throw new Error(html || '전체 목록을 불러오지 못했습니다.');
+    const temp = document.createElement('tbody');
+    temp.innerHTML = html;
+    const rows = Array.from(temp.querySelectorAll('.js-member-row'));
+    markOriginalIndices(rows);
+    memberSectionState.clientRows = rows;
+    memberSectionState.clientFilterKey = filterKey;
+    memberSectionState.clientTotal = Number(res.headers.get('X-Section-Total') || rows.length || 0);
+}
+
+async function renderClientMembers(pageOverride) {
+    memberSectionState.mode = 'CLIENT';
+    const tbody = getMemberTbody();
+    if (!tbody) return;
+    tbody.classList.add('is-loading');
+    try {
+        await ensureClientMemberRows();
+        let rows = (memberSectionState.clientRows || []).slice();
+        rows.sort(compareMemberRows);
+        const total = rows.length;
+        const pageSize = memberSectionState.pageSize || 20;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        const page = Math.min(Math.max(1, Number(pageOverride || memberSectionState.page || 1)), totalPages);
+        const start = (page - 1) * pageSize;
+        const visible = rows.slice(start, start + pageSize);
+        tbody.innerHTML = '';
+        if (visible.length === 0) {
+            tbody.innerHTML = renderMemberEmptyRow();
+        } else {
+            visible.forEach(function (row) { tbody.appendChild(row.cloneNode(true)); });
+        }
+        updateMemberPaginationMeta(page, totalPages, total, visible.length);
+        updateMemberSortIndicators();
+        clearSelection();
+    } catch (e) {
+        adm_toast(e.message || '전체 목록을 불러오지 못했습니다.', 'error');
+    } finally {
+        tbody.classList.remove('is-loading');
+    }
+}
+
+async function renderMemberByMode(pageOverride) {
+    if (memberSectionState.mode === 'CLIENT') {
+        return renderClientMembers(pageOverride);
+    }
+    return renderServerMembers(pageOverride);
+}
+
+async function reloadMemberRows(pageOverride) {
+    if (memberSectionState.mode === 'CLIENT') memberSectionState.clientRows = null;
+    return renderMemberByMode(pageOverride || memberSectionState.page || 1);
+}
+
+async function refreshMemberSection() {
+    if (memberSectionState.mode === 'CLIENT') memberSectionState.clientRows = null;
+    return renderMemberByMode(memberSectionState.page || 1);
+}
+
 function memberSortBy(field) {
-    const curField = document.getElementById('sortByInput').value || 'createdAt';
-    const curDir   = document.getElementById('sortDirInput').value || 'DESC';
-    document.getElementById('sortByInput').value  = field;
-    document.getElementById('sortDirInput').value = (field === curField && curDir === 'DESC') ? 'ASC' : 'DESC';
-    document.getElementById('searchForm').querySelector('[name=page]').value = 1;
-    document.getElementById('searchForm').submit();
+    const prevField = memberSectionState.sortBy || '';
+    const prevDir = memberSectionState.sortDir || 'ASC';
+    memberSectionState.sortBy = field;
+    memberSectionState.sortDir = (prevField === field && prevDir === 'ASC') ? 'DESC' : 'ASC';
+    memberSectionState.page = 1;
+    renderMemberByMode(1);
+}
+
+function resetMemberSort() {
+    memberSectionState.sortBy = '';
+    memberSectionState.sortDir = 'ASC';
+    memberSectionState.page = 1;
+    renderMemberByMode(1);
+}
+
+function resetMemberFilters() {
+    const form = getSearchForm();
+    if (form) {
+        const setValue = function (name, value) {
+            const el = form.querySelector('[name=' + name + ']');
+            if (el) el.value = value;
+        };
+        setValue('searchType', 'all');
+        setValue('keyword', '');
+        setValue('status', 'ALL');
+        setValue('role', 'ALL');
+        setValue('provider', 'ALL');
+        setValue('dateFrom', '');
+        setValue('dateTo', '');
+    }
+    memberSectionState.page = 1;
+    memberSectionState.sortBy = '';
+    memberSectionState.sortDir = 'ASC';
+    memberSectionState.clientRows = null;
+    renderMemberByMode(1);
+}
+
+function goPage(p) {
+    const page = Math.max(1, Number(p || 1));
+    renderMemberByMode(page);
+}
+
+function changeSize(size) {
+    const parsed = Number(size);
+    memberSectionState.pageSize = [10, 20, 50, 100].includes(parsed) ? parsed : 20;
+    memberSectionState.page = 1;
+    syncMemberHiddenInputs();
+    renderMemberByMode(1);
 }
 
 /* ── 체크박스 ── */
 function toggleAll(cb) {
-    document.querySelectorAll('.js-row-check').forEach(c => { c.checked = cb.checked; });
+    document.querySelectorAll('.js-row-check').forEach(function (c) { c.checked = cb.checked; });
     updateBulkBar();
 }
 function updateBulkBar() {
     const checked = document.querySelectorAll('.js-row-check:checked');
     const n = checked.length;
-    document.getElementById('bulkBar').style.display = n > 0 ? 'flex' : 'none';
-    document.getElementById('bulkCount').textContent = n;
+    const bulkBar = document.getElementById('bulkBar');
+    if (bulkBar) bulkBar.style.display = n > 0 ? 'flex' : 'none';
+    const bulkCount = document.getElementById('bulkCount');
+    if (bulkCount) bulkCount.textContent = n;
     const selBtn = document.getElementById('exportSelectedBtn');
     if (selBtn) {
         selBtn.disabled = n === 0;
         selBtn.style.color = n > 0 ? '#e2e8f0' : '#94a3b8';
-        selBtn.textContent = '☑ 선택 내보내기 (' + n + ')';
+        selBtn.textContent = ADMIN_MEMBER_MSG.exportSelected + ' (' + n + ')';
+    }
+    const all = document.getElementById('checkAll');
+    if (all) {
+        const rows = document.querySelectorAll('.js-row-check');
+        all.checked = rows.length > 0 && n === rows.length;
+        all.indeterminate = n > 0 && n < rows.length;
     }
 }
 function clearSelection() {
-    document.querySelectorAll('.js-row-check, #checkAll').forEach(c => { c.checked = false; });
+    document.querySelectorAll('.js-row-check, #checkAll').forEach(function (c) {
+        c.checked = false;
+        c.indeterminate = false;
+    });
     updateBulkBar();
 }
 
@@ -549,11 +641,11 @@ function clearSelection() {
 async function applyBulkStatus() {
     const status = document.getElementById('bulkStatusSelect').value;
     if (!status) { adm_toast('상태를 선택해주세요.', 'error'); return; }
-    const ids = Array.from(document.querySelectorAll('.js-row-check:checked')).map(c => c.value);
+    const ids = Array.from(document.querySelectorAll('.js-row-check:checked')).map(function (c) { return c.value; });
     if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
     if (!confirm(ids.length + '명의 상태를 "' + status + '"(으)로 변경하시겠습니까?')) return;
     const params = new URLSearchParams();
-    ids.forEach(id => params.append('userIdxList', id));
+    ids.forEach(function (id) { params.append('userIdxList', id); });
     params.append('status', status);
     const res = await fetch(ctx + '/admin/members/bulk/status', {
         method: 'POST',
@@ -561,22 +653,24 @@ async function applyBulkStatus() {
         body: params
     });
     const data = await res.json();
-    if (res.ok && data.success) { adm_toast(data.message); setTimeout(() => location.reload(), 700); }
-    else { adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error'); }
+    if (res.ok && data.success) {
+        adm_toast(data.message);
+        document.getElementById('bulkStatusSelect').value = '';
+        await refreshMemberSection();
+    } else {
+        adm_toast(data.message || '처리 중 오류가 발생했습니다.', 'error');
+    }
 }
 
 /* ── 내보내기 ── */
 function exportData(scope) {
     const format = document.getElementById('exportFormat').value;
-    const form   = document.getElementById('searchForm');
-    const params = new URLSearchParams();
-    new FormData(form).forEach((val, key) => {
-        if (key !== 'page' && key !== 'sortBy' && key !== 'sortDir') params.append(key, val);
-    });
+    const params = buildMemberParams(null, {includeSort: true});
+    params.delete('page');
     params.set('scope', scope);
     params.set('format', format);
     if (scope === 'selected') {
-        const ids = Array.from(document.querySelectorAll('.js-row-check:checked')).map(c => c.value);
+        const ids = Array.from(document.querySelectorAll('.js-row-check:checked')).map(function (c) { return c.value; });
         if (!ids.length) { adm_toast('선택된 항목이 없습니다.', 'error'); return; }
         params.set('selectedIds', ids.join(','));
     }
@@ -585,9 +679,56 @@ function exportData(scope) {
     window.location.href = ctx + '/admin/members/export?' + params.toString();
 }
 
+function initMemberSection() {
+    const sizeSelect = document.getElementById('sizeSelect');
+    memberSectionState.pageSize = Number(sizeSelect ? sizeSelect.value : 20) || 20;
+    memberSectionState.page = Number((getSearchForm() && getSearchForm().querySelector('[name=page]') || {}).value || 1) || 1;
+    saveMemberMode(loadStoredMemberMode());
+
+    const modeSelect = document.getElementById('memberModeSelect');
+    if (modeSelect) {
+        modeSelect.addEventListener('change', function () {
+            saveMemberMode(modeSelect.value === 'client' ? 'CLIENT' : 'SERVER');
+            memberSectionState.page = 1;
+            memberSectionState.clientRows = null;
+            renderMemberByMode(1);
+        });
+    }
+    const form = getSearchForm();
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            memberSectionState.page = 1;
+            memberSectionState.clientRows = null;
+            renderMemberByMode(1);
+        });
+    }
+    const exportToggle = document.querySelector('.js-export-toggle');
+    const exportDropdown = document.getElementById('exportDropdown');
+    if (exportToggle && exportDropdown) {
+        exportToggle.addEventListener('click', function () { exportDropdown.classList.toggle('open'); });
+        document.addEventListener('click', function (e) {
+            if (!exportToggle.contains(e.target) && !exportDropdown.contains(e.target)) exportDropdown.classList.remove('open');
+        });
+    }
+
+    const existingRows = Array.from(document.querySelectorAll('#memberRowsBody .js-member-row'));
+    markOriginalIndices(existingRows);
+    updateMemberPaginationMeta(memberSectionState.page, Number((document.querySelector('.js-member-page-state') || {}).textContent?.split('/')[1] || 1), Number('${total}' || existingRows.length), existingRows.length);
+    updateMemberSortIndicators();
+    if (memberSectionState.mode === 'CLIENT') renderMemberByMode(1);
+}
+
+document.addEventListener('DOMContentLoaded', initMemberSection);
+
 const ADMIN_MEMBER_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
 const ADMIN_MEMBER_MSG = {
     loading: '<spring:message code="admin.common.loading" javaScriptEscape="true"/>',
+    dashSortReset: '<spring:message code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>',
+    totalCountFormat: '<spring:message code="admin.common.totalCountFormat" javaScriptEscape="true"/>',
+    currentCountFormat: '<spring:message code="admin.common.currentCountFormat" javaScriptEscape="true"/>',
+    exportSelected: '<spring:message code="admin.common.exportSelected" javaScriptEscape="true"/>',
+    noResults: '<spring:message code="admin.common.noResults" javaScriptEscape="true"/>',
     close: '<spring:message code="admin.common.close" javaScriptEscape="true"/>',
     error: '<spring:message code="admin.common.error" javaScriptEscape="true"/>',
     yes: '<spring:message code="admin.common.yes" javaScriptEscape="true"/>',
@@ -759,20 +900,6 @@ function buildSocialHtml(linkedProviders) {
     return '<div class="adm-social-list">' + items.join('') + '</div>';
 }
 
-/* ── 페이지 이동 ── */
-function goPage(p) {
-    const form = document.getElementById('searchForm');
-    form.querySelector('[name=page]').value = p;
-    form.submit();
-}
-
-function changeSize(size) {
-    const form = document.getElementById('searchForm');
-    form.querySelector('[name=size]').value = size;
-    form.querySelector('[name=page]').value = 1;
-    form.submit();
-}
-
 /* ── 액션 메뉴 토글 ── */
 function openBlockModal(triggerOrUserIdx, nickname) {
     const trigger = typeof triggerOrUserIdx === 'object' ? triggerOrUserIdx : null;
@@ -848,7 +975,7 @@ async function submitBlock() {
         if (res.ok && data && data.success) {
             closeBlockModal();
             adm_toast(ADMIN_MEMBER_MSG.blockApplied || '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>');
-            setTimeout(() => location.reload(), 800);
+            setTimeout(() => refreshMemberSection(), 800);
         } else {
             adm_toast((data && data.message) || '<spring:message code="admin.context.toast.saveBlockFail" javaScriptEscape="true"/>', 'error');
         }
@@ -890,7 +1017,7 @@ async function changeStatus(userIdx, status, el) {
 
     if (res.ok && data.success) {
         adm_toast(data.message || '<spring:message code="admin.context.toast.saveStatusSuccess" javaScriptEscape="true"/>');
-        setTimeout(() => location.reload(), 800);
+        setTimeout(() => refreshMemberSection(), 800);
     } else {
         adm_toast(data.message || '<spring:message code="admin.context.toast.saveStatusFail" javaScriptEscape="true"/>', 'error');
     }
@@ -947,7 +1074,7 @@ async function changeRole(userIdx, role, reason, el) {
 
     if (res.ok && data.success) {
         adm_toast(data.message || '<spring:message code="admin.context.toast.saveRoleSuccess" javaScriptEscape="true"/>');
-        setTimeout(() => location.reload(), 800);
+        setTimeout(() => refreshMemberSection(), 800);
     } else {
         adm_toast(data.message || '<spring:message code="admin.context.toast.saveRoleFail" javaScriptEscape="true"/>', 'error');
     }
@@ -1462,7 +1589,7 @@ async function saveMemberProfile(userIdx, button) {
         const data = await res.json();
         if (res.ok && data.success) {
             adm_toast(data.message || '<spring:message code="admin.context.toast.saveProfileSuccess" javaScriptEscape="true"/>');
-            setTimeout(() => location.reload(), 700);
+            setTimeout(() => refreshMemberSection(), 700);
         } else {
             adm_toast(data.message || '<spring:message code="admin.context.toast.saveProfileFail" javaScriptEscape="true"/>', 'error');
         }
@@ -1535,7 +1662,7 @@ async function submitDetailBlock(userIdx, button) {
         const data = await res.json();
         if (res.ok && data.success) {
             adm_toast(data.message || '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>');
-            setTimeout(() => location.reload(), 700);
+            setTimeout(() => refreshMemberSection(), 700);
         } else {
             adm_toast(data.message || '<spring:message code="admin.context.toast.saveBlockFail" javaScriptEscape="true"/>', 'error');
         }
@@ -1575,16 +1702,8 @@ document.addEventListener('click', function (e) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    // 정렬 아이콘 초기화
-    const curSort = '${search.sortBy}';
-    const curDir  = '${search.sortDir}';
-    document.querySelectorAll('th[data-sort]').forEach(th => {
-        if (th.dataset.sort === curSort) {
-            th.classList.add('sorted');
-            const ico = th.querySelector('.sort-ico');
-            if (ico) ico.textContent = curDir === 'ASC' ? '▲' : '▼';
-        }
-    });
+    updateBulkBar();
+
     // URL 파라미터로 상세 자동 오픈
     const detailUserIdx = '${fn:escapeXml(param.detailUserIdx)}';
     if (detailUserIdx) {

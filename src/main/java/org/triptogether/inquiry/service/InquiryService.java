@@ -2,6 +2,7 @@ package org.triptogether.inquiry.service;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.inquiry.vo.InquiryAnswerDto;
+import org.triptogether.inquiry.vo.InquiryAnswerHistoryDto;
 import org.triptogether.inquiry.vo.InquiryAttachmentDto;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
@@ -62,13 +63,18 @@ public interface InquiryService {
 
     // ===== 답변 수정 =====
 
-    // 답변 내용 수정함 (어드민 전용)
-    void updateAnswer(Long inquiryId, String content);
+    // 답변 내용 수정함 (어드민 전용). 수정 전 본문은 INQUIRY_ANSWER_HISTORY 에 보존됨
+    void updateAnswer(Long inquiryId, String content, Long changedBy);
 
     // ===== 답변 삭제 =====
 
-    // 답변 삭제함. 삭제 후 문의 status → IN_PROGRESS로 되돌림
-    void deleteAnswer(Long inquiryId);
+    // 답변 삭제함. 삭제 전 본문은 INQUIRY_ANSWER_HISTORY 에 보존됨. 삭제 후 status → IN_PROGRESS
+    void deleteAnswer(Long inquiryId, Long changedBy);
+
+    // ===== 답변 수정/삭제 이력 =====
+
+    // 특정 문의의 답변 변경 이력 조회 (어드민 전용, 최신순)
+    List<InquiryAnswerHistoryDto> getAnswerHistoryByInquiry(Long inquiryId);
 
     // ===== 상태 변경 =====
 

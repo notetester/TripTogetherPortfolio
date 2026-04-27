@@ -2295,10 +2295,9 @@ function exportBlockSection(section, scope) {
     });
     const filename = 'blocks_' + section + '_' + scope + '_' + new Date().toISOString().slice(0, 10);
     if (format === 'excel') {
-        const html = '<table><thead><tr>' + headers.map(h => '<th>' + escapeHtml(h) + '</th>').join('') + '</tr></thead><tbody>'
-            + body.map(row => '<tr>' + row.map(v => '<td>' + escapeHtml(v) + '</td>').join('') + '</tr>').join('')
-            + '</tbody></table>';
-        downloadBlob('\ufeff' + html, filename + '.xls', 'application/vnd.ms-excel;charset=utf-8');
+        const worksheetName = 'blocks_' + section.replace(/[^A-Za-z0-9가-힣_-]/g, '_').slice(0, 24);
+        const xls = buildExcelXml(headers, body, worksheetName);
+        downloadBlob('\ufeff' + xls, filename + '.xls', 'application/vnd.ms-excel;charset=utf-8');
     } else {
         const csv = [headers].concat(body).map(row => row.map(csvEscape).join(',')).join('\n');
         downloadBlob('\ufeff' + csv, filename + '.csv', 'text/csv;charset=utf-8');
@@ -2308,6 +2307,45 @@ function exportBlockSection(section, scope) {
 function csvEscape(value) {
     const s = String(value == null ? '' : value);
     return '"' + s.replace(/"/g, '""') + '"';
+}
+
+function excelXmlEscape(value) {
+    return String(value == null ? '' : value)
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+function excelXmlCell(value, styleId) {
+    const styleAttr = styleId ? ' ss:StyleID="' + styleId + '"' : '';
+    return '<Cell' + styleAttr + '><Data ss:Type="String">' + excelXmlEscape(value) + '</Data></Cell>';
+}
+
+function buildExcelXml(headers, rows, worksheetName) {
+    const safeSheetName = excelXmlEscape(worksheetName || 'export').slice(0, 31) || 'export';
+    const headerXml = '<Row>' + headers.map(function (h) { return excelXmlCell(h, 'header'); }).join('') + '</Row>';
+    const bodyXml = rows.map(function (row) {
+        return '<Row>' + row.map(function (v) { return excelXmlCell(v); }).join('') + '</Row>';
+    }).join('');
+
+    return '<?xml version="1.0" encoding="UTF-8"?>'
+        + '<?mso-application progid="Excel.Sheet"?>'
+        + '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" '
+        + 'xmlns:o="urn:schemas-microsoft-com:office:office" '
+        + 'xmlns:x="urn:schemas-microsoft-com:office:excel" '
+        + 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" '
+        + 'xmlns:html="http://www.w3.org/TR/REC-html40">'
+        + '<Styles>'
+        + '<Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Center"/><Font ss:FontName="맑은 고딕" ss:Size="10"/></Style>'
+        + '<Style ss:ID="header"><Font ss:FontName="맑은 고딕" ss:Size="10" ss:Bold="1"/><Interior ss:Color="#D9EAF7" ss:Pattern="Solid"/></Style>'
+        + '</Styles>'
+        + '<Worksheet ss:Name="' + safeSheetName + '"><Table>'
+        + headerXml + bodyXml
+        + '</Table><WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><FreezePanes/><FrozenNoSplit/><SplitHorizontal>1</SplitHorizontal><TopRowBottomPane>1</TopRowBottomPane></WorksheetOptions></Worksheet>'
+        + '</Workbook>';
 }
 
 function downloadBlob(content, filename, type) {
@@ -2321,6 +2359,7 @@ function downloadBlob(content, filename, type) {
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
 }
+
 
 
 function renderLocalSection(section) {

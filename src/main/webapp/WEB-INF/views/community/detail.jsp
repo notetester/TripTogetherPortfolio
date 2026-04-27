@@ -337,7 +337,7 @@
                             <%-- comment-body: 신고 3회 이상 또는 AI 감지 시 report-blurred --%>
                             <div class="comment-body ${comment.bubbleClass} ${cmtBlurred ? 'report-blurred' : ''}">
                               <div class="comment-top">
-                                <span class="comment-author tt-nickname ${comment.nicknameColorClass} ${comment.nicknameEffectClass}">${comment.nickname}</span>
+                                <span class="comment-author tt-nickname ${comment.nicknameColorClass} ${comment.nicknameEffectClass}"><c:out value="${comment.nickname}"/></span>
                                 <c:if test="${not empty comment.profileBadgeLabel}">
                                   <span class="tt-profile-badge ${comment.profileBadgeClass}">${comment.profileBadgeLabel}</span>
                                 </c:if>
@@ -376,7 +376,7 @@
                                   <button class="comment-delete-btn" onclick="deleteComment(${comment.commentId})"><spring:message code="community.detail.comment.delete"/></button>
                                 </c:if>
                               </div>
-                              <div class="comment-text">${comment.content}</div>
+                              <div class="comment-text"><c:out value="${comment.content}"/></div>
                               <%-- 관리자모드: 차단/AI 뱃지 --%>
                               <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= reportThreshold or comment.aiFlagged)}">
                                 <c:choose>
@@ -468,7 +468,7 @@
                                     <div class="comment-body-wrap ${rplBlurred ? 'report-blurred-wrap' : ''}">
                                       <div class="comment-body ${reply.bubbleClass} ${rplBlurred ? 'report-blurred' : ''}">
                                         <div class="comment-top">
-                                          <span class="comment-author tt-nickname ${reply.nicknameColorClass} ${reply.nicknameEffectClass}">${reply.nickname}</span>
+                                          <span class="comment-author tt-nickname ${reply.nicknameColorClass} ${reply.nicknameEffectClass}"><c:out value="${reply.nickname}"/></span>
                                           <c:if test="${not empty reply.profileBadgeLabel}">
                                             <span class="tt-profile-badge ${reply.profileBadgeClass}">${reply.profileBadgeLabel}</span>
                                           </c:if>
@@ -501,7 +501,7 @@
                                             <button class="comment-delete-btn" onclick="deleteComment(${reply.commentId})"><spring:message code="community.detail.comment.delete"/></button>
                                         </c:if>
                                       </div>
-                                      <div class="comment-text">${reply.content}</div>
+                                      <div class="comment-text"><c:out value="${reply.content}"/></div>
                                       <%-- 관리자모드: 차단/AI 뱃지 --%>
                                       <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= reportThreshold or reply.aiFlagged)}">
                                         <c:choose>

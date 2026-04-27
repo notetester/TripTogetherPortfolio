@@ -77,6 +77,7 @@ document.addEventListener('keydown', e => {
     else if (mqDesktop.addListener) mqDesktop.addListener(onChange);
 })();
 </script>
+<script src="${pageContext.request.contextPath}/resources/js/admin/admin-list-tools.js"></script>
     </div><%-- /adm-main --%>
     <div class="adm-backdrop" id="admBackdrop" hidden></div>
 </div><%-- /adm-shell --%>

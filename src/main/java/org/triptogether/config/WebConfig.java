@@ -9,10 +9,13 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.triptogether.common.resolver.LoginUserArgumentResolver;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -42,6 +45,7 @@ public class WebConfig implements WebMvcConfigurer {
     private final ActivityLogInterceptor activityLogInterceptor;
     private final IpBlockInterceptor ipBlockInterceptor;
     private final NotificationInterceptor notificationInterceptor;
+    private final LoginUserArgumentResolver loginUserArgumentResolver;
 
     /**
      * 다국어 메시지 파일을 읽는 스프링 기본 MessageSource 빈.
@@ -104,6 +108,15 @@ public class WebConfig implements WebMvcConfigurer {
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
         interceptor.setParamName("lang");
         return interceptor;
+    }
+
+    /**
+     * @LoginUser UsersVO user 파라미터에 세션의 loginUser 를 자동 주입한다.
+     * 정책: ADR-0011 (어노테이션 기반 권한 체크 + @LoginUser 파라미터 자동 주입)
+     */
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(loginUserArgumentResolver);
     }
 
     @Override

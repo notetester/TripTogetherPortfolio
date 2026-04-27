@@ -41,7 +41,9 @@ public class CommunityServiceImpl implements CommunityService {
     private final RewardService rewardService;
     private final ModerationPolicyService moderationPolicyService;
     private final ReportService reportService;
+    private final org.triptogether.common.util.MessageUtil msg;
 
+    // 정책: ADR-0005 (XSS 방지 - jsoup Safelist 서버측 sanitize)
     // Summernote 본문 XSS 정화용 화이트리스트
     // basicWithImages 기반 + 서식/이미지/인라인스타일 허용, img src 프로토콜은 http/https/data 허용
     // data: 는 Phase 1 base64 인라인 이미지용. Phase 2(Cloudinary) 이후 재검토 예정
@@ -60,6 +62,14 @@ public class CommunityServiceImpl implements CommunityService {
     private String sanitizeHtml(String html) {
         if (html == null || html.isBlank()) return "";
         return Jsoup.clean(html, "", COMMUNITY_SAFELIST,
+                new Document.OutputSettings().prettyPrint(false));
+    }
+
+    // 정책: ADR-0005 (XSS 방지 - 댓글은 plain textarea 입력이므로 모든 HTML 제거)
+    // 댓글/대댓글용 plain text 정화 — 모든 태그 제거, 개행만 보존
+    private String sanitizeCommentText(String text) {
+        if (text == null || text.isBlank()) return "";
+        return Jsoup.clean(text, "", Safelist.none(),
                 new Document.OutputSettings().prettyPrint(false));
     }
 
@@ -238,8 +248,8 @@ public class CommunityServiceImpl implements CommunityService {
 
         ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
         if (communityMapper.countRecentPostsByUser(userIdx, policy.getPostWindowMinutes()) >= policy.getPostMaxCount()) {
-            throw new IllegalStateException(
-                    policy.getPostWindowMinutes() + "분 내 게시글을 " + policy.getPostMaxCount() + "개 이상 작성할 수 없습니다.");
+            throw new IllegalStateException(msg.get("community.service.error.postRateLimit",
+                    policy.getPostWindowMinutes(), policy.getPostMaxCount()));
         }
 
         // 1. 본문 XSS 정화
@@ -252,7 +262,7 @@ public class CommunityServiceImpl implements CommunityService {
             // photo 는 목록 갤러리 표시를 위해 최소 3장 필수
             int totalImgs = Jsoup.parse(sanitizedContent).select("img[src]").size();
             if (totalImgs < 3) {
-                throw new IllegalStateException("사진 유형은 본문에 이미지 3장 이상 첨부해야 합니다.");
+                throw new IllegalStateException(msg.get("community.service.error.photoMinImages"));
             }
         }
 
@@ -344,7 +354,7 @@ public class CommunityServiceImpl implements CommunityService {
         if ("photo".equals(postType)) {
             int totalImgs = Jsoup.parse(sanitizedContent).select("img[src]").size();
             if (totalImgs < 3) {
-                throw new IllegalStateException("사진 유형은 본문에 이미지 3장 이상 첨부해야 합니다.");
+                throw new IllegalStateException(msg.get("community.service.error.photoMinImages"));
             }
         }
 
@@ -402,6 +412,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 삭제 =====
 
+    // 정책: ADR-0008 (Soft Delete - status='DELETED' 마킹, 실제 row 유지)
     // 게시글 삭제함. 실제 삭제가 아니라 status를 'DELETED'로 바꿈 (소프트 딜리트)
     @Override
     @Transactional
@@ -475,13 +486,13 @@ public class CommunityServiceImpl implements CommunityService {
     public Long addComment(Long postId, Long userIdx, String content) {
         ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
         if (communityMapper.countRecentCommentsByUser(userIdx, policy.getCommentWindowMinutes()) >= policy.getCommentMaxCount()) {
-            throw new IllegalStateException(
-                    policy.getCommentWindowMinutes() + "분 내 댓글을 " + policy.getCommentMaxCount() + "개 이상 작성할 수 없습니다.");
+            throw new IllegalStateException(msg.get("community.service.error.commentRateLimit",
+                    policy.getCommentWindowMinutes(), policy.getCommentMaxCount()));
         }
         CommunityCommentDto dto = new CommunityCommentDto();
         dto.setPostId(postId);
         dto.setUserIdx(userIdx);
-        dto.setContent(content);
+        dto.setContent(sanitizeCommentText(content));
         communityMapper.insertComment(dto);
         communityMapper.increaseCommentCount(postId);
 
@@ -507,6 +518,7 @@ public class CommunityServiceImpl implements CommunityService {
         return dto.getCommentId();
     }
 
+    // 정책: ADR-0008 (Soft Delete - comment_status='DELETED' + 캐시 카운트 동기화)
     // 댓글 삭제함. 소프트 딜리트 + 댓글 수 캐시 감소
     @Override
     @Transactional
@@ -527,13 +539,13 @@ public class CommunityServiceImpl implements CommunityService {
     public Long addReply(Long postId, Long userIdx, String content, Long parentCommentId) {
         ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
         if (communityMapper.countRecentCommentsByUser(userIdx, policy.getCommentWindowMinutes()) >= policy.getCommentMaxCount()) {
-            throw new IllegalStateException(
-                    policy.getCommentWindowMinutes() + "분 내 댓글을 " + policy.getCommentMaxCount() + "개 이상 작성할 수 없습니다.");
+            throw new IllegalStateException(msg.get("community.service.error.commentRateLimit",
+                    policy.getCommentWindowMinutes(), policy.getCommentMaxCount()));
         }
         CommunityCommentDto dto = new CommunityCommentDto();
         dto.setPostId(postId);
         dto.setUserIdx(userIdx);
-        dto.setContent(content);
+        dto.setContent(sanitizeCommentText(content));
         dto.setParentCommentId(parentCommentId);
         communityMapper.insertReply(dto);
         communityMapper.increaseCommentCount(postId);
@@ -655,6 +667,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     // ===== 신고 =====
 
+    // 정책: ADR-0001(자동제재 BLUR까지), ADR-0003(BLUR vs BLOCKED 분기), ADR-0006(캐시 컬럼)
     // 게시글 신고 횟수 캐시 업데이트함. 3회 이상이면 리스트/상세에서 BLUR 처리됨 (post_status 는 ACTIVE 유지)
     @Override
     @Transactional
@@ -670,6 +683,7 @@ public class CommunityServiceImpl implements CommunityService {
         }
     }
 
+    // 정책: ADR-0001(자동제재 BLUR까지), ADR-0003(BLUR vs BLOCKED 분기), ADR-0006(캐시 컬럼)
     // 댓글 신고 횟수 캐시 업데이트함. 3회 이상이면 리스트/상세에서 BLUR 처리됨 (comment_status 는 ACTIVE 유지)
     @Override
     @Transactional
@@ -761,6 +775,7 @@ public class CommunityServiceImpl implements CommunityService {
         myPageService.addNotification(notification);
     }
 
+    // 정책: ADR-0003 (BLUR vs BLOCKED - 어드민 오신고 판정 시 BLUR 해제)
     // 게시글 BLUR 해제 (관리자: ai_flagged=0 + report_count=0)
     @Override
     @Transactional
@@ -799,6 +814,7 @@ public class CommunityServiceImpl implements CommunityService {
         notifyAccountAction(userIdx, "계정 차단이 해제되었어요.");
     }
 
+    // 정책: ADR-0003 (BLUR vs BLOCKED - 어드민 직접 차단은 BLOCKED + 일반 사용자 완전 숨김)
     // 게시글 차단함 (post_status = 'BLOCKED')
     @Override
     public void blockPost(Long postId) {

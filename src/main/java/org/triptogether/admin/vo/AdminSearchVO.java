@@ -2,46 +2,117 @@ package org.triptogether.admin.vo;
 
 import lombok.Data;
 
+import java.util.Set;
+
 /**
- * 관리자 공통 검색 파라미터 VO
- * 회원 관리 / 게시글 관리 등 모든 관리자 목록에서 재사용
+ * 관리자 회원 목록 검색/정렬/페이징 파라미터 VO.
+ *
+ * <p>MyBatis ORDER BY에 들어갈 수 있는 값은 getter에서 whitelist로 보정한다.
+ * 컨트롤러/Mapper가 외부 요청값을 그대로 신뢰하지 않도록 이 VO에서 1차 정규화한다.</p>
  */
 @Data
 public class AdminSearchVO {
 
-    // ── 공통 검색 ──
-    private String keyword;           // 검색어
-    private String searchType;        // 검색 대상 (userId / nickname / email / all)
+    private static final Set<String> VALID_SEARCH_TYPES = Set.of("all", "userId", "nickname", "email");
+    private static final Set<String> VALID_STATUS = Set.of("ALL", "ACTIVE", "DORMANT", "BLOCKED", "DELETED");
+    private static final Set<String> VALID_ROLE = Set.of("ALL", "USER", "BUSINESS", "PARTNER", "BOT", "ADMIN", "SUPERADMIN", "SYSTEM");
+    private static final Set<String> VALID_PROVIDER = Set.of("ALL", "KAKAO", "NAVER", "GOOGLE", "NONE");
+    private static final Set<String> VALID_SORT = Set.of(
+        "createdAt", "lastLoginAt", "nickname", "email", "status", "role",
+        "userIdx", "memberGrade", "levelNo", "loginSuccessCount", "loginFailCount", "social", "socialCount"
+    );
+    private static final Set<String> VALID_MODE = Set.of("SERVER", "CLIENT");
 
-    // ── 회원 전용 필터 ──
-    private String status;            // 계정 상태 (ALL / ACTIVE / DORMANT / BLOCKED / DELETED)
-    private String role;              // 권한 (ALL / USER / ADMIN)
-    private String provider;          // 소셜 필터 (ALL / KAKAO / NAVER / GOOGLE / NONE)
-    private String dateFrom;          // 가입일 시작 (yyyy-MM-dd)
-    private String dateTo;            // 가입일 종료 (yyyy-MM-dd)
+    private String keyword;
+    private String searchType;
 
-    // ── 정렬 ──
-    private String sortBy;            // createdAt / lastLoginAt / nickname / email / status / role
-    private String sortDir;           // ASC / DESC
+    private String status;
+    private String role;
+    private String provider;
+    private String dateFrom;
+    private String dateTo;
 
-    // ── 페이징 ──
-    private int page    = 1;
-    private int size    = 20;
+    private String sortBy;
+    private String sortDir;
+    private String mode;
+
+    private int page = 1;
+    private int size = 20;
 
     public int getOffset() {
-        return (page - 1) * size;
+        return (getPage() - 1) * getSize();
     }
 
-    // 기본값 보정
-    public String getSortBy() {
-        java.util.Set<String> valid = java.util.Set.of(
-            "createdAt", "lastLoginAt", "nickname", "email", "status", "role"
-        );
-        return sortBy != null && valid.contains(sortBy) ? sortBy : "createdAt";
+    public String getKeyword() {
+        return normalizeText(keyword);
     }
-    public String getSortDir()  { return "ASC".equals(sortDir) ? "ASC" : "DESC"; }
-    public String getStatus()   { return status   != null ? status   : "ALL"; }
-    public String getRole()     { return role     != null ? role     : "ALL"; }
-    public String getProvider() { return provider != null ? provider : "ALL"; }
-    public String getSearchType(){ return searchType != null ? searchType : "all"; }
+
+    public String getSearchType() {
+        String value = normalizeText(searchType);
+        return value != null && VALID_SEARCH_TYPES.contains(value) ? value : "all";
+    }
+
+    public String getStatus() {
+        String value = normalizeUpper(status);
+        return value != null && VALID_STATUS.contains(value) ? value : "ALL";
+    }
+
+    public String getRole() {
+        String value = normalizeUpper(role);
+        return value != null && VALID_ROLE.contains(value) ? value : "ALL";
+    }
+
+    public String getProvider() {
+        String value = normalizeUpper(provider);
+        return value != null && VALID_PROVIDER.contains(value) ? value : "ALL";
+    }
+
+    public String getDateFrom() {
+        return normalizeDate(dateFrom);
+    }
+
+    public String getDateTo() {
+        return normalizeDate(dateTo);
+    }
+
+    public String getSortBy() {
+        String value = normalizeText(sortBy);
+        return value != null && VALID_SORT.contains(value) ? value : "createdAt";
+    }
+
+    public String getSortDir() {
+        return "ASC".equalsIgnoreCase(normalizeText(sortDir)) ? "ASC" : "DESC";
+    }
+
+    public String getMode() {
+        String value = normalizeUpper(mode);
+        return value != null && VALID_MODE.contains(value) ? value : "SERVER";
+    }
+
+    public int getPage() {
+        return Math.max(page, 1);
+    }
+
+    public int getSize() {
+        if (size == 10 || size == 20 || size == 50 || size == 100) {
+            return size;
+        }
+        return 20;
+    }
+
+    private String normalizeDate(String value) {
+        String trimmed = normalizeText(value);
+        return trimmed != null && trimmed.matches("\\d{4}-\\d{2}-\\d{2}") ? trimmed : null;
+    }
+
+    private String normalizeText(String value) {
+        if (value == null) return null;
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private String normalizeUpper(String value) {
+        String trimmed = normalizeText(value);
+        return trimmed == null ? null : trimmed.toUpperCase();
+    }
 }

@@ -3,6 +3,7 @@ package org.triptogether.inquiry.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.triptogether.inquiry.vo.InquiryAnswerDto;
+import org.triptogether.inquiry.vo.InquiryAnswerHistoryDto;
 import org.triptogether.inquiry.vo.InquiryAttachmentDto;
 import org.triptogether.inquiry.vo.InquiryPostDto;
 import org.triptogether.inquiry.vo.InquirySearchDto;
@@ -62,6 +63,14 @@ public interface InquiryMapper {
 
     // 답변 삭제
     void deleteAnswer(@Param("inquiryId") Long inquiryId);
+
+    // ===== 답변 수정/삭제 이력 =====
+
+    // 답변 변경 이력 INSERT (UPDATE/DELETE 직전에 호출)
+    void insertAnswerHistory(InquiryAnswerHistoryDto history);
+
+    // 특정 문의의 답변 변경 이력 조회 (최신순)
+    List<InquiryAnswerHistoryDto> selectAnswerHistoryByInquiry(@Param("inquiryId") Long inquiryId);
 
     // ===== 상태 변경 =====
 

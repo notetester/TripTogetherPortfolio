@@ -332,10 +332,61 @@
                 AND FIND_IN_SET(#{provider}, IFNULL(s.linked_providers, '')) > 0
             </if>
             <if test="dateFrom != null and dateFrom != ''">
-                AND DATE(u.created_at) &gt;= #{dateFrom}
+                AND u.created_at &gt;= #{dateFrom}
             </if>
             <if test="dateTo != null and dateTo != ''">
-                AND DATE(u.created_at) &lt;= #{dateTo}
+                AND u.created_at &lt; DATE_ADD(#{dateTo}, INTERVAL 1 DAY)
+            </if>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'userId'">
+                        AND u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'nickname'">
+                        AND u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'email'">
+                        AND u.user_email LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (
+                            u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <sql id="memberCountBase">
+        FROM USERS u
+        LEFT JOIN (
+            SELECT user_idx,
+                   COUNT(*) AS social_count,
+                   GROUP_CONCAT(provider ORDER BY provider) AS linked_providers
+            FROM USER_SOCIAL
+            GROUP BY user_idx
+        ) s ON u.user_idx = s.user_idx
+        <where>
+            <if test="status != null and status != 'ALL'">
+                AND u.account_status = #{status}
+            </if>
+            <if test="role != null and role != 'ALL'">
+                AND u.user_role = #{role}
+            </if>
+            <if test="provider != null and provider == 'NONE'">
+                AND s.user_idx IS NULL
+            </if>
+            <if test="provider != null and provider != 'ALL' and provider != 'NONE'">
+                AND FIND_IN_SET(#{provider}, IFNULL(s.linked_providers, '')) > 0
+            </if>
+            <if test="dateFrom != null and dateFrom != ''">
+                AND u.created_at &gt;= #{dateFrom}
+            </if>
+            <if test="dateTo != null and dateTo != ''">
+                AND u.created_at &lt; DATE_ADD(#{dateTo}, INTERVAL 1 DAY)
             </if>
             <if test="keyword != null and keyword != ''">
                 <choose>
@@ -380,20 +431,37 @@
         <include refid="memberSearchBase"/>
         ORDER BY
         <choose>
-            <when test="sortBy == 'lastLoginAt'">COALESCE(u.last_login_at, h.last_login_at)</when>
-            <when test="sortBy == 'nickname'">u.nickname</when>
-            <when test="sortBy == 'email'">u.user_email</when>
-            <when test="sortBy == 'status'">u.account_status</when>
-            <when test="sortBy == 'role'">u.user_role</when>
-            <otherwise>u.created_at</otherwise>
-        </choose>
-        ${sortDir}
+            <when test="sortBy == 'social' or sortBy == 'socialCount'">
+                IFNULL(s.social_count, 0) ${sortDir},
+                (
+                    CASE WHEN FIND_IN_SET('KAKAO', IFNULL(s.linked_providers, '')) &gt; 0 THEN 4 ELSE 0 END
+                    + CASE WHEN FIND_IN_SET('NAVER', IFNULL(s.linked_providers, '')) &gt; 0 THEN 2 ELSE 0 END
+                    + CASE WHEN FIND_IN_SET('GOOGLE', IFNULL(s.linked_providers, '')) &gt; 0 THEN 1 ELSE 0 END
+                ) ${sortDir}
+            </when>
+            <otherwise>
+                <choose>
+                    <when test="sortBy == 'userIdx'">u.user_idx</when>
+                    <when test="sortBy == 'lastLoginAt'">COALESCE(u.last_login_at, h.last_login_at)</when>
+                    <when test="sortBy == 'nickname'">u.nickname</when>
+                    <when test="sortBy == 'email'">u.user_email</when>
+                    <when test="sortBy == 'status'">u.account_status</when>
+                    <when test="sortBy == 'role'">u.user_role</when>
+                    <when test="sortBy == 'memberGrade'">u.member_grade</when>
+                    <when test="sortBy == 'levelNo'">u.level_no</when>
+                    <when test="sortBy == 'loginSuccessCount'">IFNULL(h.login_success_count, 0)</when>
+                    <when test="sortBy == 'loginFailCount'">IFNULL(h.login_fail_count, 0)</when>
+                    <otherwise>u.created_at</otherwise>
+                </choose>
+                ${sortDir}
+            </otherwise>
+        </choose>, u.user_idx DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="countMembers" resultType="int">
         SELECT COUNT(*)
-        <include refid="memberSearchBase"/>
+        <include refid="memberCountBase"/>
     </select>
 
     <select id="findMembersForExport" resultMap="memberRM">
@@ -414,7 +482,33 @@
             IFNULL(h.login_success_count, 0) AS login_success_count,
             IFNULL(h.login_fail_count, 0) AS login_fail_count
         <include refid="memberSearchBase"/>
-        ORDER BY u.created_at DESC
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'social' or sortBy == 'socialCount'">
+                IFNULL(s.social_count, 0) ${sortDir},
+                (
+                    CASE WHEN FIND_IN_SET('KAKAO', IFNULL(s.linked_providers, '')) &gt; 0 THEN 4 ELSE 0 END
+                    + CASE WHEN FIND_IN_SET('NAVER', IFNULL(s.linked_providers, '')) &gt; 0 THEN 2 ELSE 0 END
+                    + CASE WHEN FIND_IN_SET('GOOGLE', IFNULL(s.linked_providers, '')) &gt; 0 THEN 1 ELSE 0 END
+                ) ${sortDir}
+            </when>
+            <otherwise>
+                <choose>
+                    <when test="sortBy == 'userIdx'">u.user_idx</when>
+                    <when test="sortBy == 'lastLoginAt'">COALESCE(u.last_login_at, h.last_login_at)</when>
+                    <when test="sortBy == 'nickname'">u.nickname</when>
+                    <when test="sortBy == 'email'">u.user_email</when>
+                    <when test="sortBy == 'status'">u.account_status</when>
+                    <when test="sortBy == 'role'">u.user_role</when>
+                    <when test="sortBy == 'memberGrade'">u.member_grade</when>
+                    <when test="sortBy == 'levelNo'">u.level_no</when>
+                    <when test="sortBy == 'loginSuccessCount'">IFNULL(h.login_success_count, 0)</when>
+                    <when test="sortBy == 'loginFailCount'">IFNULL(h.login_fail_count, 0)</when>
+                    <otherwise>u.created_at</otherwise>
+                </choose>
+                ${sortDir}
+            </otherwise>
+        </choose>, u.user_idx DESC
         LIMIT 10000
     </select>
 

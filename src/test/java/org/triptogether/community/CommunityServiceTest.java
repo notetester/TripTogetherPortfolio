@@ -8,19 +8,27 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.triptogether.cloudinary.CloudinaryService;
+import org.triptogether.common.util.MessageUtil;
 import org.triptogether.community.mapper.CommunityMapper;
 import org.triptogether.community.service.CommunityImageScheduler;
 import org.triptogether.community.service.CommunityServiceImpl;
 import org.triptogether.community.vo.CommunityPostDto;
 import org.triptogether.config.IpBlockMapper;
 import org.triptogether.explore.service.SpotTextTranslationService;
+import org.triptogether.moderation.service.ModerationPolicyService;
+import org.triptogether.moderation.vo.ContentModerationPolicyVO;
 import org.triptogether.myPage.service.MyPageService;
+import org.triptogether.report.service.ReportService;
+import org.triptogether.reward.service.RewardService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -33,11 +41,38 @@ class CommunityServiceTest {
     @Mock MyPageService myPageService;
     @Mock IpBlockMapper ipBlockMapper;
     @Mock SpotTextTranslationService spotTextTranslationService;
+    @Mock ModerationPolicyService moderationPolicyService;
+    @Mock RewardService rewardService;
+    @Mock ReportService reportService;
+    @Mock MessageUtil msg;
 
     @InjectMocks CommunityServiceImpl communityService;
 
     private static final Long USER_IDX = 1L;
     private static final Long POST_ID  = 100L;
+
+    /**
+     * 정책 객체 stub + i18n 메시지 stub.
+     * 정책: ADR-0009 (정책 외부화) — moderationPolicyService 가 제공하는 값 기준
+     * 정책: ADR-0013 (i18n) — msg.get(...) 이 실제 메시지 문자열 반환하도록 stub
+     */
+    @BeforeEach
+    void setUp() {
+        ContentModerationPolicyVO policy = new ContentModerationPolicyVO();
+        policy.setPostWindowMinutes(5);
+        policy.setPostMaxCount(3);
+        policy.setCommentWindowMinutes(1);
+        policy.setCommentMaxCount(5);
+        policy.setReportThreshold(3);
+        lenient().when(moderationPolicyService.getPolicy()).thenReturn(policy);
+
+        // i18n 메시지 stub - placeholder 메시지 반환 (테스트는 메시지 type 위주로 검증)
+        lenient().when(msg.get(eq("community.service.error.postRateLimit"), any(), any()))
+                .thenReturn("5분 내 게시글을 3개 이상 작성할 수 없습니다.");
+        lenient().when(msg.get(eq("community.service.error.commentRateLimit"), any(), any()))
+                .thenReturn("1분 내 댓글을 5개 이상 작성할 수 없습니다.");
+        lenient().when(msg.get(anyString())).thenReturn("");
+    }
 
     // ===== 도배 방지: 게시글 =====
 
@@ -139,5 +174,97 @@ class CommunityServiceTest {
         communityService.toggleLike(POST_ID, USER_IDX);
 
         verify(myPageService, never()).addNotification(any());
+    }
+
+    // ===== XSS sanitize (ADR-0005) =====
+
+    @Test
+    @DisplayName("댓글 sanitize - <script> 태그가 본문에 저장되지 않음")
+    void addComment_sanitize_removesScriptTag() {
+        given(communityMapper.countRecentCommentsByUser(USER_IDX, 1)).willReturn(0);
+        given(communityMapper.selectPost(POST_ID)).willReturn(null);
+
+        communityService.addComment(POST_ID, USER_IDX, "안녕<script>alert(1)</script>하세요");
+
+        org.mockito.ArgumentCaptor<org.triptogether.community.vo.CommunityCommentDto> captor =
+                org.mockito.ArgumentCaptor.forClass(org.triptogether.community.vo.CommunityCommentDto.class);
+        verify(communityMapper).insertComment(captor.capture());
+        String savedContent = captor.getValue().getContent();
+        assertThat(savedContent).doesNotContain("<script>");
+        assertThat(savedContent).contains("안녕");
+        assertThat(savedContent).contains("하세요");
+    }
+
+    // ===== updatePostReportCache - BLUR 임계값 (ADR-0001 + 0003 + 0006) =====
+
+    @Test
+    @DisplayName("신고 누적 BLUR 트리거 - 임계값 도달 직전→직후 전이 시에만 알림 발송")
+    void updatePostReportCache_atThreshold_sendsBlurNotification() {
+        CommunityPostDto post = new CommunityPostDto();
+        post.setPostId(POST_ID);
+        post.setUserIdx(USER_IDX);
+        post.setReportCount(2);    // 이전 = 2 (BLUR 아님)
+        post.setAiFlagged(false);
+        given(communityMapper.selectPost(POST_ID)).willReturn(post);
+
+        communityService.updatePostReportCache(POST_ID);
+
+        verify(communityMapper).increasePostReportCount(POST_ID);
+        // 2 → 3 으로 임계값 도달 → 알림 1회 발송
+        verify(myPageService).addNotification(any());
+    }
+
+    @Test
+    @DisplayName("신고 누적 BLUR 미트리거 - 임계값 미만이면 알림 미발송")
+    void updatePostReportCache_belowThreshold_noNotification() {
+        CommunityPostDto post = new CommunityPostDto();
+        post.setPostId(POST_ID);
+        post.setUserIdx(USER_IDX);
+        post.setReportCount(0);
+        post.setAiFlagged(false);
+        given(communityMapper.selectPost(POST_ID)).willReturn(post);
+
+        communityService.updatePostReportCache(POST_ID);
+
+        verify(communityMapper).increasePostReportCount(POST_ID);
+        verify(myPageService, never()).addNotification(any());
+    }
+
+    // ===== clearPostBlur - 어드민 BLUR 해제 (ADR-0003) =====
+
+    @Test
+    @DisplayName("어드민 BLUR 해제 - mapper 호출 + 작성자에게 알림")
+    void clearPostBlur_callsMapperAndNotifies() {
+        CommunityPostDto post = new CommunityPostDto();
+        post.setPostId(POST_ID);
+        post.setUserIdx(USER_IDX);
+        given(communityMapper.selectPost(POST_ID)).willReturn(post);
+
+        communityService.clearPostBlur(POST_ID);
+
+        verify(communityMapper).clearPostBlur(POST_ID);
+        verify(myPageService).addNotification(any());
+    }
+
+    // ===== Soft Delete (ADR-0008) =====
+
+    @Test
+    @DisplayName("게시글 삭제 - hard delete 아닌 status='DELETED' 마킹")
+    void deletePost_softDelete_setsStatusDeleted() {
+        communityService.deletePost(POST_ID);
+
+        verify(communityMapper).updatePostStatus(POST_ID, "DELETED");
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 - status='DELETED' + 부모 글 comment_count 감소 (캐시 정합성)")
+    void deleteComment_softDeleteAndDecrement() {
+        Long commentId = 555L;
+        given(communityMapper.selectPostIdByCommentId(commentId)).willReturn(POST_ID);
+
+        communityService.deleteComment(commentId);
+
+        verify(communityMapper).updateCommentStatus(commentId, "DELETED");
+        verify(communityMapper).decreaseCommentCount(POST_ID);
     }
 }
