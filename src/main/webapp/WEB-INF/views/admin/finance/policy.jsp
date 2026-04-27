@@ -20,18 +20,20 @@
         </div>
     </c:if>
 
-    <%-- 탭 (한도 / 적립률 — 적립률은 Phase 13에서 활성화) --%>
+    <%-- 탭 (한도 / 적립률) --%>
     <div class="adm-card" style="padding:0;margin-bottom:16px;">
         <div style="display:flex;border-bottom:1px solid #334155;">
-            <button type="button" class="adm-btn adm-btn-ghost adm-fin-policy-tab is-active"
-                    style="border:0;border-radius:0;padding:12px 20px;border-bottom:2px solid #3b82f6;"
-                    data-tab="limit">
+            <button type="button" class="adm-btn adm-btn-ghost adm-fin-policy-tab"
+                    id="adm-fin-tab-limit"
+                    style="border:0;border-radius:0;padding:12px 20px;border-bottom:2px solid transparent;"
+                    onclick="admFinSwitchPolicyTab('limit')">
                 💰 <spring:message code="admin.finance.policy.tab.limit"/>
             </button>
             <button type="button" class="adm-btn adm-btn-ghost adm-fin-policy-tab"
-                    style="border:0;border-radius:0;padding:12px 20px;opacity:.55;"
-                    data-tab="reward" disabled>
-                ✨ <spring:message code="admin.finance.policy.tab.reward"/> <span style="font-size:11px;">(Phase 13)</span>
+                    id="adm-fin-tab-reward"
+                    style="border:0;border-radius:0;padding:12px 20px;border-bottom:2px solid transparent;"
+                    onclick="admFinSwitchPolicyTab('reward')">
+                ✨ <spring:message code="admin.finance.policy.tab.reward"/>
             </button>
         </div>
     </div>
@@ -111,6 +113,145 @@
             - <spring:message code="admin.finance.policy.limit.note.aop"/>
         </div>
     </section>
+
+    <%-- 적립률 정책 탭 --%>
+    <section data-tab-panel="reward" style="display:none;">
+
+        <div class="adm-card adm-fin-guide" style="padding:14px 18px;margin-bottom:16px;font-size:13px;">
+            <spring:message code="admin.finance.policy.reward.guide"/>
+        </div>
+
+        <div class="adm-card" style="padding:0;overflow-x:auto;margin-bottom:14px;">
+            <table class="adm-table" style="width:100%;">
+                <thead>
+                <tr>
+                    <th style="width:100px;"><spring:message code="admin.finance.policy.reward.col.event"/></th>
+                    <th style="width:90px;"><spring:message code="admin.finance.policy.reward.col.grade"/></th>
+                    <th style="width:90px;"><spring:message code="admin.finance.policy.reward.col.rewardType"/></th>
+                    <th style="width:110px;text-align:right;"><spring:message code="admin.finance.policy.reward.col.rate"/></th>
+                    <th style="width:110px;text-align:right;"><spring:message code="admin.finance.policy.reward.col.fixed"/></th>
+                    <th><spring:message code="admin.finance.policy.reward.col.description"/></th>
+                    <th style="width:70px;"><spring:message code="admin.finance.policy.reward.col.active"/></th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:choose>
+                    <c:when test="${empty rewardPolicies}">
+                        <tr><td colspan="7" style="text-align:center;padding:36px;color:#94a3b8;">
+                            <spring:message code="admin.finance.policy.reward.empty"/>
+                        </td></tr>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="r" items="${rewardPolicies}">
+                            <tr>
+                                <td><span style="font-size:11px;font-family:monospace;">${r.eventType}</span></td>
+                                <td><span class="adm-badge">${r.memberGrade}</span></td>
+                                <td>${r.rewardType}</td>
+                                <td style="text-align:right;">
+                                    <c:if test="${r.rewardRate != null}"><fmt:formatNumber value="${r.rewardRate}" pattern="#,##0.00"/>%</c:if>
+                                </td>
+                                <td style="text-align:right;">
+                                    <c:if test="${r.rewardFixed != null}"><fmt:formatNumber value="${r.rewardFixed}" pattern="#,###"/></c:if>
+                                </td>
+                                <td style="font-size:12px;color:#94a3b8;"><c:out value="${r.description}"/></td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${r.isActive}"><span class="adm-badge adm-badge-green"><spring:message code="admin.finance.policy.reward.active.on"/></span></c:when>
+                                        <c:otherwise><span class="adm-badge"><spring:message code="admin.finance.policy.reward.active.off"/></span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+                </tbody>
+            </table>
+        </div>
+
+        <%-- 신규 등록 / 갱신 폼 --%>
+        <div class="adm-card" style="padding:16px 18px;">
+            <h4 style="margin:0 0 12px 0;font-size:14px;"><spring:message code="admin.finance.policy.reward.upsert.title"/></h4>
+            <form method="post" action="${pageContext.request.contextPath}/admin/finance/policy/reward"
+                  style="display:grid;grid-template-columns:repeat(6, 1fr);gap:10px;align-items:end;">
+                <div>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.event"/></label>
+                    <input type="text" name="eventType" required maxlength="50"
+                           class="adm-input" placeholder="CASH_CHARGE_BONUS"
+                           style="width:100%;padding:6px 8px;font-size:12px;"/>
+                </div>
+                <div>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.grade"/></label>
+                    <select name="memberGrade" class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;">
+                        <option value="ALL">ALL</option>
+                        <option value="BRONZE">BRONZE</option>
+                        <option value="SILVER">SILVER</option>
+                        <option value="GOLD">GOLD</option>
+                        <option value="DIAMOND">DIAMOND</option>
+                        <option value="PLATINUM">PLATINUM</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.rewardType"/></label>
+                    <select name="rewardType" required class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;">
+                        <option value="MILEAGE">MILEAGE</option>
+                        <option value="POINT">POINT</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.rate"/> (%)</label>
+                    <input type="number" name="rewardRate" step="0.01" min="0" max="100"
+                           class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;text-align:right;"/>
+                </div>
+                <div>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.fixed"/></label>
+                    <input type="number" name="rewardFixed" step="1" min="0"
+                           class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;text-align:right;"/>
+                </div>
+                <div style="display:flex;align-items:end;gap:8px;">
+                    <label style="display:inline-flex;align-items:center;gap:4px;font-size:12px;flex:0 0 auto;">
+                        <input type="checkbox" name="isActive" value="true" checked/>
+                        <spring:message code="admin.finance.policy.reward.active.on"/>
+                    </label>
+                    <button type="submit" class="adm-btn adm-btn-primary" style="padding:6px 12px;font-size:12px;flex:1 1 auto;">
+                        <spring:message code="admin.finance.policy.reward.upsert.button"/>
+                    </button>
+                </div>
+                <div style="grid-column:1/-1;">
+                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.description"/></label>
+                    <input type="text" name="description" maxlength="255"
+                           class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;"/>
+                </div>
+            </form>
+        </div>
+
+        <div style="font-size:12px;color:#94a3b8;padding:12px 4px;line-height:1.6;">
+            <strong>※ <spring:message code="admin.finance.policy.reward.note.title"/></strong><br/>
+            - <spring:message code="admin.finance.policy.reward.note.either"/><br/>
+            - <spring:message code="admin.finance.policy.reward.note.fallback"/><br/>
+            - <spring:message code="admin.finance.policy.reward.note.phased"/>
+        </div>
+    </section>
+
+    <script>
+    (function(){
+        var KEY = 'adm-fin-policy-tab';
+        function show(tab){
+            document.querySelectorAll('[data-tab-panel]').forEach(function(p){
+                p.style.display = p.getAttribute('data-tab-panel') === tab ? '' : 'none';
+            });
+            ['limit','reward'].forEach(function(t){
+                var btn = document.getElementById('adm-fin-tab-' + t);
+                if (!btn) return;
+                btn.style.borderBottomColor = (t === tab) ? '#3b82f6' : 'transparent';
+            });
+            try { localStorage.setItem(KEY, tab); } catch(e) {}
+        }
+        window.admFinSwitchPolicyTab = show;
+        var initial = 'limit';
+        try { initial = localStorage.getItem(KEY) || 'limit'; } catch(e) {}
+        show(initial);
+    })();
+    </script>
 
 </div>
 

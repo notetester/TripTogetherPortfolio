@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.myPage.mapper.WalletLimitPolicyMapper;
+import org.triptogether.myPage.mapper.WalletRewardPolicyMapper;
 import org.triptogether.myPage.vo.WalletLimitPolicyVO;
+import org.triptogether.myPage.vo.WalletRewardPolicyVO;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -34,12 +36,14 @@ import jakarta.servlet.http.HttpSession;
 public class AdminWalletPolicyController {
 
     private final WalletLimitPolicyMapper limitPolicyMapper;
+    private final WalletRewardPolicyMapper rewardPolicyMapper;
 
     @GetMapping
     public String policyHome(Model model) {
         model.addAttribute("activeMenu", "finance");
         model.addAttribute("section", "policy");
         model.addAttribute("limitPolicies", limitPolicyMapper.selectAll());
+        model.addAttribute("rewardPolicies", rewardPolicyMapper.selectAll());
         return "admin/finance/policy";
     }
 
@@ -57,6 +61,28 @@ public class AdminWalletPolicyController {
                     "[" + form.getMemberGrade() + "] 한도 정책 저장 완료");
         } catch (Exception e) {
             log.error("[AdminWalletPolicyController] limit upsert 실패", e);
+            ra.addFlashAttribute("policyError", "정책 저장 실패: " + e.getMessage());
+        }
+        return "redirect:/admin/finance/policy";
+    }
+
+    @PostMapping("/reward")
+    public String saveRewardPolicy(@ModelAttribute WalletRewardPolicyVO form,
+                                   HttpSession session,
+                                   RedirectAttributes ra) {
+        UsersVO admin = (UsersVO) session.getAttribute("loginUser");
+        if (admin != null) form.setUpdatedByUserIdx(admin.getUserIdx());
+        if (form.getMemberGrade() == null || form.getMemberGrade().isBlank()) {
+            form.setMemberGrade("ALL");
+        }
+        if (form.getIsActive() == null) form.setIsActive(true);
+
+        try {
+            rewardPolicyMapper.upsert(form);
+            ra.addFlashAttribute("policyMessage",
+                    "[" + form.getEventType() + " / " + form.getMemberGrade() + "] 적립률 정책 저장 완료");
+        } catch (Exception e) {
+            log.error("[AdminWalletPolicyController] reward upsert 실패", e);
             ra.addFlashAttribute("policyError", "정책 저장 실패: " + e.getMessage());
         }
         return "redirect:/admin/finance/policy";

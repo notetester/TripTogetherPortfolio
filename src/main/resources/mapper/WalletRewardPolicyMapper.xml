@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.myPage.mapper.WalletRewardPolicyMapper">
+
+    <resultMap id="RewardPolicyMap" type="WalletRewardPolicyVO">
+        <id     property="policyIdx"        column="policy_idx"/>
+        <result property="eventType"        column="event_type"/>
+        <result property="memberGrade"      column="member_grade"/>
+        <result property="rewardType"       column="reward_type"/>
+        <result property="rewardRate"       column="reward_rate"/>
+        <result property="rewardFixed"      column="reward_fixed"/>
+        <result property="description"      column="description"/>
+        <result property="isActive"         column="is_active"/>
+        <result property="createdByUserIdx" column="created_by_user_idx"/>
+        <result property="createdAt"        column="created_at"/>
+        <result property="updatedByUserIdx" column="updated_by_user_idx"/>
+        <result property="updatedAt"        column="updated_at"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="RewardPolicyMap">
+        SELECT *
+          FROM WALLET_REWARD_POLICY
+         ORDER BY event_type ASC,
+                  FIELD(member_grade, 'ALL','BRONZE','SILVER','GOLD','DIAMOND','PLATINUM'),
+                  member_grade
+    </select>
+
+    <select id="selectActiveForEvent" resultMap="RewardPolicyMap">
+        SELECT *
+          FROM WALLET_REWARD_POLICY
+         WHERE is_active = 1
+           AND event_type = #{eventType}
+           AND (member_grade = #{memberGrade} OR member_grade = 'ALL')
+         ORDER BY (member_grade = 'ALL') ASC
+         LIMIT 1
+    </select>
+
+    <update id="upsert" parameterType="WalletRewardPolicyVO">
+        INSERT INTO WALLET_REWARD_POLICY
+            (event_type, member_grade, reward_type, reward_rate, reward_fixed,
+             description,
+             <choose><when test="isActive != null">is_active,</when></choose>
+             updated_by_user_idx)
+        VALUES
+            (#{eventType},
+             <choose><when test="memberGrade != null and memberGrade != ''">#{memberGrade}</when><otherwise>'ALL'</otherwise></choose>,
+             #{rewardType}, #{rewardRate}, #{rewardFixed},
+             #{description},
+             <choose><when test="isActive != null">#{isActive},</when></choose>
+             #{updatedByUserIdx})
+        ON DUPLICATE KEY UPDATE
+            reward_type         = VALUES(reward_type),
+            reward_rate         = VALUES(reward_rate),
+            reward_fixed        = VALUES(reward_fixed),
+            description         = VALUES(description),
+            <if test="isActive != null">is_active = VALUES(is_active),</if>
+            updated_by_user_idx = VALUES(updated_by_user_idx)
+    </update>
+
+    <update id="updateActive">
+        UPDATE WALLET_REWARD_POLICY
+           SET is_active = #{isActive}
+         WHERE policy_idx = #{policyIdx}
+    </update>
+
+</mapper>
