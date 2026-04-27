@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.myPage.mapper.WalletLimitPolicyMapper">
+
+    <resultMap id="LimitPolicyMap" type="WalletLimitPolicyVO">
+        <id     property="policyIdx"          column="policy_idx"/>
+        <result property="memberGrade"        column="member_grade"/>
+        <result property="singleLimit"        column="single_limit"/>
+        <result property="dailyLimit"         column="daily_limit"/>
+        <result property="monthlyLimit"       column="monthly_limit"/>
+        <result property="isActive"           column="is_active"/>
+        <result property="createdByUserIdx"   column="created_by_user_idx"/>
+        <result property="createdAt"          column="created_at"/>
+        <result property="updatedByUserIdx"   column="updated_by_user_idx"/>
+        <result property="updatedAt"          column="updated_at"/>
+    </resultMap>
+
+    <select id="selectActivePolicyForUser" resultMap="LimitPolicyMap">
+        SELECT p.*
+          FROM WALLET_LIMIT_POLICY p
+          JOIN USERS u ON u.member_grade = p.member_grade
+                      AND u.user_idx     = #{userIdx}
+         WHERE p.is_active = 1
+         LIMIT 1
+    </select>
+
+    <select id="selectAll" resultMap="LimitPolicyMap">
+        SELECT *
+          FROM WALLET_LIMIT_POLICY
+         ORDER BY FIELD(member_grade, 'BRONZE','SILVER','GOLD','DIAMOND','PLATINUM'),
+                  member_grade
+    </select>
+
+    <select id="selectByGrade" resultMap="LimitPolicyMap">
+        SELECT *
+          FROM WALLET_LIMIT_POLICY
+         WHERE member_grade = #{memberGrade}
+         LIMIT 1
+    </select>
+
+    <update id="upsert" parameterType="WalletLimitPolicyVO">
+        INSERT INTO WALLET_LIMIT_POLICY
+            (member_grade, single_limit, daily_limit, monthly_limit, is_active, updated_by_user_idx)
+        VALUES
+            (#{memberGrade}, #{singleLimit}, #{dailyLimit}, #{monthlyLimit},
+             <choose><when test="isActive != null">#{isActive}</when><otherwise>1</otherwise></choose>,
+             #{updatedByUserIdx}) AS new_row
+        ON DUPLICATE KEY UPDATE
+            single_limit         = new_row.single_limit,
+            daily_limit          = new_row.daily_limit,
+            monthly_limit        = new_row.monthly_limit,
+            is_active            = new_row.is_active,
+            updated_by_user_idx  = new_row.updated_by_user_idx
+    </update>
+
+    <select id="sumTodayCharge" resultType="long">
+        SELECT IFNULL(SUM(final_amount), 0)
+          FROM USER_PAYMENT_HISTORY
+         WHERE user_idx       = #{userIdx}
+           AND payment_type   = 'CHARGE'
+           AND payment_status = 'COMPLETED'
+           AND DATE(paid_at)  = CURDATE()
+    </select>
+
+    <select id="sumThisMonthCharge" resultType="long">
+        SELECT IFNULL(SUM(final_amount), 0)
+          FROM USER_PAYMENT_HISTORY
+         WHERE user_idx       = #{userIdx}
+           AND payment_type   = 'CHARGE'
+           AND payment_status = 'COMPLETED'
+           AND paid_at        &gt;= DATE_FORMAT(NOW(), '%Y-%m-01')
+           AND paid_at        &lt;  DATE_FORMAT(NOW(), '%Y-%m-01') + INTERVAL 1 MONTH
+    </select>
+
+</mapper>

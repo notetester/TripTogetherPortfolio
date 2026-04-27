@@ -98,8 +98,8 @@ public class AdminInterceptor implements HandlerInterceptor {
         Map.entry("/admin/explore",     "EXPLORE_ADMIN"),
         Map.entry("/admin/courses",     "COURSE_ADMIN"),
         Map.entry("/admin/moderation",  "CONTENT_MODERATION_ADMIN"),
-        Map.entry("/admin/policies",    "OPS_POLICY_ADMIN"),
-        Map.entry("/admin/finance",     "FINANCE_ADMIN")
+        Map.entry("/admin/policies",    "OPS_POLICY_ADMIN")
+        // /admin/finance/** 는 resolveFinancePermission() 으로 별도 분기 처리
     );
 
     private static final Map<String, String> AUDIT_URLS = Map.of(
@@ -113,6 +113,9 @@ public class AdminInterceptor implements HandlerInterceptor {
     private String resolveRequiredPermission(String uri) {
         if (uri.startsWith("/admin/ai-helper")) {
             return resolveAiHelperPermission(uri);
+        }
+        if (uri.startsWith("/admin/finance")) {
+            return resolveFinancePermission(uri);
         }
         for (Map.Entry<String, String> entry : URL_PERMISSION_MAP.entrySet()) {
             if (uri.startsWith(entry.getKey())) return entry.getValue();
@@ -136,5 +139,17 @@ public class AdminInterceptor implements HandlerInterceptor {
             return "AI_CHATBOT_ADMIN";
         }
         return "ASSISTANT_ADMIN";
+    }
+
+    /**
+     * /admin/finance 이하 경로의 필요 권한 해석.
+     * - /admin/finance/refund/**  : 환불 처리 (FINANCE_OPERATOR)
+     * - /admin/finance/policy/**  : 한도/적립률 정책 (FINANCE_POLICY_ADMIN)
+     * - 그 외 (대시보드/사용자 목록·상세) : read-only (FINANCE_ADMIN)
+     */
+    private String resolveFinancePermission(String uri) {
+        if (uri.startsWith("/admin/finance/refund")) return "FINANCE_OPERATOR";
+        if (uri.startsWith("/admin/finance/policy")) return "FINANCE_POLICY_ADMIN";
+        return "FINANCE_ADMIN";
     }
 }

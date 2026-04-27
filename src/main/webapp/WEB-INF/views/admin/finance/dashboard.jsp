@@ -14,7 +14,7 @@
             <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
                 💰 <spring:message code="admin.finance.stats.totalCash"/>
             </div>
-            <div style="font-size:22px;font-weight:700;color:#0f172a;">
+            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
                 <fmt:formatNumber value="${stats.totalCashBalance}" pattern="#,###"/> <spring:message code="admin.finance.unit.krw"/>
             </div>
         </div>
@@ -22,7 +22,7 @@
             <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
                 ✈️ <spring:message code="admin.finance.stats.totalMileage"/>
             </div>
-            <div style="font-size:22px;font-weight:700;color:#0f172a;">
+            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
                 <fmt:formatNumber value="${stats.totalMileageBalance}" pattern="#,###"/> <spring:message code="admin.finance.unit.mileage"/>
             </div>
         </div>
@@ -30,7 +30,7 @@
             <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
                 ⭐ <spring:message code="admin.finance.stats.totalPoint"/>
             </div>
-            <div style="font-size:22px;font-weight:700;color:#0f172a;">
+            <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
                 <fmt:formatNumber value="${stats.totalPointBalance}" pattern="#,###"/> <spring:message code="admin.finance.unit.point"/>
             </div>
         </div>
@@ -61,7 +61,7 @@
     </div>
 
     <div class="adm-card" style="padding:20px;">
-        <div style="font-size:14px;color:#475569;margin-bottom:12px;">
+        <div class="adm-fin-guide" style="font-size:14px;margin-bottom:12px;">
             <spring:message code="admin.finance.dashboard.guide"/>
         </div>
         <a href="${pageContext.request.contextPath}/admin/finance/users" class="adm-btn adm-btn-primary">

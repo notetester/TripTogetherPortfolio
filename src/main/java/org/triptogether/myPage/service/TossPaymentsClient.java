@@ -17,13 +17,14 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Toss Payments 결제 승인 API를 호출하는 얇은 클라이언트.
+ * Toss Payments 결제 승인 / 취소 API 를 호출하는 얇은 클라이언트.
  */
 @Component
 @RequiredArgsConstructor
 public class TossPaymentsClient {
 
     private static final String CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
+    private static final String CANCEL_URL_TEMPLATE = "https://api.tosspayments.com/v1/payments/%s/cancel";
 
     private final RestTemplate restTemplate;
 
@@ -53,6 +54,36 @@ public class TossPaymentsClient {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
         try {
             return restTemplate.postForObject(CONFIRM_URL, entity, TossPaymentConfirmResponse.class);
+        } catch (HttpStatusCodeException e) {
+            throw new IllegalStateException(extractMessage(e), e);
+        }
+    }
+
+    /**
+     * 결제 취소 (전액 환불).
+     * @param paymentKey   토스 결제 키 (USER_PAYMENT_HISTORY.toss_payment_key)
+     * @param cancelReason 어드민이 입력한 환불 사유
+     */
+    public void cancelPayment(String paymentKey, String cancelReason) {
+        if (secretKey == null || secretKey.isBlank()) {
+            throw new IllegalStateException("Toss Payments secret key is not configured.");
+        }
+        if (paymentKey == null || paymentKey.isBlank()) {
+            throw new IllegalArgumentException("paymentKey is required for cancel.");
+        }
+
+        String url = String.format(CANCEL_URL_TEMPLATE, paymentKey);
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("cancelReason", cancelReason == null || cancelReason.isBlank() ? "Admin refund" : cancelReason);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.AUTHORIZATION, "Basic " + encodeSecretKey(secretKey));
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+        try {
+            restTemplate.postForObject(url, entity, Map.class);
         } catch (HttpStatusCodeException e) {
             throw new IllegalStateException(extractMessage(e), e);
         }
