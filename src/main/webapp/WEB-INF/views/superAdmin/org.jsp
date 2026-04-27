@@ -35,6 +35,12 @@ const admins = [
     }<c:if test="${!s.last}">,</c:if>
     </c:forEach>
 ];
+// 권한 코드 → 사람이 읽는 라벨 (ADMIN_PERMISSION_CODE_POLICY.display_name)
+const permCodeMap = {
+    <c:forEach var="p" items="${permCodePolicies}" varStatus="s">
+    '${fn:escapeXml(p.adminPermissionCode)}': '${fn:escapeXml(p.displayName)}'<c:if test="${!s.last}">,</c:if>
+    </c:forEach>
+};
 
 function buildTree(nodes) {
     const map = {};
@@ -54,8 +60,9 @@ function buildTree(nodes) {
 // depth 2+ (본부장의 자식 = 부서장 부터) 는 들여쓰기 트리로 전환해 가로 폭 절약.
 function renderNode(node, depth) {
     depth = depth || 0;
+    var permLabel = (node.permCode && permCodeMap[node.permCode]) || node.permCode;
     var permBadge = node.permCode
-        ? '<span class="sa-org-badge">' + node.permCode + '</span>' : '';
+        ? '<span class="sa-org-badge" title="' + node.permCode + '">' + permLabel + '</span>' : '';
     var dept = node.department
         ? '<div class="sa-org-dept">' + node.department + '</div>' : '';
     var title = node.title
