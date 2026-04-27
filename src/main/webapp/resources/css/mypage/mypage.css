@@ -2637,9 +2637,11 @@ html.dark .mp-history-empty { color: #94a3b8; }
 }
 
 .mp-level-reward-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 10px;
+    row-gap: 5px;
     padding: 11px 14px;
     border-radius: 12px;
     border: 1px solid var(--gray-100);
@@ -2662,36 +2664,54 @@ html.dark .mp-history-empty { color: #94a3b8; }
 }
 
 .mp-level-reward-item__lv {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    align-self: center;
     font-weight: 800;
     font-size: 13px;
     color: var(--gray-700);
-    min-width: 38px;
-    flex-shrink: 0;
+    text-align: center;
 }
 
 .mp-level-reward-item__content {
+    grid-column: 2;
+    grid-row: 1;
     display: flex;
     align-items: center;
     gap: 7px;
-    flex: 1;
     min-width: 0;
     font-size: 13px;
     color: var(--gray-700);
     font-weight: 600;
 }
 
-.mp-level-reward-item__img {
+.mp-level-reward-item__content > span:last-child {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+.mp-level-reward-item__img-wrap {
     width: 28px;
     height: 28px;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mp-level-reward-item__img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
 }
 
 .mp-level-reward-status {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    min-width: 86px;
-    padding: 6px 10px;
+    padding: 4px 10px;
     border-radius: 999px;
     font-size: 12px;
     font-weight: 700;

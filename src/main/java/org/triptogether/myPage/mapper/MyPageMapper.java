@@ -67,6 +67,9 @@ public interface MyPageMapper {
     // 알림 목록 조회 (최신순 10개)
     List<FeedNotificationDto> selectNotifications(@Param("userIdx") Long userIdx);
 
+    // 미읽은 levelup 알림 전체 조회 (LIMIT 없음, 팝업용)
+    List<FeedNotificationDto> selectUnreadLevelUpNotifications(@Param("userIdx") Long userIdx);
+
     // 헤더 드롭다운용 최근 N개 조회
     List<FeedNotificationDto> selectRecentNotifications(@Param("userIdx") Long userIdx, @Param("limit") int limit);
 

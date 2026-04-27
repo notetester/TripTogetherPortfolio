@@ -197,6 +197,11 @@ public class MyPageServiceImpl implements MyPageService {
     }
 
     @Override
+    public List<FeedNotificationDto> getUnreadLevelUpNotifications(Long userIdx) {
+        return myPageMapper.selectUnreadLevelUpNotifications(userIdx);
+    }
+
+    @Override
     public List<FeedNotificationDto> getRecentNotifications(Long userIdx, int limit) {
         return myPageMapper.selectRecentNotifications(userIdx, limit);
     }

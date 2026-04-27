@@ -379,20 +379,22 @@ public class ProfileController {
         // 활성 등급 정책 목록 (등급 바의 "다음 등급 기준값" 산출에 사용)
         model.addAttribute("gradePolicies", walletService.getActiveMemberGradePolicies());
 
-        // ── 레벨업 알림 팝업용: 읽지 않은 levelup 알림이 있으면 전달 후 읽음 처리 ──
-        List<FeedNotificationDto> allNotifications = myPageService.getNotifications(freshUser.getUserIdx());
-        FeedNotificationDto levelUpNoti = null;
-        for (FeedNotificationDto noti : allNotifications) {
-            if ("levelup".equals(noti.getSourceType()) && !Boolean.TRUE.equals(noti.getIsRead())) {
-                levelUpNoti = noti;
-                break;
+        // ── 레벨업 알림 팝업용: 미읽은 levelup 알림 전체 조회 → 최고 레벨 한 번만 표시 ──
+        List<FeedNotificationDto> unreadLevelUpNotis = myPageService.getUnreadLevelUpNotifications(freshUser.getUserIdx());
+        if (!unreadLevelUpNotis.isEmpty()) {
+            Integer maxLevel = null;
+            for (FeedNotificationDto noti : unreadLevelUpNotis) {
+                try {
+                    int lvl = Integer.parseInt(String.valueOf(noti.getSourceId()));
+                    if (maxLevel == null || lvl > maxLevel) maxLevel = lvl;
+                } catch (NumberFormatException ignored) {}
             }
-        }
-        if (levelUpNoti != null) {
-            // 팝업에 표시할 새 레벨 번호를 model에 전달
-            model.addAttribute("levelUpLevel", levelUpNoti.getSourceId());
-            // 표시했으니 읽음 처리 (한 번만 팝업, 이력은 보존)
-            myPageService.markAsRead(levelUpNoti.getNotificationId());
+            if (maxLevel != null) {
+                model.addAttribute("levelUpLevel", maxLevel);
+            }
+            for (FeedNotificationDto noti : unreadLevelUpNotis) {
+                myPageService.markAsRead(noti.getNotificationId());
+            }
         }
 
         return "mypage/index";
@@ -593,25 +595,25 @@ public class ProfileController {
         if (itemCode != null) {
             switch (itemCode) {
                 case "LEVEL_BADGE_BRONZE_10":
-                    return localizeLevelRewardText(targetLang, "Lv.10 브론즈 성장 뱃지",
-                            "Lv.10 Bronze Growth Badge",
-                            "Lv.10 ブロンズ成長バッジ",
-                            "Lv.10 青铜成长徽章");
+                    return localizeLevelRewardText(targetLang, "브론즈 성장 뱃지",
+                            "Bronze Growth Badge",
+                            "ブロンズ成長バッジ",
+                            "青铜成长徽章");
                 case "LEVEL_BADGE_SILVER_20":
-                    return localizeLevelRewardText(targetLang, "Lv.20 실버 성장 뱃지",
-                            "Lv.20 Silver Growth Badge",
-                            "Lv.20 シルバー成長バッジ",
-                            "Lv.20 白银成长徽章");
+                    return localizeLevelRewardText(targetLang, "실버 성장 뱃지",
+                            "Silver Growth Badge",
+                            "シルバー成長バッジ",
+                            "白银成长徽章");
                 case "LEVEL_BADGE_GOLD_30":
-                    return localizeLevelRewardText(targetLang, "Lv.30 골드 성장 뱃지",
-                            "Lv.30 Gold Growth Badge",
-                            "Lv.30 ゴールド成長バッジ",
-                            "Lv.30 黄金成长徽章");
+                    return localizeLevelRewardText(targetLang, "골드 성장 뱃지",
+                            "Gold Growth Badge",
+                            "ゴールド成長バッジ",
+                            "黄金成长徽章");
                 case "LEVEL_BADGE_MASTER_50":
-                    return localizeLevelRewardText(targetLang, "Lv.50 마스터 성장 뱃지",
-                            "Lv.50 Master Growth Badge",
-                            "Lv.50 マスター成長バッジ",
-                            "Lv.50 大师成长徽章");
+                    return localizeLevelRewardText(targetLang, "마스터 성장 뱃지",
+                            "Master Growth Badge",
+                            "マスター成長バッジ",
+                            "大师成长徽章");
                 default:
                     break;
             }

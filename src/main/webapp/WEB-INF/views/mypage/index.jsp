@@ -518,11 +518,13 @@
                             <div class="mp-level-reward-item is-${reward.rewardStatusCode}">
                                 <span class="mp-level-reward-item__lv">Lv.${reward.levelNo}</span>
                                 <div class="mp-level-reward-item__content">
-                                    <c:if test="${not empty reward.rewardImagePath}">
-                                        <img class="mp-level-reward-item__img"
-                                             src="${pageContext.request.contextPath}${reward.rewardImagePath}"
-                                             alt="${reward.rewardDisplayText}">
-                                    </c:if>
+                                    <span class="mp-level-reward-item__img-wrap">
+                                        <c:if test="${not empty reward.rewardImagePath}">
+                                            <img class="mp-level-reward-item__img"
+                                                 src="${pageContext.request.contextPath}${reward.rewardImagePath}"
+                                                 alt="${reward.rewardDisplayText}">
+                                        </c:if>
+                                    </span>
                                     <span>${reward.rewardDisplayText}</span>
                                 </div>
                                 <span class="mp-level-reward-status is-${reward.rewardStatusCode}">
@@ -1775,7 +1777,6 @@
 <script>
     /**
      * Close the level-up popup with a short fade-out effect.
-     */
      */
     function closeLevelUpPopup() {
         var overlay = document.getElementById('levelup-overlay');
