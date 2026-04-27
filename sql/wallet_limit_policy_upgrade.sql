@@ -29,9 +29,9 @@ INSERT INTO `WALLET_LIMIT_POLICY` (`member_grade`, `single_limit`, `daily_limit`
     ('SILVER',    500000,  1000000,  5000000, 1),
     ('GOLD',      800000,  2000000, 10000000, 1),
     ('DIAMOND',  1500000,  3000000, 20000000, 1),
-    ('PLATINUM', 3000000,  5000000, 50000000, 1)
+    ('PLATINUM', 3000000,  5000000, 50000000, 1) AS new_row
 ON DUPLICATE KEY UPDATE
-    `single_limit`  = VALUES(`single_limit`),
-    `daily_limit`   = VALUES(`daily_limit`),
-    `monthly_limit` = VALUES(`monthly_limit`),
-    `is_active`     = VALUES(`is_active`);
+    `single_limit`  = new_row.`single_limit`,
+    `daily_limit`   = new_row.`daily_limit`,
+    `monthly_limit` = new_row.`monthly_limit`,
+    `is_active`     = new_row.`is_active`;

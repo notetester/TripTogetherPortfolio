@@ -50,14 +50,14 @@
              #{rewardType}, #{rewardRate}, #{rewardFixed},
              #{description},
              <choose><when test="isActive != null">#{isActive},</when></choose>
-             #{updatedByUserIdx})
+             #{updatedByUserIdx}) AS new_row
         ON DUPLICATE KEY UPDATE
-            reward_type         = VALUES(reward_type),
-            reward_rate         = VALUES(reward_rate),
-            reward_fixed        = VALUES(reward_fixed),
-            description         = VALUES(description),
-            <if test="isActive != null">is_active = VALUES(is_active),</if>
-            updated_by_user_idx = VALUES(updated_by_user_idx)
+            reward_type         = new_row.reward_type,
+            reward_rate         = new_row.reward_rate,
+            reward_fixed        = new_row.reward_fixed,
+            description         = new_row.description,
+            <if test="isActive != null">is_active = new_row.is_active,</if>
+            updated_by_user_idx = new_row.updated_by_user_idx
     </update>
 
     <update id="updateActive">

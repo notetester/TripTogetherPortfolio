@@ -47,13 +47,13 @@
         VALUES
             (#{memberGrade}, #{singleLimit}, #{dailyLimit}, #{monthlyLimit},
              <choose><when test="isActive != null">#{isActive}</when><otherwise>1</otherwise></choose>,
-             #{updatedByUserIdx})
+             #{updatedByUserIdx}) AS new_row
         ON DUPLICATE KEY UPDATE
-            single_limit         = VALUES(single_limit),
-            daily_limit          = VALUES(daily_limit),
-            monthly_limit        = VALUES(monthly_limit),
-            is_active            = VALUES(is_active),
-            updated_by_user_idx  = VALUES(updated_by_user_idx)
+            single_limit         = new_row.single_limit,
+            daily_limit          = new_row.daily_limit,
+            monthly_limit        = new_row.monthly_limit,
+            is_active            = new_row.is_active,
+            updated_by_user_idx  = new_row.updated_by_user_idx
     </update>
 
     <select id="sumTodayCharge" resultType="long">

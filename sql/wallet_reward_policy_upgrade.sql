@@ -35,10 +35,10 @@ VALUES
     ('COMMUNITY_POST',    'ALL',      'POINT',   NULL,  50,   '커뮤니티 글 작성 보상 (포인트)',      1),
     ('COMMUNITY_COMMENT', 'ALL',      'POINT',   NULL,  5,    '커뮤니티 댓글 작성 보상',            1),
     ('PLAN_COMPLETE',     'ALL',      'POINT',   NULL,  200,  '여행 일정 완료 보상',                1),
-    ('LEVEL_UP',          'ALL',      'MILEAGE', NULL,  1000, '레벨 업 보너스 마일리지',            1)
+    ('LEVEL_UP',          'ALL',      'MILEAGE', NULL,  1000, '레벨 업 보너스 마일리지',            1) AS new_row
 ON DUPLICATE KEY UPDATE
-    `reward_type`  = VALUES(`reward_type`),
-    `reward_rate`  = VALUES(`reward_rate`),
-    `reward_fixed` = VALUES(`reward_fixed`),
-    `description`  = VALUES(`description`),
-    `is_active`    = VALUES(`is_active`);
+    `reward_type`  = new_row.`reward_type`,
+    `reward_rate`  = new_row.`reward_rate`,
+    `reward_fixed` = new_row.`reward_fixed`,
+    `description`  = new_row.`description`,
+    `is_active`    = new_row.`is_active`;
