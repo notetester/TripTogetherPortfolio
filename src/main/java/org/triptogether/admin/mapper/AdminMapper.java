@@ -79,7 +79,10 @@ public interface AdminMapper {
                                    @Param("permissionCode") String permissionCode);
 
     // ===== 기업 회원 신청 =====
-    List<BusinessAccountApplicationVO> findBusinessApplications(@Param("status") String status);
+    List<BusinessAccountApplicationVO> findBusinessApplications(Map<String, Object> params);
+    int countBusinessApplications(Map<String, Object> params);
+    List<BusinessAccountApplicationVO> findBusinessApplicationsForExport(Map<String, Object> params);
+    List<BusinessAccountApplicationVO> findBusinessApplicationsByIds(@Param("ids") List<Long> ids);
     BusinessAccountApplicationVO findBusinessApplicationForUpdate(@Param("applicationIdx") Long applicationIdx);
     void approveBusinessApplication(@Param("applicationIdx") Long applicationIdx,
                                     @Param("reviewedByUserIdx") Long reviewedByUserIdx);

@@ -847,43 +847,156 @@
         )
     </insert>
 
-    <select id="findBusinessApplications" resultMap="businessApplicationRM">
-        SELECT
-            baa.application_idx,
-            baa.user_idx,
-            baa.requested_role,
-            baa.company_name,
-            baa.business_number,
-            baa.manager_name,
-            baa.manager_phone,
-            baa.description,
-            baa.application_status,
-            baa.reject_reason,
-            baa.reviewed_by_user_idx,
-            baa.reviewed_at,
-            baa.created_at,
-            baa.updated_at,
-            u.user_id,
-            u.nickname,
-            u.user_email,
-            u.user_role AS current_user_role,
-            reviewer.nickname AS reviewer_nickname
+    <sql id="businessApplicationColumns">
+        baa.application_idx,
+        baa.user_idx,
+        baa.requested_role,
+        baa.company_name,
+        baa.business_number,
+        baa.manager_name,
+        baa.manager_phone,
+        baa.description,
+        baa.application_status,
+        baa.reject_reason,
+        baa.reviewed_by_user_idx,
+        baa.reviewed_at,
+        baa.created_at,
+        baa.updated_at,
+        u.user_id,
+        u.nickname,
+        u.user_email,
+        u.user_role AS current_user_role,
+        reviewer.nickname AS reviewer_nickname
+    </sql>
+
+    <sql id="businessApplicationFrom">
         FROM BUSINESS_ACCOUNT_APPLICATION baa
         JOIN USERS u ON baa.user_idx = u.user_idx
         LEFT JOIN USERS reviewer ON baa.reviewed_by_user_idx = reviewer.user_idx
+    </sql>
+
+    <sql id="businessApplicationWhere">
         <where>
             <if test="status != null and status != 'ALL'">
                 baa.application_status = #{status}
             </if>
+            <if test="requestedRole != null and requestedRole != 'ALL'">
+                AND baa.requested_role = #{requestedRole}
+            </if>
+            <if test="dateFrom != null">
+                AND baa.created_at &gt;= STR_TO_DATE(#{dateFrom}, '%Y-%m-%d')
+            </if>
+            <if test="dateTo != null">
+                AND baa.created_at &lt; DATE_ADD(STR_TO_DATE(#{dateTo}, '%Y-%m-%d'), INTERVAL 1 DAY)
+            </if>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'applicant'">
+                        AND (
+                            u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </when>
+                    <when test="searchType == 'company'">
+                        AND (
+                            baa.company_name LIKE CONCAT('%', #{keyword}, '%')
+                            OR baa.description LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </when>
+                    <when test="searchType == 'manager'">
+                        AND (
+                            baa.manager_name LIKE CONCAT('%', #{keyword}, '%')
+                            OR baa.manager_phone LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </when>
+                    <when test="searchType == 'businessNumber'">
+                        AND baa.business_number LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (
+                            u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                            OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
+                            OR baa.company_name LIKE CONCAT('%', #{keyword}, '%')
+                            OR baa.business_number LIKE CONCAT('%', #{keyword}, '%')
+                            OR baa.manager_name LIKE CONCAT('%', #{keyword}, '%')
+                            OR baa.manager_phone LIKE CONCAT('%', #{keyword}, '%')
+                        )
+                    </otherwise>
+                </choose>
+            </if>
         </where>
+    </sql>
+
+    <sql id="businessApplicationOrderBy">
         ORDER BY
-            CASE baa.application_status
-                WHEN 'PENDING' THEN 0
-                WHEN 'REJECTED' THEN 1
-                WHEN 'APPROVED' THEN 2
-                ELSE 3
-            END,
-            baa.created_at DESC
+        <choose>
+            <when test="sortBy == 'applicationIdx' and sortDir == 'ASC'">baa.application_idx ASC</when>
+            <when test="sortBy == 'applicationIdx' and sortDir == 'DESC'">baa.application_idx DESC</when>
+            <when test="sortBy == 'applicant' and sortDir == 'ASC'">u.nickname ASC, u.user_id ASC, baa.application_idx ASC</when>
+            <when test="sortBy == 'applicant' and sortDir == 'DESC'">u.nickname DESC, u.user_id DESC, baa.application_idx DESC</when>
+            <when test="sortBy == 'requestedRole' and sortDir == 'ASC'">
+                CASE baa.requested_role WHEN 'BUSINESS' THEN 1 WHEN 'PARTNER' THEN 2 ELSE 9 END ASC,
+                baa.application_idx ASC
+            </when>
+            <when test="sortBy == 'requestedRole' and sortDir == 'DESC'">
+                CASE baa.requested_role WHEN 'BUSINESS' THEN 1 WHEN 'PARTNER' THEN 2 ELSE 9 END DESC,
+                baa.application_idx DESC
+            </when>
+            <when test="sortBy == 'company' and sortDir == 'ASC'">baa.company_name ASC, baa.application_idx ASC</when>
+            <when test="sortBy == 'company' and sortDir == 'DESC'">baa.company_name DESC, baa.application_idx DESC</when>
+            <when test="sortBy == 'status' and sortDir == 'ASC'">
+                CASE baa.application_status WHEN 'PENDING' THEN 1 WHEN 'REJECTED' THEN 2 WHEN 'APPROVED' THEN 3 ELSE 9 END ASC,
+                baa.created_at DESC
+            </when>
+            <when test="sortBy == 'status' and sortDir == 'DESC'">
+                CASE baa.application_status WHEN 'PENDING' THEN 1 WHEN 'REJECTED' THEN 2 WHEN 'APPROVED' THEN 3 ELSE 9 END DESC,
+                baa.created_at DESC
+            </when>
+            <when test="sortBy == 'reviewedAt' and sortDir == 'ASC'">baa.reviewed_at ASC, baa.application_idx ASC</when>
+            <when test="sortBy == 'reviewedAt' and sortDir == 'DESC'">baa.reviewed_at DESC, baa.application_idx DESC</when>
+            <when test="sortBy == 'reviewer' and sortDir == 'ASC'">reviewer.nickname ASC, baa.reviewed_at ASC, baa.application_idx ASC</when>
+            <when test="sortBy == 'reviewer' and sortDir == 'DESC'">reviewer.nickname DESC, baa.reviewed_at DESC, baa.application_idx DESC</when>
+            <when test="sortBy == 'createdAt' and sortDir == 'ASC'">baa.created_at ASC, baa.application_idx ASC</when>
+            <otherwise>baa.created_at DESC, baa.application_idx DESC</otherwise>
+        </choose>
+    </sql>
+
+    <select id="countBusinessApplications" resultType="int">
+        SELECT COUNT(*)
+        <include refid="businessApplicationFrom"/>
+        <include refid="businessApplicationWhere"/>
+    </select>
+
+    <select id="findBusinessApplications" resultMap="businessApplicationRM">
+        SELECT
+        <include refid="businessApplicationColumns"/>
+        <include refid="businessApplicationFrom"/>
+        <include refid="businessApplicationWhere"/>
+        <include refid="businessApplicationOrderBy"/>
+        <if test="paged">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="findBusinessApplicationsForExport" resultMap="businessApplicationRM">
+        SELECT
+        <include refid="businessApplicationColumns"/>
+        <include refid="businessApplicationFrom"/>
+        <include refid="businessApplicationWhere"/>
+        <include refid="businessApplicationOrderBy"/>
+    </select>
+
+    <select id="findBusinessApplicationsByIds" resultMap="businessApplicationRM">
+        SELECT
+        <include refid="businessApplicationColumns"/>
+        <include refid="businessApplicationFrom"/>
+        WHERE baa.application_idx IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY baa.created_at DESC, baa.application_idx DESC
     </select>
 
     <select id="findBusinessApplicationForUpdate" resultMap="businessApplicationRM">

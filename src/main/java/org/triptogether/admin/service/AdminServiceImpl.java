@@ -51,6 +51,11 @@ public class AdminServiceImpl implements AdminService {
             "userIdx", "memberGrade", "levelNo", "loginSuccessCount", "loginFailCount", "social", "socialCount"
     );
     private static final Set<String> MEMBER_VALID_MODE = Set.of("SERVER", "CLIENT");
+    private static final Set<String> BUSINESS_VALID_SEARCH_TYPES = Set.of("all", "applicant", "company", "manager", "businessNumber");
+    private static final Set<String> BUSINESS_VALID_STATUS = Set.of("ALL", "PENDING", "APPROVED", "REJECTED");
+    private static final Set<String> BUSINESS_VALID_ROLE = Set.of("ALL", "BUSINESS", "PARTNER");
+    private static final Set<String> BUSINESS_VALID_SORT = Set.of("createdAt", "reviewedAt", "applicant", "requestedRole", "company", "status", "reviewer", "applicationIdx");
+    private static final Set<String> BUSINESS_VALID_MODE = Set.of("SERVER", "CLIENT");
 
     private final AdminMapper adminMapper;
     private final IpBlockMapper ipBlockMapper;
@@ -701,10 +706,151 @@ public class AdminServiceImpl implements AdminService {
     // ===== 기업 회원 신청 =====
 
     @Override
-    public List<BusinessAccountApplicationVO> getBusinessApplications(String status) {
-        String normalizedStatus = normalizeApplicationStatus(status);
-        return adminMapper.findBusinessApplications(normalizedStatus);
+    public Map<String, Object> getBusinessApplicationList(BusinessApplicationSearchVO search) {
+        BusinessApplicationSearchVO normalized = normalizeBusinessApplicationSearch(search);
+        Map<String, Object> params = buildBusinessApplicationParams(normalized, "CLIENT".equals(normalized.getMode()) ? false : true);
+        int total = adminMapper.countBusinessApplications(params);
+        AdminPageVO paging = AdminPageVO.of(total, normalized.getPage(), normalized.getSize(), 10);
+        normalized.setPage(paging.getCurrentPage());
+        params = buildBusinessApplicationParams(normalized, "CLIENT".equals(normalized.getMode()) ? false : true);
+
+        List<BusinessAccountApplicationVO> list = adminMapper.findBusinessApplications(params);
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("applicationList", list);
+        result.put("search", normalized);
+        result.put("status", normalized.getStatus());
+        result.put("total", total);
+        result.put("paging", paging);
+        return result;
     }
+
+    @Override
+    public List<BusinessAccountApplicationVO> getBusinessApplications(String status) {
+        BusinessApplicationSearchVO search = new BusinessApplicationSearchVO();
+        search.setStatus(status);
+        search.setMode("CLIENT");
+        return adminMapper.findBusinessApplications(buildBusinessApplicationParams(normalizeBusinessApplicationSearch(search), false));
+    }
+
+    @Override
+    public List<BusinessAccountApplicationVO> getBusinessApplicationsForExport(BusinessApplicationSearchVO search) {
+        return adminMapper.findBusinessApplicationsForExport(buildBusinessApplicationParams(normalizeBusinessApplicationSearch(search), false));
+    }
+
+    @Override
+    public List<BusinessAccountApplicationVO> getBusinessApplicationsByIds(List<Long> ids) {
+        List<Long> normalized = normalizeBusinessApplicationIds(ids);
+        if (normalized.isEmpty()) return Collections.emptyList();
+        return adminMapper.findBusinessApplicationsByIds(normalized);
+    }
+
+    @Override
+    @Transactional
+    public void bulkApproveBusinessApplications(List<Long> applicationIdxList, Long reviewerUserIdx) {
+        List<Long> ids = normalizeBusinessApplicationIds(applicationIdxList);
+        if (ids.isEmpty()) {
+            throw new IllegalArgumentException("선택된 신청이 없습니다.");
+        }
+        for (Long id : ids) {
+            approveBusinessApplication(id, reviewerUserIdx);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void bulkRejectBusinessApplications(List<Long> applicationIdxList, String rejectReason, Long reviewerUserIdx) {
+        List<Long> ids = normalizeBusinessApplicationIds(applicationIdxList);
+        if (ids.isEmpty()) {
+            throw new IllegalArgumentException("선택된 신청이 없습니다.");
+        }
+        String normalizedReason = normalizeRequiredRejectReason(rejectReason);
+        for (Long id : ids) {
+            rejectBusinessApplication(id, normalizedReason, reviewerUserIdx);
+        }
+    }
+
+    private BusinessApplicationSearchVO normalizeBusinessApplicationSearch(BusinessApplicationSearchVO source) {
+        BusinessApplicationSearchVO search = source != null ? source : new BusinessApplicationSearchVO();
+        search.setKeyword(trimToNull(search.getKeyword()));
+        search.setSearchType(normalizeBusinessSearchType(search.getSearchType()));
+        search.setStatus(normalizeBusinessFilter(search.getStatus(), BUSINESS_VALID_STATUS, "PENDING", true));
+        search.setRequestedRole(normalizeBusinessFilter(search.getRequestedRole(), BUSINESS_VALID_ROLE, "ALL", true));
+
+        LocalDate from = parseMemberDate(search.getDateFrom());
+        LocalDate to = parseMemberDate(search.getDateTo());
+        if (from != null && to != null && from.isAfter(to)) {
+            LocalDate tmp = from;
+            from = to;
+            to = tmp;
+        }
+        search.setDateFrom(from != null ? from.toString() : null);
+        search.setDateTo(to != null ? to.toString() : null);
+        search.setSortBy(normalizeBusinessSortBy(search.getSortBy()));
+        search.setSortDir(normalizeBusinessSortDir(search.getSortDir()));
+        search.setMode(normalizeBusinessMode(search.getMode()));
+        search.setPage(Math.max(1, search.getPage()));
+        search.setSize(normalizeMemberPageSize(search.getSize()));
+        return search;
+    }
+
+    private Map<String, Object> buildBusinessApplicationParams(BusinessApplicationSearchVO search, boolean paged) {
+        BusinessApplicationSearchVO normalized = normalizeBusinessApplicationSearch(search);
+        Map<String, Object> params = new HashMap<>();
+        params.put("keyword", normalized.getKeyword());
+        params.put("searchType", normalized.getSearchType());
+        params.put("status", normalized.getStatus());
+        params.put("requestedRole", normalized.getRequestedRole());
+        params.put("dateFrom", normalized.getDateFrom());
+        params.put("dateTo", normalized.getDateTo());
+        params.put("sortBy", normalized.getSortBy());
+        params.put("sortDir", normalized.getSortDir());
+        params.put("mode", normalized.getMode());
+        params.put("page", normalized.getPage());
+        params.put("size", normalized.getSize());
+        params.put("offset", normalized.getOffset());
+        params.put("paged", paged);
+        return params;
+    }
+
+    private String normalizeBusinessSearchType(String value) {
+        String text = trimToNull(value);
+        return text != null && BUSINESS_VALID_SEARCH_TYPES.contains(text) ? text : "all";
+    }
+
+    private String normalizeBusinessSortBy(String value) {
+        String text = trimToNull(value);
+        return text != null && BUSINESS_VALID_SORT.contains(text) ? text : "createdAt";
+    }
+
+    private String normalizeBusinessSortDir(String value) {
+        return "ASC".equalsIgnoreCase(trimToNull(value)) ? "ASC" : "DESC";
+    }
+
+    private String normalizeBusinessMode(String value) {
+        String text = trimToNull(value);
+        if (text == null) return "SERVER";
+        text = text.toUpperCase();
+        return BUSINESS_VALID_MODE.contains(text) ? text : "SERVER";
+    }
+
+    private String normalizeBusinessFilter(String value, Set<String> validValues, String defaultValue, boolean upper) {
+        String text = trimToNull(value);
+        if (text == null) return defaultValue;
+        if (upper) text = text.toUpperCase();
+        return validValues.contains(text) ? text : defaultValue;
+    }
+
+    private List<Long> normalizeBusinessApplicationIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return Collections.emptyList();
+        return ids.stream()
+                .filter(id -> id != null && id > 0)
+                .collect(java.util.stream.Collectors.collectingAndThen(
+                        java.util.stream.Collectors.toCollection(LinkedHashSet::new),
+                        ArrayList::new
+                ));
+    }
+
 
     @Override
     @Transactional
@@ -749,14 +895,6 @@ public class AdminServiceImpl implements AdminService {
         adminMapper.rejectBusinessApplication(applicationIdx, normalizedReason, reviewerUserIdx);
     }
 
-    private String normalizeApplicationStatus(String status) {
-        if (status == null || status.isBlank() || "ALL".equalsIgnoreCase(status)) {
-            return "ALL";
-        }
-        String normalized = status.trim().toUpperCase();
-        List<String> allowed = List.of("PENDING", "APPROVED", "REJECTED");
-        return allowed.contains(normalized) ? normalized : "ALL";
-    }
 
     private String normalizeRequiredRejectReason(String reason) {
         String normalized = normalizeRoleChangeReason(reason);
