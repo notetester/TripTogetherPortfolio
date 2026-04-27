@@ -41,58 +41,72 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-form-label { font-size:13px; color:#64748b; font-weight:500; }
 .sa-full-select { width:100%; }
 
-/* ── 조직도 (들여쓰기 트리 + ├─ └─ 분기선) ── */
-.sa-org-tree         { display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
-.sa-org-node-wrap    { display:flex; flex-direction:column; align-items:flex-start; position:relative; }
-.sa-org-node         { display:flex; align-items:center; gap:12px; background:#1e2330; border:1px solid #2d3748; border-radius:10px; padding:12px 16px; min-width:280px; position:relative; }
+/* ── 조직도 (클래식 top-down 트리: 부모 아래 자식들 가로 정렬 + ┴ 분기) ── */
+.sa-org-tree         { display:flex; flex-direction:column; align-items:center; overflow-x:auto; padding:16px 24px; gap:0; }
+.sa-org-node-wrap    { display:flex; flex-direction:column; align-items:center; position:relative; flex:0 0 auto; }
+.sa-org-node         { display:flex; align-items:center; gap:10px; background:#1e2330; border:1px solid #2d3748; border-radius:10px; padding:10px 14px; min-width:200px; max-width:240px; position:relative; z-index:1; }
 .sa-org-node:hover   { border-color:#6366f1; background:#1a2035; }
-.sa-org-avatar       { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; flex-shrink:0; }
+.sa-org-avatar       { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; flex-shrink:0; }
 .sa-org-info         { flex:1; min-width:0; }
-.sa-org-name         { font-weight:600; font-size:14px; color:#e2e8f0; }
-.sa-org-title        { font-size:12px; color:#94a3b8; margin-top:2px; }
-.sa-org-dept         { font-size:11px; color:#64748b; }
+.sa-org-name         { font-weight:600; font-size:13px; color:#e2e8f0; }
+.sa-org-title        { font-size:11px; color:#94a3b8; margin-top:2px; }
+.sa-org-dept         { font-size:10px; color:#64748b; }
 .sa-org-badge        { display:inline-block; margin-top:4px; font-size:10px; font-family:monospace; background:#4c1d95; color:#c4b5fd; border-radius:4px; padding:1px 6px; }
 .sa-org-edit         { font-size:11px; color:#94a3b8; text-decoration:none; flex-shrink:0; }
 .sa-org-edit:hover   { color:#6366f1; }
 
-/* 자식 그룹: 들여쓰기 + 세로 나열 */
-.sa-org-children     { display:flex; flex-direction:column; gap:0; margin-top:0; margin-left:32px; padding-left:32px; align-items:flex-start; }
-
-/* 각 자식 wrap: 위쪽 수직선 (모든 자식 / 카드 중앙까지) */
-.sa-org-children > .sa-org-node-wrap {
+/* 자식 그룹: 가로 정렬 (형제 노드들이 부모 아래 같은 행) */
+.sa-org-children {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 16px;
+    margin-top: 0;
+    padding-top: 32px;       /* 16px 부모-가로선 + 16px 가로선-자식카드 */
     position: relative;
-    padding-top: 8px;
-    padding-bottom: 8px;
 }
+
+/* 부모 카드 → 가로 연결선 사이의 수직선 (16px) */
+.sa-org-children::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 16px;
+    background: #475569;
+}
+
+/* 각 자식 위 짧은 수직선 (가로선 → 자식카드, 16px) */
 .sa-org-children > .sa-org-node-wrap::before {
     content: '';
     position: absolute;
-    left: -32px;
-    top: 0;
-    height: calc(50% + 1px);
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 2px;
+    height: 16px;
     background: #475569;
 }
-/* 마지막 자식 제외 — 카드 중앙부터 아래까지 수직선 (다음 형제로 이어줌) */
-.sa-org-children > .sa-org-node-wrap:not(:last-child)::after {
+
+/* 가로 연결선 — 자식들 머리 위 (각 자식 wrap의 ::after, 합쳐져 직선처럼 보임) */
+.sa-org-children > .sa-org-node-wrap::after {
     content: '';
     position: absolute;
-    left: -32px;
-    top: calc(50% + 1px);
-    bottom: 0;
-    width: 2px;
-    background: #475569;
-}
-/* 카드 옆 수평 분기선 (├─ 또는 └─ 의 가로 부분) */
-.sa-org-children > .sa-org-node-wrap > .sa-org-node::before {
-    content: '';
-    position: absolute;
-    left: -32px;
-    top: 50%;
-    width: 32px;
+    top: -16px;
+    left: 0;
+    right: 0;
     height: 2px;
     background: #475569;
 }
+/* 첫번째 자식 — 왼쪽 절반 가로선 안 그림 (자기 카드 가운데부터 오른쪽으로) */
+.sa-org-children > .sa-org-node-wrap:first-child::after { left: 50%; }
+/* 마지막 자식 — 오른쪽 절반 가로선 안 그림 */
+.sa-org-children > .sa-org-node-wrap:last-child::after  { right: 50%; }
+/* 자식이 1명뿐이면 가로선 자체가 의미 없음 (수직선만으로 충분) */
+.sa-org-children > .sa-org-node-wrap:only-child::after  { display: none; }
 
 /* ── 급여/역량 현황 일람표 ── */
 .sa-salary-toolbar { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid #2d3748; }
@@ -332,9 +346,9 @@ body.sa-light .sa-org-name          { color:#1e293b; }
 body.sa-light .sa-org-title         { color:#64748b; }
 body.sa-light .sa-org-dept          { color:#94a3b8; }
 body.sa-light .sa-org-badge         { background:#ede9fe; color:#7c3aed; }
+body.sa-light .sa-org-children::before,
 body.sa-light .sa-org-children > .sa-org-node-wrap::before,
-body.sa-light .sa-org-children > .sa-org-node-wrap:not(:last-child)::after,
-body.sa-light .sa-org-children > .sa-org-node-wrap > .sa-org-node::before {
+body.sa-light .sa-org-children > .sa-org-node-wrap::after {
     background: #cbd5e1;
 }
 body.sa-light .sa-group-row         { border-bottom-color:#f1f5f9; }
