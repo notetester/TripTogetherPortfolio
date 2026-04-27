@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.admin.mapper.AdminRefundMapper">
+
+    <resultMap id="PaymentDtoMap" type="WalletPaymentDto">
+        <id     property="paymentIdx"     column="payment_idx"/>
+        <result property="userIdx"        column="user_idx"/>
+        <result property="paymentType"    column="payment_type"/>
+        <result property="paymentMethod"  column="payment_method"/>
+        <result property="orderName"      column="order_name"/>
+        <result property="sourceType"     column="source_type"/>
+        <result property="sourceId"       column="source_id"/>
+        <result property="originalAmount" column="original_amount"/>
+        <result property="discountRate"   column="discount_rate"/>
+        <result property="discountAmount" column="discount_amount"/>
+        <result property="finalAmount"    column="final_amount"/>
+        <result property="usedCash"       column="used_cash"/>
+        <result property="usedMileage"    column="used_mileage"/>
+        <result property="earnedMileage"  column="earned_mileage"/>
+        <result property="paymentStatus"  column="payment_status"/>
+        <result property="tossOrderId"    column="toss_order_id"/>
+        <result property="tossPaymentKey" column="toss_payment_key"/>
+        <result property="tossStatus"     column="toss_status"/>
+        <result property="tossApprovedAt" column="toss_approved_at"/>
+        <result property="paidAt"         column="paid_at"/>
+        <result property="cancelledAt"    column="cancelled_at"/>
+        <result property="createdAt"      column="created_at"/>
+    </resultMap>
+
+    <resultMap id="RefundLogMap" type="WalletRefundLogVO">
+        <id     property="refundLogIdx"      column="refund_log_idx"/>
+        <result property="paymentIdx"        column="payment_idx"/>
+        <result property="userIdx"           column="user_idx"/>
+        <result property="refundAmount"      column="refund_amount"/>
+        <result property="refundReason"      column="refund_reason"/>
+        <result property="tossCancelStatus"  column="toss_cancel_status"/>
+        <result property="refundedByUserIdx" column="refunded_by_user_idx"/>
+        <result property="refundedAt"        column="refunded_at"/>
+        <result property="userNickname"      column="user_nickname"/>
+        <result property="adminNickname"     column="admin_nickname"/>
+        <result property="orderName"         column="order_name"/>
+    </resultMap>
+
+    <select id="selectRefundCandidates" resultMap="PaymentDtoMap">
+        SELECT p.*
+          FROM USER_PAYMENT_HISTORY p
+          LEFT JOIN USERS u ON u.user_idx = p.user_idx
+         WHERE p.payment_type   = 'CHARGE'
+           AND p.payment_status = 'COMPLETED'
+        <if test="keyword != null and keyword != ''">
+           AND (u.nickname  LIKE CONCAT('%', #{keyword}, '%')
+             OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
+             OR p.order_name LIKE CONCAT('%', #{keyword}, '%')
+             OR p.toss_order_id = #{keyword}
+             OR p.payment_idx   = #{keyword})
+        </if>
+         ORDER BY p.paid_at DESC
+         LIMIT 200
+    </select>
+
+    <select id="selectPaymentForRefund" resultMap="PaymentDtoMap">
+        SELECT *
+          FROM USER_PAYMENT_HISTORY
+         WHERE payment_idx = #{paymentIdx}
+         LIMIT 1
+    </select>
+
+    <update id="markPaymentRefunded">
+        UPDATE USER_PAYMENT_HISTORY
+           SET payment_status = 'REFUNDED',
+               cancelled_at   = NOW()
+         WHERE payment_idx    = #{paymentIdx}
+           AND payment_status = 'COMPLETED'
+    </update>
+
+    <update id="decreaseCashBalance">
+        UPDATE USERS
+           SET cash_balance = GREATEST(cash_balance - #{amount}, 0)
+         WHERE user_idx = #{userIdx}
+    </update>
+
+    <insert id="insertWalletHistoryRefund">
+        INSERT INTO USER_WALLET_HISTORY
+            (user_idx, asset_type, change_type, amount, balance_after,
+             related_payment_idx, detail_message, actor_user_idx)
+        VALUES
+            (#{userIdx}, 'CASH', 'REFUND', #{amount}, #{balanceAfter},
+             #{relatedPaymentIdx}, #{detailMessage}, #{actorUserIdx})
+    </insert>
+
+    <insert id="insertRefundLog" parameterType="WalletRefundLogVO" useGeneratedKeys="true" keyProperty="refundLogIdx">
+        INSERT INTO WALLET_REFUND_LOG
+            (payment_idx, user_idx, refund_amount, refund_reason, toss_cancel_status, refunded_by_user_idx)
+        VALUES
+            (#{paymentIdx}, #{userIdx}, #{refundAmount}, #{refundReason}, #{tossCancelStatus}, #{refundedByUserIdx})
+    </insert>
+
+    <select id="selectRecentRefundLogs" resultMap="RefundLogMap">
+        SELECT r.*,
+               u.nickname  AS user_nickname,
+               a.nickname  AS admin_nickname,
+               p.order_name
+          FROM WALLET_REFUND_LOG r
+          LEFT JOIN USERS u  ON u.user_idx = r.user_idx
+          LEFT JOIN USERS a  ON a.user_idx = r.refunded_by_user_idx
+          LEFT JOIN USER_PAYMENT_HISTORY p ON p.payment_idx = r.payment_idx
+         ORDER BY r.refunded_at DESC
+         LIMIT #{limit}
+    </select>
+
+</mapper>
