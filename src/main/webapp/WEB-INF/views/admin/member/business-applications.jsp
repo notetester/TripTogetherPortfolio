@@ -160,6 +160,22 @@
     </div>
 </div>
 
+
+<div id="businessApplicationDetailModal" class="adm-modal-overlay" onclick="closeBusinessApplicationDetailModal()">
+    <div class="adm-modal adm-context-modal adm-context-modal-wide" onclick="event.stopPropagation()">
+        <div class="adm-modal-head">
+            <div class="adm-modal-title" id="businessApplicationDetailTitle">기업 신청 상세</div>
+            <button class="adm-modal-close" type="button" onclick="closeBusinessApplicationDetailModal()">✕</button>
+        </div>
+        <div class="adm-modal-body" id="businessApplicationDetailBody" style="padding:20px 24px;max-height:72vh;overflow-y:auto;"></div>
+        <div class="adm-modal-foot" style="gap:8px;justify-content:flex-end;">
+            <button class="adm-btn adm-btn-ghost" type="button" id="businessApplicationDetailMemberBtn">회원 설정</button>
+            <button class="adm-btn adm-btn-primary" type="button" id="businessApplicationDetailReviewBtn">검토 위치로 이동</button>
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeBusinessApplicationDetailModal()"><spring:message code="admin.common.close"/></button>
+        </div>
+    </div>
+</div>
+
 <script>
 const BUSINESS_CTX = '${pageContext.request.contextPath}';
 const BUSINESS_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
@@ -380,6 +396,101 @@ function updateBusinessBulkBar() {
     }
 }
 function clearBusinessSelection() { document.querySelectorAll('.js-business-row-check, #businessCheckAll').forEach(function(c) { c.checked = false; c.indeterminate = false; }); updateBusinessBulkBar(); }
+
+function businessDash(value) {
+    return value == null || String(value).trim() === '' ? '-' : String(value);
+}
+function businessEscapeHtml(value) {
+    return businessDash(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+function businessDetailField(label, value, options) {
+    const opts = options || {};
+    const safeValue = businessEscapeHtml(value);
+    const pre = opts.pre ? 'white-space:pre-wrap;' : '';
+    return '<div class="adm-context-field ' + (opts.focus ? 'is-focus-target" data-focus-key="' + opts.focus : '') + '">'
+        + '<div class="adm-context-label">' + businessEscapeHtml(label) + '</div>'
+        + '<div class="adm-context-value" style="' + pre + '">' + safeValue + '</div>'
+        + '</div>';
+}
+function closeBusinessApplicationDetailModal() {
+    const modal = document.getElementById('businessApplicationDetailModal');
+    if (modal) modal.classList.remove('open');
+}
+function openBusinessApplicationDetail(trigger) {
+    const row = trigger ? trigger.closest('.js-business-row') : null;
+    if (!row) return;
+    const d = row.dataset;
+    const modal = document.getElementById('businessApplicationDetailModal');
+    const title = document.getElementById('businessApplicationDetailTitle');
+    const body = document.getElementById('businessApplicationDetailBody');
+    if (!modal || !title || !body) return;
+
+    title.textContent = '#' + businessDash(d.applicationIdx) + ' · ' + businessDash(d.companyName);
+    const applicant = businessDash(d.nickname) + (d.userId ? ' (@' + d.userId + ')' : '');
+    body.innerHTML =
+        '<div class="adm-context-grid">'
+        + businessDetailField('신청 번호', d.applicationIdx)
+        + businessDetailField('신청자', applicant)
+        + businessDetailField('회원 이메일', d.userEmail)
+        + businessDetailField('현재 권한', d.currentRole)
+        + businessDetailField('요청 권한', d.requestedRole, {focus:'role'})
+        + businessDetailField('회사명', d.companyName, {focus:'company'})
+        + businessDetailField('사업자번호', d.businessNumber, {focus:'company'})
+        + businessDetailField('담당자', d.managerName, {focus:'company'})
+        + businessDetailField('담당자 연락처', d.managerPhone, {focus:'company'})
+        + businessDetailField('상태', d.status, {focus:'status'})
+        + businessDetailField('신청일시', d.createdAtDisplay || d.createdAt, {focus:'date'})
+        + businessDetailField('검토자', d.reviewer)
+        + businessDetailField('검토일시', d.reviewedAtDisplay || d.reviewedAt)
+        + businessDetailField('반려 사유', d.rejectReason, {pre:true, focus:'status'})
+        + businessDetailField('신청 설명', d.description, {pre:true, focus:'company'})
+        + '</div>';
+
+    const memberBtn = document.getElementById('businessApplicationDetailMemberBtn');
+    if (memberBtn) {
+        memberBtn.disabled = !d.userIdx;
+        memberBtn.onclick = function() {
+            closeBusinessApplicationDetailModal();
+            if (d.userIdx) openAdminMemberContext(d.userIdx, 'actions');
+        };
+    }
+    const reviewBtn = document.getElementById('businessApplicationDetailReviewBtn');
+    if (reviewBtn) {
+        reviewBtn.disabled = d.status !== 'PENDING';
+        reviewBtn.onclick = function() {
+            closeBusinessApplicationDetailModal();
+            focusBusinessReviewActions(d.applicationIdx);
+        };
+    }
+    modal.classList.add('open');
+
+    const focusKey = trigger.getAttribute('data-default-focus');
+    if (focusKey) {
+        const focusEl = body.querySelector('[data-focus-key="' + focusKey + '"]');
+        if (focusEl) {
+            focusEl.classList.remove('is-focus-flash');
+            void focusEl.offsetWidth;
+            focusEl.classList.add('is-focus-flash');
+        }
+    }
+}
+function focusBusinessReviewActions(applicationIdx) {
+    const target = document.getElementById('business-review-actions-' + applicationIdx);
+    if (!target) {
+        adm_toast('현재 페이지에 검토 영역이 없습니다.', 'error');
+        return;
+    }
+    target.scrollIntoView({behavior:'smooth', block:'center'});
+    target.classList.remove('is-focus-flash'); void target.offsetWidth; target.classList.add('is-focus-flash');
+    const focusable = target.querySelector('input, button, textarea, select');
+    if (focusable) { try { focusable.focus({preventScroll:true}); } catch(e) { focusable.focus(); } }
+}
+
 async function postBusinessBulk(url, extra) {
     const ids = selectedBusinessIds();
     if (!ids.length) { adm_toast(BUSINESS_MSG.selectedMissing, 'error'); return; }
@@ -423,14 +534,14 @@ function initBusinessSection() {
         document.addEventListener('click', function(e) { if (!exportToggle.contains(e.target) && !exportDropdown.contains(e.target)) exportDropdown.classList.remove('open'); });
     }
     document.addEventListener('click', function(event) {
+        const detailTrigger = event.target.closest('.js-open-business-detail');
+        if (detailTrigger) {
+            openBusinessApplicationDetail(detailTrigger);
+            return;
+        }
         const trigger = event.target.closest('.js-focus-review-actions');
         if (!trigger) return;
-        const target = document.getElementById('business-review-actions-' + trigger.getAttribute('data-application-idx'));
-        if (!target) return;
-        target.scrollIntoView({behavior:'smooth', block:'center'});
-        target.classList.remove('is-focus-flash'); void target.offsetWidth; target.classList.add('is-focus-flash');
-        const focusable = target.querySelector('input, button, textarea, select');
-        if (focusable) { try { focusable.focus({preventScroll:true}); } catch(e) { focusable.focus(); } }
+        focusBusinessReviewActions(trigger.getAttribute('data-application-idx'));
     });
     document.addEventListener('submit', async function(event) {
         const formEl = event.target.closest('.js-business-review-form');

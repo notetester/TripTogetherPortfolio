@@ -1025,6 +1025,29 @@ public class AdminController {
         return "admin/logs/list";
     }
 
+    @GetMapping("/logins/api")
+    @ResponseBody
+    public Map<String, Object> loginAuditApi(AdminLoginAuditSearchVO search) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.putAll(adminService.getLoginAuditList(search));
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("로그인 감사 목록 API 조회 실패", e);
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/logins/fragment")
+    public String loginAuditRowsFragment(AdminLoginAuditSearchVO search, Model model, HttpServletResponse response) {
+        Map<String, Object> data = adminService.getLoginAuditList(search);
+        model.addAllAttributes(data);
+        writeAdminListHeaders(response, data);
+        return "admin/logs/_loginAuditRowsFragment";
+    }
+
     @GetMapping("/security")
     public String securityAudit(AdminSecurityAuditSearchVO search, Model model) {
         model.addAllAttributes(adminService.getSecurityAuditList(search));

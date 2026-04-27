@@ -11,12 +11,12 @@
 <div class="adm-content">
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-body">
-            <form method="get" action="${pageContext.request.contextPath}/admin/logins">
+            <form id="loginSearchForm" method="get" action="${pageContext.request.contextPath}/admin/logins">
                 <div class="adm-filter-bar">
                     <div class="adm-search-box" style="flex:1;min-width:220px;">
                         <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
                         <span class="adm-search-ico">🔍</span>
-                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="<spring:message code='admin.logs.searchPlaceholder'/>">
+                        <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="<spring:message code='admin.logs.searchPlaceholder'/>">
                     </div>
                     <div>
                         <div class="adm-filter-label"><spring:message code="admin.logs.event"/></div>
@@ -66,242 +66,84 @@
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:8px;">
                         <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
-                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/logins"><spring:message code="admin.common.reset"/></a>
+                        <button type="button" class="adm-btn adm-btn-ghost" onclick="resetLoginFilters()"><spring:message code="admin.common.reset"/></button>
                     </div>
+
+                    <input type="hidden" name="page" value="${search.page}">
+                    <input type="hidden" name="size" value="${search.size}">
+                    <input type="hidden" id="loginSortFieldInput" name="sortField" value="${fn:escapeXml(search.sortField)}">
+                    <input type="hidden" id="loginSortDirInput" name="sortDir" value="${fn:escapeXml(search.sortDir)}">
+                    <input type="hidden" id="loginDateFilterInput" name="dateFilter" value="${fn:escapeXml(search.dateFilter)}">
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="adm-card">
+    <div class="adm-card adm-managed-section-card js-login-section-card" data-section="loginAudits" data-enhanced="true">
         <div class="adm-card-head">
             <div class="adm-card-title"><spring:message code="admin.logs.historyTitle"/></div>
             <div style="font-size:12px;color:#64748b;"><spring:message code="admin.common.totalCount" arguments="${total}"/></div>
         </div>
+        <div class="adm-local-toolbar adm-managed-local-toolbar">
+            <div class="adm-local-toolbar-group adm-managed-toolbar-actions">
+                <button type="button" class="adm-dash-sort-reset js-login-sort-reset" id="loginSortResetBtn" style="display:none;" onclick="resetLoginSort()"></button>
+                <select class="adm-select js-login-section-mode" id="loginModeSelect" title="<spring:message code='admin.blocks.mode.label'/>">
+                    <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
+                    <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                </select>
+                <select class="adm-select js-login-page-size" id="loginSizeSelect" style="width:90px;" onchange="changeLoginSize(this.value)">
+                    <option value="30" ${search.size==30 ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="30"/></option>
+                    <option value="50" ${search.size==50 ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="50"/></option>
+                    <option value="100" ${search.size==100 ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="100"/></option>
+                </select>
+            </div>
+        </div>
         <div class="adm-table-wrap">
-            <table class="adm-table">
+            <table class="adm-table adm-section-table-fixed adm-login-section-table" data-admin-list-ignore="true" data-section="loginAudits">
+                <colgroup>
+                    <col style="width:150px;">
+                    <col style="width:150px;">
+                    <col style="width:92px;">
+                    <col style="width:96px;">
+                    <col style="width:96px;">
+                    <col style="width:150px;">
+                    <col style="width:190px;">
+                    <col style="width:88px;">
+                    <col style="width:180px;">
+                    <col style="width:128px;">
+                    <col style="width:210px;">
+                    <col style="width:96px;">
+                </colgroup>
                 <thead>
                 <tr>
-                    <th data-sort="time" onclick="sortBy('time')"><spring:message code="admin.common.time"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="member" onclick="sortBy('member')"><spring:message code="admin.common.member"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="eventType" onclick="sortBy('eventType')"><spring:message code="admin.logs.event"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="authType" onclick="sortBy('authType')"><spring:message code="admin.logs.authType"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="provider" onclick="sortBy('provider')"><spring:message code="admin.logs.provider"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="loginMethod" onclick="sortBy('loginMethod')"><spring:message code="admin.logs.authFlow"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="input" onclick="sortBy('input')"><spring:message code="admin.context.inputValue"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="success" onclick="sortBy('success')"><spring:message code="admin.common.result"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="reason" onclick="sortBy('reason')"><spring:message code="admin.common.reason"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="ip" onclick="sortBy('ip')"><spring:message code="admin.common.ip"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="requestId" onclick="sortBy('requestId')"><spring:message code="admin.context.requestId"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="time" onclick="loginSortBy('time')"><spring:message code="admin.common.time"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="member" onclick="loginSortBy('member')"><spring:message code="admin.common.member"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="eventType" onclick="loginSortBy('eventType')"><spring:message code="admin.logs.event"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="authType" onclick="loginSortBy('authType')"><spring:message code="admin.logs.authType"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="provider" onclick="loginSortBy('provider')"><spring:message code="admin.logs.provider"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="loginMethod" onclick="loginSortBy('loginMethod')"><spring:message code="admin.logs.authFlow"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="input" onclick="loginSortBy('input')"><spring:message code="admin.context.inputValue"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="success" onclick="loginSortBy('success')"><spring:message code="admin.common.result"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="reason" onclick="loginSortBy('reason')"><spring:message code="admin.common.reason"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="ip" onclick="loginSortBy('ip')"><spring:message code="admin.common.ip"/><span class="sort-ico">▼</span></th>
+                    <th class="js-login-sort" data-sort="requestId" onclick="loginSortBy('requestId')"><spring:message code="admin.context.requestId"/><span class="sort-ico">▼</span></th>
                     <th></th>
                 </tr>
                 </thead>
-                <tbody>
-                <c:forEach items="${list}" var="item">
-                    <fmt:formatDate var="itemDateFilter" value="${item.loginAt}" pattern="yyyy-MM-dd"/>
-                    <fmt:formatDate var="itemTimeDisplay" value="${item.loginAt}" pattern="yyyy.MM.dd HH:mm:ss"/>
-                    <tr>
-                        <td>
-                            <button type="button" class="adm-cell-link"
-                                    data-date="${itemDateFilter}"
-                                    onclick="filterByDate(this.dataset.date)">
-                                <span>${itemTimeDisplay}</span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
-                            </button>
-                        </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${not empty item.userIdx}">
-                                    <button type="button"
-                                            class="adm-inline-link js-open-member-context"
-                                            data-user-idx="${item.userIdx}"
-                                            data-default-tab="logins"
-                                            style="font-weight:700;color:#93c5fd;">${item.nickname}</button>
-                                    <div class="mem-uid">
-                                        <button type="button"
-                                                class="adm-inline-link js-open-member-context"
-                                                data-user-idx="${item.userIdx}"
-                                                data-default-tab="logins"
-                                                style="color:#94a3b8;">@${item.userId}</button>
-                                    </div>
-                                </c:when>
-                                <c:otherwise><span style="color:#64748b;"><spring:message code="admin.common.unidentified"/></span></c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <button type="button" class="adm-cell-link" data-param-name="eventType" data-param-value="${item.eventType}" onclick="applySelectFilter(this)">
-                                <span class="status-badge ${item.eventType == 'LOGOUT' ? 'PENDING' : 'ACTIVE'}">
-                                    <c:choose>
-                                        <c:when test="${item.eventType eq 'LOGIN'}"><spring:message code="admin.logs.event.login"/></c:when>
-                                        <c:when test="${item.eventType eq 'LOGOUT'}"><spring:message code="admin.logs.event.logout"/></c:when>
-                                        <c:otherwise><c:out value="${item.eventType}"/></c:otherwise>
-                                    </c:choose>
-                                </span>
-                            </button>
-                        </td>
-                        <td>
-                            <button type="button" class="adm-cell-link" data-param-name="authType" data-param-value="${item.authType}" onclick="applySelectFilter(this)">
-                                <span><c:choose>
-                                    <c:when test="${item.authType eq 'PASSWORD'}"><spring:message code="admin.logs.authType.password"/></c:when>
-                                    <c:when test="${item.authType eq 'SOCIAL'}"><spring:message code="admin.logs.authType.social"/></c:when>
-                                    <c:otherwise><c:out value="${item.authType}"/></c:otherwise>
-                                </c:choose></span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
-                            </button>
-                        </td>
-                        <td>
-                            <button type="button" class="adm-cell-link" data-param-name="authProvider" data-param-value="${item.authProvider}" onclick="applySelectFilter(this)">
-                                <span><c:choose>
-                                    <c:when test="${item.authProvider eq 'LOCAL'}"><spring:message code="admin.logs.provider.local"/></c:when>
-                                    <c:when test="${item.authProvider eq 'KAKAO'}"><spring:message code="admin.logs.provider.kakao"/></c:when>
-                                    <c:when test="${item.authProvider eq 'NAVER'}"><spring:message code="admin.logs.provider.naver"/></c:when>
-                                    <c:when test="${item.authProvider eq 'GOOGLE'}"><spring:message code="admin.logs.provider.google"/></c:when>
-                                    <c:otherwise><c:out value="${item.authProvider}"/></c:otherwise>
-                                </c:choose></span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
-                            </button>
-                        </td>
-                        <td>
-                            <button type="button" class="adm-cell-link" data-param-name="loginMethod" data-param-value="${item.loginMethod}" onclick="applySelectFilter(this)">
-                                <span><c:choose>
-                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'LOCAL'}"><spring:message code="admin.logs.authFlow.local"/></c:when>
-                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'ID'}"><spring:message code="admin.logs.authFlow.id"/></c:when>
-                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'EMAIL'}"><spring:message code="admin.logs.authFlow.email"/></c:when>
-                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'KAKAO'}"><spring:message code="admin.logs.provider.kakao"/></c:when>
-                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'NAVER'}"><spring:message code="admin.logs.provider.naver"/></c:when>
-                                    <c:when test="${empty item.authFlow and item.loginMethod eq 'GOOGLE'}"><spring:message code="admin.logs.provider.google"/></c:when>
-                                    <c:when test="${item.authFlow eq 'PASSWORD_ID'}"><spring:message code="admin.logs.authFlow.passwordId"/></c:when>
-                                    <c:when test="${item.authFlow eq 'PASSWORD_EMAIL'}"><spring:message code="admin.logs.authFlow.passwordEmail"/></c:when>
-                                    <c:when test="${item.authFlow eq 'SOCIAL_LOGIN'}"><spring:message code="admin.logs.authFlow.socialLogin"/></c:when>
-                                    <c:when test="${item.authFlow eq 'SOCIAL_REGISTER'}"><spring:message code="admin.logs.authFlow.socialRegister"/></c:when>
-                                    <c:when test="${item.authFlow eq 'LOGOUT_LOCAL'}"><spring:message code="admin.logs.authFlow.logoutLocal"/></c:when>
-                                    <c:when test="${item.authFlow eq 'LOGOUT_SOCIAL'}"><spring:message code="admin.logs.authFlow.logoutSocial"/></c:when>
-                                    <c:otherwise><c:out value="${empty item.authFlow ? item.loginMethod : item.authFlow}"/></c:otherwise>
-                                </c:choose></span>
-                                <c:if test="${not empty item.requestUri}">
-                                    <span class="adm-cell-link-note"><c:out value="${item.requestUri}"/></span>
-                                </c:if>
-                            </button>
-                        </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${not empty item.loginIdentifier}">
-                                    <button type="button"
-                                            class="adm-cell-link"
-                                            data-keyword="${item.loginIdentifier}"
-                                            onclick="applyKeywordFilter(this)">
-                                        <span><c:out value="${item.loginIdentifier}"/></span>
-                                        <c:if test="${not empty item.requestUri}">
-                                            <span class="adm-cell-link-note"><c:out value="${item.requestUri}"/></span>
-                                        </c:if>
-                                    </button>
-                                </c:when>
-                                <c:otherwise><span style="color:#64748b;">-</span></c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <button type="button" class="adm-cell-link" data-param-name="success" data-param-value="${item.success ? 'SUCCESS' : 'FAIL'}" onclick="applySelectFilter(this)">
-                                <c:choose>
-                                    <c:when test="${item.success}"><span class="status-badge ACTIVE"><spring:message code="admin.common.success"/></span></c:when>
-                                    <c:otherwise><span class="status-badge DELETED"><spring:message code="admin.common.fail"/></span></c:otherwise>
-                                </c:choose>
-                            </button>
-                        </td>
-                        <td style="max-width:280px;white-space:normal;">
-                            <c:choose>
-                                <c:when test="${not empty item.failReason}">
-                                    <button type="button" class="adm-cell-link" data-keyword="${item.failReason}" onclick="applyKeywordFilter(this)">
-                                        <span><c:out value="${item.failReason}"/></span>
-                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
-                                    </button>
-                                    <div class="adm-tr-inline js-admin-translation-widget"
-                                         data-label="<spring:message code='admin.translation.label.loginFailReason'/>"
-                                         data-source-type="LOGIN_AUDIT"
-                                         data-source-idx="${item.loginIdx}"
-                                         data-field-name="fail_reason"
-                                         data-default-source-lang="ko"
-                                         data-source-text="${fn:escapeXml(item.failReason)}"></div>
-                                </c:when>
-                                <c:when test="${item.success and not empty item.authFlow}">
-                                    <button type="button" class="adm-cell-link" data-param-name="loginMethod" data-param-value="${item.loginMethod}" onclick="applySelectFilter(this)">
-                                        <span style="color:#64748b;font-size:12px;"><c:out value="${item.authFlow}"/></span>
-                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
-                                    </button>
-                                </c:when>
-                                <c:otherwise><div style="color:#475569;">-</div></c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${not empty item.ipAddress}">
-                                    <button type="button"
-                                            class="adm-cell-link js-open-ip-context"
-                                            data-ip-address="${item.ipAddress}"
-                                            data-default-tab="logins">
-                                        <span style="color:#93c5fd;">${item.ipAddress}</span>
-                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameIp"/></span>
-                                    </button>
-                                </c:when>
-                                <c:otherwise>-</c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${not empty item.requestId or not empty item.flowTraceId}">
-                                    <button type="button"
-                                            class="adm-cell-link"
-                                            data-keyword="${not empty item.requestId ? item.requestId : item.flowTraceId}"
-                                            onclick="applyKeywordFilter(this)">
-                                        <span><c:out value="${empty item.requestId ? '-' : item.requestId}"/></span>
-                                        <c:if test="${not empty item.flowTraceId}">
-                                            <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
-                                        </c:if>
-                                    </button>
-                                </c:when>
-                                <c:otherwise><div style="font-size:12px;color:#64748b;">-</div></c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <button type="button" class="adm-row-btn detail"
-                                    data-time="${itemTimeDisplay}"
-                                    data-user="${fn:escapeXml(item.nickname)} (@${fn:escapeXml(item.userId)})"
-                                    data-event="${fn:escapeXml(item.eventType)}"
-                                    data-auth-type="${fn:escapeXml(item.authType)}"
-                                    data-provider="${fn:escapeXml(item.authProvider)}"
-                                    data-auth-flow="${fn:escapeXml(item.authFlow)}"
-                                    data-login-method="${fn:escapeXml(item.loginMethod)}"
-                                    data-identifier="${fn:escapeXml(item.loginIdentifier)}"
-                                    data-success="${item.success ? 'SUCCESS' : 'FAIL'}"
-                                    data-fail-reason="${fn:escapeXml(item.failReason)}"
-                                    data-ip="${fn:escapeXml(item.ipAddress)}"
-                                    data-request-id="${fn:escapeXml(item.requestId)}"
-                                    data-flow-trace="${fn:escapeXml(item.flowTraceId)}"
-                                    data-user-agent="${fn:escapeXml(item.userAgent)}"
-                                    data-request-uri="${fn:escapeXml(item.requestUri)}"
-                                    data-session-id="${fn:escapeXml(item.sessionId)}"
-                                    onclick="openLoginDetail(this)">
-                                <spring:message code="admin.common.viewDetail"/>
-                            </button>
-                        </td>
-                    </tr>
-                </c:forEach>
-                <c:if test="${empty list}">
-                    <tr><td colspan="12" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
-                </c:if>
+                <tbody id="loginRowsBody">
+                <%@ include file="_loginAuditRowsFragment.jsp" %>
                 </tbody>
             </table>
         </div>
 
-        <c:if test="${paging.totalPage > 1}">
-            <div class="adm-paging">
-                <c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if>
-                <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p">
-                    <button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>
-                </c:forEach>
-                <c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if>
-                <span class="adm-page-info"><spring:message code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/></span>
+        <div class="adm-local-pagination" data-section="loginAudits" id="loginPaging">
+            <div class="adm-local-page-info js-login-page-info" data-section="loginAudits">총 ${total}건 / 현재 ${fn:length(list)}건</div>
+            <div class="adm-local-page-actions">
+                <button type="button" class="adm-btn adm-btn-ghost js-login-prev" onclick="goLoginPage(loginSectionState.page - 1)"><spring:message code="admin.common.prev"/></button>
+                <span class="js-login-page-state" data-section="loginAudits">${paging.currentPage} / ${paging.totalPage}</span>
+                <button type="button" class="adm-btn adm-btn-ghost js-login-next" onclick="goLoginPage(loginSectionState.page + 1)"><spring:message code="admin.common.next"/></button>
             </div>
-        </c:if>
+        </div>
     </div>
 </div>
 
@@ -318,63 +160,398 @@
 </div>
 
 <script>
-var BASE_URL = '${pageContext.request.contextPath}/admin/logins';
-var curSortField = '${search.sortField}';
-var curSortDir = '${search.sortDir}';
+const ctx = '${pageContext.request.contextPath}';
+const LOGIN_MODE_STORAGE = 'admLoginAuditSectionMode';
+const LOGIN_MODE_COOKIE = 'admLoginAuditMode';
+const LOGIN_CLIENT_MAX_SIZE = 10000;
+const ADMIN_LOGIN_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
+const ADMIN_LOGIN_MSG = {
+    loadFailed: '<spring:message code="admin.common.loadFailed" text="목록을 불러오지 못했습니다." javaScriptEscape="true"/>',
+    loadAllFailed: '<spring:message code="admin.common.loadAllFailed" text="전체 목록을 불러오지 못했습니다." javaScriptEscape="true"/>',
+    dashSortReset: '<spring:message code="admin.blocks.js.dashSortReset" text="↺ 정렬 초기화" javaScriptEscape="true"/>',
+    totalCountFormat: '<spring:message code="admin.common.totalCountFormat" text="총 {0}건" javaScriptEscape="true"/>',
+    currentCountFormat: '<spring:message code="admin.common.currentCountFormat" text="현재 {0}건" javaScriptEscape="true"/>',
+    noResults: '<spring:message code="admin.common.noResults" text="조회 결과가 없습니다." javaScriptEscape="true"/>',
+    historyTitle: '<spring:message code="admin.logs.historyTitle" text="로그인 감사" javaScriptEscape="true"/>'
+};
 
-document.querySelectorAll('th[data-sort]').forEach(function(th) {
-    var f = th.getAttribute('data-sort');
-    if (f === curSortField) {
-        th.classList.add('sorted');
-        var ico = th.querySelector('.sort-ico');
-        if (ico) ico.textContent = curSortDir === 'ASC' ? '▲' : '▼';
+var loginSectionState = {
+    page: Number('${paging.currentPage}' || 1) || 1,
+    pageSize: Number('${search.size}' || 30) || 30,
+    sortBy: '',
+    sortDir: 'DESC',
+    mode: 'SERVER',
+    clientRows: null,
+    clientFilterKey: '',
+    clientTotal: 0
+};
+
+function showLoginToast(message, type) {
+    if (typeof adm_toast === 'function') {
+        adm_toast(message, type);
+    } else {
+        console[type === 'error' ? 'error' : 'log'](message);
     }
-});
+}
 
-function sortBy(field) {
-    var params = new URLSearchParams(window.location.search);
-    var dir = (params.get('sortField') === field && params.get('sortDir') !== 'ASC') ? 'ASC' : 'DESC';
-    params.set('sortField', field);
-    params.set('sortDir', dir);
-    params.set('page', '1');
-    location.href = BASE_URL + '?' + params.toString();
+function escapeHtml(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function getLoginSearchForm() {
+    return document.getElementById('loginSearchForm');
+}
+
+function getLoginTbody() {
+    return document.getElementById('loginRowsBody');
+}
+
+function getLoginSearchFilterKey() {
+    const form = getLoginSearchForm();
+    if (!form) return '';
+    const params = new URLSearchParams();
+    new FormData(form).forEach(function (val, key) {
+        if (['page', 'size', 'sortField', 'sortDir', 'mode'].includes(key)) return;
+        if (val != null && String(val).trim().length > 0) params.append(key, String(val).trim());
+    });
+    return params.toString();
+}
+
+function buildLoginParams(pageOverride, options) {
+    options = options || {};
+    const form = getLoginSearchForm();
+    const params = new URLSearchParams();
+    if (form) {
+        new FormData(form).forEach(function (val, key) {
+            if (['page', 'size', 'sortField', 'sortDir', 'mode'].includes(key)) return;
+            if (val != null && String(val).trim().length > 0) params.append(key, String(val).trim());
+        });
+    }
+    const targetPage = pageOverride != null ? Number(pageOverride) : Number(loginSectionState.page || 1);
+    params.set('page', String(Math.max(1, targetPage || 1)));
+    params.set('size', String(options.clientFetch ? LOGIN_CLIENT_MAX_SIZE : (loginSectionState.pageSize || 30)));
+    params.set('mode', options.clientFetch ? 'CLIENT' : loginSectionState.mode);
+    if (options.includeSort !== false && loginSectionState.sortBy) {
+        params.set('sortField', loginSectionState.sortBy);
+        params.set('sortDir', loginSectionState.sortDir === 'ASC' ? 'ASC' : 'DESC');
+    }
+    return params;
+}
+
+function syncLoginHiddenInputs() {
+    const form = getLoginSearchForm();
+    if (!form) return;
+    const pageInput = form.querySelector('[name=page]');
+    const sizeInput = form.querySelector('[name=size]');
+    const sortFieldInput = document.getElementById('loginSortFieldInput');
+    const sortDirInput = document.getElementById('loginSortDirInput');
+    if (pageInput) pageInput.value = String(loginSectionState.page || 1);
+    if (sizeInput) sizeInput.value = String(loginSectionState.pageSize || 30);
+    if (sortFieldInput) sortFieldInput.value = loginSectionState.sortBy || '';
+    if (sortDirInput) sortDirInput.value = loginSectionState.sortBy ? loginSectionState.sortDir : '';
+}
+
+function setLoginModeCookie(mode) {
+    document.cookie = LOGIN_MODE_COOKIE + '=' + (mode === 'CLIENT' ? 'client' : 'server') + ';path=' + (ctx || '/') + ';max-age=31536000;samesite=lax';
+}
+
+function loadStoredLoginMode() {
+    try {
+        const stored = localStorage.getItem(LOGIN_MODE_STORAGE);
+        return stored === 'CLIENT' ? 'CLIENT' : 'SERVER';
+    } catch (e) {
+        return 'SERVER';
+    }
+}
+
+function saveLoginMode(mode) {
+    loginSectionState.mode = mode === 'CLIENT' ? 'CLIENT' : 'SERVER';
+    try { localStorage.setItem(LOGIN_MODE_STORAGE, loginSectionState.mode); } catch (e) {}
+    setLoginModeCookie(loginSectionState.mode);
+    const select = document.getElementById('loginModeSelect');
+    if (select) select.value = loginSectionState.mode === 'CLIENT' ? 'client' : 'server';
+}
+
+function updateLoginSortIndicators() {
+    document.querySelectorAll('th[data-sort]').forEach(function (th) {
+        const active = !!loginSectionState.sortBy && th.dataset.sort === loginSectionState.sortBy;
+        th.classList.toggle('sorted', active);
+        let ico = th.querySelector('.sort-ico');
+        if (active) {
+            if (!ico) {
+                ico = document.createElement('span');
+                ico.className = 'sort-ico';
+                ico.style.cssText = 'font-size:10px;margin-left:4px;font-weight:900;';
+                th.appendChild(ico);
+            }
+            ico.textContent = loginSectionState.sortDir === 'DESC' ? '▼' : '▲';
+            ico.style.color = loginSectionState.sortDir === 'DESC' ? '#3b82f6' : '#ef4444';
+        } else if (ico) {
+            ico.remove();
+        }
+    });
+    const resetBtn = document.querySelector('.js-login-sort-reset');
+    if (resetBtn) {
+        resetBtn.textContent = ADMIN_LOGIN_MSG.dashSortReset;
+        resetBtn.style.display = loginSectionState.sortBy ? '' : 'none';
+    }
+}
+
+function updateLoginTotal(total) {
+    const cardTitleCounter = document.querySelector('.js-login-section-card .adm-card-head > div:last-child');
+    if (cardTitleCounter) {
+        cardTitleCounter.textContent = '총 ' + Number(total || 0).toLocaleString() + '건';
+    }
+}
+
+function updateLoginPaginationMeta(page, totalPages, total, renderedCount) {
+    const safePages = Math.max(1, Number(totalPages || 1));
+    const safePage = Math.min(Math.max(1, Number(page || 1)), safePages);
+    loginSectionState.page = safePage;
+    const pageInfo = document.querySelector('.js-login-page-info');
+    if (pageInfo) {
+        const totalText = ADMIN_LOGIN_MSG.totalCountFormat.replace('{0}', Number(total || 0).toLocaleString());
+        const currentText = ADMIN_LOGIN_MSG.currentCountFormat.replace('{0}', Number(renderedCount || 0).toLocaleString());
+        pageInfo.textContent = totalText + ' / ' + currentText;
+    }
+    const pageState = document.querySelector('.js-login-page-state');
+    if (pageState) pageState.textContent = safePage + ' / ' + safePages;
+    const prevBtn = document.querySelector('.js-login-prev');
+    const nextBtn = document.querySelector('.js-login-next');
+    if (prevBtn) prevBtn.disabled = safePage <= 1;
+    if (nextBtn) nextBtn.disabled = safePage >= safePages;
+    updateLoginTotal(total);
+    syncLoginHiddenInputs();
+}
+
+function loginSortValue(row, field) {
+    if (!row || !field) return '';
+    if (field === 'time') return row.dataset.time || '0';
+    if (field === 'member') return row.dataset.member || '';
+    if (field === 'eventType') return row.dataset.eventType || '';
+    if (field === 'authType') return row.dataset.authType || '';
+    if (field === 'provider') return row.dataset.provider || '';
+    if (field === 'loginMethod') return row.dataset.loginMethod || '';
+    if (field === 'input') return row.dataset.input || '';
+    if (field === 'success') return row.dataset.success || '0';
+    if (field === 'reason') return row.dataset.reason || '';
+    if (field === 'ip') return row.dataset.ip || '';
+    if (field === 'requestId') return row.dataset.requestId || '';
+    return row.dataset.time || '0';
+}
+
+function compareLoginRows(a, b) {
+    const field = loginSectionState.sortBy;
+    if (!field) {
+        return Number(a.dataset.originalIndex || 0) - Number(b.dataset.originalIndex || 0);
+    }
+    const av = loginSortValue(a, field);
+    const bv = loginSortValue(b, field);
+    const numericFields = ['time', 'success'];
+    let cmp;
+    if (numericFields.includes(field)) {
+        cmp = (Number(av) || 0) - (Number(bv) || 0);
+    } else {
+        cmp = String(av).localeCompare(String(bv), ADMIN_LOGIN_LOCALE || undefined, {numeric: true, sensitivity: 'base'});
+    }
+    if (cmp === 0) {
+        cmp = (Number(a.dataset.time || 0) - Number(b.dataset.time || 0));
+    }
+    return cmp * (loginSectionState.sortDir === 'DESC' ? -1 : 1);
+}
+
+function markLoginOriginalIndices(rows) {
+    rows.forEach(function (row, idx) {
+        if (row.dataset.originalIndex == null) row.dataset.originalIndex = String(idx);
+    });
+}
+
+function renderLoginEmptyRow() {
+    return '<tr class="adm-local-empty"><td colspan="12" style="text-align:center;color:#64748b;padding:32px;">' + escapeHtml(ADMIN_LOGIN_MSG.noResults) + '</td></tr>';
+}
+
+async function renderServerLogins(pageOverride) {
+    loginSectionState.mode = 'SERVER';
+    const params = buildLoginParams(pageOverride, {includeSort: true});
+    const tbody = getLoginTbody();
+    if (!tbody) return;
+    tbody.classList.add('is-loading');
+    try {
+        const res = await fetch(ctx + '/admin/logins/fragment?' + params.toString(), {
+            credentials: 'same-origin',
+            headers: {'Accept': 'text/html', 'X-Requested-With': 'XMLHttpRequest'}
+        });
+        const html = await res.text();
+        if (!res.ok) throw new Error(html || ADMIN_LOGIN_MSG.loadFailed);
+        tbody.innerHTML = html.trim() || renderLoginEmptyRow();
+        const rows = Array.from(tbody.querySelectorAll('.js-login-row'));
+        markLoginOriginalIndices(rows);
+        const total = Number(res.headers.get('X-Section-Total') || rows.length || 0);
+        const page = Number(res.headers.get('X-Section-Page') || params.get('page') || 1);
+        const size = Number(res.headers.get('X-Section-Size') || loginSectionState.pageSize || 30);
+        const pages = Number(res.headers.get('X-Section-Pages') || 1);
+        loginSectionState.pageSize = [30,50,100].includes(size) ? size : loginSectionState.pageSize;
+        const sizeSelect = document.getElementById('loginSizeSelect');
+        if (sizeSelect) sizeSelect.value = String(loginSectionState.pageSize);
+        updateLoginPaginationMeta(page, pages, total, rows.length);
+        updateLoginSortIndicators();
+    } catch (e) {
+        showLoginToast(e.message || ADMIN_LOGIN_MSG.loadFailed, 'error');
+    } finally {
+        tbody.classList.remove('is-loading');
+    }
+}
+
+async function ensureClientLoginRows() {
+    const filterKey = getLoginSearchFilterKey();
+    if (loginSectionState.clientRows && loginSectionState.clientFilterKey === filterKey) return;
+    const params = buildLoginParams(1, {clientFetch: true, includeSort: false});
+    const res = await fetch(ctx + '/admin/logins/fragment?' + params.toString(), {
+        credentials: 'same-origin',
+        headers: {'Accept': 'text/html', 'X-Requested-With': 'XMLHttpRequest'}
+    });
+    const html = await res.text();
+    if (!res.ok) throw new Error(html || ADMIN_LOGIN_MSG.loadAllFailed);
+    const temp = document.createElement('tbody');
+    temp.innerHTML = html;
+    const rows = Array.from(temp.querySelectorAll('.js-login-row'));
+    markLoginOriginalIndices(rows);
+    loginSectionState.clientRows = rows;
+    loginSectionState.clientFilterKey = filterKey;
+    loginSectionState.clientTotal = Number(res.headers.get('X-Section-Total') || rows.length || 0);
+}
+
+async function renderClientLogins(pageOverride) {
+    loginSectionState.mode = 'CLIENT';
+    const tbody = getLoginTbody();
+    if (!tbody) return;
+    tbody.classList.add('is-loading');
+    try {
+        await ensureClientLoginRows();
+        let rows = (loginSectionState.clientRows || []).slice();
+        rows.sort(compareLoginRows);
+        const total = rows.length;
+        const pageSize = loginSectionState.pageSize || 30;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        const page = Math.min(Math.max(1, Number(pageOverride || loginSectionState.page || 1)), totalPages);
+        const start = (page - 1) * pageSize;
+        const visible = rows.slice(start, start + pageSize);
+        tbody.innerHTML = '';
+        if (visible.length === 0) {
+            tbody.innerHTML = renderLoginEmptyRow();
+        } else {
+            visible.forEach(function (row) { tbody.appendChild(row.cloneNode(true)); });
+        }
+        updateLoginPaginationMeta(page, totalPages, total, visible.length);
+        updateLoginSortIndicators();
+    } catch (e) {
+        showLoginToast(e.message || ADMIN_LOGIN_MSG.loadAllFailed, 'error');
+    } finally {
+        tbody.classList.remove('is-loading');
+    }
+}
+
+async function renderLoginByMode(pageOverride) {
+    if (loginSectionState.mode === 'CLIENT') {
+        return renderClientLogins(pageOverride);
+    }
+    return renderServerLogins(pageOverride);
+}
+
+async function refreshLoginSection() {
+    if (loginSectionState.mode === 'CLIENT') loginSectionState.clientRows = null;
+    return renderLoginByMode(loginSectionState.page || 1);
+}
+
+function loginSortBy(field) {
+    const prevField = loginSectionState.sortBy || '';
+    const prevDir = loginSectionState.sortDir || 'DESC';
+    loginSectionState.sortBy = field;
+    loginSectionState.sortDir = (prevField === field && prevDir === 'ASC') ? 'DESC' : 'ASC';
+    loginSectionState.page = 1;
+    renderLoginByMode(1);
+}
+
+function resetLoginSort() {
+    loginSectionState.sortBy = '';
+    loginSectionState.sortDir = 'DESC';
+    loginSectionState.page = 1;
+    renderLoginByMode(1);
+}
+
+function resetLoginFilters() {
+    const form = getLoginSearchForm();
+    if (form) {
+        const setValue = function (name, value) {
+            const el = form.querySelector('[name=' + name + ']');
+            if (el) el.value = value;
+        };
+        setValue('keyword', '');
+        setValue('success', 'ALL');
+        setValue('eventType', 'ALL');
+        setValue('authType', 'ALL');
+        setValue('authProvider', 'ALL');
+        setValue('loginMethod', 'ALL');
+        setValue('dateFilter', '');
+    }
+    loginSectionState.page = 1;
+    loginSectionState.sortBy = '';
+    loginSectionState.sortDir = 'DESC';
+    loginSectionState.clientRows = null;
+    renderLoginByMode(1);
+}
+
+function goLoginPage(page) {
+    renderLoginByMode(Math.max(1, Number(page || 1)));
+}
+
+function changeLoginSize(size) {
+    const parsed = Number(size);
+    loginSectionState.pageSize = [30,50,100].includes(parsed) ? parsed : 30;
+    loginSectionState.page = 1;
+    syncLoginHiddenInputs();
+    renderLoginByMode(1);
 }
 
 function filterByDate(dateStr) {
-    var params = new URLSearchParams(window.location.search);
-    params.set('dateFilter', dateStr);
-    params.set('page', '1');
-    location.href = BASE_URL + '?' + params.toString();
+    const dateInput = document.getElementById('loginDateFilterInput');
+    if (dateInput) dateInput.value = dateStr || '';
+    loginSectionState.page = 1;
+    loginSectionState.clientRows = null;
+    renderLoginByMode(1);
 }
 
 function applyKeywordFilter(button) {
-    var keyword = button.getAttribute('data-keyword');
+    const keyword = button.getAttribute('data-keyword');
     if (!keyword) return;
-    var params = new URLSearchParams(window.location.search);
-    params.set('keyword', keyword);
-    params.set('page', '1');
-    location.href = BASE_URL + '?' + params.toString();
+    const form = getLoginSearchForm();
+    const input = form ? form.querySelector('[name=keyword]') : null;
+    if (input) input.value = keyword;
+    loginSectionState.page = 1;
+    loginSectionState.clientRows = null;
+    renderLoginByMode(1);
 }
 
 function applySelectFilter(button) {
-    var paramName = button.getAttribute('data-param-name');
-    var paramValue = button.getAttribute('data-param-value');
+    const paramName = button.getAttribute('data-param-name');
+    const paramValue = button.getAttribute('data-param-value');
     if (!paramName || !paramValue) return;
-    var params = new URLSearchParams(window.location.search);
-    params.set(paramName, paramValue);
-    params.set('page', '1');
-    location.href = BASE_URL + '?' + params.toString();
-}
-
-function goPage(page) {
-    var params = new URLSearchParams(window.location.search);
-    params.set('page', page);
-    location.href = BASE_URL + '?' + params.toString();
+    const form = getLoginSearchForm();
+    const input = form ? form.querySelector('[name=' + paramName + ']') : null;
+    if (input) input.value = paramValue;
+    loginSectionState.page = 1;
+    loginSectionState.clientRows = null;
+    renderLoginByMode(1);
 }
 
 function openLoginDetail(btn) {
     var d = btn.dataset;
-    showRowDetail('<spring:message code="admin.logs.historyTitle"/>', [
+    showRowDetail(ADMIN_LOGIN_MSG.historyTitle, [
         ['시각', d.time],
         ['회원', d.user],
         ['이벤트', d.event],
@@ -413,6 +590,44 @@ function showRowDetail(title, fields) {
     });
     modal.classList.add('open');
 }
+
+function initLoginSection() {
+    const sizeSelect = document.getElementById('loginSizeSelect');
+    loginSectionState.pageSize = Number(sizeSelect ? sizeSelect.value : loginSectionState.pageSize) || 30;
+    const sortFieldInput = document.getElementById('loginSortFieldInput');
+    const sortDirInput = document.getElementById('loginSortDirInput');
+    loginSectionState.sortBy = sortFieldInput ? sortFieldInput.value : '';
+    loginSectionState.sortDir = sortDirInput && sortDirInput.value === 'ASC' ? 'ASC' : 'DESC';
+    saveLoginMode(loadStoredLoginMode());
+
+    const modeSelect = document.getElementById('loginModeSelect');
+    if (modeSelect) {
+        modeSelect.addEventListener('change', function () {
+            saveLoginMode(modeSelect.value === 'client' ? 'CLIENT' : 'SERVER');
+            loginSectionState.page = 1;
+            loginSectionState.clientRows = null;
+            renderLoginByMode(1);
+        });
+    }
+
+    const form = getLoginSearchForm();
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            loginSectionState.page = 1;
+            loginSectionState.clientRows = null;
+            renderLoginByMode(1);
+        });
+    }
+
+    const existingRows = Array.from(document.querySelectorAll('#loginRowsBody .js-login-row'));
+    markLoginOriginalIndices(existingRows);
+    updateLoginPaginationMeta(loginSectionState.page, Number((document.querySelector('.js-login-page-state') || {}).textContent?.split('/')[1] || 1), Number('${total}' || existingRows.length), existingRows.length);
+    updateLoginSortIndicators();
+    if (loginSectionState.mode === 'CLIENT') renderLoginByMode(1);
+}
+
+document.addEventListener('DOMContentLoaded', initLoginSection);
 </script>
 
 <%@ include file="../layout-close.jsp" %>
