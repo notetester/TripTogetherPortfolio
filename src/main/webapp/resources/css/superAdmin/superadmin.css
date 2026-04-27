@@ -41,22 +41,136 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 .sa-form-label { font-size:13px; color:#64748b; font-weight:500; }
 .sa-full-select { width:100%; }
 
-/* ── 조직도 ── */
-.sa-org-tree         { display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start; }
-.sa-org-node-wrap    { display:flex; flex-direction:column; align-items:center; }
-.sa-org-node         { display:flex; align-items:center; gap:12px; background:#1e2330; border:1px solid #2d3748; border-radius:10px; padding:12px 16px; min-width:220px; position:relative; }
+/* ── 조직도 (클래식 top-down 트리: 부모 아래 자식들 가로 정렬 + ┴ 분기) ── */
+.sa-org-tree         { display:flex; flex-direction:column; align-items:center; overflow-x:auto; padding:16px 24px; gap:0;
+                       scrollbar-color: #475569 #131826; scrollbar-width: thin; }
+.sa-org-tree::-webkit-scrollbar              { height: 10px; }
+.sa-org-tree::-webkit-scrollbar-track        { background: #131826; }
+.sa-org-tree::-webkit-scrollbar-thumb        { background: #475569; border-radius: 4px; }
+.sa-org-tree::-webkit-scrollbar-thumb:hover  { background: #64748b; }
+body.sa-light .sa-org-tree                   { scrollbar-color: #cbd5e1 #f1f5f9; }
+body.sa-light .sa-org-tree::-webkit-scrollbar-track { background: #f1f5f9; }
+body.sa-light .sa-org-tree::-webkit-scrollbar-thumb { background: #cbd5e1; }
+body.sa-light .sa-org-tree::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.sa-org-node-wrap    { display:flex; flex-direction:column; align-items:center; position:relative; flex:0 0 auto; }
+.sa-org-node         { display:flex; align-items:center; gap:10px; background:#1e2330; border:1px solid #2d3748; border-radius:10px; padding:10px 14px; min-width:200px; max-width:240px; position:relative; z-index:1; }
 .sa-org-node:hover   { border-color:#6366f1; background:#1a2035; }
-.sa-org-avatar       { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; flex-shrink:0; }
+.sa-org-avatar       { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; flex-shrink:0; }
 .sa-org-info         { flex:1; min-width:0; }
-.sa-org-name         { font-weight:600; font-size:14px; color:#e2e8f0; }
-.sa-org-title        { font-size:12px; color:#94a3b8; margin-top:2px; }
-.sa-org-dept         { font-size:11px; color:#64748b; }
-.sa-org-badge        { display:inline-block; margin-top:4px; font-size:10px; font-family:monospace; background:#4c1d95; color:#c4b5fd; border-radius:4px; padding:1px 6px; }
+.sa-org-name         { font-weight:600; font-size:13px; color:#e2e8f0; }
+.sa-org-title        { font-size:11px; color:#94a3b8; margin-top:2px; }
+.sa-org-dept         { font-size:10px; color:#64748b; }
+.sa-org-badge        { display:block; margin-top:2px; font-size:10px; color:#64748b; }
 .sa-org-edit         { font-size:11px; color:#94a3b8; text-decoration:none; flex-shrink:0; }
 .sa-org-edit:hover   { color:#6366f1; }
 
-/* 자식 노드 연결선 */
-.sa-org-children     { display:flex; flex-wrap:wrap; gap:16px; margin-top:0; padding-top:20px; padding-left:20px; border-left:2px solid #2d3748; margin-left:20px; align-items:flex-start; }
+/* 자식 그룹: 가로 정렬 (형제 노드들이 부모 아래 같은 행) */
+.sa-org-children {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 0;                  /* gap 대신 자식 wrap 의 좌우 padding 으로 간격 — 가로선 끊김 방지 */
+    margin-top: 0;
+    padding-top: 32px;       /* 16px 부모-가로선 + 16px 가로선-자식카드 */
+    position: relative;
+}
+.sa-org-children > .sa-org-node-wrap { padding: 0 8px; }
+
+/* 부모 카드 → 가로 연결선 사이의 수직선 (16px) */
+.sa-org-children::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 16px;
+    background: #475569;
+}
+
+/* 각 자식 위 짧은 수직선 (가로선 → 자식카드, 16px) */
+.sa-org-children > .sa-org-node-wrap::before {
+    content: '';
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 16px;
+    background: #475569;
+}
+
+/* 가로 연결선 — 자식들 머리 위 (각 자식 wrap의 ::after, 합쳐져 직선처럼 보임) */
+.sa-org-children > .sa-org-node-wrap::after {
+    content: '';
+    position: absolute;
+    top: -16px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #475569;
+}
+/* 첫번째 자식 — 왼쪽 절반 가로선 안 그림 (자기 카드 가운데부터 오른쪽으로) */
+.sa-org-children > .sa-org-node-wrap:first-child::after { left: 50%; }
+/* 마지막 자식 — 오른쪽 절반 가로선 안 그림 */
+.sa-org-children > .sa-org-node-wrap:last-child::after  { right: 50%; }
+/* 자식이 1명뿐이면 가로선 자체가 의미 없음 (수직선만으로 충분) */
+.sa-org-children > .sa-org-node-wrap:only-child::after  { display: none; }
+
+/* ── indent 모드: depth 2+ 부터 들여쓰기 트리 (├─ └─) — 가로 폭 절약 ── */
+.sa-org-children.sa-org-children-indent {
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 0;
+    padding-top: 4px;
+    margin-left: 32px;
+    padding-left: 32px;
+}
+/* top-down 모드의 부모-가로선 사이 메인 수직선 비활성화 */
+.sa-org-children.sa-org-children-indent::before { display: none; }
+
+/* 자식 wrap 내부 패딩 (top-down 의 좌우 padding 무효화) */
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap {
+    padding: 6px 0;
+    align-items: flex-start;
+}
+/* 위쪽 수직선: wrap top → 카드 중앙 (모든 자식) */
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap::before {
+    top: 0;
+    left: -32px;
+    transform: none;
+    width: 2px;
+    height: 36px;       /* padding 6 + 카드 절반 ≈ 30 */
+    background: #475569;
+}
+/* 아래쪽 수직선: 카드 중앙 → wrap bottom (마지막 자식 제외) */
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap::after {
+    top: 36px;
+    left: -32px;
+    right: auto;
+    bottom: 0;
+    width: 2px;
+    height: auto;
+    background: #475569;
+}
+/* 가장자리 가림 / only-child 처리 무효화 */
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap:first-child::after { left: -32px; }
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap:last-child::after  { display: none; }
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap:only-child::after  { display: none; }
+/* only-child 인 경우 위쪽 수직선만 카드 중앙까지 (그 위 가로선 부모 효과는 부모 수직선이 담당) */
+
+/* 카드 옆 가로 가지선 (├─ 또는 └─ 의 가로 부분, 32px) */
+.sa-org-children.sa-org-children-indent > .sa-org-node-wrap > .sa-org-node::before {
+    content: '';
+    position: absolute;
+    left: -32px;
+    top: 50%;
+    width: 32px;
+    height: 2px;
+    background: #475569;
+}
 
 /* ── 급여/역량 현황 일람표 ── */
 .sa-salary-toolbar { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid #2d3748; }
@@ -92,7 +206,8 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
     .sa-stats-grid { grid-template-columns:1fr; }
     .sa-stats-exception-grid { grid-template-columns:1fr; }
     .sa-profile-wrap { flex-direction: column; min-height: auto; }
-    .sa-profile-nav  { width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; }
+    .sa-profile-nav  { width: 100%; border-right: none; border-bottom: 1px solid #2d3748; }
+    body.sa-light .sa-profile-nav { border-bottom-color: #e2e8f0; }
     .sa-profile-avatar-wrap { padding: 16px; }
 }
 
@@ -220,15 +335,24 @@ body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemF
 
 /* ── 프로필 편집 페이지 (OrangeHRM 스타일) ── */
 .sa-profile-wrap        { display:flex; min-height:calc(100vh - 60px); }
-.sa-profile-nav         { width:220px; flex-shrink:0; border-right:1px solid #e2e8f0; background:#f8fafc; display:flex; flex-direction:column; }
-.sa-profile-avatar-wrap { padding:24px 16px; text-align:center; border-bottom:1px solid #e2e8f0; }
+/* ── 프로필 편집 사이드바 (default = 다크) ── */
+.sa-profile-nav         { width:220px; flex-shrink:0; border-right:1px solid #2d3748; background:#131826; display:flex; flex-direction:column; }
+.sa-profile-avatar-wrap { padding:24px 16px; text-align:center; border-bottom:1px solid #2d3748; }
 .sa-profile-avatar      { width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; font-size:24px; font-weight:700; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; }
-.sa-profile-name        { font-size:15px; font-weight:700; color:#1e293b; }
+.sa-profile-name        { font-size:15px; font-weight:700; color:#e2e8f0; }
 .sa-profile-sub         { font-size:12px; color:#94a3b8; margin-top:3px; }
 .sa-profile-menu        { flex:1; padding:8px 0; }
-.sa-profile-menu-item   { display:block; padding:10px 20px; font-size:13px; color:#64748b; cursor:pointer; border-left:3px solid transparent; text-decoration:none; background:none; border-top:none; border-right:none; border-bottom:none; width:100%; text-align:left; }
-.sa-profile-menu-item:hover             { background:#f1f5f9; color:#334155; }
-.sa-profile-menu-item.active            { color:#6366f1; border-left-color:#6366f1; background:#eff6ff; font-weight:600; }
+.sa-profile-menu-item   { display:block; padding:10px 20px; font-size:13px; color:#94a3b8; cursor:pointer; border-left:3px solid transparent; text-decoration:none; background:none; border-top:none; border-right:none; border-bottom:none; width:100%; text-align:left; }
+.sa-profile-menu-item:hover             { background:#1a2035; color:#e2e8f0; }
+.sa-profile-menu-item.active            { color:#a5b4fc; border-left-color:#6366f1; background:rgba(99,102,241,.12); font-weight:600; }
+
+/* ── 프로필 편집 사이드바 (sa-light = 라이트) ── */
+body.sa-light .sa-profile-nav         { border-right-color:#e2e8f0; background:#f8fafc; }
+body.sa-light .sa-profile-avatar-wrap { border-bottom-color:#e2e8f0; }
+body.sa-light .sa-profile-name        { color:#1e293b; }
+body.sa-light .sa-profile-menu-item   { color:#64748b; }
+body.sa-light .sa-profile-menu-item:hover  { background:#f1f5f9; color:#334155; }
+body.sa-light .sa-profile-menu-item.active { color:#6366f1; background:#eff6ff; }
 .sa-profile-back        { display:block; padding:12px 20px; font-size:12px; color:#94a3b8; text-decoration:none; border-top:1px solid #e2e8f0; }
 .sa-profile-back:hover  { color:#6366f1; }
 .sa-profile-content     { flex:1; overflow-y:auto; }
@@ -295,8 +419,13 @@ body.sa-light .sa-org-node:hover    { border-color:#94a3b8; background:#f1f5f9; 
 body.sa-light .sa-org-name          { color:#1e293b; }
 body.sa-light .sa-org-title         { color:#64748b; }
 body.sa-light .sa-org-dept          { color:#94a3b8; }
-body.sa-light .sa-org-badge         { background:#ede9fe; color:#7c3aed; }
-body.sa-light .sa-org-children      { border-left-color:#e2e8f0; }
+body.sa-light .sa-org-badge         { color:#94a3b8; }
+body.sa-light .sa-org-children::before,
+body.sa-light .sa-org-children > .sa-org-node-wrap::before,
+body.sa-light .sa-org-children > .sa-org-node-wrap::after,
+body.sa-light .sa-org-children.sa-org-children-indent > .sa-org-node-wrap > .sa-org-node::before {
+    background: #cbd5e1;
+}
 body.sa-light .sa-group-row         { border-bottom-color:#f1f5f9; }
 body.sa-light .sa-group-row:hover   { background:#f8fafc; }
 body.sa-light .sa-group-code        { background:#e0e7ff; color:#4338ca; }

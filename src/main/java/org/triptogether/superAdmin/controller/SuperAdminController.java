@@ -217,6 +217,8 @@ public class SuperAdminController {
     @GetMapping("/org")
     public String orgChart(Model model) {
         model.addAttribute("adminList", superAdminService.getAdminsForOrgChart());
+        // 권한 코드(예: BLOCK_OPERATION_MASTER) → 사람이 읽는 라벨(display_name) 매핑
+        model.addAttribute("permCodePolicies", superAdminService.getAllPermissionCodePolicies());
         model.addAttribute("activeMenu", "org");
         return "superAdmin/org";
     }

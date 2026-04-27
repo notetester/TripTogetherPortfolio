@@ -35,6 +35,12 @@ const admins = [
     }<c:if test="${!s.last}">,</c:if>
     </c:forEach>
 ];
+// 권한 코드 → 사람이 읽는 라벨 (ADMIN_PERMISSION_CODE_POLICY.display_name)
+const permCodeMap = {
+    <c:forEach var="p" items="${permCodePolicies}" varStatus="s">
+    '${fn:escapeXml(p.adminPermissionCode)}': '${fn:escapeXml(p.displayName)}'<c:if test="${!s.last}">,</c:if>
+    </c:forEach>
+};
 
 function buildTree(nodes) {
     const map = {};
@@ -50,16 +56,26 @@ function buildTree(nodes) {
     return roots;
 }
 
-function renderNode(node) {
+// depth 0 (root) 와 1 (root 의 자식) 까지는 클래식 top-down,
+// depth 2+ (본부장의 자식 = 부서장 부터) 는 들여쓰기 트리로 전환해 가로 폭 절약.
+function renderNode(node, depth) {
+    depth = depth || 0;
+    var permLabel = (node.permCode && permCodeMap[node.permCode]) || node.permCode;
     var permBadge = node.permCode
-        ? '<span class="sa-org-badge">' + node.permCode + '</span>' : '';
+        ? '<span class="sa-org-badge" title="' + node.permCode + '">' + permLabel + '</span>' : '';
     var dept = node.department
         ? '<div class="sa-org-dept">' + node.department + '</div>' : '';
     var title = node.title
         ? '<div class="sa-org-title">' + node.title + '</div>' : '';
 
+    var childrenClass = (depth >= 1)
+        ? 'sa-org-children sa-org-children-indent'
+        : 'sa-org-children';
+
     var childrenHtml = node.children.length > 0
-        ? '<div class="sa-org-children">' + node.children.map(renderNode).join('') + '</div>'
+        ? '<div class="' + childrenClass + '">'
+            + node.children.map(function(c) { return renderNode(c, depth + 1); }).join('')
+            + '</div>'
         : '';
 
     return '<div class="sa-org-node-wrap">'
@@ -82,7 +98,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     var tree = buildTree(admins);
     document.getElementById('org-chart').innerHTML =
-        '<div class="sa-org-tree">' + tree.map(renderNode).join('') + '</div>';
+        '<div class="sa-org-tree">' + tree.map(function(r) { return renderNode(r, 0); }).join('') + '</div>';
 });
 </script>
 
