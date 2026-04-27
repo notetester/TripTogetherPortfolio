@@ -2951,7 +2951,7 @@ body.sa-light .adm-fin-guide { color: #475569; }
 }
 .adm-login-section-table {
     table-layout: fixed;
-    min-width: 1626px;
+    min-width: 1670px;
 }
 .adm-login-section-table th,
 .adm-login-section-table td {
@@ -3167,7 +3167,7 @@ body.sa-light .adm-login-section-table th.js-login-sort.sorted {
 
 /* ── Security audit section alignment ── */
 .adm-security-section-table {
-    min-width:1716px;
+    min-width:1760px;
 }
 .adm-security-section-table th,
 .adm-security-section-table td {
@@ -3270,4 +3270,64 @@ body.sa-light .js-security-section-card .js-security-page-state {
         margin-left:0;
         justify-content:flex-start;
     }
+}
+
+
+/* ── Audit list selection/export restoration ── */
+.adm-section-head-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-left: auto;
+    white-space: nowrap;
+}
+.adm-section-total-inline {
+    margin-left: 8px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #64748b;
+}
+.adm-audit-bulk-bar {
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 0 12px;
+    padding: 10px 14px;
+    border: 1px solid rgba(96,165,250,.28);
+    border-radius: 10px;
+    background: rgba(30,64,175,.22);
+    color: #bfdbfe;
+    font-size: 13px;
+    font-weight: 700;
+}
+.adm-check-cell {
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
+    text-align: center !important;
+    vertical-align: middle;
+}
+.adm-login-section-table,
+.adm-security-section-table {
+    table-layout: fixed;
+}
+.adm-login-section-table th.js-login-sort,
+.adm-security-section-table th.js-security-sort {
+    cursor: pointer;
+    user-select: none;
+}
+.adm-login-section-table th.js-login-sort:not(.sorted) .sort-ico,
+.adm-security-section-table th.js-security-sort:not(.sorted) .sort-ico {
+    display: none !important;
+}
+body.sa-light .adm-section-total-inline {
+    color: #64748b;
+}
+body.sa-light .adm-audit-bulk-bar {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
 }

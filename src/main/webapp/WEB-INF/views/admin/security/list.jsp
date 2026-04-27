@@ -65,8 +65,24 @@
 
     <div class="adm-card adm-managed-section-card js-security-section-card" data-section="securityAudits" data-enhanced="true">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.security.historyTitle"/></div>
-            <div style="font-size:12px;color:#64748b;"><spring:message code="admin.common.totalCount" arguments="${total}"/></div>
+            <div class="adm-card-title">
+                <spring:message code="admin.security.historyTitle"/>
+                <span id="securityTotalLabel" class="adm-section-total-inline"><spring:message code="admin.common.totalCount" arguments="${total}"/></span>
+            </div>
+            <div class="adm-section-head-actions">
+                <select class="adm-select" id="securityExportFormat" style="width:90px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <div class="adm-export-menu">
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-export-toggle"><spring:message code="admin.common.export"/> ▾</button>
+                    <div id="securityExportDropdown" class="adm-export-dropdown">
+                        <button type="button" onclick="exportSecurityAudits('all')"><spring:message code="admin.common.exportAll"/></button>
+                        <button type="button" onclick="exportSecurityAudits('search')"><spring:message code="admin.common.exportFiltered"/></button>
+                        <button type="button" id="securityExportSelectedBtn" disabled onclick="exportSecurityAudits('selected')"><spring:message code="admin.common.exportSelected"/> (0)</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="adm-local-toolbar adm-managed-local-toolbar">
@@ -84,9 +100,15 @@
             </div>
         </div>
 
+        <div id="securityBulkBar" class="adm-audit-bulk-bar" style="display:none;">
+            <span><spring:message code="admin.common.selectedCount"/>: <strong id="securityBulkCount">0</strong></span>
+            <button type="button" class="adm-btn adm-btn-ghost" onclick="clearSecuritySelection()"><spring:message code="admin.common.clearSelection"/></button>
+        </div>
+
         <div class="adm-table-wrap">
             <table class="adm-table adm-section-table-fixed adm-security-section-table" data-admin-list-ignore="true" data-section="securityAudits">
                 <colgroup>
+                    <col style="width:44px;">
                     <col style="width:150px;">
                     <col style="width:150px;">
                     <col style="width:150px;">
@@ -102,17 +124,18 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="js-security-sort" data-sort="time" onclick="securitySortBy('time')"><spring:message code="admin.common.time"/><span class="sort-ico">▼</span></th>
-                    <th class="js-security-sort" data-sort="targetMember" onclick="securitySortBy('targetMember')"><spring:message code="admin.security.targetMember"/><span class="sort-ico">▼</span></th>
-                    <th class="js-security-sort" data-sort="actor" onclick="securitySortBy('actor')"><spring:message code="admin.security.actor"/><span class="sort-ico">▼</span></th>
-                    <th class="js-security-sort" data-sort="eventType" onclick="securitySortBy('eventType')"><spring:message code="admin.security.eventType"/><span class="sort-ico">▼</span></th>
-                    <th class="js-security-sort" data-sort="eventStage" onclick="securitySortBy('eventStage')"><spring:message code="admin.security.stage"/><span class="sort-ico">▼</span></th>
-                    <th class="js-security-sort" data-sort="input" onclick="securitySortBy('input')"><spring:message code="admin.context.inputValue"/><span class="sort-ico">▼</span></th>
-                    <th class="js-security-sort" data-sort="targetEmail" onclick="securitySortBy('targetEmail')"><spring:message code="admin.context.targetEmail"/><span class="sort-ico">▼</span></th>
-                    <th class="js-security-sort" data-sort="success" onclick="securitySortBy('success')"><spring:message code="admin.common.result"/><span class="sort-ico">▼</span></th>
-                    <th class="js-security-sort" data-sort="reason" onclick="securitySortBy('reason')"><spring:message code="admin.common.reason"/><span class="sort-ico">▼</span></th>
-                    <th class="js-security-sort" data-sort="ip" onclick="securitySortBy('ip')"><spring:message code="admin.common.ip"/><span class="sort-ico">▼</span></th>
-                    <th class="js-security-sort" data-sort="requestId" onclick="securitySortBy('requestId')"><spring:message code="admin.context.requestId"/><span class="sort-ico">▼</span></th>
+                    <th class="adm-check-cell"><input type="checkbox" id="securityCheckAll" class="adm-check" onchange="toggleAllSecurity(this)"></th>
+                    <th class="js-security-sort" data-sort="time" onclick="securitySortBy('time')"><spring:message code="admin.common.time"/></th>
+                    <th class="js-security-sort" data-sort="targetMember" onclick="securitySortBy('targetMember')"><spring:message code="admin.security.targetMember"/></th>
+                    <th class="js-security-sort" data-sort="actor" onclick="securitySortBy('actor')"><spring:message code="admin.security.actor"/></th>
+                    <th class="js-security-sort" data-sort="eventType" onclick="securitySortBy('eventType')"><spring:message code="admin.security.eventType"/></th>
+                    <th class="js-security-sort" data-sort="eventStage" onclick="securitySortBy('eventStage')"><spring:message code="admin.security.stage"/></th>
+                    <th class="js-security-sort" data-sort="input" onclick="securitySortBy('input')"><spring:message code="admin.context.inputValue"/></th>
+                    <th class="js-security-sort" data-sort="targetEmail" onclick="securitySortBy('targetEmail')"><spring:message code="admin.context.targetEmail"/></th>
+                    <th class="js-security-sort" data-sort="success" onclick="securitySortBy('success')"><spring:message code="admin.common.result"/></th>
+                    <th class="js-security-sort" data-sort="reason" onclick="securitySortBy('reason')"><spring:message code="admin.common.reason"/></th>
+                    <th class="js-security-sort" data-sort="ip" onclick="securitySortBy('ip')"><spring:message code="admin.common.ip"/></th>
+                    <th class="js-security-sort" data-sort="requestId" onclick="securitySortBy('requestId')"><spring:message code="admin.context.requestId"/></th>
                     <th></th>
                 </tr>
                 </thead>
@@ -239,13 +262,20 @@ function syncSecurityHiddenInputs() {
 }
 function updateSecuritySortIndicators() {
     document.querySelectorAll('.js-security-sort').forEach(function (th) {
-        th.classList.remove('sorted');
-        const ico = th.querySelector('.sort-ico');
-        if (ico) ico.textContent = '▼';
-        if (securitySectionState.sortBy && th.dataset.sort === securitySectionState.sortBy) {
-            th.classList.add('sorted');
-            const icon = th.querySelector('.sort-ico');
-            if (icon) icon.textContent = securitySectionState.sortDir === 'ASC' ? '▲' : '▼';
+        const active = !!securitySectionState.sortBy && th.dataset.sort === securitySectionState.sortBy;
+        th.classList.toggle('sorted', active);
+        let ico = th.querySelector('.sort-ico');
+        if (active) {
+            if (!ico) {
+                ico = document.createElement('span');
+                ico.className = 'sort-ico';
+                ico.style.cssText = 'font-size:10px;margin-left:4px;font-weight:900;';
+                th.appendChild(ico);
+            }
+            ico.textContent = securitySectionState.sortDir === 'ASC' ? '▲' : '▼';
+            ico.style.color = securitySectionState.sortDir === 'ASC' ? '#ef4444' : '#3b82f6';
+        } else if (ico) {
+            ico.remove();
         }
     });
     const resetBtn = document.getElementById('securitySortResetBtn');
@@ -255,7 +285,7 @@ function updateSecuritySortIndicators() {
     }
 }
 function updateSecurityTotal(total) {
-    const cardTitleCounter = document.querySelector('.js-security-section-card .adm-card-head > div:last-child');
+    const cardTitleCounter = document.getElementById('securityTotalLabel');
     if (cardTitleCounter) cardTitleCounter.textContent = '총 ' + Number(total || 0).toLocaleString() + '건';
 }
 function updateSecurityPaginationMeta(page, totalPages, total, renderedCount) {
@@ -310,7 +340,7 @@ function markSecurityOriginalIndices(rows) {
     });
 }
 function renderSecurityEmptyRow() {
-    return '<tr class="adm-local-empty"><td colspan="12" style="text-align:center;color:#64748b;padding:32px;">' + escapeSecurityHtml(SECURITY_MSG.noResults) + '</td></tr>';
+    return '<tr class="adm-local-empty"><td colspan="13" style="text-align:center;color:#64748b;padding:32px;">' + escapeSecurityHtml(SECURITY_MSG.noResults) + '</td></tr>';
 }
 async function renderServerSecurity(pageOverride) {
     securitySectionState.mode = 'SERVER';
@@ -337,6 +367,7 @@ async function renderServerSecurity(pageOverride) {
         if (sizeSelect) sizeSelect.value = String(securitySectionState.pageSize);
         updateSecurityPaginationMeta(page, pages, total, rows.length);
         updateSecuritySortIndicators();
+        clearSecuritySelection();
     } catch (e) {
         showSecurityToast(e.message || SECURITY_MSG.loadFailed, 'error');
     } finally {
@@ -381,6 +412,7 @@ async function renderClientSecurity(pageOverride) {
         else visible.forEach(function (row) { tbody.appendChild(row.cloneNode(true)); });
         updateSecurityPaginationMeta(page, totalPages, total, visible.length);
         updateSecuritySortIndicators();
+        clearSecuritySelection();
     } catch (e) {
         showSecurityToast(e.message || SECURITY_MSG.loadAllFailed, 'error');
     } finally {
@@ -487,6 +519,114 @@ function securityDetailSection(title, fields) {
         + '<div class="adm-audit-detail-grid">' + fields.join('') + '</div>'
         + '</section>';
 }
+
+function getSecurityCheckedBoxes() {
+    return Array.from(document.querySelectorAll('.js-security-row-check:checked'));
+}
+function toggleAllSecurity(cb) {
+    document.querySelectorAll('.js-security-row-check').forEach(function (c) { c.checked = cb.checked; });
+    updateSecuritySelectionState();
+}
+function clearSecuritySelection() {
+    document.querySelectorAll('.js-security-row-check').forEach(function (c) { c.checked = false; });
+    const all = document.getElementById('securityCheckAll');
+    if (all) all.checked = false;
+    updateSecuritySelectionState();
+}
+function updateSecuritySelectionState() {
+    const checked = getSecurityCheckedBoxes();
+    const n = checked.length;
+    const bar = document.getElementById('securityBulkBar');
+    if (bar) bar.style.display = n > 0 ? 'flex' : 'none';
+    const count = document.getElementById('securityBulkCount');
+    if (count) count.textContent = n;
+    const selectedBtn = document.getElementById('securityExportSelectedBtn');
+    if (selectedBtn) {
+        selectedBtn.disabled = n === 0;
+        selectedBtn.textContent = '선택 내보내기 (' + n + ')';
+    }
+    const all = document.getElementById('securityCheckAll');
+    if (all) {
+        const rows = Array.from(document.querySelectorAll('.js-security-row-check'));
+        all.checked = rows.length > 0 && n === rows.length;
+        all.indeterminate = n > 0 && n < rows.length;
+    }
+}
+function securityHeaderLabels() {
+    return Array.from(document.querySelectorAll('.adm-security-section-table thead th'))
+        .slice(1, -1)
+        .map(function (th) { return th.textContent.trim(); });
+}
+function securityRowToExportValues(row) {
+    return Array.from(row.children).slice(1, -1).map(function (td) {
+        return td.textContent.replace(/\s+/g, ' ').trim();
+    });
+}
+function securityRowsToCsv(rows) {
+    const csvEscape = function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
+    const lines = [securityHeaderLabels().map(csvEscape).join(',')];
+    rows.forEach(function (row) { lines.push(securityRowToExportValues(row).map(csvEscape).join(',')); });
+    return '\ufeff' + lines.join('\r\n');
+}
+function securityRowsToExcelHtml(rows) {
+    const esc = function (v) { return escapeSecurityHtml(v); };
+    let html = '<table><thead><tr>' + securityHeaderLabels().map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') + '</tr></thead><tbody>';
+    rows.forEach(function (row) {
+        html += '<tr>' + securityRowToExportValues(row).map(function (v) { return '<td>' + esc(v) + '</td>'; }).join('') + '</tr>';
+    });
+    html += '</tbody></table>';
+    return '\ufeff<html><head><meta charset="UTF-8"></head><body>' + html + '</body></html>';
+}
+function downloadSecurityBlob(content, filename, mime) {
+    const blob = new Blob([content], {type: mime});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+async function fetchSecurityRowsForExport(scope) {
+    if (scope === 'selected') {
+        return getSecurityCheckedBoxes().map(function (cb) { return cb.closest('tr'); }).filter(Boolean);
+    }
+    const params = scope === 'all' ? new URLSearchParams() : buildSecurityParams(1, {includeSort: true});
+    params.set('page', '1');
+    params.set('size', String(SECURITY_CLIENT_MAX_SIZE));
+    if (scope === 'all') {
+        params.set('sortField', securitySectionState.sortBy || '');
+        params.set('sortDir', securitySectionState.sortBy ? securitySectionState.sortDir : '');
+    }
+    const res = await fetch(SECURITY_CTX + '/admin/security/fragment?' + params.toString(), {
+        credentials: 'same-origin',
+        headers: {'Accept': 'text/html', 'X-Requested-With': 'XMLHttpRequest'}
+    });
+    const html = await res.text();
+    if (!res.ok) throw new Error(html || SECURITY_MSG.loadAllFailed);
+    const temp = document.createElement('tbody');
+    temp.innerHTML = html;
+    return Array.from(temp.querySelectorAll('.js-security-row'));
+}
+async function exportSecurityAudits(scope) {
+    try {
+        const rows = await fetchSecurityRowsForExport(scope);
+        if (!rows.length) { showSecurityToast('내보낼 항목이 없습니다.', 'error'); return; }
+        const format = (document.getElementById('securityExportFormat') || {}).value === 'excel' ? 'excel' : 'csv';
+        const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        if (format === 'excel') {
+            downloadSecurityBlob(securityRowsToExcelHtml(rows), 'security-audits-' + scope + '-' + stamp + '.xls', 'application/vnd.ms-excel;charset=utf-8');
+        } else {
+            downloadSecurityBlob(securityRowsToCsv(rows), 'security-audits-' + scope + '-' + stamp + '.csv', 'text/csv;charset=utf-8');
+        }
+        const dropdown = document.getElementById('securityExportDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+    } catch (e) {
+        showSecurityToast(e.message || SECURITY_MSG.loadAllFailed, 'error');
+    }
+}
+
 function openSecurityDetail(btn) {
     const d = btn.dataset;
     const modal = document.getElementById('securityDetailModal');
@@ -557,12 +697,22 @@ function initSecuritySection() {
         });
     }
 
+    const exportToggle = document.querySelector('.js-security-export-toggle');
+    const exportDropdown = document.getElementById('securityExportDropdown');
+    if (exportToggle && exportDropdown) {
+        exportToggle.addEventListener('click', function (e) { e.stopPropagation(); exportDropdown.classList.toggle('open'); });
+        document.addEventListener('click', function (e) {
+            if (!exportToggle.contains(e.target) && !exportDropdown.contains(e.target)) exportDropdown.classList.remove('open');
+        });
+    }
+
     const existingRows = Array.from(document.querySelectorAll('#securityRowsBody .js-security-row'));
     markSecurityOriginalIndices(existingRows);
     const pageState = document.querySelector('.js-security-page-state');
     const totalPages = pageState && pageState.textContent.indexOf('/') >= 0 ? Number(pageState.textContent.split('/')[1].trim()) : 1;
     updateSecurityPaginationMeta(securitySectionState.page, totalPages, Number('${total}' || existingRows.length), existingRows.length);
     updateSecuritySortIndicators();
+    updateSecuritySelectionState();
     if (securitySectionState.mode === 'CLIENT') renderSecurityByMode(1);
 }
 document.addEventListener('DOMContentLoaded', initSecuritySection);

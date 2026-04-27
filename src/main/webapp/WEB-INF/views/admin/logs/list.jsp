@@ -81,8 +81,24 @@
 
     <div class="adm-card adm-managed-section-card js-login-section-card" data-section="loginAudits" data-enhanced="true">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.logs.historyTitle"/></div>
-            <div style="font-size:12px;color:#64748b;"><spring:message code="admin.common.totalCount" arguments="${total}"/></div>
+            <div class="adm-card-title">
+                <spring:message code="admin.logs.historyTitle"/>
+                <span id="loginTotalLabel" class="adm-section-total-inline"><spring:message code="admin.common.totalCount" arguments="${total}"/></span>
+            </div>
+            <div class="adm-section-head-actions">
+                <select class="adm-select" id="loginExportFormat" style="width:90px;">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <div class="adm-export-menu">
+                    <button type="button" class="adm-btn adm-btn-ghost js-login-export-toggle"><spring:message code="admin.common.export"/> ▾</button>
+                    <div id="loginExportDropdown" class="adm-export-dropdown">
+                        <button type="button" onclick="exportLoginAudits('all')"><spring:message code="admin.common.exportAll"/></button>
+                        <button type="button" onclick="exportLoginAudits('search')"><spring:message code="admin.common.exportFiltered"/></button>
+                        <button type="button" id="loginExportSelectedBtn" disabled onclick="exportLoginAudits('selected')"><spring:message code="admin.common.exportSelected"/> (0)</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="adm-local-toolbar adm-managed-local-toolbar">
             <div class="adm-local-toolbar-group adm-managed-toolbar-actions">
@@ -98,9 +114,15 @@
                 </select>
             </div>
         </div>
+        <div id="loginBulkBar" class="adm-audit-bulk-bar" style="display:none;">
+            <span><spring:message code="admin.common.selectedCount"/>: <strong id="loginBulkCount">0</strong></span>
+            <button type="button" class="adm-btn adm-btn-ghost" onclick="clearLoginSelection()"><spring:message code="admin.common.clearSelection"/></button>
+        </div>
+
         <div class="adm-table-wrap">
             <table class="adm-table adm-section-table-fixed adm-login-section-table" data-admin-list-ignore="true" data-section="loginAudits">
                 <colgroup>
+                    <col style="width:44px;">
                     <col style="width:150px;">
                     <col style="width:150px;">
                     <col style="width:92px;">
@@ -116,17 +138,18 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="js-login-sort" data-sort="time" onclick="loginSortBy('time')"><spring:message code="admin.common.time"/><span class="sort-ico">▼</span></th>
-                    <th class="js-login-sort" data-sort="member" onclick="loginSortBy('member')"><spring:message code="admin.common.member"/><span class="sort-ico">▼</span></th>
-                    <th class="js-login-sort" data-sort="eventType" onclick="loginSortBy('eventType')"><spring:message code="admin.logs.event"/><span class="sort-ico">▼</span></th>
-                    <th class="js-login-sort" data-sort="authType" onclick="loginSortBy('authType')"><spring:message code="admin.logs.authType"/><span class="sort-ico">▼</span></th>
-                    <th class="js-login-sort" data-sort="provider" onclick="loginSortBy('provider')"><spring:message code="admin.logs.provider"/><span class="sort-ico">▼</span></th>
-                    <th class="js-login-sort" data-sort="loginMethod" onclick="loginSortBy('loginMethod')"><spring:message code="admin.logs.authFlow"/><span class="sort-ico">▼</span></th>
-                    <th class="js-login-sort" data-sort="input" onclick="loginSortBy('input')"><spring:message code="admin.context.inputValue"/><span class="sort-ico">▼</span></th>
-                    <th class="js-login-sort" data-sort="success" onclick="loginSortBy('success')"><spring:message code="admin.common.result"/><span class="sort-ico">▼</span></th>
-                    <th class="js-login-sort" data-sort="reason" onclick="loginSortBy('reason')"><spring:message code="admin.common.reason"/><span class="sort-ico">▼</span></th>
-                    <th class="js-login-sort" data-sort="ip" onclick="loginSortBy('ip')"><spring:message code="admin.common.ip"/><span class="sort-ico">▼</span></th>
-                    <th class="js-login-sort" data-sort="requestId" onclick="loginSortBy('requestId')"><spring:message code="admin.context.requestId"/><span class="sort-ico">▼</span></th>
+                    <th class="adm-check-cell"><input type="checkbox" id="loginCheckAll" class="adm-check" onchange="toggleAllLogin(this)"></th>
+                    <th class="js-login-sort" data-sort="time" onclick="loginSortBy('time')"><spring:message code="admin.common.time"/></th>
+                    <th class="js-login-sort" data-sort="member" onclick="loginSortBy('member')"><spring:message code="admin.common.member"/></th>
+                    <th class="js-login-sort" data-sort="eventType" onclick="loginSortBy('eventType')"><spring:message code="admin.logs.event"/></th>
+                    <th class="js-login-sort" data-sort="authType" onclick="loginSortBy('authType')"><spring:message code="admin.logs.authType"/></th>
+                    <th class="js-login-sort" data-sort="provider" onclick="loginSortBy('provider')"><spring:message code="admin.logs.provider"/></th>
+                    <th class="js-login-sort" data-sort="loginMethod" onclick="loginSortBy('loginMethod')"><spring:message code="admin.logs.authFlow"/></th>
+                    <th class="js-login-sort" data-sort="input" onclick="loginSortBy('input')"><spring:message code="admin.context.inputValue"/></th>
+                    <th class="js-login-sort" data-sort="success" onclick="loginSortBy('success')"><spring:message code="admin.common.result"/></th>
+                    <th class="js-login-sort" data-sort="reason" onclick="loginSortBy('reason')"><spring:message code="admin.common.reason"/></th>
+                    <th class="js-login-sort" data-sort="ip" onclick="loginSortBy('ip')"><spring:message code="admin.common.ip"/></th>
+                    <th class="js-login-sort" data-sort="requestId" onclick="loginSortBy('requestId')"><spring:message code="admin.context.requestId"/></th>
                     <th></th>
                 </tr>
                 </thead>
@@ -303,7 +326,7 @@ function updateLoginSortIndicators() {
 }
 
 function updateLoginTotal(total) {
-    const cardTitleCounter = document.querySelector('.js-login-section-card .adm-card-head > div:last-child');
+    const cardTitleCounter = document.getElementById('loginTotalLabel');
     if (cardTitleCounter) {
         cardTitleCounter.textContent = '총 ' + Number(total || 0).toLocaleString() + '건';
     }
@@ -372,7 +395,7 @@ function markLoginOriginalIndices(rows) {
 }
 
 function renderLoginEmptyRow() {
-    return '<tr class="adm-local-empty"><td colspan="12" style="text-align:center;color:#64748b;padding:32px;">' + escapeHtml(ADMIN_LOGIN_MSG.noResults) + '</td></tr>';
+    return '<tr class="adm-local-empty"><td colspan="13" style="text-align:center;color:#64748b;padding:32px;">' + escapeHtml(ADMIN_LOGIN_MSG.noResults) + '</td></tr>';
 }
 
 async function renderServerLogins(pageOverride) {
@@ -400,6 +423,7 @@ async function renderServerLogins(pageOverride) {
         if (sizeSelect) sizeSelect.value = String(loginSectionState.pageSize);
         updateLoginPaginationMeta(page, pages, total, rows.length);
         updateLoginSortIndicators();
+        clearLoginSelection();
     } catch (e) {
         showLoginToast(e.message || ADMIN_LOGIN_MSG.loadFailed, 'error');
     } finally {
@@ -449,6 +473,7 @@ async function renderClientLogins(pageOverride) {
         }
         updateLoginPaginationMeta(page, totalPages, total, visible.length);
         updateLoginSortIndicators();
+        clearLoginSelection();
     } catch (e) {
         showLoginToast(e.message || ADMIN_LOGIN_MSG.loadAllFailed, 'error');
     } finally {
@@ -549,6 +574,124 @@ function applySelectFilter(button) {
     renderLoginByMode(1);
 }
 
+
+function getLoginCheckedBoxes() {
+    return Array.from(document.querySelectorAll('.js-login-row-check:checked'));
+}
+
+function toggleAllLogin(cb) {
+    document.querySelectorAll('.js-login-row-check').forEach(function (c) { c.checked = cb.checked; });
+    updateLoginSelectionState();
+}
+
+function clearLoginSelection() {
+    document.querySelectorAll('.js-login-row-check').forEach(function (c) { c.checked = false; });
+    const all = document.getElementById('loginCheckAll');
+    if (all) all.checked = false;
+    updateLoginSelectionState();
+}
+
+function updateLoginSelectionState() {
+    const checked = getLoginCheckedBoxes();
+    const n = checked.length;
+    const bar = document.getElementById('loginBulkBar');
+    if (bar) bar.style.display = n > 0 ? 'flex' : 'none';
+    const count = document.getElementById('loginBulkCount');
+    if (count) count.textContent = n;
+    const selectedBtn = document.getElementById('loginExportSelectedBtn');
+    if (selectedBtn) {
+        selectedBtn.disabled = n === 0;
+        selectedBtn.textContent = '선택 내보내기 (' + n + ')';
+    }
+    const all = document.getElementById('loginCheckAll');
+    if (all) {
+        const rows = Array.from(document.querySelectorAll('.js-login-row-check'));
+        all.checked = rows.length > 0 && n === rows.length;
+        all.indeterminate = n > 0 && n < rows.length;
+    }
+}
+
+function loginHeaderLabels() {
+    return Array.from(document.querySelectorAll('.adm-login-section-table thead th'))
+        .slice(1, -1)
+        .map(function (th) { return th.textContent.trim(); });
+}
+
+function loginRowToExportValues(row) {
+    return Array.from(row.children).slice(1, -1).map(function (td) {
+        return td.textContent.replace(/\s+/g, ' ').trim();
+    });
+}
+
+function loginRowsToCsv(rows) {
+    const csvEscape = function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
+    const lines = [loginHeaderLabels().map(csvEscape).join(',')];
+    rows.forEach(function (row) { lines.push(loginRowToExportValues(row).map(csvEscape).join(',')); });
+    return '\ufeff' + lines.join('\r\n');
+}
+
+function loginRowsToExcelHtml(rows) {
+    const esc = function (v) { return escapeHtml(v); };
+    let html = '<table><thead><tr>' + loginHeaderLabels().map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') + '</tr></thead><tbody>';
+    rows.forEach(function (row) {
+        html += '<tr>' + loginRowToExportValues(row).map(function (v) { return '<td>' + esc(v) + '</td>'; }).join('') + '</tr>';
+    });
+    html += '</tbody></table>';
+    return '\ufeff<html><head><meta charset="UTF-8"></head><body>' + html + '</body></html>';
+}
+
+function downloadLoginBlob(content, filename, mime) {
+    const blob = new Blob([content], {type: mime});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+async function fetchLoginRowsForExport(scope) {
+    if (scope === 'selected') {
+        return getLoginCheckedBoxes().map(function (cb) { return cb.closest('tr'); }).filter(Boolean);
+    }
+    const params = scope === 'all' ? new URLSearchParams() : buildLoginParams(1, {includeSort: true});
+    params.set('page', '1');
+    params.set('size', String(LOGIN_CLIENT_MAX_SIZE));
+    if (scope === 'all') {
+        params.set('sortField', loginSectionState.sortBy || '');
+        params.set('sortDir', loginSectionState.sortBy ? loginSectionState.sortDir : '');
+    }
+    const res = await fetch(ctx + '/admin/logins/fragment?' + params.toString(), {
+        credentials: 'same-origin',
+        headers: {'Accept': 'text/html', 'X-Requested-With': 'XMLHttpRequest'}
+    });
+    const html = await res.text();
+    if (!res.ok) throw new Error(html || ADMIN_LOGIN_MSG.loadAllFailed);
+    const temp = document.createElement('tbody');
+    temp.innerHTML = html;
+    return Array.from(temp.querySelectorAll('.js-login-row'));
+}
+
+async function exportLoginAudits(scope) {
+    try {
+        const rows = await fetchLoginRowsForExport(scope);
+        if (!rows.length) { showLoginToast('내보낼 항목이 없습니다.', 'error'); return; }
+        const format = (document.getElementById('loginExportFormat') || {}).value === 'excel' ? 'excel' : 'csv';
+        const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        if (format === 'excel') {
+            downloadLoginBlob(loginRowsToExcelHtml(rows), 'login-audits-' + scope + '-' + stamp + '.xls', 'application/vnd.ms-excel;charset=utf-8');
+        } else {
+            downloadLoginBlob(loginRowsToCsv(rows), 'login-audits-' + scope + '-' + stamp + '.csv', 'text/csv;charset=utf-8');
+        }
+        const dropdown = document.getElementById('loginExportDropdown');
+        if (dropdown) dropdown.classList.remove('open');
+    } catch (e) {
+        showLoginToast(e.message || ADMIN_LOGIN_MSG.loadAllFailed, 'error');
+    }
+}
+
 function openLoginDetail(btn) {
     var d = btn.dataset;
     showRowDetail(ADMIN_LOGIN_MSG.historyTitle, [
@@ -620,10 +763,20 @@ function initLoginSection() {
         });
     }
 
+    const exportToggle = document.querySelector('.js-login-export-toggle');
+    const exportDropdown = document.getElementById('loginExportDropdown');
+    if (exportToggle && exportDropdown) {
+        exportToggle.addEventListener('click', function (e) { e.stopPropagation(); exportDropdown.classList.toggle('open'); });
+        document.addEventListener('click', function (e) {
+            if (!exportToggle.contains(e.target) && !exportDropdown.contains(e.target)) exportDropdown.classList.remove('open');
+        });
+    }
+
     const existingRows = Array.from(document.querySelectorAll('#loginRowsBody .js-login-row'));
     markLoginOriginalIndices(existingRows);
     updateLoginPaginationMeta(loginSectionState.page, Number((document.querySelector('.js-login-page-state') || {}).textContent?.split('/')[1] || 1), Number('${total}' || existingRows.length), existingRows.length);
     updateLoginSortIndicators();
+    updateLoginSelectionState();
     if (loginSectionState.mode === 'CLIENT') renderLoginByMode(1);
 }
 

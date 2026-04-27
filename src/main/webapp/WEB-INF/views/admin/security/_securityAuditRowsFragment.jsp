@@ -21,6 +21,9 @@
         data-ip="${fn:escapeXml(item.ipAddress)}"
         data-request-id="${fn:escapeXml(empty item.requestId ? item.flowTraceId : item.requestId)}"
         data-original-index="${st.index}">
+        <td class="adm-check-cell">
+            <input type="checkbox" class="adm-check js-security-row-check" value="${item.securityIdx}" onchange="updateSecuritySelectionState()">
+        </td>
         <td>
             <button type="button" class="adm-cell-link"
                     data-date="${itemDateFilter}"
@@ -206,5 +209,5 @@
     </tr>
 </c:forEach>
 <c:if test="${empty list}">
-    <tr class="adm-local-empty"><td colspan="12" style="text-align:center;padding:40px;color:#64748b;"><spring:message code="admin.common.noResults"/></td></tr>
+    <tr class="adm-local-empty"><td colspan="13" style="text-align:center;padding:40px;color:#64748b;"><spring:message code="admin.common.noResults"/></td></tr>
 </c:if>
