@@ -67,7 +67,7 @@
                         <form method="post" action="${pageContext.request.contextPath}/admin/finance/policy/limit">
                             <td>
                                 <input type="hidden" name="memberGrade" value="${g}"/>
-                                <span class="adm-badge">${g}</span>
+                                <span class="adm-badge"><spring:message code="admin.finance.grade.${g}"/></span>
                             </td>
                             <td style="text-align:right;">
                                 <input type="number" name="singleLimit" min="0" step="1"
@@ -144,9 +144,14 @@
                     <c:otherwise>
                         <c:forEach var="r" items="${rewardPolicies}">
                             <tr>
-                                <td><span style="font-size:11px;font-family:monospace;">${r.eventType}</span></td>
-                                <td><span class="adm-badge">${r.memberGrade}</span></td>
-                                <td>${r.rewardType}</td>
+                                <td>
+                                    <span style="font-size:13px;">
+                                        <spring:message code="admin.finance.rewardEvent.${r.eventType}" text="${r.eventType}"/>
+                                    </span>
+                                    <div style="font-size:10px;color:#94a3b8;font-family:monospace;">${r.eventType}</div>
+                                </td>
+                                <td><span class="adm-badge"><spring:message code="admin.finance.grade.${r.memberGrade}" text="${r.memberGrade}"/></span></td>
+                                <td><spring:message code="admin.finance.rewardType.${r.rewardType}" text="${r.rewardType}"/></td>
                                 <td style="text-align:right;">
                                     <c:if test="${r.rewardRate != null}"><fmt:formatNumber value="${r.rewardRate}" pattern="#,##0.00"/>%</c:if>
                                 </td>
@@ -182,19 +187,17 @@
                 <div>
                     <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.grade"/></label>
                     <select name="memberGrade" class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;">
-                        <option value="ALL">ALL</option>
-                        <option value="BRONZE">BRONZE</option>
-                        <option value="SILVER">SILVER</option>
-                        <option value="GOLD">GOLD</option>
-                        <option value="DIAMOND">DIAMOND</option>
-                        <option value="PLATINUM">PLATINUM</option>
+                        <c:forEach var="g" items="${['ALL','BRONZE','SILVER','GOLD','DIAMOND','PLATINUM']}">
+                            <option value="${g}"><spring:message code="admin.finance.grade.${g}"/></option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div>
                     <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.rewardType"/></label>
                     <select name="rewardType" required class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;">
-                        <option value="MILEAGE">MILEAGE</option>
-                        <option value="POINT">POINT</option>
+                        <c:forEach var="t" items="${['MILEAGE','POINT']}">
+                            <option value="${t}"><spring:message code="admin.finance.rewardType.${t}"/></option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div>
