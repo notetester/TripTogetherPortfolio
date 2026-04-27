@@ -7,6 +7,7 @@ import org.triptogether.auth.vo.UserLoginHistoryVO;
 import org.triptogether.report.vo.ReportSearchDto;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface AdminMapper {
@@ -20,9 +21,9 @@ public interface AdminMapper {
     List<AdminSalesDailyStatVO> findDailySalesStats(@Param("days") int days);
 
     // ===== 회원 관리 =====
-    List<AdminMemberVO> findMembers(AdminSearchVO search);
-    int countMembers(AdminSearchVO search);
-    List<AdminMemberVO> findMembersForExport(AdminSearchVO search);
+    List<AdminMemberVO> findMembers(Map<String, Object> params);
+    int countMembers(Map<String, Object> params);
+    List<AdminMemberVO> findMembersForExport(Map<String, Object> params);
     List<AdminMemberVO> findMembersByIds(@Param("ids") List<Long> ids);
     void bulkChangeMemberStatus(@Param("userIdxList") List<Long> userIdxList, @Param("status") String status);
     AdminMemberVO findMemberDetail(Long userIdx);

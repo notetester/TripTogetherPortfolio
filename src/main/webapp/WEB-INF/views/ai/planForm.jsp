@@ -182,6 +182,19 @@
       cursor: not-allowed;
     }
 
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #64748b;
+      text-decoration: none;
+      margin-bottom: 16px;
+    }
+    .back-link:hover {
+      color: #2563eb;
+    }
+
     @keyframes spin {
       100% { transform: rotate(360deg); }
     }
@@ -189,6 +202,11 @@
 </head>
 <body>
 <div class="container">
+
+  <a href="${pageContext.request.contextPath}/courses/list" class="back-link">
+    <spring:message code="course.write.backToList"/>
+  </a>
+
   <h1><spring:message code="courses.ai.pageTitle"/></h1>
   <div class="sub-text">
     <spring:message code="courses.ai.subtitle.line1"/> <br>
