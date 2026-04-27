@@ -54,7 +54,7 @@
 
 ### 갱신 시점 (실시간 동기화)
 
-```java
+```text
 // 좋아요 토글
 if (alreadyLiked) {
     deleteLike();
@@ -78,7 +78,7 @@ incrementReportCount();
 
 ### Reconcile 스케줄러 (정합성 안전망)
 
-```java
+```text
 // CommunityCacheReconcileScheduler
 @Scheduled(cron = "0 0 4 * * *")  // 매일 새벽 4시
 public void reconcileCounts() {

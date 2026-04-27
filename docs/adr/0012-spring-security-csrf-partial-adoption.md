@@ -49,7 +49,7 @@ CSRF 보호는 도입하되, **회귀 위험과 협업 충돌을 최소화하는
 
 자체 인증 시스템(세션 + 인터셉터 + AOP) 과 충돌 회피:
 
-```java
+```text
 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())  // 자체 인터셉터/AOP 가 담당
 .formLogin(form -> form.disable())
 .httpBasic(basic -> basic.disable())
@@ -62,7 +62,7 @@ Spring Security 는 본질적으로 **CSRF 필터 1개만 동작하는 모드**�
 
 기존 fetch / jQuery 코드를 손대지 않도록 `common/header.jsp` 에 monkey-patch 주입:
 
-```javascript
+```textscript
 // 1. CSRF 토큰을 메타 태그로 노출
 <meta name="_csrf" content="${_csrf.token}">
 <meta name="_csrf_header" content="${_csrf.headerName}">

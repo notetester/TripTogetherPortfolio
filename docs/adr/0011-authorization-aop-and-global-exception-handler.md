@@ -10,7 +10,7 @@
 
 기존 컨트롤러는 메서드마다 다음과 같은 보일러플레이트가 반복됐습니다:
 
-```java
+```text
 if (!isAdmin(session)) {
     result.put("success", false);
     result.put("message", "운영진만 ...");
@@ -75,7 +75,7 @@ common/
 
 **Before** (`InquiryController.editAnswer` 23줄):
 
-```java
+```text
 @PostMapping("/{inquiryId}/answer/edit")
 @ResponseBody
 public ResponseEntity<Map<String, Object>> editAnswer(
@@ -102,7 +102,7 @@ public ResponseEntity<Map<String, Object>> editAnswer(
 
 **After** (8줄):
 
-```java
+```text
 @PostMapping("/{inquiryId}/answer/edit")
 @ResponseBody
 @RequireAdmin

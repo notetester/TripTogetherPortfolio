@@ -101,9 +101,12 @@
 
 **아닙니다, 정책 객체로 외부화되어 있습니다.** `ContentModerationPolicyVO` (`moderation` 모듈) 가 시간 윈도우/최대 횟수를 보유하며, 커뮤니티·문의 등 모든 모듈이 `ModerationPolicyService.getPolicy()` 로 가져와 사용합니다. 코드의 숫자 리터럴은 정책 객체 주입 결과이지 magic number 가 아닙니다.
 
-```java
+```text
 ContentModerationPolicyVO policy = moderationPolicyService.getPolicy();
-if (countRecent(...) >= policy.getInquiryMaxCount()) { ... }
+int recent = countRecentInquiries(userIdx, sinceMinutes);
+if (recent >= policy.getInquiryMaxCount()) {
+    throw new ModerationLimitException();
+}
 ```
 
 → 상세: [ADR-0009](../adr/0009-moderation-policy-externalization.md)
