@@ -2626,3 +2626,9 @@ body.sa-light .adm-dash-sort-reset:hover {
     color: #334155;
     border-color: #94a3b8;
 }
+
+/* finance dashboard - 텍스트 색상만 다크/라이트 분기 (인라인 specificity 회피용) */
+.adm-fin-num   { color: #f1f5f9; }
+.adm-fin-guide { color: #94a3b8; }
+body.sa-light .adm-fin-num   { color: #0f172a; }
+body.sa-light .adm-fin-guide { color: #475569; }
