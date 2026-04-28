@@ -53,7 +53,7 @@
                                     <div>
                                         <span class="mp-flight-status mp-package-status">${packageStatusLabel}</span>
                                         <h4>${packageBooking.packageTitle}</h4>
-                                        <p>${packageBooking.spotName} · <spring:message code="mypage.booking.reservationNo" arguments="${packageBooking.bookingNo}"/></p>
+                                        <p>${packageBooking.spotName} &middot; <spring:message code="mypage.booking.reservationNo" arguments="${packageBooking.bookingNo}"/></p>
                                     </div>
                                     <div class="mp-flight-ticket-price">
                                         <span><spring:message code="mypage.booking.totalPayment"/></span>

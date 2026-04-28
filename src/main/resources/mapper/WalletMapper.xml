@@ -113,13 +113,11 @@
             user_idx, payment_type, payment_method, order_name, source_type, source_id,
             original_amount, discount_rate, discount_amount, final_amount,
             used_cash, used_mileage, earned_mileage, payment_status,
-            toss_order_id, toss_payment_key, toss_status, toss_approved_at,
             paid_at, created_at
         ) VALUES (
             #{userIdx}, #{paymentType}, #{paymentMethod}, #{orderName}, #{sourceType}, #{sourceId},
             #{originalAmount}, #{discountRate}, #{discountAmount}, #{finalAmount},
             #{usedCash}, #{usedMileage}, #{earnedMileage}, #{paymentStatus},
-            #{tossOrderId}, #{tossPaymentKey}, #{tossStatus}, #{tossApprovedAt},
             COALESCE(#{paidAt}, NOW()), COALESCE(#{createdAt}, NOW())
         )
     </insert>

@@ -210,6 +210,9 @@ public class TravelPackageController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             result.put("success", false);
             result.put("message", message(e.getMessage()));
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", message("detail.package.booking.error"));
         }
         return result;
     }
