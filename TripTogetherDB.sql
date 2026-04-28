@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `ADMIN_ASSISTANT_DAILY_USAGE` (
   UNIQUE KEY `uk_aa_ip_period` (`ip_address`,`period_start`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI 도우미 주기별 사용량 집계';
 
--- 테이블 데이터 team1_db.ADMIN_ASSISTANT_DAILY_USAGE:~0 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.ADMIN_ASSISTANT_DAILY_USAGE:~2 rows (대략적) 내보내기
 INSERT INTO `ADMIN_ASSISTANT_DAILY_USAGE` (`usage_id`, `user_idx`, `ip_address`, `period_start`, `session_count`, `message_count`) VALUES
 	(1, 7, NULL, '2026-04-27 00:00:00', 1, 1),
 	(3, 10, NULL, '2026-04-28 00:00:00', 1, 1);
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `ADMIN_ASSISTANT_MODERATION` (
   CONSTRAINT `fk_aa_mod_comment` FOREIGN KEY (`chat_comment_idx`) REFERENCES `CHAT_COMMENT` (`chat_comment_idx`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='AI 도우미 user 메시지 독성 감지 결과';
 
--- 테이블 데이터 team1_db.ADMIN_ASSISTANT_MODERATION:~29 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.ADMIN_ASSISTANT_MODERATION:~28 rows (대략적) 내보내기
 INSERT INTO `ADMIN_ASSISTANT_MODERATION` (`moderation_id`, `chat_comment_idx`, `is_inappropriate`, `toxicity_score`, `checked_at`) VALUES
 	(1, 1, 0, 0.030, '2026-04-23 18:11:32'),
 	(2, 3, 0, 0.035, '2026-04-23 18:11:33'),
@@ -760,7 +760,7 @@ CREATE TABLE IF NOT EXISTS `CHAT_POST` (
   CONSTRAINT `fk_chat_post_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- 테이블 데이터 team1_db.CHAT_POST:~14 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.CHAT_POST:~13 rows (대략적) 내보내기
 INSERT INTO `CHAT_POST` (`chat_post_idx`, `user_idx`, `title`, `created_at`) VALUES
 	(1, 6, '동남아 배낭여행 추천 국가는?', '2026-04-20 06:24:24'),
 	(2, 7, '혼자 여행하기 좋은 안전한 나라 추천...', '2026-04-20 06:33:15'),
@@ -809,7 +809,7 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_CONVERSATION` (
   KEY `idx_anon` (`anon_session_id`,`is_deleted`,`last_active` DESC)
 ) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 대화 그룹';
 
--- 테이블 데이터 team1_db.CHATBOT_CONVERSATION:~27 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.CHATBOT_CONVERSATION:~28 rows (대략적) 내보내기
 INSERT INTO `CHATBOT_CONVERSATION` (`conversation_id`, `user_idx`, `anon_session_id`, `title`, `ip_address`, `created_at`, `last_active`, `is_deleted`, `sort_order`) VALUES
 	(1, NULL, '6BB61EC6BAFCCEBB486DD36F368E8A1E', '안녕?', '0:0:0:0:0:0:0:1', '2026-04-22 08:57:29', '2026-04-22 08:59:03', 0, 0),
 	(2, 6, NULL, '인기 여행지 추천바람', '0:0:0:0:0:0:0:1', '2026-04-22 08:59:39', '2026-04-23 03:44:46', 1, 0),
@@ -952,7 +952,7 @@ CREATE TABLE IF NOT EXISTS `CHATBOT_MESSAGE` (
   CONSTRAINT `fk_chatbot_msg_conv` FOREIGN KEY (`conversation_id`) REFERENCES `CHATBOT_CONVERSATION` (`conversation_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='챗봇 메시지';
 
--- 테이블 데이터 team1_db.CHATBOT_MESSAGE:~118 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.CHATBOT_MESSAGE:~126 rows (대략적) 내보내기
 INSERT INTO `CHATBOT_MESSAGE` (`message_id`, `conversation_id`, `role`, `content`, `is_inappropriate`, `created_at`) VALUES
 	(1, 1, 'user', '안녕?', 0, '2026-04-22 08:57:29'),
 	(2, 1, 'assistant', '죄송해요, 잠시 문제가 생겼어요. 아래 링크를 이용해보세요! 🙏', 0, '2026-04-22 08:57:29'),
@@ -2354,7 +2354,7 @@ CREATE TABLE IF NOT EXISTS `FLIGHT_PURCHASE_SIMULATION` (
   CONSTRAINT `fk_flight_purchase_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='항공권 구매 시뮬레이션 이력';
 
--- 테이블 데이터 team1_db.FLIGHT_PURCHASE_SIMULATION:~6 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.FLIGHT_PURCHASE_SIMULATION:~9 rows (대략적) 내보내기
 INSERT INTO `FLIGHT_PURCHASE_SIMULATION` (`flight_purchase_idx`, `purchase_no`, `user_idx`, `spot_idx`, `offer_id`, `provider_type`, `payment_idx`, `airline_name`, `flight_no`, `origin_airport_code`, `destination_airport_code`, `departure_time`, `arrival_time`, `trip_type`, `return_airline_name`, `return_flight_no`, `return_origin_airport_code`, `return_destination_airport_code`, `return_departure_time`, `return_arrival_time`, `outbound_price`, `return_price`, `total_price`, `used_cash`, `used_mileage`, `status`, `cancel_reason`, `created_at`) VALUES
 	(1, 'FLT-DC54C4CFEBFD4047', 14, 10, 'MOCK-10-TT115', 'MOCK', NULL, 'TripTogether Air', 'TT115', 'ICN', 'DEST', '2026-05-04 15:20:00', '2026-05-05 01:20:00', 'ONE_WAY', NULL, NULL, NULL, NULL, NULL, NULL, 1446000, 0, 1446000, 1446000, 0, 'COMPLETED', NULL, '2026-04-20 08:53:30'),
 	(2, 'FLT-B0F7B8CAA8D84A56', 14, 12, 'MOCK-12-TT119', 'MOCK', NULL, 'Jeju Air', 'TT119', 'ICN', 'KIX', '2026-05-04 15:20:00', '2026-05-04 20:20:00', 'ONE_WAY', NULL, NULL, NULL, NULL, NULL, NULL, 256000, 0, 256000, 180000, 76000, 'COMPLETED', NULL, '2026-04-20 09:02:24'),
@@ -2873,7 +2873,7 @@ CREATE TABLE IF NOT EXISTS `plan_spot` (
   CONSTRAINT `fk_plan_spot_spot` FOREIGN KEY (`spot_id`) REFERENCES `SPOT_TRAVEL` (`spot_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=616 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- 테이블 데이터 team1_db.plan_spot:~259 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.plan_spot:~306 rows (대략적) 내보내기
 INSERT INTO `plan_spot` (`plan_spot_id`, `plan_id`, `spot_id`, `place_name`, `visit_date`, `visit_order`, `created_at`) VALUES
 	(9, 4, '6a62ab65-2cd5-11f1-a646-0aa7402bf58d', '니시키 시장', '2026-04-08', 1, '2026-04-08 09:16:14'),
 	(10, 4, '6a62ab65-2cd5-11f1-a646-0aa7402bf58d', '기요미즈데라', '2026-04-08', 2, '2026-04-08 09:16:14'),
@@ -5617,7 +5617,7 @@ CREATE TABLE IF NOT EXISTS `TRAVEL_PACKAGE` (
   CONSTRAINT `fk_travel_package_spot` FOREIGN KEY (`spot_idx`) REFERENCES `SPOT_TRAVEL` (`spot_idx`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='여행 패키지 상품';
 
--- 테이블 데이터 team1_db.TRAVEL_PACKAGE:~38 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.TRAVEL_PACKAGE:~40 rows (대략적) 내보내기
 INSERT INTO `TRAVEL_PACKAGE` (`package_idx`, `seller_user_idx`, `spot_idx`, `package_title`, `package_summary`, `package_content`, `package_price`, `currency_code`, `start_date`, `end_date`, `min_people`, `max_people`, `package_status`, `reject_reason`, `main_image_path`, `view_count`, `like_count`, `booking_count`, `is_home_featured`, `home_featured_order`, `home_featured_start_at`, `home_featured_end_at`, `home_exposure_count`, `home_click_count`, `approved_by_user_idx`, `approved_at`, `created_at`, `updated_at`) VALUES
 	(1, 3, 33, '동대문중 미식 패키지', '동대문중학교 미식 투어', '동대문중 짱짱맨', 44444, 'KRW', '2026-04-21', '2026-04-21', 1, NULL, 'APPROVED', NULL, 'https://mblogthumb-phinf.pstatic.net/MjAyNDA0MThfMTM3/MDAxNzEzNDExMjIyMzU4.CVwiHFeiTd5qyCvKS8PDEe9oYKMKRFfunzImX2M69Pcg.No9rVEyQiA202m0BXX7nwmpp5t9vuNtO3FvTzdPxCHwg.JPEG/1713411183371.jpg?type=w800', 0, 0, 0, 0, NULL, NULL, NULL, 0, 0, 14, '2026-04-21 08:53:50', '2026-04-21 07:45:13', '2026-04-22 03:47:46'),
 	(24, 126, 1, '도쿄 감성 시티 투어 3일', '시부야, 아사쿠사, 도쿄타워를 한 번에 즐기는 도쿄 핵심 패키지', '도쿄의 대표 명소와 현지 맛집을 중심으로 구성한 2박 3일 여행 패키지입니다. 첫 방문자도 부담 없이 이동할 수 있도록 주요 동선을 압축했습니다.', 389000, 'KRW', '2026-05-10', '2026-08-31', 1, 12, 'APPROVED', NULL, 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1200&q=80', 320, 48, 17, 1, 1, '2026-04-23 07:06:08', '2026-08-31 23:59:59', 0, 0, 6, '2026-04-23 07:06:08', '2026-04-23 07:06:08', '2026-04-23 07:06:08'),
@@ -5684,7 +5684,7 @@ CREATE TABLE IF NOT EXISTS `TRAVEL_PACKAGE_BOOKING` (
   CONSTRAINT `fk_package_booking_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='여행 패키지 예약/구매 시뮬레이션';
 
--- 테이블 데이터 team1_db.TRAVEL_PACKAGE_BOOKING:~1 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.TRAVEL_PACKAGE_BOOKING:~10 rows (대략적) 내보내기
 INSERT INTO `TRAVEL_PACKAGE_BOOKING` (`package_booking_idx`, `booking_no`, `package_idx`, `user_idx`, `people_count`, `unit_price`, `total_price`, `used_cash`, `used_mileage`, `booking_status`, `booked_at`, `cancelled_at`, `cancel_reason`) VALUES
 	(1, 'PKG-0157B4D5F4AB40B4', 1, 3, 1, 44444, 44444, 31444, 13000, 'CANCELLED', '2026-04-22 03:02:42', '2026-04-22 03:47:46', '사용자 직접 취소'),
 	(2, 'PKG-E097D796AC31448B', 35, 14, 1, 230000, 230000, 161000, 69000, 'CANCELLED', '2026-04-27 17:54:40', '2026-04-27 17:55:13', '사용자 직접 취소'),
@@ -5731,7 +5731,7 @@ CREATE TABLE IF NOT EXISTS `TRAVEL_PACKAGE_REVIEW_HISTORY` (
   CONSTRAINT `fk_package_review_reviewer` FOREIGN KEY (`reviewed_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='여행 패키지 관리자 검토 이력';
 
--- 테이블 데이터 team1_db.TRAVEL_PACKAGE_REVIEW_HISTORY:~5 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.TRAVEL_PACKAGE_REVIEW_HISTORY:~3 rows (대략적) 내보내기
 INSERT INTO `TRAVEL_PACKAGE_REVIEW_HISTORY` (`package_review_idx`, `package_idx`, `previous_status`, `new_status`, `review_reason`, `reviewed_by_user_idx`, `created_at`) VALUES
 	(1, 1, 'PENDING', 'APPROVED', '관리자 승인', 14, '2026-04-21 08:53:50'),
 	(6, 61, 'PENDING', 'REJECTED', 'dd', 14, '2026-04-28 10:27:48'),
@@ -32886,7 +32886,7 @@ CREATE TABLE IF NOT EXISTS `USER_VIEW_HISTORY` (
   CONSTRAINT `fk_uvh_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=226 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- 테이블 데이터 team1_db.USER_VIEW_HISTORY:~42 rows (대략적) 내보내기
+-- 테이블 데이터 team1_db.USER_VIEW_HISTORY:~75 rows (대략적) 내보내기
 INSERT INTO `USER_VIEW_HISTORY` (`history_idx`, `user_idx`, `content_type`, `content_id`, `viewed_at`) VALUES
 	(1, 7, 'spot', 10, '2026-04-24 00:20:18'),
 	(2, 7, 'community', 73, '2026-04-24 00:07:32'),
