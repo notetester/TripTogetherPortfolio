@@ -3,6 +3,7 @@ package org.triptogether.config;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.triptogether.common.vo.IpBlockRuleVO;
+import org.triptogether.common.vo.UserBlockRuleVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,6 +13,9 @@ public interface IpBlockMapper {
 
     /** 현재 유효한 IP 차단 규칙 목록 조회 */
     List<IpBlockRuleVO> findActiveIpBlockRules();
+
+    /** 현재 유효한 회원 차단 규칙 목록 조회 */
+    List<UserBlockRuleVO> findActiveUserBlockRules();
 
     /** 레거시 단일 IP 차단 등록 */
     void insertBlockedIp(@Param("ipAddress") String ipAddress,

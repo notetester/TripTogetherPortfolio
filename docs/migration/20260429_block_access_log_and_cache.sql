@@ -1,0 +1,53 @@
+-- TripTogether 보안 보강: 차단 요청 별도 로그 + 차단 규칙 캐시 설정
+-- 적용 대상: MySQL 8.x / 기존 TripTogether 스키마
+
+CREATE TABLE IF NOT EXISTS `BLOCK_ACCESS_LOG` (
+  `block_access_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '차단 접근 로그 PK',
+  `request_id` varchar(36) NOT NULL COMMENT '차단된 단일 HTTP 요청 식별자(UUID)',
+  `flow_trace_id` varchar(36) DEFAULT NULL COMMENT '동일 흐름 추적용 식별자',
+  `user_idx` bigint DEFAULT NULL COMMENT '로그인 사용자 PK. 비회원/IP 차단은 NULL 가능',
+  `session_id` varchar(100) DEFAULT NULL COMMENT '세션 식별자',
+  `request_uri` varchar(255) NOT NULL COMMENT '차단된 요청 URI',
+  `http_method` varchar(10) NOT NULL COMMENT 'HTTP 메서드',
+  `activity_domain` varchar(30) NOT NULL DEFAULT 'GENERAL' COMMENT '도메인 분류',
+  `activity_type` varchar(30) NOT NULL COMMENT 'PAGE_VIEW / ACTION / AJAX / API',
+  `activity_code` varchar(50) DEFAULT 'BLOCKED_ACCESS' COMMENT '차단 활동 코드',
+  `activity_provider` varchar(20) DEFAULT NULL COMMENT '인증/연동 제공자',
+  `auth_event_type` varchar(20) DEFAULT NULL COMMENT 'AUTH 세부 이벤트',
+  `target_type` varchar(30) DEFAULT NULL COMMENT '대상 유형',
+  `target_id` varchar(100) DEFAULT NULL COMMENT '대상 식별자',
+  `handler_name` varchar(200) DEFAULT NULL COMMENT '차단 시점 핸들러',
+  `query_string` varchar(1000) DEFAULT NULL COMMENT '민감값 마스킹된 쿼리 문자열',
+  `referer` varchar(500) DEFAULT NULL COMMENT '민감값 마스킹된 Referer',
+  `ip_address` varchar(45) DEFAULT NULL COMMENT '클라이언트 IP',
+  `user_agent` varchar(500) DEFAULT NULL COMMENT 'User-Agent',
+  `response_status` int DEFAULT 403 COMMENT '차단 응답 상태',
+  `response_time_ms` int DEFAULT NULL COMMENT '차단 판단 시간(ms)',
+  `is_success` tinyint(1) DEFAULT 0 COMMENT '항상 실패성 요청으로 취급',
+  `detail_summary` varchar(500) DEFAULT NULL COMMENT '차단 요약',
+  `block_kind` varchar(20) NOT NULL COMMENT 'IP / USER',
+  `block_match_type` varchar(30) DEFAULT NULL COMMENT 'SINGLE_IP / CIDR / RANGE / COUNTRY / ASN / USER_ONLY / USER_IP / ACCOUNT_STATUS',
+  `block_target_key` varchar(120) DEFAULT NULL COMMENT '차단 대상 키',
+  `block_request_id` varchar(36) DEFAULT NULL COMMENT '차단 규칙을 만든 요청 ID',
+  `block_rule_idx` bigint DEFAULT NULL COMMENT 'IP_BLOCKLIST.ip_blocklist_idx 또는 USER_BLOCKLIST.block_idx',
+  `block_reason` varchar(500) DEFAULT NULL COMMENT '차단 사유',
+  `country_code` varchar(2) DEFAULT NULL COMMENT '앞단 CDN/WAF에서 전달한 국가코드',
+  `asn` varchar(20) DEFAULT NULL COMMENT '앞단 CDN/WAF에서 전달한 ASN',
+  `cache_source` varchar(20) DEFAULT NULL COMMENT 'DB / FILE / EMPTY 등 차단 규칙 캐시 출처',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '로그 시각',
+  PRIMARY KEY (`block_access_idx`),
+  KEY `idx_bal_request_id` (`request_id`),
+  KEY `idx_bal_user_created` (`user_idx`,`created_at`),
+  KEY `idx_bal_ip_created` (`ip_address`,`created_at`),
+  KEY `idx_bal_kind_created` (`block_kind`,`created_at`),
+  KEY `idx_bal_match_created` (`block_match_type`,`created_at`),
+  KEY `idx_bal_target_key` (`block_target_key`),
+  KEY `idx_bal_rule_idx` (`block_rule_idx`),
+  KEY `idx_bal_country_created` (`country_code`,`created_at`),
+  KEY `idx_bal_asn_created` (`asn`,`created_at`),
+  KEY `idx_bal_created_at` (`created_at`),
+  CONSTRAINT `fk_bal_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='IP/회원 차단으로 거부된 요청 전용 로그';
+
+-- application.properties에 선택적으로 추가 가능
+-- security.block.cache.file=./data/block-rule-cache.json

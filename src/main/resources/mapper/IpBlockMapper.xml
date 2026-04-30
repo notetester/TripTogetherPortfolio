@@ -42,6 +42,28 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
+    <resultMap id="userBlockRuleMap" type="org.triptogether.common.vo.UserBlockRuleVO">
+        <id property="blockIdx" column="block_idx"/>
+        <result property="sourceHistoryBlockIdx" column="source_history_block_idx"/>
+        <result property="blockRequestId" column="block_request_id"/>
+        <result property="blockTargetKey" column="block_target_key"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="blockType" column="block_type"/>
+        <result property="blockedIp" column="blocked_ip"/>
+        <result property="active" column="is_active"/>
+        <result property="snapshotStatus" column="snapshot_status"/>
+        <result property="reason" column="reason"/>
+        <result property="blockedByUserIdx" column="blocked_by_user_idx"/>
+        <result property="blockedAt" column="blocked_at"/>
+        <result property="releasedByUserIdx" column="released_by_user_idx"/>
+        <result property="releasedAt" column="released_at"/>
+        <result property="expiresAt" column="expires_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="syncedAt" column="synced_at"/>
+    </resultMap>
+
     <select id="findActiveIpBlockRules" resultMap="ipBlockRuleMap">
         SELECT ipb.*
         FROM IP_BLOCKLIST ipb
@@ -50,6 +72,35 @@
                  CASE WHEN ipb.rule_action = 'BLOCK' THEN 0 ELSE 1 END ASC,
                  ipb.updated_at DESC,
                  ipb.ip_blocklist_idx DESC
+    </select>
+
+    <select id="findActiveUserBlockRules" resultMap="userBlockRuleMap">
+        SELECT
+            ub.block_idx,
+            ub.source_history_block_idx,
+            ub.block_request_id,
+            ub.block_target_key,
+            ub.user_idx,
+            u.user_id,
+            u.nickname,
+            ub.block_type,
+            ub.blocked_ip,
+            ub.is_active,
+            ub.snapshot_status,
+            ub.reason,
+            ub.blocked_by_user_idx,
+            ub.blocked_at,
+            ub.released_by_user_idx,
+            ub.released_at,
+            ub.expires_at,
+            ub.updated_at,
+            ub.synced_at
+        FROM USER_BLOCKLIST ub
+        LEFT JOIN USERS u ON u.user_idx = ub.user_idx
+        WHERE ub.is_active = 1
+          AND COALESCE(ub.snapshot_status, 'ACTIVE') = 'ACTIVE'
+          AND (ub.expires_at IS NULL OR ub.expires_at > NOW())
+        ORDER BY ub.blocked_at DESC, ub.block_idx DESC
     </select>
 
     <insert id="insertBlockedIp">

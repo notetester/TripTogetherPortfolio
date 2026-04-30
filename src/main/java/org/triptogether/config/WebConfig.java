@@ -137,7 +137,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/resources/**", "/upload/**", "/favicon.ico",
-                        "/error", "/css/**", "/js/**", "/images/**"
+                        "/error", "/blocked-access", "/css/**", "/js/**", "/images/**"
                 );
 
         // IP 차단
@@ -145,7 +145,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/resources/**", "/upload/**", "/favicon.ico",
-                        "/error", "/css/**", "/js/**", "/images/**"
+                        "/error", "/blocked-access", "/css/**", "/js/**", "/images/**"
                 );
 
         // 일반 활동 로그
@@ -153,7 +153,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/resources/**", "/upload/**", "/favicon.ico",
-                        "/error", "/css/**", "/js/**", "/images/**"
+                        "/error", "/blocked-access", "/css/**", "/js/**", "/images/**"
                 );
 
         // 일반 로그인 필요 영역
@@ -180,14 +180,14 @@ public class WebConfig implements WebMvcConfigurer {
         // 전체 페이지 어드민모드 인터셉터
         registry.addInterceptor(adminModeInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/resources/**", "/upload/**", "/api/**");
+                .excludePathPatterns("/resources/**", "/upload/**", "/api/**", "/blocked-access");
 
         // 헤더 알림 데이터 주입 (로그인 유저 한정, View 있는 페이지만)
         registry.addInterceptor(notificationInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/resources/**", "/upload/**", "/api/**", "/sse/**",
-                        "/favicon.ico", "/error", "/css/**", "/js/**", "/images/**"
+                        "/favicon.ico", "/error", "/blocked-access", "/css/**", "/js/**", "/images/**"
                 );
     }
 }

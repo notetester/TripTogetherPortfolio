@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.triptogether.admin.service.AdminBlockService;
 import org.triptogether.admin.vo.*;
 import org.triptogether.auth.vo.UsersVO;
+import org.triptogether.config.BlockRuleCacheService;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class AdminBlockController {
 
     private final AdminBlockService adminBlockService;
+    private final BlockRuleCacheService blockRuleCacheService;
 
     @GetMapping
     public String blockDashboard(AdminBlockSearchVO search,
@@ -151,6 +153,25 @@ public class AdminBlockController {
         return "admin/block/_historyRowsFragment";
     }
 
+    @PostMapping("/api/cache/sync")
+    @ResponseBody
+    public Map<String, Object> syncBlockRuleCache() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            BlockRuleCacheService.BlockRuleCacheSnapshot snapshot = blockRuleCacheService.invalidateAndRefresh();
+            result.put("success", true);
+            result.put("message", "차단 규칙 캐시가 DB 기준으로 동기화되었습니다.");
+            result.put("source", snapshot.getSource());
+            result.put("loadedAt", snapshot.getLoadedAt());
+            result.put("ipRuleCount", snapshot.getIpRules() == null ? 0 : snapshot.getIpRules().size());
+            result.put("userRuleCount", snapshot.getUserRules() == null ? 0 : snapshot.getUserRules().size());
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
     private void writeSectionHeaders(HttpServletResponse response, Map<String, Object> data) {
         response.setHeader("X-Section-Total", String.valueOf(data.getOrDefault("total", 0)));
         response.setHeader("X-Section-Page", String.valueOf(data.getOrDefault("page", 1)));
@@ -230,6 +251,7 @@ public class AdminBlockController {
             adminBlockService.createGlobalIpRule(matchType, ipAddress, cidrNotation, rangeStartIp, rangeEndIp,
                     countryCode, asn, ruleAction, controlMode, blockCategory, priority, ipBlockBatchIdx, reason, detailMessage, parsed,
                     loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", "IP 정책 규칙이 저장되었습니다.");
         } catch (Exception e) {
@@ -256,6 +278,7 @@ public class AdminBlockController {
             LocalDateTime parsed = (expiresAt != null && !expiresAt.isBlank()) ? LocalDateTime.parse(expiresAt) : null;
             adminBlockService.updateIpRule(ipBlocklistIdx, ruleAction, controlMode, blockCategory, priority,
                     reason, detailMessage, parsed, loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", "IP 정책 규칙 설정이 저장되었습니다.");
         } catch (Exception e) {
@@ -274,6 +297,7 @@ public class AdminBlockController {
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.toggleIpRule(ipBlocklistIdx, active, loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", active ? "IP 차단 규칙이 재활성화되었습니다." : "IP 차단 규칙이 비활성화되었습니다.");
         } catch (Exception e) {
@@ -292,6 +316,7 @@ public class AdminBlockController {
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.bulkToggleIpRules(ipBlocklistIdxList, active, loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", ipBlocklistIdxList.size() + "개의 IP 규칙이 " + (active ? "활성화" : "비활성화") + "되었습니다.");
         } catch (Exception e) {
@@ -309,6 +334,7 @@ public class AdminBlockController {
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.returnIpRuleToBatchControl(ipBlocklistIdx, loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", "규칙을 배치 제어 상태로 되돌렸습니다.");
         } catch (Exception e) {
@@ -331,6 +357,7 @@ public class AdminBlockController {
             LocalDateTime parsed = (expiresAt != null && !expiresAt.isBlank()) ? LocalDateTime.parse(expiresAt) : null;
             adminBlockService.updateUserBlock(blockIdx, active, reason, parsed,
                     loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", active ? "회원 차단 설정이 저장되었습니다." : "회원 차단이 해제되었습니다.");
         } catch (Exception e) {
@@ -348,6 +375,7 @@ public class AdminBlockController {
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.releaseUserBlock(blockTargetKey, loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", "회원 차단이 해제되었습니다.");
         } catch (Exception e) {
@@ -365,6 +393,7 @@ public class AdminBlockController {
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.bulkReleaseUserBlocks(blockTargetKeys, loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", blockTargetKeys.size() + "개의 회원 차단이 해제되었습니다.");
         } catch (Exception e) {
@@ -392,6 +421,7 @@ public class AdminBlockController {
             adminBlockService.createIpBlockBatch(batchCode, batchName, sourceType, sourceName,
                     batchRuleAction, defaultRulePriority, defaultDisableStrategy, defaultEnableStrategy, description,
                     loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", "IP 차단 배치가 생성되었습니다.");
         } catch (Exception e) {
@@ -420,6 +450,7 @@ public class AdminBlockController {
             adminBlockService.updateIpBlockBatch(ipBlockBatchIdx, batchCode, batchName, sourceType, sourceName,
                     batchRuleAction, defaultRulePriority, defaultDisableStrategy, defaultEnableStrategy, description,
                     loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", "IP 정책 배치 설정이 저장되었습니다.");
         } catch (Exception e) {
@@ -441,6 +472,7 @@ public class AdminBlockController {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.toggleIpBlockBatch(ipBlockBatchIdx, active, operationOption, description,
                     loginUser != null ? loginUser.getUserIdx() : null);
+            syncBlockCacheQuietly();
             result.put("success", true);
             result.put("message", active
                     ? "배치 상태가 활성으로 변경되었습니다."
@@ -450,5 +482,13 @@ public class AdminBlockController {
             result.put("message", e.getMessage());
         }
         return result;
+    }
+
+    private void syncBlockCacheQuietly() {
+        try {
+            blockRuleCacheService.invalidateAndRefresh();
+        } catch (Exception ignored) {
+            // 차단 규칙 변경 API의 주 동작은 성공했으므로, 캐시 동기화 실패는 별도 명시 동기화 API로 복구한다.
+        }
     }
 }

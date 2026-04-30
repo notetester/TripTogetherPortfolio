@@ -80,6 +80,16 @@
     </div>
 
     <div class="adm-card" style="margin-bottom:20px;">
+        <div class="adm-card-body" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div>
+                <div style="font-weight:800;color:#0f172a;">차단 규칙 런타임 캐시</div>
+                <div style="font-size:12px;color:#64748b;margin-top:4px;">요청 차단은 DB 직접 조회가 아니라 메모리/파일 캐시 기준으로 처리됩니다. 규칙 변경 후 자동 동기화되며, 필요 시 수동 동기화할 수 있습니다.</div>
+            </div>
+            <button type="button" class="adm-btn adm-btn-primary js-sync-block-cache">DB 기준 캐시 동기화</button>
+        </div>
+    </div>
+
+    <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/blocks">
                 <input type="hidden" name="tab" id="blockActiveTabInput" value="${fn:escapeXml(param.tab)}">
@@ -3306,7 +3316,26 @@ async function submitBatchToggle() {
     }
 }
 
+async function syncBlockCache() {
+    const res = await fetch(CTX + '/admin/blocks/api/cache/sync', {
+        method: 'POST',
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    });
+    const data = await res.json();
+    if (data.success) {
+        adm_toast((data.message || '차단 규칙 캐시가 동기화되었습니다.') + ' IP=' + (data.ipRuleCount || 0) + ', USER=' + (data.userRuleCount || 0));
+    } else {
+        adm_toast(data.message || '차단 규칙 캐시 동기화 실패', 'error');
+    }
+}
+
 document.addEventListener('click', function (e) {
+    const syncCacheBtn = e.target.closest('.js-sync-block-cache');
+    if (syncCacheBtn) {
+        syncBlockCache();
+        return;
+    }
+
     const tabButton = e.target.closest('.js-block-tab');
     if (tabButton) {
         activateBlockTab(tabButton.dataset.tab);
