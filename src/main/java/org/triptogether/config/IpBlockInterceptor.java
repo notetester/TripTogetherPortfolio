@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.triptogether.auth.vo.UsersVO;
@@ -19,6 +20,8 @@ import org.triptogether.common.vo.UserBlockRuleVO;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -41,6 +44,9 @@ public class IpBlockInterceptor implements HandlerInterceptor {
     public static final String ATTR_BLOCK_CLIENT_IP = "block.clientIp";
     public static final String ATTR_BLOCK_COUNTRY_CODE = "block.countryCode";
     public static final String ATTR_BLOCK_ASN = "block.asn";
+    public static final String ATTR_BLOCK_LANG = "block.lang";
+
+    private static final Set<String> SUPPORTED_BLOCK_LANGS = Set.of("ko", "en", "ja", "zh");
 
     private final BlockRuleCacheService blockRuleCacheService;
     private final BlockAccessLogMapper blockAccessLogMapper;
@@ -57,15 +63,20 @@ public class IpBlockInterceptor implements HandlerInterceptor {
         UsersVO loginUser = session == null ? null : (UsersVO) session.getAttribute("loginUser");
 
         BlockRuleCacheService.BlockRuleCacheSnapshot snapshot = blockRuleCacheService.getSnapshot();
-        BlockDecisionVO userDecision = evaluateUserBlock(loginUser, clientIp, snapshot.getUserRules());
-        if (userDecision.isBlocked()) {
-            handleBlockedRequest(request, response, handler, userDecision, clientIp, countryCode, asn, snapshot.getSource());
-            return false;
-        }
 
+        /*
+         * 현재 접속 환경 자체가 차단된 경우에는 계정 상태보다 IP/환경 차단을 우선한다.
+         * "계정 + IP 동시 차단"도 실제 런타임에서는 IP 전역 차단과 계정 차단이 각각 평가된다.
+         */
         BlockDecisionVO ipDecision = evaluateIpBlock(clientIp, countryCode, asn, snapshot.getIpRules());
         if (ipDecision.isBlocked()) {
             handleBlockedRequest(request, response, handler, ipDecision, clientIp, countryCode, asn, snapshot.getSource());
+            return false;
+        }
+
+        BlockDecisionVO userDecision = evaluateUserBlock(loginUser, clientIp, snapshot.getUserRules());
+        if (userDecision.isBlocked()) {
+            handleBlockedRequest(request, response, handler, userDecision, clientIp, countryCode, asn, snapshot.getSource());
             return false;
         }
         return true;
@@ -155,6 +166,10 @@ public class IpBlockInterceptor implements HandlerInterceptor {
                                       String asn,
                                       String cacheSource) throws Exception {
         String requestId = UUID.randomUUID().toString();
+        HttpSession session = request.getSession(false);
+        UsersVO loginUser = session == null ? null : (UsersVO) session.getAttribute("loginUser");
+        String pageLang = resolveBlockedPageLang(decision, loginUser, countryCode, request);
+
         request.setAttribute(ATTR_BLOCK_REQUEST_ID, requestId);
         request.setAttribute(ATTR_BLOCK_KIND, decision.getBlockKind());
         request.setAttribute(ATTR_BLOCK_MATCH_TYPE, decision.getMatchType());
@@ -163,12 +178,58 @@ public class IpBlockInterceptor implements HandlerInterceptor {
         request.setAttribute(ATTR_BLOCK_CLIENT_IP, clientIp);
         request.setAttribute(ATTR_BLOCK_COUNTRY_CODE, countryCode);
         request.setAttribute(ATTR_BLOCK_ASN, asn);
+        request.setAttribute(ATTR_BLOCK_LANG, pageLang);
+
+        request.getSession(true).setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, Locale.forLanguageTag(pageLang));
 
         logBlockedRequest(request, handler, decision, requestId, clientIp, countryCode, asn, cacheSource);
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/blocked-access");
         dispatcher.forward(request, response);
+    }
+
+    private String resolveBlockedPageLang(BlockDecisionVO decision,
+                                          UsersVO loginUser,
+                                          String countryCode,
+                                          HttpServletRequest request) {
+        String requestedLang = normalizeSupportedLang(request.getParameter("lang"));
+        if (requestedLang != null) return requestedLang;
+
+        if (decision != null && "USER".equalsIgnoreCase(decision.getBlockKind()) && loginUser != null) {
+            String preferredLang = normalizeSupportedLang(loginUser.getPreferredLang());
+            if (preferredLang != null) return preferredLang;
+        }
+
+        String countryLang = langFromCountryCode(countryCode);
+        if (countryLang != null) return countryLang;
+
+        return "ko";
+    }
+
+    private String langFromCountryCode(String countryCode) {
+        if (countryCode == null || countryCode.isBlank()) return null;
+        String code = countryCode.trim().toUpperCase(Locale.ROOT);
+        return switch (code) {
+            case "KR" -> "ko";
+            case "JP" -> "ja";
+            case "CN", "HK", "MO", "TW" -> "zh";
+            case "US", "GB", "AU", "CA", "NZ", "SG", "PH" -> "en";
+            default -> null;
+        };
+    }
+
+    private String normalizeSupportedLang(String value) {
+        if (value == null || value.isBlank()) return null;
+        String lang = value.trim().toLowerCase(Locale.ROOT);
+        int dash = lang.indexOf('-');
+        int underscore = lang.indexOf('_');
+        int cut = -1;
+        if (dash >= 0 && underscore >= 0) cut = Math.min(dash, underscore);
+        else if (dash >= 0) cut = dash;
+        else if (underscore >= 0) cut = underscore;
+        if (cut >= 0) lang = lang.substring(0, cut);
+        return SUPPORTED_BLOCK_LANGS.contains(lang) ? lang : null;
     }
 
     private void logBlockedRequest(HttpServletRequest request,

@@ -16,6 +16,7 @@ import org.triptogether.admin.service.AdminPolicyService;
 import org.triptogether.admin.service.AdminService;
 import org.triptogether.admin.vo.*;
 import org.triptogether.community.service.CommunityService;
+import org.triptogether.config.BlockRuleCacheService;
 import org.triptogether.explore.service.ExploreService;
 import org.triptogether.explore.vo.ReviewVO;
 import org.triptogether.report.service.ReportService;
@@ -69,6 +70,7 @@ public class AdminController {
     private final SpotTextTranslationService translationService;
     private final ExploreService exploreService;
     private final AdminExploreService adminExploreService;
+    private final BlockRuleCacheService blockRuleCacheService;
 
     @GetMapping({"", "/"})
     public String dashboard(Model model) {
@@ -660,6 +662,7 @@ public class AdminController {
             }
             LocalDateTime parsed = (expiresAt != null && !expiresAt.isBlank()) ? LocalDateTime.parse(expiresAt) : null;
             adminService.blockMember(userIdx, blockType, blockedIp != null ? blockedIp.trim() : null, reason != null ? reason.trim() : null, parsed, loginUser != null ? loginUser.getUserIdx() : null);
+            blockRuleCacheService.invalidateAndRefresh();
             result.put("success", true);
             result.put("message", "차단이 적용되었습니다.");
         } catch (Exception e) {

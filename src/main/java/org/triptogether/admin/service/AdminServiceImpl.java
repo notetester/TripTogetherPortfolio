@@ -491,37 +491,66 @@ public class AdminServiceImpl implements AdminService {
         }
 
         String normalizedIp = normalizeIp(blockedIp);
-        if (("IP_ONLY".equals(blockType) || "USER_IP".equals(blockType)) && (normalizedIp == null || normalizedIp.isBlank())) {
+        boolean includesUserBlock = "USER_ONLY".equals(blockType) || "USER_IP".equals(blockType);
+        boolean includesIpBlock = "IP_ONLY".equals(blockType) || "USER_IP".equals(blockType);
+
+        if (includesIpBlock && (normalizedIp == null || normalizedIp.isBlank())) {
             throw new IllegalArgumentException("IP 차단 유형은 차단 IP가 필요합니다.");
         }
 
-        String blockRequestId = UUID.randomUUID().toString();
-        String historyTargetKey = buildHistoryTargetKey(userIdx, blockType, normalizedIp);
-        String ipMatchType = normalizedIp != null && !normalizedIp.isBlank() ? "SINGLE_IP" : null;
+        /*
+         * USER_IP는 런타임의 교집합 조건으로 저장하지 않는다.
+         *
+         * 관리자 액션 의미:
+         * - 악성 회원을 계정 차단하고, 같은 사건으로 해당 IP도 전역 차단한다.
+         *
+         * 실제 저장/평가 의미:
+         * - USER_BLOCKLIST: USER_ONLY
+         * - IP_BLOCKLIST: IP_ONLY(SINGLE_IP)
+         *
+         * 이렇게 분리해야 사용자 안내 화면에서도 현재 요청 기준으로
+         * "계정 이용 제한" 또는 "접근 환경 제한"을 자연스럽게 보여줄 수 있다.
+         */
+        String userBlockRequestId = includesUserBlock ? UUID.randomUUID().toString() : null;
+        Long userHistoryBlockIdx = null;
 
-        if ("USER_ONLY".equals(blockType) || "USER_IP".equals(blockType)) {
-            adminMapper.markMemberBlocked(userIdx, expiresAt, reason);
+        if (includesUserBlock) {
+            String userReason = "USER_IP".equals(blockType)
+                    ? appendActionContext(reason, "계정 및 IP 동시 차단 중 계정 차단")
+                    : reason;
+            String userTargetKey = buildHistoryTargetKey(userIdx, "USER_ONLY", null);
+
+            adminMapper.markMemberBlocked(userIdx, expiresAt, userReason);
+            adminMapper.insertUserBlockHistory(userBlockRequestId, userTargetKey, userIdx, "USER_ONLY", null, userReason, actorUserIdx, expiresAt, null);
+            userHistoryBlockIdx = adminMapper.findBlockHistoryIdxByRequestId(userBlockRequestId);
+            adminMapper.upsertUserBlocklist(userHistoryBlockIdx, userBlockRequestId, userTargetKey, userIdx, "USER_ONLY", null, userReason, actorUserIdx, expiresAt);
         }
 
-        adminMapper.insertUserBlockHistory(blockRequestId, historyTargetKey, userIdx, blockType, normalizedIp, reason, actorUserIdx, expiresAt, ipMatchType);
-        Long historyBlockIdx = adminMapper.findBlockHistoryIdxByRequestId(blockRequestId);
-
-        Long sourceBlocklistIdx = null;
-        if ("USER_ONLY".equals(blockType) || "USER_IP".equals(blockType)) {
-            adminMapper.upsertUserBlocklist(historyBlockIdx, blockRequestId, historyTargetKey, userIdx, blockType, normalizedIp, reason, actorUserIdx, expiresAt);
-            sourceBlocklistIdx = adminMapper.findUserBlocklistIdxByTargetKey(historyTargetKey);
-        }
-
-        if (("IP_ONLY".equals(blockType) || "USER_IP".equals(blockType)) && normalizedIp != null && !normalizedIp.isBlank()) {
+        if (includesIpBlock && normalizedIp != null && !normalizedIp.isBlank()) {
+            String ipBlockRequestId = UUID.randomUUID().toString();
+            String ipReason = "USER_IP".equals(blockType)
+                    ? appendActionContext(reason, "계정 및 IP 동시 차단 중 IP 차단")
+                    : reason;
+            String ipHistoryTargetKey = buildHistoryTargetKey(userIdx, "IP_ONLY", normalizedIp);
             String ipRuleTargetKey = buildIpRuleTargetKey(normalizedIp);
+            String ipMatchType = "SINGLE_IP";
+
+            adminMapper.insertUserBlockHistory(ipBlockRequestId, ipHistoryTargetKey, userIdx, "IP_ONLY", normalizedIp, ipReason, actorUserIdx, expiresAt, ipMatchType);
+            Long ipHistoryBlockIdx = adminMapper.findBlockHistoryIdxByRequestId(ipBlockRequestId);
+
             ipBlockMapper.deactivateUserActionBlockedIpByTargetKey(ipRuleTargetKey, actorUserIdx);
-            ipBlockMapper.upsertBlockedIpWithHistory(normalizedIp, ipRuleTargetKey, reason, userIdx, blockType, actorUserIdx, expiresAt, blockRequestId, historyBlockIdx, sourceBlocklistIdx);
+            ipBlockMapper.upsertBlockedIpWithHistory(normalizedIp, ipRuleTargetKey, ipReason, userIdx, "IP_ONLY", actorUserIdx, expiresAt, ipBlockRequestId, ipHistoryBlockIdx, null);
         }
 
-        // 계정 차단 알림 (USER_ONLY / USER_IP 일 때만, IP_ONLY 제외)
-        if ("USER_ONLY".equals(blockType) || "USER_IP".equals(blockType)) {
+        if (includesUserBlock) {
             notifyAccountBlocked(userIdx, reason, expiresAt);
         }
+    }
+
+    private String appendActionContext(String reason, String context) {
+        if (context == null || context.isBlank()) return reason;
+        if (reason == null || reason.isBlank()) return context;
+        return reason + " (" + context + ")";
     }
 
     // 계정 차단 시 본인에게 알림 발송

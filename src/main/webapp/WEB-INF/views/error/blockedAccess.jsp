@@ -1,11 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="${pageLang}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>접근 제한 - TripTogether</title>
+    <title><spring:message code="error.blocked.pageTitle"/></title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -14,17 +15,24 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Noto Sans JP", "Microsoft YaHei", sans-serif;
             background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
             color: #0f172a;
         }
         .blocked-card {
-            width: min(720px, calc(100vw - 32px));
+            width: min(760px, calc(100vw - 32px));
             background: #fff;
             border: 1px solid #e5e7eb;
             border-radius: 28px;
             box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
             padding: 34px;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+            flex-wrap: wrap;
         }
         .badge {
             display: inline-flex;
@@ -32,11 +40,33 @@
             gap: 8px;
             padding: 7px 12px;
             border-radius: 999px;
-            background: #fee2e2;
-            color: #991b1b;
+            background: #eff6ff;
+            color: #1d4ed8;
             font-weight: 800;
             font-size: 13px;
             letter-spacing: -.01em;
+        }
+        .language-switch {
+            display: inline-flex;
+            gap: 6px;
+            padding: 4px;
+            border: 1px solid #e5e7eb;
+            border-radius: 999px;
+            background: #f8fafc;
+        }
+        .language-switch a {
+            min-width: 38px;
+            padding: 6px 9px;
+            border-radius: 999px;
+            text-align: center;
+            color: #475569;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 12px;
+        }
+        .language-switch a.active {
+            background: #1d4ed8;
+            color: #fff;
         }
         h1 {
             margin: 22px 0 10px;
@@ -45,18 +75,31 @@
             letter-spacing: -.04em;
         }
         .lead {
-            margin: 0 0 24px;
+            margin: 0 0 12px;
             color: #475569;
-            line-height: 1.75;
+            line-height: 1.78;
             font-size: 15px;
+        }
+        .support-box {
+            margin-top: 24px;
+            padding: 18px;
+            border: 1px solid #dbeafe;
+            border-radius: 18px;
+            background: #f8fbff;
+        }
+        .support-title {
+            margin: 0 0 12px;
+            font-size: 14px;
+            font-weight: 900;
+            color: #1e3a8a;
         }
         .info-grid {
             display: grid;
-            grid-template-columns: 150px 1fr;
+            grid-template-columns: 155px 1fr;
             border: 1px solid #e5e7eb;
-            border-radius: 18px;
+            border-radius: 16px;
             overflow: hidden;
-            background: #f8fafc;
+            background: #fff;
         }
         .info-grid dt,
         .info-grid dd {
@@ -68,7 +111,7 @@
         .info-grid dt {
             color: #64748b;
             font-weight: 800;
-            background: #f1f5f9;
+            background: #f8fafc;
         }
         .info-grid dd {
             color: #111827;
@@ -107,41 +150,82 @@
             font-size: 12px;
             line-height: 1.65;
         }
+        @media (max-width: 640px) {
+            .blocked-card { padding: 24px; }
+            h1 { font-size: 25px; }
+            .info-grid { grid-template-columns: 1fr; }
+            .info-grid dt { border-bottom: 0; padding-bottom: 4px; }
+            .info-grid dd { padding-top: 4px; }
+        }
     </style>
 </head>
 <body>
-<main class="blocked-card">
-    <span class="badge">보안 정책 차단</span>
-    <h1>접근이 제한되었습니다.</h1>
-    <p class="lead">
-        현재 요청은 TripTogether 보안 정책에 의해 차단되었습니다.
-        반복 로그인 실패, 계정 차단, IP/CIDR/RANGE/COUNTRY/ASN 정책 등 운영자가 설정한 규칙이 적용되었을 수 있습니다.
-        문의가 필요한 경우 아래 요청 ID를 관리자에게 전달해 주세요.
-    </p>
+<c:set var="restrictionTypeCode" value="error.blocked.type.access"/>
+<c:if test="${blockKind eq 'USER'}">
+    <c:set var="restrictionTypeCode" value="error.blocked.type.account"/>
+</c:if>
 
-    <dl class="info-grid">
-        <dt>요청 ID</dt>
-        <dd><c:out value="${requestId}" default="-"/></dd>
-        <dt>차단 유형</dt>
-        <dd><c:out value="${blockKind}" default="-"/> / <c:out value="${matchType}" default="-"/></dd>
-        <dt>대상 키</dt>
-        <dd><c:out value="${targetKey}" default="-"/></dd>
-        <dt>접속 IP</dt>
-        <dd><c:out value="${clientIp}" default="-"/></dd>
-        <dt>국가 / ASN</dt>
-        <dd><c:out value="${countryCode}" default="-"/> / <c:out value="${asn}" default="-"/></dd>
-        <dt>사유</dt>
-        <dd><c:out value="${reason}" default="보안 정책에 의해 접근이 제한되었습니다."/></dd>
-    </dl>
+<c:url var="langKoUrl" value="/blocked-access">
+    <c:param name="lang" value="ko"/>
+    <c:param name="requestId" value="${requestId}"/>
+    <c:param name="blockKind" value="${blockKind}"/>
+    <c:param name="clientIp" value="${clientIp}"/>
+</c:url>
+<c:url var="langEnUrl" value="/blocked-access">
+    <c:param name="lang" value="en"/>
+    <c:param name="requestId" value="${requestId}"/>
+    <c:param name="blockKind" value="${blockKind}"/>
+    <c:param name="clientIp" value="${clientIp}"/>
+</c:url>
+<c:url var="langJaUrl" value="/blocked-access">
+    <c:param name="lang" value="ja"/>
+    <c:param name="requestId" value="${requestId}"/>
+    <c:param name="blockKind" value="${blockKind}"/>
+    <c:param name="clientIp" value="${clientIp}"/>
+</c:url>
+<c:url var="langZhUrl" value="/blocked-access">
+    <c:param name="lang" value="zh"/>
+    <c:param name="requestId" value="${requestId}"/>
+    <c:param name="blockKind" value="${blockKind}"/>
+    <c:param name="clientIp" value="${clientIp}"/>
+</c:url>
+
+<main class="blocked-card">
+    <div class="topbar">
+        <span class="badge"><spring:message code="error.blocked.badge"/></span>
+        <nav class="language-switch" aria-label="<spring:message code='error.blocked.language'/>">
+            <a href="${langKoUrl}" class="${pageLang eq 'ko' ? 'active' : ''}">KO</a>
+            <a href="${langEnUrl}" class="${pageLang eq 'en' ? 'active' : ''}">EN</a>
+            <a href="${langJaUrl}" class="${pageLang eq 'ja' ? 'active' : ''}">JA</a>
+            <a href="${langZhUrl}" class="${pageLang eq 'zh' ? 'active' : ''}">ZH</a>
+        </nav>
+    </div>
+
+    <h1><spring:message code="error.blocked.title"/></h1>
+    <p class="lead"><spring:message code="error.blocked.lead"/></p>
+    <p class="lead"><spring:message code="error.blocked.description"/></p>
+    <p class="lead"><spring:message code="error.blocked.contact"/></p>
+
+    <section class="support-box" aria-labelledby="supportInfoTitle">
+        <p id="supportInfoTitle" class="support-title"><spring:message code="error.blocked.supportInfo"/></p>
+        <dl class="info-grid">
+            <dt><spring:message code="error.blocked.requestId"/></dt>
+            <dd><c:out value="${requestId}" default="-"/></dd>
+
+            <dt><spring:message code="error.blocked.restrictionType"/></dt>
+            <dd><spring:message code="${restrictionTypeCode}"/></dd>
+
+            <dt><spring:message code="error.blocked.ip"/></dt>
+            <dd><c:out value="${clientIp}" default="-"/></dd>
+        </dl>
+    </section>
 
     <div class="actions">
-        <a class="btn btn-primary" href="${pageContext.request.contextPath}/">메인으로 이동</a>
-        <a class="btn" href="${pageContext.request.contextPath}/inquiry/list">문의하기</a>
+        <a class="btn btn-primary" href="${pageContext.request.contextPath}/"><spring:message code="error.blocked.home"/></a>
+        <a class="btn" href="${pageContext.request.contextPath}/inquiry/list"><spring:message code="error.blocked.support"/></a>
     </div>
-    <p class="note">
-        대량 트래픽 공격은 CDN/WAF/Nginx 등 앞단 계층에서 완화하고,
-        이 화면은 애플리케이션 내부의 정밀 차단 정책이 적용된 요청에 표시됩니다.
-    </p>
+
+    <p class="note"><spring:message code="error.blocked.notice"/></p>
 </main>
 </body>
 </html>

@@ -137,7 +137,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/resources/**", "/upload/**", "/favicon.ico",
-                        "/error", "/blocked-access", "/css/**", "/js/**", "/images/**"
+                        "/error", "/css/**", "/js/**", "/images/**"
                 );
 
         // IP 차단
