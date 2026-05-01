@@ -61,6 +61,34 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
+    <resultMap id="LoginRiskExternalAssessmentMap" type="org.triptogether.auth.vo.LoginRiskExternalAssessmentVO">
+        <id property="assessmentIdx" column="assessment_idx"/>
+        <result property="sourceKind" column="source_kind"/>
+        <result property="sourceCode" column="source_code"/>
+        <result property="sourceName" column="source_name"/>
+        <result property="sourceVersion" column="source_version"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="sourceId" column="source_id"/>
+        <result property="policyCode" column="policy_code"/>
+        <result property="subjectType" column="subject_type"/>
+        <result property="subjectKey" column="subject_key"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="countryCode" column="country_code"/>
+        <result property="asn" column="asn"/>
+        <result property="riskScore" column="risk_score"/>
+        <result property="riskLevel" column="risk_level"/>
+        <result property="confidenceScore" column="confidence_score"/>
+        <result property="recommendationAction" column="recommendation_action"/>
+        <result property="recommendationReason" column="recommendation_reason"/>
+        <result property="evidenceSummary" column="evidence_summary"/>
+        <result property="decisionStatus" column="decision_status"/>
+        <result property="rawPayload" column="raw_payload"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
     <select id="findPolicies" resultMap="LoginRiskPolicyMap">
         SELECT
             policy_idx, policy_code, policy_name, policy_type, is_active,
@@ -347,4 +375,49 @@
             is_enabled = VALUES(is_enabled),
             updated_at = NOW()
     </insert>
+
+    <select id="findExternalAssessments" resultMap="LoginRiskExternalAssessmentMap">
+        SELECT
+            a.*,
+            u.user_id,
+            u.nickname
+        FROM LOGIN_RISK_EXTERNAL_ASSESSMENT a
+        LEFT JOIN USERS u ON u.user_idx = a.user_idx
+        <where>
+            <if test="sourceKind != null and sourceKind != ''">AND a.source_kind = #{sourceKind}</if>
+            <if test="riskLevel != null and riskLevel != ''">AND a.risk_level = #{riskLevel}</if>
+            <if test="decisionStatus != null and decisionStatus != ''">AND a.decision_status = #{decisionStatus}</if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    a.source_code LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.source_name LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.subject_key LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.ip_address LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.recommendation_reason LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.evidence_summary LIKE CONCAT('%', #{keyword}, '%')
+                    OR u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY a.created_at DESC, a.assessment_idx DESC
+    </select>
+
+    <insert id="insertExternalAssessment">
+        INSERT INTO LOGIN_RISK_EXTERNAL_ASSESSMENT
+        (source_kind, source_code, source_name, source_version,
+         source_type, source_id, policy_code, subject_type, subject_key,
+         user_idx, ip_address, country_code, asn,
+         risk_score, risk_level, confidence_score,
+         recommendation_action, recommendation_reason, evidence_summary,
+         decision_status, raw_payload, created_at)
+        VALUES
+        (#{sourceKind}, #{sourceCode}, #{sourceName}, #{sourceVersion},
+         #{sourceType}, #{sourceId}, #{policyCode}, #{subjectType}, #{subjectKey},
+         #{userIdx}, #{ipAddress}, #{countryCode}, #{asn},
+         #{riskScore}, #{riskLevel}, #{confidenceScore},
+         #{recommendationAction}, #{recommendationReason}, #{evidenceSummary},
+         #{decisionStatus}, #{rawPayload}, NOW())
+    </insert>
+
 </mapper>

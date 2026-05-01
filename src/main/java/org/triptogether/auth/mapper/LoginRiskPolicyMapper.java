@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.triptogether.auth.vo.AdminNotificationPreferenceVO;
 import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
+import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -106,6 +107,33 @@ public interface LoginRiskPolicyMapper {
                             @Param("modelName") String modelName,
                             @Param("summary") String summary,
                             @Param("rawPayload") String rawPayload);
+
+    List<LoginRiskExternalAssessmentVO> findExternalAssessments(@Param("sourceKind") String sourceKind,
+                                                               @Param("riskLevel") String riskLevel,
+                                                               @Param("decisionStatus") String decisionStatus,
+                                                               @Param("keyword") String keyword);
+
+    void insertExternalAssessment(@Param("sourceKind") String sourceKind,
+                                  @Param("sourceCode") String sourceCode,
+                                  @Param("sourceName") String sourceName,
+                                  @Param("sourceVersion") String sourceVersion,
+                                  @Param("sourceType") String sourceType,
+                                  @Param("sourceId") Long sourceId,
+                                  @Param("policyCode") String policyCode,
+                                  @Param("subjectType") String subjectType,
+                                  @Param("subjectKey") String subjectKey,
+                                  @Param("userIdx") Long userIdx,
+                                  @Param("ipAddress") String ipAddress,
+                                  @Param("countryCode") String countryCode,
+                                  @Param("asn") String asn,
+                                  @Param("riskScore") Integer riskScore,
+                                  @Param("riskLevel") String riskLevel,
+                                  @Param("confidenceScore") Integer confidenceScore,
+                                  @Param("recommendationAction") String recommendationAction,
+                                  @Param("recommendationReason") String recommendationReason,
+                                  @Param("evidenceSummary") String evidenceSummary,
+                                  @Param("decisionStatus") String decisionStatus,
+                                  @Param("rawPayload") String rawPayload);
 
     List<AdminNotificationPreferenceVO> findNotificationPreferences(@Param("userIdx") Long userIdx);
     void upsertNotificationPreference(@Param("userIdx") Long userIdx,

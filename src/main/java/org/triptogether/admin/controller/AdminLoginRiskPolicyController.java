@@ -75,6 +75,22 @@ public class AdminLoginRiskPolicyController {
         return "redirect:/admin/login-risk/reviews";
     }
 
+    @GetMapping("/assessments")
+    public String assessments(@RequestParam(value = "sourceKind", required = false) String sourceKind,
+                              @RequestParam(value = "riskLevel", required = false) String riskLevel,
+                              @RequestParam(value = "decisionStatus", required = false) String decisionStatus,
+                              @RequestParam(value = "keyword", required = false) String keyword,
+                              Model model) {
+        model.addAttribute("assessments", loginRiskPolicyService.getExternalAssessments(sourceKind, riskLevel, decisionStatus, keyword));
+        model.addAttribute("sourceKind", sourceKind);
+        model.addAttribute("riskLevel", riskLevel);
+        model.addAttribute("decisionStatus", decisionStatus);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("activeMenu", "loginRiskAssessments");
+        model.addAttribute("pageTitle", "로그인 위험 외부 판단");
+        return "admin/login-risk/assessments";
+    }
+
     @GetMapping("/notification-preferences")
     public String notificationPreferences(HttpSession session, Model model) {
         Long adminIdx = currentAdminIdx(session);

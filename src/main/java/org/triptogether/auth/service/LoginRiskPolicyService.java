@@ -15,8 +15,12 @@ import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.LoginRiskDecisionVO;
 import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
+import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.config.BlockRuleCacheService;
+import org.triptogether.auth.risk.LoginRiskAssessmentProvider;
+import org.triptogether.auth.risk.LoginRiskAssessmentRequest;
+import org.triptogether.auth.risk.LoginRiskAssessmentResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +41,7 @@ public class LoginRiskPolicyService {
     private final AdminMapper adminMapper;
     private final JavaMailSender mailSender;
     private final BlockRuleCacheService blockRuleCacheService;
+    private final List<LoginRiskAssessmentProvider> assessmentProviders;
 
     @Value("${spring.mail.username:}")
     private String mailFrom;
@@ -56,6 +61,10 @@ public class LoginRiskPolicyService {
 
     public LoginRiskReviewVO getReviewDetail(Long reviewIdx) {
         return loginRiskPolicyMapper.findReviewByIdx(reviewIdx);
+    }
+
+    public List<LoginRiskExternalAssessmentVO> getExternalAssessments(String sourceKind, String riskLevel, String decisionStatus, String keyword) {
+        return loginRiskPolicyMapper.findExternalAssessments(emptyToNull(sourceKind), emptyToNull(riskLevel), emptyToNull(decisionStatus), emptyToNull(keyword));
     }
 
     public List<AdminNotificationPreferenceVO> getNotificationPreferences(Long adminUserIdx) {
@@ -278,8 +287,114 @@ public class LoginRiskPolicyService {
         String detail = "IP=" + context.getIpAddress() + ", failures=" + failures + ", distinctIdentifiers=" + distinct;
         createAdminReview(policy, "IP_LOGIN_RISK", "IP", context.getIpAddress(), user == null ? null : user.getUserIdx(), context.getIpAddress(), context, summary, detail);
         if (policy.isAiAssistEnabled()) {
-            loginRiskPolicyMapper.insertAiAssessment("LOGIN_RISK_REVIEW", null, null, "PENDING", "manual-review", "AI 판단 대기: " + detail, "{}");
+            recordAssessmentCandidates(policy, "LOGIN_RISK_REVIEW", null, "IP", context.getIpAddress(),
+                    user == null ? null : user.getUserIdx(), context.getIpAddress(), null, null,
+                    failures, distinct, detail);
         }
+    }
+
+
+    private void recordAssessmentCandidates(LoginRiskPolicyVO policy,
+                                            String sourceType,
+                                            Long sourceId,
+                                            String subjectType,
+                                            String subjectKey,
+                                            Long userIdx,
+                                            String ipAddress,
+                                            String countryCode,
+                                            String asn,
+                                            Integer observedCount,
+                                            Integer distinctCount,
+                                            String detail) {
+        LoginRiskAssessmentRequest request = LoginRiskAssessmentRequest.builder()
+                .policyCode(policy == null ? null : policy.getPolicyCode())
+                .subjectType(subjectType)
+                .subjectKey(subjectKey)
+                .userIdx(userIdx)
+                .ipAddress(ipAddress)
+                .countryCode(countryCode)
+                .asn(asn)
+                .observedCount(observedCount)
+                .distinctIdentifierCount(distinctCount)
+                .detailMessage(detail)
+                .build();
+
+        boolean providerReturned = false;
+        if (assessmentProviders != null) {
+            for (LoginRiskAssessmentProvider provider : assessmentProviders) {
+                try {
+                    var result = provider.assess(request);
+                    if (result.isPresent()) {
+                        providerReturned = true;
+                        insertExternalAssessmentResult(sourceType, sourceId, policy, subjectType, subjectKey,
+                                userIdx, ipAddress, countryCode, asn, result.get());
+                    }
+                } catch (Exception e) {
+                    log.warn("[LoginRisk] 외부 위험 평가 Provider 실행 실패 provider={}", provider.getClass().getName(), e);
+                }
+            }
+        }
+
+        if (!providerReturned) {
+            loginRiskPolicyMapper.insertExternalAssessment(
+                    "ASSESSMENT_PIPELINE",
+                    "READY_FOR_PROVIDER",
+                    "External assessment provider hook",
+                    "0.0.0",
+                    sourceType,
+                    sourceId,
+                    policy == null ? null : policy.getPolicyCode(),
+                    subjectType,
+                    subjectKey,
+                    userIdx,
+                    ipAddress,
+                    countryCode,
+                    asn,
+                    null,
+                    "PENDING",
+                    null,
+                    "REVIEW",
+                    "실제 AI/알고리즘/상위 정책기관 모듈 연결 대기",
+                    detail,
+                    "PENDING",
+                    "{\"provider\":\"not-connected\"}"
+            );
+        }
+    }
+
+    private void insertExternalAssessmentResult(String sourceType,
+                                                Long sourceId,
+                                                LoginRiskPolicyVO policy,
+                                                String subjectType,
+                                                String subjectKey,
+                                                Long userIdx,
+                                                String ipAddress,
+                                                String countryCode,
+                                                String asn,
+                                                LoginRiskAssessmentResult result) {
+        loginRiskPolicyMapper.insertExternalAssessment(
+                result.getSourceKind(),
+                result.getSourceCode(),
+                result.getSourceName(),
+                result.getSourceVersion(),
+                sourceType,
+                sourceId,
+                policy == null ? null : policy.getPolicyCode(),
+                subjectType,
+                subjectKey,
+                userIdx,
+                ipAddress,
+                countryCode,
+                asn,
+                result.getRiskScore(),
+                result.getRiskLevel(),
+                result.getConfidenceScore(),
+                result.getRecommendationAction(),
+                result.getRecommendationReason(),
+                result.getEvidenceSummary(),
+                "PROPOSED",
+                result.getRawPayload()
+        );
     }
 
     private void createAdminReview(LoginRiskPolicyVO policy, String reviewType, String subjectType, String subjectKey,

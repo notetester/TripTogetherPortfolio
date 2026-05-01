@@ -104,6 +104,9 @@
                     <a class="adm-nav-item ${activeMenu=='loginRiskReviews'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/reviews">
                         <span class="adm-nav-icon">🧯</span> 로그인 위험 검토
                     </a>
+                    <a class="adm-nav-item ${activeMenu=='loginRiskAssessments'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/assessments">
+                        <span class="adm-nav-icon">🧠</span> 외부 위험 판단
+                    </a>
                     <a class="adm-nav-item ${activeMenu=='adminNotificationPreferences'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">
                         <span class="adm-nav-icon">🔔</span> 알림 설정
                     </a>
