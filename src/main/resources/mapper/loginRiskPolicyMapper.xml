@@ -120,6 +120,66 @@
         <result property="createdAt" column="created_at"/>
     </resultMap>
 
+    <resultMap id="SecurityReviewMap" type="org.triptogether.auth.vo.SecurityReviewVO">
+        <id property="reviewIdx" column="review_idx"/>
+        <result property="assessmentIdx" column="assessment_idx"/>
+        <result property="assessmentScope" column="assessment_scope"/>
+        <result property="reviewType" column="review_type"/>
+        <result property="severity" column="severity"/>
+        <result property="subjectType" column="subject_type"/>
+        <result property="subjectKey" column="subject_key"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="summary" column="summary"/>
+        <result property="detailMessage" column="detail_message"/>
+        <result property="reviewStatus" column="review_status"/>
+        <result property="reviewedByUserIdx" column="reviewed_by_user_idx"/>
+        <result property="reviewedByUserId" column="reviewed_by_user_id"/>
+        <result property="reviewedAt" column="reviewed_at"/>
+        <result property="reviewComment" column="review_comment"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="SecurityAppealMap" type="org.triptogether.auth.vo.SecurityAppealVO">
+        <id property="appealIdx" column="appeal_idx"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="targetType" column="target_type"/>
+        <result property="targetKey" column="target_key"/>
+        <result property="sourceAssessmentIdx" column="source_assessment_idx"/>
+        <result property="appealStatus" column="appeal_status"/>
+        <result property="appealTitle" column="appeal_title"/>
+        <result property="appealContent" column="appeal_content"/>
+        <result property="reviewedByUserIdx" column="reviewed_by_user_idx"/>
+        <result property="reviewedByUserId" column="reviewed_by_user_id"/>
+        <result property="reviewedAt" column="reviewed_at"/>
+        <result property="reviewComment" column="review_comment"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="SecurityAssessmentProviderConfigMap" type="org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO">
+        <id property="providerIdx" column="provider_idx"/>
+        <result property="providerCode" column="provider_code"/>
+        <result property="providerKind" column="provider_kind"/>
+        <result property="providerName" column="provider_name"/>
+        <result property="enabled" column="is_enabled"/>
+        <result property="endpointUrl" column="endpoint_url"/>
+        <result property="apiKeyRef" column="api_key_ref"/>
+        <result property="modelName" column="model_name"/>
+        <result property="timeoutMillis" column="timeout_millis"/>
+        <result property="failOpen" column="fail_open"/>
+        <result property="status" column="status"/>
+        <result property="description" column="description"/>
+        <result property="lastCheckedAt" column="last_checked_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
     <select id="findPolicies" resultMap="LoginRiskPolicyMap">
         SELECT
             policy_idx, policy_code, policy_name, policy_type, is_active,
@@ -607,6 +667,162 @@
         UPDATE SECURITY_RISK_ASSESSMENT
         SET decision_status = #{decisionStatus}
         WHERE assessment_idx = #{assessmentIdx}
+    </update>
+
+
+    <select id="findSecurityReviews" resultMap="SecurityReviewMap">
+        SELECT
+            r.*,
+            a.assessment_scope,
+            u.user_id,
+            u.nickname,
+            reviewer.user_id AS reviewed_by_user_id
+        FROM SECURITY_REVIEW_QUEUE r
+        LEFT JOIN SECURITY_RISK_ASSESSMENT a ON a.assessment_idx = r.assessment_idx
+        LEFT JOIN USERS u ON u.user_idx = r.user_idx
+        LEFT JOIN USERS reviewer ON reviewer.user_idx = r.reviewed_by_user_idx
+        <where>
+            <if test="status != null and status != ''">AND r.review_status = #{status}</if>
+            <if test="severity != null and severity != ''">AND r.severity = #{severity}</if>
+            <if test="reviewType != null and reviewType != ''">AND r.review_type = #{reviewType}</if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    r.review_type LIKE CONCAT('%', #{keyword}, '%')
+                    OR r.subject_key LIKE CONCAT('%', #{keyword}, '%')
+                    OR r.ip_address LIKE CONCAT('%', #{keyword}, '%')
+                    OR r.summary LIKE CONCAT('%', #{keyword}, '%')
+                    OR r.detail_message LIKE CONCAT('%', #{keyword}, '%')
+                    OR u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY
+            CASE r.review_status WHEN 'PENDING' THEN 0 WHEN 'HOLD' THEN 1 WHEN 'APPROVED' THEN 2 ELSE 3 END,
+            CASE r.severity WHEN 'CRITICAL' THEN 0 WHEN 'HIGH' THEN 1 WHEN 'MEDIUM' THEN 2 ELSE 3 END,
+            r.created_at DESC
+    </select>
+
+    <select id="findSecurityReviewByIdx" resultMap="SecurityReviewMap">
+        SELECT
+            r.*,
+            a.assessment_scope,
+            u.user_id,
+            u.nickname,
+            reviewer.user_id AS reviewed_by_user_id
+        FROM SECURITY_REVIEW_QUEUE r
+        LEFT JOIN SECURITY_RISK_ASSESSMENT a ON a.assessment_idx = r.assessment_idx
+        LEFT JOIN USERS u ON u.user_idx = r.user_idx
+        LEFT JOIN USERS reviewer ON reviewer.user_idx = r.reviewed_by_user_idx
+        WHERE r.review_idx = #{reviewIdx}
+    </select>
+
+    <insert id="insertSecurityReviewFromAssessment">
+        INSERT INTO SECURITY_REVIEW_QUEUE
+        (assessment_idx, review_type, severity, subject_type, subject_key, user_idx, ip_address,
+         summary, detail_message, review_status, created_at, updated_at)
+        SELECT
+            assessment_idx,
+            #{reviewType},
+            #{severity},
+            subject_type,
+            subject_key,
+            user_idx,
+            ip_address,
+            #{summary},
+            #{detailMessage},
+            'PENDING',
+            NOW(),
+            NOW()
+        FROM SECURITY_RISK_ASSESSMENT
+        WHERE assessment_idx = #{assessmentIdx}
+    </insert>
+
+    <update id="updateSecurityReviewDecision">
+        UPDATE SECURITY_REVIEW_QUEUE
+        SET review_status = #{reviewStatus},
+            reviewed_by_user_idx = #{reviewedByUserIdx},
+            reviewed_at = NOW(),
+            review_comment = #{reviewComment},
+            updated_at = NOW()
+        WHERE review_idx = #{reviewIdx}
+    </update>
+
+    <select id="findProviderConfigs" resultMap="SecurityAssessmentProviderConfigMap">
+        SELECT * FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        ORDER BY provider_kind, provider_code
+    </select>
+
+    <select id="findProviderConfigByIdx" resultMap="SecurityAssessmentProviderConfigMap">
+        SELECT * FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        WHERE provider_idx = #{providerIdx}
+    </select>
+
+    <update id="updateProviderConfig" parameterType="org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO">
+        UPDATE SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        SET provider_name = #{providerName},
+            is_enabled = #{enabled},
+            endpoint_url = #{endpointUrl},
+            api_key_ref = #{apiKeyRef},
+            model_name = #{modelName},
+            timeout_millis = #{timeoutMillis},
+            fail_open = #{failOpen},
+            status = CASE
+                WHEN #{enabled} = 1 AND (#{endpointUrl} IS NULL OR #{endpointUrl} = '' OR #{apiKeyRef} IS NULL OR #{apiKeyRef} = '') THEN 'READY_NEEDS_SECRET'
+                WHEN #{enabled} = 1 THEN 'READY'
+                ELSE 'DISABLED'
+            END,
+            description = #{description},
+            updated_at = NOW()
+        WHERE provider_idx = #{providerIdx}
+    </update>
+
+
+    <insert id="insertSecurityActionAudit">
+        INSERT INTO SECURITY_ACTION_AUDIT
+        (action_type, actor_user_idx, target_type, target_key, source_type, source_id,
+         summary, detail_message, created_at)
+        VALUES
+        (#{actionType}, #{actorUserIdx}, #{targetType}, #{targetKey}, #{sourceType}, #{sourceId},
+         #{summary}, #{detailMessage}, NOW())
+    </insert>
+
+
+    <select id="findSecurityAppeals" resultMap="SecurityAppealMap">
+        SELECT
+            a.*,
+            u.user_id,
+            u.nickname,
+            reviewer.user_id AS reviewed_by_user_id
+        FROM SECURITY_ACTION_APPEAL a
+        LEFT JOIN USERS u ON u.user_idx = a.user_idx
+        LEFT JOIN USERS reviewer ON reviewer.user_idx = a.reviewed_by_user_idx
+        <where>
+            <if test="status != null and status != ''">AND a.appeal_status = #{status}</if>
+            <if test="targetType != null and targetType != ''">AND a.target_type = #{targetType}</if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    a.target_key LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.appeal_title LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.appeal_content LIKE CONCAT('%', #{keyword}, '%')
+                    OR u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY
+            CASE a.appeal_status WHEN 'PENDING' THEN 0 WHEN 'HOLD' THEN 1 WHEN 'ACCEPTED' THEN 2 ELSE 3 END,
+            a.created_at DESC
+    </select>
+
+    <update id="updateSecurityAppealDecision">
+        UPDATE SECURITY_ACTION_APPEAL
+        SET appeal_status = #{appealStatus},
+            reviewed_by_user_idx = #{reviewedByUserIdx},
+            reviewed_at = NOW(),
+            review_comment = #{reviewComment},
+            updated_at = NOW()
+        WHERE appeal_idx = #{appealIdx}
     </update>
 
 </mapper>

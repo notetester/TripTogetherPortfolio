@@ -10,7 +10,7 @@
     </c:if>
     <tr class="js-local-row"
         data-section="user-blocks"
-        data-search="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)} ${fn:toLowerCase(empty b.userId ? '' : b.userId)} ${fn:toLowerCase(empty b.userEmail ? '' : b.userEmail)} ${fn:toLowerCase(empty b.blockedIp ? '' : b.blockedIp)} ${fn:toLowerCase(empty b.reason ? '' : b.reason)} ${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)} ${fn:toLowerCase(empty b.blockType ? '' : b.blockType)} ${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}"
+        data-search="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)} ${fn:toLowerCase(empty b.userId ? '' : b.userId)} ${fn:toLowerCase(empty b.userEmail ? '' : b.userEmail)} ${fn:toLowerCase(empty b.blockedIp ? '' : b.blockedIp)} ${fn:toLowerCase(empty b.reason ? '' : b.reason)} ${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)} ${fn:toLowerCase(empty b.blockType ? '' : b.blockType)} ${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)} ${fn:toLowerCase(empty b.blockCategory ? '' : b.blockCategory)} ${fn:toLowerCase(empty b.ruleOriginType ? '' : b.ruleOriginType)} ${fn:toLowerCase(empty b.autoBlockSource ? '' : b.autoBlockSource)} ${fn:toLowerCase(empty b.detailMessage ? '' : b.detailMessage)}"
         data-nickname="${fn:toLowerCase(empty b.nickname ? '' : b.nickname)}"
         data-user-id="${fn:toLowerCase(empty b.userId ? '' : b.userId)}"
         data-target="${fn:toLowerCase(empty b.blockedIp ? '' : b.blockedIp)} ${fn:toLowerCase(empty b.blockTargetKey ? '' : b.blockTargetKey)}"
@@ -88,11 +88,17 @@
         <td data-sort-value="${fn:toLowerCase(empty b.snapshotStatus ? '' : b.snapshotStatus)}">
             <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
                 <span class="status-badge ${b.active ? 'ACTIVE' : 'DORMANT'}">${b.snapshotStatus}</span>
+                <span class="adm-cell-link-note">${empty b.effectiveStatus ? '-' : b.effectiveStatus}</span>
+                <span class="adm-cell-link-note">${empty b.blockCategory ? '-' : b.blockCategory} · ${empty b.ruleOriginType ? '-' : b.ruleOriginType}</span>
             </button>
         </td>
         <td style="max-width:260px;white-space:normal;" data-sort-value="${fn:toLowerCase(empty b.reason ? '' : b.reason)}">
             <button type="button" class="adm-cell-link js-open-user-block-editor" data-block-idx="${b.blockIdx}">
                 <span><c:out value="${empty b.reason ? '-' : b.reason}"/></span>
+                <span class="adm-cell-link-note">
+                    <c:if test="${not empty b.riskScore}">위험 ${b.riskScore} · </c:if>
+                    ${b.autoBlock ? '자동' : '수동'} · ${empty b.autoBlockSource ? '-' : b.autoBlockSource}
+                </span>
             </button>
             <c:if test="${not empty b.reason}">
                 <div class="adm-tr-inline js-admin-translation-widget"

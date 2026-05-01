@@ -90,6 +90,97 @@ CREATE TABLE IF NOT EXISTS `SECURITY_RISK_ASSESSMENT` (
   CONSTRAINT `fk_sra_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='AI/알고리즘/상위 정책기관 기반 일반 보안 위험 판단 결과';
 
+
+CREATE TABLE IF NOT EXISTS `SECURITY_REVIEW_QUEUE` (
+  `review_idx` bigint NOT NULL AUTO_INCREMENT,
+  `assessment_idx` bigint DEFAULT NULL,
+  `review_type` varchar(40) NOT NULL COMMENT 'USER_SECURITY_REVIEW / ACCESS_ENVIRONMENT_REVIEW / CONTENT_MODERATION_REVIEW',
+  `severity` varchar(20) DEFAULT 'MEDIUM',
+  `subject_type` varchar(30) NOT NULL,
+  `subject_key` varchar(120) NOT NULL,
+  `user_idx` bigint DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `summary` varchar(300) NOT NULL,
+  `detail_message` varchar(1000) DEFAULT NULL,
+  `review_status` varchar(20) NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING / APPROVED / REJECTED / HOLD',
+  `reviewed_by_user_idx` bigint DEFAULT NULL,
+  `reviewed_at` datetime DEFAULT NULL,
+  `review_comment` varchar(1000) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`review_idx`),
+  KEY `idx_sr_status_created` (`review_status`,`created_at`),
+  KEY `idx_sr_assessment` (`assessment_idx`),
+  KEY `idx_sr_subject` (`subject_type`,`subject_key`,`created_at`),
+  KEY `idx_sr_user_created` (`user_idx`,`created_at`),
+  CONSTRAINT `fk_sr_assessment` FOREIGN KEY (`assessment_idx`) REFERENCES `SECURITY_RISK_ASSESSMENT` (`assessment_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_sr_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_sr_reviewed_by` FOREIGN KEY (`reviewed_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='일반 보안 위험 관리자 검토 큐';
+
+CREATE TABLE IF NOT EXISTS `SECURITY_ACTION_AUDIT` (
+  `audit_idx` bigint NOT NULL AUTO_INCREMENT,
+  `action_type` varchar(60) NOT NULL COMMENT 'SECURITY_REVIEW_APPROVED / ASSESSMENT_USER_BLOCK_APPLIED 등',
+  `actor_user_idx` bigint DEFAULT NULL,
+  `target_type` varchar(40) DEFAULT NULL,
+  `target_key` varchar(160) DEFAULT NULL,
+  `source_type` varchar(60) DEFAULT NULL,
+  `source_id` bigint DEFAULT NULL,
+  `summary` varchar(300) DEFAULT NULL,
+  `detail_message` varchar(1000) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`audit_idx`),
+  KEY `idx_saa_action_created` (`action_type`,`created_at`),
+  KEY `idx_saa_actor_created` (`actor_user_idx`,`created_at`),
+  KEY `idx_saa_target` (`target_type`,`target_key`,`created_at`),
+  KEY `idx_saa_source` (`source_type`,`source_id`),
+  CONSTRAINT `fk_saa_actor` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 판단/검토/차단 집행 감사 로그';
+
+CREATE TABLE IF NOT EXISTS `SECURITY_ACTION_APPEAL` (
+  `appeal_idx` bigint NOT NULL AUTO_INCREMENT,
+  `user_idx` bigint DEFAULT NULL,
+  `target_type` varchar(40) NOT NULL COMMENT 'USER_BLOCK / IP_BLOCK / CONTENT_MODERATION',
+  `target_key` varchar(160) NOT NULL,
+  `source_assessment_idx` bigint DEFAULT NULL,
+  `appeal_status` varchar(20) NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING / ACCEPTED / REJECTED / HOLD',
+  `appeal_title` varchar(200) NOT NULL,
+  `appeal_content` varchar(2000) NOT NULL,
+  `reviewed_by_user_idx` bigint DEFAULT NULL,
+  `reviewed_at` datetime DEFAULT NULL,
+  `review_comment` varchar(1000) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`appeal_idx`),
+  KEY `idx_saa2_status_created` (`appeal_status`,`created_at`),
+  KEY `idx_saa2_user_created` (`user_idx`,`created_at`),
+  KEY `idx_saa2_target` (`target_type`,`target_key`),
+  KEY `idx_saa2_assessment` (`source_assessment_idx`),
+  CONSTRAINT `fk_saa2_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_saa2_reviewed_by` FOREIGN KEY (`reviewed_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 조치 이의제기/오탐 검토';
+
+CREATE TABLE IF NOT EXISTS `SECURITY_ASSESSMENT_PROVIDER_CONFIG` (
+  `provider_idx` bigint NOT NULL AUTO_INCREMENT,
+  `provider_code` varchar(80) NOT NULL,
+  `provider_kind` varchar(40) NOT NULL COMMENT 'AI_MODEL / POLICY_AUTHORITY / RULE_ALGORITHM',
+  `provider_name` varchar(160) NOT NULL,
+  `is_enabled` tinyint(1) NOT NULL DEFAULT 0,
+  `endpoint_url` varchar(500) DEFAULT NULL,
+  `api_key_ref` varchar(160) DEFAULT NULL COMMENT '실제 키값이 아니라 환경변수명/Secret Manager 참조명',
+  `model_name` varchar(160) DEFAULT NULL,
+  `timeout_millis` int NOT NULL DEFAULT 3000,
+  `fail_open` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1이면 Provider 실패 시 운영 차단하지 않음',
+  `status` varchar(30) NOT NULL DEFAULT 'DISABLED' COMMENT 'DISABLED / READY_NEEDS_SECRET / READY / ERROR',
+  `description` varchar(1000) DEFAULT NULL,
+  `last_checked_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`provider_idx`),
+  UNIQUE KEY `uk_sapc_provider_code` (`provider_code`),
+  KEY `idx_sapc_enabled_kind` (`is_enabled`,`provider_kind`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 판단 Provider 연결 설정';
+
 -- USER_BLOCKLIST: IP_BLOCKLIST와 같은 수준의 운영 메타데이터 보강
 CALL add_column_if_missing('USER_BLOCKLIST', 'rule_action', '`rule_action` varchar(10) NOT NULL DEFAULT ''BLOCK'' COMMENT ''규칙 동작 BLOCK / ALLOW''');
 CALL add_column_if_missing('USER_BLOCKLIST', 'control_mode', '`control_mode` varchar(30) NOT NULL DEFAULT ''MANUAL'' COMMENT ''MANUAL / AUTO / BATCH / MANUAL_OVERRIDE''');
@@ -364,6 +455,90 @@ SET account_status = 'BLOCKED',
     blocked_reason = 'AI 스팸 계정 판단에 따른 자동 보호/차단 조치',
     status_changed_at = NOW()
 WHERE user_idx = @demo_spam_idx;
+
+
+-- Provider 연결 설정 시드. 실제 키는 저장하지 않고 환경변수/Secret 참조명을 넣는다.
+INSERT INTO SECURITY_ASSESSMENT_PROVIDER_CONFIG
+(provider_code, provider_kind, provider_name, is_enabled, endpoint_url, api_key_ref, model_name, timeout_millis, fail_open, status, description)
+VALUES
+('OPENAI_RISK_MODEL', 'AI_MODEL', 'OpenAI 기반 보안 위험 판단 Provider', 0, NULL, 'ENV:TRIPTOGETHER_OPENAI_RISK_KEY', 'risk-classifier-prod', 5000, 1, 'DISABLED', '런칭 시 API 키와 endpoint 입력 후 사용 토글을 켜면 연결 가능한 Provider 설정'),
+('POLICY_AUTHORITY_FEED', 'POLICY_AUTHORITY', '상위 정책기관/관제센터 Feed Provider', 0, NULL, 'ENV:TRIPTOGETHER_POLICY_FEED_KEY', 'policy-feed-v1', 5000, 1, 'DISABLED', '상위 정책기관 또는 관제센터 지표 수신용 Provider 설정'),
+('INTERNAL_RULE_ENGINE', 'RULE_ALGORITHM', '내부 룰 기반 보안 판단 엔진', 1, NULL, NULL, 'rule-engine-local', 1000, 1, 'READY', '외부 API 없이 내부 룰 기반으로 동작 가능한 판단 엔진')
+ON DUPLICATE KEY UPDATE
+ provider_name = VALUES(provider_name),
+ api_key_ref = VALUES(api_key_ref),
+ model_name = VALUES(model_name),
+ timeout_millis = VALUES(timeout_millis),
+ fail_open = VALUES(fail_open),
+ status = VALUES(status),
+ description = VALUES(description),
+ updated_at = NOW();
+
+-- 일반 보안 검토 큐 샘플
+SET @DEMO_SECURITY_REVIEW_TAG := 'DEMO-SECURITY-REVIEW-20260501';
+
+DELETE FROM SECURITY_REVIEW_QUEUE
+WHERE detail_message LIKE CONCAT('%', @DEMO_SECURITY_REVIEW_TAG, '%')
+   OR summary LIKE CONCAT('%', @DEMO_SECURITY_REVIEW_TAG, '%');
+
+INSERT INTO SECURITY_REVIEW_QUEUE
+(assessment_idx, review_type, severity, subject_type, subject_key, user_idx, ip_address,
+ summary, detail_message, review_status, created_at, updated_at)
+SELECT
+ assessment_idx,
+ CASE
+   WHEN subject_type = 'USER' AND assessment_scope = 'CONTENT_MODERATION' THEN 'CONTENT_MODERATION_REVIEW'
+   WHEN subject_type = 'USER' THEN 'USER_SECURITY_REVIEW'
+   WHEN subject_type IN ('IP', 'IP_RANGE', 'ASN', 'COUNTRY') THEN 'ACCESS_ENVIRONMENT_REVIEW'
+   ELSE 'GENERAL_SECURITY_REVIEW'
+ END,
+ COALESCE(risk_level, 'MEDIUM'),
+ subject_type,
+ subject_key,
+ user_idx,
+ ip_address,
+ CONCAT(@DEMO_SECURITY_REVIEW_TAG, ' ', recommendation_action, ' 검토 필요'),
+ CONCAT(@DEMO_SECURITY_REVIEW_TAG, ' ', evidence_summary),
+ CASE WHEN decision_status = 'APPLIED' THEN 'APPROVED' ELSE 'PENDING' END,
+ created_at,
+ NOW()
+FROM SECURITY_RISK_ASSESSMENT
+WHERE raw_payload IS NOT NULL
+  AND JSON_UNQUOTE(JSON_EXTRACT(raw_payload, '$.demoTag')) = @DEMO_SECURITY_TAG;
+
+-- 감사 로그와 이의제기 샘플
+INSERT INTO SECURITY_ACTION_AUDIT
+(action_type, actor_user_idx, target_type, target_key, source_type, source_id, summary, detail_message, created_at)
+SELECT
+ 'ASSESSMENT_USER_BLOCK_APPLIED',
+ @system_ai_idx,
+ 'USER',
+ 'demo_spam_user',
+ 'SECURITY_RISK_ASSESSMENT',
+ @spam_assessment_idx,
+ 'AI 보안 판단 기반 자동 계정 차단',
+ 'DEMO-SECURITY-ASSESS-20260501 스팸 계정 자동 차단 시연 로그',
+ NOW()
+WHERE @spam_assessment_idx IS NOT NULL;
+
+SET @DEMO_SECURITY_APPEAL_TAG := 'DEMO-SECURITY-APPEAL-20260501';
+
+DELETE FROM SECURITY_ACTION_APPEAL
+WHERE appeal_title LIKE CONCAT('%', @DEMO_SECURITY_APPEAL_TAG, '%')
+   OR appeal_content LIKE CONCAT('%', @DEMO_SECURITY_APPEAL_TAG, '%');
+
+INSERT INTO SECURITY_ACTION_APPEAL
+(user_idx, target_type, target_key, source_assessment_idx, appeal_status,
+ appeal_title, appeal_content, created_at, updated_at)
+VALUES
+(@demo_spam_idx, 'USER_BLOCK', CONCAT('USER:', @demo_spam_idx), @spam_assessment_idx, 'PENDING',
+ CONCAT(@DEMO_SECURITY_APPEAL_TAG, ' 자동 차단 이의제기'),
+ '시연용: AI 스팸 계정 자동 차단에 대해 사용자가 정상 활동이었다고 이의제기한 예시입니다.',
+ NOW(), NOW()),
+(@demo_content_idx, 'CONTENT_MODERATION', 'COMMUNITY_POST:91001', NULL, 'HOLD',
+ CONCAT(@DEMO_SECURITY_APPEAL_TAG, ' 콘텐츠 조치 검토 보류'),
+ '시연용: 콘텐츠 안전성 판단에 대한 추가 검토가 필요한 이의제기 예시입니다.',
+ NOW(), NOW());
 
 UPDATE SECURITY_RISK_ASSESSMENT
 SET decision_status = 'APPLIED'

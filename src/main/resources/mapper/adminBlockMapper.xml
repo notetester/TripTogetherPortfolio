@@ -29,6 +29,30 @@
         <result property="updatedByUserIdx" column="updated_by_user_idx"/>
         <result property="blockScope" column="block_scope"/>
         <result property="ipMatchType" column="ip_match_type"/>
+        <result property="ruleAction" column="rule_action"/>
+        <result property="controlMode" column="control_mode"/>
+        <result property="ruleOriginType" column="rule_origin_type"/>
+        <result property="sourceScope" column="source_scope"/>
+        <result property="blockCategory" column="block_category"/>
+        <result property="riskScore" column="risk_score"/>
+        <result property="autoBlock" column="auto_block"/>
+        <result property="autoBlockSource" column="auto_block_source"/>
+        <result property="detailMessage" column="detail_message"/>
+        <result property="priority" column="priority"/>
+        <result property="effectiveActive" column="is_effective_active"/>
+        <result property="effectiveStatus" column="effective_status"/>
+        <result property="effectiveStatusReason" column="effective_status_reason"/>
+        <result property="effectiveSyncedAt" column="effective_synced_at"/>
+        <result property="lastControlAction" column="last_control_action"/>
+        <result property="lastControlByUserIdx" column="last_control_by_user_idx"/>
+        <result property="lastControlByNickname" column="last_control_by_nickname"/>
+        <result property="lastControlAt" column="last_control_at"/>
+        <result property="lastControlReason" column="last_control_reason"/>
+        <result property="sourceAssessmentIdx" column="source_assessment_idx"/>
+        <result property="sourceActionType" column="source_action_type"/>
+        <result property="sourceActionGroupId" column="source_action_group_id"/>
+        <result property="sourceUserIdx" column="source_user_idx"/>
+        <result property="sourceIpAddress" column="source_ip_address"/>
     </resultMap>
 
     <resultMap id="ipBlockRM" type="org.triptogether.admin.vo.AdminIpBlockVO">
@@ -243,11 +267,36 @@
             x.synced_at,
             x.updated_by_user_idx,
             h.block_scope,
-            h.ip_match_type
+            h.ip_match_type,
+            x.rule_action,
+            x.control_mode,
+            x.rule_origin_type,
+            x.source_scope,
+            x.block_category,
+            x.risk_score,
+            x.is_auto_block AS auto_block,
+            x.auto_block_source,
+            x.detail_message,
+            x.priority,
+            x.is_effective_active,
+            x.effective_status,
+            x.effective_status_reason,
+            x.effective_synced_at,
+            x.last_control_action,
+            x.last_control_by_user_idx,
+            lcu.nickname AS last_control_by_nickname,
+            x.last_control_at,
+            x.last_control_reason,
+            x.source_assessment_idx,
+            x.source_action_type,
+            x.source_action_group_id,
+            x.source_user_idx,
+            x.source_ip_address
         FROM USER_BLOCKLIST x
         LEFT JOIN USERS u ON u.user_idx = x.user_idx
         LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
         LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USERS lcu ON lcu.user_idx = x.last_control_by_user_idx
         LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
         WHERE 1=1
         <if test="status != null and status != '' and status != 'ALL'">
@@ -261,6 +310,15 @@
         </if>
         <if test="blockType != null and blockType != '' and blockType != 'ALL'">
             AND x.block_type = #{blockType}
+        </if>
+        <if test="controlMode != null and controlMode != '' and controlMode != 'ALL'">
+            AND x.control_mode = #{controlMode}
+        </if>
+        <if test="category != null and category != '' and category != 'ALL'">
+            AND x.block_category = #{category}
+        </if>
+        <if test="effectiveStatus != null and effectiveStatus != '' and effectiveStatus != 'ALL'">
+            AND x.effective_status = #{effectiveStatus}
         </if>
         <if test="batchId != null">
             AND h.ip_block_batch_idx = #{batchId}
@@ -327,6 +385,9 @@
                         OR u.user_email LIKE CONCAT('%', #{keyword}, '%')
                         OR x.blocked_ip LIKE CONCAT('%', #{keyword}, '%')
                         OR x.reason LIKE CONCAT('%', #{keyword}, '%')
+                        OR x.detail_message LIKE CONCAT('%', #{keyword}, '%')
+                        OR x.block_category LIKE CONCAT('%', #{keyword}, '%')
+                        OR x.rule_origin_type LIKE CONCAT('%', #{keyword}, '%')
                         OR x.block_target_key LIKE CONCAT('%', #{keyword}, '%')
                         OR DATE_FORMAT(x.blocked_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
                         OR DATE_FORMAT(x.expires_at, '%Y.%m.%d %H:%i') LIKE CONCAT('%', #{keyword}, '%')
@@ -346,11 +407,18 @@
             x.blocked_at, x.released_at, x.expires_at,
             x.block_request_id, x.block_target_key,
             x.snapshot_status, x.last_history_at, x.synced_at, x.updated_by_user_idx,
-            h.block_scope, h.ip_match_type
+            h.block_scope, h.ip_match_type,
+            x.rule_action, x.control_mode, x.rule_origin_type, x.source_scope, x.block_category,
+            x.risk_score, x.is_auto_block AS auto_block, x.auto_block_source, x.detail_message, x.priority,
+            x.is_effective_active, x.effective_status, x.effective_status_reason, x.effective_synced_at,
+            x.last_control_action, x.last_control_by_user_idx, lcu.nickname AS last_control_by_nickname,
+            x.last_control_at, x.last_control_reason,
+            x.source_assessment_idx, x.source_action_type, x.source_action_group_id, x.source_user_idx, x.source_ip_address
         FROM USER_BLOCKLIST x
         LEFT JOIN USERS u ON u.user_idx = x.user_idx
         LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
         LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USERS lcu ON lcu.user_idx = x.last_control_by_user_idx
         LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
         <include refid="userBlocksWhere"/>
         <choose>
@@ -361,7 +429,7 @@
             <when test="sortBy == 'reason'">    ORDER BY x.reason <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, x.block_idx DESC</when>
             <when test="sortBy == 'blockedAt'"> ORDER BY x.blocked_at <if test="sortDir == 'ASC'">ASC</if><if test="sortDir != 'ASC'">DESC</if>, x.block_idx DESC</when>
             <otherwise>
-                ORDER BY x.is_active DESC, x.blocked_at DESC, x.block_idx DESC
+                ORDER BY x.is_active DESC, COALESCE(x.priority, 1) DESC, x.blocked_at DESC, x.block_idx DESC
             </otherwise>
         </choose>
         LIMIT #{size} OFFSET #{offset}
@@ -1240,11 +1308,36 @@
             x.synced_at,
             x.updated_by_user_idx,
             h.block_scope,
-            h.ip_match_type
+            h.ip_match_type,
+            x.rule_action,
+            x.control_mode,
+            x.rule_origin_type,
+            x.source_scope,
+            x.block_category,
+            x.risk_score,
+            x.is_auto_block AS auto_block,
+            x.auto_block_source,
+            x.detail_message,
+            x.priority,
+            x.is_effective_active,
+            x.effective_status,
+            x.effective_status_reason,
+            x.effective_synced_at,
+            x.last_control_action,
+            x.last_control_by_user_idx,
+            lcu.nickname AS last_control_by_nickname,
+            x.last_control_at,
+            x.last_control_reason,
+            x.source_assessment_idx,
+            x.source_action_type,
+            x.source_action_group_id,
+            x.source_user_idx,
+            x.source_ip_address
         FROM USER_BLOCKLIST x
         LEFT JOIN USERS u ON u.user_idx = x.user_idx
         LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
         LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USERS lcu ON lcu.user_idx = x.last_control_by_user_idx
         LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
         WHERE x.block_idx = #{blockIdx}
         LIMIT 1
@@ -1276,11 +1369,36 @@
             x.synced_at,
             x.updated_by_user_idx,
             h.block_scope,
-            h.ip_match_type
+            h.ip_match_type,
+            x.rule_action,
+            x.control_mode,
+            x.rule_origin_type,
+            x.source_scope,
+            x.block_category,
+            x.risk_score,
+            x.is_auto_block AS auto_block,
+            x.auto_block_source,
+            x.detail_message,
+            x.priority,
+            x.is_effective_active,
+            x.effective_status,
+            x.effective_status_reason,
+            x.effective_synced_at,
+            x.last_control_action,
+            x.last_control_by_user_idx,
+            lcu.nickname AS last_control_by_nickname,
+            x.last_control_at,
+            x.last_control_reason,
+            x.source_assessment_idx,
+            x.source_action_type,
+            x.source_action_group_id,
+            x.source_user_idx,
+            x.source_ip_address
         FROM USER_BLOCKLIST x
         LEFT JOIN USERS u ON u.user_idx = x.user_idx
         LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
         LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USERS lcu ON lcu.user_idx = x.last_control_by_user_idx
         LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
         WHERE x.user_idx = #{userIdx}
           AND x.is_active = 1
@@ -1514,11 +1632,36 @@
             x.synced_at,
             x.updated_by_user_idx,
             h.block_scope,
-            h.ip_match_type
+            h.ip_match_type,
+            x.rule_action,
+            x.control_mode,
+            x.rule_origin_type,
+            x.source_scope,
+            x.block_category,
+            x.risk_score,
+            x.is_auto_block AS auto_block,
+            x.auto_block_source,
+            x.detail_message,
+            x.priority,
+            x.is_effective_active,
+            x.effective_status,
+            x.effective_status_reason,
+            x.effective_synced_at,
+            x.last_control_action,
+            x.last_control_by_user_idx,
+            lcu.nickname AS last_control_by_nickname,
+            x.last_control_at,
+            x.last_control_reason,
+            x.source_assessment_idx,
+            x.source_action_type,
+            x.source_action_group_id,
+            x.source_user_idx,
+            x.source_ip_address
         FROM USER_BLOCKLIST x
         LEFT JOIN USERS u ON u.user_idx = x.user_idx
         LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
         LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USERS lcu ON lcu.user_idx = x.last_control_by_user_idx
         LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
         WHERE x.block_target_key = #{blockTargetKey}
         ORDER BY x.last_history_at DESC, x.blocked_at DESC, x.block_idx DESC
@@ -1551,11 +1694,36 @@
             x.synced_at,
             x.updated_by_user_idx,
             h.block_scope,
-            h.ip_match_type
+            h.ip_match_type,
+            x.rule_action,
+            x.control_mode,
+            x.rule_origin_type,
+            x.source_scope,
+            x.block_category,
+            x.risk_score,
+            x.is_auto_block AS auto_block,
+            x.auto_block_source,
+            x.detail_message,
+            x.priority,
+            x.is_effective_active,
+            x.effective_status,
+            x.effective_status_reason,
+            x.effective_synced_at,
+            x.last_control_action,
+            x.last_control_by_user_idx,
+            lcu.nickname AS last_control_by_nickname,
+            x.last_control_at,
+            x.last_control_reason,
+            x.source_assessment_idx,
+            x.source_action_type,
+            x.source_action_group_id,
+            x.source_user_idx,
+            x.source_ip_address
         FROM USER_BLOCKLIST x
         LEFT JOIN USERS u ON u.user_idx = x.user_idx
         LEFT JOIN USERS bu ON bu.user_idx = x.blocked_by_user_idx
         LEFT JOIN USERS ru ON ru.user_idx = x.released_by_user_idx
+        LEFT JOIN USERS lcu ON lcu.user_idx = x.last_control_by_user_idx
         LEFT JOIN USER_BLOCK_HISTORY h ON h.block_idx = x.source_history_block_idx
         WHERE (
                 #{historyBlockIdx} IS NOT NULL
@@ -1611,6 +1779,14 @@
             last_history_at = NOW(),
             synced_at = NOW(),
             updated_by_user_idx = #{releasedByUserIdx},
+            is_effective_active = #{active},
+            effective_status = CASE WHEN #{active} THEN 'EFFECTIVE' ELSE 'MANUAL_RELEASED' END,
+            effective_status_reason = CASE WHEN #{active} THEN '관리자에 의해 다시 활성화되었습니다.' ELSE '관리자에 의해 해제되었습니다.' END,
+            effective_synced_at = NOW(),
+            last_control_action = CASE WHEN #{active} THEN 'MANUAL_ENABLE' ELSE 'RELEASE' END,
+            last_control_by_user_idx = #{releasedByUserIdx},
+            last_control_at = NOW(),
+            last_control_reason = CASE WHEN #{active} THEN '관리자 수동 활성화' ELSE '관리자 수동 해제' END,
             updated_at = NOW()
         WHERE block_target_key = #{blockTargetKey}
     </update>

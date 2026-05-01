@@ -16,6 +16,9 @@ import org.triptogether.auth.vo.LoginRiskDecisionVO;
 import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
 import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
+import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
+import org.triptogether.auth.vo.SecurityReviewVO;
+import org.triptogether.auth.vo.SecurityAppealVO;
 import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.config.BlockRuleCacheService;
@@ -82,6 +85,164 @@ public class LoginRiskPolicyService {
         );
     }
 
+    public List<SecurityReviewVO> getSecurityReviews(String status, String severity, String reviewType, String keyword) {
+        return loginRiskPolicyMapper.findSecurityReviews(emptyToNull(status), emptyToNull(severity), emptyToNull(reviewType), emptyToNull(keyword));
+    }
+
+    @Transactional
+    public void createSecurityReviewFromAssessment(Long assessmentIdx, String severity, String summary, String detailMessage) {
+        SecurityRiskAssessmentVO assessment = loginRiskPolicyMapper.findSecurityRiskAssessmentByIdx(assessmentIdx);
+        if (assessment == null) {
+            throw new IllegalArgumentException("보안 판단 근거를 찾을 수 없습니다.");
+        }
+        String reviewType = switch (assessment.getSubjectType() == null ? "" : assessment.getSubjectType()) {
+            case "USER" -> "USER_SECURITY_REVIEW";
+            case "IP", "IP_RANGE", "ASN", "COUNTRY" -> "ACCESS_ENVIRONMENT_REVIEW";
+            case "CONTENT" -> "CONTENT_MODERATION_REVIEW";
+            default -> "GENERAL_SECURITY_REVIEW";
+        };
+        loginRiskPolicyMapper.insertSecurityReviewFromAssessment(
+                assessmentIdx,
+                reviewType,
+                firstNonBlank(severity, assessment.getRiskLevel(), "MEDIUM"),
+                firstNonBlank(summary, assessment.getRecommendationAction(), "보안 위험 판단 검토 필요"),
+                firstNonBlank(detailMessage, assessment.getEvidenceSummary(), assessment.getRecommendationReason())
+        );
+        for (Long adminIdx : loginRiskPolicyMapper.findAdminNotificationTargets("BLOCK_REVIEW")) {
+            loginRiskPolicyMapper.insertAdminNotification(adminIdx, "SECURITY_REVIEW", assessmentIdx,
+                    "[보안 검토] " + firstNonBlank(summary, assessment.getSubjectKey(), "보안 위험 판단 검토 필요"),
+                    "/admin/login-risk/security-reviews");
+        }
+    }
+
+    @Transactional
+    public void decideSecurityReview(Long reviewIdx, String decision, Long actorUserIdx, String comment) {
+        SecurityReviewVO review = loginRiskPolicyMapper.findSecurityReviewByIdx(reviewIdx);
+        if (review == null) {
+            throw new IllegalArgumentException("보안 검토 대상을 찾을 수 없습니다.");
+        }
+        String normalized = normalizeDecision(decision);
+        loginRiskPolicyMapper.updateSecurityReviewDecision(reviewIdx, normalized, actorUserIdx, comment);
+        loginRiskPolicyMapper.insertSecurityActionAudit(
+                "SECURITY_REVIEW_" + normalized,
+                actorUserIdx,
+                review.getSubjectType(),
+                review.getSubjectKey(),
+                "SECURITY_REVIEW_QUEUE",
+                reviewIdx,
+                "일반 보안 검토 처리",
+                comment
+        );
+
+        if ("APPROVED".equals(normalized) && review.getAssessmentIdx() != null) {
+            SecurityRiskAssessmentVO assessment = loginRiskPolicyMapper.findSecurityRiskAssessmentByIdx(review.getAssessmentIdx());
+            if (assessment != null) {
+                applyApprovedSecurityAssessment(assessment, actorUserIdx);
+            }
+        } else if ("REJECTED".equals(normalized) && review.getAssessmentIdx() != null) {
+            loginRiskPolicyMapper.updateSecurityRiskAssessmentDecision(review.getAssessmentIdx(), "IGNORED");
+        }
+    }
+
+    private void applyApprovedSecurityAssessment(SecurityRiskAssessmentVO assessment, Long actorUserIdx) {
+        if ("USER".equals(assessment.getSubjectType())) {
+            applyUserBlockFromSecurityAssessment(assessment.getAssessmentIdx(), actorUserIdx);
+            return;
+        }
+
+        String subjectType = assessment.getSubjectType();
+        String target = firstNonBlank(assessment.getSubjectKey(), assessment.getIpAddress());
+        if (target == null || target.isBlank()) {
+            loginRiskPolicyMapper.updateSecurityRiskAssessmentDecision(assessment.getAssessmentIdx(), "APPLIED");
+            return;
+        }
+
+        boolean cidr = "IP_RANGE".equals(subjectType) || target.contains("/");
+        boolean ipLike = "IP".equals(subjectType) || "IP_RANGE".equals(subjectType);
+        if (ipLike) {
+            String ipAddress = cidr && target.contains("/") ? target.substring(0, target.indexOf('/')) : target;
+            String matchType = cidr ? "CIDR" : "SINGLE_IP";
+            String blockTargetKey = cidr ? "CIDR:" + target : "IP:" + target;
+            String requestId = UUID.randomUUID().toString();
+            loginRiskPolicyMapper.insertApprovedIpBlock(
+                    ipAddress,
+                    blockTargetKey,
+                    matchType,
+                    cidr ? target : null,
+                    firstNonBlank(assessment.getRecommendationReason(), assessment.getEvidenceSummary(), "보안 판단 승인 기반 접근 환경 제한"),
+                    actorUserIdx,
+                    requestId,
+                    "SECURITY_REVIEW_APPROVED",
+                    firstNonBlank(assessment.getSourceType(), requestId) + ":" + assessment.getAssessmentIdx(),
+                    assessment.getUserIdx(),
+                    target
+            );
+            try {
+                blockRuleCacheService.invalidateAndRefresh();
+            } catch (Exception e) {
+                log.warn("[SecurityReview] 보안 검토 승인 후 차단 캐시 갱신 실패 assessmentIdx={}", assessment.getAssessmentIdx(), e);
+            }
+        }
+
+        if ("IP".equals(subjectType) || "IP_RANGE".equals(subjectType) || "ASN".equals(subjectType) || "COUNTRY".equals(subjectType)) {
+            loginRiskPolicyMapper.insertWafSyncQueue(
+                    "SECURITY_RISK_ASSESSMENT",
+                    assessment.getAssessmentIdx(),
+                    "BLOCK",
+                    "IP_RANGE".equals(subjectType) ? "CIDR" : subjectType,
+                    target,
+                    "PENDING",
+                    "보안 검토 승인에 따른 외부 WAF/CDN 동기화 후보입니다."
+            );
+        }
+
+        loginRiskPolicyMapper.updateSecurityRiskAssessmentDecision(assessment.getAssessmentIdx(), "APPLIED");
+    }
+
+    public List<SecurityAppealVO> getSecurityAppeals(String status, String targetType, String keyword) {
+        return loginRiskPolicyMapper.findSecurityAppeals(emptyToNull(status), emptyToNull(targetType), emptyToNull(keyword));
+    }
+
+    @Transactional
+    public void decideSecurityAppeal(Long appealIdx, String decision, Long actorUserIdx, String comment) {
+        String normalized = switch (decision == null ? "" : decision.toLowerCase(Locale.ROOT)) {
+            case "accept", "accepted" -> "ACCEPTED";
+            case "reject", "rejected" -> "REJECTED";
+            case "hold" -> "HOLD";
+            default -> "HOLD";
+        };
+        loginRiskPolicyMapper.updateSecurityAppealDecision(appealIdx, normalized, actorUserIdx, comment);
+        loginRiskPolicyMapper.insertSecurityActionAudit(
+                "SECURITY_APPEAL_" + normalized,
+                actorUserIdx,
+                "APPEAL",
+                String.valueOf(appealIdx),
+                "SECURITY_ACTION_APPEAL",
+                appealIdx,
+                "보안 조치 이의제기 처리",
+                comment
+        );
+    }
+
+    public List<SecurityAssessmentProviderConfigVO> getProviderConfigs() {
+        return loginRiskPolicyMapper.findProviderConfigs();
+    }
+
+    @Transactional
+    public void updateProviderConfig(SecurityAssessmentProviderConfigVO config) {
+        loginRiskPolicyMapper.updateProviderConfig(config);
+        loginRiskPolicyMapper.insertSecurityActionAudit(
+                "PROVIDER_CONFIG_UPDATE",
+                null,
+                "PROVIDER",
+                config.getProviderCode(),
+                "SECURITY_ASSESSMENT_PROVIDER_CONFIG",
+                config.getProviderIdx(),
+                "보안 판단 Provider 설정 변경",
+                "enabled=" + config.isEnabled() + ", endpoint=" + config.getEndpointUrl()
+        );
+    }
+
     @Transactional
     public void applyUserBlockFromSecurityAssessment(Long assessmentIdx, Long actorUserIdx) {
         SecurityRiskAssessmentVO assessment = loginRiskPolicyMapper.findSecurityRiskAssessmentByIdx(assessmentIdx);
@@ -129,6 +290,16 @@ public class LoginRiskPolicyService {
         );
         adminMapper.markMemberBlocked(assessment.getUserIdx(), null, reason);
         loginRiskPolicyMapper.updateSecurityRiskAssessmentDecision(assessmentIdx, "APPLIED");
+        loginRiskPolicyMapper.insertSecurityActionAudit(
+                "ASSESSMENT_USER_BLOCK_APPLIED",
+                actorUserIdx,
+                "USER",
+                assessment.getSubjectKey(),
+                "SECURITY_RISK_ASSESSMENT",
+                assessmentIdx,
+                "보안 판단 근거 기반 계정 차단 적용",
+                reason
+        );
     }
 
     public List<AdminNotificationPreferenceVO> getNotificationPreferences(Long adminUserIdx) {

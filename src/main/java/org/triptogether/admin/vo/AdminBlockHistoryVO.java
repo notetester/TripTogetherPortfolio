@@ -51,6 +51,28 @@ public class AdminBlockHistoryVO {
     private String afterEffectiveStatus;
     private String effectiveResult;
     private String controlReason;
+    private String ruleOriginType;
+    private String sourceScope;
+    private String blockCategory;
+    private Integer riskScore;
+    private boolean autoBlock;
+    private String autoBlockSource;
+    private String detailMessage;
+    private Integer priority;
+    private boolean effectiveActive;
+    private String effectiveStatus;
+    private String effectiveStatusReason;
+    private LocalDateTime effectiveSyncedAt;
+    private String lastControlAction;
+    private Long lastControlByUserIdx;
+    private String lastControlByNickname;
+    private LocalDateTime lastControlAt;
+    private String lastControlReason;
+    private Long sourceAssessmentIdx;
+    private String sourceActionType;
+    private String sourceActionGroupId;
+    private Long sourceUserIdx;
+    private String sourceIpAddress;
 
     public Date getBlockedAtDate() {
         return blockedAt == null ? null : Date.from(blockedAt.atZone(ZoneId.systemDefault()).toInstant());
@@ -66,5 +88,13 @@ public class AdminBlockHistoryVO {
 
     public Date getListSyncedAtDate() {
         return listSyncedAt == null ? null : Date.from(listSyncedAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getEffectiveSyncedAtDate() {
+        return effectiveSyncedAt == null ? null : Date.from(effectiveSyncedAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getLastControlAtDate() {
+        return lastControlAt == null ? null : Date.from(lastControlAt.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

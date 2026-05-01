@@ -13,8 +13,15 @@
             <div class="detail-item"><div class="detail-label"><spring:message code="admin.context.expiresAt"/></div><div class="detail-value"><c:choose><c:when test="${b.expiresAtDate != null}"><fmt:formatDate value="${b.expiresAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise><spring:message code="admin.members.none"/></c:otherwise></c:choose></div></div>
             <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.releasedAt"/></div><div class="detail-value"><c:choose><c:when test="${b.releasedAtDate != null}"><fmt:formatDate value="${b.releasedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
             <div class="detail-item"><div class="detail-label"><spring:message code="admin.blocks.syncedAt"/></div><div class="detail-value"><c:choose><c:when test="${b.syncedAtDate != null}"><fmt:formatDate value="${b.syncedAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></div></div>
+            <div class="detail-item"><div class="detail-label">차단 분류</div><div class="detail-value">${empty b.blockCategory ? '-' : b.blockCategory}</div></div>
+            <div class="detail-item"><div class="detail-label">판단 출처</div><div class="detail-value">${empty b.ruleOriginType ? '-' : b.ruleOriginType}</div></div>
+            <div class="detail-item"><div class="detail-label">위험 점수</div><div class="detail-value">${empty b.riskScore ? '-' : b.riskScore}</div></div>
+            <div class="detail-item"><div class="detail-label">자동 차단</div><div class="detail-value">${b.autoBlock ? 'YES' : 'NO'} / ${empty b.autoBlockSource ? '-' : b.autoBlockSource}</div></div>
+            <div class="detail-item"><div class="detail-label">실효 상태</div><div class="detail-value">${empty b.effectiveStatus ? '-' : b.effectiveStatus} / ${b.effectiveActive ? 'ACTIVE' : 'INACTIVE'}</div></div>
+            <div class="detail-item"><div class="detail-label">마지막 제어</div><div class="detail-value">${empty b.lastControlAction ? '-' : b.lastControlAction} / ${empty b.lastControlByNickname ? '-' : b.lastControlByNickname}</div></div>
         </div>
         <div class="detail-item" style="margin-top:14px;"><div class="detail-label"><spring:message code="admin.blocks.detailReason"/></div><div class="detail-value">${empty b.reason ? '-' : fn:escapeXml(b.reason)}</div></div>
+        <div class="detail-item" style="margin-top:14px;"><div class="detail-label">상세 판단 근거</div><div class="detail-value">${empty b.detailMessage ? '-' : fn:escapeXml(b.detailMessage)}</div></div>
         <c:if test="${not empty b.reason}">
             <div class="adm-tr-inline js-admin-translation-widget"
                  data-label="<spring:message code='admin.translation.label.userBlockReason'/>"
@@ -30,6 +37,9 @@
             <tr><td><spring:message code="admin.context.requestId"/></td><td>${empty b.blockRequestId ? '-' : b.blockRequestId}</td></tr>
             <tr><td><spring:message code="admin.blocks.scope"/></td><td>${empty b.blockScope ? '-' : b.blockScope}</td></tr>
             <tr><td><spring:message code="admin.blocks.ipMatch"/></td><td>${empty b.ipMatchType ? '-' : b.ipMatchType}</td></tr>
+            <tr><td>판단 근거 ID</td><td>${empty b.sourceAssessmentIdx ? '-' : b.sourceAssessmentIdx}</td></tr>
+            <tr><td>조치 그룹 ID</td><td>${empty b.sourceActionGroupId ? '-' : b.sourceActionGroupId}</td></tr>
+            <tr><td>출처 범위</td><td>${empty b.sourceScope ? '-' : b.sourceScope}</td></tr>
             <tr><td><spring:message code="admin.blocks.lastHistory"/></td><td><c:choose><c:when test="${b.lastHistoryAtDate != null}"><fmt:formatDate value="${b.lastHistoryAtDate}" pattern="yyyy.MM.dd HH:mm"/></c:when><c:otherwise>-</c:otherwise></c:choose></td></tr>
             </tbody>
         </table>

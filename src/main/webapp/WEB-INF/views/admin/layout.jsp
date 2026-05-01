@@ -110,6 +110,15 @@
                     <a class="adm-nav-item ${activeMenu=='securityRiskAssessments'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">
                         <span class="adm-nav-icon">🛡️</span> 보안 위험 판단
                     </a>
+                    <a class="adm-nav-item ${activeMenu=='securityReviews'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">
+                        <span class="adm-nav-icon">🧾</span> 일반 보안 검토
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='securityProviderConfigs'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">
+                        <span class="adm-nav-icon">🔌</span> Provider 설정
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='securityAppeals'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/appeals">
+                        <span class="adm-nav-icon">📮</span> 보안 이의제기
+                    </a>
                     <a class="adm-nav-item ${activeMenu=='adminNotificationPreferences'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">
                         <span class="adm-nav-icon">🔔</span> 알림 설정
                     </a>

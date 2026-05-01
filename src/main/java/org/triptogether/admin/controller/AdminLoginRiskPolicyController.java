@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.service.LoginRiskPolicyService;
 import org.triptogether.auth.vo.LoginRiskPolicyVO;
+import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.UsersVO;
 
 import java.util.Collections;
@@ -116,6 +117,91 @@ public class AdminLoginRiskPolicyController {
         loginRiskPolicyService.applyUserBlockFromSecurityAssessment(assessmentIdx, currentAdminIdx(session));
         redirectAttributes.addFlashAttribute("message", "보안 판단 근거를 계정 차단으로 적용했습니다.");
         return "redirect:/admin/login-risk/security-assessments";
+    }
+
+    @PostMapping("/security-assessments/{assessmentIdx}/create-review")
+    public String createSecurityReview(@PathVariable Long assessmentIdx,
+                                       @RequestParam(value = "severity", required = false) String severity,
+                                       @RequestParam(value = "summary", required = false) String summary,
+                                       @RequestParam(value = "detailMessage", required = false) String detailMessage,
+                                       RedirectAttributes redirectAttributes) {
+        loginRiskPolicyService.createSecurityReviewFromAssessment(assessmentIdx, severity, summary, detailMessage);
+        redirectAttributes.addFlashAttribute("message", "보안 판단 근거를 일반 검토 큐에 등록했습니다.");
+        return "redirect:/admin/login-risk/security-assessments";
+    }
+
+    @GetMapping("/security-reviews")
+    public String securityReviews(@RequestParam(value = "status", required = false) String status,
+                                  @RequestParam(value = "severity", required = false) String severity,
+                                  @RequestParam(value = "reviewType", required = false) String reviewType,
+                                  @RequestParam(value = "keyword", required = false) String keyword,
+                                  Model model) {
+        model.addAttribute("reviews", loginRiskPolicyService.getSecurityReviews(status, severity, reviewType, keyword));
+        model.addAttribute("status", status);
+        model.addAttribute("severity", severity);
+        model.addAttribute("reviewType", reviewType);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("activeMenu", "securityReviews");
+        model.addAttribute("pageTitle", "일반 보안 검토 큐");
+        return "admin/login-risk/security-reviews";
+    }
+
+    @PostMapping("/security-reviews/{reviewIdx}/{decision}")
+    public String decideSecurityReview(@PathVariable Long reviewIdx,
+                                       @PathVariable String decision,
+                                       @RequestParam(value = "comment", required = false) String comment,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        loginRiskPolicyService.decideSecurityReview(reviewIdx, decision, currentAdminIdx(session), comment);
+        redirectAttributes.addFlashAttribute("message", "보안 검토 상태가 처리되었습니다.");
+        return "redirect:/admin/login-risk/security-reviews";
+    }
+
+    @GetMapping("/appeals")
+    public String securityAppeals(@RequestParam(value = "status", required = false) String status,
+                                  @RequestParam(value = "targetType", required = false) String targetType,
+                                  @RequestParam(value = "keyword", required = false) String keyword,
+                                  Model model) {
+        model.addAttribute("appeals", loginRiskPolicyService.getSecurityAppeals(status, targetType, keyword));
+        model.addAttribute("status", status);
+        model.addAttribute("targetType", targetType);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("activeMenu", "securityAppeals");
+        model.addAttribute("pageTitle", "보안 조치 이의제기");
+        return "admin/login-risk/appeals";
+    }
+
+    @PostMapping("/appeals/{appealIdx}/{decision}")
+    public String decideSecurityAppeal(@PathVariable Long appealIdx,
+                                       @PathVariable String decision,
+                                       @RequestParam(value = "comment", required = false) String comment,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        loginRiskPolicyService.decideSecurityAppeal(appealIdx, decision, currentAdminIdx(session), comment);
+        redirectAttributes.addFlashAttribute("message", "이의제기 상태가 처리되었습니다.");
+        return "redirect:/admin/login-risk/appeals";
+    }
+
+    @GetMapping("/provider-configs")
+    public String providerConfigs(Model model) {
+        model.addAttribute("providers", loginRiskPolicyService.getProviderConfigs());
+        model.addAttribute("activeMenu", "securityProviderConfigs");
+        model.addAttribute("pageTitle", "보안 판단 Provider 설정");
+        return "admin/login-risk/provider-configs";
+    }
+
+    @PostMapping("/provider-configs/{providerIdx}")
+    public String updateProviderConfig(@PathVariable Long providerIdx,
+                                       SecurityAssessmentProviderConfigVO config,
+                                       @RequestParam(value = "enabled", required = false) String enabled,
+                                       @RequestParam(value = "failOpen", required = false) Integer failOpen,
+                                       RedirectAttributes redirectAttributes) {
+        config.setProviderIdx(providerIdx);
+        config.setEnabled(enabled != null);
+        config.setFailOpen(failOpen == null ? 1 : failOpen);
+        loginRiskPolicyService.updateProviderConfig(config);
+        redirectAttributes.addFlashAttribute("message", "Provider 설정이 저장되었습니다.");
+        return "redirect:/admin/login-risk/provider-configs";
     }
 
     @GetMapping("/notification-preferences")

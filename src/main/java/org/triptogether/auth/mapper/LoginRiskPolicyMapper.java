@@ -7,6 +7,9 @@ import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
 import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
+import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
+import org.triptogether.auth.vo.SecurityReviewVO;
+import org.triptogether.auth.vo.SecurityAppealVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -171,5 +174,47 @@ public interface LoginRiskPolicyMapper {
 
     void updateSecurityRiskAssessmentDecision(@Param("assessmentIdx") Long assessmentIdx,
                                               @Param("decisionStatus") String decisionStatus);
+
+    List<SecurityReviewVO> findSecurityReviews(@Param("status") String status,
+                                               @Param("severity") String severity,
+                                               @Param("reviewType") String reviewType,
+                                               @Param("keyword") String keyword);
+
+    SecurityReviewVO findSecurityReviewByIdx(@Param("reviewIdx") Long reviewIdx);
+
+    void insertSecurityReviewFromAssessment(@Param("assessmentIdx") Long assessmentIdx,
+                                            @Param("reviewType") String reviewType,
+                                            @Param("severity") String severity,
+                                            @Param("summary") String summary,
+                                            @Param("detailMessage") String detailMessage);
+
+    void updateSecurityReviewDecision(@Param("reviewIdx") Long reviewIdx,
+                                      @Param("reviewStatus") String reviewStatus,
+                                      @Param("reviewedByUserIdx") Long reviewedByUserIdx,
+                                      @Param("reviewComment") String reviewComment);
+
+    List<SecurityAssessmentProviderConfigVO> findProviderConfigs();
+
+    SecurityAssessmentProviderConfigVO findProviderConfigByIdx(@Param("providerIdx") Long providerIdx);
+
+    void updateProviderConfig(SecurityAssessmentProviderConfigVO config);
+
+    void insertSecurityActionAudit(@Param("actionType") String actionType,
+                                   @Param("actorUserIdx") Long actorUserIdx,
+                                   @Param("targetType") String targetType,
+                                   @Param("targetKey") String targetKey,
+                                   @Param("sourceType") String sourceType,
+                                   @Param("sourceId") Long sourceId,
+                                   @Param("summary") String summary,
+                                   @Param("detailMessage") String detailMessage);
+
+    List<SecurityAppealVO> findSecurityAppeals(@Param("status") String status,
+                                               @Param("targetType") String targetType,
+                                               @Param("keyword") String keyword);
+
+    void updateSecurityAppealDecision(@Param("appealIdx") Long appealIdx,
+                                      @Param("appealStatus") String appealStatus,
+                                      @Param("reviewedByUserIdx") Long reviewedByUserIdx,
+                                      @Param("reviewComment") String reviewComment);
 
 }

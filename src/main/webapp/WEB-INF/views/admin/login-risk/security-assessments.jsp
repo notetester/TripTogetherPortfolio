@@ -13,6 +13,8 @@
         </div>
         <div class="adm-actions">
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/assessments">로그인 외부 판단</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">일반 검토 큐</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">Provider 설정</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/blocks">차단 관리</a>
         </div>
     </div>
@@ -109,8 +111,16 @@
                     <td>${a.decisionStatus}</td>
                     <td><fmt:formatDate value="${a.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                     <td>
+                        <c:if test="${a.decisionStatus != 'APPLIED'}">
+                            <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-assessments/${a.assessmentIdx}/create-review" style="display:inline;">
+                                <input type="hidden" name="severity" value="${a.riskLevel}">
+                                <input type="hidden" name="summary" value="${a.recommendationAction}">
+                                <input type="hidden" name="detailMessage" value="${a.evidenceSummary}">
+                                <button class="adm-btn" type="submit">검토 큐 등록</button>
+                            </form>
+                        </c:if>
                         <c:if test="${a.subjectType == 'USER' && a.decisionStatus != 'APPLIED'}">
-                            <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-assessments/${a.assessmentIdx}/apply-user-block">
+                            <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-assessments/${a.assessmentIdx}/apply-user-block" style="display:inline;">
                                 <button class="adm-btn danger" type="submit">계정 차단 적용</button>
                             </form>
                         </c:if>

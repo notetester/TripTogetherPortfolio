@@ -36,6 +36,30 @@ public class AdminUserBlockVO {
     private Long updatedByUserIdx;
     private String blockScope;
     private String ipMatchType;
+    private String ruleAction;
+    private String controlMode;
+    private String ruleOriginType;
+    private String sourceScope;
+    private String blockCategory;
+    private Integer riskScore;
+    private boolean autoBlock;
+    private String autoBlockSource;
+    private String detailMessage;
+    private Integer priority;
+    private boolean effectiveActive;
+    private String effectiveStatus;
+    private String effectiveStatusReason;
+    private LocalDateTime effectiveSyncedAt;
+    private String lastControlAction;
+    private Long lastControlByUserIdx;
+    private String lastControlByNickname;
+    private LocalDateTime lastControlAt;
+    private String lastControlReason;
+    private Long sourceAssessmentIdx;
+    private String sourceActionType;
+    private String sourceActionGroupId;
+    private Long sourceUserIdx;
+    private String sourceIpAddress;
 
     public Date getBlockedAtDate() {
         return blockedAt == null ? null : Date.from(blockedAt.atZone(ZoneId.systemDefault()).toInstant());
@@ -55,6 +79,14 @@ public class AdminUserBlockVO {
 
     public Date getSyncedAtDate() {
         return syncedAt == null ? null : Date.from(syncedAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getEffectiveSyncedAtDate() {
+        return effectiveSyncedAt == null ? null : Date.from(effectiveSyncedAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getLastControlAtDate() {
+        return lastControlAt == null ? null : Date.from(lastControlAt.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public String getExpiresAtInputValue() {

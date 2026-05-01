@@ -140,6 +140,9 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         params.put("status", search.getStatus());
         params.put("scope", search.getScope());
         params.put("blockType", search.getBlockType());
+        params.put("controlMode", search.getControlMode());
+        params.put("category", search.getCategory());
+        params.put("effectiveStatus", search.getEffectiveStatus());
         params.put("batchId", search.getBatchId());
         params.put("keyword", search.getKeyword());
         params.put("field", search.getField());
@@ -741,6 +744,15 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         current.setLastHistoryAt(now);
         current.setSyncedAt(now);
         current.setUpdatedByUserIdx(actorUserIdx);
+        current.setEffectiveActive(active);
+        current.setEffectiveStatus(active ? "EFFECTIVE" : "MANUAL_RELEASED");
+        current.setEffectiveStatusReason(active ? "관리자 수동 활성화" : "관리자 수동 해제");
+        current.setEffectiveSyncedAt(now);
+        current.setLastControlAction(active ? "MANUAL_ENABLE" : "RELEASE");
+        current.setLastControlByUserIdx(actorUserIdx);
+        current.setLastControlAt(now);
+        current.setLastControlReason(controlReason);
+        current.setControlMode("MANUAL");
 
         if (active) {
             current.setSnapshotStatus("ACTIVE");
