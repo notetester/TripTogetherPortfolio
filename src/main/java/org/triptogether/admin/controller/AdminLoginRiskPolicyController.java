@@ -91,6 +91,33 @@ public class AdminLoginRiskPolicyController {
         return "admin/login-risk/assessments";
     }
 
+    @GetMapping("/security-assessments")
+    public String securityAssessments(@RequestParam(value = "assessmentScope", required = false) String assessmentScope,
+                                      @RequestParam(value = "sourceKind", required = false) String sourceKind,
+                                      @RequestParam(value = "riskLevel", required = false) String riskLevel,
+                                      @RequestParam(value = "decisionStatus", required = false) String decisionStatus,
+                                      @RequestParam(value = "keyword", required = false) String keyword,
+                                      Model model) {
+        model.addAttribute("assessments", loginRiskPolicyService.getSecurityRiskAssessments(assessmentScope, sourceKind, riskLevel, decisionStatus, keyword));
+        model.addAttribute("assessmentScope", assessmentScope);
+        model.addAttribute("sourceKind", sourceKind);
+        model.addAttribute("riskLevel", riskLevel);
+        model.addAttribute("decisionStatus", decisionStatus);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("activeMenu", "securityRiskAssessments");
+        model.addAttribute("pageTitle", "보안 위험 판단");
+        return "admin/login-risk/security-assessments";
+    }
+
+    @PostMapping("/security-assessments/{assessmentIdx}/apply-user-block")
+    public String applyUserBlockFromAssessment(@PathVariable Long assessmentIdx,
+                                               HttpSession session,
+                                               RedirectAttributes redirectAttributes) {
+        loginRiskPolicyService.applyUserBlockFromSecurityAssessment(assessmentIdx, currentAdminIdx(session));
+        redirectAttributes.addFlashAttribute("message", "보안 판단 근거를 계정 차단으로 적용했습니다.");
+        return "redirect:/admin/login-risk/security-assessments";
+    }
+
     @GetMapping("/notification-preferences")
     public String notificationPreferences(HttpSession session, Model model) {
         Long adminIdx = currentAdminIdx(session);

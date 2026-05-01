@@ -6,6 +6,7 @@ import org.triptogether.auth.vo.AdminNotificationPreferenceVO;
 import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
 import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
+import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -139,4 +140,36 @@ public interface LoginRiskPolicyMapper {
     void upsertNotificationPreference(@Param("userIdx") Long userIdx,
                                       @Param("notificationCategory") String notificationCategory,
                                       @Param("enabled") boolean enabled);
+    List<SecurityRiskAssessmentVO> findSecurityRiskAssessments(@Param("assessmentScope") String assessmentScope,
+                                                               @Param("sourceKind") String sourceKind,
+                                                               @Param("riskLevel") String riskLevel,
+                                                               @Param("decisionStatus") String decisionStatus,
+                                                               @Param("keyword") String keyword);
+
+    SecurityRiskAssessmentVO findSecurityRiskAssessmentByIdx(@Param("assessmentIdx") Long assessmentIdx);
+
+    Long findSystemUserIdxByUserId(@Param("userId") String userId);
+
+    void insertUserBlockHistoryFromAssessment(@Param("assessmentIdx") Long assessmentIdx,
+                                              @Param("blockRequestId") String blockRequestId,
+                                              @Param("blockTargetKey") String blockTargetKey,
+                                              @Param("userIdx") Long userIdx,
+                                              @Param("reason") String reason,
+                                              @Param("blockedByUserIdx") Long blockedByUserIdx,
+                                              @Param("sourceActionGroupId") String sourceActionGroupId);
+
+    Long findBlockHistoryIdxByRequestId(@Param("blockRequestId") String blockRequestId);
+
+    void upsertUserBlocklistFromAssessment(@Param("sourceHistoryBlockIdx") Long sourceHistoryBlockIdx,
+                                           @Param("assessmentIdx") Long assessmentIdx,
+                                           @Param("blockRequestId") String blockRequestId,
+                                           @Param("blockTargetKey") String blockTargetKey,
+                                           @Param("userIdx") Long userIdx,
+                                           @Param("reason") String reason,
+                                           @Param("blockedByUserIdx") Long blockedByUserIdx,
+                                           @Param("sourceActionGroupId") String sourceActionGroupId);
+
+    void updateSecurityRiskAssessmentDecision(@Param("assessmentIdx") Long assessmentIdx,
+                                              @Param("decisionStatus") String decisionStatus);
+
 }

@@ -96,6 +96,25 @@
             ub.is_active,
             ub.snapshot_status,
             ub.reason,
+            ub.rule_action,
+            ub.control_mode,
+            ub.rule_origin_type,
+            ub.source_scope,
+            ub.block_category,
+            ub.risk_score,
+            ub.is_auto_block,
+            ub.auto_block_source,
+            ub.detail_message,
+            ub.priority,
+            ub.is_effective_active,
+            ub.effective_status,
+            ub.effective_status_reason,
+            ub.effective_synced_at,
+            ub.last_control_action,
+            ub.last_control_by_user_idx,
+            ub.last_control_at,
+            ub.last_control_reason,
+            ub.source_assessment_idx,
             ub.source_action_type,
             ub.source_action_group_id,
             ub.source_user_idx,
@@ -111,8 +130,9 @@
         LEFT JOIN USERS u ON u.user_idx = ub.user_idx
         WHERE ub.is_active = 1
           AND COALESCE(ub.snapshot_status, 'ACTIVE') = 'ACTIVE'
+          AND COALESCE(ub.is_effective_active, 1) = 1
           AND (ub.expires_at IS NULL OR ub.expires_at > NOW())
-        ORDER BY ub.blocked_at DESC, ub.block_idx DESC
+        ORDER BY COALESCE(ub.priority, 1) DESC, ub.blocked_at DESC, ub.block_idx DESC
     </select>
 
     <insert id="insertBlockedIp">

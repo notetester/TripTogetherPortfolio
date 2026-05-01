@@ -1,25 +1,37 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<c:set var="activeMenu" value="loginRiskAssessments"/>
-<c:set var="pageTitle" value="로그인 위험 외부 판단"/>
+<c:set var="activeMenu" value="securityRiskAssessments"/>
+<c:set var="pageTitle" value="보안 위험 판단"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1>로그인 위험 외부 판단</h1>
-            <p class="adm-page-desc">AI, 규칙 알고리즘, 상위 보안 정책기관/관제센터의 보조 판단 결과를 확인합니다.</p>
+            <h1>보안 위험 판단</h1>
+            <p class="adm-page-desc">AI, 알고리즘, 상위 정책기관 판단을 로그인·계정·콘텐츠·IP 보안 조치와 연결합니다.</p>
         </div>
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies">정책 설정</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews">검토 큐</a>
-                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">보안 위험 판단</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/assessments">로그인 외부 판단</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/blocks">차단 관리</a>
         </div>
     </div>
 
+    <c:if test="${not empty message}">
+        <div class="adm-alert success">${message}</div>
+    </c:if>
+
     <form method="get" class="adm-card" style="margin-bottom:16px;">
-        <div class="adm-form-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;">
+        <div class="adm-form-grid" style="grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;">
+            <label>범위
+                <select class="adm-input" name="assessmentScope">
+                    <option value="">전체</option>
+                    <option value="LOGIN_RISK" ${assessmentScope == 'LOGIN_RISK' ? 'selected' : ''}>LOGIN_RISK</option>
+                    <option value="USER_SECURITY" ${assessmentScope == 'USER_SECURITY' ? 'selected' : ''}>USER_SECURITY</option>
+                    <option value="CONTENT_MODERATION" ${assessmentScope == 'CONTENT_MODERATION' ? 'selected' : ''}>CONTENT_MODERATION</option>
+                    <option value="IP_REPUTATION" ${assessmentScope == 'IP_REPUTATION' ? 'selected' : ''}>IP_REPUTATION</option>
+                </select>
+            </label>
             <label>판단 출처
                 <select class="adm-input" name="sourceKind">
                     <option value="">전체</option>
@@ -39,7 +51,7 @@
                     <option value="PENDING" ${riskLevel == 'PENDING' ? 'selected' : ''}>PENDING</option>
                 </select>
             </label>
-            <label>결정 상태
+            <label>상태
                 <select class="adm-input" name="decisionStatus">
                     <option value="">전체</option>
                     <option value="PROPOSED" ${decisionStatus == 'PROPOSED' ? 'selected' : ''}>PROPOSED</option>
@@ -49,7 +61,7 @@
                 </select>
             </label>
             <label>검색
-                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="IP, 계정, 출처, 사유">
+                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="계정, IP, 근거, 출처">
             </label>
             <div style="align-self:end;">
                 <button class="adm-btn primary" type="submit">검색</button>
@@ -61,22 +73,23 @@
         <table class="adm-table">
             <thead>
             <tr>
-                <th>출처</th>
+                <th>범위/출처</th>
                 <th>대상</th>
                 <th>위험도</th>
                 <th>권고 조치</th>
                 <th>판단 근거</th>
                 <th>상태</th>
                 <th>생성일</th>
+                <th>적용</th>
             </tr>
             </thead>
             <tbody>
             <c:forEach var="a" items="${assessments}">
                 <tr>
                     <td>
-                        <strong>${a.sourceKind}</strong><br>
-                        <small>${a.sourceName}</small><br>
-                        <small>${a.sourceCode} ${a.sourceVersion}</small>
+                        <strong>${a.assessmentScope}</strong><br>
+                        <small>${a.sourceKind}</small><br>
+                        <small>${a.sourceName}</small>
                     </td>
                     <td>
                         ${a.subjectType}: ${a.subjectKey}<br>
@@ -95,10 +108,17 @@
                     <td>${a.evidenceSummary}</td>
                     <td>${a.decisionStatus}</td>
                     <td><fmt:formatDate value="${a.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                    <td>
+                        <c:if test="${a.subjectType == 'USER' && a.decisionStatus != 'APPLIED'}">
+                            <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-assessments/${a.assessmentIdx}/apply-user-block">
+                                <button class="adm-btn danger" type="submit">계정 차단 적용</button>
+                            </form>
+                        </c:if>
+                    </td>
                 </tr>
             </c:forEach>
             <c:if test="${empty assessments}">
-                <tr><td colspan="7" class="adm-empty">외부 판단 데이터가 없습니다.</td></tr>
+                <tr><td colspan="8" class="adm-empty">보안 위험 판단 데이터가 없습니다.</td></tr>
             </c:if>
             </tbody>
         </table>

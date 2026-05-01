@@ -23,6 +23,25 @@ public class UserBlockRuleVO {
     private boolean active;
     private String snapshotStatus;
     private String reason;
+    private String ruleAction;
+    private String controlMode;
+    private String ruleOriginType;
+    private String sourceScope;
+    private String blockCategory;
+    private Integer riskScore;
+    private boolean autoBlock;
+    private String autoBlockSource;
+    private String detailMessage;
+    private Integer priority;
+    private boolean effectiveActive;
+    private String effectiveStatus;
+    private String effectiveStatusReason;
+    private LocalDateTime effectiveSyncedAt;
+    private String lastControlAction;
+    private Long lastControlByUserIdx;
+    private LocalDateTime lastControlAt;
+    private String lastControlReason;
+    private Long sourceAssessmentIdx;
     private String sourceActionType;
     private String sourceActionGroupId;
     private Long sourceUserIdx;
@@ -60,6 +79,14 @@ public class UserBlockRuleVO {
 
     public Date getSyncedAtDate() {
         return fromLocalDateTime(syncedAt);
+    }
+
+    public Date getEffectiveSyncedAtDate() {
+        return fromLocalDateTime(effectiveSyncedAt);
+    }
+
+    public Date getLastControlAtDate() {
+        return fromLocalDateTime(lastControlAt);
     }
 
 }

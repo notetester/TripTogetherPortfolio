@@ -15,6 +15,7 @@ import org.triptogether.auth.vo.LoginRequestContext;
 import org.triptogether.auth.vo.LoginRiskDecisionVO;
 import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
+import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.config.BlockRuleCacheService;
@@ -65,6 +66,69 @@ public class LoginRiskPolicyService {
 
     public List<LoginRiskExternalAssessmentVO> getExternalAssessments(String sourceKind, String riskLevel, String decisionStatus, String keyword) {
         return loginRiskPolicyMapper.findExternalAssessments(emptyToNull(sourceKind), emptyToNull(riskLevel), emptyToNull(decisionStatus), emptyToNull(keyword));
+    }
+
+    public List<SecurityRiskAssessmentVO> getSecurityRiskAssessments(String assessmentScope,
+                                                                    String sourceKind,
+                                                                    String riskLevel,
+                                                                    String decisionStatus,
+                                                                    String keyword) {
+        return loginRiskPolicyMapper.findSecurityRiskAssessments(
+                emptyToNull(assessmentScope),
+                emptyToNull(sourceKind),
+                emptyToNull(riskLevel),
+                emptyToNull(decisionStatus),
+                emptyToNull(keyword)
+        );
+    }
+
+    @Transactional
+    public void applyUserBlockFromSecurityAssessment(Long assessmentIdx, Long actorUserIdx) {
+        SecurityRiskAssessmentVO assessment = loginRiskPolicyMapper.findSecurityRiskAssessmentByIdx(assessmentIdx);
+        if (assessment == null) {
+            throw new IllegalArgumentException("보안 판단 근거를 찾을 수 없습니다.");
+        }
+        if (assessment.getUserIdx() == null) {
+            throw new IllegalArgumentException("사용자 차단으로 적용할 수 없는 판단 근거입니다.");
+        }
+
+        Long systemUserIdx = loginRiskPolicyMapper.findSystemUserIdxByUserId("system_ai_security");
+        Long blockedBy = actorUserIdx != null ? actorUserIdx : systemUserIdx;
+        if (blockedBy == null) {
+            blockedBy = loginRiskPolicyMapper.findSystemUserIdxByUserId("system_policy_engine");
+        }
+
+        String blockRequestId = UUID.randomUUID().toString();
+        String actionGroupId = UUID.randomUUID().toString();
+        String targetKey = "USER:" + assessment.getUserIdx();
+        String reason = firstNonBlank(
+                assessment.getRecommendationReason(),
+                assessment.getEvidenceSummary(),
+                "외부/보조 보안 판단에 따른 계정 차단"
+        );
+
+        loginRiskPolicyMapper.insertUserBlockHistoryFromAssessment(
+                assessmentIdx,
+                blockRequestId,
+                targetKey,
+                assessment.getUserIdx(),
+                reason,
+                blockedBy,
+                actionGroupId
+        );
+        Long historyIdx = loginRiskPolicyMapper.findBlockHistoryIdxByRequestId(blockRequestId);
+        loginRiskPolicyMapper.upsertUserBlocklistFromAssessment(
+                historyIdx,
+                assessmentIdx,
+                blockRequestId,
+                targetKey,
+                assessment.getUserIdx(),
+                reason,
+                blockedBy,
+                actionGroupId
+        );
+        adminMapper.markMemberBlocked(assessment.getUserIdx(), null, reason);
+        loginRiskPolicyMapper.updateSecurityRiskAssessmentDecision(assessmentIdx, "APPLIED");
     }
 
     public List<AdminNotificationPreferenceVO> getNotificationPreferences(Long adminUserIdx) {

@@ -89,6 +89,37 @@
         <result property="createdAt" column="created_at"/>
     </resultMap>
 
+    <resultMap id="SecurityRiskAssessmentMap" type="org.triptogether.auth.vo.SecurityRiskAssessmentVO">
+        <id property="assessmentIdx" column="assessment_idx"/>
+        <result property="assessmentScope" column="assessment_scope"/>
+        <result property="sourceKind" column="source_kind"/>
+        <result property="sourceCode" column="source_code"/>
+        <result property="sourceName" column="source_name"/>
+        <result property="sourceVersion" column="source_version"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="sourceId" column="source_id"/>
+        <result property="policyCode" column="policy_code"/>
+        <result property="subjectType" column="subject_type"/>
+        <result property="subjectKey" column="subject_key"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="countryCode" column="country_code"/>
+        <result property="asn" column="asn"/>
+        <result property="contentType" column="content_type"/>
+        <result property="contentId" column="content_id"/>
+        <result property="riskScore" column="risk_score"/>
+        <result property="riskLevel" column="risk_level"/>
+        <result property="confidenceScore" column="confidence_score"/>
+        <result property="recommendationAction" column="recommendation_action"/>
+        <result property="recommendationReason" column="recommendation_reason"/>
+        <result property="evidenceSummary" column="evidence_summary"/>
+        <result property="decisionStatus" column="decision_status"/>
+        <result property="rawPayload" column="raw_payload"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
     <select id="findPolicies" resultMap="LoginRiskPolicyMap">
         SELECT
             policy_idx, policy_code, policy_name, policy_type, is_active,
@@ -419,5 +450,163 @@
          #{recommendationAction}, #{recommendationReason}, #{evidenceSummary},
          #{decisionStatus}, #{rawPayload}, NOW())
     </insert>
+
+
+    <select id="findSecurityRiskAssessments" resultMap="SecurityRiskAssessmentMap">
+        SELECT
+            a.*,
+            u.user_id,
+            u.nickname
+        FROM SECURITY_RISK_ASSESSMENT a
+        LEFT JOIN USERS u ON u.user_idx = a.user_idx
+        <where>
+            <if test="assessmentScope != null and assessmentScope != ''">AND a.assessment_scope = #{assessmentScope}</if>
+            <if test="sourceKind != null and sourceKind != ''">AND a.source_kind = #{sourceKind}</if>
+            <if test="riskLevel != null and riskLevel != ''">AND a.risk_level = #{riskLevel}</if>
+            <if test="decisionStatus != null and decisionStatus != ''">AND a.decision_status = #{decisionStatus}</if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    a.source_code LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.source_name LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.subject_key LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.ip_address LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.recommendation_reason LIKE CONCAT('%', #{keyword}, '%')
+                    OR a.evidence_summary LIKE CONCAT('%', #{keyword}, '%')
+                    OR u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY a.created_at DESC, a.assessment_idx DESC
+    </select>
+
+    <select id="findSecurityRiskAssessmentByIdx" resultMap="SecurityRiskAssessmentMap">
+        SELECT a.*, u.user_id, u.nickname
+        FROM SECURITY_RISK_ASSESSMENT a
+        LEFT JOIN USERS u ON u.user_idx = a.user_idx
+        WHERE a.assessment_idx = #{assessmentIdx}
+    </select>
+
+    <select id="findSystemUserIdxByUserId" resultType="long">
+        SELECT user_idx
+        FROM USERS
+        WHERE user_id = #{userId}
+          AND user_role = 'SYSTEM'
+        LIMIT 1
+    </select>
+
+    <insert id="insertUserBlockHistoryFromAssessment">
+        INSERT INTO USER_BLOCK_HISTORY (
+            block_request_id, block_target_key,
+            user_idx, block_type, blocked_ip, is_active, reason,
+            blocked_by_user_idx, blocked_at, expires_at,
+            rule_action, control_mode, operation_source, history_kind, block_scope,
+            rule_origin_type, source_scope, block_category, risk_score,
+            is_auto_block, auto_block_source, detail_message, priority,
+            before_effective_active, after_effective_active, before_effective_status, after_effective_status,
+            source_assessment_idx, source_action_type, source_action_group_id, source_user_idx, source_ip_address,
+            effective_result, control_reason,
+            created_by_user_idx, created_at, updated_by_user_idx, updated_at
+        )
+        SELECT
+            #{blockRequestId}, #{blockTargetKey},
+            #{userIdx}, 'USER_ONLY', NULL, TRUE, #{reason},
+            #{blockedByUserIdx}, NOW(), NULL,
+            'BLOCK', 'AUTO', 'AUTO', 'BLOCK', COALESCE(a.assessment_scope, 'AUTO_DETECTION'),
+            COALESCE(a.source_kind, 'AI'), COALESCE(a.assessment_scope, 'AUTO_DETECTION'),
+            CASE
+                WHEN a.recommendation_action LIKE '%SPAM%' OR a.evidence_summary LIKE '%스팸%' THEN 'SPAM'
+                WHEN a.assessment_scope = 'CONTENT_MODERATION' THEN 'CONTENT_VIOLATION'
+                WHEN a.assessment_scope = 'LOGIN_RISK' THEN 'BRUTE_FORCE'
+                ELSE 'SECURITY'
+            END,
+            a.risk_score,
+            TRUE, COALESCE(a.source_kind, 'SYSTEM'), a.evidence_summary, 100,
+            NULL, TRUE, NULL, 'EFFECTIVE',
+            a.assessment_idx, CONCAT(a.source_kind, '_AUTO_USER_BLOCK'), #{sourceActionGroupId}, #{userIdx}, a.ip_address,
+            'APPLIED', a.recommendation_reason,
+            #{blockedByUserIdx}, NOW(), #{blockedByUserIdx}, NOW()
+        FROM SECURITY_RISK_ASSESSMENT a
+        WHERE a.assessment_idx = #{assessmentIdx}
+    </insert>
+
+    <select id="findBlockHistoryIdxByRequestId" resultType="long">
+        SELECT block_idx
+        FROM USER_BLOCK_HISTORY
+        WHERE block_request_id = #{blockRequestId}
+        LIMIT 1
+    </select>
+
+    <insert id="upsertUserBlocklistFromAssessment">
+        INSERT INTO USER_BLOCKLIST (
+            source_history_block_idx, block_request_id, block_target_key,
+            user_idx, block_type, blocked_ip, is_active, snapshot_status, reason,
+            rule_action, control_mode, rule_origin_type, source_scope, block_category,
+            risk_score, is_auto_block, auto_block_source, detail_message, priority,
+            is_effective_active, effective_status, effective_status_reason, effective_synced_at,
+            last_control_action, last_control_by_user_idx, last_control_at, last_control_reason,
+            source_assessment_idx, source_action_type, source_action_group_id, source_user_idx, source_ip_address,
+            blocked_by_user_idx, blocked_at, expires_at, last_history_at, synced_at,
+            created_by_user_idx, created_at, updated_by_user_idx, updated_at
+        )
+        SELECT
+            #{sourceHistoryBlockIdx}, #{blockRequestId}, #{blockTargetKey},
+            #{userIdx}, 'USER_ONLY', NULL, TRUE, 'ACTIVE', #{reason},
+            'BLOCK', 'AUTO', COALESCE(a.source_kind, 'AI'), COALESCE(a.assessment_scope, 'AUTO_DETECTION'),
+            CASE
+                WHEN a.recommendation_action LIKE '%SPAM%' OR a.evidence_summary LIKE '%스팸%' THEN 'SPAM'
+                WHEN a.assessment_scope = 'CONTENT_MODERATION' THEN 'CONTENT_VIOLATION'
+                WHEN a.assessment_scope = 'LOGIN_RISK' THEN 'BRUTE_FORCE'
+                ELSE 'SECURITY'
+            END,
+            a.risk_score, TRUE, COALESCE(a.source_kind, 'SYSTEM'), a.evidence_summary, 100,
+            TRUE, 'EFFECTIVE', '외부/보조 판단 기반 자동 계정 차단', NOW(),
+            'AUTO_BLOCK', #{blockedByUserIdx}, NOW(), a.recommendation_reason,
+            a.assessment_idx, CONCAT(a.source_kind, '_AUTO_USER_BLOCK'), #{sourceActionGroupId}, #{userIdx}, a.ip_address,
+            #{blockedByUserIdx}, NOW(), NULL, NOW(), NOW(),
+            #{blockedByUserIdx}, NOW(), #{blockedByUserIdx}, NOW()
+        FROM SECURITY_RISK_ASSESSMENT a
+        WHERE a.assessment_idx = #{assessmentIdx}
+        ON DUPLICATE KEY UPDATE
+            source_history_block_idx = VALUES(source_history_block_idx),
+            is_active = TRUE,
+            snapshot_status = 'ACTIVE',
+            reason = VALUES(reason),
+            rule_action = VALUES(rule_action),
+            control_mode = VALUES(control_mode),
+            rule_origin_type = VALUES(rule_origin_type),
+            source_scope = VALUES(source_scope),
+            block_category = VALUES(block_category),
+            risk_score = VALUES(risk_score),
+            is_auto_block = VALUES(is_auto_block),
+            auto_block_source = VALUES(auto_block_source),
+            detail_message = VALUES(detail_message),
+            priority = VALUES(priority),
+            is_effective_active = VALUES(is_effective_active),
+            effective_status = VALUES(effective_status),
+            effective_status_reason = VALUES(effective_status_reason),
+            effective_synced_at = VALUES(effective_synced_at),
+            last_control_action = VALUES(last_control_action),
+            last_control_by_user_idx = VALUES(last_control_by_user_idx),
+            last_control_at = VALUES(last_control_at),
+            last_control_reason = VALUES(last_control_reason),
+            source_assessment_idx = VALUES(source_assessment_idx),
+            source_action_type = VALUES(source_action_type),
+            source_action_group_id = VALUES(source_action_group_id),
+            source_user_idx = VALUES(source_user_idx),
+            source_ip_address = VALUES(source_ip_address),
+            blocked_by_user_idx = VALUES(blocked_by_user_idx),
+            blocked_at = VALUES(blocked_at),
+            last_history_at = VALUES(last_history_at),
+            synced_at = VALUES(synced_at),
+            updated_by_user_idx = VALUES(updated_by_user_idx),
+            updated_at = NOW()
+    </insert>
+
+    <update id="updateSecurityRiskAssessmentDecision">
+        UPDATE SECURITY_RISK_ASSESSMENT
+        SET decision_status = #{decisionStatus}
+        WHERE assessment_idx = #{assessmentIdx}
+    </update>
 
 </mapper>

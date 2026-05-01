@@ -15,6 +15,7 @@
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies">정책 설정</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/assessments">외부 판단</a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">알림 설정</a>
+                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">보안 위험 판단</a>
         </div>
     </div>
 
