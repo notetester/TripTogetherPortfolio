@@ -110,7 +110,7 @@
                     <div>
                         <div class="adm-filter-label"><spring:message code="admin.courses.detail.field.createdAt"/></div>
                         <div style="font-size:12px;color:#94a3b8;">
-                            <fmt:formatDate value="${plan.createdAt}" pattern="yyyy.MM.dd HH:mm"/>
+                            <fmt:formatDate value="${plan.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                         </div>
                     </div>
                     <div>
@@ -118,7 +118,7 @@
                         <div style="font-size:12px;color:#94a3b8;">
                             <c:choose>
                                 <c:when test="${not empty plan.updatedAt}">
-                                    <fmt:formatDate value="${plan.updatedAt}" pattern="yyyy.MM.dd HH:mm"/>
+                                    <fmt:formatDate value="${plan.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                                 </c:when>
                                 <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
                             </c:choose>

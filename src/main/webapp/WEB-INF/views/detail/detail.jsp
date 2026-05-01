@@ -1704,7 +1704,7 @@ html { scrollbar-gutter: stable; }
                       </c:if>
                     </div>
                     <div class="review-date">
-                      <fmt:formatDate value="${rv.createdAt}" pattern="yyyy.MM.dd" type="date"/>
+                      <fmt:formatDate value="${rv.createdAtDate}" pattern="yyyy.MM.dd" type="date"/>
                     </div>
                   </div>
                 </div>

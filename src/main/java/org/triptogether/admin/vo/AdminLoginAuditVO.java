@@ -41,4 +41,16 @@ public class AdminLoginAuditVO {
     public Date getLoginAt() {
         return loginAt == null ? null : Date.from(loginAt.atZone(ZoneId.systemDefault()).toInstant());
     }
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getLoginAtDate() {
+        return fromLocalDateTime(loginAt);
+    }
+
 }

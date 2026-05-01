@@ -3,6 +3,8 @@ package org.triptogether.common.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * IP 차단 규칙/현재 상태 조회용 VO.
@@ -54,4 +56,32 @@ public class IpBlockRuleVO {
     private Long releasedByUserIdx;
     private LocalDateTime lastSyncedAt;
     private LocalDateTime updatedAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getBlockedAtDate() {
+        return fromLocalDateTime(blockedAt);
+    }
+
+    public Date getExpiresAtDate() {
+        return fromLocalDateTime(expiresAt);
+    }
+
+    public Date getReleasedAtDate() {
+        return fromLocalDateTime(releasedAt);
+    }
+
+    public Date getLastSyncedAtDate() {
+        return fromLocalDateTime(lastSyncedAt);
+    }
+
+    public Date getUpdatedAtDate() {
+        return fromLocalDateTime(updatedAt);
+    }
+
 }

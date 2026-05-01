@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * EMAIL_VERIFICATION_REQUEST 테이블 VO.
@@ -37,4 +39,40 @@ public class EmailVerificationRequestVO {
     private String userAgent;
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getRequestedAtDate() {
+        return fromLocalDateTime(requestedAt);
+    }
+
+    public Date getVerifiedAtDate() {
+        return fromLocalDateTime(verifiedAt);
+    }
+
+    public Date getAppliedAtDate() {
+        return fromLocalDateTime(appliedAt);
+    }
+
+    public Date getExpiredAtDate() {
+        return fromLocalDateTime(expiredAt);
+    }
+
+    public Date getCancelledAtDate() {
+        return fromLocalDateTime(cancelledAt);
+    }
+
+    public Date getUpdatedAtDate() {
+        return fromLocalDateTime(updatedAt);
+    }
+
+    public Date getCreatedAtDate() {
+        return fromLocalDateTime(createdAt);
+    }
+
 }

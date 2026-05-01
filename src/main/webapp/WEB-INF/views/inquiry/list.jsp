@@ -234,7 +234,7 @@
 
                                 <%-- 작성일 --%>
                                 <td class="inq-date">
-                                    <fmt:formatDate value="${inq.createdAt}" pattern="yyyy-MM-dd"/>
+                                    <fmt:formatDate value="${inq.createdAtDate}" pattern="yyyy-MM-dd"/>
                                 </td>
                             </tr>
                         </c:forEach>

@@ -2,6 +2,8 @@ package org.triptogether.superAdmin.vo;
 
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Data
 public class SuperAdminAdminGroupVO {
@@ -14,4 +16,20 @@ public class SuperAdminAdminGroupVO {
     private String grantedByNickname;
     private LocalDateTime grantedAt;
     private LocalDateTime revokedAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getGrantedAtDate() {
+        return fromLocalDateTime(grantedAt);
+    }
+
+    public Date getRevokedAtDate() {
+        return fromLocalDateTime(revokedAt);
+    }
+
 }

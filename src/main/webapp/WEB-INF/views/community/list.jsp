@@ -403,7 +403,7 @@
                                             <span class="tt-profile-badge ${post.profileBadgeClass}">${post.profileBadgeLabel}</span>
                                         </c:if>
                                         <span class="post-date">
-              <fmt:formatDate value="${post.createdAt}" pattern="yyyy-MM-dd"/>
+              <fmt:formatDate value="${post.createdAtDate}" pattern="yyyy-MM-dd"/>
             </span>
                                     </div>
                                     <div class="post-card-title">${post.title}</div>

@@ -126,7 +126,7 @@
                                 <span style="color:#f87171;">🚨 <spring:message code="admin.community.column.reportCount"/> ${post.reportCount}<spring:message code="admin.common.countSuffix"/></span>
                             </c:if>
                             <span>
-                                <fmt:formatDate value="${post.createdAt}" type="both" dateStyle="short" timeStyle="short"/>
+                                <fmt:formatDate value="${post.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/>
                             </span>
                         </div>
                     </div>
@@ -186,7 +186,7 @@
                                             <td style="font-size:11px;color:#64748b;">
                                                 <a class="adm-cell-link adm-cell-link--inline"
                                                    href="${pageContext.request.contextPath}/admin/reports/${r.reportId}">
-                                                <fmt:formatDate value="${r.createdAt}" type="both" dateStyle="short" timeStyle="short"/>
+                                                <fmt:formatDate value="${r.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/>
                                                 </a>
                                             </td>
                                             <td>
@@ -325,7 +325,7 @@
                                                  data-source-text="${fn:escapeXml(comment.content)}"></div>
                                         </c:if>
                                         <div style="font-size:11px;color:#475569;margin-top:4px;">
-                                            <fmt:formatDate value="${comment.createdAt}" type="both" dateStyle="short" timeStyle="short"/>
+                                            <fmt:formatDate value="${comment.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/>
                                             <c:if test="${not empty comment.parentCommentId}">
                                                 <span style="margin-left:8px;color:#334155;">↩ <spring:message code="admin.community.kind.reply"/></span>
                                             </c:if>

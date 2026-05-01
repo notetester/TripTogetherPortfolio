@@ -239,7 +239,7 @@
 
                         <div style="border-top:1px solid #1e2736;padding-top:12px;
                                     display:flex;gap:20px;font-size:12px;color:#64748b;">
-                            <span><spring:message code="admin.reports.reportedAt"/> <fmt:formatDate value="${report.createdAt}" type="both" dateStyle="short" timeStyle="short"/></span>
+                            <span><spring:message code="admin.reports.reportedAt"/> <fmt:formatDate value="${report.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
                             <c:if test="${not empty report.resolvedAt}">
                                 <span><spring:message code="admin.reports.resolvedAt"/> <fmt:formatDate value="${report.resolvedAt}" type="both" dateStyle="short" timeStyle="short"/></span>
                             </c:if>

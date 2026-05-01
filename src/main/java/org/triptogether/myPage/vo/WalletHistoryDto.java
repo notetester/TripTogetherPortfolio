@@ -3,6 +3,8 @@ package org.triptogether.myPage.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * 자산 변동 이력 DTO.
@@ -23,4 +25,16 @@ public class WalletHistoryDto {
     private String detailMessage;
     private Long actorUserIdx;
     private LocalDateTime createdAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getCreatedAtDate() {
+        return fromLocalDateTime(createdAt);
+    }
+
 }

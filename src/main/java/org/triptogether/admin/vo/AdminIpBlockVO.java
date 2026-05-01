@@ -136,4 +136,16 @@ public class AdminIpBlockVO {
     public String getExpiresAtInputValue() {
         return expiresAt == null ? "" : expiresAt.format(INPUT_DATE_TIME_FORMATTER);
     }
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getBatchDetachedAtDate() {
+        return fromLocalDateTime(batchDetachedAt);
+    }
+
 }

@@ -3,6 +3,8 @@ package org.triptogether.travelPackage.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * TRAVEL_PACKAGE_BOOKING 테이블의 예약 정보를 담는 VO.
@@ -26,4 +28,20 @@ public class PackageBookingVO {
     private LocalDateTime bookedAt;
     private LocalDateTime cancelledAt;
     private String cancelReason;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getBookedAtDate() {
+        return fromLocalDateTime(bookedAt);
+    }
+
+    public Date getCancelledAtDate() {
+        return fromLocalDateTime(cancelledAt);
+    }
+
 }

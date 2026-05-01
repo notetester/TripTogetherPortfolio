@@ -247,7 +247,7 @@
                                 </c:choose>
                             </span>
                         </td>
-                        <td class="adm-muted-inline"><fmt:formatDate value="${review.createdAt}" type="date" dateStyle="short"/></td>
+                        <td class="adm-muted-inline"><fmt:formatDate value="${review.createdAtDate}" type="date" dateStyle="short"/></td>
                         <td>
                             <c:if test="${review.displayStatus != 'BLOCKED'}">
                                 <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="blockReview(this)"><spring:message code="admin.explore.reviews.action.block"/></button>

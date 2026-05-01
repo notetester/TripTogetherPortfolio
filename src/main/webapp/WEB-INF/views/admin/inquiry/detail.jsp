@@ -103,7 +103,7 @@
                     <div style="margin-top:16px;padding-top:12px;border-top:1px solid #1e2736;
                                 display:flex;gap:20px;font-size:12px;color:#64748b;">
                         <span><spring:message code="admin.inquiry.viewCount" arguments="${inquiry.viewCount}"/></span>
-                        <span><fmt:formatDate value="${inquiry.createdAt}" type="both" dateStyle="short" timeStyle="short"/></span>
+                        <span><fmt:formatDate value="${inquiry.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
                     </div>
                 </div>
             </div>
@@ -115,7 +115,7 @@
                     <c:if test="${not empty inquiry.answerId}">
                         <div style="font-size:12px;color:#64748b;">
                             ${inquiry.answerAdminNickname} ·
-                            <fmt:formatDate value="${inquiry.answeredAt}" type="both" dateStyle="short" timeStyle="short"/>
+                            <fmt:formatDate value="${inquiry.answeredAtDate}" type="both" dateStyle="short" timeStyle="short"/>
                         </div>
                     </c:if>
                 </div>

@@ -2,6 +2,8 @@ package org.triptogether.admin.vo;
 
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * ADMIN_ASSISTANT_DAILY_USAGE 테이블 매핑.
@@ -16,4 +18,16 @@ public class AdminAssistantUsageVO {
     private LocalDateTime periodStart; // 현재 주기 시작 시각(KST)
     private Integer sessionCount;      // 해당 주기 신규 세션 수 (참고용)
     private Integer messageCount;      // 해당 주기 유저 메시지 수 (enforce 대상)
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getPeriodStartDate() {
+        return fromLocalDateTime(periodStart);
+    }
+
 }

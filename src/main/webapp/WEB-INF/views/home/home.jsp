@@ -317,7 +317,7 @@
                                                             <div class="cc-av">${fn:substring(post.nickname, 0, 1)}</div>
                                                             <div>
                                                                 <div class="cc-an">${post.nickname}</div>
-                                                                <div class="cc-dt"><fmt:formatDate value="${post.createdAt}" pattern="yyyy.MM.dd"/></div>
+                                                                <div class="cc-dt"><fmt:formatDate value="${post.createdAtDate}" pattern="yyyy.MM.dd"/></div>
                                                             </div>
                                                         </div>
                                                         <div class="cc-stats">

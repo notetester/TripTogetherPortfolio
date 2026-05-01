@@ -210,7 +210,7 @@
                             <a href="${pageContext.request.contextPath}/admin/reports/${r.reportId}?${fn:escapeXml(listParams)}"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
-                                <span><fmt:formatDate value="${r.createdAt}" type="both" dateStyle="short" timeStyle="short"/></span>
+                                <span><fmt:formatDate value="${r.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
                             </a>
                         </td>
 

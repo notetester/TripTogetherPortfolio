@@ -62,9 +62,9 @@
                                         <p>${booking.airlineName} · ${booking.flightNo}</p>
                                         <dl>
                                             <dt><spring:message code="mypage.booking.departure"/></dt>
-                                            <dd><fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                            <dd><fmt:formatDate value="${booking.departureTimeDate}" pattern="yyyy-MM-dd HH:mm"/></dd>
                                             <dt><spring:message code="mypage.booking.arrival"/></dt>
-                                            <dd><fmt:formatDate value="${booking.arrivalTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                            <dd><fmt:formatDate value="${booking.arrivalTimeDate}" pattern="yyyy-MM-dd HH:mm"/></dd>
                                         </dl>
                                     </div>
                                     <div class="mp-flight-itinerary-item">
@@ -73,9 +73,9 @@
                                         <p>${booking.returnAirlineName} · ${booking.returnFlightNo}</p>
                                         <dl>
                                             <dt><spring:message code="mypage.booking.departure"/></dt>
-                                            <dd><fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                            <dd><fmt:formatDate value="${booking.returnDepartureTimeDate}" pattern="yyyy-MM-dd HH:mm"/></dd>
                                             <dt><spring:message code="mypage.booking.arrival"/></dt>
-                                            <dd><fmt:formatDate value="${booking.returnArrivalTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                            <dd><fmt:formatDate value="${booking.returnArrivalTimeDate}" pattern="yyyy-MM-dd HH:mm"/></dd>
                                         </dl>
                                     </div>
                                 </div>
@@ -86,7 +86,7 @@
                                     <div><span><spring:message code="mypage.booking.usedCash"/></span><strong><fmt:formatNumber value="${booking.usedCash}" pattern="#,##0"/> C</strong></div>
                                     <div><span><spring:message code="mypage.booking.usedMileage"/></span><strong><fmt:formatNumber value="${booking.usedMileage}" pattern="#,##0"/> M</strong></div>
                                     <div class="total"><span><spring:message code="mypage.booking.finalAmount"/></span><strong><fmt:formatNumber value="${booking.finalAmount}" pattern="#,##0"/> C</strong></div>
-                                    <div><span><spring:message code="mypage.booking.paidAt"/></span><strong><fmt:formatDate value="${booking.paidAt}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
+                                    <div><span><spring:message code="mypage.booking.paidAt"/></span><strong><fmt:formatDate value="${booking.paidAtDate}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
                                     <c:if test="${booking.status eq 'CANCELLED'}">
                                         <div>
                                             <span><spring:message code="mypage.booking.cancelReason"/></span>

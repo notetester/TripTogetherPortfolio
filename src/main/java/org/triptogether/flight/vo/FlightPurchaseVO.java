@@ -3,6 +3,8 @@ package org.triptogether.flight.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * FLIGHT_PURCHASE_SIMULATION 테이블의 항공권 예매 정보를 담는 VO.
@@ -43,4 +45,32 @@ public class FlightPurchaseVO {
     private String status;
     private String cancelReason;
     private LocalDateTime createdAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getDepartureTimeDate() {
+        return fromLocalDateTime(departureTime);
+    }
+
+    public Date getArrivalTimeDate() {
+        return fromLocalDateTime(arrivalTime);
+    }
+
+    public Date getReturnDepartureTimeDate() {
+        return fromLocalDateTime(returnDepartureTime);
+    }
+
+    public Date getReturnArrivalTimeDate() {
+        return fromLocalDateTime(returnArrivalTime);
+    }
+
+    public Date getCreatedAtDate() {
+        return fromLocalDateTime(createdAt);
+    }
+
 }

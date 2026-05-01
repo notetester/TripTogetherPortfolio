@@ -19,7 +19,7 @@
             <div class="adm-card-title"><spring:message code="admin.moderation.pageTitle"/></div>
             <div style="font-size:12px;color:#64748b;">
                 <c:if test="${not empty policy.updatedAt}">
-                    <spring:message code="admin.moderation.updatedAt"/> <fmt:formatDate value="${policy.updatedAt}" type="both" dateStyle="short" timeStyle="short"/>
+                    <spring:message code="admin.moderation.updatedAt"/> <fmt:formatDate value="${policy.updatedAtDate}" type="both" dateStyle="short" timeStyle="short"/>
                 </c:if>
             </div>
         </div>

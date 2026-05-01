@@ -3,6 +3,8 @@ package org.triptogether.common.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * USER_BLOCKLIST 현재 차단 규칙 캐시/판단용 VO.
@@ -32,4 +34,32 @@ public class UserBlockRuleVO {
     private LocalDateTime expiresAt;
     private LocalDateTime updatedAt;
     private LocalDateTime syncedAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getBlockedAtDate() {
+        return fromLocalDateTime(blockedAt);
+    }
+
+    public Date getReleasedAtDate() {
+        return fromLocalDateTime(releasedAt);
+    }
+
+    public Date getExpiresAtDate() {
+        return fromLocalDateTime(expiresAt);
+    }
+
+    public Date getUpdatedAtDate() {
+        return fromLocalDateTime(updatedAt);
+    }
+
+    public Date getSyncedAtDate() {
+        return fromLocalDateTime(syncedAt);
+    }
+
 }

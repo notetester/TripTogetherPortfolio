@@ -5,6 +5,8 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Data
 public class AdminTranslationVO {
@@ -31,4 +33,24 @@ public class AdminTranslationVO {
     private boolean outdated;
     private AdminTranslationRevisionVO currentRevision;
     private List<AdminTranslationRevisionVO> revisions = new ArrayList<>();
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getCreatedAtDate() {
+        return fromLocalDateTime(createdAt);
+    }
+
+    public Date getUpdatedAtDate() {
+        return fromLocalDateTime(updatedAt);
+    }
+
+    public Date getDeletedAtDate() {
+        return fromLocalDateTime(deletedAt);
+    }
+
 }

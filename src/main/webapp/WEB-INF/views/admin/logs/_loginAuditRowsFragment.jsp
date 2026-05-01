@@ -4,8 +4,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
                 <c:forEach items="${list}" var="item">
-                    <fmt:formatDate var="itemDateFilter" value="${item.loginAt}" pattern="yyyy-MM-dd"/>
-                    <fmt:formatDate var="itemTimeDisplay" value="${item.loginAt}" pattern="yyyy.MM.dd HH:mm:ss"/>
+                    <fmt:formatDate var="itemDateFilter" value="${item.loginAtDate}" pattern="yyyy-MM-dd"/>
+                    <fmt:formatDate var="itemTimeDisplay" value="${item.loginAtDate}" pattern="yyyy.MM.dd HH:mm:ss"/>
                     <tr class="js-login-row"
                         data-time="${item.loginAt.time}"
                         data-member="${fn:escapeXml(item.nickname)} ${fn:escapeXml(item.userId)} ${item.userIdx}"

@@ -254,7 +254,7 @@
                         <td style="font-size:11px;color:#64748b;white-space:nowrap;">
                             <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
                                class="adm-cell-link adm-cell-link--inline">
-                                <fmt:formatDate value="${p.createdAt}" pattern="yyyy.MM.dd HH:mm"/>
+                                <fmt:formatDate value="${p.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                             </a>
                         </td>
 

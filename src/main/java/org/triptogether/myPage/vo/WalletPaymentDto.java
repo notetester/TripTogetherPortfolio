@@ -3,6 +3,8 @@ package org.triptogether.myPage.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * 내 지갑 화면에서 보여줄 충전/결제 이력 DTO.
@@ -36,4 +38,28 @@ public class WalletPaymentDto {
     private LocalDateTime paidAt;
     private LocalDateTime cancelledAt;
     private LocalDateTime createdAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getTossApprovedAtDate() {
+        return fromLocalDateTime(tossApprovedAt);
+    }
+
+    public Date getPaidAtDate() {
+        return fromLocalDateTime(paidAt);
+    }
+
+    public Date getCancelledAtDate() {
+        return fromLocalDateTime(cancelledAt);
+    }
+
+    public Date getCreatedAtDate() {
+        return fromLocalDateTime(createdAt);
+    }
+
 }

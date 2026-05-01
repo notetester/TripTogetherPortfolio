@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * Toss 결제 요청을 위해 클라이언트로 내려줄 준비 정보.
@@ -23,4 +25,16 @@ public class WalletTossChargeRequestDto {
     private String successUrl;
     private String failUrl;
     private LocalDateTime createdAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getCreatedAtDate() {
+        return fromLocalDateTime(createdAt);
+    }
+
 }

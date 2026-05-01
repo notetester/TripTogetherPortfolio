@@ -3,6 +3,8 @@ package org.triptogether.flight.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * FLIGHT_PURCHASE_SIMULATION 테이블 INSERT용 DTO.
@@ -38,4 +40,28 @@ public class FlightPurchaseCreateDto {
     private long usedCash;
     private long usedMileage;
     private String status;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getDepartureTimeDate() {
+        return fromLocalDateTime(departureTime);
+    }
+
+    public Date getArrivalTimeDate() {
+        return fromLocalDateTime(arrivalTime);
+    }
+
+    public Date getReturnDepartureTimeDate() {
+        return fromLocalDateTime(returnDepartureTime);
+    }
+
+    public Date getReturnArrivalTimeDate() {
+        return fromLocalDateTime(returnArrivalTime);
+    }
+
 }

@@ -87,4 +87,20 @@ public class AdminMemberVO {
         if (lastLoginAt == null) return null;
         return Date.from(lastLoginAt.atZone(ZoneId.systemDefault()).toInstant());
     }
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getDormantAtDate() {
+        return fromLocalDateTime(dormantAt);
+    }
+
+    public Date getBlockedUntilDate() {
+        return fromLocalDateTime(blockedUntil);
+    }
+
 }

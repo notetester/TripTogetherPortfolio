@@ -247,8 +247,8 @@
                         <td style="font-size:11px;color:#64748b;">
                             <a class="adm-cell-link adm-cell-link--inline"
                                href="${pageContext.request.contextPath}/admin/community/posts/${comment.postId}">
-                            <fmt:formatDate value="${comment.createdAt}" pattern="yyyy.MM.dd"/>
-                            <div><fmt:formatDate value="${comment.createdAt}" pattern="HH:mm"/></div>
+                            <fmt:formatDate value="${comment.createdAtDate}" pattern="yyyy.MM.dd"/>
+                            <div><fmt:formatDate value="${comment.createdAtDate}" pattern="HH:mm"/></div>
                             </a>
                         </td>
 

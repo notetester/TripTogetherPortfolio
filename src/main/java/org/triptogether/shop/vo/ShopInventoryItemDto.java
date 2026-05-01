@@ -3,6 +3,8 @@ package org.triptogether.shop.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Data
 public class ShopInventoryItemDto {
@@ -21,4 +23,20 @@ public class ShopInventoryItemDto {
     private LocalDateTime lastUsedAt;
     private boolean equipped;
     private String equipSlot;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getAcquiredAtDate() {
+        return fromLocalDateTime(acquiredAt);
+    }
+
+    public Date getLastUsedAtDate() {
+        return fromLocalDateTime(lastUsedAt);
+    }
+
 }

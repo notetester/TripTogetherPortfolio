@@ -2,6 +2,8 @@ package org.triptogether.superAdmin.vo;
 
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Data
 public class SuperAdminPermissionVO {
@@ -24,4 +26,16 @@ public class SuperAdminPermissionVO {
     // ── 뷰 추가 컬럼 ──
     private String permissionSource;
     private String sourceGroupCode;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getCreatedAtDate() {
+        return fromLocalDateTime(createdAt);
+    }
+
 }

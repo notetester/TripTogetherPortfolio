@@ -3,6 +3,8 @@ package org.triptogether.common.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * CHATBOT_LINK_CLICK 테이블 매핑.
@@ -20,4 +22,16 @@ public class ChatbotLinkClickVO {
     private String label;
     private String ipAddress;
     private LocalDateTime clickedAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getClickedAtDate() {
+        return fromLocalDateTime(clickedAt);
+    }
+
 }

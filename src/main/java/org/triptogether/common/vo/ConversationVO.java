@@ -2,6 +2,8 @@ package org.triptogether.common.vo;
 
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * CHATBOT_CONVERSATION 테이블 매핑.
@@ -23,4 +25,20 @@ public class ConversationVO {
 
     /** 조회용 (JOIN으로 채움, DB 컬럼 아님) */
     private Integer messageCount;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getCreatedAtDate() {
+        return fromLocalDateTime(createdAt);
+    }
+
+    public Date getLastActiveDate() {
+        return fromLocalDateTime(lastActive);
+    }
+
 }

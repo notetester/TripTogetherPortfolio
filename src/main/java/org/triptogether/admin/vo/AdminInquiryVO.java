@@ -47,4 +47,24 @@ public class AdminInquiryVO {
     public Date getAnsweredAt() {
         return answeredAt == null ? null : Date.from(answeredAt.atZone(ZoneId.systemDefault()).toInstant());
     }
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getCreatedAtDate() {
+        return fromLocalDateTime(createdAt);
+    }
+
+    public Date getUpdatedAtDate() {
+        return fromLocalDateTime(updatedAt);
+    }
+
+    public Date getAnsweredAtDate() {
+        return fromLocalDateTime(answeredAt);
+    }
+
 }

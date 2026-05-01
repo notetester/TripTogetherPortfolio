@@ -71,7 +71,7 @@
                           <span class="accepted-badge"><spring:message code="community.detail.comment.accepted"/></span>
                         </c:if>
                         <span class="comment-date">
-                          <fmt:formatDate value="${comment.createdAt}" pattern="yyyy-MM-dd"/>
+                          <fmt:formatDate value="${comment.createdAtDate}" pattern="yyyy-MM-dd"/>
                         </span>
                         <c:if test="${isOwner and post.postType eq 'question' and not isSolved and comment.commentId ne acceptedCommentId}">
                           <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})"><spring:message code="community.detail.comment.accept"/></button>
@@ -203,7 +203,7 @@
                                     </c:choose>
                                   </c:if>
                                   <span class="comment-date">
-                                    <fmt:formatDate value="${reply.createdAt}" pattern="yyyy-MM-dd"/>
+                                    <fmt:formatDate value="${reply.createdAtDate}" pattern="yyyy-MM-dd"/>
                                   </span>
                                   <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne reply.userIdx and not isAdminMode}">
                                     <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>

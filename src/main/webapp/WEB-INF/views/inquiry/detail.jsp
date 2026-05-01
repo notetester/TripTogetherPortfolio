@@ -134,13 +134,13 @@
           </span>
           <span class="inq-detail-divider">·</span>
           <span class="inq-detail-date">
-            <fmt:formatDate value="${inquiry.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
+            <fmt:formatDate value="${inquiry.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/>
           </span>
           <span class="inq-detail-divider">·</span>
           <span class="inq-detail-views">${inquiryViewsLabel} ${inquiry.viewCount}</span>
           <c:if test="${inquiry.updatedAt != null and inquiry.updatedAt.time != inquiry.createdAt.time}">
             <span class="inq-detail-divider">·</span>
-            <span class="inq-detail-edited">${inquiryEditedLabel} <fmt:formatDate value="${inquiry.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></span>
+            <span class="inq-detail-edited">${inquiryEditedLabel} <fmt:formatDate value="${inquiry.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
           </c:if>
         </div>
       </div>
@@ -184,9 +184,9 @@
               <div class="inq-answer-title">${inquiryAnswerTitleLabel}</div>
               <div class="inq-answer-meta">
                 <c:out value="${answer.adminNickname}"/> ·
-                <fmt:formatDate value="${answer.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
+                <fmt:formatDate value="${answer.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/>
                 <c:if test="${answer.updatedAt != null and answer.updatedAt.time != answer.createdAt.time}">
-                  · <span class="inq-detail-edited">${inquiryEditedLabel} <fmt:formatDate value="${answer.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></span>
+                  · <span class="inq-detail-edited">${inquiryEditedLabel} <fmt:formatDate value="${answer.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
                 </c:if>
               </div>
             </div>

@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * 승인된 패키지 상품의 수정 요청본을 담는 VO.
@@ -40,4 +42,20 @@ public class TravelPackageRevisionVO {
     private String spotName;
     private String spotRegion;
     private String sellerNickname;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getRequestedAtDate() {
+        return fromLocalDateTime(requestedAt);
+    }
+
+    public Date getReviewedAtDate() {
+        return fromLocalDateTime(reviewedAt);
+    }
+
 }

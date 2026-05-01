@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * USER_SOCIAL 테이블 VO
@@ -27,4 +29,16 @@ public class UserSocialVO {
     private String providerUserId;
 
     private LocalDateTime linkedAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getLinkedAtDate() {
+        return fromLocalDateTime(linkedAt);
+    }
+
 }

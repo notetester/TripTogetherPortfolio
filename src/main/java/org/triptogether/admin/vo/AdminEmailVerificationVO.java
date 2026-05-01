@@ -38,4 +38,16 @@ public class AdminEmailVerificationVO {
     public Date getExpiredAtDate() { return expiredAt == null ? null : Date.from(expiredAt.atZone(ZoneId.systemDefault()).toInstant()); }
     public Date getCancelledAtDate() { return cancelledAt == null ? null : Date.from(cancelledAt.atZone(ZoneId.systemDefault()).toInstant()); }
     public Date getCreatedAtDate() { return createdAt == null ? null : Date.from(createdAt.atZone(ZoneId.systemDefault()).toInstant()); }
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getUpdatedAtDate() {
+        return fromLocalDateTime(updatedAt);
+    }
+
 }

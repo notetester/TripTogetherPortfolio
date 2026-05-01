@@ -85,9 +85,9 @@
                                     <div><span><spring:message code="mypage.booking.usedCash"/></span><strong><fmt:formatNumber value="${packageBooking.usedCash}" pattern="#,##0"/> C</strong></div>
                                     <div><span><spring:message code="mypage.booking.usedMileage"/></span><strong><fmt:formatNumber value="${packageBooking.usedMileage}" pattern="#,##0"/> M</strong></div>
                                     <div class="total"><span><spring:message code="mypage.booking.totalAmount"/></span><strong><fmt:formatNumber value="${packageBooking.totalPrice}" pattern="#,##0"/> C</strong></div>
-                                    <div><span><spring:message code="mypage.booking.bookedAt"/></span><strong><fmt:formatDate value="${packageBooking.bookedAt}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
+                                    <div><span><spring:message code="mypage.booking.bookedAt"/></span><strong><fmt:formatDate value="${packageBooking.bookedAtDate}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
                                     <c:if test="${packageBooking.bookingStatus eq 'CANCELLED'}">
-                                        <div><span><spring:message code="mypage.booking.cancelledAt"/></span><strong><fmt:formatDate value="${packageBooking.cancelledAt}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
+                                        <div><span><spring:message code="mypage.booking.cancelledAt"/></span><strong><fmt:formatDate value="${packageBooking.cancelledAtDate}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
                                         <div>
                                             <span><spring:message code="mypage.booking.cancelReason"/></span>
                                             <strong>

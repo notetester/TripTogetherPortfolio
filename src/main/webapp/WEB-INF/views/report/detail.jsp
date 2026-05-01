@@ -113,7 +113,7 @@
 
         <%-- 신고일 --%>
         <div class="rpt-detail-info">
-          <spring:message code="report.detail.info.reportedAt"/>: <fmt:formatDate value="${report.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
+          <spring:message code="report.detail.info.reportedAt"/>: <fmt:formatDate value="${report.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/>
         </div>
       </div>
 
@@ -343,7 +343,7 @@
             <div>
               <div class="rpt-result-title"><spring:message code="report.detail.result.cancelled.title"/></div>
               <c:if test="${not empty report.updatedAt}">
-                <div class="rpt-result-meta"><fmt:formatDate value="${report.updatedAt}" pattern="yyyy-MM-dd HH:mm"/></div>
+                <div class="rpt-result-meta"><fmt:formatDate value="${report.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
               </c:if>
             </div>
           </div>

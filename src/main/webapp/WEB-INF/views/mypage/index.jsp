@@ -698,7 +698,7 @@
         </span>
         <span class="mp-notif-msg">${noti.message}</span>
         <span class="mp-notif-date">
-            <fmt:formatDate value="${noti.createdAt}" pattern="yyyy-MM-dd"/>
+            <fmt:formatDate value="${noti.createdAtDate}" pattern="yyyy-MM-dd"/>
         </span>
         <button type="button"
                 class="mp-notif-delete"
@@ -756,7 +756,7 @@
                                         <c:if test="${not empty review.content}">
                                             <span class="mp-review-excerpt">${fn:substring(review.content, 0, 40)}<c:if test="${fn:length(review.content) > 40}">...</c:if></span>
                                         </c:if>
-                                        <span><fmt:formatDate value="${review.createdAt}" pattern="yyyy-MM-dd"/></span>
+                                        <span><fmt:formatDate value="${review.createdAtDate}" pattern="yyyy-MM-dd"/></span>
                                     </div>
                                 </div>
                                 <div class="mp-list-badges">
@@ -806,7 +806,7 @@
                                             ~
                                             <fmt:formatDate value="${plan.endDate}" pattern="yyyy-MM-dd"/>
                                         </span>
-                                        <span><fmt:formatDate value="${plan.createdAt}" pattern="yyyy-MM-dd"/></span>
+                                        <span><fmt:formatDate value="${plan.createdAtDate}" pattern="yyyy-MM-dd"/></span>
                                     </div>
                                 </div>
                                 <div class="mp-list-badges">
@@ -944,12 +944,12 @@
                                     <div class="mp-flight-route-row">
                                         <span class="mp-flight-route-tag"><spring:message code="mypage.booking.outbound"/></span>
                                         <strong>${booking.originAirportCode} &#8594; ${booking.destinationAirportCode}</strong>
-                                        <span><fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/></span>
+                                        <span><fmt:formatDate value="${booking.departureTimeDate}" pattern="yyyy-MM-dd HH:mm"/></span>
                                     </div>
                                     <div class="mp-flight-route-row">
                                         <span class="mp-flight-route-tag return"><spring:message code="mypage.booking.return"/></span>
                                         <strong>${booking.returnOriginAirportCode} &#8594; ${booking.returnDestinationAirportCode}</strong>
-                                        <span><fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/></span>
+                                        <span><fmt:formatDate value="${booking.returnDepartureTimeDate}" pattern="yyyy-MM-dd HH:mm"/></span>
                                     </div>
                                 </div>
 
@@ -982,9 +982,9 @@
                                             <p>${booking.airlineName} | ${booking.flightNo}</p>
                                             <dl>
                                                 <dt><spring:message code="mypage.booking.departure"/></dt>
-                                                <dd><fmt:formatDate value="${booking.departureTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                                <dd><fmt:formatDate value="${booking.departureTimeDate}" pattern="yyyy-MM-dd HH:mm"/></dd>
                                                 <dt><spring:message code="mypage.booking.arrival"/></dt>
-                                                <dd><fmt:formatDate value="${booking.arrivalTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                                <dd><fmt:formatDate value="${booking.arrivalTimeDate}" pattern="yyyy-MM-dd HH:mm"/></dd>
                                             </dl>
                                         </div>
                                         <div class="mp-flight-itinerary-item">
@@ -993,9 +993,9 @@
                                             <p>${booking.returnAirlineName} | ${booking.returnFlightNo}</p>
                                             <dl>
                                                 <dt><spring:message code="mypage.booking.departure"/></dt>
-                                                <dd><fmt:formatDate value="${booking.returnDepartureTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                                <dd><fmt:formatDate value="${booking.returnDepartureTimeDate}" pattern="yyyy-MM-dd HH:mm"/></dd>
                                                 <dt><spring:message code="mypage.booking.arrival"/></dt>
-                                                <dd><fmt:formatDate value="${booking.returnArrivalTime}" pattern="yyyy-MM-dd HH:mm"/></dd>
+                                                <dd><fmt:formatDate value="${booking.returnArrivalTimeDate}" pattern="yyyy-MM-dd HH:mm"/></dd>
                                             </dl>
                                         </div>
                                     </div>
@@ -1006,7 +1006,7 @@
                                         <div><span><spring:message code="mypage.booking.usedCash"/></span><strong><fmt:formatNumber value="${booking.usedCash}" pattern="#,##0"/> C</strong></div>
                                         <div><span><spring:message code="mypage.booking.usedMileage"/></span><strong><fmt:formatNumber value="${booking.usedMileage}" pattern="#,##0"/> M</strong></div>
                                         <div class="total"><span><spring:message code="mypage.booking.finalAmount"/></span><strong><fmt:formatNumber value="${booking.finalAmount}" pattern="#,##0"/> C</strong></div>
-                                        <div><span><spring:message code="mypage.booking.paidAt"/></span><strong><fmt:formatDate value="${booking.paidAt}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
+                                        <div><span><spring:message code="mypage.booking.paidAt"/></span><strong><fmt:formatDate value="${booking.paidAtDate}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
                                     </div>
 
                                     <p class="mp-flight-mock-note"><spring:message code="mypage.booking.mockFlight"/></p>
@@ -1132,9 +1132,9 @@
                                         <div><span><spring:message code="mypage.booking.usedCash"/></span><strong><fmt:formatNumber value="${packageBooking.usedCash}" pattern="#,##0"/> C</strong></div>
                                         <div><span><spring:message code="mypage.booking.usedMileage"/></span><strong><fmt:formatNumber value="${packageBooking.usedMileage}" pattern="#,##0"/> M</strong></div>
                                         <div class="total"><span><spring:message code="mypage.booking.totalAmount"/></span><strong><fmt:formatNumber value="${packageBooking.totalPrice}" pattern="#,##0"/> C</strong></div>
-                                        <div><span><spring:message code="mypage.booking.bookedAt"/></span><strong><fmt:formatDate value="${packageBooking.bookedAt}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
+                                        <div><span><spring:message code="mypage.booking.bookedAt"/></span><strong><fmt:formatDate value="${packageBooking.bookedAtDate}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
                                         <c:if test="${packageBooking.bookingStatus eq 'CANCELLED'}">
-                                            <div><span><spring:message code="mypage.booking.cancelledAt"/></span><strong><fmt:formatDate value="${packageBooking.cancelledAt}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
+                                            <div><span><spring:message code="mypage.booking.cancelledAt"/></span><strong><fmt:formatDate value="${packageBooking.cancelledAtDate}" pattern="yyyy-MM-dd HH:mm"/></strong></div>
                                             <div>
                                                 <span><spring:message code="mypage.booking.cancelReason"/></span>
                                                 <strong>
@@ -1202,7 +1202,7 @@
                                 <div class="mp-list-content">
                                     <div class="mp-list-title">${post.title}</div>
                                     <div class="mp-list-meta">
-                                        <span><fmt:formatDate value="${post.createdAt}" pattern="yyyy-MM-dd"/></span>
+                                        <span><fmt:formatDate value="${post.createdAtDate}" pattern="yyyy-MM-dd"/></span>
                                         <span>&#128065; ${post.viewCount}</span>
                                         <span>&#10084; ${post.likeCount}</span>
                                         <span>&#128172; ${post.commentCount}</span>
@@ -1257,7 +1257,7 @@
                                 <div class="mp-list-content">
                                     <div class="mp-list-title">${inq.title}</div>
                                     <div class="mp-list-meta">
-                                        <span><fmt:formatDate value="${inq.createdAt}" pattern="yyyy-MM-dd"/></span>
+                                        <span><fmt:formatDate value="${inq.createdAtDate}" pattern="yyyy-MM-dd"/></span>
                                         <span>
                                             <c:choose>
                                                 <c:when test="${inq.category eq 'service'}"><spring:message code="mypage.inquiry.category.service"/></c:when>
@@ -1322,7 +1322,7 @@
                                         <span style="color:var(--gray-400);font-size:12px;margin-left:4px;">#${rpt.targetId}</span>
                                     </div>
                                     <div class="mp-list-meta">
-                                        <span><fmt:formatDate value="${rpt.createdAt}" pattern="yyyy-MM-dd"/></span>
+                                        <span><fmt:formatDate value="${rpt.createdAtDate}" pattern="yyyy-MM-dd"/></span>
                                         <c:if test="${not empty rpt.reason}">
                                             <span>
                                                 <c:choose>

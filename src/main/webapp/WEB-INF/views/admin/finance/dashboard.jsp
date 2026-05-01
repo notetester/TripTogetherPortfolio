@@ -94,7 +94,7 @@
                                 <tbody>
                                 <c:forEach var="r" items="${recentRefunds}">
                                     <tr>
-                                        <td style="padding:6px 4px;color:#cbd5e1;"><fmt:formatDate value="${r.refundedAt}" pattern="MM/dd HH:mm"/></td>
+                                        <td style="padding:6px 4px;color:#cbd5e1;"><fmt:formatDate value="${r.refundedAtDate}" pattern="MM/dd HH:mm"/></td>
                                         <td style="padding:6px 4px;"><c:out value="${r.userNickname}"/></td>
                                         <td style="padding:6px 4px;text-align:right;font-weight:600;"><fmt:formatNumber value="${r.refundAmount}" pattern="#,###"/></td>
                                     </tr>

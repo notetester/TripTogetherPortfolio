@@ -138,7 +138,7 @@
                                         <button type="button"
                                                 class="adm-cell-link adm-cell-link--inline"
                                                 data-session-id="${s.chatPostIdx}"
-                                                onclick="viewAssistantMessages(this.dataset.sessionId)"><fmt:formatDate value="${s.createdAt}" pattern="yyyy-MM-dd HH:mm"/></button>
+                                                onclick="viewAssistantMessages(this.dataset.sessionId)"><fmt:formatDate value="${s.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></button>
                                     </td>
                                     <td>
                                         <c:choose>
@@ -279,7 +279,7 @@
                                         <button type="button"
                                                 class="adm-cell-link adm-cell-link--inline"
                                                 data-session-id="${m.chatPostIdx}"
-                                                onclick="viewAssistantMessages(this.dataset.sessionId)"><fmt:formatDate value="${m.createdAt}" pattern="yyyy-MM-dd HH:mm"/></button>
+                                                onclick="viewAssistantMessages(this.dataset.sessionId)"><fmt:formatDate value="${m.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></button>
                                     </td>
                                     <td style="text-align:right;">
                                         <div class="adm-row-actions is-single">
@@ -449,10 +449,10 @@
                                     <td>${b.blockValue}</td>
                                     <td><c:if test="${b.targetNickname != null}">${b.targetNickname}</c:if></td>
                                     <td style="max-width:260px;word-break:break-all;font-size:12px;">${fn:escapeXml(b.reason)}</td>
-                                    <td><fmt:formatDate value="${b.blockedAt}" pattern="yyyy-MM-dd HH:mm"/></td>
+                                    <td><fmt:formatDate value="${b.blockedAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${b.expiresAt != null}"><fmt:formatDate value="${b.expiresAt}" pattern="yyyy-MM-dd HH:mm"/></c:when>
+                                            <c:when test="${b.expiresAt != null}"><fmt:formatDate value="${b.expiresAtDate}" pattern="yyyy-MM-dd HH:mm"/></c:when>
                                             <c:otherwise><span style="color:#94a3b8;">영구</span></c:otherwise>
                                         </c:choose>
                                     </td>

@@ -164,7 +164,7 @@
                             <button type="button"
                                     class="adm-cell-link js-focus-review-action"
                                     data-review-idx="${review.reviewIdx}">
-                                <span class="adm-muted-inline"><fmt:formatDate value="${review.createdAt}" type="date" dateStyle="short"/></span>
+                                <span class="adm-muted-inline"><fmt:formatDate value="${review.createdAtDate}" type="date" dateStyle="short"/></span>
                                 <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
                             </button>
                         </td>

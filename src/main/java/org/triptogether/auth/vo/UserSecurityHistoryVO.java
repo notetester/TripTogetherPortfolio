@@ -3,6 +3,8 @@ package org.triptogether.auth.vo;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Data
 @Builder
@@ -24,4 +26,16 @@ public class UserSecurityHistoryVO {
     private String ipAddress;
     private String userAgent;
     private LocalDateTime occurredAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getOccurredAtDate() {
+        return fromLocalDateTime(occurredAt);
+    }
+
 }

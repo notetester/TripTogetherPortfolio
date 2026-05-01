@@ -195,7 +195,7 @@
                             <a href="${pageContext.request.contextPath}/admin/inquiries/${item.inquiryId}?${fn:escapeXml(listParams)}"
                                class="adm-cell-link"
                                onclick="event.stopPropagation();">
-                                <span><fmt:formatDate value="${item.createdAt}" type="both" dateStyle="short" timeStyle="short"/></span>
+                                <span><fmt:formatDate value="${item.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
                             </a>
                         </td>
                     </tr>

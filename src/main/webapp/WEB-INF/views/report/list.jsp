@@ -173,7 +173,7 @@
                                 </td>
 
                                 <td class="rpt-date">
-                                    <fmt:formatDate value="${r.createdAt}" pattern="yyyy-MM-dd"/>
+                                    <fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd"/>
                                 </td>
                             </tr>
                         </c:forEach>

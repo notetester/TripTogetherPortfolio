@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * 어드민 환불 audit 로그 (WALLET_REFUND_LOG).
@@ -29,4 +31,16 @@ public class WalletRefundLogVO {
     private String userNickname;
     private String adminNickname;
     private String orderName;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getRefundedAtDate() {
+        return fromLocalDateTime(refundedAt);
+    }
+
 }

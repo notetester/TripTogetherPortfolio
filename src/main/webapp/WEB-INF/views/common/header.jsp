@@ -186,7 +186,7 @@
                                                 </span>
                                                 <span class="noti-msg">${n.message}</span>
                                                 <span class="noti-date">
-                                                    <fmt:formatDate value="${n.createdAt}" pattern="MM-dd HH:mm"/>
+                                                    <fmt:formatDate value="${n.createdAtDate}" pattern="MM-dd HH:mm"/>
                                                 </span>
                                             </div>
                                         </c:forEach>

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * USER_LOGIN_HISTORY 테이블 VO
@@ -60,4 +62,16 @@ public class UserLoginHistoryVO {
     private String userAgent;       // 브라우저·디바이스 정보
 
     private LocalDateTime loginAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getLoginAtDate() {
+        return fromLocalDateTime(loginAt);
+    }
+
 }

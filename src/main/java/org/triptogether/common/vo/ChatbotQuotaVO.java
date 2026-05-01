@@ -2,6 +2,8 @@ package org.triptogether.common.vo;
 
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * CHATBOT_GRADE_QUOTA 테이블 매핑.
@@ -22,4 +24,16 @@ public class ChatbotQuotaVO {
     private Long updatedBy;
     private String updaterNickname;        // JOIN으로 채움 (DB 컬럼 아님) — 마지막 수정자 표시용
     private LocalDateTime updatedAt;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getUpdatedAtDate() {
+        return fromLocalDateTime(updatedAt);
+    }
+
 }

@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * TRAVEL_PACKAGE 테이블의 패키지 상품 정보를 담는 VO.
@@ -60,4 +62,24 @@ public class TravelPackageVO {
     public boolean isRevisionPending() {
         return pendingRevisionCount != null && pendingRevisionCount > 0;
     }
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getApprovedAtDate() {
+        return fromLocalDateTime(approvedAt);
+    }
+
+    public Date getCreatedAtDate() {
+        return fromLocalDateTime(createdAt);
+    }
+
+    public Date getUpdatedAtDate() {
+        return fromLocalDateTime(updatedAt);
+    }
+
 }

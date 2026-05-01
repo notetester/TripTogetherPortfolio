@@ -72,7 +72,7 @@
                             <td><c:out value="${p.orderName}"/></td>
                             <td style="text-align:right;font-weight:600;"><fmt:formatNumber value="${p.finalAmount}" pattern="#,###"/></td>
                             <td>${p.paymentMethod}</td>
-                            <td style="font-size:12px;color:#94a3b8;"><fmt:formatDate value="${p.paidAt}" pattern="yyyy-MM-dd HH:mm"/></td>
+                            <td style="font-size:12px;color:#94a3b8;"><fmt:formatDate value="${p.paidAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                             <td>
                                 <button type="button" class="adm-btn adm-btn-primary adm-fin-refund-btn"
                                         style="padding:5px 12px;font-size:12px;"
@@ -124,7 +124,7 @@
                             <td style="text-align:right;"><fmt:formatNumber value="${log.refundAmount}" pattern="#,###"/></td>
                             <td style="font-size:12px;"><c:out value="${log.refundReason}"/></td>
                             <td><span class="adm-badge">${log.tossCancelStatus}</span></td>
-                            <td style="font-size:12px;color:#94a3b8;"><fmt:formatDate value="${log.refundedAt}" pattern="yyyy-MM-dd HH:mm"/></td>
+                            <td style="font-size:12px;color:#94a3b8;"><fmt:formatDate value="${log.refundedAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                             <td><c:out value="${log.adminNickname}"/></td>
                         </tr>
                     </c:forEach>

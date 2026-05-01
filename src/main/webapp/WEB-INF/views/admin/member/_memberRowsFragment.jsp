@@ -168,7 +168,7 @@
                                 <span style="font-size:12px;">
                                     <c:choose>
                                         <c:when test="${m.lastLoginAt != null}">
-                                            <fmt:formatDate value="${m.lastLoginAt}" pattern="MM.dd HH:mm"/>
+                                            <fmt:formatDate value="${m.lastLoginAtDate}" pattern="MM.dd HH:mm"/>
                                         </c:when>
                                         <c:otherwise><span style="color:#475569;"><spring:message code="admin.members.none"/></span></c:otherwise>
                                     </c:choose>
@@ -185,7 +185,7 @@
                                     data-default-tab="info"
                                     data-focus-section="createdMeta"
                                     style="font-size:12px;color:#64748b;">
-                                <fmt:formatDate value="${m.createdAt}" pattern="yyyy.MM.dd"/>
+                                <fmt:formatDate value="${m.createdAtDate}" pattern="yyyy.MM.dd"/>
                             </button>
                         </td>
 

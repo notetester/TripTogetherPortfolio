@@ -3,6 +3,8 @@ package org.triptogether.admin.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Data
 public class AdminTranslationSourceSnapshotVO {
@@ -17,4 +19,20 @@ public class AdminTranslationSourceSnapshotVO {
     private Integer snapshotSeq;
     private LocalDateTime capturedAt;
     private Long capturedByUserIdx;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getSourceUpdatedAtDate() {
+        return fromLocalDateTime(sourceUpdatedAt);
+    }
+
+    public Date getCapturedAtDate() {
+        return fromLocalDateTime(capturedAt);
+    }
+
 }

@@ -3,6 +3,8 @@ package org.triptogether.flight.vo;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * 화면에 보여줄 항공권 Mock 견적 DTO.
@@ -48,4 +50,28 @@ public class FlightOfferDto {
     private long finalPrice;
 
     private long maxMileageUse;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getDepartureTimeDate() {
+        return fromLocalDateTime(departureTime);
+    }
+
+    public Date getArrivalTimeDate() {
+        return fromLocalDateTime(arrivalTime);
+    }
+
+    public Date getReturnDepartureTimeDate() {
+        return fromLocalDateTime(returnDepartureTime);
+    }
+
+    public Date getReturnArrivalTimeDate() {
+        return fromLocalDateTime(returnArrivalTime);
+    }
+
 }

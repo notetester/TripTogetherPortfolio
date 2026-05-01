@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.time.ZoneId;
 
 @Getter
 @Setter
@@ -34,5 +35,20 @@ public class TravelPlanVO {
     private List<PlanSpotVO> spotList;
 
     private String nickname;
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getCreated_atDate() {
+        return fromLocalDateTime(created_at);
+    }
+
+    public Date getUpdated_atDate() {
+        return fromLocalDateTime(updated_at);
+    }
 
 }

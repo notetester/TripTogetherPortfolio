@@ -106,7 +106,7 @@
             </c:if>
           </div>
           <span class="detail-date">
-            <fmt:formatDate value="${post.createdAt}" pattern="yyyy-MM-dd HH:mm"/>
+            <fmt:formatDate value="${post.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/>
           </span>
         </div>
         <span class="detail-type-badge type-${post.postType}">
@@ -363,7 +363,7 @@
                                   <span class="accepted-badge"><spring:message code="community.detail.comment.accepted"/></span>
                                 </c:if>
                                 <span class="comment-date">
-                                  <fmt:formatDate value="${comment.createdAt}" pattern="yyyy-MM-dd"/>
+                                  <fmt:formatDate value="${comment.createdAtDate}" pattern="yyyy-MM-dd"/>
                                 </span>
                                 <c:if test="${isOwner and post.postType eq 'question' and not isSolved and comment.commentId ne acceptedCommentId}">
                                   <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})"><spring:message code="community.detail.comment.accept"/></button>
@@ -491,7 +491,7 @@
                                             </c:choose>
                                           </c:if>
                                           <span class="comment-date">
-                                            <fmt:formatDate value="${reply.createdAt}" pattern="yyyy-MM-dd"/>
+                                            <fmt:formatDate value="${reply.createdAtDate}" pattern="yyyy-MM-dd"/>
                                           </span>
                                           <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne reply.userIdx and not isAdminMode}">
                                             <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
@@ -690,7 +690,7 @@
                   <c:if test="${not empty r.profileBadgeLabel}">
                     <span class="tt-profile-badge ${r.profileBadgeClass}">${r.profileBadgeLabel}</span>
                   </c:if>
-                  <span class="post-date"><fmt:formatDate value="${r.createdAt}" pattern="yyyy-MM-dd"/></span>
+                  <span class="post-date"><fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd"/></span>
                 </div>
                 <div class="post-card-title">${r.title}</div>
                 <div class="post-card-content">${r.content}</div>
@@ -796,7 +796,7 @@
                     <c:if test="${not empty l.profileBadgeLabel}">
                       <span class="tt-profile-badge ${l.profileBadgeClass}">${l.profileBadgeLabel}</span>
                     </c:if>
-                    <span class="post-date"><fmt:formatDate value="${l.createdAt}" pattern="yyyy-MM-dd"/></span>
+                    <span class="post-date"><fmt:formatDate value="${l.createdAtDate}" pattern="yyyy-MM-dd"/></span>
                   </div>
                   <div class="post-card-title">${l.title}</div>
                   <div class="post-card-content">${l.content}</div>

@@ -45,4 +45,16 @@ public class AdminSecurityAuditVO {
     public Date getOccurredAt() {
         return occurredAt == null ? null : Date.from(occurredAt.atZone(ZoneId.systemDefault()).toInstant());
     }
+
+    private Date fromLocalDateTime(LocalDateTime value) {
+        if (value == null) {
+            return null;
+        }
+        return Date.from(value.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public Date getOccurredAtDate() {
+        return fromLocalDateTime(occurredAt);
+    }
+
 }
