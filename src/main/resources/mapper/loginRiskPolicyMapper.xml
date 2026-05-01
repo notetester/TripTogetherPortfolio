@@ -17,19 +17,77 @@
         <result property="requireAdminReview" column="require_admin_review"/>
         <result property="reviewSeverity" column="review_severity"/>
         <result property="notificationCategory" column="notification_category"/>
+        <result property="aiAssistEnabled" column="ai_assist_enabled"/>
+        <result property="aiRiskScoreThreshold" column="ai_risk_score_threshold"/>
+        <result property="wafSyncEnabled" column="waf_sync_enabled"/>
         <result property="description" column="description"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
+    <resultMap id="LoginRiskReviewMap" type="org.triptogether.auth.vo.LoginRiskReviewVO">
+        <id property="reviewIdx" column="review_idx"/>
+        <result property="policyCode" column="policy_code"/>
+        <result property="policyName" column="policy_name"/>
+        <result property="reviewType" column="review_type"/>
+        <result property="severity" column="severity"/>
+        <result property="subjectType" column="subject_type"/>
+        <result property="subjectKey" column="subject_key"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="requestId" column="request_id"/>
+        <result property="flowTraceId" column="flow_trace_id"/>
+        <result property="summary" column="summary"/>
+        <result property="detailMessage" column="detail_message"/>
+        <result property="reviewStatus" column="review_status"/>
+        <result property="reviewedByUserIdx" column="reviewed_by_user_idx"/>
+        <result property="reviewedByUserId" column="reviewed_by_user_id"/>
+        <result property="reviewedAt" column="reviewed_at"/>
+        <result property="reviewComment" column="review_comment"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="AdminNotificationPreferenceMap" type="org.triptogether.auth.vo.AdminNotificationPreferenceVO">
+        <id property="preferenceIdx" column="preference_idx"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="notificationCategory" column="notification_category"/>
+        <result property="enabled" column="is_enabled"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
     <select id="findPolicies" resultMap="LoginRiskPolicyMap">
-        SELECT * FROM LOGIN_RISK_POLICY
+        SELECT
+            policy_idx, policy_code, policy_name, policy_type, is_active,
+            observation_minutes, threshold_count, distinct_account_threshold,
+            lock_duration_minutes, warning_before_count, reset_on_success,
+            action_type, require_admin_review, review_severity, notification_category,
+            COALESCE(ai_assist_enabled, 0) AS ai_assist_enabled,
+            ai_risk_score_threshold,
+            COALESCE(waf_sync_enabled, 0) AS waf_sync_enabled,
+            description, created_at, updated_at
+        FROM LOGIN_RISK_POLICY
         <if test="!includeInactive">WHERE is_active = 1</if>
         ORDER BY policy_idx
     </select>
 
     <select id="findActivePolicyByCode" resultMap="LoginRiskPolicyMap">
-        SELECT * FROM LOGIN_RISK_POLICY WHERE policy_code = #{policyCode} AND is_active = 1
+        SELECT
+            policy_idx, policy_code, policy_name, policy_type, is_active,
+            observation_minutes, threshold_count, distinct_account_threshold,
+            lock_duration_minutes, warning_before_count, reset_on_success,
+            action_type, require_admin_review, review_severity, notification_category,
+            COALESCE(ai_assist_enabled, 0) AS ai_assist_enabled,
+            ai_risk_score_threshold,
+            COALESCE(waf_sync_enabled, 0) AS waf_sync_enabled,
+            description, created_at, updated_at
+        FROM LOGIN_RISK_POLICY
+        WHERE policy_code = #{policyCode} AND is_active = 1
     </select>
 
     <update id="updatePolicy">
@@ -46,6 +104,9 @@
             require_admin_review = #{requireAdminReview},
             review_severity = #{reviewSeverity},
             notification_category = #{notificationCategory},
+            ai_assist_enabled = #{aiAssistEnabled},
+            ai_risk_score_threshold = #{aiRiskScoreThreshold},
+            waf_sync_enabled = #{wafSyncEnabled},
             description = #{description},
             updated_at = NOW()
         WHERE policy_idx = #{policyIdx}
@@ -153,5 +214,137 @@
         (user_idx, source_type, source_id, message, target_url, created_at)
         VALUES
         (#{userIdx}, #{sourceType}, COALESCE(#{sourceId}, 0), #{message}, #{targetUrl}, NOW())
+    </insert>
+
+    <select id="findReviewQueue" resultMap="LoginRiskReviewMap">
+        SELECT
+            rq.*,
+            p.policy_name,
+            u.user_id,
+            u.nickname,
+            reviewer.user_id AS reviewed_by_user_id
+        FROM LOGIN_RISK_REVIEW_QUEUE rq
+        LEFT JOIN LOGIN_RISK_POLICY p ON p.policy_code = rq.policy_code
+        LEFT JOIN USERS u ON u.user_idx = rq.user_idx
+        LEFT JOIN USERS reviewer ON reviewer.user_idx = rq.reviewed_by_user_idx
+        <where>
+            <if test="status != null and status != ''">AND rq.review_status = #{status}</if>
+            <if test="severity != null and severity != ''">AND rq.severity = #{severity}</if>
+            <if test="reviewType != null and reviewType != ''">AND rq.review_type = #{reviewType}</if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    rq.policy_code LIKE CONCAT('%', #{keyword}, '%')
+                    OR rq.subject_key LIKE CONCAT('%', #{keyword}, '%')
+                    OR rq.ip_address LIKE CONCAT('%', #{keyword}, '%')
+                    OR rq.summary LIKE CONCAT('%', #{keyword}, '%')
+                    OR rq.detail_message LIKE CONCAT('%', #{keyword}, '%')
+                    OR u.user_id LIKE CONCAT('%', #{keyword}, '%')
+                    OR u.nickname LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY
+            CASE rq.review_status WHEN 'PENDING' THEN 0 WHEN 'HOLD' THEN 1 WHEN 'APPROVED' THEN 2 ELSE 3 END,
+            CASE rq.severity WHEN 'CRITICAL' THEN 0 WHEN 'HIGH' THEN 1 WHEN 'MEDIUM' THEN 2 ELSE 3 END,
+            rq.created_at DESC
+    </select>
+
+    <select id="findReviewByIdx" resultMap="LoginRiskReviewMap">
+        SELECT
+            rq.*,
+            p.policy_name,
+            u.user_id,
+            u.nickname,
+            reviewer.user_id AS reviewed_by_user_id
+        FROM LOGIN_RISK_REVIEW_QUEUE rq
+        LEFT JOIN LOGIN_RISK_POLICY p ON p.policy_code = rq.policy_code
+        LEFT JOIN USERS u ON u.user_idx = rq.user_idx
+        LEFT JOIN USERS reviewer ON reviewer.user_idx = rq.reviewed_by_user_idx
+        WHERE rq.review_idx = #{reviewIdx}
+    </select>
+
+    <update id="updateReviewDecision">
+        UPDATE LOGIN_RISK_REVIEW_QUEUE
+        SET review_status = #{reviewStatus},
+            reviewed_by_user_idx = #{reviewedByUserIdx},
+            reviewed_at = NOW(),
+            review_comment = #{reviewComment},
+            updated_at = NOW()
+        WHERE review_idx = #{reviewIdx}
+    </update>
+
+    <insert id="insertApprovedIpBlock">
+        INSERT INTO IP_BLOCKLIST (
+            ip_address, block_target_key, block_request_id,
+            rule_action, control_mode, rule_origin_type,
+            match_type, cidr_notation, source_scope, block_category,
+            user_idx, block_type, blocked_by_user_idx,
+            source_action_type, source_action_group_id, source_user_idx, source_ip_address,
+            blocked_at, reason, is_active,
+            is_effective_active, effective_status, effective_status_reason,
+            effective_synced_at, effective_synced_by_source,
+            last_control_action, last_control_by_user_idx, last_control_at, last_control_reason,
+            priority, last_synced_at, updated_at
+        ) VALUES (
+            #{ipAddress}, #{blockTargetKey}, #{blockRequestId},
+            'BLOCK', 'MANUAL', 'LOGIN_RISK_REVIEW',
+            #{matchType}, #{cidrNotation}, 'GLOBAL', 'LOGIN_RISK',
+            #{sourceUserIdx}, 'IP_ONLY', #{blockedByUserIdx},
+            #{sourceActionType}, #{sourceActionGroupId}, #{sourceUserIdx}, #{sourceIpAddress},
+            NOW(), #{reason}, TRUE,
+            TRUE, 'EFFECTIVE', '관리자 검토 승인으로 활성화되었습니다.',
+            NOW(), 'ADMIN_REVIEW',
+            'CREATE', #{blockedByUserIdx}, NOW(), #{reason},
+            150, NOW(), NOW()
+        )
+    </insert>
+
+    <insert id="insertWafSyncQueue">
+        INSERT INTO LOGIN_RISK_WAF_SYNC_QUEUE
+        (source_type, source_id, sync_action, target_type, target_value, status, detail_message, created_at, updated_at)
+        VALUES
+        (#{sourceType}, #{sourceId}, #{syncAction}, #{targetType}, #{targetValue}, #{status}, #{detailMessage}, NOW(), NOW())
+    </insert>
+
+    <insert id="insertAiAssessment">
+        INSERT INTO LOGIN_RISK_AI_ASSESSMENT
+        (source_type, source_id, risk_score, risk_label, model_name, summary, raw_payload, created_at)
+        VALUES
+        (#{sourceType}, #{sourceId}, #{riskScore}, #{riskLabel}, #{modelName}, #{summary}, #{rawPayload}, NOW())
+    </insert>
+
+    <select id="findNotificationPreferences" resultMap="AdminNotificationPreferenceMap">
+        SELECT
+            p.preference_idx,
+            u.user_idx,
+            u.user_id,
+            u.nickname,
+            categories.notification_category,
+            COALESCE(p.is_enabled, 1) AS is_enabled,
+            p.created_at,
+            p.updated_at
+        FROM USERS u
+        JOIN (
+            SELECT 'LOGIN_RISK' AS notification_category
+            UNION ALL SELECT 'BUSINESS_APPLICATION'
+            UNION ALL SELECT 'REPORT'
+            UNION ALL SELECT 'INQUIRY'
+            UNION ALL SELECT 'BLOCK_REVIEW'
+        ) categories
+        LEFT JOIN ADMIN_NOTIFICATION_PREFERENCE p
+          ON p.user_idx = u.user_idx
+         AND p.notification_category = categories.notification_category
+        WHERE u.user_idx = #{userIdx}
+        ORDER BY categories.notification_category
+    </select>
+
+    <insert id="upsertNotificationPreference">
+        INSERT INTO ADMIN_NOTIFICATION_PREFERENCE
+        (user_idx, notification_category, is_enabled, created_at, updated_at)
+        VALUES
+        (#{userIdx}, #{notificationCategory}, #{enabled}, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+            is_enabled = VALUES(is_enabled),
+            updated_at = NOW()
     </insert>
 </mapper>

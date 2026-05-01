@@ -101,6 +101,12 @@
                     <a class="adm-nav-item ${activeMenu=='loginRiskPolicies'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/policies">
                         <span class="adm-nav-icon">⚙️</span> 로그인 위험 정책
                     </a>
+                    <a class="adm-nav-item ${activeMenu=='loginRiskReviews'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/reviews">
+                        <span class="adm-nav-icon">🧯</span> 로그인 위험 검토
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='adminNotificationPreferences'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">
+                        <span class="adm-nav-icon">🔔</span> 알림 설정
+                    </a>
                 </div>
             </div>
             </c:if>

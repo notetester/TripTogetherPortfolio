@@ -290,3 +290,6 @@ COMMIT;
 -- SELECT policy_code, event_type, subject_type, subject_key, observed_count, action_type, decision_status, review_required, detail_message, created_at FROM LOGIN_RISK_EVENT WHERE detail_message LIKE '%DEMO-RISK-20260501%' ORDER BY created_at;
 -- SELECT review_status, severity, review_type, subject_type, subject_key, summary, reviewed_by_user_idx, reviewed_at FROM LOGIN_RISK_REVIEW_QUEUE WHERE detail_message LIKE '%DEMO-RISK-20260501%' ORDER BY created_at;
 -- SELECT user_idx, source_type, source_id, message, target_url, is_read, created_at FROM MYPAGE_FEED_NOTIFICATION WHERE source_type='LOGIN_RISK_REVIEW' AND message LIKE '%DEMO-RISK-20260501%' ORDER BY created_at DESC;
+
+
+-- 후속 보강 SQL(20260501_login_risk_followup.sql)을 실행하면 위 검토 큐에 AI/WAF 동기화 샘플이 자동 연결됩니다.
