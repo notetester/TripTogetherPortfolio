@@ -98,6 +98,9 @@
                     <a class="adm-nav-item ${activeMenu=='activityLogs'?'active':''}" href="${pageContext.request.contextPath}/admin/activity-logs">
                         <span class="adm-nav-icon">🧭</span> <spring:message code="admin.layout.menu.activityLogs"/>
                     </a>
+                    <a class="adm-nav-item ${activeMenu=='loginRiskPolicies'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/policies">
+                        <span class="adm-nav-icon">⚙️</span> 로그인 위험 정책
+                    </a>
                 </div>
             </div>
             </c:if>

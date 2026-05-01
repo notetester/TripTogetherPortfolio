@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.triptogether.auth.mapper.LoginRiskPolicyMapper">
+    <resultMap id="LoginRiskPolicyMap" type="org.triptogether.auth.vo.LoginRiskPolicyVO">
+        <id property="policyIdx" column="policy_idx"/>
+        <result property="policyCode" column="policy_code"/>
+        <result property="policyName" column="policy_name"/>
+        <result property="policyType" column="policy_type"/>
+        <result property="active" column="is_active"/>
+        <result property="observationMinutes" column="observation_minutes"/>
+        <result property="thresholdCount" column="threshold_count"/>
+        <result property="distinctAccountThreshold" column="distinct_account_threshold"/>
+        <result property="lockDurationMinutes" column="lock_duration_minutes"/>
+        <result property="warningBeforeCount" column="warning_before_count"/>
+        <result property="resetOnSuccess" column="reset_on_success"/>
+        <result property="actionType" column="action_type"/>
+        <result property="requireAdminReview" column="require_admin_review"/>
+        <result property="reviewSeverity" column="review_severity"/>
+        <result property="notificationCategory" column="notification_category"/>
+        <result property="description" column="description"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findPolicies" resultMap="LoginRiskPolicyMap">
+        SELECT * FROM LOGIN_RISK_POLICY
+        <if test="!includeInactive">WHERE is_active = 1</if>
+        ORDER BY policy_idx
+    </select>
+
+    <select id="findActivePolicyByCode" resultMap="LoginRiskPolicyMap">
+        SELECT * FROM LOGIN_RISK_POLICY WHERE policy_code = #{policyCode} AND is_active = 1
+    </select>
+
+    <update id="updatePolicy">
+        UPDATE LOGIN_RISK_POLICY
+        SET policy_name = #{policyName},
+            is_active = #{active},
+            observation_minutes = #{observationMinutes},
+            threshold_count = #{thresholdCount},
+            distinct_account_threshold = #{distinctAccountThreshold},
+            lock_duration_minutes = #{lockDurationMinutes},
+            warning_before_count = #{warningBeforeCount},
+            reset_on_success = #{resetOnSuccess},
+            action_type = #{actionType},
+            require_admin_review = #{requireAdminReview},
+            review_severity = #{reviewSeverity},
+            notification_category = #{notificationCategory},
+            description = #{description},
+            updated_at = NOW()
+        WHERE policy_idx = #{policyIdx}
+    </update>
+
+    <select id="countRecentWrongPasswordByUser" resultType="int">
+        SELECT COUNT(*) FROM USER_LOGIN_HISTORY
+        WHERE user_idx = #{userIdx}
+          AND is_success = 0
+          AND fail_reason = 'WRONG_PASSWORD'
+          AND login_at &gt; COALESCE((
+                SELECT MAX(success_log.login_at)
+                FROM USER_LOGIN_HISTORY success_log
+                WHERE success_log.user_idx = #{userIdx}
+                  AND success_log.is_success = 1
+          ), '1970-01-01 00:00:00')
+          <if test="since != null">AND login_at &gt;= #{since}</if>
+    </select>
+
+    <select id="countRecentWrongPasswordByIp" resultType="int">
+        SELECT COUNT(*) FROM USER_LOGIN_HISTORY
+        WHERE ip_address = #{ipAddress}
+          AND is_success = 0
+          AND fail_reason = 'WRONG_PASSWORD'
+          <if test="since != null">AND login_at &gt;= #{since}</if>
+    </select>
+
+    <select id="countRecentDistinctIdentifiersByIp" resultType="int">
+        SELECT COUNT(DISTINCT login_identifier) FROM USER_LOGIN_HISTORY
+        WHERE ip_address = #{ipAddress}
+          AND is_success = 0
+          <if test="since != null">AND login_at &gt;= #{since}</if>
+    </select>
+
+    <select id="countRecentAccountLocks" resultType="int">
+        SELECT COUNT(*) FROM LOGIN_RISK_EVENT
+        WHERE user_idx = #{userIdx}
+          AND action_type IN ('ACCOUNT_TEMP_LOCK','ACCOUNT_PROTECTION_REQUIRED')
+          <if test="since != null">AND created_at &gt;= #{since}</if>
+    </select>
+
+    <select id="countActiveIpLoginLocks" resultType="int">
+        SELECT COUNT(*) FROM LOGIN_RISK_COUNTER
+        WHERE subject_type = 'IP'
+          AND subject_key = #{ipAddress}
+          AND action_type = 'IP_LOGIN_LOCK'
+          AND blocked_until IS NOT NULL
+          AND blocked_until &gt; #{now}
+    </select>
+
+    <insert id="insertIpLoginLockCounter">
+        INSERT INTO LOGIN_RISK_COUNTER
+        (policy_code, subject_type, subject_key, attempt_count, action_type, blocked_until, detail_message, observed_started_at, last_event_at, updated_at)
+        VALUES
+        (#{policyCode}, 'IP', #{ipAddress}, 1, 'IP_LOGIN_LOCK', #{blockedUntil}, #{detailMessage}, NOW(), NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+            attempt_count = attempt_count + 1,
+            blocked_until = VALUES(blocked_until),
+            detail_message = VALUES(detail_message),
+            last_event_at = NOW(),
+            updated_at = NOW()
+    </insert>
+
+    <delete id="clearCountersOnLoginSuccess">
+        DELETE FROM LOGIN_RISK_COUNTER
+        WHERE (subject_type = 'USER' AND subject_key = CAST(#{userIdx} AS CHAR))
+           OR (subject_type = 'IP' AND subject_key = #{ipAddress} AND action_type = 'IP_LOGIN_LOCK')
+    </delete>
+
+    <insert id="insertRiskEvent">
+        INSERT INTO LOGIN_RISK_EVENT
+        (policy_code, event_type, subject_type, subject_key, user_idx, ip_address, login_identifier,
+         threshold_count, observed_count, action_type, decision_status, review_required,
+         blocked_until, request_id, flow_trace_id, detail_message, created_at)
+        VALUES
+        (#{policyCode}, #{eventType}, #{subjectType}, #{subjectKey}, #{userIdx}, #{ipAddress}, #{loginIdentifier},
+         #{thresholdCount}, #{observedCount}, #{actionType}, #{decisionStatus}, #{reviewRequired},
+         #{blockedUntil}, #{requestId}, #{flowTraceId}, #{detailMessage}, NOW())
+    </insert>
+
+    <insert id="insertReviewQueue">
+        INSERT INTO LOGIN_RISK_REVIEW_QUEUE
+        (policy_code, review_type, severity, subject_type, subject_key, user_idx, ip_address,
+         request_id, flow_trace_id, summary, detail_message, review_status, created_at, updated_at)
+        VALUES
+        (#{policyCode}, #{reviewType}, #{severity}, #{subjectType}, #{subjectKey}, #{userIdx}, #{ipAddress},
+         #{requestId}, #{flowTraceId}, #{summary}, #{detailMessage}, 'PENDING', NOW(), NOW())
+    </insert>
+
+    <select id="findAdminNotificationTargets" resultType="long">
+        SELECT u.user_idx
+        FROM USERS u
+        WHERE u.account_status = 'ACTIVE'
+          AND u.user_role IN ('ADMIN','SUPERADMIN')
+          AND NOT EXISTS (
+              SELECT 1 FROM ADMIN_NOTIFICATION_PREFERENCE p
+              WHERE p.user_idx = u.user_idx
+                AND p.notification_category = #{category}
+                AND p.is_enabled = 0
+          )
+    </select>
+
+    <insert id="insertAdminNotification">
+        INSERT INTO MYPAGE_FEED_NOTIFICATION
+        (user_idx, source_type, source_id, message, target_url, created_at)
+        VALUES
+        (#{userIdx}, #{sourceType}, #{sourceId}, #{message}, #{targetUrl}, NOW())
+    </insert>
+</mapper>

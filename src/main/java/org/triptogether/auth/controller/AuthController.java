@@ -109,7 +109,18 @@ public class AuthController {
         UsersVO user = authService.login(identifier, password, context);
         if (user == null) {
             result.put("success", false);
-            result.put("message", "아이디(이메일) 또는 비밀번호가 올바르지 않습니다.");
+            result.put("message", hasText(context.getLoginRiskMessage())
+                    ? context.getLoginRiskMessage()
+                    : "아이디(이메일) 또는 비밀번호가 올바르지 않습니다.");
+            if (context.getRemainingAttempts() != null) {
+                result.put("remainingAttempts", context.getRemainingAttempts());
+            }
+            if (context.isLoginRiskDenied()) {
+                result.put("loginRiskDenied", true);
+            }
+            if (context.isLoginRiskReviewRequired()) {
+                result.put("loginRiskReviewRequired", true);
+            }
             return result;
         }
 

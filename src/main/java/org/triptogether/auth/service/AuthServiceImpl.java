@@ -40,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RestTemplate restTemplate;
     private final JavaMailSender mailSender;
+    private final LoginRiskPolicyService loginRiskPolicyService;
 
     @Value("${spring.mail.username}")           private String mailFrom;
     @Value("${app.base-url}")                   private String baseUrl;
@@ -82,6 +83,13 @@ public class AuthServiceImpl implements AuthService {
                 ? authMapper.findByEmail(identifier)
                 : authMapper.findByUserId(identifier);
 
+        LoginRiskDecisionVO preLoginDecision = loginRiskPolicyService.checkPreLogin(identifier, user, loginMethod, context);
+        if (preLoginDecision != null && preLoginDecision.isDenied()) {
+            recordLoginResult(user == null ? null : user.getUserIdx(), loginMethod, identifier,
+                    false, preLoginDecision.getFailReason(), context);
+            return null;
+        }
+
         // 2. 사용자 없음
         if (user == null) {
             recordLoginResult(null, loginMethod, identifier,
@@ -122,6 +130,7 @@ public class AuthServiceImpl implements AuthService {
         if (!bCryptPasswordEncoder.matches(password, user.getUserPassword())) {
             recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                     false, "WRONG_PASSWORD", context);
+            loginRiskPolicyService.handleWrongPassword(user, identifier, loginMethod, context);
             return null;
         }
 
@@ -146,6 +155,7 @@ public class AuthServiceImpl implements AuthService {
         authMapper.updateLastLoginAt(user.getUserIdx());
         recordLoginResult(user.getUserIdx(), loginMethod, identifier,
                 true, null, context);
+        loginRiskPolicyService.handleLoginSuccess(user, identifier, context);
 
         return authMapper.findByIdx(user.getUserIdx());
     }
