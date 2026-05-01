@@ -498,6 +498,11 @@ public class AdminServiceImpl implements AdminService {
             throw new IllegalArgumentException("IP 차단 유형은 차단 IP가 필요합니다.");
         }
 
+        String sourceActionType = resolveSourceActionType(blockType);
+        String sourceActionGroupId = UUID.randomUUID().toString();
+        Long sourceUserIdx = userIdx;
+        String sourceIpAddress = includesIpBlock ? normalizedIp : null;
+
         /*
          * USER_IP는 런타임의 교집합 조건으로 저장하지 않는다.
          *
@@ -521,9 +526,13 @@ public class AdminServiceImpl implements AdminService {
             String userTargetKey = buildHistoryTargetKey(userIdx, "USER_ONLY", null);
 
             adminMapper.markMemberBlocked(userIdx, expiresAt, userReason);
-            adminMapper.insertUserBlockHistory(userBlockRequestId, userTargetKey, userIdx, "USER_ONLY", null, userReason, actorUserIdx, expiresAt, null);
+            adminMapper.insertUserBlockHistory(userBlockRequestId, userTargetKey, userIdx, "USER_ONLY", null, userReason,
+                    actorUserIdx, expiresAt, null,
+                    sourceActionType, sourceActionGroupId, sourceUserIdx, sourceIpAddress);
             userHistoryBlockIdx = adminMapper.findBlockHistoryIdxByRequestId(userBlockRequestId);
-            adminMapper.upsertUserBlocklist(userHistoryBlockIdx, userBlockRequestId, userTargetKey, userIdx, "USER_ONLY", null, userReason, actorUserIdx, expiresAt);
+            adminMapper.upsertUserBlocklist(userHistoryBlockIdx, userBlockRequestId, userTargetKey, userIdx, "USER_ONLY", null, userReason,
+                    actorUserIdx, expiresAt,
+                    sourceActionType, sourceActionGroupId, sourceUserIdx, sourceIpAddress);
         }
 
         if (includesIpBlock && normalizedIp != null && !normalizedIp.isBlank()) {
@@ -535,16 +544,33 @@ public class AdminServiceImpl implements AdminService {
             String ipRuleTargetKey = buildIpRuleTargetKey(normalizedIp);
             String ipMatchType = "SINGLE_IP";
 
-            adminMapper.insertUserBlockHistory(ipBlockRequestId, ipHistoryTargetKey, userIdx, "IP_ONLY", normalizedIp, ipReason, actorUserIdx, expiresAt, ipMatchType);
+            adminMapper.insertUserBlockHistory(ipBlockRequestId, ipHistoryTargetKey, userIdx, "IP_ONLY", normalizedIp, ipReason,
+                    actorUserIdx, expiresAt, ipMatchType,
+                    sourceActionType, sourceActionGroupId, sourceUserIdx, sourceIpAddress);
             Long ipHistoryBlockIdx = adminMapper.findBlockHistoryIdxByRequestId(ipBlockRequestId);
 
             ipBlockMapper.deactivateUserActionBlockedIpByTargetKey(ipRuleTargetKey, actorUserIdx);
-            ipBlockMapper.upsertBlockedIpWithHistory(normalizedIp, ipRuleTargetKey, ipReason, userIdx, "IP_ONLY", actorUserIdx, expiresAt, ipBlockRequestId, ipHistoryBlockIdx, null);
+            ipBlockMapper.upsertBlockedIpWithHistory(normalizedIp, ipRuleTargetKey, ipReason, userIdx, "IP_ONLY",
+                    actorUserIdx, expiresAt, ipBlockRequestId, ipHistoryBlockIdx, null,
+                    sourceActionType, sourceActionGroupId, sourceUserIdx, sourceIpAddress);
         }
 
         if (includesUserBlock) {
             notifyAccountBlocked(userIdx, reason, expiresAt);
         }
+    }
+
+    private String resolveSourceActionType(String blockType) {
+        if ("USER_IP".equals(blockType)) {
+            return "USER_AND_IP_BLOCK";
+        }
+        if ("USER_ONLY".equals(blockType)) {
+            return "USER_BLOCK";
+        }
+        if ("IP_ONLY".equals(blockType)) {
+            return "IP_BLOCK_FROM_MEMBER";
+        }
+        return "UNKNOWN_BLOCK_ACTION";
     }
 
     private String appendActionContext(String reason, String context) {
@@ -597,7 +623,11 @@ public class AdminServiceImpl implements AdminService {
                 latest.getExpiresAt(),
                 latest.getBlockRequestId(),
                 latest.getSourceHistoryBlockIdx(),
-                latest.getSourceBlocklistIdx()
+                latest.getSourceBlocklistIdx(),
+                latest.getSourceActionType(),
+                latest.getSourceActionGroupId(),
+                latest.getSourceUserIdx(),
+                latest.getSourceIpAddress()
         );
     }
 

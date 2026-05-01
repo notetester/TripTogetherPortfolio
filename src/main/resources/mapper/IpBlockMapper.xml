@@ -30,6 +30,10 @@
         <result property="autoBlock" column="is_auto_block"/>
         <result property="autoBlockSource" column="auto_block_source"/>
         <result property="detailMessage" column="detail_message"/>
+        <result property="sourceActionType" column="source_action_type"/>
+        <result property="sourceActionGroupId" column="source_action_group_id"/>
+        <result property="sourceUserIdx" column="source_user_idx"/>
+        <result property="sourceIpAddress" column="source_ip_address"/>
         <result property="priority" column="priority"/>
         <result property="active" column="is_active"/>
         <result property="effectiveActive" column="is_effective_active"/>
@@ -55,6 +59,10 @@
         <result property="active" column="is_active"/>
         <result property="snapshotStatus" column="snapshot_status"/>
         <result property="reason" column="reason"/>
+        <result property="sourceActionType" column="source_action_type"/>
+        <result property="sourceActionGroupId" column="source_action_group_id"/>
+        <result property="sourceUserIdx" column="source_user_idx"/>
+        <result property="sourceIpAddress" column="source_ip_address"/>
         <result property="blockedByUserIdx" column="blocked_by_user_idx"/>
         <result property="blockedAt" column="blocked_at"/>
         <result property="releasedByUserIdx" column="released_by_user_idx"/>
@@ -88,6 +96,10 @@
             ub.is_active,
             ub.snapshot_status,
             ub.reason,
+            ub.source_action_type,
+            ub.source_action_group_id,
+            ub.source_user_idx,
+            ub.source_ip_address,
             ub.blocked_by_user_idx,
             ub.blocked_at,
             ub.released_by_user_idx,
@@ -147,6 +159,7 @@
             source_history_block_idx, source_blocklist_idx,
             match_type, source_scope, block_category,
             user_idx, block_type, blocked_by_user_idx,
+            source_action_type, source_action_group_id, source_user_idx, source_ip_address,
             blocked_at, reason, is_active,
             is_effective_active, effective_status, effective_status_reason,
             effective_synced_at, effective_synced_by_source,
@@ -159,6 +172,7 @@
             #{sourceHistoryBlockIdx}, #{sourceBlocklistIdx},
             'SINGLE_IP', 'USER_ACTION', 'MANUAL',
             #{userIdx}, #{blockType}, #{blockedByUserIdx},
+            #{sourceActionType}, #{sourceActionGroupId}, #{sourceUserIdx}, #{sourceIpAddress},
             NOW(), #{reason}, TRUE,
             TRUE, 'EFFECTIVE', '현재 평가 대상입니다.',
             NOW(), 'SYSTEM',
@@ -195,6 +209,10 @@
             0 AS is_auto_block,
             NULL AS auto_block_source,
             NULL AS detail_message,
+            h.source_action_type,
+            h.source_action_group_id,
+            h.source_user_idx,
+            h.source_ip_address,
             1 AS priority,
             h.is_active,
             CASE WHEN h.after_effective_active IS NULL THEN h.is_active ELSE h.after_effective_active END AS is_effective_active,

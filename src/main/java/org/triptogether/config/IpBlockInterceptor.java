@@ -92,6 +92,8 @@ public class IpBlockInterceptor implements HandlerInterceptor {
             accountRule.setBlockTargetKey("USER:" + loginUser.getUserIdx());
             accountRule.setBlockType("ACCOUNT_STATUS");
             accountRule.setReason(loginUser.getBlockedReason() == null ? "계정 상태가 BLOCKED 입니다." : loginUser.getBlockedReason());
+            accountRule.setSourceActionType("ACCOUNT_STATUS_BLOCK");
+            accountRule.setSourceUserIdx(loginUser.getUserIdx());
             return BlockDecisionVO.blockUser(accountRule);
         }
         if (rules == null || rules.isEmpty()) {
@@ -248,6 +250,10 @@ public class IpBlockInterceptor implements HandlerInterceptor {
                 handlerName = hm.getBeanType().getSimpleName() + "#" + hm.getMethod().getName();
             }
             Long userIdx = decision.getUserIdx() != null ? decision.getUserIdx() : (loginUser == null ? null : loginUser.getUserIdx());
+            boolean sourceUserMatch = decision.getSourceUserIdx() != null && userIdx != null && decision.getSourceUserIdx().equals(userIdx);
+            boolean sourceIpMatch = isSameIp(decision.getSourceIpAddress(), clientIp);
+            boolean sourceIntersection = sourceUserMatch && sourceIpMatch;
+
             blockAccessLogMapper.insertBlockAccessLog(BlockAccessLogVO.builder()
                     .requestId(requestId)
                     .flowTraceId(requestId)
@@ -278,10 +284,23 @@ public class IpBlockInterceptor implements HandlerInterceptor {
                     .countryCode(countryCode)
                     .asn(asn)
                     .cacheSource(cacheSource)
+                    .sourceActionType(decision.getSourceActionType())
+                    .sourceActionGroupId(decision.getSourceActionGroupId())
+                    .sourceUserIdx(decision.getSourceUserIdx())
+                    .sourceIpAddress(decision.getSourceIpAddress())
+                    .sourceUserMatch(sourceUserMatch)
+                    .sourceIpMatch(sourceIpMatch)
+                    .sourceUserIpIntersection(sourceIntersection)
                     .build());
         } catch (Exception e) {
             log.warn("[BlockAccessLog] 차단 요청 로그 저장 실패: {}", e.getMessage());
         }
+    }
+
+    private boolean isSameIp(String expectedIp, String actualIp) {
+        String expected = normalizeIp(expectedIp);
+        String actual = normalizeIp(actualIp);
+        return expected != null && actual != null && expected.equals(actual);
     }
 
     private String resolveActivityDomain(String uri) {

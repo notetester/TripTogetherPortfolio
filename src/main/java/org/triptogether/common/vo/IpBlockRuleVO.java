@@ -39,6 +39,10 @@ public class IpBlockRuleVO {
     private boolean autoBlock;
     private String autoBlockSource;
     private String detailMessage;
+    private String sourceActionType;
+    private String sourceActionGroupId;
+    private Long sourceUserIdx;
+    private String sourceIpAddress;
     private int priority;
     private boolean active;
     private boolean effectiveActive;

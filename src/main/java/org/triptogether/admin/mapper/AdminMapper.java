@@ -51,7 +51,11 @@ public interface AdminMapper {
                                 @Param("reason") String reason,
                                 @Param("blockedByUserIdx") Long blockedByUserIdx,
                                 @Param("expiresAt") java.time.LocalDateTime expiresAt,
-                                @Param("ipMatchType") String ipMatchType);
+                                @Param("ipMatchType") String ipMatchType,
+                                @Param("sourceActionType") String sourceActionType,
+                                @Param("sourceActionGroupId") String sourceActionGroupId,
+                                @Param("sourceUserIdx") Long sourceUserIdx,
+                                @Param("sourceIpAddress") String sourceIpAddress);
     Long findBlockHistoryIdxByRequestId(@Param("blockRequestId") String blockRequestId);
     void upsertUserBlocklist(@Param("sourceHistoryBlockIdx") Long sourceHistoryBlockIdx,
                              @Param("blockRequestId") String blockRequestId,
@@ -61,7 +65,11 @@ public interface AdminMapper {
                              @Param("blockedIp") String blockedIp,
                              @Param("reason") String reason,
                              @Param("blockedByUserIdx") Long blockedByUserIdx,
-                             @Param("expiresAt") java.time.LocalDateTime expiresAt);
+                             @Param("expiresAt") java.time.LocalDateTime expiresAt,
+                             @Param("sourceActionType") String sourceActionType,
+                             @Param("sourceActionGroupId") String sourceActionGroupId,
+                             @Param("sourceUserIdx") Long sourceUserIdx,
+                             @Param("sourceIpAddress") String sourceIpAddress);
     Long findUserBlocklistIdxByTargetKey(@Param("blockTargetKey") String blockTargetKey);
     java.util.List<String> findActiveBlockedIpsByUser(@Param("userIdx") Long userIdx);
     void deactivateCurrentBlocklistByUser(@Param("userIdx") Long userIdx,

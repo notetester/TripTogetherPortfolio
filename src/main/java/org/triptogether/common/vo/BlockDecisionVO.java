@@ -20,6 +20,10 @@ public class BlockDecisionVO {
     private String reason;
     private String detailMessage;
     private Integer priority;
+    private String sourceActionType;
+    private String sourceActionGroupId;
+    private Long sourceUserIdx;
+    private String sourceIpAddress;
 
     public static BlockDecisionVO allow() {
         return BlockDecisionVO.builder().blocked(false).ruleAction("ALLOW").build();
@@ -38,6 +42,10 @@ public class BlockDecisionVO {
                 .reason(rule == null ? null : rule.getReason())
                 .detailMessage(rule == null ? null : rule.getDetailMessage())
                 .priority(rule == null ? null : rule.getPriority())
+                .sourceActionType(rule == null ? null : rule.getSourceActionType())
+                .sourceActionGroupId(rule == null ? null : rule.getSourceActionGroupId())
+                .sourceUserIdx(rule == null ? null : rule.getSourceUserIdx())
+                .sourceIpAddress(rule == null ? null : rule.getSourceIpAddress())
                 .build();
     }
 
@@ -54,6 +62,10 @@ public class BlockDecisionVO {
                 .reason(rule == null ? null : rule.getReason())
                 .detailMessage(rule == null ? null : rule.getReason())
                 .priority(999)
+                .sourceActionType(rule == null ? null : rule.getSourceActionType())
+                .sourceActionGroupId(rule == null ? null : rule.getSourceActionGroupId())
+                .sourceUserIdx(rule == null ? null : rule.getSourceUserIdx())
+                .sourceIpAddress(rule == null ? null : rule.getSourceIpAddress())
                 .build();
     }
 }

@@ -35,7 +35,11 @@ public interface IpBlockMapper {
                                     @Param("expiresAt") LocalDateTime expiresAt,
                                     @Param("blockRequestId") String blockRequestId,
                                     @Param("sourceHistoryBlockIdx") Long sourceHistoryBlockIdx,
-                                    @Param("sourceBlocklistIdx") Long sourceBlocklistIdx);
+                                    @Param("sourceBlocklistIdx") Long sourceBlocklistIdx,
+                                    @Param("sourceActionType") String sourceActionType,
+                                    @Param("sourceActionGroupId") String sourceActionGroupId,
+                                    @Param("sourceUserIdx") Long sourceUserIdx,
+                                    @Param("sourceIpAddress") String sourceIpAddress);
 
     /** 특정 IP에 대해 가장 최근의 활성 USER_BLOCK_HISTORY 기반 규칙 조회 */
     IpBlockRuleVO findLatestActiveHistoryRuleByIp(@Param("ipAddress") String ipAddress);

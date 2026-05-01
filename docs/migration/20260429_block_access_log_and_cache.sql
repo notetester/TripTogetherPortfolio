@@ -34,6 +34,13 @@ CREATE TABLE IF NOT EXISTS `BLOCK_ACCESS_LOG` (
   `country_code` varchar(2) DEFAULT NULL COMMENT '앞단 CDN/WAF에서 전달한 국가코드',
   `asn` varchar(20) DEFAULT NULL COMMENT '앞단 CDN/WAF에서 전달한 ASN',
   `cache_source` varchar(20) DEFAULT NULL COMMENT 'DB / FILE / EMPTY 등 차단 규칙 캐시 출처',
+  `source_action_type` varchar(40) DEFAULT NULL COMMENT '차단 규칙 생성 조치 유형. 예: USER_AND_IP_BLOCK',
+  `source_action_group_id` varchar(36) DEFAULT NULL COMMENT '같은 보안 조치로 생성된 계정/IP 규칙 묶음 ID',
+  `source_user_idx` bigint DEFAULT NULL COMMENT '규칙 생성 당시 기준 사용자 PK',
+  `source_ip_address` varchar(45) DEFAULT NULL COMMENT '규칙 생성 당시 기준 IP',
+  `is_source_user_match` tinyint(1) DEFAULT NULL COMMENT '차단 요청 사용자가 source_user_idx와 일치하는지',
+  `is_source_ip_match` tinyint(1) DEFAULT NULL COMMENT '차단 요청 IP가 source_ip_address와 일치하는지',
+  `is_source_user_ip_intersection` tinyint(1) DEFAULT NULL COMMENT 'source_user_idx와 source_ip_address가 모두 일치하는 교집합 재접근인지',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '로그 시각',
   PRIMARY KEY (`block_access_idx`),
   KEY `idx_bal_request_id` (`request_id`),
@@ -45,6 +52,9 @@ CREATE TABLE IF NOT EXISTS `BLOCK_ACCESS_LOG` (
   KEY `idx_bal_rule_idx` (`block_rule_idx`),
   KEY `idx_bal_country_created` (`country_code`,`created_at`),
   KEY `idx_bal_asn_created` (`asn`,`created_at`),
+  KEY `idx_bal_source_action_group` (`source_action_group_id`,`created_at`),
+  KEY `idx_bal_source_user_ip` (`source_user_idx`,`source_ip_address`,`created_at`),
+  KEY `idx_bal_source_intersection` (`is_source_user_ip_intersection`,`created_at`),
   KEY `idx_bal_created_at` (`created_at`),
   CONSTRAINT `fk_bal_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='IP/회원 차단으로 거부된 요청 전용 로그';

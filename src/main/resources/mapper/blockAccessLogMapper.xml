@@ -12,7 +12,9 @@
             ip_address, user_agent, response_status, response_time_ms,
             is_success, detail_summary,
             block_kind, block_match_type, block_target_key, block_request_id, block_rule_idx,
-            block_reason, country_code, asn, cache_source
+            block_reason, country_code, asn, cache_source,
+            source_action_type, source_action_group_id, source_user_idx, source_ip_address,
+            is_source_user_match, is_source_ip_match, is_source_user_ip_intersection
         ) VALUES (
             #{requestId}, #{flowTraceId}, #{userIdx}, #{sessionId}, #{requestUri}, #{httpMethod},
             #{activityDomain}, #{activityType}, #{activityCode}, #{activityProvider}, #{authEventType}, #{targetType}, #{targetId},
@@ -20,7 +22,9 @@
             #{ipAddress}, #{userAgent}, #{responseStatus}, #{responseTimeMs},
             #{success}, #{detailSummary},
             #{blockKind}, #{blockMatchType}, #{blockTargetKey}, #{blockRequestId}, #{blockRuleIdx},
-            #{blockReason}, #{countryCode}, #{asn}, #{cacheSource}
+            #{blockReason}, #{countryCode}, #{asn}, #{cacheSource},
+            #{sourceActionType}, #{sourceActionGroupId}, #{sourceUserIdx}, #{sourceIpAddress},
+            #{sourceUserMatch}, #{sourceIpMatch}, #{sourceUserIpIntersection}
         )
     </insert>
 

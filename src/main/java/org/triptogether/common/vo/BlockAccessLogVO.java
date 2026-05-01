@@ -51,5 +51,12 @@ public class BlockAccessLogVO {
     private String countryCode;
     private String asn;
     private String cacheSource;
+    private String sourceActionType;
+    private String sourceActionGroupId;
+    private Long sourceUserIdx;
+    private String sourceIpAddress;
+    private Boolean sourceUserMatch;
+    private Boolean sourceIpMatch;
+    private Boolean sourceUserIpIntersection;
     private LocalDateTime createdAt;
 }

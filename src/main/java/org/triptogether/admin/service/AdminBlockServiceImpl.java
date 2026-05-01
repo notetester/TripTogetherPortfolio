@@ -894,7 +894,11 @@ public class AdminBlockServiceImpl implements AdminBlockService {
                 latest.getExpiresAt(),
                 latest.getBlockRequestId(),
                 latest.getSourceHistoryBlockIdx(),
-                latest.getSourceBlocklistIdx()
+                latest.getSourceBlocklistIdx(),
+                latest.getSourceActionType(),
+                latest.getSourceActionGroupId(),
+                latest.getSourceUserIdx(),
+                latest.getSourceIpAddress()
         );
     }
 

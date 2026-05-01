@@ -682,6 +682,7 @@
             user_idx, block_type, blocked_ip, is_active, reason,
             blocked_by_user_idx, blocked_at, expires_at,
             ip_match_type,
+            source_action_type, source_action_group_id, source_user_idx, source_ip_address,
             ip_block_registered_at,
             created_by_user_idx, created_at,
             updated_by_user_idx, updated_at
@@ -691,6 +692,7 @@
             #{userIdx}, #{blockType}, #{blockedIp}, TRUE, #{reason},
             #{blockedByUserIdx}, NOW(), #{expiresAt},
             #{ipMatchType},
+            #{sourceActionType}, #{sourceActionGroupId}, #{sourceUserIdx}, #{sourceIpAddress},
             CASE WHEN #{blockedIp} IS NOT NULL AND #{blockedIp} != '' THEN NOW() ELSE NULL END,
             #{blockedByUserIdx}, NOW(),
             #{blockedByUserIdx}, NOW()
@@ -715,6 +717,10 @@
             is_active,
             snapshot_status,
             reason,
+            source_action_type,
+            source_action_group_id,
+            source_user_idx,
+            source_ip_address,
             blocked_by_user_idx,
             blocked_at,
             expires_at,
@@ -734,6 +740,10 @@
             TRUE,
             'ACTIVE',
             #{reason},
+            #{sourceActionType},
+            #{sourceActionGroupId},
+            #{sourceUserIdx},
+            #{sourceIpAddress},
             #{blockedByUserIdx},
             NOW(),
             #{expiresAt},
@@ -753,6 +763,10 @@
             is_active = TRUE,
             snapshot_status = 'ACTIVE',
             reason = VALUES(reason),
+            source_action_type = VALUES(source_action_type),
+            source_action_group_id = VALUES(source_action_group_id),
+            source_user_idx = VALUES(source_user_idx),
+            source_ip_address = VALUES(source_ip_address),
             blocked_by_user_idx = VALUES(blocked_by_user_idx),
             blocked_at = NOW(),
             expires_at = VALUES(expires_at),
@@ -776,7 +790,7 @@
         FROM USER_BLOCK_HISTORY
         WHERE user_idx = #{userIdx}
           AND is_active = TRUE
-          AND block_type IN ('IP_ONLY', 'USER_IP')
+          AND block_type = 'IP_ONLY'
           AND blocked_ip IS NOT NULL
     </select>
 

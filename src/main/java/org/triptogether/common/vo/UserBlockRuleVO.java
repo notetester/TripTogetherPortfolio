@@ -21,6 +21,10 @@ public class UserBlockRuleVO {
     private boolean active;
     private String snapshotStatus;
     private String reason;
+    private String sourceActionType;
+    private String sourceActionGroupId;
+    private Long sourceUserIdx;
+    private String sourceIpAddress;
     private Long blockedByUserIdx;
     private LocalDateTime blockedAt;
     private Long releasedByUserIdx;
