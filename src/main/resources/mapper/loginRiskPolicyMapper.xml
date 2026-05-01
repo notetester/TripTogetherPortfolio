@@ -152,6 +152,6 @@
         INSERT INTO MYPAGE_FEED_NOTIFICATION
         (user_idx, source_type, source_id, message, target_url, created_at)
         VALUES
-        (#{userIdx}, #{sourceType}, #{sourceId}, #{message}, #{targetUrl}, NOW())
+        (#{userIdx}, #{sourceType}, COALESCE(#{sourceId}, 0), #{message}, #{targetUrl}, NOW())
     </insert>
 </mapper>
