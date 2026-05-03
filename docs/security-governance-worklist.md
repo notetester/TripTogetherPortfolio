@@ -57,6 +57,9 @@
 
 ## 남은 작업
 
+> 보류된 운영 판단은 `docs/security-pending-decisions.md` 질문서에 답변한 뒤 진행한다.
+
+
 ### 외부 연동
 
 - 실제 운영 AI/정책기관 API 계약 확정
@@ -104,3 +107,4 @@
 - `docs/security-state-transitions.md`
 - `docs/security-provider-test-plan.md`
 - `docs/development-guidelines.md`
+- `docs/security-pending-decisions.md`

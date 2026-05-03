@@ -60,3 +60,10 @@
 - Provider별 실패 결과는 하나의 detailMessage에 모두 남겨야 한다.
 - AWS WAF SDK, Cloudflare Direct API, Nginx Direct API는 기존 Provider 설정 테이블을 그대로 사용한다.
 - Provider별 새 테이블을 만들지 않는다.
+
+
+## 보류 결정 질문서 원칙
+
+- 외부 API 계약, Secret 관리, Provider 활성화, 운영 정책처럼 프로젝트 소유자의 결정이 필요한 사안은 임의로 구현하지 않는다.
+- 이런 항목은 `docs/security-pending-decisions.md`에 질문으로 정리하고, 답변을 받은 뒤 구현한다.
+- 질문은 선택지와 권장 기본값을 함께 제시한다.
