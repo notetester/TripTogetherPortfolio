@@ -68,3 +68,27 @@
 
 - `fail_open = 1`: 외부 API 실패 시 즉시 운영 차단하지 않고 대기/검토 상태로 둔다.
 - `fail_open = 0`: 외부 API 실패 시 보수적으로 실패 상태를 남기고 운영자가 재시도/검토한다.
+
+
+## Provider Adapter 구조
+
+현재 코드는 DB 설정을 바꾸지 않고 Java Bean 레벨에서 Provider를 분리한다.
+
+### Assessment
+
+- `HttpSecurityAssessmentProvider`: 활성 Provider 설정을 조회하고 지원 가능한 Adapter로 라우팅한다.
+- `SecurityAssessmentAdapter`: AI/정책기관 Provider별 어댑터 인터페이스.
+- `GenericAiRiskAssessmentAdapter`: `provider_kind = AI_MODEL` 처리.
+- `GenericPolicyAuthorityAssessmentAdapter`: `provider_kind = POLICY_AUTHORITY` 처리.
+- `SecurityAssessmentHttpClient`: 공통 HTTP POST/응답 파싱/Fail-open/Fail-closed 처리.
+
+### WAF/CDN
+
+- `HttpWafSyncProvider`: 활성 WAF Provider 설정을 조회하고 지원 가능한 Adapter로 라우팅한다.
+- `WafSyncAdapter`: WAF Provider별 어댑터 인터페이스.
+- `GenericWafCdnHttpAdapter`: `WAF_CDN`, `WAF`, `CDN`, `EDGE_SECURITY` 공통 처리.
+- `CloudflareWafGatewayAdapter`: `provider_code`가 `CLOUDFLARE`로 시작하는 Provider 처리.
+- `AwsWafGatewayAdapter`: `provider_code`가 `AWS` 또는 `AWS_WAF`로 시작하는 Provider 처리.
+- `WafSyncHttpClient`: 공통 HTTP POST/실패 사유 상세 메시지 생성.
+
+운영 API별 응답 스키마가 확정되면 Adapter별로 응답 파싱만 분리하고, 설정 테이블 구조는 그대로 유지한다.

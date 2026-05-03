@@ -43,19 +43,23 @@
 - 이의제기 중복 접수 제한 UI 안내
 - Provider/WAF fail-open/fail-closed 테스트 계획 문서화
 - Provider 수동 헬스체크 버튼
+- 기존 보안 검토/이의제기/Provider/Assessment 감사 로그 reason_code 사용 확대
+- WAF Provider별 실패 사유 상세 표시 강화
+- WAF/CDN Provider Adapter 분리
+- AI/정책기관 Provider Adapter 분리
 
 ## 남은 작업
 
 ### 외부 연동
 
 - 실제 운영 AI/정책기관/WAF API 계약 확정
-- 운영 API별 어댑터 분리 및 실제 응답 스키마 매핑 확정
+- 운영 API별 실제 응답 스키마 매핑 확정
 - Provider별 Secret 관리 방식 최종 확정
 - 외부 Provider 장애 시 fail-open / fail-closed 정책별 통합 테스트
 
 ### 데이터 모델 고도화
 
-- 기존 DB 감사 사유 전체를 `reason_code` + `reason_args` 구조로 점진 전환
+- 기존 DB 감사 사유 중 과거 데이터/타 도메인 로그를 `reason_code` + `reason_args` 구조로 점진 전환
 - 기존 `LOGIN_RISK_EXTERNAL_ASSESSMENT`와 `SECURITY_RISK_ASSESSMENT`의 장기 통합 방향 결정
 - `SECURITY_REVIEW_QUEUE`와 `SECURITY_RISK_ASSESSMENT` 상태 전이 규칙 상세 문서화
 
@@ -65,7 +69,7 @@
 - Provider 헬스체크 결과 상세 화면 추가 고도화
 - 차단/이의제기 처리 결과 사이트 내 알림 고도화
 - 이의제기 중복 접수 제한 정책 세부 문구/UX 고도화
-- WAF Provider별 재시도/실패 사유 상세 표시
+- WAF Provider별 재시도/실패 사유 UI 추가 고도화
 
 ### 검증
 

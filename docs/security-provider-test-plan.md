@@ -50,3 +50,23 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 - `ko/en/ja/zh` 언어팩 키 누락이 없어야 한다.
 - 공개 이의제기 화면에 직접 하드코딩 문구가 없어야 한다.
 - 관리자 화면에서 사용자 입력값은 `c:out` 또는 동등한 escaping으로 출력되어야 한다.
+
+
+## 6. Adapter 라우팅 테스트
+
+| Case | Provider Code / Kind | Expected |
+|---|---|---|
+| Generic AI | `GENERIC_AI_RISK_HTTP` / `AI_MODEL` | `GenericAiRiskAssessmentAdapter` 사용 |
+| Policy Authority | `GENERIC_POLICY_AUTHORITY_HTTP` / `POLICY_AUTHORITY` | `GenericPolicyAuthorityAssessmentAdapter` 사용 |
+| Generic WAF | `GENERIC_WAF_HTTP` / `WAF_CDN` | `GenericWafCdnHttpAdapter` 사용 |
+| Cloudflare Gateway | `CLOUDFLARE_*` / `WAF_CDN` | `CloudflareWafGatewayAdapter` 사용 |
+| AWS WAF Gateway | `AWS_WAF_*` / `WAF_CDN` | `AwsWafGatewayAdapter` 사용 |
+
+## 7. WAF 실패 사유 표시 테스트
+
+| Case | Expected |
+|---|---|
+| HTTP 4xx | detailMessage에 providerCode, providerKind, HTTP status, failOpen, reason 표시 |
+| HTTP 5xx | detailMessage에 providerCode, providerKind, HTTP status, failOpen, reason 표시 |
+| Timeout | detailMessage에 exception class, failOpen, reason 표시 |
+| Manual retry | status가 PENDING으로 바뀌고 기존 상세 메시지보다 재시도 요청 사유가 표시 |

@@ -36,3 +36,11 @@
 - 이전 마이그레이션을 다시 반복해서 작성하지 않는다.
 - 기존에 제시한 SQL은 특별히 미적용이라고 확인되지 않는 한 적용된 것으로 보고 후속 작업을 이어간다.
 - `SCHEMA_MIGRATION_HISTORY`는 운영 기능과 연결하지 않으며, 새 기능 구현을 위해 조회하지 않는다.
+
+
+## Provider Adapter 작업 원칙
+
+- Provider 설정 테이블을 Provider별로 새로 만들지 않는다.
+- `SECURITY_ASSESSMENT_PROVIDER_CONFIG`의 `provider_kind`, `provider_code`, `endpoint_url`, `api_key_ref`, `fail_open`을 기준으로 Java Adapter에서 분기한다.
+- 운영 API별 응답 스키마가 확정되면 새 테이블보다 Adapter 응답 파서 분리를 우선 검토한다.
+- WAF/CDN 실패 사유는 `LOGIN_RISK_WAF_SYNC_QUEUE.detail_message`에 providerCode, providerKind, status, failOpen, reason을 포함해 운영자가 추적 가능하게 남긴다.

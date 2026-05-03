@@ -2,11 +2,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="activeMenu" value="securityWafSync"/>
 <spring:message var="pageTitle" code="security.admin.wafSync.title"/>
 <spring:message var="keywordPlaceholder" code="security.admin.placeholder.wafSync"/>
 <spring:message var="targetTypePlaceholder" code="security.admin.placeholder.wafTargetType"/>
 <%@ include file="../layout.jsp" %>
+<style>
+    .sync-detail { white-space: pre-wrap; max-width: 520px; line-height: 1.55; }
+    .sync-meta { display:block; color:#64748b; font-size:12px; margin-top:6px; }
+</style>
 
 <div class="adm-content">
     <div class="adm-page-head">
@@ -36,10 +41,10 @@
                 </select>
             </label>
             <label><spring:message code="security.admin.common.targetType"/>
-                <input class="adm-input" type="text" name="targetType" value="${targetType}" placeholder="${targetTypePlaceholder}">
+                <input class="adm-input" type="text" name="targetType" value="${fn:escapeXml(targetType)}" placeholder="${targetTypePlaceholder}">
             </label>
             <label><spring:message code="security.admin.common.search"/>
-                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="${keywordPlaceholder}">
+                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${keywordPlaceholder}">
             </label>
             <div style="align-self:end;">
                 <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.search"/></button>
@@ -57,6 +62,7 @@
                 <th><spring:message code="security.admin.common.target"/></th>
                 <th><spring:message code="security.admin.common.description"/></th>
                 <th><spring:message code="security.admin.common.createdAt"/></th>
+                <th><spring:message code="security.admin.wafSync.lastResultAt"/></th>
                 <th><spring:message code="security.admin.common.action"/></th>
             </tr>
             </thead>
@@ -67,8 +73,12 @@
                     <td><c:out value="${i.sourceType}"/> #<c:out value="${i.sourceId}"/></td>
                     <td><c:out value="${i.syncAction}"/></td>
                     <td><c:out value="${i.targetType}"/>: <c:out value="${i.targetValue}"/></td>
-                    <td><c:out value="${i.detailMessage}"/></td>
+                    <td><div class="sync-detail"><c:out value="${i.detailMessage}"/></div></td>
                     <td><fmt:formatDate value="${i.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                    <td>
+                        <span class="sync-meta"><spring:message code="security.admin.wafSync.updatedAt"/>: <fmt:formatDate value="${i.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
+                        <span class="sync-meta"><spring:message code="security.admin.wafSync.syncedAt"/>: <fmt:formatDate value="${i.syncedAtDate}" pattern="yyyy-MM-dd HH:mm"/></span>
+                    </td>
                     <td>
                         <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/waf-sync/${i.syncIdx}/retry">
                             <button class="adm-btn" type="submit"><spring:message code="security.admin.wafSync.retry"/></button>
@@ -77,7 +87,7 @@
                 </tr>
             </c:forEach>
             <c:if test="${empty items}">
-                <tr><td colspan="7" class="adm-empty"><spring:message code="security.admin.empty.wafSync"/></td></tr>
+                <tr><td colspan="8" class="adm-empty"><spring:message code="security.admin.empty.wafSync"/></td></tr>
             </c:if>
             </tbody>
         </table>

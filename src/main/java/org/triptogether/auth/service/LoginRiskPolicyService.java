@@ -489,15 +489,16 @@ public class LoginRiskPolicyService {
         );
         adminMapper.markMemberBlocked(assessment.getUserIdx(), null, reason);
         loginRiskPolicyMapper.updateSecurityRiskAssessmentDecision(assessmentIdx, "APPLIED");
-        loginRiskPolicyMapper.insertSecurityActionAudit(
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
                 "ASSESSMENT_USER_BLOCK_APPLIED",
                 actorUserIdx,
                 "USER",
                 assessment.getSubjectKey(),
                 "SECURITY_RISK_ASSESSMENT",
                 assessmentIdx,
-                msg("ko", "security.assessment.audit.userBlockApplied"),
-                reason
+                "SECURITY.ASSESSMENT.USER_BLOCK_APPLIED",
+                jsonArg("assessmentIdx", assessmentIdx, "targetKey", targetKey),
+                firstNonBlank(reason, msg("ko", "security.assessment.audit.userBlockApplied"))
         );
     }
 
@@ -624,15 +625,16 @@ public class LoginRiskPolicyService {
             loginRiskPolicyMapper.markAppealTokenUsed(tokenVO.getTokenIdx());
         }
 
-        loginRiskPolicyMapper.insertSecurityActionAudit(
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
                 "SECURITY_APPEAL_SUBMITTED",
                 context.getUserIdx(),
                 context.getTargetType(),
                 context.getTargetKey(),
                 "SECURITY_ACTION_APPEAL",
                 null,
-                msg(pageLang, "security.appeal.audit.submitted"),
-                "publicRequestId=" + publicRequestId + ", requestId=" + firstNonBlank(context.getRequestId(), requestId)
+                "SECURITY.APPEAL.SUBMITTED",
+                jsonArg("publicRequestId", publicRequestId, "requestId", firstNonBlank(context.getRequestId(), requestId)),
+                msg(pageLang, "security.appeal.audit.submitted")
         );
 
         for (Long adminIdx : loginRiskPolicyMapper.findAdminNotificationTargets("BLOCK_REVIEW")) {
