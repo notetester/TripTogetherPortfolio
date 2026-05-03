@@ -145,7 +145,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/resources/**", "/upload/**", "/favicon.ico",
-                        "/error", "/blocked-access", "/css/**", "/js/**", "/images/**"
+                        "/error", "/blocked-access", "/security/appeal/**", "/css/**", "/js/**", "/images/**"
                 );
 
         // 일반 활동 로그
@@ -153,7 +153,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/resources/**", "/upload/**", "/favicon.ico",
-                        "/error", "/blocked-access", "/css/**", "/js/**", "/images/**"
+                        "/error", "/blocked-access", "/security/appeal/**", "/css/**", "/js/**", "/images/**"
                 );
 
         // 일반 로그인 필요 영역

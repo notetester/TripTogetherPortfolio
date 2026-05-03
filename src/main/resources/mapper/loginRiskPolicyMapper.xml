@@ -151,6 +151,12 @@
         <result property="targetType" column="target_type"/>
         <result property="targetKey" column="target_key"/>
         <result property="sourceAssessmentIdx" column="source_assessment_idx"/>
+        <result property="appealTokenIdx" column="appeal_token_idx"/>
+        <result property="blockRequestId" column="block_request_id"/>
+        <result property="blockAccessRequestId" column="block_access_request_id"/>
+        <result property="inquiryId" column="inquiry_id"/>
+        <result property="submitterEmail" column="submitter_email"/>
+        <result property="publicRequestId" column="public_request_id"/>
         <result property="appealStatus" column="appeal_status"/>
         <result property="appealTitle" column="appeal_title"/>
         <result property="appealContent" column="appeal_content"/>
@@ -160,6 +166,33 @@
         <result property="reviewComment" column="review_comment"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="SecurityAppealTokenMap" type="org.triptogether.auth.vo.SecurityAppealTokenVO">
+        <id property="tokenIdx" column="token_idx"/>
+        <result property="token" column="token"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="targetType" column="target_type"/>
+        <result property="targetKey" column="target_key"/>
+        <result property="sourceAssessmentIdx" column="source_assessment_idx"/>
+        <result property="blockRequestId" column="block_request_id"/>
+        <result property="blockAccessRequestId" column="block_access_request_id"/>
+        <result property="status" column="status"/>
+        <result property="expiresAt" column="expires_at"/>
+        <result property="usedAt" column="used_at"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <resultMap id="SecurityAppealFormMap" type="org.triptogether.auth.vo.SecurityAppealFormVO">
+        <result property="requestId" column="request_id"/>
+        <result property="targetType" column="target_type"/>
+        <result property="targetKey" column="target_key"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="sourceAssessmentIdx" column="source_assessment_idx"/>
+        <result property="blockKind" column="block_kind"/>
+        <result property="blockMatchType" column="block_match_type"/>
+        <result property="blockReason" column="block_reason"/>
+        <result property="ipAddress" column="ip_address"/>
     </resultMap>
 
     <resultMap id="SecurityAssessmentProviderConfigMap" type="org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO">
@@ -823,6 +856,145 @@
             review_comment = #{reviewComment},
             updated_at = NOW()
         WHERE appeal_idx = #{appealIdx}
+    </update>
+
+
+    <insert id="insertSecurityAppealToken">
+        INSERT INTO SECURITY_ACTION_APPEAL_TOKEN
+        (token, user_idx, target_type, target_key, source_assessment_idx,
+         block_request_id, block_access_request_id, status, expires_at, created_at)
+        VALUES
+        (#{token}, #{userIdx}, #{targetType}, #{targetKey}, #{sourceAssessmentIdx},
+         #{blockRequestId}, #{blockAccessRequestId}, 'ACTIVE', #{expiresAt}, NOW())
+    </insert>
+
+    <select id="findAppealToken" resultMap="SecurityAppealTokenMap">
+        SELECT *
+        FROM SECURITY_ACTION_APPEAL_TOKEN
+        WHERE token = #{token}
+          AND status = 'ACTIVE'
+          AND used_at IS NULL
+          AND expires_at > #{now}
+        LIMIT 1
+    </select>
+
+    <update id="markAppealTokenUsed">
+        UPDATE SECURITY_ACTION_APPEAL_TOKEN
+        SET used_at = NOW(),
+            status = 'USED'
+        WHERE token_idx = #{tokenIdx}
+    </update>
+
+    <select id="findBlockAccessAppealContext" resultMap="SecurityAppealFormMap">
+        SELECT
+            bal.request_id,
+            CASE
+                WHEN bal.block_kind = 'USER' THEN 'USER_BLOCK'
+                WHEN bal.block_kind = 'IP' THEN 'IP_BLOCK'
+                ELSE 'SECURITY_ACTION'
+            END AS target_type,
+            COALESCE(
+                CASE WHEN bal.user_idx IS NOT NULL THEN CONCAT('USER:', bal.user_idx) END,
+                bal.block_target_key,
+                bal.ip_address
+            ) AS target_key,
+            bal.user_idx,
+            bal.source_assessment_idx,
+            bal.block_kind,
+            bal.block_match_type,
+            bal.block_reason,
+            bal.ip_address
+        FROM BLOCK_ACCESS_LOG bal
+        WHERE bal.request_id = #{requestId}
+        LIMIT 1
+    </select>
+
+    <insert id="insertSecurityAppealPublic">
+        INSERT INTO SECURITY_ACTION_APPEAL
+        (user_idx, target_type, target_key, source_assessment_idx,
+         appeal_token_idx, block_request_id, block_access_request_id, inquiry_id,
+         submitter_email, public_request_id,
+         appeal_status, appeal_title, appeal_content, created_at, updated_at)
+        VALUES
+        (#{userIdx}, #{targetType}, #{targetKey}, #{sourceAssessmentIdx},
+         #{appealTokenIdx}, #{blockRequestId}, #{blockAccessRequestId}, #{inquiryId},
+         #{submitterEmail}, #{publicRequestId},
+         'PENDING', #{appealTitle}, #{appealContent}, NOW(), NOW())
+    </insert>
+
+    <insert id="insertSecurityAppealInquiry">
+        INSERT INTO INQUIRY_POST
+        (user_idx, title, content, category, is_private, status, created_at, updated_at)
+        VALUES
+        (#{userIdx}, #{title}, #{content}, 'account', 1, 'PENDING', NOW(), NOW())
+    </insert>
+
+    <select id="findLatestInquiryIdByUserAndTitle" resultType="long">
+        SELECT inquiry_id
+        FROM INQUIRY_POST
+        WHERE user_idx = #{userIdx}
+          AND title = #{title}
+        ORDER BY inquiry_id DESC
+        LIMIT 1
+    </select>
+
+    <select id="findSecurityAppealByIdx" resultMap="SecurityAppealMap">
+        SELECT
+            a.*,
+            u.user_id,
+            u.nickname,
+            reviewer.user_id AS reviewed_by_user_id
+        FROM SECURITY_ACTION_APPEAL a
+        LEFT JOIN USERS u ON u.user_idx = a.user_idx
+        LEFT JOIN USERS reviewer ON reviewer.user_idx = a.reviewed_by_user_idx
+        WHERE a.appeal_idx = #{appealIdx}
+    </select>
+
+    <update id="releaseUserBlockByTargetKey">
+        UPDATE USER_BLOCKLIST
+        SET is_active = 0,
+            snapshot_status = 'RELEASED',
+            released_by_user_idx = #{actorUserIdx},
+            released_at = NOW(),
+            release_reason = #{reason},
+            is_effective_active = 0,
+            effective_status = 'MANUAL_RELEASED',
+            effective_status_reason = #{reason},
+            last_control_action = 'RELEASE',
+            last_control_by_user_idx = #{actorUserIdx},
+            last_control_at = NOW(),
+            last_control_reason = #{reason},
+            updated_by_user_idx = #{actorUserIdx},
+            updated_at = NOW()
+        WHERE block_target_key = #{targetKey}
+           OR CONCAT('USER:', user_idx) = #{targetKey}
+    </update>
+
+    <update id="releaseIpBlockByTargetKey">
+        UPDATE IP_BLOCKLIST
+        SET is_active = 0,
+            is_effective_active = 0,
+            effective_status = 'MANUAL_RELEASED',
+            effective_status_reason = #{reason},
+            last_control_action = 'RELEASE',
+            last_control_by_user_idx = #{actorUserIdx},
+            last_control_at = NOW(),
+            last_control_reason = #{reason},
+            updated_by_user_idx = #{actorUserIdx},
+            updated_at = NOW()
+        WHERE block_target_key = #{targetKey}
+           OR CONCAT('IP:', ip_address) = #{targetKey}
+           OR CONCAT('CIDR:', cidr_notation) = #{targetKey}
+    </update>
+
+    <update id="restoreUserStatusByTargetKey">
+        UPDATE USERS u
+        SET u.account_status = 'ACTIVE',
+            u.blocked_until = NULL,
+            u.blocked_reason = NULL,
+            u.status_changed_at = NOW()
+        WHERE CONCAT('USER:', u.user_idx) = #{targetKey}
+          AND u.account_status = 'BLOCKED'
     </update>
 
 </mapper>

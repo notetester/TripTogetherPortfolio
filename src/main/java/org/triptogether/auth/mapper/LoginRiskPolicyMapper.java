@@ -10,6 +10,8 @@ import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityReviewVO;
 import org.triptogether.auth.vo.SecurityAppealVO;
+import org.triptogether.auth.vo.SecurityAppealTokenVO;
+import org.triptogether.auth.vo.SecurityAppealFormVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -216,5 +218,56 @@ public interface LoginRiskPolicyMapper {
                                       @Param("appealStatus") String appealStatus,
                                       @Param("reviewedByUserIdx") Long reviewedByUserIdx,
                                       @Param("reviewComment") String reviewComment);
+
+
+    void insertSecurityAppealToken(@Param("token") String token,
+                                   @Param("userIdx") Long userIdx,
+                                   @Param("targetType") String targetType,
+                                   @Param("targetKey") String targetKey,
+                                   @Param("sourceAssessmentIdx") Long sourceAssessmentIdx,
+                                   @Param("blockRequestId") String blockRequestId,
+                                   @Param("blockAccessRequestId") String blockAccessRequestId,
+                                   @Param("expiresAt") java.time.LocalDateTime expiresAt);
+
+    SecurityAppealTokenVO findAppealToken(@Param("token") String token,
+                                          @Param("now") java.time.LocalDateTime now);
+
+    void markAppealTokenUsed(@Param("tokenIdx") Long tokenIdx);
+
+    SecurityAppealFormVO findBlockAccessAppealContext(@Param("requestId") String requestId);
+
+    void insertSecurityAppealPublic(@Param("userIdx") Long userIdx,
+                                    @Param("targetType") String targetType,
+                                    @Param("targetKey") String targetKey,
+                                    @Param("sourceAssessmentIdx") Long sourceAssessmentIdx,
+                                    @Param("appealTokenIdx") Long appealTokenIdx,
+                                    @Param("blockRequestId") String blockRequestId,
+                                    @Param("blockAccessRequestId") String blockAccessRequestId,
+                                    @Param("inquiryId") Long inquiryId,
+                                    @Param("submitterEmail") String submitterEmail,
+                                    @Param("publicRequestId") String publicRequestId,
+                                    @Param("appealTitle") String appealTitle,
+                                    @Param("appealContent") String appealContent);
+
+    void insertSecurityAppealInquiry(@Param("userIdx") Long userIdx,
+                                     @Param("title") String title,
+                                     @Param("content") String content);
+
+    Long findLatestInquiryIdByUserAndTitle(@Param("userIdx") Long userIdx,
+                                           @Param("title") String title);
+
+    SecurityAppealVO findSecurityAppealByIdx(@Param("appealIdx") Long appealIdx);
+
+    void releaseUserBlockByTargetKey(@Param("targetKey") String targetKey,
+                                     @Param("actorUserIdx") Long actorUserIdx,
+                                     @Param("reason") String reason);
+
+    void releaseIpBlockByTargetKey(@Param("targetKey") String targetKey,
+                                   @Param("actorUserIdx") Long actorUserIdx,
+                                   @Param("reason") String reason);
+
+    void restoreUserStatusByTargetKey(@Param("targetKey") String targetKey,
+                                      @Param("reason") String reason);
+
 
 }

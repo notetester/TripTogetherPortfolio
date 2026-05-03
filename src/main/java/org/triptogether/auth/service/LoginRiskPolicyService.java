@@ -19,6 +19,8 @@ import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityReviewVO;
 import org.triptogether.auth.vo.SecurityAppealVO;
+import org.triptogether.auth.vo.SecurityAppealFormVO;
+import org.triptogether.auth.vo.SecurityAppealTokenVO;
 import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.config.BlockRuleCacheService;
@@ -49,6 +51,9 @@ public class LoginRiskPolicyService {
 
     @Value("${spring.mail.username:}")
     private String mailFrom;
+
+    @Value("${app.public-base-url:http://localhost:8080/TripTogether}")
+    private String publicBaseUrl;
 
     public List<LoginRiskPolicyVO> getPolicies(boolean includeInactive) {
         return loginRiskPolicyMapper.findPolicies(includeInactive);
@@ -211,17 +216,43 @@ public class LoginRiskPolicyService {
             case "hold" -> "HOLD";
             default -> "HOLD";
         };
+        SecurityAppealVO appeal = loginRiskPolicyMapper.findSecurityAppealByIdx(appealIdx);
         loginRiskPolicyMapper.updateSecurityAppealDecision(appealIdx, normalized, actorUserIdx, comment);
+        if ("ACCEPTED".equals(normalized) && appeal != null) {
+            applyAcceptedSecurityAppeal(appeal, actorUserIdx, firstNonBlank(comment, "이의제기 수용에 따른 보안 조치 해제"));
+        }
         loginRiskPolicyMapper.insertSecurityActionAudit(
                 "SECURITY_APPEAL_" + normalized,
                 actorUserIdx,
-                "APPEAL",
-                String.valueOf(appealIdx),
+                appeal == null ? "APPEAL" : appeal.getTargetType(),
+                appeal == null ? String.valueOf(appealIdx) : appeal.getTargetKey(),
                 "SECURITY_ACTION_APPEAL",
                 appealIdx,
                 "보안 조치 이의제기 처리",
                 comment
         );
+    }
+
+
+    private void applyAcceptedSecurityAppeal(SecurityAppealVO appeal, Long actorUserIdx, String reason) {
+        if (appeal.getTargetType() == null || appeal.getTargetKey() == null) {
+            return;
+        }
+        if (appeal.getTargetType().contains("USER")) {
+            loginRiskPolicyMapper.releaseUserBlockByTargetKey(appeal.getTargetKey(), actorUserIdx, reason);
+            loginRiskPolicyMapper.restoreUserStatusByTargetKey(appeal.getTargetKey(), reason);
+        } else if (appeal.getTargetType().contains("IP")) {
+            loginRiskPolicyMapper.releaseIpBlockByTargetKey(appeal.getTargetKey(), actorUserIdx, reason);
+            try {
+                blockRuleCacheService.invalidateAndRefresh();
+            } catch (Exception e) {
+                log.warn("[SecurityAppeal] 이의제기 수용 후 차단 캐시 갱신 실패 appealIdx={}", appeal.getAppealIdx(), e);
+            }
+        }
+
+        if (appeal.getSourceAssessmentIdx() != null) {
+            loginRiskPolicyMapper.updateSecurityRiskAssessmentDecision(appeal.getSourceAssessmentIdx(), "REVERSED");
+        }
     }
 
     public List<SecurityAssessmentProviderConfigVO> getProviderConfigs() {
@@ -300,6 +331,159 @@ public class LoginRiskPolicyService {
                 "보안 판단 근거 기반 계정 차단 적용",
                 reason
         );
+    }
+
+
+    public SecurityAppealFormVO getPublicAppealForm(String token, String requestId, String lang) {
+        if (token != null && !token.isBlank()) {
+            SecurityAppealTokenVO tokenVO = loginRiskPolicyMapper.findAppealToken(token, LocalDateTime.now());
+            if (tokenVO == null) {
+                return SecurityAppealFormVO.builder()
+                        .valid(false)
+                        .errorMessage("이의제기 링크가 만료되었거나 이미 사용되었습니다.")
+                        .pageLang(normalizeLang(lang))
+                        .build();
+            }
+            return SecurityAppealFormVO.builder()
+                    .valid(true)
+                    .token(token)
+                    .targetType(tokenVO.getTargetType())
+                    .targetKey(tokenVO.getTargetKey())
+                    .userIdx(tokenVO.getUserIdx())
+                    .sourceAssessmentIdx(tokenVO.getSourceAssessmentIdx())
+                    .requestId(tokenVO.getBlockAccessRequestId())
+                    .pageLang(normalizeLang(lang))
+                    .build();
+        }
+
+        if (requestId != null && !requestId.isBlank()) {
+            SecurityAppealFormVO context = loginRiskPolicyMapper.findBlockAccessAppealContext(requestId);
+            if (context == null) {
+                return SecurityAppealFormVO.builder()
+                        .valid(false)
+                        .errorMessage("해당 요청 ID의 차단 기록을 찾을 수 없습니다.")
+                        .requestId(requestId)
+                        .pageLang(normalizeLang(lang))
+                        .build();
+            }
+            context.setValid(true);
+            context.setPageLang(normalizeLang(lang));
+            return context;
+        }
+
+        return SecurityAppealFormVO.builder()
+                .valid(false)
+                .errorMessage("이의제기 대상 정보가 없습니다.")
+                .pageLang(normalizeLang(lang))
+                .build();
+    }
+
+    @Transactional
+    public String submitPublicSecurityAppeal(String token,
+                                             String requestId,
+                                             String appealTitle,
+                                             String appealContent,
+                                             String submitterEmail,
+                                             String pageLang) {
+        SecurityAppealFormVO context = getPublicAppealForm(token, requestId, pageLang);
+        if (!context.isValid()) {
+            throw new IllegalArgumentException(context.getErrorMessage());
+        }
+
+        SecurityAppealTokenVO tokenVO = null;
+        if (token != null && !token.isBlank()) {
+            tokenVO = loginRiskPolicyMapper.findAppealToken(token, LocalDateTime.now());
+            if (tokenVO == null) {
+                throw new IllegalArgumentException("이의제기 링크가 만료되었거나 이미 사용되었습니다.");
+            }
+        }
+
+        String publicRequestId = "SAP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
+        Long inquiryId = null;
+        String title = firstNonBlank(appealTitle, "보안 조치 이의제기");
+        String content = firstNonBlank(appealContent, "");
+        String enrichedContent = """
+                [보안 조치 이의제기]
+                공개 접수번호: %s
+                대상 유형: %s
+                대상 키: %s
+                차단 요청 ID: %s
+                차단 접근 요청 ID: %s
+                연락 이메일: %s
+
+                %s
+                """.formatted(
+                publicRequestId,
+                context.getTargetType(),
+                context.getTargetKey(),
+                tokenVO == null ? null : tokenVO.getBlockRequestId(),
+                firstNonBlank(context.getRequestId(), requestId),
+                firstNonBlank(submitterEmail, "-"),
+                content
+        );
+
+        if (context.getUserIdx() != null) {
+            loginRiskPolicyMapper.insertSecurityAppealInquiry(context.getUserIdx(), "[보안 이의제기] " + title, enrichedContent);
+            inquiryId = loginRiskPolicyMapper.findLatestInquiryIdByUserAndTitle(context.getUserIdx(), "[보안 이의제기] " + title);
+        }
+
+        loginRiskPolicyMapper.insertSecurityAppealPublic(
+                context.getUserIdx(),
+                context.getTargetType(),
+                context.getTargetKey(),
+                context.getSourceAssessmentIdx(),
+                tokenVO == null ? null : tokenVO.getTokenIdx(),
+                tokenVO == null ? null : tokenVO.getBlockRequestId(),
+                firstNonBlank(context.getRequestId(), requestId),
+                inquiryId,
+                submitterEmail,
+                publicRequestId,
+                title,
+                enrichedContent
+        );
+
+        if (tokenVO != null) {
+            loginRiskPolicyMapper.markAppealTokenUsed(tokenVO.getTokenIdx());
+        }
+
+        loginRiskPolicyMapper.insertSecurityActionAudit(
+                "SECURITY_APPEAL_SUBMITTED",
+                context.getUserIdx(),
+                context.getTargetType(),
+                context.getTargetKey(),
+                "SECURITY_ACTION_APPEAL",
+                null,
+                "사용자 보안 조치 이의제기 접수",
+                "publicRequestId=" + publicRequestId + ", requestId=" + firstNonBlank(context.getRequestId(), requestId)
+        );
+
+        for (Long adminIdx : loginRiskPolicyMapper.findAdminNotificationTargets("BLOCK_REVIEW")) {
+            loginRiskPolicyMapper.insertAdminNotification(adminIdx, "SECURITY_APPEAL", null,
+                    "[보안 이의제기] " + title,
+                    "/admin/login-risk/appeals");
+        }
+
+        return publicRequestId;
+    }
+
+    private String createAppealToken(Long userIdx,
+                                     String targetType,
+                                     String targetKey,
+                                     Long sourceAssessmentIdx,
+                                     String blockRequestId,
+                                     String blockAccessRequestId) {
+        String token = UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", "");
+        loginRiskPolicyMapper.insertSecurityAppealToken(
+                token,
+                userIdx,
+                targetType,
+                targetKey,
+                sourceAssessmentIdx,
+                blockRequestId,
+                blockAccessRequestId,
+                LocalDateTime.now().plusDays(7)
+        );
+        return token;
     }
 
     public List<AdminNotificationPreferenceVO> getNotificationPreferences(Long adminUserIdx) {
@@ -657,7 +841,9 @@ public class LoginRiskPolicyService {
 
         String lang = normalizeLang(user.getPreferredLang());
         String subject = protectionMailSubject(lang);
-        String html = protectionMailHtml(lang, user.getNickname(), reason);
+        String token = createAppealToken(user.getUserIdx(), "USER_BLOCK", "USER:" + user.getUserIdx(), null, null, context == null ? null : context.getRequestId());
+        String appealUrl = publicBaseUrl + "/security/appeal?token=" + token + "&lang=" + lang;
+        String html = protectionMailHtml(lang, user.getNickname(), reason, appealUrl);
         boolean sent = sendMail(user.getUserEmail(), subject, html);
         loginRiskPolicyMapper.insertRiskEvent(ACCOUNT_REPEAT_POLICY, sent ? "PROTECTION_MAIL_SENT" : "PROTECTION_MAIL_FAILED",
                 "USER", String.valueOf(user.getUserIdx()), user.getUserIdx(),
@@ -694,7 +880,7 @@ public class LoginRiskPolicyService {
         };
     }
 
-    private String protectionMailHtml(String lang, String nickname, String reason) {
+    private String protectionMailHtml(String lang, String nickname, String reason, String appealUrl) {
         String safeName = nickname == null || nickname.isBlank() ? "TripTogether user" : nickname;
         String title;
         String body;
@@ -732,9 +918,14 @@ public class LoginRiskPolicyService {
                         <strong>User</strong>: %s<br>
                         <strong>Reason</strong>: %s
                     </div>
+                    <p style="margin-top:20px">
+                        <a href="%s" style="display:inline-block;background:#2563eb;color:white;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700">
+                            Appeal / Contact Support
+                        </a>
+                    </p>
                 </div>
                 </body></html>
-                """.formatted(title, body, guide, safeName, reason == null ? "-" : reason);
+                """.formatted(title, body, guide, safeName, reason == null ? "-" : reason, appealUrl);
     }
 
     private String normalizeDecision(String decision) {

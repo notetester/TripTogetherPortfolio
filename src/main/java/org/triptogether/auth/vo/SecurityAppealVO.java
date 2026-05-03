@@ -15,6 +15,12 @@ public class SecurityAppealVO {
     private String targetType;
     private String targetKey;
     private Long sourceAssessmentIdx;
+    private Long appealTokenIdx;
+    private String blockRequestId;
+    private String blockAccessRequestId;
+    private Long inquiryId;
+    private String submitterEmail;
+    private String publicRequestId;
     private String appealStatus;
     private String appealTitle;
     private String appealContent;

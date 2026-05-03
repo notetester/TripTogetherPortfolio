@@ -190,6 +190,11 @@
     <c:param name="clientIp" value="${clientIp}"/>
 </c:url>
 
+<c:url var="appealUrl" value="/security/appeal/new">
+    <c:param name="requestId" value="${requestId}"/>
+    <c:param name="lang" value="${pageLang}"/>
+</c:url>
+
 <main class="blocked-card">
     <div class="topbar">
         <span class="badge"><spring:message code="error.blocked.badge"/></span>
@@ -221,7 +226,8 @@
     </section>
 
     <div class="actions">
-        <a class="btn btn-primary" href="${pageContext.request.contextPath}/"><spring:message code="error.blocked.home"/></a>
+        <a class="btn btn-primary" href="${appealUrl}">보안 이의제기</a>
+        <a class="btn" href="${pageContext.request.contextPath}/"><spring:message code="error.blocked.home"/></a>
         <a class="btn" href="${pageContext.request.contextPath}/inquiry/list"><spring:message code="error.blocked.support"/></a>
     </div>
 
