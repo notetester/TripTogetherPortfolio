@@ -26,8 +26,8 @@
         <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/provider-configs/${p.providerIdx}" class="adm-card" style="margin-bottom:16px;">
             <div class="adm-card-header">
                 <div>
-                    <div class="adm-card-title">${p.providerName}</div>
-                    <div class="adm-muted">${p.providerKind} · ${p.providerCode} · <spring:message code="security.admin.common.status"/> ${p.status}</div>
+                    <div class="adm-card-title"><c:out value="${p.providerName}"/></div>
+                    <div class="adm-muted"><c:out value="${p.providerKind}"/> · <c:out value="${p.providerCode}"/> · <spring:message code="security.admin.common.status"/> <c:out value="${p.status}"/></div>
                 </div>
                 <label class="adm-check">
                     <input type="checkbox" name="enabled" ${p.enabled ? 'checked' : ''}>
@@ -35,8 +35,8 @@
                 </label>
             </div>
             <div class="adm-card-body">
-                <input type="hidden" name="providerCode" value="${p.providerCode}">
-                <input type="hidden" name="providerKind" value="${p.providerKind}">
+                <input type="hidden" name="providerCode" value="<c:out value="${p.providerCode}"/>">
+                <input type="hidden" name="providerKind" value="<c:out value="${p.providerKind}"/>">
                 <div class="adm-form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;">
                     <label><spring:message code="security.admin.provider.displayName"/>
                         <input class="adm-input" type="text" name="providerName" value="${p.providerName}">
@@ -61,10 +61,12 @@
                     </label>
                 </div>
                 <label style="display:block;margin-top:12px;"><spring:message code="security.admin.common.description"/>
-                    <textarea class="adm-input" name="description" rows="2">${p.description}</textarea>
+                    <textarea class="adm-input" name="description" rows="2"><c:out value="${p.description}"/></textarea>
                 </label>
-                <div class="adm-muted" style="margin-top:8px;">
-                    <spring:message code="security.admin.provider.externalCallNotice"/>
+                <div class="adm-muted" style="margin-top:8px;line-height:1.7;">
+                    <spring:message code="security.admin.provider.externalCallNotice"/><br>
+                    <spring:message code="security.admin.provider.lastCheckedAt"/>:
+                    <fmt:formatDate value="${p.lastCheckedAtDate}" pattern="yyyy-MM-dd HH:mm"/>
                 </div>
                 <div class="adm-actions" style="margin-top:12px;">
                     <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.save"/></button>

@@ -116,6 +116,9 @@
                     <a class="adm-nav-item ${activeMenu=='securityProviderConfigs'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">
                         <span class="adm-nav-icon">🔌</span> Provider 설정
                     </a>
+                    <a class="adm-nav-item ${activeMenu=='securityWafSync'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/waf-sync">
+                        <span class="adm-nav-icon">🌐</span> <spring:message code="security.admin.nav.wafSync"/>
+                    </a>
                     <a class="adm-nav-item ${activeMenu=='securityAppeals'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/appeals">
                         <span class="adm-nav-icon">📮</span> 보안 이의제기
                     </a>

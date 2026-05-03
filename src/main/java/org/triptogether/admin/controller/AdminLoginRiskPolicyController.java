@@ -214,6 +214,30 @@ public class AdminLoginRiskPolicyController {
         return "redirect:/admin/login-risk/provider-configs";
     }
 
+    @GetMapping("/waf-sync")
+    public String wafSyncQueue(@RequestParam(value = "status", required = false) String status,
+                               @RequestParam(value = "targetType", required = false) String targetType,
+                               @RequestParam(value = "keyword", required = false) String keyword,
+                               Model model) {
+        model.addAttribute("items", loginRiskPolicyService.getWafSyncQueue(status, targetType, keyword));
+        model.addAttribute("status", status);
+        model.addAttribute("targetType", targetType);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("activeMenu", "securityWafSync");
+        model.addAttribute("pageTitleCode", "security.admin.wafSync.title");
+        return "admin/login-risk/waf-sync";
+    }
+
+    @PostMapping("/waf-sync/{syncIdx}/retry")
+    public String retryWafSync(@PathVariable Long syncIdx,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes,
+                               Locale locale) {
+        loginRiskPolicyService.retryWafSync(syncIdx, currentAdminIdx(session));
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.wafSyncRetryQueued"));
+        return "redirect:/admin/login-risk/waf-sync";
+    }
+
     @GetMapping("/notification-preferences")
     public String notificationPreferences(HttpSession session, Model model) {
         Long adminIdx = currentAdminIdx(session);

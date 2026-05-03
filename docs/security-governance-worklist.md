@@ -27,33 +27,38 @@
 - 공개 사용자 보안 이의제기 화면 i18n
 - 관리자 보안 화면 `admin/login-risk/*.jsp` i18n 1차 정리
 - 이의제기 관리자 화면 사용자 입력 출력부 `c:out` 적용
-- `SCHEMA_MIGRATION_HISTORY` 마이그레이션 이력 테이블 추가
 - Provider 상태 점검 스케줄러 골격
 - WAF 동기화 큐 처리 스케줄러 골격
+- Generic HTTP AI Provider 골격
+- Generic HTTP Policy Authority Provider 골격
+- Generic HTTP WAF/CDN Provider 골격
+- WAF 동기화 큐 관리자 조회/재시도 화면
+- 이의제기 중복 접수 제한 1차 정책
+- 이의제기 처리 결과 이메일 통지
+- `SECURITY_ACTION_AUDIT.reason_code` / `reason_args` 1차 컬럼 추가
 
 ## 남은 작업
 
 ### 외부 연동
 
-- 실제 AI Provider API 호출 구현
-- 실제 상위 정책기관 Provider API 호출 구현
-- 실제 Cloudflare/AWS WAF/Nginx Provider 구현
-- Provider별 Secret 관리 방식 확정
-- 외부 Provider 장애 시 fail-open / fail-closed 정책별 처리 테스트
+- 실제 운영 AI/정책기관/WAF API 계약 확정
+- 실제 Provider 응답 스키마 확정 및 운영 API별 어댑터 분리
+- Provider별 Secret 관리 방식 최종 확정
+- 외부 Provider 장애 시 fail-open / fail-closed 정책별 통합 테스트
 
 ### 데이터 모델 고도화
 
-- DB에 저장되는 한국어 감사 사유를 `reason_code` + `reason_args` 구조로 전환
+- 기존 DB 감사 사유 전체를 `reason_code` + `reason_args` 구조로 점진 전환
 - 기존 `LOGIN_RISK_EXTERNAL_ASSESSMENT`와 `SECURITY_RISK_ASSESSMENT`의 장기 통합 방향 결정
-- `SECURITY_REVIEW_QUEUE`와 `SECURITY_RISK_ASSESSMENT` 상태 전이 규칙 문서화
+- `SECURITY_REVIEW_QUEUE`와 `SECURITY_RISK_ASSESSMENT` 상태 전이 규칙 상세 문서화
 
 ### UI/운영 고도화
 
 - 보안 검토 큐 상세 모달 고도화
-- WAF 동기화 큐 관리자 재시도 버튼
-- Provider 헬스체크 결과 상세 화면
-- 차단/이의제기 처리 결과 사용자 통지
-- 이의제기 중복 접수 제한 정책 확정 및 UI 안내
+- Provider 헬스체크 결과 상세 화면 고도화
+- 차단/이의제기 처리 결과 사이트 내 알림 연동
+- 이의제기 중복 접수 제한 정책 세부 UI 안내
+- WAF Provider별 재시도/실패 사유 상세 표시
 
 ### 검증
 
@@ -62,6 +67,8 @@
 - 관리자 검토 승인/보류/미승인 상태 전이 테스트
 - USER/IP 차단 해제 후 캐시 갱신 테스트
 - 4언어 화면 스모크 테스트
+- Provider enabled/disabled/fail-open/fail-closed 테스트
+- WAF 동기화 큐 retry 테스트
 
 ## 작업 원칙
 
@@ -69,5 +76,6 @@
 2. 사용자 입력을 관리자 화면에 출력할 때는 반드시 `c:out` 또는 동등한 escaping을 적용한다.
 3. 차단/해제/자동 조치에는 감사 로그와 이력 테이블을 함께 남긴다.
 4. 외부 API 호출은 설정/Provider/큐 구조와 실제 호출 구현을 분리한다.
-5. 마이그레이션은 `SCHEMA_MIGRATION_HISTORY`에 기록한다.
+5. `SCHEMA_MIGRATION_HISTORY`는 운영 기능과 연결하지 않는다. 삭제해도 서비스 기능에 영향이 없어야 한다.
 6. 새 SQL은 가능하면 `CREATE IF NOT EXISTS`, `ADD COLUMN IF MISSING` 방식으로 작성한다.
+7. 새 작업을 시작할 때 이 문서를 먼저 갱신한다.

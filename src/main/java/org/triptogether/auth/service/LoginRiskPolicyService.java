@@ -30,6 +30,8 @@ import org.triptogether.config.BlockRuleCacheService;
 import org.triptogether.auth.risk.LoginRiskAssessmentProvider;
 import org.triptogether.auth.risk.LoginRiskAssessmentRequest;
 import org.triptogether.auth.risk.LoginRiskAssessmentResult;
+import org.triptogether.auth.risk.WafSyncProvider;
+import org.triptogether.auth.risk.WafSyncResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,6 +54,7 @@ public class LoginRiskPolicyService {
     private final MessageSource messageSource;
     private final BlockRuleCacheService blockRuleCacheService;
     private final List<LoginRiskAssessmentProvider> assessmentProviders;
+    private final List<WafSyncProvider> wafSyncProviders;
 
     @Value("${spring.mail.username:}")
     private String mailFrom;
@@ -237,6 +240,38 @@ public class LoginRiskPolicyService {
                 msg("ko", "security.appeal.audit.decision"),
                 comment
         );
+        sendAppealDecisionNoticeIfPossible(appeal, normalized, comment);
+    }
+
+    private void sendAppealDecisionNoticeIfPossible(SecurityAppealVO appeal, String status, String comment) {
+        if (appeal == null) {
+            return;
+        }
+        String to = firstNonBlank(appeal.getSubmitterEmail(),
+                appeal.getUserIdx() == null ? null : loginRiskPolicyMapper.findUserEmailByUserIdx(appeal.getUserIdx()));
+        if (to == null || to.isBlank()) {
+            return;
+        }
+        String lang = normalizeLang(appeal.getUserIdx() == null ? null : loginRiskPolicyMapper.findUserPreferredLangByUserIdx(appeal.getUserIdx()));
+        String subject = msg(lang, "security.appeal.result.mail.subject");
+        String body = """
+                <div style="font-family:Arial,'Noto Sans KR',sans-serif;line-height:1.7;color:#111827">
+                  <h2>%s</h2>
+                  <p>%s</p>
+                  <div style="padding:14px;border-radius:12px;background:#f1f5f9">
+                    <strong>%s</strong>: %s<br>
+                    <strong>%s</strong>: %s<br>
+                    <strong>%s</strong>: %s
+                  </div>
+                </div>
+                """.formatted(
+                msg(lang, "security.appeal.result.mail.title"),
+                msg(lang, "security.appeal.result.mail.body"),
+                msg(lang, "security.appeal.result.mail.publicRequestId"), firstNonBlank(appeal.getPublicRequestId(), "-"),
+                msg(lang, "security.appeal.result.mail.status"), status,
+                msg(lang, "security.appeal.result.mail.comment"), firstNonBlank(comment, "-")
+        );
+        sendMail(to, subject, body);
     }
 
 
@@ -260,6 +295,27 @@ public class LoginRiskPolicyService {
         if (appeal.getSourceAssessmentIdx() != null) {
             loginRiskPolicyMapper.updateSecurityRiskAssessmentDecision(appeal.getSourceAssessmentIdx(), "REVERSED");
         }
+    }
+
+
+    public List<SecurityWafSyncQueueVO> getWafSyncQueue(String status, String targetType, String keyword) {
+        return loginRiskPolicyMapper.findWafSyncQueue(emptyToNull(status), emptyToNull(targetType), emptyToNull(keyword));
+    }
+
+    @Transactional
+    public void retryWafSync(Long syncIdx, Long actorUserIdx) {
+        loginRiskPolicyMapper.resetWafSyncStatus(syncIdx, msg("ko", "security.waf.sync.retryRequested"));
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
+                "WAF_SYNC_RETRY_REQUESTED",
+                actorUserIdx,
+                "WAF_SYNC",
+                String.valueOf(syncIdx),
+                "LOGIN_RISK_WAF_SYNC_QUEUE",
+                syncIdx,
+                "SECURITY.WAF_SYNC.RETRY_REQUESTED",
+                "{\"syncIdx\":" + syncIdx + "}",
+                msg("ko", "security.waf.sync.retryRequested")
+        );
     }
 
     public List<SecurityAssessmentProviderConfigVO> getProviderConfigs() {
@@ -308,14 +364,46 @@ public class LoginRiskPolicyService {
     public void processWafSyncQueueOnce() {
         List<SecurityWafSyncQueueVO> pendingItems = loginRiskPolicyMapper.findPendingWafSyncQueue(20);
         for (SecurityWafSyncQueueVO item : pendingItems) {
-            // 실제 Cloudflare/AWS WAF/Nginx 연동 Provider는 런칭 시점에 별도로 연결한다.
-            // 지금은 큐 워커 골격을 통해 상태가 방치되지 않도록 EXTERNAL_PROVIDER_PENDING으로 정리한다.
+            WafSyncResult result = applyWafSyncProviders(item);
             loginRiskPolicyMapper.updateWafSyncStatus(
                     item.getSyncIdx(),
-                    "EXTERNAL_PROVIDER_PENDING",
-                    msg("ko", "security.waf.sync.providerPending")
+                    result.getStatus(),
+                    result.getMessage()
             );
         }
+    }
+
+    private WafSyncResult applyWafSyncProviders(SecurityWafSyncQueueVO item) {
+        if (wafSyncProviders == null || wafSyncProviders.isEmpty()) {
+            return WafSyncResult.builder()
+                    .handled(false)
+                    .success(false)
+                    .status("EXTERNAL_PROVIDER_PENDING")
+                    .message(msg("ko", "security.waf.sync.providerPending"))
+                    .build();
+        }
+        for (WafSyncProvider provider : wafSyncProviders) {
+            try {
+                if (provider.supports(item)) {
+                    return provider.sync(item);
+                }
+            } catch (Exception e) {
+                log.warn("[WAF] sync provider execution failed syncIdx={} provider={}",
+                        item.getSyncIdx(), provider.getClass().getName(), e);
+                return WafSyncResult.builder()
+                        .handled(true)
+                        .success(false)
+                        .status("FAILED")
+                        .message(e.getMessage())
+                        .build();
+            }
+        }
+        return WafSyncResult.builder()
+                .handled(false)
+                .success(false)
+                .status("EXTERNAL_PROVIDER_PENDING")
+                .message(msg("ko", "security.waf.sync.providerPending"))
+                .build();
     }
 
     @Transactional
@@ -440,6 +528,15 @@ public class LoginRiskPolicyService {
             if (tokenVO == null) {
                 throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.tokenInvalid"));
             }
+        }
+
+        Integer duplicateCount = loginRiskPolicyMapper.countDuplicatePendingAppeal(
+                context.getTargetType(),
+                context.getTargetKey(),
+                firstNonBlank(context.getRequestId(), requestId)
+        );
+        if (duplicateCount != null && duplicateCount > 0) {
+            throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.duplicatePending"));
         }
 
         String publicRequestId = "SAP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);

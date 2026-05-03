@@ -284,4 +284,38 @@ public interface LoginRiskPolicyMapper {
                                       @Param("reason") String reason);
 
 
+    List<SecurityAssessmentProviderConfigVO> findEnabledExternalAssessmentProviders();
+
+    List<SecurityAssessmentProviderConfigVO> findEnabledWafProviderConfigs();
+
+
+    List<SecurityWafSyncQueueVO> findWafSyncQueue(@Param("status") String status,
+                                                 @Param("targetType") String targetType,
+                                                 @Param("keyword") String keyword);
+
+    void resetWafSyncStatus(@Param("syncIdx") Long syncIdx,
+                            @Param("reason") String reason);
+
+
+    Integer countDuplicatePendingAppeal(@Param("targetType") String targetType,
+                                        @Param("targetKey") String targetKey,
+                                        @Param("blockAccessRequestId") String blockAccessRequestId);
+
+
+    void insertSecurityActionAuditWithReason(@Param("actionType") String actionType,
+                                             @Param("actorUserIdx") Long actorUserIdx,
+                                             @Param("targetType") String targetType,
+                                             @Param("targetKey") String targetKey,
+                                             @Param("sourceType") String sourceType,
+                                             @Param("sourceId") Long sourceId,
+                                             @Param("reasonCode") String reasonCode,
+                                             @Param("reasonArgs") String reasonArgs,
+                                             @Param("detailMessage") String detailMessage);
+
+
+    String findUserEmailByUserIdx(@Param("userIdx") Long userIdx);
+
+    String findUserPreferredLangByUserIdx(@Param("userIdx") Long userIdx);
+
+
 }

@@ -1080,4 +1080,83 @@
         WHERE sync_idx = #{syncIdx}
     </update>
 
+
+    <select id="findEnabledExternalAssessmentProviders" resultMap="SecurityAssessmentProviderConfigMap">
+        SELECT *
+        FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        WHERE is_enabled = 1
+          AND provider_kind IN ('AI_MODEL', 'POLICY_AUTHORITY')
+        ORDER BY provider_kind, provider_code
+    </select>
+
+    <select id="findEnabledWafProviderConfigs" resultMap="SecurityAssessmentProviderConfigMap">
+        SELECT *
+        FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        WHERE is_enabled = 1
+          AND provider_kind IN ('WAF_CDN', 'WAF', 'CDN', 'EDGE_SECURITY')
+        ORDER BY provider_kind, provider_code
+    </select>
+
+    <select id="findWafSyncQueue" resultMap="SecurityWafSyncQueueMap">
+        SELECT *
+        FROM LOGIN_RISK_WAF_SYNC_QUEUE
+        <where>
+            <if test="status != null and status != ''">AND status = #{status}</if>
+            <if test="targetType != null and targetType != ''">AND target_type = #{targetType}</if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    target_value LIKE CONCAT('%', #{keyword}, '%')
+                    OR detail_message LIKE CONCAT('%', #{keyword}, '%')
+                    OR source_type LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY created_at DESC, sync_idx DESC
+    </select>
+
+    <update id="resetWafSyncStatus">
+        UPDATE LOGIN_RISK_WAF_SYNC_QUEUE
+        SET status = 'PENDING',
+            detail_message = #{reason},
+            synced_at = NULL,
+            updated_at = NOW()
+        WHERE sync_idx = #{syncIdx}
+    </update>
+
+    <select id="countDuplicatePendingAppeal" resultType="int">
+        SELECT COUNT(*)
+        FROM SECURITY_ACTION_APPEAL
+        WHERE appeal_status IN ('PENDING', 'HOLD')
+          AND target_type = #{targetType}
+          AND target_key = #{targetKey}
+          <if test="blockAccessRequestId != null and blockAccessRequestId != ''">
+            AND block_access_request_id = #{blockAccessRequestId}
+          </if>
+    </select>
+
+    <insert id="insertSecurityActionAuditWithReason">
+        INSERT INTO SECURITY_ACTION_AUDIT
+        (action_type, actor_user_idx, target_type, target_key, source_type, source_id,
+         reason_code, reason_args, detail_message, created_at)
+        VALUES
+        (#{actionType}, #{actorUserIdx}, #{targetType}, #{targetKey}, #{sourceType}, #{sourceId},
+         #{reasonCode}, #{reasonArgs}, #{detailMessage}, NOW())
+    </insert>
+
+    <select id="findUserEmailByUserIdx" resultType="string">
+        SELECT user_email
+        FROM USERS
+        WHERE user_idx = #{userIdx}
+          AND user_email IS NOT NULL
+          AND user_email != ''
+        LIMIT 1
+    </select>
+
+    <select id="findUserPreferredLangByUserIdx" resultType="string">
+        SELECT preferred_lang
+        FROM USERS
+        WHERE user_idx = #{userIdx}
+        LIMIT 1
+    </select>
+
 </mapper>
