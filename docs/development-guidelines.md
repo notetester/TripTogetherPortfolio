@@ -21,3 +21,10 @@
 - 실제 API 키는 DB에 직접 저장하지 않고 `ENV:` 또는 `PROP:` 참조명으로 관리한다.
 - `SCHEMA_MIGRATION_HISTORY`는 운영 기능과 결합하지 않는다.
 - 후속 작업은 `docs/security-governance-worklist.md`를 먼저 확인하고 갱신한다.
+
+
+## 마이그레이션 작업 원칙
+
+- 특별히 적용하지 않았다는 언급이 없으면, 이전에 제시한 SQL은 적용된 것으로 간주하고 후속 작업을 이어간다.
+- 기존 테이블을 다시 생성하려고 하기보다, 현재 마이그레이션 이력과 기존 스키마를 기준으로 필요한 컬럼/인덱스/데이터만 증분 보강한다.
+- 새 테이블이 정말 필요한 경우에는 먼저 `docs/security-governance-worklist.md`와 `docs/migration-history.md`를 확인하고, 기존 테이블로 표현 가능한지 검토한다.

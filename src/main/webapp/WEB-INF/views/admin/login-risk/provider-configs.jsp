@@ -2,8 +2,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="activeMenu" value="securityProviderConfigs"/>
 <spring:message var="pageTitle" code="security.admin.provider.title"/>
+<spring:message var="providerEndpointPlaceholder" code="security.admin.provider.endpointPlaceholder"/>
+<spring:message var="providerApiKeyRefPlaceholder" code="security.admin.provider.apiKeyRefPlaceholder"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -19,14 +22,14 @@
     </div>
 
     <c:if test="${not empty message}">
-        <div class="adm-alert success">${message}</div>
+        <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
     <c:forEach var="p" items="${providers}">
         <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/provider-configs/${p.providerIdx}" class="adm-card" style="margin-bottom:16px;">
             <div class="adm-card-header">
                 <div>
-                    <div class="adm-card-title"><c:out value="${p.providerName}"/></div>
+                    <div class="adm-card-title"><c:out value="${fn:escapeXml(p.providerName)}"/></div>
                     <div class="adm-muted"><c:out value="${p.providerKind}"/> · <c:out value="${p.providerCode}"/> · <spring:message code="security.admin.common.status"/> <c:out value="${p.status}"/></div>
                 </div>
                 <label class="adm-check">
@@ -35,23 +38,23 @@
                 </label>
             </div>
             <div class="adm-card-body">
-                <input type="hidden" name="providerCode" value="<c:out value="${p.providerCode}"/>">
-                <input type="hidden" name="providerKind" value="<c:out value="${p.providerKind}"/>">
+                <input type="hidden" name="providerCode" value="${fn:escapeXml(p.providerCode)}">
+                <input type="hidden" name="providerKind" value="${fn:escapeXml(p.providerKind)}">
                 <div class="adm-form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;">
                     <label><spring:message code="security.admin.provider.displayName"/>
-                        <input class="adm-input" type="text" name="providerName" value="${p.providerName}">
+                        <input class="adm-input" type="text" name="providerName" value="${fn:escapeXml(p.providerName)}">
                     </label>
-                    <label>Endpoint URL
-                        <input class="adm-input" type="text" name="endpointUrl" value="${p.endpointUrl}" placeholder="https://api.example.com/risk">
+                    <label><spring:message code="security.admin.provider.endpointUrl"/>
+                        <input class="adm-input" type="text" name="endpointUrl" value="${fn:escapeXml(p.endpointUrl)}" placeholder="${providerEndpointPlaceholder}">
                     </label>
-                    <label>API Key Ref
-                        <input class="adm-input" type="text" name="apiKeyRef" value="${p.apiKeyRef}" placeholder="ENV:TRIPTOGETHER_AI_KEY">
+                    <label><spring:message code="security.admin.provider.apiKeyRef"/>
+                        <input class="adm-input" type="text" name="apiKeyRef" value="${fn:escapeXml(p.apiKeyRef)}" placeholder="${providerApiKeyRefPlaceholder}">
                     </label>
                     <label><spring:message code="security.admin.provider.modelName"/>
-                        <input class="adm-input" type="text" name="modelName" value="${p.modelName}">
+                        <input class="adm-input" type="text" name="modelName" value="${fn:escapeXml(p.modelName)}">
                     </label>
-                    <label>Timeout(ms)
-                        <input class="adm-input" type="number" name="timeoutMillis" value="${p.timeoutMillis}">
+                    <label><spring:message code="security.admin.provider.timeoutMillis"/>
+                        <input class="adm-input" type="number" name="timeoutMillis" value="${fn:escapeXml(p.timeoutMillis)}">
                     </label>
                     <label><spring:message code="security.admin.provider.failPolicy"/>
                         <select class="adm-input" name="failOpen">

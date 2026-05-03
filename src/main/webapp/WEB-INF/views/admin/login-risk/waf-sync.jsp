@@ -5,6 +5,7 @@
 <c:set var="activeMenu" value="securityWafSync"/>
 <spring:message var="pageTitle" code="security.admin.wafSync.title"/>
 <spring:message var="keywordPlaceholder" code="security.admin.placeholder.wafSync"/>
+<spring:message var="targetTypePlaceholder" code="security.admin.placeholder.wafTargetType"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -35,7 +36,7 @@
                 </select>
             </label>
             <label><spring:message code="security.admin.common.targetType"/>
-                <input class="adm-input" type="text" name="targetType" value="${targetType}" placeholder="IP / CIDR / ASN / COUNTRY">
+                <input class="adm-input" type="text" name="targetType" value="${targetType}" placeholder="${targetTypePlaceholder}">
             </label>
             <label><spring:message code="security.admin.common.search"/>
                 <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="${keywordPlaceholder}">

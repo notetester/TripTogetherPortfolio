@@ -249,10 +249,19 @@ public class LoginRiskPolicyService {
         }
         String to = firstNonBlank(appeal.getSubmitterEmail(),
                 appeal.getUserIdx() == null ? null : loginRiskPolicyMapper.findUserEmailByUserIdx(appeal.getUserIdx()));
+        String lang = normalizeLang(appeal.getUserIdx() == null ? null : loginRiskPolicyMapper.findUserPreferredLangByUserIdx(appeal.getUserIdx()));
+        if (appeal.getUserIdx() != null) {
+            loginRiskPolicyMapper.insertAdminNotification(
+                    appeal.getUserIdx(),
+                    "SECURITY_APPEAL",
+                    appeal.getAppealIdx(),
+                    msg(lang, "security.appeal.result.notification"),
+                    "/mypage"
+            );
+        }
         if (to == null || to.isBlank()) {
             return;
         }
-        String lang = normalizeLang(appeal.getUserIdx() == null ? null : loginRiskPolicyMapper.findUserPreferredLangByUserIdx(appeal.getUserIdx()));
         String subject = msg(lang, "security.appeal.result.mail.subject");
         String body = """
                 <div style="font-family:Arial,'Noto Sans KR',sans-serif;line-height:1.7;color:#111827">
