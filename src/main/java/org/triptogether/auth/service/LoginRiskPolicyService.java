@@ -4,6 +4,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class LoginRiskPolicyService {
     private final LoginRiskPolicyMapper loginRiskPolicyMapper;
     private final AdminMapper adminMapper;
     private final JavaMailSender mailSender;
+    private final MessageSource messageSource;
     private final BlockRuleCacheService blockRuleCacheService;
     private final List<LoginRiskAssessmentProvider> assessmentProviders;
 
@@ -98,7 +100,7 @@ public class LoginRiskPolicyService {
     public void createSecurityReviewFromAssessment(Long assessmentIdx, String severity, String summary, String detailMessage) {
         SecurityRiskAssessmentVO assessment = loginRiskPolicyMapper.findSecurityRiskAssessmentByIdx(assessmentIdx);
         if (assessment == null) {
-            throw new IllegalArgumentException("보안 판단 근거를 찾을 수 없습니다.");
+            throw new IllegalArgumentException(msg("ko", "security.assessment.notFound"));
         }
         String reviewType = switch (assessment.getSubjectType() == null ? "" : assessment.getSubjectType()) {
             case "USER" -> "USER_SECURITY_REVIEW";
@@ -110,12 +112,12 @@ public class LoginRiskPolicyService {
                 assessmentIdx,
                 reviewType,
                 firstNonBlank(severity, assessment.getRiskLevel(), "MEDIUM"),
-                firstNonBlank(summary, assessment.getRecommendationAction(), "보안 위험 판단 검토 필요"),
+                firstNonBlank(summary, assessment.getRecommendationAction(), msg("ko", "security.review.required.default")),
                 firstNonBlank(detailMessage, assessment.getEvidenceSummary(), assessment.getRecommendationReason())
         );
         for (Long adminIdx : loginRiskPolicyMapper.findAdminNotificationTargets("BLOCK_REVIEW")) {
             loginRiskPolicyMapper.insertAdminNotification(adminIdx, "SECURITY_REVIEW", assessmentIdx,
-                    "[보안 검토] " + firstNonBlank(summary, assessment.getSubjectKey(), "보안 위험 판단 검토 필요"),
+                    msg("ko", "security.review.notification.prefix") + " " + firstNonBlank(summary, assessment.getSubjectKey(), msg("ko", "security.review.required.default")),
                     "/admin/login-risk/security-reviews");
         }
     }
@@ -124,7 +126,7 @@ public class LoginRiskPolicyService {
     public void decideSecurityReview(Long reviewIdx, String decision, Long actorUserIdx, String comment) {
         SecurityReviewVO review = loginRiskPolicyMapper.findSecurityReviewByIdx(reviewIdx);
         if (review == null) {
-            throw new IllegalArgumentException("보안 검토 대상을 찾을 수 없습니다.");
+            throw new IllegalArgumentException(msg("ko", "security.review.notFound"));
         }
         String normalized = normalizeDecision(decision);
         loginRiskPolicyMapper.updateSecurityReviewDecision(reviewIdx, normalized, actorUserIdx, comment);
@@ -135,7 +137,7 @@ public class LoginRiskPolicyService {
                 review.getSubjectKey(),
                 "SECURITY_REVIEW_QUEUE",
                 reviewIdx,
-                "일반 보안 검토 처리",
+                msg("ko", "security.review.audit.decision"),
                 comment
         );
 
@@ -174,7 +176,7 @@ public class LoginRiskPolicyService {
                     blockTargetKey,
                     matchType,
                     cidr ? target : null,
-                    firstNonBlank(assessment.getRecommendationReason(), assessment.getEvidenceSummary(), "보안 판단 승인 기반 접근 환경 제한"),
+                    firstNonBlank(assessment.getRecommendationReason(), assessment.getEvidenceSummary(), msg("ko", "security.review.approved.accessRestriction")),
                     actorUserIdx,
                     requestId,
                     "SECURITY_REVIEW_APPROVED",
@@ -185,7 +187,7 @@ public class LoginRiskPolicyService {
             try {
                 blockRuleCacheService.invalidateAndRefresh();
             } catch (Exception e) {
-                log.warn("[SecurityReview] 보안 검토 승인 후 차단 캐시 갱신 실패 assessmentIdx={}", assessment.getAssessmentIdx(), e);
+                log.warn("[SecurityReview] Failed to refresh block-rule cache after approval. assessmentIdx={}", assessment.getAssessmentIdx(), e);
             }
         }
 
@@ -197,7 +199,7 @@ public class LoginRiskPolicyService {
                     "IP_RANGE".equals(subjectType) ? "CIDR" : subjectType,
                     target,
                     "PENDING",
-                    "보안 검토 승인에 따른 외부 WAF/CDN 동기화 후보입니다."
+                    msg("ko", "security.review.wafCandidate")
             );
         }
 
@@ -219,7 +221,7 @@ public class LoginRiskPolicyService {
         SecurityAppealVO appeal = loginRiskPolicyMapper.findSecurityAppealByIdx(appealIdx);
         loginRiskPolicyMapper.updateSecurityAppealDecision(appealIdx, normalized, actorUserIdx, comment);
         if ("ACCEPTED".equals(normalized) && appeal != null) {
-            applyAcceptedSecurityAppeal(appeal, actorUserIdx, firstNonBlank(comment, "이의제기 수용에 따른 보안 조치 해제"));
+            applyAcceptedSecurityAppeal(appeal, actorUserIdx, firstNonBlank(comment, msg("ko", "security.appeal.release.defaultReason")));
         }
         loginRiskPolicyMapper.insertSecurityActionAudit(
                 "SECURITY_APPEAL_" + normalized,
@@ -228,7 +230,7 @@ public class LoginRiskPolicyService {
                 appeal == null ? String.valueOf(appealIdx) : appeal.getTargetKey(),
                 "SECURITY_ACTION_APPEAL",
                 appealIdx,
-                "보안 조치 이의제기 처리",
+                msg("ko", "security.appeal.audit.decision"),
                 comment
         );
     }
@@ -246,7 +248,7 @@ public class LoginRiskPolicyService {
             try {
                 blockRuleCacheService.invalidateAndRefresh();
             } catch (Exception e) {
-                log.warn("[SecurityAppeal] 이의제기 수용 후 차단 캐시 갱신 실패 appealIdx={}", appeal.getAppealIdx(), e);
+                log.warn("[SecurityAppeal] Failed to refresh block-rule cache after accepted appeal. appealIdx={}", appeal.getAppealIdx(), e);
             }
         }
 
@@ -269,7 +271,7 @@ public class LoginRiskPolicyService {
                 config.getProviderCode(),
                 "SECURITY_ASSESSMENT_PROVIDER_CONFIG",
                 config.getProviderIdx(),
-                "보안 판단 Provider 설정 변경",
+                msg("ko", "security.provider.audit.configUpdate"),
                 "enabled=" + config.isEnabled() + ", endpoint=" + config.getEndpointUrl()
         );
     }
@@ -278,10 +280,10 @@ public class LoginRiskPolicyService {
     public void applyUserBlockFromSecurityAssessment(Long assessmentIdx, Long actorUserIdx) {
         SecurityRiskAssessmentVO assessment = loginRiskPolicyMapper.findSecurityRiskAssessmentByIdx(assessmentIdx);
         if (assessment == null) {
-            throw new IllegalArgumentException("보안 판단 근거를 찾을 수 없습니다.");
+            throw new IllegalArgumentException(msg("ko", "security.assessment.notFound"));
         }
         if (assessment.getUserIdx() == null) {
-            throw new IllegalArgumentException("사용자 차단으로 적용할 수 없는 판단 근거입니다.");
+            throw new IllegalArgumentException(msg("ko", "security.assessment.userBlockNotApplicable"));
         }
 
         Long systemUserIdx = loginRiskPolicyMapper.findSystemUserIdxByUserId("system_ai_security");
@@ -296,7 +298,7 @@ public class LoginRiskPolicyService {
         String reason = firstNonBlank(
                 assessment.getRecommendationReason(),
                 assessment.getEvidenceSummary(),
-                "외부/보조 보안 판단에 따른 계정 차단"
+                msg("ko", "security.assessment.userBlock.defaultReason")
         );
 
         loginRiskPolicyMapper.insertUserBlockHistoryFromAssessment(
@@ -328,7 +330,7 @@ public class LoginRiskPolicyService {
                 assessment.getSubjectKey(),
                 "SECURITY_RISK_ASSESSMENT",
                 assessmentIdx,
-                "보안 판단 근거 기반 계정 차단 적용",
+                msg("ko", "security.assessment.audit.userBlockApplied"),
                 reason
         );
     }
@@ -340,7 +342,7 @@ public class LoginRiskPolicyService {
             if (tokenVO == null) {
                 return SecurityAppealFormVO.builder()
                         .valid(false)
-                        .errorMessage("이의제기 링크가 만료되었거나 이미 사용되었습니다.")
+                        .errorMessage(msg(lang, "security.appeal.error.tokenInvalid"))
                         .pageLang(normalizeLang(lang))
                         .build();
             }
@@ -361,7 +363,7 @@ public class LoginRiskPolicyService {
             if (context == null) {
                 return SecurityAppealFormVO.builder()
                         .valid(false)
-                        .errorMessage("해당 요청 ID의 차단 기록을 찾을 수 없습니다.")
+                        .errorMessage(msg(lang, "security.appeal.error.requestNotFound"))
                         .requestId(requestId)
                         .pageLang(normalizeLang(lang))
                         .build();
@@ -373,7 +375,7 @@ public class LoginRiskPolicyService {
 
         return SecurityAppealFormVO.builder()
                 .valid(false)
-                .errorMessage("이의제기 대상 정보가 없습니다.")
+                .errorMessage(msg(lang, "security.appeal.error.targetMissing"))
                 .pageLang(normalizeLang(lang))
                 .build();
     }
@@ -394,37 +396,38 @@ public class LoginRiskPolicyService {
         if (token != null && !token.isBlank()) {
             tokenVO = loginRiskPolicyMapper.findAppealToken(token, LocalDateTime.now());
             if (tokenVO == null) {
-                throw new IllegalArgumentException("이의제기 링크가 만료되었거나 이미 사용되었습니다.");
+                throw new IllegalArgumentException(msg(lang, "security.appeal.error.tokenInvalid"));
             }
         }
 
         String publicRequestId = "SAP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
         Long inquiryId = null;
-        String title = firstNonBlank(appealTitle, "보안 조치 이의제기");
+        String title = firstNonBlank(appealTitle, msg(pageLang, "security.appeal.form.defaultTitle"));
         String content = firstNonBlank(appealContent, "");
         String enrichedContent = """
-                [보안 조치 이의제기]
-                공개 접수번호: %s
-                대상 유형: %s
-                대상 키: %s
-                차단 요청 ID: %s
-                차단 접근 요청 ID: %s
-                연락 이메일: %s
+                %s
+                %s: %s
+                %s: %s
+                %s: %s
+                %s: %s
+                %s: %s
+                %s: %s
 
                 %s
                 """.formatted(
-                publicRequestId,
-                context.getTargetType(),
-                context.getTargetKey(),
-                tokenVO == null ? null : tokenVO.getBlockRequestId(),
-                firstNonBlank(context.getRequestId(), requestId),
-                firstNonBlank(submitterEmail, "-"),
+                msg(pageLang, "security.appeal.inquiry.header"),
+                msg(pageLang, "security.appeal.inquiry.publicRequestId"), publicRequestId,
+                msg(pageLang, "security.appeal.inquiry.targetType"), context.getTargetType(),
+                msg(pageLang, "security.appeal.inquiry.targetKey"), context.getTargetKey(),
+                msg(pageLang, "security.appeal.inquiry.blockRequestId"), tokenVO == null ? null : tokenVO.getBlockRequestId(),
+                msg(pageLang, "security.appeal.inquiry.blockAccessRequestId"), firstNonBlank(context.getRequestId(), requestId),
+                msg(pageLang, "security.appeal.inquiry.contactEmail"), firstNonBlank(submitterEmail, "-"),
                 content
         );
 
         if (context.getUserIdx() != null) {
-            loginRiskPolicyMapper.insertSecurityAppealInquiry(context.getUserIdx(), "[보안 이의제기] " + title, enrichedContent);
-            inquiryId = loginRiskPolicyMapper.findLatestInquiryIdByUserAndTitle(context.getUserIdx(), "[보안 이의제기] " + title);
+            loginRiskPolicyMapper.insertSecurityAppealInquiry(context.getUserIdx(), msg(pageLang, "security.appeal.inquiry.titlePrefix") + " " + title, enrichedContent);
+            inquiryId = loginRiskPolicyMapper.findLatestInquiryIdByUserAndTitle(context.getUserIdx(), msg(pageLang, "security.appeal.inquiry.titlePrefix") + " " + title);
         }
 
         loginRiskPolicyMapper.insertSecurityAppealPublic(
@@ -453,13 +456,13 @@ public class LoginRiskPolicyService {
                 context.getTargetKey(),
                 "SECURITY_ACTION_APPEAL",
                 null,
-                "사용자 보안 조치 이의제기 접수",
+                msg(pageLang, "security.appeal.audit.submitted"),
                 "publicRequestId=" + publicRequestId + ", requestId=" + firstNonBlank(context.getRequestId(), requestId)
         );
 
         for (Long adminIdx : loginRiskPolicyMapper.findAdminNotificationTargets("BLOCK_REVIEW")) {
             loginRiskPolicyMapper.insertAdminNotification(adminIdx, "SECURITY_APPEAL", null,
-                    "[보안 이의제기] " + title,
+                    msg(pageLang, "security.appeal.inquiry.titlePrefix") + " " + title,
                     "/admin/login-risk/appeals");
         }
 
@@ -502,7 +505,7 @@ public class LoginRiskPolicyService {
     public void decideReview(Long reviewIdx, String decision, Long adminUserIdx, String comment) {
         LoginRiskReviewVO review = loginRiskPolicyMapper.findReviewByIdx(reviewIdx);
         if (review == null) {
-            throw new IllegalArgumentException("검토 대상을 찾을 수 없습니다.");
+            throw new IllegalArgumentException(msg("ko", "security.login.review.notFound"));
         }
 
         String normalized = normalizeDecision(decision);
@@ -528,13 +531,13 @@ public class LoginRiskPolicyService {
                 null,
                 review.getRequestId(),
                 review.getFlowTraceId(),
-                "관리자 검토 처리: " + normalized + (comment == null || comment.isBlank() ? "" : " / " + comment)
+                msg("ko", "security.login.audit.adminReviewDecision") + ": " + normalized + (comment == null || comment.isBlank() ? "" : " / " + comment)
         );
     }
 
     private void applyApprovedReview(LoginRiskReviewVO review, Long adminUserIdx, String comment) {
         if (review.getReviewType() != null && review.getReviewType().contains("ACCOUNT") && review.getUserIdx() != null) {
-            adminMapper.markMemberBlocked(review.getUserIdx(), null, "관리자 승인: 로그인 위험 검토에 따른 계정 보호 조치");
+            adminMapper.markMemberBlocked(review.getUserIdx(), null, msg("ko", "security.login.accountReviewApprovedReason"));
         }
 
         if ("IP".equalsIgnoreCase(review.getSubjectType()) || "IP_RANGE".equalsIgnoreCase(review.getSubjectType())) {
@@ -545,7 +548,7 @@ public class LoginRiskPolicyService {
                 String ipAddress = cidr ? target.substring(0, target.indexOf('/')) : target;
                 String blockTargetKey = cidr ? "CIDR:" + target : "IP:" + target;
                 String blockRequestId = UUID.randomUUID().toString();
-                String reason = "관리자 승인: 로그인 위험 검토 기반 접근 환경 제한";
+                String reason = msg("ko", "security.login.ipReviewApprovedReason");
                 loginRiskPolicyMapper.insertApprovedIpBlock(
                         ipAddress,
                         blockTargetKey,
@@ -567,13 +570,13 @@ public class LoginRiskPolicyService {
                         cidr ? "CIDR" : "IP",
                         target,
                         "PENDING",
-                        "관리자 승인된 로그인 위험 검토입니다. 외부 WAF/CDN 동기화 후보로 등록되었습니다."
+                        msg("ko", "security.login.ipReviewWafCandidate")
                 );
 
                 try {
                     blockRuleCacheService.invalidateAndRefresh();
                 } catch (Exception e) {
-                    log.warn("[LoginRisk] 차단 규칙 캐시 갱신 실패 reviewIdx={}", review.getReviewIdx(), e);
+                    log.warn("[LoginRisk] Failed to refresh block-rule cache. reviewIdx={}", review.getReviewIdx(), e);
                 }
             }
         }
@@ -585,7 +588,7 @@ public class LoginRiskPolicyService {
         if (ip != null && !ip.isBlank()) {
             int ipLocks = n(loginRiskPolicyMapper.countActiveIpLoginLocks(ip, LocalDateTime.now()));
             if (ipLocks > 0) {
-                String message = "현재 접속 환경에서 로그인 시도가 일시적으로 제한되었습니다. 잠시 후 다시 시도해 주세요.";
+                String message = msg(user == null ? null : user.getPreferredLang(), "security.login.ipLockMessage");
                 applyContext(context, "IP_LOGIN_LOCK", message, null, true, true);
                 return LoginRiskDecisionVO.builder()
                         .denied(true)
@@ -626,13 +629,13 @@ public class LoginRiskPolicyService {
 
         if (observed >= threshold) {
             LocalDateTime blockedUntil = lockUntil(policy);
-            String reason = "비밀번호 오류 횟수 초과로 로그인 일시 제한";
+            String reason = msg(user.getPreferredLang(), "security.login.accountTempLockReason");
             adminMapper.markMemberBlocked(user.getUserIdx(), blockedUntil, reason);
             loginRiskPolicyMapper.insertRiskEvent(policy.getPolicyCode(), "THRESHOLD_REACHED", "USER", String.valueOf(user.getUserIdx()),
                     user.getUserIdx(), context.getIpAddress(), identifier, threshold, observed, "ACCOUNT_TEMP_LOCK", "AUTO_APPLIED",
                     false, blockedUntil, context.getRequestId(), context.getFlowTraceId(), reason);
             maybeProtectAccount(user, identifier, context);
-            String message = "비밀번호 오류 횟수 초과로 로그인이 일시적으로 제한되었습니다. 일정 시간 후 다시 시도해 주세요.";
+            String message = msg(user.getPreferredLang(), "security.login.accountTempLockMessage");
             applyContext(context, policy.getPolicyCode(), message, 0, true, false);
             return LoginRiskDecisionVO.builder().denied(true).locked(true).policyCode(policy.getPolicyCode())
                     .actionType("ACCOUNT_TEMP_LOCK").failReason("ACCOUNT_TEMP_LOCKED")
@@ -658,13 +661,13 @@ public class LoginRiskPolicyService {
         int lockCount = n(loginRiskPolicyMapper.countRecentAccountLocks(user.getUserIdx(), since(policy)));
         int threshold = safeThreshold(policy, 3);
         if (lockCount >= threshold) {
-            String reason = "반복된 로그인 제한으로 계정 보호 조치 전환";
+            String reason = msg(user.getPreferredLang(), "security.login.repeatProtectionReason");
             adminMapper.markMemberBlocked(user.getUserIdx(), null, reason);
             loginRiskPolicyMapper.insertRiskEvent(policy.getPolicyCode(), "PROTECTION_REQUIRED", "USER", String.valueOf(user.getUserIdx()),
                     user.getUserIdx(), context.getIpAddress(), identifier, threshold, lockCount, "ACCOUNT_PROTECTION_REQUIRED", "AUTO_APPLIED",
                     true, null, context.getRequestId(), context.getFlowTraceId(), reason);
             createAdminReview(policy, "ACCOUNT_PROTECTION", "USER", String.valueOf(user.getUserIdx()), user.getUserIdx(), context.getIpAddress(), context,
-                    "계정 보호 조치 검토 필요", reason);
+                    msg(user.getPreferredLang(), "security.login.protectionReviewSummary"), reason);
             sendProtectionNoticeIfPossible(user, context, reason);
         }
     }
@@ -685,12 +688,12 @@ public class LoginRiskPolicyService {
             return null;
         }
         LocalDateTime blockedUntil = lockUntil(policy);
-        String reason = "동일 IP의 반복 로그인 실패로 로그인 일시 제한";
+        String reason = msg(user == null ? null : user.getPreferredLang(), "security.login.ipLockReason");
         loginRiskPolicyMapper.insertIpLoginLockCounter(policy.getPolicyCode(), ip, blockedUntil, reason);
         loginRiskPolicyMapper.insertRiskEvent(policy.getPolicyCode(), "THRESHOLD_REACHED", "IP", ip,
                 user == null ? null : user.getUserIdx(), ip, identifier, threshold, failures, "IP_LOGIN_LOCK", "AUTO_APPLIED",
                 false, blockedUntil, context.getRequestId(), context.getFlowTraceId(), reason);
-        String message = "현재 접속 환경에서 로그인 시도가 일시적으로 제한되었습니다. 잠시 후 다시 시도해 주세요.";
+        String message = msg(user == null ? null : user.getPreferredLang(), "security.login.ipLockMessage");
         applyContext(context, policy.getPolicyCode(), message, 0, true, false);
         return LoginRiskDecisionVO.builder().denied(true).locked(true).policyCode(policy.getPolicyCode()).actionType("IP_LOGIN_LOCK")
                 .failReason("IP_LOGIN_LOCKED").userMessage(message).remainingAttempts(0).blockedUntil(blockedUntil).build();
@@ -702,7 +705,7 @@ public class LoginRiskPolicyService {
         int threshold = safeThreshold(policy, 20);
         int distinctThreshold = policy.getDistinctAccountThreshold() == null ? 0 : policy.getDistinctAccountThreshold();
         if (failures < threshold || (distinctThreshold > 0 && distinct < distinctThreshold)) return;
-        String summary = "반복 로그인 실패 IP 검토 필요";
+        String summary = msg(user == null ? null : user.getPreferredLang(), "security.login.ipReviewSummary");
         String detail = "IP=" + context.getIpAddress() + ", failures=" + failures + ", distinctIdentifiers=" + distinct;
         createAdminReview(policy, "IP_LOGIN_RISK", "IP", context.getIpAddress(), user == null ? null : user.getUserIdx(), context.getIpAddress(), context, summary, detail);
         if (policy.isAiAssistEnabled()) {
@@ -749,7 +752,7 @@ public class LoginRiskPolicyService {
                                 userIdx, ipAddress, countryCode, asn, result.get());
                     }
                 } catch (Exception e) {
-                    log.warn("[LoginRisk] 외부 위험 평가 Provider 실행 실패 provider={}", provider.getClass().getName(), e);
+                    log.warn("[LoginRisk] Failed to run external risk assessment provider. provider={}", provider.getClass().getName(), e);
                 }
             }
         }
@@ -773,7 +776,7 @@ public class LoginRiskPolicyService {
                     "PENDING",
                     null,
                     "REVIEW",
-                    "실제 AI/알고리즘/상위 정책기관 모듈 연결 대기",
+                    msg("ko", "security.assessment.provider.pendingReason"),
                     detail,
                     "PENDING",
                     "{\"provider\":\"not-connected\"}"
@@ -835,7 +838,7 @@ public class LoginRiskPolicyService {
                     null,
                     context == null ? null : context.getRequestId(),
                     context == null ? null : context.getFlowTraceId(),
-                    "인증된 이메일이 없어 계정 보호 조치 안내 메일을 발송하지 않았습니다.");
+                    msg(user == null ? null : user.getPreferredLang(), "security.mail.protection.skipped"));
             return;
         }
 
@@ -852,7 +855,7 @@ public class LoginRiskPolicyService {
                 null,
                 context == null ? null : context.getRequestId(),
                 context == null ? null : context.getFlowTraceId(),
-                sent ? "계정 보호 조치 안내 메일 발송 완료" : "계정 보호 조치 안내 메일 발송 실패");
+                sent ? msg(user.getPreferredLang(), "security.mail.protection.sent") : msg(user.getPreferredLang(), "security.mail.protection.failed"));
     }
 
     private boolean sendMail(String to, String subject, String html) {
@@ -866,47 +869,23 @@ public class LoginRiskPolicyService {
             mailSender.send(message);
             return true;
         } catch (Exception e) {
-            log.warn("[LoginRisk] 보호 조치 안내 메일 발송 실패 to={}", to, e);
+            log.warn("[LoginRisk] Failed to send account protection notice email. to={}", to, e);
             return false;
         }
     }
 
     private String protectionMailSubject(String lang) {
-        return switch (lang) {
-            case "en" -> "[TripTogether] Account protection notice";
-            case "ja" -> "[TripTogether] アカウント保護措置のお知らせ";
-            case "zh" -> "[TripTogether] 账户保护措施通知";
-            default -> "[TripTogether] 계정 보호 조치 안내";
-        };
+        return msg(lang, "security.mail.protection.subject");
     }
 
     private String protectionMailHtml(String lang, String nickname, String reason, String appealUrl) {
         String safeName = nickname == null || nickname.isBlank() ? "TripTogether user" : nickname;
-        String title;
-        String body;
-        String guide;
-        switch (lang) {
-            case "en" -> {
-                title = "Account protection has been applied.";
-                body = "For your security, sign-in to your TripTogether account has been restricted temporarily pending operator review.";
-                guide = "If this was not expected, please contact customer support and provide your account information and recent sign-in context.";
-            }
-            case "ja" -> {
-                title = "アカウント保護措置が適用されました。";
-                body = "セキュリティ保護のため、運営者の確認が完了するまでTripTogetherアカウントのログインが制限されています。";
-                guide = "心当たりがない場合は、カスタマーサポートまでお問い合わせください。";
-            }
-            case "zh" -> {
-                title = "账户已进入保护状态。";
-                body = "为保护账户安全，在运营人员确认之前，您的 TripTogether 账户登录将受到限制。";
-                guide = "如果您认为这是误判，请联系客户支持并提供相关账户信息。";
-            }
-            default -> {
-                title = "계정 보호 조치가 적용되었습니다.";
-                body = "계정 보안을 위해 운영자 확인 전까지 TripTogether 계정 로그인이 제한됩니다.";
-                guide = "본인이 요청하지 않은 상황이라면 고객센터로 문의해 주세요.";
-            }
-        }
+        String title = msg(lang, "security.mail.protection.title");
+        String body = msg(lang, "security.mail.protection.body");
+        String guide = msg(lang, "security.mail.protection.guide");
+        String userLabel = msg(lang, "security.mail.protection.user");
+        String reasonLabel = msg(lang, "security.mail.protection.reason");
+        String appealButton = msg(lang, "security.mail.protection.appealButton");
         return """
                 <!DOCTYPE html>
                 <html><body style="font-family:Arial,'Noto Sans KR',sans-serif;background:#f8fafc;padding:32px">
@@ -915,17 +894,17 @@ public class LoginRiskPolicyService {
                     <p style="line-height:1.7;color:#374151">%s</p>
                     <p style="line-height:1.7;color:#374151">%s</p>
                     <div style="margin-top:20px;padding:16px;border-radius:12px;background:#eff6ff;color:#1e3a8a">
-                        <strong>User</strong>: %s<br>
-                        <strong>Reason</strong>: %s
+                        <strong>%s</strong>: %s<br>
+                        <strong>%s</strong>: %s
                     </div>
                     <p style="margin-top:20px">
                         <a href="%s" style="display:inline-block;background:#2563eb;color:white;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700">
-                            Appeal / Contact Support
+                            %s
                         </a>
                     </p>
                 </div>
                 </body></html>
-                """.formatted(title, body, guide, safeName, reason == null ? "-" : reason, appealUrl);
+                """.formatted(title, body, guide, userLabel, safeName, reasonLabel, reason == null ? "-" : reason, appealUrl, appealButton);
     }
 
     private String normalizeDecision(String decision) {
@@ -963,11 +942,12 @@ public class LoginRiskPolicyService {
     }
 
     private String localizedRemainingMessage(String preferredLang, int remaining) {
-        String lang = normalizeLang(preferredLang);
-        if (lang.startsWith("en")) return "The password is incorrect. Remaining attempts before temporary restriction: " + remaining + ".";
-        if (lang.startsWith("ja")) return "パスワードが正しくありません。一時的な制限まで残り " + remaining + " 回です。";
-        if (lang.startsWith("zh")) return "密码不正确。距离临时限制还剩 " + remaining + " 次尝试。";
-        return "비밀번호가 올바르지 않습니다. 일시 제한 전 남은 시도 횟수는 " + remaining + "회입니다.";
+        return msg(preferredLang, "security.login.remainingAttempts", remaining);
+    }
+
+    private String msg(String lang, String code, Object... args) {
+        Locale locale = Locale.forLanguageTag(normalizeLang(lang));
+        return messageSource.getMessage(code, args, locale);
     }
 
     private String normalizeLang(String preferredLang) {

@@ -77,6 +77,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "classpath:messages/recommend",
                 "classpath:messages/superAdmin",
                 "classpath:messages/shop",
+                "classpath:messages/security",
                 "classpath:messages/wallet"
         );
         messageSource.setDefaultEncoding("UTF-8");

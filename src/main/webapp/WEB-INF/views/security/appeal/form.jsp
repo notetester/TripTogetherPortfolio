@@ -1,10 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html lang="${pageLang}">
 <head>
     <meta charset="UTF-8">
-    <title>보안 조치 이의제기</title>
+    <title><spring:message code="security.appeal.form.pageTitle"/></title>
     <style>
         body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f8fafc; font-family:Arial,'Noto Sans KR',sans-serif; color:#0f172a; }
         .card { width:min(720px, calc(100vw - 32px)); background:#fff; border:1px solid #e2e8f0; border-radius:22px; padding:34px; box-shadow:0 24px 70px rgba(15,23,42,.12); }
@@ -25,11 +26,8 @@
 </head>
 <body>
 <main class="card">
-    <h1>보안 조치 이의제기</h1>
-    <p class="lead">
-        접근 제한이나 계정 보호 조치에 대해 이의가 있는 경우 아래 내용을 작성해 주세요.
-        접수 내용은 비공개로 처리되며 관리자 검토 후 조치됩니다.
-    </p>
+    <h1><spring:message code="security.appeal.form.title"/></h1>
+    <p class="lead"><spring:message code="security.appeal.form.lead"/></p>
 
     <c:if test="${not form.valid}">
         <div class="error">${form.errorMessage}</div>
@@ -37,10 +35,10 @@
 
     <c:if test="${form.valid}">
         <div class="info">
-            <div><strong>대상 유형</strong>: <c:out value="${form.targetType}" default="-"/></div>
-            <div><strong>대상 키</strong>: <c:out value="${form.targetKey}" default="-"/></div>
-            <div><strong>요청 ID</strong>: <c:out value="${form.requestId}" default="-"/></div>
-            <div><strong>차단 유형</strong>: <c:out value="${form.blockKind}" default="-"/> / <c:out value="${form.blockMatchType}" default="-"/></div>
+            <div><strong><spring:message code="security.appeal.form.targetType"/></strong>: <c:out value="${form.targetType}" default="-"/></div>
+            <div><strong><spring:message code="security.appeal.form.targetKey"/></strong>: <c:out value="${form.targetKey}" default="-"/></div>
+            <div><strong><spring:message code="security.appeal.form.requestId"/></strong>: <c:out value="${form.requestId}" default="-"/></div>
+            <div><strong><spring:message code="security.appeal.form.blockType"/></strong>: <c:out value="${form.blockKind}" default="-"/> / <c:out value="${form.blockMatchType}" default="-"/></div>
         </div>
 
         <form method="post" action="${pageContext.request.contextPath}/security/appeal">
@@ -48,29 +46,26 @@
             <input type="hidden" name="requestId" value="${requestId}">
             <input type="hidden" name="lang" value="${pageLang}">
 
-            <label>연락 가능한 이메일
-                <input type="email" name="submitterEmail" placeholder="name@example.com">
+            <label><spring:message code="security.appeal.form.email"/>
+                <input type="email" name="submitterEmail" placeholder="<spring:message code='security.appeal.form.email.placeholder'/>">
             </label>
 
-            <label>제목
-                <input type="text" name="appealTitle" required maxlength="200" value="보안 조치 이의제기">
+            <label><spring:message code="security.appeal.form.subject"/>
+                <input type="text" name="appealTitle" required maxlength="200" value="<spring:message code='security.appeal.form.defaultTitle'/>">
             </label>
 
-            <label>내용
-                <textarea name="appealContent" required maxlength="2000" placeholder="본인이 시도하지 않은 로그인 실패, 오탐 가능성, 정상 이용 상황 등을 구체적으로 작성해 주세요."></textarea>
+            <label><spring:message code="security.appeal.form.content"/>
+                <textarea name="appealContent" required maxlength="2000" placeholder="<spring:message code='security.appeal.form.content.placeholder'/>"></textarea>
             </label>
 
             <div class="actions">
-                <button type="submit">이의제기 접수</button>
-                <a class="btn" href="${pageContext.request.contextPath}/">홈으로</a>
+                <button type="submit"><spring:message code="security.appeal.form.submit"/></button>
+                <a class="btn" href="${pageContext.request.contextPath}/"><spring:message code="security.appeal.form.home"/></a>
             </div>
         </form>
     </c:if>
 
-    <p class="note">
-        보안 정책의 악용을 막기 위해 일부 내부 판단 기준은 공개되지 않을 수 있습니다.
-        접수번호는 제출 완료 화면에서 확인할 수 있습니다.
-    </p>
+    <p class="note"><spring:message code="security.appeal.form.notice"/></p>
 </main>
 </body>
 </html>

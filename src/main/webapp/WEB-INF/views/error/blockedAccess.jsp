@@ -226,7 +226,7 @@
     </section>
 
     <div class="actions">
-        <a class="btn btn-primary" href="${appealUrl}">보안 이의제기</a>
+        <a class="btn btn-primary" href="${appealUrl}"><spring:message code="error.blocked.appeal"/></a>
         <a class="btn" href="${pageContext.request.contextPath}/"><spring:message code="error.blocked.home"/></a>
         <a class="btn" href="${pageContext.request.contextPath}/inquiry/list"><spring:message code="error.blocked.support"/></a>
     </div>
