@@ -7,16 +7,16 @@ import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityWafSyncQueueVO;
 
 @Component
-@Order(20)
+@Order(10)
 @RequiredArgsConstructor
-public class CloudflareWafGatewayAdapter implements WafSyncAdapter {
+public class CloudflareDirectWafAdapter implements WafSyncAdapter {
 
     private final WafSyncHttpClient httpClient;
 
     @Override
     public boolean supports(SecurityAssessmentProviderConfigVO provider, SecurityWafSyncQueueVO item) {
         String code = provider.getProviderCode();
-        return hasEndpoint(provider) && code != null && code.startsWith("CLOUDFLARE");
+        return hasEndpoint(provider) && code != null && (code.startsWith("CLOUDFLARE_DIRECT") || code.startsWith("CLOUDFLARE_API"));
     }
 
     @Override

@@ -81,3 +81,25 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | Escape key | 열린 모달이 닫힌다 |
 | user input fields | summary/detail/reviewComment/userId/nickname 등이 escape 처리되어 출력된다 |
 | processed review | reviewedBy/reviewedAt/reviewComment가 상세 모달에 표시된다 |
+
+
+## 9. Defense in Depth WAF 테스트
+
+| Case | Expected |
+|---|---|
+| Gateway only enabled | Gateway Provider만 실행되고 결과가 큐에 반영된다 |
+| Direct only enabled | Direct Provider만 실행되고 결과가 큐에 반영된다 |
+| Gateway + Direct both enabled | 두 Provider가 모두 실행되고 detailMessage에 결과가 모두 남는다 |
+| one SYNCED, one FAILED | 최종 status = FAILED |
+| one SYNCED, one EXTERNAL_PROVIDER_PENDING | 최종 status = EXTERNAL_PROVIDER_PENDING |
+| all SYNCED | 최종 status = SYNCED |
+
+## 10. Direct Provider 테스트
+
+| Case | Expected |
+|---|---|
+| Cloudflare Direct with endpoint/token | Cloudflare 직접 API URL로 HTTP 호출 |
+| AWS WAF SDK with valid modelName | Wafv2Client가 GetIPSet → UpdateIPSet 실행 |
+| AWS WAF SDK missing ipSetId/ipSetName | FAILED, MISSING_CONFIG 상세 메시지 |
+| AWS WAF SDK IP target | IPv4는 /32, IPv6는 /128로 정규화 |
+| Nginx Direct with endpoint/token | Nginx 관리 API로 HTTP 호출 |

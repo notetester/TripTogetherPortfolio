@@ -92,3 +92,45 @@
 - `WafSyncHttpClient`: 공통 HTTP POST/실패 사유 상세 메시지 생성.
 
 운영 API별 응답 스키마가 확정되면 Adapter별로 응답 파싱만 분리하고, 설정 테이블 구조는 그대로 유지한다.
+
+
+## Defense in Depth WAF 실행 원칙
+
+WAF/CDN 동기화는 Gateway 방식과 Direct 방식 중 하나만 선택하지 않는다.  
+보안의 정석은 계층화된 방어이므로, 활성화된 Provider가 여러 개라면 가능한 Provider를 모두 실행한다.
+
+- Gateway Provider: 내부 Gateway/API를 통해 앞단 보안 장비에 동기화한다.
+- Direct Provider: Cloudflare API, AWS WAF SDK, Nginx 관리 API처럼 대상 시스템에 직접 동기화한다.
+- 최종 큐 상태는 전체 결과를 합산한다.
+  - 하나라도 `FAILED`이면 `FAILED`
+  - 실패는 없지만 하나라도 `EXTERNAL_PROVIDER_PENDING`이면 `EXTERNAL_PROVIDER_PENDING`
+  - 전부 `SYNCED`이면 `SYNCED`
+
+## Direct WAF Provider
+
+### Cloudflare Direct
+
+- Provider code 예: `CLOUDFLARE_DIRECT_WAF`
+- `endpoint_url`: Cloudflare API URL 또는 `{targetValue}` 템플릿이 포함된 내부 Cloudflare 직접 호출 URL
+- `api_key_ref`: `ENV:TRIPTOGETHER_CLOUDFLARE_TOKEN`
+- `model_name`: `method=POST` 또는 `method=DELETE`
+
+### AWS WAF SDK
+
+- Provider code 예: `AWS_WAF_SDK_IPSET`
+- AWS SDK for Java v2 `Wafv2Client`를 사용한다.
+- AWS 인증은 SDK의 Default Credential Provider Chain을 사용한다.
+- `model_name` 예:
+
+```text
+region=ap-northeast-2;scope=REGIONAL;ipSetId=...;ipSetName=...
+```
+
+- IP/CIDR 대상은 IPSet 주소 목록에 추가/삭제한다.
+- 단일 IPv4는 `/32`, 단일 IPv6는 `/128`로 정규화한다.
+
+### Nginx Direct
+
+- Provider code 예: `NGINX_DIRECT_WAF`
+- Nginx Plus API 또는 내부 관리 API URL을 `endpoint_url`에 넣는다.
+- OSS Nginx의 설정 파일 직접 수정/리로드는 운영 위험이 크므로, 별도 관리 API 또는 Gateway를 두고 호출하는 방식이 안전하다.

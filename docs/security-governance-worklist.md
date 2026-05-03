@@ -49,19 +49,24 @@
 - AI/정책기관 Provider Adapter 분리
 - 보안 판단/검토 관리자 화면 추가 XSS escape 정리
 - 보안 검토 큐 상세 모달 1차 구현
+- 과거 SECURITY_ACTION_AUDIT reason_code/reason_args 백필 SQL
+- Nginx Direct API WAF Adapter
+- AWS WAF SDK IPSet Adapter
+- Cloudflare Direct API WAF Adapter
+- Gateway + Direct Defense in Depth WAF 실행 구조
 
 ## 남은 작업
 
 ### 외부 연동
 
-- 실제 운영 AI/정책기관/WAF API 계약 확정
-- 운영 API별 실제 응답 스키마 매핑 확정
+- 실제 운영 AI/정책기관 API 계약 확정
+- 운영 AI/정책기관 API별 실제 응답 스키마 매핑 확정
 - Provider별 Secret 관리 방식 최종 확정
 - 외부 Provider 장애 시 fail-open / fail-closed 정책별 통합 테스트
 
 ### 데이터 모델 고도화
 
-- 기존 DB 감사 사유 중 과거 데이터/타 도메인 로그를 `reason_code` + `reason_args` 구조로 점진 전환
+- 보안 도메인 외 타 도메인 감사 로그의 `reason_code` + `reason_args` 전환 여부 검토
 - 기존 `LOGIN_RISK_EXTERNAL_ASSESSMENT`와 `SECURITY_RISK_ASSESSMENT`의 장기 통합 방향 결정
 - `SECURITY_REVIEW_QUEUE`와 `SECURITY_RISK_ASSESSMENT` 상태 전이 규칙 상세 문서화
 

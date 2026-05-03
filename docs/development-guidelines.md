@@ -51,3 +51,12 @@
 - 목록 화면에서 사용자 입력/외부 Provider 응답을 상세로 보여줄 때도 반드시 escape한다.
 - 모달 내부의 summary, detailMessage, reviewComment, provider response는 `<c:out>` 또는 동등한 escaping을 사용한다.
 - 모달 UI 추가만으로 DB 구조를 변경하지 않는다.
+
+
+## Defense in Depth WAF 원칙
+
+- Gateway 방식과 Direct 방식은 양자택일이 아니라 함께 사용할 수 있어야 한다.
+- 활성화된 WAF Provider가 여러 개면 가능한 Provider를 모두 실행한다.
+- Provider별 실패 결과는 하나의 detailMessage에 모두 남겨야 한다.
+- AWS WAF SDK, Cloudflare Direct API, Nginx Direct API는 기존 Provider 설정 테이블을 그대로 사용한다.
+- Provider별 새 테이블을 만들지 않는다.

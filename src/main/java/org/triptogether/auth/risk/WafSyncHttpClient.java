@@ -37,10 +37,21 @@ public class WafSyncHttpClient {
 
             String apiKey = secretResolver.resolve(provider.getApiKeyRef());
             HttpRequest.Builder builder = HttpRequest.newBuilder()
-                    .uri(URI.create(provider.getEndpointUrl()))
+                    .uri(URI.create(resolveEndpoint(provider.getEndpointUrl(), item)))
                     .timeout(Duration.ofMillis(provider.getTimeoutMillis() == null ? 3000 : provider.getTimeoutMillis()))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(payload)));
+                    .header("Content-Type", "application/json");
+
+            String body = objectMapper.writeValueAsString(payload);
+            String method = resolveMethod(provider, item);
+            if ("DELETE".equals(method)) {
+                builder.method("DELETE", HttpRequest.BodyPublishers.ofString(body));
+            } else if ("PUT".equals(method)) {
+                builder.PUT(HttpRequest.BodyPublishers.ofString(body));
+            } else if ("PATCH".equals(method)) {
+                builder.method("PATCH", HttpRequest.BodyPublishers.ofString(body));
+            } else {
+                builder.POST(HttpRequest.BodyPublishers.ofString(body));
+            }
             if (apiKey != null && !apiKey.isBlank()) {
                 builder.header("Authorization", "Bearer " + apiKey);
             }
@@ -73,6 +84,46 @@ public class WafSyncHttpClient {
                     .message(detail(provider, e.getClass().getSimpleName(), e.getMessage()))
                     .build();
         }
+    }
+
+
+    private String resolveEndpoint(String endpointUrl, SecurityWafSyncQueueVO item) {
+        if (endpointUrl == null) {
+            return "";
+        }
+        return endpointUrl
+                .replace("{syncIdx}", safe(String.valueOf(item.getSyncIdx())))
+                .replace("{sourceType}", safe(item.getSourceType()))
+                .replace("{sourceId}", safe(String.valueOf(item.getSourceId())))
+                .replace("{syncAction}", safe(item.getSyncAction()))
+                .replace("{targetType}", safe(item.getTargetType()))
+                .replace("{targetValue}", safe(item.getTargetValue()));
+    }
+
+    private String resolveMethod(SecurityAssessmentProviderConfigVO provider, SecurityWafSyncQueueVO item) {
+        Map<String, String> config = parseModelConfig(provider.getModelName());
+        String method = config.get("method");
+        if (method != null && !method.isBlank()) {
+            return method.trim().toUpperCase();
+        }
+        if ("UNBLOCK".equals(item.getSyncAction()) || "DELETE".equals(item.getSyncAction()) || "REMOVE".equals(item.getSyncAction())) {
+            return "DELETE";
+        }
+        return "POST";
+    }
+
+    private Map<String, String> parseModelConfig(String value) {
+        Map<String, String> result = new LinkedHashMap<>();
+        if (value == null || value.isBlank()) {
+            return result;
+        }
+        for (String token : value.split(";")) {
+            int idx = token.indexOf('=');
+            if (idx > 0) {
+                result.put(token.substring(0, idx).trim(), token.substring(idx + 1).trim());
+            }
+        }
+        return result;
     }
 
     private String detail(SecurityAssessmentProviderConfigVO provider, String result, String reason) {
