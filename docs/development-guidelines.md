@@ -44,3 +44,10 @@
 - `SECURITY_ASSESSMENT_PROVIDER_CONFIG`의 `provider_kind`, `provider_code`, `endpoint_url`, `api_key_ref`, `fail_open`을 기준으로 Java Adapter에서 분기한다.
 - 운영 API별 응답 스키마가 확정되면 새 테이블보다 Adapter 응답 파서 분리를 우선 검토한다.
 - WAF/CDN 실패 사유는 `LOGIN_RISK_WAF_SYNC_QUEUE.detail_message`에 providerCode, providerKind, status, failOpen, reason을 포함해 운영자가 추적 가능하게 남긴다.
+
+
+## 관리자 상세 모달 원칙
+
+- 목록 화면에서 사용자 입력/외부 Provider 응답을 상세로 보여줄 때도 반드시 escape한다.
+- 모달 내부의 summary, detailMessage, reviewComment, provider response는 `<c:out>` 또는 동등한 escaping을 사용한다.
+- 모달 UI 추가만으로 DB 구조를 변경하지 않는다.

@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="activeMenu" value="securityRiskAssessments"/>
 <spring:message var="pageTitle" code="security.admin.securityAssessments.title"/>
 <spring:message var="keywordPlaceholder" code="security.admin.placeholder.accountIpEvidenceSource"/>
@@ -22,7 +23,7 @@
     </div>
 
     <c:if test="${not empty message}">
-        <div class="adm-alert success">${message}</div>
+        <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
     <form method="get" class="adm-card" style="margin-bottom:16px;">
@@ -65,7 +66,7 @@
                 </select>
             </label>
             <label><spring:message code="security.admin.common.search"/>
-                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="${keywordPlaceholder}">
+                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${keywordPlaceholder}">
             </label>
             <div style="align-self:end;">
                 <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.search"/></button>
@@ -91,33 +92,33 @@
             <c:forEach var="a" items="${assessments}">
                 <tr>
                     <td>
-                        <strong>${a.assessmentScope}</strong><br>
-                        <small>${a.sourceKind}</small><br>
-                        <small>${a.sourceName}</small>
+                        <strong><c:out value="${a.assessmentScope}"/></strong><br>
+                        <small><c:out value="${a.sourceKind}"/></small><br>
+                        <small><c:out value="${a.sourceName}"/></small>
                     </td>
                     <td>
-                        ${a.subjectType}: ${a.subjectKey}<br>
-                        <c:if test="${not empty a.userId}"><small>${a.userId} / ${a.nickname}</small><br></c:if>
-                        <c:if test="${not empty a.ipAddress}"><small>IP: ${a.ipAddress}</small></c:if>
+                        <c:out value="${a.subjectType}"/>: <c:out value="${a.subjectKey}"/><br>
+                        <c:if test="${not empty a.userId}"><small><c:out value="${a.userId}"/> / <c:out value="${a.nickname}"/></small><br></c:if>
+                        <c:if test="${not empty a.ipAddress}"><small><spring:message code="security.admin.common.ip"/>: <c:out value="${a.ipAddress}"/></small></c:if>
                     </td>
                     <td>
-                        <strong>${a.riskLevel}</strong>
-                        <c:if test="${not empty a.riskScore}"><br><small>score ${a.riskScore}</small></c:if>
-                        <c:if test="${not empty a.confidenceScore}"><br><small>confidence ${a.confidenceScore}</small></c:if>
+                        <strong><c:out value="${fn:escapeXml(a.riskLevel)}"/></strong>
+                        <c:if test="${not empty a.riskScore}"><br><small>score <c:out value="${a.riskScore}"/></small></c:if>
+                        <c:if test="${not empty a.confidenceScore}"><br><small>confidence <c:out value="${a.confidenceScore}"/></small></c:if>
                     </td>
                     <td>
-                        <strong>${a.recommendationAction}</strong><br>
-                        <small>${a.recommendationReason}</small>
+                        <strong><c:out value="${fn:escapeXml(a.recommendationAction)}"/></strong><br>
+                        <small><c:out value="${a.recommendationReason}"/></small>
                     </td>
-                    <td>${a.evidenceSummary}</td>
-                    <td>${a.decisionStatus}</td>
+                    <td><c:out value="${fn:escapeXml(a.evidenceSummary)}"/></td>
+                    <td><c:out value="${a.decisionStatus}"/></td>
                     <td><fmt:formatDate value="${a.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                     <td>
                         <c:if test="${a.decisionStatus != 'APPLIED'}">
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-assessments/${a.assessmentIdx}/create-review" style="display:inline;">
-                                <input type="hidden" name="severity" value="${a.riskLevel}">
-                                <input type="hidden" name="summary" value="${a.recommendationAction}">
-                                <input type="hidden" name="detailMessage" value="${a.evidenceSummary}">
+                                <input type="hidden" name="severity" value="${fn:escapeXml(a.riskLevel)}">
+                                <input type="hidden" name="summary" value="${fn:escapeXml(a.recommendationAction)}">
+                                <input type="hidden" name="detailMessage" value="${fn:escapeXml(a.evidenceSummary)}">
                                 <button class="adm-btn" type="submit"><spring:message code="security.admin.common.enqueueReview"/></button>
                             </form>
                         </c:if>

@@ -2,13 +2,30 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="activeMenu" value="securityReviews"/>
 <spring:message var="pageTitle" code="security.admin.securityReviews.title"/>
 <spring:message var="keywordPlaceholder" code="security.admin.placeholder.accountIpSummary"/>
+<spring:message var="reviewTypePlaceholder" code="security.admin.placeholder.reviewType"/>
+<spring:message var="manualCommentPlaceholder" code="security.admin.placeholder.reviewComment"/>
 <spring:message var="securityReviewApproveComment" code="security.admin.comment.approved"/>
 <spring:message var="securityReviewHoldComment" code="security.admin.comment.needMoreCheck"/>
 <spring:message var="securityReviewRejectComment" code="security.admin.comment.noAction"/>
 <%@ include file="../layout.jsp" %>
+<style>
+    .review-detail-modal { display:none; position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:2000; align-items:center; justify-content:center; padding:24px; }
+    .review-detail-modal.is-open { display:flex; }
+    .review-detail-card { width:min(920px, calc(100vw - 48px)); max-height:calc(100vh - 80px); overflow:auto; background:#fff; border-radius:18px; box-shadow:0 24px 80px rgba(15,23,42,.28); padding:24px; }
+    .review-detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:14px; }
+    .review-detail-item { background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px; }
+    .review-detail-item strong { display:block; margin-bottom:6px; color:#334155; }
+    .review-detail-pre { white-space:pre-wrap; line-height:1.65; }
+</style>
+<script>
+    function openSecurityReviewDetail(id) { document.getElementById(id).classList.add("is-open"); }
+    function closeSecurityReviewDetail(id) { document.getElementById(id).classList.remove("is-open"); }
+    document.addEventListener("keydown", function(e) { if (e.key === "Escape") { document.querySelectorAll(".review-detail-modal.is-open").forEach(function(m) { m.classList.remove("is-open"); }); } });
+</script>
 
 <div class="adm-content">
     <div class="adm-page-head">
@@ -23,7 +40,7 @@
     </div>
 
     <c:if test="${not empty message}">
-        <div class="adm-alert success">${message}</div>
+        <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
     <form method="get" class="adm-card" style="margin-bottom:16px;">
@@ -47,10 +64,10 @@
                 </select>
             </label>
             <label><spring:message code="security.admin.common.type"/>
-                <input class="adm-input" type="text" name="reviewType" value="${reviewType}" placeholder="USER_SECURITY_REVIEW">
+                <input class="adm-input" type="text" name="reviewType" value="${fn:escapeXml(reviewType)}" placeholder="${reviewTypePlaceholder}">
             </label>
             <label><spring:message code="security.admin.common.search"/>
-                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="${keywordPlaceholder}">
+                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${keywordPlaceholder}">
             </label>
             <div style="align-self:end;">
                 <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.search"/></button>
@@ -74,38 +91,41 @@
             <tbody>
             <c:forEach var="r" items="${reviews}">
                 <tr>
-                    <td><span class="adm-badge">${r.reviewStatus}</span></td>
-                    <td>${r.severity}</td>
-                    <td>${r.reviewType}<br><small>${r.assessmentScope}</small></td>
+                    <td><span class="adm-badge"><c:out value="${r.reviewStatus}"/></span></td>
+                    <td><c:out value="${r.severity}"/></td>
+                    <td><c:out value="${r.reviewType}"/><br><small><c:out value="${r.assessmentScope}"/></small></td>
                     <td>
-                        ${r.subjectType}: ${r.subjectKey}<br>
-                        <c:if test="${not empty r.userId}"><small>${r.userId} / ${r.nickname}</small></c:if>
+                        <c:out value="${r.subjectType}"/>: <c:out value="${r.subjectKey}"/><br>
+                        <c:if test="${not empty r.userId}"><small><c:out value="${r.userId}"/> / <c:out value="${r.nickname}"/></small></c:if>
                     </td>
                     <td>
-                        <strong>${r.summary}</strong><br>
-                        <small>${r.detailMessage}</small>
+                        <strong><c:out value="${r.summary}"/></strong><br>
+                        <small><c:out value="${r.detailMessage}"/></small>
                         <c:if test="${not empty r.reviewComment}">
-                            <br><small><spring:message code="security.admin.common.reviewComment"/>: ${r.reviewComment}</small>
+                            <br><small><spring:message code="security.admin.common.reviewComment"/>: <c:out value="${r.reviewComment}"/></small>
                         </c:if>
                     </td>
                     <td><fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                     <td>
+                        <button class="adm-btn" type="button" onclick="openSecurityReviewDetail('securityReviewDetail${r.reviewIdx}')">
+                            <spring:message code="security.admin.common.detail"/>
+                        </button>
                         <c:if test="${r.reviewStatus == 'PENDING' || r.reviewStatus == 'HOLD'}">
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-reviews/${r.reviewIdx}/approve" style="display:inline;">
-                                <input type="hidden" name="comment" value="${securityReviewApproveComment}">
+                                <input type="hidden" name="comment" value="${fn:escapeXml(securityReviewApproveComment)}">
                                 <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.approve"/></button>
                             </form>
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-reviews/${r.reviewIdx}/hold" style="display:inline;">
-                                <input type="hidden" name="comment" value="${securityReviewHoldComment}">
+                                <input type="hidden" name="comment" value="${fn:escapeXml(securityReviewHoldComment)}">
                                 <button class="adm-btn" type="submit"><spring:message code="security.admin.common.hold"/></button>
                             </form>
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-reviews/${r.reviewIdx}/reject" style="display:inline;">
-                                <input type="hidden" name="comment" value="${securityReviewRejectComment}">
+                                <input type="hidden" name="comment" value="${fn:escapeXml(securityReviewRejectComment)}">
                                 <button class="adm-btn danger" type="submit"><spring:message code="security.admin.common.reject"/></button>
                             </form>
                         </c:if>
                         <c:if test="${r.reviewStatus != 'PENDING' && r.reviewStatus != 'HOLD'}">
-                            <small>${r.reviewedByUserId} / <fmt:formatDate value="${r.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></small>
+                            <small><c:out value="${r.reviewedByUserId}"/> / <fmt:formatDate value="${r.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></small>
                         </c:if>
                     </td>
                 </tr>

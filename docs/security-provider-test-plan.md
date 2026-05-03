@@ -70,3 +70,14 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | HTTP 5xx | detailMessage에 providerCode, providerKind, HTTP status, failOpen, reason 표시 |
 | Timeout | detailMessage에 exception class, failOpen, reason 표시 |
 | Manual retry | status가 PENDING으로 바뀌고 기존 상세 메시지보다 재시도 요청 사유가 표시 |
+
+
+## 8. Security Review Detail Modal 테스트
+
+| Case | Expected |
+|---|---|
+| detail button click | 상세 모달이 열린다 |
+| outside click | 모달이 닫힌다 |
+| Escape key | 열린 모달이 닫힌다 |
+| user input fields | summary/detail/reviewComment/userId/nickname 등이 escape 처리되어 출력된다 |
+| processed review | reviewedBy/reviewedAt/reviewComment가 상세 모달에 표시된다 |
