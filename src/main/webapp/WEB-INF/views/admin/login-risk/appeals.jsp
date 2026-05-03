@@ -1,19 +1,24 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="securityAppeals"/>
-<c:set var="pageTitle" value="보안 조치 이의제기"/>
+<spring:message var="pageTitle" code="security.admin.appeals.title"/>
+<spring:message var="keywordPlaceholder" code="security.admin.placeholder.accountTitleTarget"/>
+<spring:message var="appealAcceptComment" code="security.admin.comment.appealAccepted"/>
+<spring:message var="appealHoldComment" code="security.admin.comment.needMoreCheck"/>
+<spring:message var="appealRejectComment" code="security.admin.comment.appealRejected"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1>보안 조치 이의제기</h1>
-            <p class="adm-page-desc">자동 차단, 콘텐츠 조치, 접근 제한에 대한 이의제기를 운영자가 검토합니다.</p>
+            <h1><spring:message code="security.admin.appeals.title"/></h1>
+            <p class="adm-page-desc"><spring:message code="security.admin.appeals.desc"/></p>
         </div>
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">보안 위험 판단</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">일반 검토 큐</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments"><spring:message code="security.admin.nav.securityAssessments"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews"><spring:message code="security.admin.nav.securityReviews"/></a>
         </div>
     </div>
 
@@ -23,23 +28,23 @@
 
     <form method="get" class="adm-card" style="margin-bottom:16px;">
         <div class="adm-form-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
-            <label>상태
+            <label><spring:message code="security.admin.common.status"/>
                 <select class="adm-input" name="status">
-                    <option value="">전체</option>
+                    <option value=""><spring:message code="security.admin.common.all"/></option>
                     <option value="PENDING" ${status == 'PENDING' ? 'selected' : ''}>PENDING</option>
                     <option value="HOLD" ${status == 'HOLD' ? 'selected' : ''}>HOLD</option>
                     <option value="ACCEPTED" ${status == 'ACCEPTED' ? 'selected' : ''}>ACCEPTED</option>
                     <option value="REJECTED" ${status == 'REJECTED' ? 'selected' : ''}>REJECTED</option>
                 </select>
             </label>
-            <label>대상 유형
+            <label><spring:message code="security.admin.common.targetType"/>
                 <input class="adm-input" type="text" name="targetType" value="${targetType}" placeholder="USER_BLOCK">
             </label>
-            <label>검색
-                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="계정, 제목, 대상">
+            <label><spring:message code="security.admin.common.search"/>
+                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="${keywordPlaceholder}">
             </label>
             <div style="align-self:end;">
-                <button class="adm-btn primary" type="submit">검색</button>
+                <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.search"/></button>
             </div>
         </div>
     </form>
@@ -48,51 +53,70 @@
         <table class="adm-table">
             <thead>
             <tr>
-                <th>상태</th>
-                <th>사용자</th>
-                <th>대상</th>
-                <th>제목/내용</th>
-                <th>접수일</th>
-                <th>처리</th>
+                <th><spring:message code="security.admin.common.status"/></th>
+                <th><spring:message code="security.admin.common.user"/></th>
+                <th><spring:message code="security.admin.common.target"/></th>
+                <th><spring:message code="security.admin.common.titleContent"/></th>
+                <th><spring:message code="security.admin.common.submittedAt"/></th>
+                <th><spring:message code="security.admin.common.action"/></th>
             </tr>
             </thead>
             <tbody>
             <c:forEach var="a" items="${appeals}">
                 <tr>
-                    <td><span class="adm-badge">${a.appealStatus}</span></td>
-                    <td>${empty a.userId ? '-' : a.userId}<br><small>${empty a.nickname ? '-' : a.nickname}</small></td>
-                    <td>${a.targetType}<br><small>${a.targetKey}</small></td>
+                    <td><span class="adm-badge"><c:out value="${a.appealStatus}"/></span></td>
                     <td>
-                        <strong>${a.appealTitle}</strong><br>
-                        <small>${a.appealContent}</small>
+                        <c:choose>
+                            <c:when test="${empty a.userId}">-</c:when>
+                            <c:otherwise><c:out value="${a.userId}"/></c:otherwise>
+                        </c:choose>
+                        <br>
+                        <small>
+                            <c:choose>
+                                <c:when test="${empty a.nickname}">-</c:when>
+                                <c:otherwise><c:out value="${a.nickname}"/></c:otherwise>
+                            </c:choose>
+                        </small>
+                    </td>
+                    <td><c:out value="${a.targetType}"/><br><small><c:out value="${a.targetKey}"/></small></td>
+                    <td>
+                        <strong><c:out value="${a.appealTitle}"/></strong><br>
+                        <small><c:out value="${a.appealContent}"/></small>
                         <c:if test="${not empty a.reviewComment}">
-                            <br><small>처리 메모: ${a.reviewComment}</small>
+                            <br><small><spring:message code="security.admin.common.reviewComment"/>: <c:out value="${a.reviewComment}"/></small>
                         </c:if>
+                        <div class="adm-muted" style="margin-top:8px;line-height:1.7;">
+                            <small><spring:message code="security.admin.common.publicRequestId"/>: <c:out value="${a.publicRequestId}" default="-"/></small><br>
+                            <small><spring:message code="security.admin.common.contactEmail"/>: <c:out value="${a.submitterEmail}" default="-"/></small><br>
+                            <small><spring:message code="security.admin.common.privateInquiry"/>: <c:out value="${a.inquiryId}" default="-"/></small><br>
+                            <small><spring:message code="security.admin.common.blockAccessRequest"/>: <c:out value="${a.blockAccessRequestId}" default="-"/></small><br>
+                            <small><spring:message code="security.admin.common.blockRequest"/>: <c:out value="${a.blockRequestId}" default="-"/></small>
+                        </div>
                     </td>
                     <td><fmt:formatDate value="${a.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                     <td>
                         <c:if test="${a.appealStatus == 'PENDING' || a.appealStatus == 'HOLD'}">
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/accept" style="display:inline;">
-                                <input type="hidden" name="comment" value="이의제기 수용">
-                                <button class="adm-btn primary" type="submit">수용</button>
+                                <input type="hidden" name="comment" value="${appealAcceptComment}">
+                                <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.accept"/></button>
                             </form>
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/hold" style="display:inline;">
-                                <input type="hidden" name="comment" value="추가 확인 필요">
-                                <button class="adm-btn" type="submit">보류</button>
+                                <input type="hidden" name="comment" value="${appealHoldComment}">
+                                <button class="adm-btn" type="submit"><spring:message code="security.admin.common.hold"/></button>
                             </form>
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/reject" style="display:inline;">
-                                <input type="hidden" name="comment" value="이의제기 미수용">
-                                <button class="adm-btn danger" type="submit">미수용</button>
+                                <input type="hidden" name="comment" value="${appealRejectComment}">
+                                <button class="adm-btn danger" type="submit"><spring:message code="security.admin.common.rejectAppeal"/></button>
                             </form>
                         </c:if>
                         <c:if test="${a.appealStatus != 'PENDING' && a.appealStatus != 'HOLD'}">
-                            <small>${a.reviewedByUserId} / <fmt:formatDate value="${a.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></small>
+                            <small><c:out value="${a.reviewedByUserId}"/> / <fmt:formatDate value="${a.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></small>
                         </c:if>
                     </td>
                 </tr>
             </c:forEach>
             <c:if test="${empty appeals}">
-                <tr><td colspan="6" class="adm-empty">이의제기 데이터가 없습니다.</td></tr>
+                <tr><td colspan="6" class="adm-empty"><spring:message code="security.admin.empty.appeals"/></td></tr>
             </c:if>
             </tbody>
         </table>

@@ -8,6 +8,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.triptogether.admin.mapper.AdminMapper;
 import org.triptogether.auth.mapper.LoginRiskPolicyMapper;
@@ -19,6 +20,7 @@ import org.triptogether.auth.vo.LoginRiskReviewVO;
 import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityReviewVO;
+import org.triptogether.auth.vo.SecurityWafSyncQueueVO;
 import org.triptogether.auth.vo.SecurityAppealVO;
 import org.triptogether.auth.vo.SecurityAppealFormVO;
 import org.triptogether.auth.vo.SecurityAppealTokenVO;
@@ -148,6 +150,8 @@ public class LoginRiskPolicyService {
             }
         } else if ("REJECTED".equals(normalized) && review.getAssessmentIdx() != null) {
             loginRiskPolicyMapper.updateSecurityRiskAssessmentDecision(review.getAssessmentIdx(), "IGNORED");
+        } else if ("HOLD".equals(normalized) && review.getAssessmentIdx() != null) {
+            loginRiskPolicyMapper.updateSecurityRiskAssessmentDecision(review.getAssessmentIdx(), "PENDING");
         }
     }
 
@@ -241,6 +245,7 @@ public class LoginRiskPolicyService {
             return;
         }
         if (appeal.getTargetType().contains("USER")) {
+            loginRiskPolicyMapper.insertUserBlockReleaseHistoryFromAppeal(appeal.getTargetKey(), actorUserIdx, reason, appeal.getAppealIdx());
             loginRiskPolicyMapper.releaseUserBlockByTargetKey(appeal.getTargetKey(), actorUserIdx, reason);
             loginRiskPolicyMapper.restoreUserStatusByTargetKey(appeal.getTargetKey(), reason);
         } else if (appeal.getTargetType().contains("IP")) {
@@ -274,6 +279,43 @@ public class LoginRiskPolicyService {
                 msg("ko", "security.provider.audit.configUpdate"),
                 "enabled=" + config.isEnabled() + ", endpoint=" + config.getEndpointUrl()
         );
+    }
+
+
+    @Scheduled(fixedDelayString = "${security.provider.healthcheck.fixed-delay-ms:300000}")
+    @Transactional
+    public void runProviderHealthCheckOnce() {
+        List<SecurityAssessmentProviderConfigVO> providers = loginRiskPolicyMapper.findProviderConfigsForHealthCheck();
+        for (SecurityAssessmentProviderConfigVO provider : providers) {
+            String status;
+            String description;
+            if (!provider.isEnabled()) {
+                status = "DISABLED";
+                description = msg("ko", "security.provider.health.disabled");
+            } else if (provider.getEndpointUrl() == null || provider.getEndpointUrl().isBlank()) {
+                status = "READY";
+                description = msg("ko", "security.provider.health.readyNoEndpoint");
+            } else {
+                status = "READY";
+                description = msg("ko", "security.provider.health.readyExternalPending");
+            }
+            loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), status, description);
+        }
+    }
+
+    @Scheduled(fixedDelayString = "${security.waf.sync.fixed-delay-ms:300000}")
+    @Transactional
+    public void processWafSyncQueueOnce() {
+        List<SecurityWafSyncQueueVO> pendingItems = loginRiskPolicyMapper.findPendingWafSyncQueue(20);
+        for (SecurityWafSyncQueueVO item : pendingItems) {
+            // 실제 Cloudflare/AWS WAF/Nginx 연동 Provider는 런칭 시점에 별도로 연결한다.
+            // 지금은 큐 워커 골격을 통해 상태가 방치되지 않도록 EXTERNAL_PROVIDER_PENDING으로 정리한다.
+            loginRiskPolicyMapper.updateWafSyncStatus(
+                    item.getSyncIdx(),
+                    "EXTERNAL_PROVIDER_PENDING",
+                    msg("ko", "security.waf.sync.providerPending")
+            );
+        }
     }
 
     @Transactional
@@ -396,7 +438,7 @@ public class LoginRiskPolicyService {
         if (token != null && !token.isBlank()) {
             tokenVO = loginRiskPolicyMapper.findAppealToken(token, LocalDateTime.now());
             if (tokenVO == null) {
-                throw new IllegalArgumentException(msg(lang, "security.appeal.error.tokenInvalid"));
+                throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.tokenInvalid"));
             }
         }
 

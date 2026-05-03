@@ -9,6 +9,7 @@ import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityReviewVO;
+import org.triptogether.auth.vo.SecurityWafSyncQueueVO;
 import org.triptogether.auth.vo.SecurityAppealVO;
 import org.triptogether.auth.vo.SecurityAppealTokenVO;
 import org.triptogether.auth.vo.SecurityAppealFormVO;
@@ -106,6 +107,11 @@ public interface LoginRiskPolicyMapper {
                             @Param("status") String status,
                             @Param("detailMessage") String detailMessage);
 
+    List<SecurityWafSyncQueueVO> findPendingWafSyncQueue(@Param("limit") int limit);
+
+    void updateWafSyncStatus(@Param("syncIdx") Long syncIdx,
+                             @Param("status") String status,
+                             @Param("detailMessage") String detailMessage);
     void insertAiAssessment(@Param("sourceType") String sourceType,
                             @Param("sourceId") Long sourceId,
                             @Param("riskScore") Integer riskScore,
@@ -176,6 +182,9 @@ public interface LoginRiskPolicyMapper {
 
     void updateSecurityRiskAssessmentDecision(@Param("assessmentIdx") Long assessmentIdx,
                                               @Param("decisionStatus") String decisionStatus);
+
+    void updateSecurityRiskAssessmentDecisionByReview(@Param("reviewIdx") Long reviewIdx,
+                                                      @Param("decisionStatus") String decisionStatus);
 
     List<SecurityReviewVO> findSecurityReviews(@Param("status") String status,
                                                @Param("severity") String severity,
@@ -261,6 +270,11 @@ public interface LoginRiskPolicyMapper {
     void releaseUserBlockByTargetKey(@Param("targetKey") String targetKey,
                                      @Param("actorUserIdx") Long actorUserIdx,
                                      @Param("reason") String reason);
+
+    void insertUserBlockReleaseHistoryFromAppeal(@Param("targetKey") String targetKey,
+                                                 @Param("actorUserIdx") Long actorUserIdx,
+                                                 @Param("reason") String reason,
+                                                 @Param("appealIdx") Long appealIdx);
 
     void releaseIpBlockByTargetKey(@Param("targetKey") String targetKey,
                                    @Param("actorUserIdx") Long actorUserIdx,

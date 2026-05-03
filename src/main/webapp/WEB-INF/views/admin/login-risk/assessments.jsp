@@ -1,37 +1,39 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="loginRiskAssessments"/>
-<c:set var="pageTitle" value="로그인 위험 외부 판단"/>
+<spring:message var="pageTitle" code="security.admin.externalAssessments.title"/>
+<spring:message var="keywordPlaceholder" code="security.admin.placeholder.ipAccountSourceReason"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1>로그인 위험 외부 판단</h1>
-            <p class="adm-page-desc">AI, 규칙 알고리즘, 상위 보안 정책기관/관제센터의 보조 판단 결과를 확인합니다.</p>
+            <h1><spring:message code="security.admin.externalAssessments.title"/></h1>
+            <p class="adm-page-desc"><spring:message code="security.admin.externalAssessments.desc"/></p>
         </div>
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies">정책 설정</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews">검토 큐</a>
-                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">보안 위험 판단</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies"><spring:message code="security.admin.nav.policies"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews"><spring:message code="security.admin.nav.reviews"/></a>
+                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments"><spring:message code="security.admin.nav.securityAssessments"/></a>
         </div>
     </div>
 
     <form method="get" class="adm-card" style="margin-bottom:16px;">
         <div class="adm-form-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;">
-            <label>판단 출처
+            <label><spring:message code="security.admin.common.sourceKind"/>
                 <select class="adm-input" name="sourceKind">
-                    <option value="">전체</option>
+                    <option value=""><spring:message code="security.admin.common.all"/></option>
                     <option value="AI_MODEL" ${sourceKind == 'AI_MODEL' ? 'selected' : ''}>AI_MODEL</option>
                     <option value="RULE_ALGORITHM" ${sourceKind == 'RULE_ALGORITHM' ? 'selected' : ''}>RULE_ALGORITHM</option>
                     <option value="POLICY_AUTHORITY" ${sourceKind == 'POLICY_AUTHORITY' ? 'selected' : ''}>POLICY_AUTHORITY</option>
                     <option value="ASSESSMENT_PIPELINE" ${sourceKind == 'ASSESSMENT_PIPELINE' ? 'selected' : ''}>ASSESSMENT_PIPELINE</option>
                 </select>
             </label>
-            <label>위험도
+            <label><spring:message code="security.admin.common.riskLevel"/>
                 <select class="adm-input" name="riskLevel">
-                    <option value="">전체</option>
+                    <option value=""><spring:message code="security.admin.common.all"/></option>
                     <option value="CRITICAL" ${riskLevel == 'CRITICAL' ? 'selected' : ''}>CRITICAL</option>
                     <option value="HIGH" ${riskLevel == 'HIGH' ? 'selected' : ''}>HIGH</option>
                     <option value="MEDIUM" ${riskLevel == 'MEDIUM' ? 'selected' : ''}>MEDIUM</option>
@@ -39,20 +41,20 @@
                     <option value="PENDING" ${riskLevel == 'PENDING' ? 'selected' : ''}>PENDING</option>
                 </select>
             </label>
-            <label>결정 상태
+            <label><spring:message code="security.admin.common.decisionStatus"/>
                 <select class="adm-input" name="decisionStatus">
-                    <option value="">전체</option>
+                    <option value=""><spring:message code="security.admin.common.all"/></option>
                     <option value="PROPOSED" ${decisionStatus == 'PROPOSED' ? 'selected' : ''}>PROPOSED</option>
                     <option value="APPLIED" ${decisionStatus == 'APPLIED' ? 'selected' : ''}>APPLIED</option>
                     <option value="IGNORED" ${decisionStatus == 'IGNORED' ? 'selected' : ''}>IGNORED</option>
                     <option value="PENDING" ${decisionStatus == 'PENDING' ? 'selected' : ''}>PENDING</option>
                 </select>
             </label>
-            <label>검색
-                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="IP, 계정, 출처, 사유">
+            <label><spring:message code="security.admin.common.search"/>
+                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="${keywordPlaceholder}">
             </label>
             <div style="align-self:end;">
-                <button class="adm-btn primary" type="submit">검색</button>
+                <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.search"/></button>
             </div>
         </div>
     </form>
@@ -61,13 +63,13 @@
         <table class="adm-table">
             <thead>
             <tr>
-                <th>출처</th>
-                <th>대상</th>
-                <th>위험도</th>
-                <th>권고 조치</th>
-                <th>판단 근거</th>
-                <th>상태</th>
-                <th>생성일</th>
+                <th><spring:message code="security.admin.common.source"/></th>
+                <th><spring:message code="security.admin.common.target"/></th>
+                <th><spring:message code="security.admin.common.riskLevel"/></th>
+                <th><spring:message code="security.admin.common.recommendationAction"/></th>
+                <th><spring:message code="security.admin.common.evidence"/></th>
+                <th><spring:message code="security.admin.common.status"/></th>
+                <th><spring:message code="security.admin.common.createdAt"/></th>
             </tr>
             </thead>
             <tbody>
@@ -98,7 +100,7 @@
                 </tr>
             </c:forEach>
             <c:if test="${empty assessments}">
-                <tr><td colspan="7" class="adm-empty">외부 판단 데이터가 없습니다.</td></tr>
+                <tr><td colspan="7" class="adm-empty"><spring:message code="security.admin.empty.externalAssessments"/></td></tr>
             </c:if>
             </tbody>
         </table>

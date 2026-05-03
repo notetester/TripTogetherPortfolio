@@ -1,18 +1,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="adminNotificationPreferences"/>
-<c:set var="pageTitle" value="관리자 알림 설정"/>
+<spring:message var="pageTitle" code="security.admin.notifications.title"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1>관리자 알림 설정</h1>
-            <p class="adm-page-desc">담당 업무에 맞춰 수신할 관리자 알림을 선택합니다.</p>
+            <h1><spring:message code="security.admin.notifications.title"/></h1>
+            <p class="adm-page-desc"><spring:message code="security.admin.notifications.desc"/></p>
         </div>
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies">정책 설정</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews">검토 큐</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies"><spring:message code="security.admin.nav.policies"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews"><spring:message code="security.admin.nav.reviews"/></a>
         </div>
     </div>
 
@@ -22,7 +23,7 @@
 
     <form method="post" class="adm-card">
         <div class="adm-card-header">
-            <div class="adm-card-title">알림 카테고리</div>
+            <div class="adm-card-title"><spring:message code="security.admin.notifications.category"/></div>
         </div>
         <div class="adm-card-body">
             <c:forEach var="p" items="${preferences}">
@@ -31,18 +32,18 @@
                     <strong>${p.notificationCategory}</strong>
                     <span class="adm-muted">
                         <c:choose>
-                            <c:when test="${p.notificationCategory == 'LOGIN_RISK'}">로그인 위험/검토 큐</c:when>
-                            <c:when test="${p.notificationCategory == 'BUSINESS_APPLICATION'}">기업/파트너 승인</c:when>
-                            <c:when test="${p.notificationCategory == 'REPORT'}">신고 처리</c:when>
-                            <c:when test="${p.notificationCategory == 'INQUIRY'}">문의 응대</c:when>
-                            <c:when test="${p.notificationCategory == 'BLOCK_REVIEW'}">차단 검토</c:when>
-                            <c:otherwise>기타 알림</c:otherwise>
+                            <c:when test="${p.notificationCategory == 'LOGIN_RISK'}"><spring:message code="security.admin.notifications.loginRisk"/></c:when>
+                            <c:when test="${p.notificationCategory == 'BUSINESS_APPLICATION'}"><spring:message code="security.admin.notifications.business"/></c:when>
+                            <c:when test="${p.notificationCategory == 'REPORT'}"><spring:message code="security.admin.notifications.report"/></c:when>
+                            <c:when test="${p.notificationCategory == 'INQUIRY'}"><spring:message code="security.admin.notifications.inquiry"/></c:when>
+                            <c:when test="${p.notificationCategory == 'BLOCK_REVIEW'}"><spring:message code="security.admin.notifications.blockReview"/></c:when>
+                            <c:otherwise><spring:message code="security.admin.notifications.etc"/></c:otherwise>
                         </c:choose>
                     </span>
                 </label>
             </c:forEach>
             <div class="adm-actions" style="margin-top:16px;">
-                <button class="adm-btn primary" type="submit">저장</button>
+                <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.save"/></button>
             </div>
         </div>
     </form>

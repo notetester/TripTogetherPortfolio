@@ -1,10 +1,14 @@
 package org.triptogether.auth.vo;
 
 import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SecurityAppealFormVO {
     private boolean valid;
     private String errorMessage;

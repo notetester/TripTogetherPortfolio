@@ -1,6 +1,7 @@
 package org.triptogether.admin.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.MessageSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,7 @@ import org.triptogether.auth.vo.UsersVO;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,12 +22,13 @@ import java.util.List;
 public class AdminLoginRiskPolicyController {
 
     private final LoginRiskPolicyService loginRiskPolicyService;
+    private final MessageSource messageSource;
 
     @GetMapping("/policies")
     public String policies(Model model) {
         model.addAttribute("policies", loginRiskPolicyService.getPolicies(true));
         model.addAttribute("activeMenu", "loginRiskPolicies");
-        model.addAttribute("pageTitle", "로그인 위험 정책");
+        model.addAttribute("pageTitleCode", "security.admin.policies.title");
         return "admin/login-risk/policies";
     }
 
@@ -37,7 +40,8 @@ public class AdminLoginRiskPolicyController {
                                @RequestParam(value = "requireAdminReview", required = false) String requireAdminReview,
                                @RequestParam(value = "aiAssistEnabled", required = false) String aiAssistEnabled,
                                @RequestParam(value = "wafSyncEnabled", required = false) String wafSyncEnabled,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes,
+                               Locale locale) {
         policy.setPolicyIdx(policyIdx);
         policy.setActive(active != null);
         policy.setResetOnSuccess(resetOnSuccess != null);
@@ -45,7 +49,7 @@ public class AdminLoginRiskPolicyController {
         policy.setAiAssistEnabled(aiAssistEnabled != null);
         policy.setWafSyncEnabled(wafSyncEnabled != null);
         loginRiskPolicyService.updatePolicy(policy);
-        redirectAttributes.addFlashAttribute("message", "정책이 저장되었습니다.");
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.policySaved"));
         return "redirect:/admin/login-risk/policies";
     }
 
@@ -61,7 +65,7 @@ public class AdminLoginRiskPolicyController {
         model.addAttribute("reviewType", reviewType);
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "loginRiskReviews");
-        model.addAttribute("pageTitle", "로그인 위험 검토 큐");
+        model.addAttribute("pageTitleCode", "security.admin.loginReviews.title");
         return "admin/login-risk/reviews";
     }
 
@@ -70,9 +74,10 @@ public class AdminLoginRiskPolicyController {
                                @PathVariable String decision,
                                @RequestParam(value = "comment", required = false) String comment,
                                HttpSession session,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes,
+                               Locale locale) {
         loginRiskPolicyService.decideReview(reviewIdx, decision, currentAdminIdx(session), comment);
-        redirectAttributes.addFlashAttribute("message", "검토 상태가 처리되었습니다.");
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.reviewProcessed"));
         return "redirect:/admin/login-risk/reviews";
     }
 
@@ -88,7 +93,7 @@ public class AdminLoginRiskPolicyController {
         model.addAttribute("decisionStatus", decisionStatus);
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "loginRiskAssessments");
-        model.addAttribute("pageTitle", "로그인 위험 외부 판단");
+        model.addAttribute("pageTitleCode", "security.admin.externalAssessments.title");
         return "admin/login-risk/assessments";
     }
 
@@ -106,16 +111,17 @@ public class AdminLoginRiskPolicyController {
         model.addAttribute("decisionStatus", decisionStatus);
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "securityRiskAssessments");
-        model.addAttribute("pageTitle", "보안 위험 판단");
+        model.addAttribute("pageTitleCode", "security.admin.securityAssessments.title");
         return "admin/login-risk/security-assessments";
     }
 
     @PostMapping("/security-assessments/{assessmentIdx}/apply-user-block")
     public String applyUserBlockFromAssessment(@PathVariable Long assessmentIdx,
                                                HttpSession session,
-                                               RedirectAttributes redirectAttributes) {
+                                               RedirectAttributes redirectAttributes,
+                                               Locale locale) {
         loginRiskPolicyService.applyUserBlockFromSecurityAssessment(assessmentIdx, currentAdminIdx(session));
-        redirectAttributes.addFlashAttribute("message", "보안 판단 근거를 계정 차단으로 적용했습니다.");
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.assessmentUserBlockApplied"));
         return "redirect:/admin/login-risk/security-assessments";
     }
 
@@ -124,9 +130,10 @@ public class AdminLoginRiskPolicyController {
                                        @RequestParam(value = "severity", required = false) String severity,
                                        @RequestParam(value = "summary", required = false) String summary,
                                        @RequestParam(value = "detailMessage", required = false) String detailMessage,
-                                       RedirectAttributes redirectAttributes) {
+                                       RedirectAttributes redirectAttributes,
+                                       Locale locale) {
         loginRiskPolicyService.createSecurityReviewFromAssessment(assessmentIdx, severity, summary, detailMessage);
-        redirectAttributes.addFlashAttribute("message", "보안 판단 근거를 일반 검토 큐에 등록했습니다.");
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.assessmentQueued"));
         return "redirect:/admin/login-risk/security-assessments";
     }
 
@@ -142,7 +149,7 @@ public class AdminLoginRiskPolicyController {
         model.addAttribute("reviewType", reviewType);
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "securityReviews");
-        model.addAttribute("pageTitle", "일반 보안 검토 큐");
+        model.addAttribute("pageTitleCode", "security.admin.securityReviews.title");
         return "admin/login-risk/security-reviews";
     }
 
@@ -151,9 +158,10 @@ public class AdminLoginRiskPolicyController {
                                        @PathVariable String decision,
                                        @RequestParam(value = "comment", required = false) String comment,
                                        HttpSession session,
-                                       RedirectAttributes redirectAttributes) {
+                                       RedirectAttributes redirectAttributes,
+                               Locale locale) {
         loginRiskPolicyService.decideSecurityReview(reviewIdx, decision, currentAdminIdx(session), comment);
-        redirectAttributes.addFlashAttribute("message", "보안 검토 상태가 처리되었습니다.");
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.securityReviewProcessed"));
         return "redirect:/admin/login-risk/security-reviews";
     }
 
@@ -167,7 +175,7 @@ public class AdminLoginRiskPolicyController {
         model.addAttribute("targetType", targetType);
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeMenu", "securityAppeals");
-        model.addAttribute("pageTitle", "보안 조치 이의제기");
+        model.addAttribute("pageTitleCode", "security.admin.appeals.title");
         return "admin/login-risk/appeals";
     }
 
@@ -176,9 +184,10 @@ public class AdminLoginRiskPolicyController {
                                        @PathVariable String decision,
                                        @RequestParam(value = "comment", required = false) String comment,
                                        HttpSession session,
-                                       RedirectAttributes redirectAttributes) {
+                                       RedirectAttributes redirectAttributes,
+                               Locale locale) {
         loginRiskPolicyService.decideSecurityAppeal(appealIdx, decision, currentAdminIdx(session), comment);
-        redirectAttributes.addFlashAttribute("message", "이의제기 상태가 처리되었습니다.");
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.appealProcessed"));
         return "redirect:/admin/login-risk/appeals";
     }
 
@@ -186,7 +195,7 @@ public class AdminLoginRiskPolicyController {
     public String providerConfigs(Model model) {
         model.addAttribute("providers", loginRiskPolicyService.getProviderConfigs());
         model.addAttribute("activeMenu", "securityProviderConfigs");
-        model.addAttribute("pageTitle", "보안 판단 Provider 설정");
+        model.addAttribute("pageTitleCode", "security.admin.provider.title");
         return "admin/login-risk/provider-configs";
     }
 
@@ -195,12 +204,13 @@ public class AdminLoginRiskPolicyController {
                                        SecurityAssessmentProviderConfigVO config,
                                        @RequestParam(value = "enabled", required = false) String enabled,
                                        @RequestParam(value = "failOpen", required = false) Integer failOpen,
-                                       RedirectAttributes redirectAttributes) {
+                                       RedirectAttributes redirectAttributes,
+                                      Locale locale) {
         config.setProviderIdx(providerIdx);
         config.setEnabled(enabled != null);
         config.setFailOpen(failOpen == null ? 1 : failOpen);
         loginRiskPolicyService.updateProviderConfig(config);
-        redirectAttributes.addFlashAttribute("message", "Provider 설정이 저장되었습니다.");
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.providerSaved"));
         return "redirect:/admin/login-risk/provider-configs";
     }
 
@@ -209,18 +219,23 @@ public class AdminLoginRiskPolicyController {
         Long adminIdx = currentAdminIdx(session);
         model.addAttribute("preferences", loginRiskPolicyService.getNotificationPreferences(adminIdx));
         model.addAttribute("activeMenu", "adminNotificationPreferences");
-        model.addAttribute("pageTitle", "관리자 알림 설정");
+        model.addAttribute("pageTitleCode", "security.admin.notifications.title");
         return "admin/login-risk/notification-preferences";
     }
 
     @PostMapping("/notification-preferences")
     public String updateNotificationPreferences(@RequestParam(value = "enabledCategories", required = false) List<String> enabledCategories,
                                                 HttpSession session,
-                                                RedirectAttributes redirectAttributes) {
+                                                RedirectAttributes redirectAttributes,
+                                                Locale locale) {
         loginRiskPolicyService.updateNotificationPreferences(currentAdminIdx(session),
                 enabledCategories == null ? Collections.emptyList() : enabledCategories);
-        redirectAttributes.addFlashAttribute("message", "알림 설정이 저장되었습니다.");
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.notificationSaved"));
         return "redirect:/admin/login-risk/notification-preferences";
+    }
+
+    private String msg(Locale locale, String code) {
+        return messageSource.getMessage(code, null, locale == null ? Locale.KOREAN : locale);
     }
 
     private Long currentAdminIdx(HttpSession session) {

@@ -213,6 +213,20 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
+    <resultMap id="SecurityWafSyncQueueMap" type="org.triptogether.auth.vo.SecurityWafSyncQueueVO">
+        <id property="syncIdx" column="sync_idx"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="sourceId" column="source_id"/>
+        <result property="syncAction" column="sync_action"/>
+        <result property="targetType" column="target_type"/>
+        <result property="targetValue" column="target_value"/>
+        <result property="status" column="status"/>
+        <result property="detailMessage" column="detail_message"/>
+        <result property="syncedAt" column="synced_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
     <select id="findPolicies" resultMap="LoginRiskPolicyMap">
         SELECT
             policy_idx, policy_code, policy_name, policy_type, is_active,
@@ -995,6 +1009,75 @@
             u.status_changed_at = NOW()
         WHERE CONCAT('USER:', u.user_idx) = #{targetKey}
           AND u.account_status = 'BLOCKED'
+    </update>
+
+
+    <insert id="insertUserBlockReleaseHistoryFromAppeal">
+        INSERT INTO USER_BLOCK_HISTORY (
+            block_request_id, block_target_key,
+            user_idx, block_type, blocked_ip, is_active, reason,
+            blocked_by_user_idx, blocked_at, released_by_user_idx, released_at, release_reason,
+            rule_action, control_mode, operation_source, history_kind, block_scope,
+            rule_origin_type, source_scope, block_category, risk_score,
+            is_auto_block, auto_block_source, detail_message, priority,
+            before_effective_active, after_effective_active, before_effective_status, after_effective_status,
+            source_assessment_idx, source_action_type, source_action_group_id, source_user_idx, source_ip_address,
+            effective_result, control_reason,
+            created_by_user_idx, created_at, updated_by_user_idx, updated_at
+        )
+        SELECT
+            UUID(), ub.block_target_key,
+            ub.user_idx, ub.block_type, ub.blocked_ip, 0, #{reason},
+            ub.blocked_by_user_idx, ub.blocked_at, #{actorUserIdx}, NOW(), #{reason},
+            ub.rule_action, ub.control_mode, 'ADMIN', 'RELEASE', ub.source_scope,
+            ub.rule_origin_type, ub.source_scope, ub.block_category, ub.risk_score,
+            ub.is_auto_block, ub.auto_block_source, ub.detail_message, ub.priority,
+            ub.is_effective_active, 0, ub.effective_status, 'MANUAL_RELEASED',
+            ub.source_assessment_idx, 'SECURITY_APPEAL_RELEASE', ub.source_action_group_id, ub.source_user_idx, ub.source_ip_address,
+            'RELEASED', CONCAT('appealIdx=', #{appealIdx}, ', ', #{reason}),
+            #{actorUserIdx}, NOW(), #{actorUserIdx}, NOW()
+        FROM USER_BLOCKLIST ub
+        WHERE ub.block_target_key = #{targetKey}
+           OR CONCAT('USER:', ub.user_idx) = #{targetKey}
+    </insert>
+
+    <update id="updateSecurityRiskAssessmentDecisionByReview">
+        UPDATE SECURITY_RISK_ASSESSMENT sra
+        JOIN SECURITY_REVIEW_QUEUE srq ON srq.source_assessment_idx = sra.assessment_idx
+        SET sra.decision_status = #{decisionStatus}
+        WHERE srq.review_idx = #{reviewIdx}
+    </update>
+
+    <select id="findProviderConfigsForHealthCheck" resultMap="SecurityAssessmentProviderConfigMap">
+        SELECT *
+        FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        ORDER BY provider_kind, provider_code
+    </select>
+
+    <update id="updateProviderHealth">
+        UPDATE SECURITY_ASSESSMENT_PROVIDER_CONFIG
+        SET status = #{status},
+            description = COALESCE(#{description}, description),
+            last_checked_at = NOW(),
+            updated_at = NOW()
+        WHERE provider_idx = #{providerIdx}
+    </update>
+
+    <select id="findPendingWafSyncQueue" resultMap="SecurityWafSyncQueueMap">
+        SELECT *
+        FROM LOGIN_RISK_WAF_SYNC_QUEUE
+        WHERE status IN ('PENDING', 'FAILED')
+        ORDER BY created_at ASC
+        LIMIT #{limit}
+    </select>
+
+    <update id="updateWafSyncStatus">
+        UPDATE LOGIN_RISK_WAF_SYNC_QUEUE
+        SET status = #{status},
+            detail_message = #{detailMessage},
+            synced_at = CASE WHEN #{status} = 'SYNCED' THEN NOW() ELSE synced_at END,
+            updated_at = NOW()
+        WHERE sync_idx = #{syncIdx}
     </update>
 
 </mapper>

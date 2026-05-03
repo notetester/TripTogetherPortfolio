@@ -1,20 +1,21 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <c:set var="activeMenu" value="loginRiskPolicies"/>
-<c:set var="pageTitle" value="로그인 위험 정책"/>
+<spring:message var="pageTitle" code="security.admin.policies.title"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1>로그인 위험 정책</h1>
-            <p class="adm-page-desc">로그인 실패, IP 기반 실패 패턴, 관리자 검토 대상 정책을 조정합니다.</p>
+            <h1><spring:message code="security.admin.policies.title"/></h1>
+            <p class="adm-page-desc"><spring:message code="security.admin.policies.desc"/></p>
         </div>
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews">검토 큐</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/assessments">외부 판단</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">알림 설정</a>
-                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">보안 위험 판단</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews"><spring:message code="security.admin.nav.reviews"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/assessments"><spring:message code="security.admin.nav.externalAssessments"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences"><spring:message code="security.admin.nav.notifications"/></a>
+                    <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments"><spring:message code="security.admin.nav.securityAssessments"/></a>
         </div>
     </div>
 
@@ -31,7 +32,7 @@
                 </div>
                 <label class="adm-check">
                     <input type="checkbox" name="active" ${p.active ? 'checked' : ''}>
-                    사용
+                    <spring:message code="security.admin.common.enabled"/>
                 </label>
             </div>
             <div class="adm-card-body">
@@ -40,22 +41,22 @@
                 <input type="hidden" name="actionType" value="${p.actionType}">
 
                 <div class="adm-form-grid" style="grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px;">
-                    <label>관찰 시간(분)
+                    <label><spring:message code="security.admin.policies.observationMinutes"/>
                         <input class="adm-input" type="number" name="observationMinutes" value="${p.observationMinutes}">
                     </label>
-                    <label>임계 횟수
+                    <label><spring:message code="security.admin.policies.thresholdCount"/>
                         <input class="adm-input" type="number" name="thresholdCount" value="${p.thresholdCount}">
                     </label>
-                    <label>서로 다른 계정 수
+                    <label><spring:message code="security.admin.policies.distinctAccountThreshold"/>
                         <input class="adm-input" type="number" name="distinctAccountThreshold" value="${p.distinctAccountThreshold}">
                     </label>
-                    <label>제한 시간(분)
+                    <label><spring:message code="security.admin.policies.lockDurationMinutes"/>
                         <input class="adm-input" type="number" name="lockDurationMinutes" value="${p.lockDurationMinutes}">
                     </label>
-                    <label>경고 시작 잔여 횟수
+                    <label><spring:message code="security.admin.policies.warningBeforeCount"/>
                         <input class="adm-input" type="number" name="warningBeforeCount" value="${p.warningBeforeCount}">
                     </label>
-                    <label>심각도
+                    <label><spring:message code="security.admin.common.severity"/>
                         <select class="adm-input" name="reviewSeverity">
                             <option value="LOW" ${p.reviewSeverity == 'LOW' ? 'selected' : ''}>LOW</option>
                             <option value="MEDIUM" ${p.reviewSeverity == 'MEDIUM' ? 'selected' : ''}>MEDIUM</option>
@@ -63,36 +64,36 @@
                             <option value="CRITICAL" ${p.reviewSeverity == 'CRITICAL' ? 'selected' : ''}>CRITICAL</option>
                         </select>
                     </label>
-                    <label>알림 분류
+                    <label><spring:message code="security.admin.policies.notificationCategory"/>
                         <input class="adm-input" type="text" name="notificationCategory" value="${p.notificationCategory}">
                     </label>
-                    <label>AI 위험 점수 기준
+                    <label><spring:message code="security.admin.policies.aiRiskScoreThreshold"/>
                         <input class="adm-input" type="number" name="aiRiskScoreThreshold" value="${p.aiRiskScoreThreshold}">
                     </label>
                     <label class="adm-check" style="align-self:end;">
                         <input type="checkbox" name="resetOnSuccess" ${p.resetOnSuccess ? 'checked' : ''}>
-                        로그인 성공 시 초기화
+                        <spring:message code="security.admin.policies.resetOnSuccess"/>
                     </label>
                     <label class="adm-check" style="align-self:end;">
                         <input type="checkbox" name="requireAdminReview" ${p.requireAdminReview ? 'checked' : ''}>
-                        관리자 검토 큐 생성
+                        <spring:message code="security.admin.policies.requireAdminReview"/>
                     </label>
                     <label class="adm-check" style="align-self:end;">
                         <input type="checkbox" name="aiAssistEnabled" ${p.aiAssistEnabled ? 'checked' : ''}>
-                        AI 판단 보조
+                        <spring:message code="security.admin.policies.aiAssistEnabled"/>
                     </label>
                     <label class="adm-check" style="align-self:end;">
                         <input type="checkbox" name="wafSyncEnabled" ${p.wafSyncEnabled ? 'checked' : ''}>
-                        WAF 동기화 후보 생성
+                        <spring:message code="security.admin.policies.wafSyncEnabled"/>
                     </label>
                 </div>
 
-                <label style="display:block;margin-top:12px;">설명
+                <label style="display:block;margin-top:12px;"><spring:message code="security.admin.common.description"/>
                     <textarea class="adm-input" name="description" rows="2">${p.description}</textarea>
                 </label>
 
                 <div class="adm-actions" style="margin-top:12px;">
-                    <button type="submit" class="adm-btn primary">저장</button>
+                    <button type="submit" class="adm-btn primary"><spring:message code="security.admin.common.save"/></button>
                 </div>
             </div>
         </form>
