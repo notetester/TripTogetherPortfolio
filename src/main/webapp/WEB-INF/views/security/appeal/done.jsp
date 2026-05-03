@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="${pageLang}">
 <head>
@@ -18,7 +19,7 @@
 <main class="card">
     <h1><spring:message code="security.appeal.done.title"/></h1>
     <p><spring:message code="security.appeal.done.lead"/></p>
-    <div class="code">${publicRequestId}</div>
+    <div class="code"><c:out value="${publicRequestId}"/></div>
     <p><spring:message code="security.appeal.done.notice"/></p>
     <a href="${pageContext.request.contextPath}/"><spring:message code="security.appeal.done.home"/></a>
 </main>

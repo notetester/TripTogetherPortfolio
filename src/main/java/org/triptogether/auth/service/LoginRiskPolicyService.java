@@ -135,15 +135,16 @@ public class LoginRiskPolicyService {
         }
         String normalized = normalizeDecision(decision);
         loginRiskPolicyMapper.updateSecurityReviewDecision(reviewIdx, normalized, actorUserIdx, comment);
-        loginRiskPolicyMapper.insertSecurityActionAudit(
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
                 "SECURITY_REVIEW_" + normalized,
                 actorUserIdx,
                 review.getSubjectType(),
                 review.getSubjectKey(),
                 "SECURITY_REVIEW_QUEUE",
                 reviewIdx,
-                msg("ko", "security.review.audit.decision"),
-                comment
+                "SECURITY.REVIEW." + normalized,
+                jsonArg("reviewIdx", reviewIdx, "decision", normalized),
+                firstNonBlank(comment, msg("ko", "security.review.audit.decision"))
         );
 
         if ("APPROVED".equals(normalized) && review.getAssessmentIdx() != null) {
@@ -230,15 +231,16 @@ public class LoginRiskPolicyService {
         if ("ACCEPTED".equals(normalized) && appeal != null) {
             applyAcceptedSecurityAppeal(appeal, actorUserIdx, firstNonBlank(comment, msg("ko", "security.appeal.release.defaultReason")));
         }
-        loginRiskPolicyMapper.insertSecurityActionAudit(
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
                 "SECURITY_APPEAL_" + normalized,
                 actorUserIdx,
                 appeal == null ? "APPEAL" : appeal.getTargetType(),
                 appeal == null ? String.valueOf(appealIdx) : appeal.getTargetKey(),
                 "SECURITY_ACTION_APPEAL",
                 appealIdx,
-                msg("ko", "security.appeal.audit.decision"),
-                comment
+                "SECURITY.APPEAL." + normalized,
+                jsonArg("appealIdx", appealIdx, "decision", normalized),
+                firstNonBlank(comment, msg("ko", "security.appeal.audit.decision"))
         );
         sendAppealDecisionNoticeIfPossible(appeal, normalized, comment);
     }
@@ -334,14 +336,15 @@ public class LoginRiskPolicyService {
     @Transactional
     public void updateProviderConfig(SecurityAssessmentProviderConfigVO config) {
         loginRiskPolicyMapper.updateProviderConfig(config);
-        loginRiskPolicyMapper.insertSecurityActionAudit(
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
                 "PROVIDER_CONFIG_UPDATE",
                 null,
                 "PROVIDER",
                 config.getProviderCode(),
                 "SECURITY_ASSESSMENT_PROVIDER_CONFIG",
                 config.getProviderIdx(),
-                msg("ko", "security.provider.audit.configUpdate"),
+                "SECURITY.PROVIDER.CONFIG_UPDATE",
+                jsonArg("providerIdx", config.getProviderIdx(), "enabled", config.isEnabled()),
                 "enabled=" + config.isEnabled() + ", endpoint=" + config.getEndpointUrl()
         );
     }
@@ -352,20 +355,44 @@ public class LoginRiskPolicyService {
     public void runProviderHealthCheckOnce() {
         List<SecurityAssessmentProviderConfigVO> providers = loginRiskPolicyMapper.findProviderConfigsForHealthCheck();
         for (SecurityAssessmentProviderConfigVO provider : providers) {
-            String status;
-            String description;
-            if (!provider.isEnabled()) {
-                status = "DISABLED";
-                description = msg("ko", "security.provider.health.disabled");
-            } else if (provider.getEndpointUrl() == null || provider.getEndpointUrl().isBlank()) {
-                status = "READY";
-                description = msg("ko", "security.provider.health.readyNoEndpoint");
-            } else {
-                status = "READY";
-                description = msg("ko", "security.provider.health.readyExternalPending");
-            }
-            loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), status, description);
+            ProviderHealth health = evaluateProviderHealth(provider);
+            loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), health.status(), health.description());
         }
+    }
+
+    @Transactional
+    public void checkProviderHealth(Long providerIdx, Long actorUserIdx) {
+        SecurityAssessmentProviderConfigVO provider = loginRiskPolicyMapper.findProviderConfigs().stream()
+                .filter(p -> providerIdx != null && providerIdx.equals(p.getProviderIdx()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(msg("ko", "security.provider.notFound")));
+
+        ProviderHealth health = evaluateProviderHealth(provider);
+        loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), health.status(), health.description());
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
+                "PROVIDER_HEALTH_CHECK",
+                actorUserIdx,
+                "PROVIDER",
+                provider.getProviderCode(),
+                "SECURITY_ASSESSMENT_PROVIDER_CONFIG",
+                provider.getProviderIdx(),
+                "SECURITY.PROVIDER.HEALTH_CHECK",
+                jsonArg("providerIdx", provider.getProviderIdx(), "status", health.status()),
+                health.description()
+        );
+    }
+
+    private ProviderHealth evaluateProviderHealth(SecurityAssessmentProviderConfigVO provider) {
+        if (!provider.isEnabled()) {
+            return new ProviderHealth("DISABLED", msg("ko", "security.provider.health.disabled"));
+        }
+        if (provider.getEndpointUrl() == null || provider.getEndpointUrl().isBlank()) {
+            return new ProviderHealth("READY", msg("ko", "security.provider.health.readyNoEndpoint"));
+        }
+        return new ProviderHealth("READY", msg("ko", "security.provider.health.readyExternalPending"));
+    }
+
+    private record ProviderHealth(String status, String description) {
     }
 
     @Scheduled(fixedDelayString = "${security.waf.sync.fixed-delay-ms:300000}")
@@ -1105,6 +1132,15 @@ public class LoginRiskPolicyService {
         if (lang.startsWith("ja")) return "ja";
         if (lang.startsWith("zh")) return "zh";
         return "ko";
+    }
+
+    private String jsonArg(String firstKey, Object firstValue, String secondKey, Object secondValue) {
+        return "{\"%s\":\"%s\",\"%s\":\"%s\"}".formatted(
+                firstKey,
+                firstValue == null ? "" : String.valueOf(firstValue).replace("\"", "\\\""),
+                secondKey,
+                secondValue == null ? "" : String.valueOf(secondValue).replace("\"", "\\\"")
+        );
     }
 
     private String firstNonBlank(String... values) {

@@ -73,6 +73,11 @@
                 </div>
                 <div class="adm-actions" style="margin-top:12px;">
                     <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.save"/></button>
+                    <button class="adm-btn" type="submit"
+                            formmethod="post"
+                            formaction="${pageContext.request.contextPath}/admin/login-risk/provider-configs/${p.providerIdx}/check">
+                        <spring:message code="security.admin.provider.checkNow"/>
+                    </button>
                 </div>
             </div>
         </form>

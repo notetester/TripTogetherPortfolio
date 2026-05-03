@@ -1,6 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<spring:message var="emailPlaceholder" code="security.appeal.form.email.placeholder"/>
+<spring:message var="defaultTitle" code="security.appeal.form.defaultTitle"/>
+<spring:message var="contentPlaceholder" code="security.appeal.form.content.placeholder"/>
 <!DOCTYPE html>
 <html lang="${pageLang}">
 <head>
@@ -30,7 +34,7 @@
     <p class="lead"><spring:message code="security.appeal.form.lead"/></p>
 
     <c:if test="${not form.valid}">
-        <div class="error">${form.errorMessage}</div>
+        <div class="error"><c:out value="${form.errorMessage}"/></div>
     </c:if>
 
     <c:if test="${form.valid}">
@@ -42,20 +46,20 @@
         </div>
 
         <form method="post" action="${pageContext.request.contextPath}/security/appeal">
-            <input type="hidden" name="token" value="${token}">
-            <input type="hidden" name="requestId" value="${requestId}">
-            <input type="hidden" name="lang" value="${pageLang}">
+            <input type="hidden" name="token" value="${fn:escapeXml(token)}">
+            <input type="hidden" name="requestId" value="${fn:escapeXml(requestId)}">
+            <input type="hidden" name="lang" value="${fn:escapeXml(pageLang)}">
 
             <label><spring:message code="security.appeal.form.email"/>
-                <input type="email" name="submitterEmail" placeholder="<spring:message code='security.appeal.form.email.placeholder'/>">
+                <input type="email" name="submitterEmail" placeholder="${emailPlaceholder}">
             </label>
 
             <label><spring:message code="security.appeal.form.subject"/>
-                <input type="text" name="appealTitle" required maxlength="200" value="<spring:message code='security.appeal.form.defaultTitle'/>">
+                <input type="text" name="appealTitle" required maxlength="200" value="${defaultTitle}">
             </label>
 
             <label><spring:message code="security.appeal.form.content"/>
-                <textarea name="appealContent" required maxlength="2000" placeholder="<spring:message code='security.appeal.form.content.placeholder'/>"></textarea>
+                <textarea name="appealContent" required maxlength="2000" placeholder="${contentPlaceholder}"></textarea>
             </label>
 
             <div class="actions">
@@ -66,6 +70,7 @@
     </c:if>
 
     <p class="note"><spring:message code="security.appeal.form.notice"/></p>
+    <p class="note"><spring:message code="security.appeal.form.duplicateNotice"/></p>
 </main>
 </body>
 </html>

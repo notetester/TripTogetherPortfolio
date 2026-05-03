@@ -214,6 +214,16 @@ public class AdminLoginRiskPolicyController {
         return "redirect:/admin/login-risk/provider-configs";
     }
 
+    @PostMapping("/provider-configs/{providerIdx}/check")
+    public String checkProviderConfig(@PathVariable Long providerIdx,
+                                      HttpSession session,
+                                      RedirectAttributes redirectAttributes,
+                                      Locale locale) {
+        loginRiskPolicyService.checkProviderHealth(providerIdx, currentAdminIdx(session));
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.providerChecked"));
+        return "redirect:/admin/login-risk/provider-configs";
+    }
+
     @GetMapping("/waf-sync")
     public String wafSyncQueue(@RequestParam(value = "status", required = false) String status,
                                @RequestParam(value = "targetType", required = false) String targetType,

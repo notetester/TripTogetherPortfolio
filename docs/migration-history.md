@@ -40,3 +40,10 @@ SELECT status, COUNT(*)
 FROM LOGIN_RISK_WAF_SYNC_QUEUE
 GROUP BY status;
 ```
+
+
+## 후속 작업 원칙
+
+- 새 코드 패치에 DB 변경이 없다면 새 SQL을 만들지 않는다.
+- 과거 마이그레이션 SQL을 반복 작성하지 않는다.
+- 실제 적용 여부는 DB에서 직접 확인한다.

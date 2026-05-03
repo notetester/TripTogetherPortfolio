@@ -39,6 +39,10 @@
 - Provider 요청/응답 기본 계약 문서화
 - 보안 검토/이의제기/WAF 상태 전이 문서화
 - 차단/이의제기 처리 결과 사이트 내 알림 1차 연동
+- 보안 검토/이의제기/Provider 설정 감사 로그 reason_code 사용 확대
+- 이의제기 중복 접수 제한 UI 안내
+- Provider/WAF fail-open/fail-closed 테스트 계획 문서화
+- Provider 수동 헬스체크 버튼
 
 ## 남은 작업
 
@@ -58,9 +62,9 @@
 ### UI/운영 고도화
 
 - 보안 검토 큐 상세 모달 고도화
-- Provider 헬스체크 결과 상세 화면 고도화
+- Provider 헬스체크 결과 상세 화면 추가 고도화
 - 차단/이의제기 처리 결과 사이트 내 알림 고도화
-- 이의제기 중복 접수 제한 정책 세부 UI 안내
+- 이의제기 중복 접수 제한 정책 세부 문구/UX 고도화
 - WAF Provider별 재시도/실패 사유 상세 표시
 
 ### 검증
@@ -70,7 +74,7 @@
 - 관리자 검토 승인/보류/미승인 상태 전이 테스트
 - USER/IP 차단 해제 후 캐시 갱신 테스트
 - 4언어 화면 스모크 테스트
-- Provider enabled/disabled/fail-open/fail-closed 테스트
+- Provider enabled/disabled/fail-open/fail-closed 실제 API 통합 테스트
 - WAF 동기화 큐 retry 테스트
 
 ## 작업 원칙
@@ -82,3 +86,10 @@
 5. `SCHEMA_MIGRATION_HISTORY`는 운영 기능과 연결하지 않는다. 삭제해도 서비스 기능에 영향이 없어야 한다.
 6. 새 SQL은 가능하면 `CREATE IF NOT EXISTS`, `ADD COLUMN IF MISSING` 방식으로 작성한다.
 7. 새 작업을 시작할 때 이 문서를 먼저 갱신한다.
+
+## 참고 문서
+
+- `docs/security-provider-contract.md`
+- `docs/security-state-transitions.md`
+- `docs/security-provider-test-plan.md`
+- `docs/development-guidelines.md`
