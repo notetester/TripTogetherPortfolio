@@ -256,6 +256,13 @@
         WHERE policy_code = #{policyCode} AND is_active = 1
     </select>
 
+    <select id="findPolicyByCode" resultMap="LoginRiskPolicyMap">
+        SELECT * FROM LOGIN_RISK_POLICY
+        WHERE policy_code = #{policyCode}
+        LIMIT 1
+    </select>
+
+
     <update id="updatePolicy">
         UPDATE LOGIN_RISK_POLICY
         SET policy_name = #{policyName},
@@ -1189,5 +1196,12 @@
         WHERE user_idx = #{userIdx}
         LIMIT 1
     </select>
+
+    <select id="findUserAccountStatusByUserIdx" resultType="string">
+        SELECT account_status
+        FROM USERS
+        WHERE user_idx = #{userIdx}
+    </select>
+
 
 </mapper>

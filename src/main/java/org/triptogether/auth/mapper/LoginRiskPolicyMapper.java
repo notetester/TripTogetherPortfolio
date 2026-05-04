@@ -21,6 +21,7 @@ import java.util.List;
 public interface LoginRiskPolicyMapper {
     List<LoginRiskPolicyVO> findPolicies(@Param("includeInactive") boolean includeInactive);
     LoginRiskPolicyVO findActivePolicyByCode(@Param("policyCode") String policyCode);
+    LoginRiskPolicyVO findPolicyByCode(@Param("policyCode") String policyCode);
     void updatePolicy(LoginRiskPolicyVO policy);
 
     Integer countRecentWrongPasswordByUser(@Param("userIdx") Long userIdx,
@@ -328,6 +329,7 @@ public interface LoginRiskPolicyMapper {
     String findUserEmailByUserIdx(@Param("userIdx") Long userIdx);
 
     String findUserPreferredLangByUserIdx(@Param("userIdx") Long userIdx);
+    String findUserAccountStatusByUserIdx(@Param("userIdx") Long userIdx);
 
 
 }

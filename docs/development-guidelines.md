@@ -75,3 +75,17 @@
 - 런칭 전 외부 호출은 Mock/Stub으로 검증하고, 실제 Provider는 명시적으로 활성화될 때만 호출한다.
 - 정책기관 피드 수동 업로드는 기존 IP 배치/규칙 구조를 재사용한다.
 - 이의제기 정책은 PENDING/HOLD 중복 차단, REJECTED 168시간 쿨타임, 2회 거절 종결, 동일 IP 일일 제한을 기준으로 한다.
+
+
+## 정책 피드 API 계약 원칙
+
+- 정책기관 피드는 파일 업로드와 JSON API 수신을 같은 내부 DTO로 정규화한다.
+- 외부 기관과 협의 전에는 `docs/security-policy-feed-api-contract.md`의 TripTogether 표준 payload를 우선 제안한다.
+- API 수신 결과는 새 테이블보다 기존 `IP_BLOCK_BATCH` / `IP_BLOCKLIST` 구조를 우선 재사용한다.
+
+## 보안 알림 적재 원칙
+
+- 이메일 통지와 사이트 내 알림은 별개의 채널로 본다.
+- 사용자가 차단 상태라 확인할 수 없는 사이트 내 알림은 무조건 쌓지 않는다.
+- 이의제기 ACCEPTED처럼 사용자가 다시 접근 가능해지는 경우에는 사이트 내 알림을 남긴다.
+- REJECTED/HOLD는 사용자 계정 상태가 ACTIVE인 경우에만 사이트 내 알림을 남기고, 차단 계정은 이메일/publicRequestId 중심으로 안내한다.

@@ -1,0 +1,25 @@
+{
+  "sourceName": "MANUAL_UPLOAD_FEED",
+  "defaultRuleAction": "BLOCK",
+  "rules": [
+    {
+      "matchType": "IP",
+      "targetValue": "203.0.113.10",
+      "reason": "Sample policy feed IP",
+      "detailMessage": "Demo payload imported through /admin/blocks/policy-feed/api",
+      "priority": 50
+    },
+    {
+      "matchType": "CIDR",
+      "targetValue": "198.51.100.0/24",
+      "reason": "Sample policy feed CIDR",
+      "priority": 60
+    },
+    {
+      "matchType": "COUNTRY",
+      "targetValue": "RU",
+      "reason": "Sample policy feed country",
+      "priority": 70
+    }
+  ]
+}

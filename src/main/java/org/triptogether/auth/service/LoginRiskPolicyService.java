@@ -252,7 +252,7 @@ public class LoginRiskPolicyService {
         String to = firstNonBlank(appeal.getSubmitterEmail(),
                 appeal.getUserIdx() == null ? null : loginRiskPolicyMapper.findUserEmailByUserIdx(appeal.getUserIdx()));
         String lang = normalizeLang(appeal.getUserIdx() == null ? null : loginRiskPolicyMapper.findUserPreferredLangByUserIdx(appeal.getUserIdx()));
-        if (appeal.getUserIdx() != null) {
+        if (shouldWriteAppealSiteNotification(appeal, status)) {
             loginRiskPolicyMapper.insertAdminNotification(
                     appeal.getUserIdx(),
                     "SECURITY_APPEAL",
@@ -576,32 +576,35 @@ public class LoginRiskPolicyService {
             throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.duplicatePending"));
         }
 
-        Integer recentRejectedCount = loginRiskPolicyMapper.countRejectedAppealAfter(
-                context.getTargetType(),
-                context.getTargetKey(),
-                firstNonBlank(context.getRequestId(), requestId),
-                LocalDateTime.now().minusHours(168)
-        );
-        if (recentRejectedCount != null && recentRejectedCount > 0) {
-            throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.rejectedCooldown"));
-        }
-
-        Integer totalRejectedCount = loginRiskPolicyMapper.countRejectedAppeals(
-                context.getTargetType(),
-                context.getTargetKey(),
-                firstNonBlank(context.getRequestId(), requestId)
-        );
-        if (totalRejectedCount != null && totalRejectedCount >= 2) {
-            throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.permanentlyClosed"));
-        }
-
-        if (context.getTargetKey() != null && context.getTargetKey().startsWith("IP:")) {
-            Integer todayIpAppealCount = loginRiskPolicyMapper.countIpTargetAppealsToday(
+        AppealPolicyConfig appealPolicy = getAppealPolicyConfig();
+        if (appealPolicy.enabled()) {
+            Integer recentRejectedCount = loginRiskPolicyMapper.countRejectedAppealAfter(
+                    context.getTargetType(),
                     context.getTargetKey(),
-                    LocalDateTime.now().toLocalDate().atStartOfDay()
+                    firstNonBlank(context.getRequestId(), requestId),
+                    LocalDateTime.now().minusMinutes(appealPolicy.rejectedCooldownMinutes())
             );
-            if (todayIpAppealCount != null && todayIpAppealCount >= 3) {
-                throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.ipDailyLimit"));
+            if (recentRejectedCount != null && recentRejectedCount > 0) {
+                throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.rejectedCooldown"));
+            }
+
+            Integer totalRejectedCount = loginRiskPolicyMapper.countRejectedAppeals(
+                    context.getTargetType(),
+                    context.getTargetKey(),
+                    firstNonBlank(context.getRequestId(), requestId)
+            );
+            if (totalRejectedCount != null && totalRejectedCount >= appealPolicy.maxRejectedCount()) {
+                throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.permanentlyClosed"));
+            }
+
+            if (context.getTargetKey() != null && context.getTargetKey().startsWith("IP:")) {
+                Integer todayIpAppealCount = loginRiskPolicyMapper.countIpTargetAppealsToday(
+                        context.getTargetKey(),
+                        LocalDateTime.now().toLocalDate().atStartOfDay()
+                );
+                if (todayIpAppealCount != null && todayIpAppealCount >= appealPolicy.ipDailyLimit()) {
+                    throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.ipDailyLimit"));
+                }
             }
         }
 
@@ -673,6 +676,41 @@ public class LoginRiskPolicyService {
         }
 
         return publicRequestId;
+    }
+
+
+    private AppealPolicyConfig getAppealPolicyConfig() {
+        LoginRiskPolicyVO policy = loginRiskPolicyMapper.findPolicyByCode("SECURITY_APPEAL_COOLDOWN");
+        if (policy == null) {
+            return new AppealPolicyConfig(true, 10080, 2, 3);
+        }
+        return new AppealPolicyConfig(
+                policy.isActive(),
+                positiveOrDefault(policy.getObservationMinutes(), 10080),
+                positiveOrDefault(policy.getThresholdCount(), 2),
+                positiveOrDefault(policy.getDistinctAccountThreshold(), 3)
+        );
+    }
+
+    private int positiveOrDefault(Integer value, int fallback) {
+        return value != null && value > 0 ? value : fallback;
+    }
+
+    private boolean shouldWriteAppealSiteNotification(SecurityAppealVO appeal, String status) {
+        if (appeal == null || appeal.getUserIdx() == null) {
+            return false;
+        }
+        if ("ACCEPTED".equals(status)) {
+            return true;
+        }
+        String accountStatus = loginRiskPolicyMapper.findUserAccountStatusByUserIdx(appeal.getUserIdx());
+        return "ACTIVE".equalsIgnoreCase(accountStatus);
+    }
+
+    private record AppealPolicyConfig(boolean enabled,
+                                      int rejectedCooldownMinutes,
+                                      int maxRejectedCount,
+                                      int ipDailyLimit) {
     }
 
     private String createAppealToken(Long userIdx,

@@ -1,0 +1,4 @@
+matchType,targetValue,reason,detailMessage,priority
+IP,203.0.113.10,Sample policy feed IP,Demo CSV payload,50
+CIDR,198.51.100.0/24,Sample policy feed CIDR,Demo CSV payload,60
+COUNTRY,RU,Sample policy feed country,Demo CSV payload,70

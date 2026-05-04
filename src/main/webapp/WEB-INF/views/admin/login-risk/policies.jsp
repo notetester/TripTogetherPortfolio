@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="activeMenu" value="loginRiskPolicies"/>
 <spring:message var="pageTitle" code="security.admin.policies.title"/>
 <%@ include file="../layout.jsp" %>
@@ -20,15 +21,27 @@
     </div>
 
     <c:if test="${not empty message}">
-        <div class="adm-alert success">${message}</div>
+        <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
+
+    <div class="adm-card" style="margin-bottom:16px;">
+        <div class="adm-card-body">
+            <div style="font-weight:800;color:#0f172a;"><spring:message code="security.admin.policies.appealGuide.title"/></div>
+            <div style="font-size:12px;color:#64748b;margin-top:6px;line-height:1.7;">
+                <spring:message code="security.admin.policies.appealGuide.desc"/><br>
+                <spring:message code="security.admin.policies.appealGuide.observation"/><br>
+                <spring:message code="security.admin.policies.appealGuide.threshold"/><br>
+                <spring:message code="security.admin.policies.appealGuide.distinct"/>
+            </div>
+        </div>
+    </div>
 
     <c:forEach var="p" items="${policies}">
         <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/policies/${p.policyIdx}" class="adm-card" style="margin-bottom:16px;">
             <div class="adm-card-header">
                 <div>
-                    <div class="adm-card-title">${p.policyName}</div>
-                    <div class="adm-muted">${p.policyCode} · ${p.policyType} · ${p.actionType}</div>
+                    <div class="adm-card-title"><c:out value="${p.policyName}"/></div>
+                    <div class="adm-muted"><c:out value="${p.policyCode}"/> · <c:out value="${p.policyType}"/> · <c:out value="${p.actionType}"/></div>
                 </div>
                 <label class="adm-check">
                     <input type="checkbox" name="active" ${p.active ? 'checked' : ''}>
@@ -36,9 +49,9 @@
                 </label>
             </div>
             <div class="adm-card-body">
-                <input type="hidden" name="policyCode" value="${p.policyCode}">
-                <input type="hidden" name="policyType" value="${p.policyType}">
-                <input type="hidden" name="actionType" value="${p.actionType}">
+                <input type="hidden" name="policyCode" value="${fn:escapeXml(p.policyCode)}">
+                <input type="hidden" name="policyType" value="${fn:escapeXml(p.policyType)}">
+                <input type="hidden" name="actionType" value="${fn:escapeXml(p.actionType)}">
 
                 <div class="adm-form-grid" style="grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px;">
                     <label><spring:message code="security.admin.policies.observationMinutes"/>
@@ -65,7 +78,7 @@
                         </select>
                     </label>
                     <label><spring:message code="security.admin.policies.notificationCategory"/>
-                        <input class="adm-input" type="text" name="notificationCategory" value="${p.notificationCategory}">
+                        <input class="adm-input" type="text" name="notificationCategory" value="${fn:escapeXml(p.notificationCategory)}">
                     </label>
                     <label><spring:message code="security.admin.policies.aiRiskScoreThreshold"/>
                         <input class="adm-input" type="number" name="aiRiskScoreThreshold" value="${p.aiRiskScoreThreshold}">
@@ -89,7 +102,7 @@
                 </div>
 
                 <label style="display:block;margin-top:12px;"><spring:message code="security.admin.common.description"/>
-                    <textarea class="adm-input" name="description" rows="2">${p.description}</textarea>
+                    <textarea class="adm-input" name="description" rows="2"><c:out value="${p.description}"/></textarea>
                 </label>
 
                 <div class="adm-actions" style="margin-top:12px;">

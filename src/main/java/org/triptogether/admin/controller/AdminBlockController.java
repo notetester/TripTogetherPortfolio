@@ -34,7 +34,8 @@ public class AdminBlockController {
                                   @CookieValue(name = "admBlockIprMode", defaultValue = "server") String iprMode,
                                   @CookieValue(name = "admBlockBatMode", defaultValue = "server") String batMode,
                                   @CookieValue(name = "admBlockUbMode", defaultValue = "server") String ubMode,
-                                  Model model) {
+                                  Model model,
+                                  Locale locale) {
         boolean loadHistories = !"server".equalsIgnoreCase(histMode);
         boolean loadIpRules = !"server".equalsIgnoreCase(iprMode);
         boolean loadBatches = !"server".equalsIgnoreCase(batMode);
@@ -48,7 +49,7 @@ public class AdminBlockController {
         model.addAttribute("batMode", batMode);
         model.addAttribute("ubMode", ubMode);
         model.addAttribute("activeMenu", "blocks");
-        model.addAttribute("pageTitle", "차단 관리");
+        model.addAttribute("pageTitle", messageSource.getMessage("admin.blocks.pageTitle", null, locale));
         return "admin/block/list";
     }
 
@@ -159,12 +160,12 @@ public class AdminBlockController {
 
     @PostMapping("/api/cache/sync")
     @ResponseBody
-    public Map<String, Object> syncBlockRuleCache() {
+    public Map<String, Object> syncBlockRuleCache(Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             BlockRuleCacheService.BlockRuleCacheSnapshot snapshot = blockRuleCacheService.invalidateAndRefresh();
             result.put("success", true);
-            result.put("message", "차단 규칙 캐시가 DB 기준으로 동기화되었습니다.");
+            result.put("message", messageSource.getMessage("admin.blocks.flash.cacheSynced", null, locale));
             result.put("source", snapshot.getSource());
             result.put("loadedAt", snapshot.getLoadedAt());
             result.put("ipRuleCount", snapshot.getIpRules() == null ? 0 : snapshot.getIpRules().size());
@@ -252,10 +253,33 @@ public class AdminBlockController {
             result.put("message", messageSource.getMessage("admin.blocks.policyFeed.uploadSuccess", null, locale));
         } catch (Exception e) {
             result.put("success", false);
-            result.put("message", e.getMessage());
+            result.put("message", resolveAdminMessage(e.getMessage(), locale));
         }
         return result;
     }
+
+    @PostMapping("/policy-feed/api")
+    @ResponseBody
+    public Map<String, Object> importPolicyFeedApi(@RequestBody AdminPolicyFeedImportRequest request,
+                                                   HttpSession session,
+                                                   Locale locale) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            result.putAll(adminBlockService.importPolicyFeed(
+                    request,
+                    loginUser != null ? loginUser.getUserIdx() : null
+            ));
+            syncBlockCacheQuietly();
+            result.put("success", true);
+            result.put("message", messageSource.getMessage("admin.blocks.policyFeed.uploadSuccess", null, locale));
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", resolveAdminMessage(e.getMessage(), locale));
+        }
+        return result;
+    }
+
 
     @PostMapping("/ip-rules")
     @ResponseBody
@@ -274,7 +298,8 @@ public class AdminBlockController {
                                             @RequestParam(required = false) String reason,
                                             @RequestParam(required = false) String detailMessage,
                                             @RequestParam(required = false) String expiresAt,
-                                            HttpSession session) {
+                                            HttpSession session,
+                                            Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
@@ -284,7 +309,7 @@ public class AdminBlockController {
                     loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", "IP 정책 규칙이 저장되었습니다.");
+            result.put("message", messageSource.getMessage("admin.blocks.flash.ipRuleCreated", null, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -302,7 +327,8 @@ public class AdminBlockController {
                                             @RequestParam(required = false) String reason,
                                             @RequestParam(required = false) String detailMessage,
                                             @RequestParam(required = false) String expiresAt,
-                                            HttpSession session) {
+                                            HttpSession session,
+                                            Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
@@ -311,7 +337,7 @@ public class AdminBlockController {
                     reason, detailMessage, parsed, loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", "IP 정책 규칙 설정이 저장되었습니다.");
+            result.put("message", messageSource.getMessage("admin.blocks.flash.ipRuleUpdated", null, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -323,14 +349,15 @@ public class AdminBlockController {
     @ResponseBody
     public Map<String, Object> toggleIpRule(@PathVariable Long ipBlocklistIdx,
                                             @RequestParam boolean active,
-                                            HttpSession session) {
+                                            HttpSession session,
+                                            Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.toggleIpRule(ipBlocklistIdx, active, loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", active ? "IP 차단 규칙이 재활성화되었습니다." : "IP 차단 규칙이 비활성화되었습니다.");
+            result.put("message", messageSource.getMessage(active ? "admin.blocks.flash.ipRuleEnabled" : "admin.blocks.flash.ipRuleDisabled", null, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -342,14 +369,15 @@ public class AdminBlockController {
     @ResponseBody
     public Map<String, Object> bulkToggleIpRules(@RequestParam List<Long> ipBlocklistIdxList,
                                                  @RequestParam boolean active,
-                                                 HttpSession session) {
+                                                 HttpSession session,
+                                                 Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.bulkToggleIpRules(ipBlocklistIdxList, active, loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", ipBlocklistIdxList.size() + "개의 IP 규칙이 " + (active ? "활성화" : "비활성화") + "되었습니다.");
+            result.put("message", messageSource.getMessage(active ? "admin.blocks.flash.ipRulesBulkEnabled" : "admin.blocks.flash.ipRulesBulkDisabled", new Object[]{ipBlocklistIdxList.size()}, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -360,14 +388,15 @@ public class AdminBlockController {
     @PostMapping("/ip-rules/{ipBlocklistIdx}/return-to-batch")
     @ResponseBody
     public Map<String, Object> returnIpRuleToBatch(@PathVariable Long ipBlocklistIdx,
-                                                   HttpSession session) {
+                                                   HttpSession session,
+                                                   Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.returnIpRuleToBatchControl(ipBlocklistIdx, loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", "규칙을 배치 제어 상태로 되돌렸습니다.");
+            result.put("message", messageSource.getMessage("admin.blocks.flash.returnedToBatch", null, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -381,7 +410,8 @@ public class AdminBlockController {
                                                @RequestParam boolean active,
                                                @RequestParam(required = false) String reason,
                                                @RequestParam(required = false) String expiresAt,
-                                               HttpSession session) {
+                                               HttpSession session,
+                                               Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
@@ -390,7 +420,7 @@ public class AdminBlockController {
                     loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", active ? "회원 차단 설정이 저장되었습니다." : "회원 차단이 해제되었습니다.");
+            result.put("message", messageSource.getMessage(active ? "admin.blocks.flash.userBlockUpdated" : "admin.blocks.flash.userBlockReleased", null, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -401,14 +431,15 @@ public class AdminBlockController {
     @PostMapping("/user-blocks/release")
     @ResponseBody
     public Map<String, Object> releaseUserBlock(@RequestParam String blockTargetKey,
-                                                HttpSession session) {
+                                                HttpSession session,
+                                                Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.releaseUserBlock(blockTargetKey, loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", "회원 차단이 해제되었습니다.");
+            result.put("message", messageSource.getMessage("admin.blocks.flash.userBlockReleased", null, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -419,14 +450,15 @@ public class AdminBlockController {
     @PostMapping("/user-blocks/bulk-release")
     @ResponseBody
     public Map<String, Object> bulkReleaseUserBlocks(@RequestParam List<String> blockTargetKeys,
-                                                     HttpSession session) {
+                                                     HttpSession session,
+                                                     Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
             adminBlockService.bulkReleaseUserBlocks(blockTargetKeys, loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", blockTargetKeys.size() + "개의 회원 차단이 해제되었습니다.");
+            result.put("message", messageSource.getMessage("admin.blocks.flash.userBlocksBulkReleased", new Object[]{blockTargetKeys.size()}, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -445,7 +477,8 @@ public class AdminBlockController {
                                            @RequestParam(defaultValue = "BATCH_ONLY") String defaultDisableStrategy,
                                            @RequestParam(defaultValue = "BATCH_ONLY") String defaultEnableStrategy,
                                            @RequestParam(required = false) String description,
-                                           HttpSession session) {
+                                           HttpSession session,
+                                           Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
@@ -454,7 +487,7 @@ public class AdminBlockController {
                     loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", "IP 차단 배치가 생성되었습니다.");
+            result.put("message", messageSource.getMessage("admin.blocks.flash.batchCreated", null, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -474,7 +507,8 @@ public class AdminBlockController {
                                            @RequestParam(defaultValue = "BATCH_ONLY") String defaultDisableStrategy,
                                            @RequestParam(defaultValue = "BATCH_ONLY") String defaultEnableStrategy,
                                            @RequestParam(required = false) String description,
-                                           HttpSession session) {
+                                           HttpSession session,
+                                           Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
@@ -483,7 +517,7 @@ public class AdminBlockController {
                     loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", "IP 정책 배치 설정이 저장되었습니다.");
+            result.put("message", messageSource.getMessage("admin.blocks.flash.batchUpdated", null, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
@@ -497,7 +531,8 @@ public class AdminBlockController {
                                            @RequestParam boolean active,
                                            @RequestParam(required = false) String operationOption,
                                            @RequestParam(required = false) String description,
-                                           HttpSession session) {
+                                           HttpSession session,
+                                           Locale locale) {
         Map<String, Object> result = new HashMap<>();
         try {
             UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
@@ -505,15 +540,21 @@ public class AdminBlockController {
                     loginUser != null ? loginUser.getUserIdx() : null);
             syncBlockCacheQuietly();
             result.put("success", true);
-            result.put("message", active
-                    ? "배치 상태가 활성으로 변경되었습니다."
-                    : "배치 상태가 비활성으로 변경되었습니다.");
+            result.put("message", messageSource.getMessage(active ? "admin.blocks.flash.batchEnabled" : "admin.blocks.flash.batchDisabled", null, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
         }
         return result;
     }
+
+    private String resolveAdminMessage(String message, Locale locale) {
+        if (message != null && message.startsWith("admin.")) {
+            return messageSource.getMessage(message, null, message, locale);
+        }
+        return message;
+    }
+
 
     private void syncBlockCacheQuietly() {
         try {

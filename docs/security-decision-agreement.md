@@ -37,3 +37,11 @@
 - 정책기관 피드는 우선 CSV/JSON 업로드로 등록하고, 외부 계약/API가 확정되면 Provider Adapter로 확장
 - 일반 사용자 활동 로그는 reason_code 전환 대상에서 제외
 - 관리자 조치 로그는 신고/문의/기업승인부터 점진 확대
+
+
+## 추가 반영
+
+- 정책 피드 수신은 CSV/JSON 파일 업로드뿐 아니라 `/admin/blocks/policy-feed/api` JSON 계약도 지원한다.
+- TripTogether가 외부 기관에 제안할 수 있는 표준 payload는 `docs/security-policy-feed-api-contract.md`에 문서화한다.
+- 이의제기 제한 정책은 `SECURITY_APPEAL_COOLDOWN` 정책 row로 관리하며, 관리자 정책 화면에서 수정한다.
+- 이의제기 결과 사이트 내 알림은 ACCEPTED 또는 ACTIVE 계정에 한해 남긴다.

@@ -134,3 +134,32 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | REJECTED after 168h and rejected count < 2 | 접수 허용 |
 | rejected count >= 2 | 영구 종결 메시지 |
 | same IP target 3+ appeals today | 일일 제한 메시지 |
+
+
+## 14. Policy Feed API Contract 테스트
+
+| Case | Expected |
+|---|---|
+| POST `/admin/blocks/policy-feed/api` valid JSON | IP_BLOCK_BATCH + IP_BLOCKLIST 생성 |
+| omitted matchType with CIDR target | CIDR로 추론 |
+| omitted matchType with two-letter country | COUNTRY로 추론 |
+| invalid rule row | skipped에 실패 사유 기록 |
+| sourceName omitted | MANUAL_UPLOAD_FEED 사용 |
+
+## 15. Appeal Policy UI 테스트
+
+| Case | Expected |
+|---|---|
+| SECURITY_APPEAL_COOLDOWN observation_minutes 변경 | REJECTED 쿨타임 기준 변경 |
+| SECURITY_APPEAL_COOLDOWN threshold_count 변경 | 영구 종결 기준 변경 |
+| SECURITY_APPEAL_COOLDOWN distinct_account_threshold 변경 | 동일 IP 일일 접수 제한 변경 |
+| policy inactive | PENDING/HOLD 중복 차단 외 쿨타임/횟수 제한 비활성 |
+
+## 16. Security Notification 테스트
+
+| Case | Expected |
+|---|---|
+| ACCEPTED + user_idx exists | MYPAGE_FEED_NOTIFICATION 생성 |
+| REJECTED + ACTIVE user | MYPAGE_FEED_NOTIFICATION 생성 |
+| REJECTED + blocked/non-active user | 사이트 내 알림 생략, 이메일 중심 |
+| HOLD + blocked/non-active user | 사이트 내 알림 생략, 이메일 중심 |

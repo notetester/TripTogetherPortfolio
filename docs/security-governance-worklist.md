@@ -60,6 +60,12 @@
 - MOCK_WAF_SERVICE WAF Adapter
 - INTERNAL_AI_GATEWAY Stub Adapter
 - 보안 거버넌스 결정 합의안 문서화
+- 차단 관리 주요 Ajax 성공 메시지 i18n 정리
+- 정책 피드 API 계약/샘플 JSON/CSV 문서화
+- 보안 알림 동작 문서화
+- 보안 이의제기 결과 사이트 내 알림 조건부 적재 로직
+- SECURITY_APPEAL_COOLDOWN 정책 row 기반 이의제기 제한값 UI 수정 연동
+- 정책 피드 JSON API 수신 계약 및 `/admin/blocks/policy-feed/api` 구현
 
 ## 남은 작업
 
@@ -83,7 +89,7 @@
 
 - 보안 검토 큐 상세 모달 추가 고도화
 - Provider 헬스체크 결과 상세 화면 추가 고도화
-- 차단/이의제기 처리 결과 사이트 내 알림 고도화
+- 차단/이의제기 처리 결과 publicRequestId 기반 비로그인 결과 조회 화면 검토
 - 이의제기 중복 접수 제한 정책 세부 문구/UX 고도화
 - WAF Provider별 재시도/실패 사유 UI 추가 고도화
 
@@ -115,3 +121,5 @@
 - `docs/development-guidelines.md`
 - `docs/security-pending-decisions.md`
 - `docs/security-decision-agreement.md`
+- `docs/security-policy-feed-api-contract.md`
+- `docs/security-notification-behavior.md`

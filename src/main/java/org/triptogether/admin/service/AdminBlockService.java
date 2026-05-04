@@ -42,4 +42,5 @@ public interface AdminBlockService {
     void bulkToggleIpRules(java.util.List<Long> ipBlocklistIdxList, boolean active, Long actorUserIdx);
     Map<String, Object> findCurrentSettingByHistory(Long historyBlockIdx);
     Map<String, Object> importPolicyFeed(MultipartFile file, String sourceName, String defaultRuleAction, Long actorUserIdx);
+    Map<String, Object> importPolicyFeed(AdminPolicyFeedImportRequest request, Long actorUserIdx);
 }

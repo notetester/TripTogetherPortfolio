@@ -14,6 +14,8 @@ import org.triptogether.admin.vo.AdminIpBlockBatchOperationRuleVO;
 import org.triptogether.admin.vo.AdminIpBlockBatchOperationVO;
 import org.triptogether.admin.vo.AdminIpBlockBatchVO;
 import org.triptogether.admin.vo.AdminIpBlockVO;
+import org.triptogether.admin.vo.AdminPolicyFeedRuleVO;
+import org.triptogether.admin.vo.AdminPolicyFeedImportRequest;
 import org.triptogether.admin.vo.AdminUserBlockVO;
 import org.triptogether.config.IpBlockMapper;
 
@@ -584,14 +586,52 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     @Override
     public Map<String, Object> importPolicyFeed(MultipartFile file, String sourceName, String defaultRuleAction, Long actorUserIdx) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("업로드할 CSV/JSON 파일이 필요합니다.");
+            throw new IllegalArgumentException("admin.blocks.policyFeed.error.fileRequired");
         }
 
         List<PolicyFeedRow> rows = parsePolicyFeedRows(file);
         if (rows.isEmpty()) {
-            throw new IllegalArgumentException("업로드 파일에 적용 가능한 정책 행이 없습니다.");
+            throw new IllegalArgumentException("admin.blocks.policyFeed.error.noRows");
         }
 
+        return importPolicyFeedRows(
+                rows,
+                sourceName,
+                defaultRuleAction,
+                "FILE",
+                file.getOriginalFilename(),
+                actorUserIdx
+        );
+    }
+
+    @Override
+    public Map<String, Object> importPolicyFeed(AdminPolicyFeedImportRequest request, Long actorUserIdx) {
+        if (request == null || request.getRules() == null || request.getRules().isEmpty()) {
+            throw new IllegalArgumentException("admin.blocks.policyFeed.error.noRows");
+        }
+        List<PolicyFeedRow> rows = request.getRules().stream()
+                .map(this::toPolicyFeedRow)
+                .filter(row -> !isBlank(row.targetValue()))
+                .collect(Collectors.toList());
+        if (rows.isEmpty()) {
+            throw new IllegalArgumentException("admin.blocks.policyFeed.error.noRows");
+        }
+        return importPolicyFeedRows(
+                rows,
+                request.getSourceName(),
+                request.getDefaultRuleAction(),
+                "API",
+                "JSON_API",
+                actorUserIdx
+        );
+    }
+
+    private Map<String, Object> importPolicyFeedRows(List<PolicyFeedRow> rows,
+                                                     String sourceName,
+                                                     String defaultRuleAction,
+                                                     String importMethod,
+                                                     String sourceDetail,
+                                                     Long actorUserIdx) {
         LocalDateTime now = LocalDateTime.now();
         AdminIpBlockBatchVO batch = new AdminIpBlockBatchVO();
         batch.setBatchCode("MANUAL_FEED_" + now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
@@ -600,7 +640,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         batch.setSourceName(firstNonBlank(trimToNull(sourceName), "MANUAL_UPLOAD_FEED"));
         batch.setBatchRuleAction(safeUpper(defaultRuleAction, "BLOCK"));
         batch.setDefaultRulePriority(50);
-        batch.setDescription("MANUAL_UPLOAD_FEED imported file=" + file.getOriginalFilename());
+        batch.setDescription("MANUAL_UPLOAD_FEED importMethod=" + firstNonBlank(importMethod, "-") + ", source=" + firstNonBlank(sourceDetail, "-"));
         batch.setDefaultDisableStrategy("BATCH_ONLY");
         batch.setDefaultEnableStrategy("RESTORE_BATCH_CONTROL");
         batch.setCreatedByUserIdx(actorUserIdx);
@@ -639,6 +679,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("batchId", batch.getIpBlockBatchIdx());
         result.put("batchCode", batch.getBatchCode());
+        result.put("importMethod", importMethod);
         result.put("totalCount", rows.size());
         result.put("successCount", successCount);
         result.put("failedCount", skipped.size());
@@ -660,7 +701,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
             }
             return parseCsvPolicyFeedRows(content);
         } catch (Exception e) {
-            throw new IllegalArgumentException("정책 피드 파일을 해석하지 못했습니다: " + e.getMessage(), e);
+            throw new IllegalArgumentException("admin.blocks.policyFeed.error.parseFailed");
         }
     }
 
@@ -715,6 +756,20 @@ public class AdminBlockServiceImpl implements AdminBlockService {
             }
         }
         return null;
+    }
+
+    private PolicyFeedRow toPolicyFeedRow(AdminPolicyFeedRuleVO value) {
+        if (value == null) {
+            return new PolicyFeedRow(null, null, null, null, null, null);
+        }
+        return new PolicyFeedRow(
+                normalizeFeedMatchType(value.getMatchType(), value.getTargetValue()),
+                trimToNull(value.getTargetValue()),
+                safeUpper(value.getRuleAction(), "BLOCK"),
+                firstNonBlank(value.getReason(), "MANUAL_UPLOAD_FEED"),
+                value.getDetailMessage(),
+                value.getPriority()
+        );
     }
 
     private PolicyFeedRow toPolicyFeedRow(Map<String, Object> value) {
