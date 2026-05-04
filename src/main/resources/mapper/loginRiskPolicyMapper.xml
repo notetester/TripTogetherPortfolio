@@ -1134,6 +1134,37 @@
           </if>
     </select>
 
+
+    <select id="countRejectedAppealAfter" resultType="int">
+        SELECT COUNT(*)
+        FROM SECURITY_ACTION_APPEAL
+        WHERE appeal_status = 'REJECTED'
+          AND target_type = #{targetType}
+          AND target_key = #{targetKey}
+          AND created_at >= #{after}
+          <if test="blockAccessRequestId != null and blockAccessRequestId != ''">
+            AND block_access_request_id = #{blockAccessRequestId}
+          </if>
+    </select>
+
+    <select id="countRejectedAppeals" resultType="int">
+        SELECT COUNT(*)
+        FROM SECURITY_ACTION_APPEAL
+        WHERE appeal_status = 'REJECTED'
+          AND target_type = #{targetType}
+          AND target_key = #{targetKey}
+          <if test="blockAccessRequestId != null and blockAccessRequestId != ''">
+            AND block_access_request_id = #{blockAccessRequestId}
+          </if>
+    </select>
+
+    <select id="countIpTargetAppealsToday" resultType="int">
+        SELECT COUNT(*)
+        FROM SECURITY_ACTION_APPEAL
+        WHERE target_key = #{targetKey}
+          AND created_at >= #{todayStart}
+    </select>
+
     <insert id="insertSecurityActionAuditWithReason">
         INSERT INTO SECURITY_ACTION_AUDIT
         (action_type, actor_user_idx, target_type, target_key, source_type, source_id,

@@ -1,8 +1,11 @@
 package org.triptogether.admin.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.admin.mapper.AdminBlockMapper;
 import org.triptogether.admin.mapper.AdminMapper;
 import org.triptogether.admin.vo.AdminBlockHistoryVO;
@@ -14,10 +17,12 @@ import org.triptogether.admin.vo.AdminIpBlockVO;
 import org.triptogether.admin.vo.AdminUserBlockVO;
 import org.triptogether.config.IpBlockMapper;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,6 +39,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     private final AdminBlockMapper adminBlockMapper;
     private final AdminMapper adminMapper;
     private final IpBlockMapper ipBlockMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Map<String, Object> getBlockHistoriesPaged(AdminBlockSearchVO search) {
@@ -572,6 +578,200 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         applyEffectiveState(rule, evaluateRule(rule, batch == null || batch.isActive()), "ADMIN", now);
         adminBlockMapper.insertIpBlockRule(rule);
         recordRuleHistory(null, rule, true, batch == null || batch.isActive(), "CREATE_RULE", "ADMIN", null, trimToNull(reason), actorUserIdx);
+    }
+
+
+    @Override
+    public Map<String, Object> importPolicyFeed(MultipartFile file, String sourceName, String defaultRuleAction, Long actorUserIdx) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("업로드할 CSV/JSON 파일이 필요합니다.");
+        }
+
+        List<PolicyFeedRow> rows = parsePolicyFeedRows(file);
+        if (rows.isEmpty()) {
+            throw new IllegalArgumentException("업로드 파일에 적용 가능한 정책 행이 없습니다.");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        AdminIpBlockBatchVO batch = new AdminIpBlockBatchVO();
+        batch.setBatchCode("MANUAL_FEED_" + now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+        batch.setBatchName("Manual Upload Feed " + now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+        batch.setSourceType("POLICY_AUTHORITY");
+        batch.setSourceName(firstNonBlank(trimToNull(sourceName), "MANUAL_UPLOAD_FEED"));
+        batch.setBatchRuleAction(safeUpper(defaultRuleAction, "BLOCK"));
+        batch.setDefaultRulePriority(50);
+        batch.setDescription("MANUAL_UPLOAD_FEED imported file=" + file.getOriginalFilename());
+        batch.setDefaultDisableStrategy("BATCH_ONLY");
+        batch.setDefaultEnableStrategy("RESTORE_BATCH_CONTROL");
+        batch.setCreatedByUserIdx(actorUserIdx);
+        batch.setUpdatedByUserIdx(actorUserIdx);
+        adminBlockMapper.insertIpBlockBatch(batch);
+
+        int successCount = 0;
+        List<String> skipped = new ArrayList<>();
+        for (int i = 0; i < rows.size(); i++) {
+            PolicyFeedRow row = rows.get(i);
+            try {
+                createGlobalIpRule(
+                        row.matchType(),
+                        "SINGLE_IP".equals(row.matchType()) ? row.targetValue() : null,
+                        "CIDR".equals(row.matchType()) ? row.targetValue() : null,
+                        null,
+                        null,
+                        "COUNTRY".equals(row.matchType()) ? row.targetValue() : null,
+                        "ASN".equals(row.matchType()) ? row.targetValue() : null,
+                        firstNonBlank(row.ruleAction(), batch.getBatchRuleAction()),
+                        "BATCH",
+                        "SECURITY",
+                        row.priority() == null ? 50 : row.priority(),
+                        batch.getIpBlockBatchIdx(),
+                        firstNonBlank(row.reason(), "MANUAL_UPLOAD_FEED"),
+                        firstNonBlank(row.detailMessage(), "Imported by MANUAL_UPLOAD_FEED"),
+                        null,
+                        actorUserIdx
+                );
+                successCount++;
+            } catch (Exception e) {
+                skipped.add("line=" + (i + 1) + ", target=" + row.targetValue() + ", reason=" + e.getMessage());
+            }
+        }
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("batchId", batch.getIpBlockBatchIdx());
+        result.put("batchCode", batch.getBatchCode());
+        result.put("totalCount", rows.size());
+        result.put("successCount", successCount);
+        result.put("failedCount", skipped.size());
+        result.put("skipped", skipped);
+        return result;
+    }
+
+    private List<PolicyFeedRow> parsePolicyFeedRows(MultipartFile file) {
+        String filename = file.getOriginalFilename() == null ? "" : file.getOriginalFilename().toLowerCase();
+        try {
+            String content = new String(file.getBytes(), StandardCharsets.UTF_8);
+            if (filename.endsWith(".json") || content.trim().startsWith("[")) {
+                List<Map<String, Object>> values = objectMapper.readValue(content, new TypeReference<List<Map<String, Object>>>() {});
+                List<PolicyFeedRow> rows = new ArrayList<>();
+                for (Map<String, Object> value : values) {
+                    rows.add(toPolicyFeedRow(value));
+                }
+                return rows.stream().filter(row -> !isBlank(row.targetValue())).collect(Collectors.toList());
+            }
+            return parseCsvPolicyFeedRows(content);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("정책 피드 파일을 해석하지 못했습니다: " + e.getMessage(), e);
+        }
+    }
+
+    private List<PolicyFeedRow> parseCsvPolicyFeedRows(String content) {
+        List<PolicyFeedRow> rows = new ArrayList<>();
+        String[] lines = content.split("\\r?\\n");
+        if (lines.length == 0) {
+            return rows;
+        }
+
+        String[] header = splitCsvLine(lines[0]);
+        Map<String, Integer> headerIndex = new HashMap<>();
+        for (int i = 0; i < header.length; i++) {
+            headerIndex.put(header[i].trim().toLowerCase(), i);
+        }
+        boolean hasHeader = headerIndex.containsKey("targetvalue") || headerIndex.containsKey("target_value")
+                || headerIndex.containsKey("value") || headerIndex.containsKey("ip") || headerIndex.containsKey("country");
+
+        for (int i = hasHeader ? 1 : 0; i < lines.length; i++) {
+            String line = lines[i];
+            if (isBlank(line) || line.trim().startsWith("#")) {
+                continue;
+            }
+            String[] cols = splitCsvLine(line);
+            Map<String, Object> value = new HashMap<>();
+            if (hasHeader) {
+                value.put("matchType", csvValue(cols, headerIndex, "matchtype", "match_type", "type"));
+                value.put("targetValue", csvValue(cols, headerIndex, "targetvalue", "target_value", "value", "ip", "cidr", "country", "asn"));
+                value.put("ruleAction", csvValue(cols, headerIndex, "ruleaction", "rule_action", "action"));
+                value.put("reason", csvValue(cols, headerIndex, "reason"));
+                value.put("detailMessage", csvValue(cols, headerIndex, "detailmessage", "detail_message", "memo"));
+                value.put("priority", csvValue(cols, headerIndex, "priority"));
+            } else {
+                value.put("matchType", cols.length > 0 ? cols[0] : null);
+                value.put("targetValue", cols.length > 1 ? cols[1] : null);
+                value.put("reason", cols.length > 2 ? cols[2] : null);
+            }
+            rows.add(toPolicyFeedRow(value));
+        }
+        return rows.stream().filter(row -> !isBlank(row.targetValue())).collect(Collectors.toList());
+    }
+
+    private String[] splitCsvLine(String line) {
+        return line.split("\\s*,\\s*", -1);
+    }
+
+    private String csvValue(String[] cols, Map<String, Integer> index, String... keys) {
+        for (String key : keys) {
+            Integer i = index.get(key);
+            if (i != null && i >= 0 && i < cols.length) {
+                return trimToNull(cols[i]);
+            }
+        }
+        return null;
+    }
+
+    private PolicyFeedRow toPolicyFeedRow(Map<String, Object> value) {
+        String targetValue = firstNonBlank(
+                stringValue(value.get("targetValue")),
+                stringValue(value.get("target_value")),
+                stringValue(value.get("value")),
+                stringValue(value.get("ip")),
+                stringValue(value.get("cidr")),
+                stringValue(value.get("country")),
+                stringValue(value.get("countryCode")),
+                stringValue(value.get("asn"))
+        );
+        String matchType = firstNonBlank(stringValue(value.get("matchType")), stringValue(value.get("match_type")), stringValue(value.get("type")));
+        matchType = normalizeFeedMatchType(matchType, targetValue);
+        return new PolicyFeedRow(
+                matchType,
+                targetValue == null ? null : targetValue.trim(),
+                safeUpper(stringValue(value.get("ruleAction")), "BLOCK"),
+                firstNonBlank(stringValue(value.get("reason")), "MANUAL_UPLOAD_FEED"),
+                stringValue(value.get("detailMessage")),
+                parseInteger(value.get("priority"))
+        );
+    }
+
+    private String normalizeFeedMatchType(String matchType, String targetValue) {
+        String normalized = trimToNull(matchType);
+        normalized = normalized == null ? null : normalized.toUpperCase();
+        if (!isBlank(normalized)) {
+            if ("IP".equals(normalized)) return "SINGLE_IP";
+            return normalized;
+        }
+        if (targetValue != null && targetValue.contains("/")) return "CIDR";
+        if (targetValue != null && targetValue.matches("(?i)^[A-Z]{2}$")) return "COUNTRY";
+        if (targetValue != null && targetValue.matches("(?i)^AS?\\d+$")) return "ASN";
+        return "SINGLE_IP";
+    }
+
+    private Integer parseInteger(Object value) {
+        if (value == null) return null;
+        try {
+            return Integer.parseInt(String.valueOf(value).trim());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String stringValue(Object value) {
+        return value == null ? null : trimToNull(String.valueOf(value));
+    }
+
+    private record PolicyFeedRow(String matchType,
+                                 String targetValue,
+                                 String ruleAction,
+                                 String reason,
+                                 String detailMessage,
+                                 Integer priority) {
     }
 
     @Override

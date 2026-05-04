@@ -89,6 +89,35 @@
         </div>
     </div>
 
+
+    <div class="adm-card" style="margin-bottom:20px;">
+        <div class="adm-card-body" style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div style="min-width:260px;flex:1;">
+                <div style="font-weight:800;color:#0f172a;"><spring:message code="admin.blocks.policyFeed.title"/></div>
+                <div style="font-size:12px;color:#64748b;margin-top:4px;"><spring:message code="admin.blocks.policyFeed.desc"/></div>
+            </div>
+            <form id="policyFeedUploadForm" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+                <label style="font-size:12px;color:#475569;">
+                    <spring:message code="admin.blocks.policyFeed.sourceName"/>
+                    <input class="adm-input" type="text" name="sourceName" value="MANUAL_UPLOAD_FEED" style="min-width:180px;">
+                </label>
+                <label style="font-size:12px;color:#475569;">
+                    <spring:message code="admin.context.ruleAction"/>
+                    <select class="adm-select" name="defaultRuleAction">
+                        <option value="BLOCK"><spring:message code="admin.context.ruleAction.block"/></option>
+                        <option value="ALLOW"><spring:message code="admin.context.ruleAction.allow"/></option>
+                    </select>
+                </label>
+                <label style="font-size:12px;color:#475569;">
+                    <spring:message code="admin.blocks.policyFeed.file"/>
+                    <input class="adm-input" type="file" name="file" accept=".csv,.json" required>
+                </label>
+                <button type="submit" class="adm-btn adm-btn-primary"><spring:message code="admin.blocks.policyFeed.upload"/></button>
+            </form>
+            <div id="policyFeedUploadResult" style="width:100%;font-size:12px;color:#475569;"></div>
+        </div>
+    </div>
+
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-body">
             <form method="get" action="${pageContext.request.contextPath}/admin/blocks">
@@ -3502,3 +3531,37 @@ initializeLocalSections();
 activateBlockTab(new URLSearchParams(window.location.search).get('tab') || 'dashboard');
 </script>
 <%@ include file="../layout-close.jsp" %>
+
+<script>
+(function () {
+    const form = document.getElementById('policyFeedUploadForm');
+    if (!form) return;
+    const resultBox = document.getElementById('policyFeedUploadResult');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        resultBox.textContent = '<spring:message code="admin.blocks.policyFeed.uploading" javaScriptEscape="true"/>';
+        fetch('${pageContext.request.contextPath}/admin/blocks/policy-feed/upload', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    resultBox.textContent =
+                        '<spring:message code="admin.blocks.policyFeed.uploadSuccess" javaScriptEscape="true"/>'
+                        + ' batch=' + data.batchCode
+                        + ', success=' + data.successCount
+                        + ', failed=' + data.failedCount;
+                    renderSectionByMode('ip-rules');
+                    renderSectionByMode('batches');
+                } else {
+                    resultBox.textContent = data.message || '<spring:message code="admin.blocks.policyFeed.uploadFailed" javaScriptEscape="true"/>';
+                }
+            })
+            .catch(error => {
+                resultBox.textContent = error.message || '<spring:message code="admin.blocks.policyFeed.uploadFailed" javaScriptEscape="true"/>';
+            });
+    });
+})();
+</script>

@@ -54,6 +54,12 @@
 - AWS WAF SDK IPSet Adapter
 - Cloudflare Direct API WAF Adapter
 - Gateway + Direct Defense in Depth WAF 실행 구조
+- Provider 결정안 seed SQL
+- 이의제기 REJECTED 7일 쿨타임 및 2회 거절 종결 정책
+- MANUAL_UPLOAD_FEED CSV/JSON 업로드 API/UI
+- MOCK_WAF_SERVICE WAF Adapter
+- INTERNAL_AI_GATEWAY Stub Adapter
+- 보안 거버넌스 결정 합의안 문서화
 
 ## 남은 작업
 
@@ -62,15 +68,15 @@
 
 ### 외부 연동
 
-- 실제 운영 AI/정책기관 API 계약 확정
+- 실제 운영 AI Gateway/정책기관 Gateway endpoint 확정
 - 운영 AI/정책기관 API별 실제 응답 스키마 매핑 확정
-- Provider별 Secret 관리 방식 최종 확정
+- AWS Secrets Manager/Parameter Store 실제 연동 구현
 - 외부 Provider 장애 시 fail-open / fail-closed 정책별 통합 테스트
 
 ### 데이터 모델 고도화
 
 - 보안 도메인 외 타 도메인 감사 로그의 `reason_code` + `reason_args` 전환 여부 검토
-- 기존 `LOGIN_RISK_EXTERNAL_ASSESSMENT`와 `SECURITY_RISK_ASSESSMENT`의 장기 통합 방향 결정
+- `LOGIN_RISK_EXTERNAL_ASSESSMENT`와 `SECURITY_RISK_ASSESSMENT` 역할 분리 운영 문서 고도화
 - `SECURITY_REVIEW_QUEUE`와 `SECURITY_RISK_ASSESSMENT` 상태 전이 규칙 상세 문서화
 
 ### UI/운영 고도화
@@ -108,3 +114,4 @@
 - `docs/security-provider-test-plan.md`
 - `docs/development-guidelines.md`
 - `docs/security-pending-decisions.md`
+- `docs/security-decision-agreement.md`

@@ -416,3 +416,23 @@ Q12:
 Q13:
 Q14:
 ```
+
+
+## 확정 답변 요약
+
+```text
+Q1: E 현재 Stub 유지 -> 장기적으로 사내 Gateway. provider_code=INTERNAL_AI_GATEWAY, fail_open=1, timeout=3000
+Q2: D CSV/JSON 파일 수동 업로드. provider_code=MANUAL_UPLOAD_FEED, fail_open=1
+Q3: D 현재 비활성 + Mock 서비스, 향후 C Gateway + Direct 모두 수용
+Q4: Cloudflare 사용 예정. 대상 IP/COUNTRY. ASN 보류. 비동기 큐 동기화
+Q5: AWS WAF 사용 예정. REGIONAL, IAM Role 운영/로컬 profile
+Q6: D Nginx 직접 제어 안 함. Cloudflare/AWS Edge WAF 중심
+Q7: 운영 AWS Secrets Manager/Parameter Store, 로컬 .env/local yml, 시연 properties/UI 입력
+Q8: AI/Policy fail-open=1, WAF_CDN fail-open=0 + DLQ 재시도
+Q9: C 내부 Gateway 표준 DTO 변환
+Q10: B 관리자 조치 로그까지 reason_code 확대. ACTIVITY_LOG 제외
+Q11: A LOGIN_RISK_EXTERNAL_ASSESSMENT와 SECURITY_RISK_ASSESSMENT 둘 다 유지
+Q12: PENDING/HOLD 중복 차단, REJECTED 7일 후 1회, 2회 거절 시 영구 종결, IP 일 3회 제한
+Q13: 즉시 알림과 일일 요약 이원화
+Q14: Mock 기반 E2E UI 흐름 우선 검증
+```

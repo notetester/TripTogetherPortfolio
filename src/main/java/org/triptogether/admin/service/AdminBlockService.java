@@ -1,6 +1,7 @@
 package org.triptogether.admin.service;
 
 import org.triptogether.admin.vo.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -40,4 +41,5 @@ public interface AdminBlockService {
     void bulkReleaseUserBlocks(java.util.List<String> blockTargetKeys, Long actorUserIdx);
     void bulkToggleIpRules(java.util.List<Long> ipBlocklistIdxList, boolean active, Long actorUserIdx);
     Map<String, Object> findCurrentSettingByHistory(Long historyBlockIdx);
+    Map<String, Object> importPolicyFeed(MultipartFile file, String sourceName, String defaultRuleAction, Long actorUserIdx);
 }

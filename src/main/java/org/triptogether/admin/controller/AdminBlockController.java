@@ -3,9 +3,11 @@ package org.triptogether.admin.controller;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.triptogether.admin.service.AdminBlockService;
 import org.triptogether.admin.vo.*;
 import org.triptogether.auth.vo.UsersVO;
@@ -14,6 +16,7 @@ import org.triptogether.config.BlockRuleCacheService;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Controller
@@ -23,6 +26,7 @@ public class AdminBlockController {
 
     private final AdminBlockService adminBlockService;
     private final BlockRuleCacheService blockRuleCacheService;
+    private final MessageSource messageSource;
 
     @GetMapping
     public String blockDashboard(AdminBlockSearchVO search,
@@ -219,6 +223,33 @@ public class AdminBlockController {
         try {
             result.putAll(adminBlockService.findCurrentSettingByHistory(historyBlockIdx));
             result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+
+    @PostMapping("/policy-feed/upload")
+    @ResponseBody
+    public Map<String, Object> uploadPolicyFeed(@RequestParam("file") MultipartFile file,
+                                                @RequestParam(required = false) String sourceName,
+                                                @RequestParam(defaultValue = "BLOCK") String defaultRuleAction,
+                                                HttpSession session,
+                                                Locale locale) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
+            result.putAll(adminBlockService.importPolicyFeed(
+                    file,
+                    sourceName,
+                    defaultRuleAction,
+                    loginUser != null ? loginUser.getUserIdx() : null
+            ));
+            syncBlockCacheQuietly();
+            result.put("success", true);
+            result.put("message", messageSource.getMessage("admin.blocks.policyFeed.uploadSuccess", null, locale));
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());

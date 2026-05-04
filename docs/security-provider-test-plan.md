@@ -103,3 +103,34 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | AWS WAF SDK missing ipSetId/ipSetName | FAILED, MISSING_CONFIG 상세 메시지 |
 | AWS WAF SDK IP target | IPv4는 /32, IPv6는 /128로 정규화 |
 | Nginx Direct with endpoint/token | Nginx 관리 API로 HTTP 호출 |
+
+
+## 11. 결정안 기반 Mock E2E 테스트
+
+| Case | Expected |
+|---|---|
+| INTERNAL_AI_GATEWAY enabled | 외부 HTTP 호출 없이 PASS/LOW Stub 평가가 반환된다 |
+| MOCK_WAF_SERVICE enabled | WAF 큐 항목이 외부 호출 없이 SYNCED 처리된다 |
+| 실제 WAF Provider disabled | Cloudflare/AWS/Nginx Provider가 호출되지 않는다 |
+| Provider 설정 화면 연결 테스트 | 관리자 화면에서 Provider 저장/점검이 가능하다 |
+| WAF 큐 적재 후 worker 실행 | Mock 결과가 detailMessage에 기록된다 |
+
+## 12. MANUAL_UPLOAD_FEED 테스트
+
+| Case | Expected |
+|---|---|
+| CSV header: matchType,targetValue,reason | 기존 IP 배치와 규칙이 생성된다 |
+| JSON array upload | 기존 IP 배치와 규칙이 생성된다 |
+| COUNTRY row | COUNTRY matchType 규칙이 생성된다 |
+| CIDR row | CIDR matchType 규칙이 생성된다 |
+| invalid row | skipped 목록에 실패 사유가 남는다 |
+
+## 13. Appeal Cooldown 테스트
+
+| Case | Expected |
+|---|---|
+| PENDING/HOLD duplicate | 접수 차단 |
+| REJECTED within 168h | 접수 차단 |
+| REJECTED after 168h and rejected count < 2 | 접수 허용 |
+| rejected count >= 2 | 영구 종결 메시지 |
+| same IP target 3+ appeals today | 일일 제한 메시지 |

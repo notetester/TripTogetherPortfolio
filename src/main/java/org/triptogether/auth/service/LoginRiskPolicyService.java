@@ -576,6 +576,35 @@ public class LoginRiskPolicyService {
             throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.duplicatePending"));
         }
 
+        Integer recentRejectedCount = loginRiskPolicyMapper.countRejectedAppealAfter(
+                context.getTargetType(),
+                context.getTargetKey(),
+                firstNonBlank(context.getRequestId(), requestId),
+                LocalDateTime.now().minusHours(168)
+        );
+        if (recentRejectedCount != null && recentRejectedCount > 0) {
+            throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.rejectedCooldown"));
+        }
+
+        Integer totalRejectedCount = loginRiskPolicyMapper.countRejectedAppeals(
+                context.getTargetType(),
+                context.getTargetKey(),
+                firstNonBlank(context.getRequestId(), requestId)
+        );
+        if (totalRejectedCount != null && totalRejectedCount >= 2) {
+            throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.permanentlyClosed"));
+        }
+
+        if (context.getTargetKey() != null && context.getTargetKey().startsWith("IP:")) {
+            Integer todayIpAppealCount = loginRiskPolicyMapper.countIpTargetAppealsToday(
+                    context.getTargetKey(),
+                    LocalDateTime.now().toLocalDate().atStartOfDay()
+            );
+            if (todayIpAppealCount != null && todayIpAppealCount >= 3) {
+                throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.ipDailyLimit"));
+            }
+        }
+
         String publicRequestId = "SAP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
         Long inquiryId = null;
         String title = firstNonBlank(appealTitle, msg(pageLang, "security.appeal.form.defaultTitle"));

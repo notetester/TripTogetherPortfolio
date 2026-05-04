@@ -67,3 +67,11 @@
 - 외부 API 계약, Secret 관리, Provider 활성화, 운영 정책처럼 프로젝트 소유자의 결정이 필요한 사안은 임의로 구현하지 않는다.
 - 이런 항목은 `docs/security-pending-decisions.md`에 질문으로 정리하고, 답변을 받은 뒤 구현한다.
 - 질문은 선택지와 권장 기본값을 함께 제시한다.
+
+
+## 결정 합의안 반영 원칙
+
+- `docs/security-decision-agreement.md`에 확정된 사항은 후속 구현의 기준으로 삼는다.
+- 런칭 전 외부 호출은 Mock/Stub으로 검증하고, 실제 Provider는 명시적으로 활성화될 때만 호출한다.
+- 정책기관 피드 수동 업로드는 기존 IP 배치/규칙 구조를 재사용한다.
+- 이의제기 정책은 PENDING/HOLD 중복 차단, REJECTED 168시간 쿨타임, 2회 거절 종결, 동일 IP 일일 제한을 기준으로 한다.
