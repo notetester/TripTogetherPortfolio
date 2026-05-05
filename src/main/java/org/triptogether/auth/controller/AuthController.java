@@ -55,14 +55,15 @@ public class AuthController {
 
     private final AuthService authService;
     private final SuperAdminMapper superAdminMapper;
+    private final RuntimeSettingService runtimeSettingService;
 
-    @Value("${oauth.kakao.logout-redirect-uri}")
+    @Value("${oauth.kakao.logout-redirect-uri:}")
     private String kakaoLogoutRedirectUri;
 
-    @Value("${oauth.naver.logout-redirect-uri}")
+    @Value("${oauth.naver.logout-redirect-uri:}")
     private String naverLogoutRedirectUri;
 
-    @Value("${oauth.google.logout-redirect-uri}")
+    @Value("${oauth.google.logout-redirect-uri:}")
     private String googleLogoutRedirectUri;
 
     // ════════════════════════════════════════════
@@ -183,17 +184,17 @@ public class AuthController {
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
         String currentSocialProvider = (String) session.getAttribute(CURRENT_SOCIAL_PROVIDER_SESSION_KEY);
         if ("KAKAO".equals(currentSocialProvider)) {
-            String flowTraceId = prepareLogoutFlow(session, "KAKAO", kakaoLogoutRedirectUri);
+            String flowTraceId = prepareLogoutFlow(session, "KAKAO", kakaoLogoutRedirectUri());
             applyLogoutActivityContext(request, session, loginUser, "KAKAO", flowTraceId, "LOGOUT_KAKAO_ENTRY");
             return "redirect:/auth/kakao/logout";
         }
         if ("NAVER".equals(currentSocialProvider)) {
-            String flowTraceId = prepareLogoutFlow(session, "NAVER", naverLogoutRedirectUri);
+            String flowTraceId = prepareLogoutFlow(session, "NAVER", naverLogoutRedirectUri());
             applyLogoutActivityContext(request, session, loginUser, "NAVER", flowTraceId, "LOGOUT_NAVER_ENTRY");
             return "redirect:/auth/naver/logout";
         }
         if ("GOOGLE".equals(currentSocialProvider)) {
-            String flowTraceId = prepareLogoutFlow(session, "GOOGLE", googleLogoutRedirectUri);
+            String flowTraceId = prepareLogoutFlow(session, "GOOGLE", googleLogoutRedirectUri());
             applyLogoutActivityContext(request, session, loginUser, "GOOGLE", flowTraceId, "LOGOUT_GOOGLE_ENTRY");
             return "redirect:/auth/google/logout";
         }
@@ -214,7 +215,7 @@ public class AuthController {
     @GetMapping("/kakao/logout")
     public String kakaoLogout(HttpServletRequest request, HttpSession session) {
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
-        String flowTraceId = prepareLogoutFlow(session, "KAKAO", kakaoLogoutRedirectUri);
+        String flowTraceId = prepareLogoutFlow(session, "KAKAO", kakaoLogoutRedirectUri());
         applyLogoutActivityContext(request, session, loginUser, "KAKAO", flowTraceId, "LOGOUT_KAKAO_REQUEST");
         String state = UUID.randomUUID().toString();
         session.setAttribute("kakaoLogoutState", state);
@@ -242,7 +243,7 @@ public class AuthController {
                 "KAKAO",
                 failReason == null,
                 failReason,
-                buildRequestContext(request, session, request.getRequestURI(), kakaoLogoutRedirectUri, flowTraceId)
+                buildRequestContext(request, session, request.getRequestURI(), kakaoLogoutRedirectUri(), flowTraceId)
         );
         clearLogoutFlowSession(session);
         session.invalidate();
@@ -252,10 +253,10 @@ public class AuthController {
     @GetMapping("/naver/logout")
     public String naverLogout(HttpServletRequest request, HttpSession session) {
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
-        String flowTraceId = prepareLogoutFlow(session, "NAVER", naverLogoutRedirectUri);
+        String flowTraceId = prepareLogoutFlow(session, "NAVER", naverLogoutRedirectUri());
         applyLogoutActivityContext(request, session, loginUser, "NAVER", flowTraceId, "LOGOUT_NAVER_REQUEST");
         setLogoutFailReason(session, revokeSocialAccessToken("NAVER", session));
-        return "redirect:" + naverLogoutRedirectUri;
+        return "redirect:" + naverLogoutRedirectUri();
     }
 
     @GetMapping("/naver/logout/callback")
@@ -269,7 +270,7 @@ public class AuthController {
                 "NAVER",
                 failReason == null,
                 failReason,
-                buildRequestContext(request, session, request.getRequestURI(), naverLogoutRedirectUri, flowTraceId)
+                buildRequestContext(request, session, request.getRequestURI(), naverLogoutRedirectUri(), flowTraceId)
         );
         clearLogoutFlowSession(session);
         session.invalidate();
@@ -279,10 +280,10 @@ public class AuthController {
     @GetMapping("/google/logout")
     public String googleLogout(HttpServletRequest request, HttpSession session) {
         UsersVO loginUser = (UsersVO) session.getAttribute("loginUser");
-        String flowTraceId = prepareLogoutFlow(session, "GOOGLE", googleLogoutRedirectUri);
+        String flowTraceId = prepareLogoutFlow(session, "GOOGLE", googleLogoutRedirectUri());
         applyLogoutActivityContext(request, session, loginUser, "GOOGLE", flowTraceId, "LOGOUT_GOOGLE_REQUEST");
         setLogoutFailReason(session, revokeSocialAccessToken("GOOGLE", session));
-        return "redirect:" + googleLogoutRedirectUri;
+        return "redirect:" + googleLogoutRedirectUri();
     }
 
     @GetMapping("/google/logout/callback")
@@ -296,7 +297,7 @@ public class AuthController {
                 "GOOGLE",
                 failReason == null,
                 failReason,
-                buildRequestContext(request, session, request.getRequestURI(), googleLogoutRedirectUri, flowTraceId)
+                buildRequestContext(request, session, request.getRequestURI(), googleLogoutRedirectUri(), flowTraceId)
         );
         clearLogoutFlowSession(session);
         session.invalidate();
@@ -938,6 +939,23 @@ public class AuthController {
         } else {
             session.removeAttribute(LOGOUT_FAIL_REASON_SESSION_KEY);
         }
+    }
+
+
+    private String runtimeSetting(String key, String fallback) {
+        return runtimeSettingService.getValue(key, fallback);
+    }
+
+    private String kakaoLogoutRedirectUri() {
+        return runtimeSetting("oauth.kakao.logout-redirect-uri", kakaoLogoutRedirectUri);
+    }
+
+    private String naverLogoutRedirectUri() {
+        return runtimeSetting("oauth.naver.logout-redirect-uri", naverLogoutRedirectUri);
+    }
+
+    private String googleLogoutRedirectUri() {
+        return runtimeSetting("oauth.google.logout-redirect-uri", googleLogoutRedirectUri);
     }
 
     private LoginRequestContext buildRequestContext(HttpServletRequest request,

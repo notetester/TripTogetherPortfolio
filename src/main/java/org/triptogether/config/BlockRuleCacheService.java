@@ -31,6 +31,7 @@ public class BlockRuleCacheService {
 
     private final IpBlockMapper ipBlockMapper;
     private final ObjectMapper objectMapper;
+    private final RuntimeSettingService runtimeSettingService;
 
     @Value("${security.block.cache.file:./data/block-rule-cache.json}")
     private String cacheFilePath;
@@ -51,7 +52,7 @@ public class BlockRuleCacheService {
         BlockRuleCacheSnapshot snapshot = BlockRuleCacheSnapshot.of("DB", ipRules, userRules);
         current.set(snapshot);
         writeToFile(snapshot);
-        log.info("[BlockCache] DB 동기화 완료: ipRules={}, userRules={}, file={}", ipRules.size(), userRules.size(), cacheFilePath);
+        log.info("[BlockCache] DB 동기화 완료: ipRules={}, userRules={}, file={}", ipRules.size(), userRules.size(), cacheFilePath());
         return snapshot;
     }
 
@@ -59,7 +60,7 @@ public class BlockRuleCacheService {
         BlockRuleCacheSnapshot fileSnapshot = readFromFile();
         if (fileSnapshot != null) {
             current.set(fileSnapshot);
-            log.info("[BlockCache] 파일 캐시 로드: ipRules={}, userRules={}, file={}", fileSnapshot.getIpRules().size(), fileSnapshot.getUserRules().size(), cacheFilePath);
+            log.info("[BlockCache] 파일 캐시 로드: ipRules={}, userRules={}, file={}", fileSnapshot.getIpRules().size(), fileSnapshot.getUserRules().size(), cacheFilePath());
             return fileSnapshot;
         }
         return refreshFromDatabase();
@@ -70,10 +71,15 @@ public class BlockRuleCacheService {
         return refreshFromDatabase();
     }
 
+
+    private String cacheFilePath() {
+        return runtimeSettingService.getValue("security.block.cache.file", cacheFilePath);
+    }
+
     private void writeToFile(BlockRuleCacheSnapshot snapshot) {
         try {
             objectMapper.findAndRegisterModules();
-            Path path = Path.of(cacheFilePath).toAbsolutePath().normalize();
+            Path path = Path.of(cacheFilePath()).toAbsolutePath().normalize();
             Path parent = path.getParent();
             if (parent != null) {
                 Files.createDirectories(parent);
@@ -87,7 +93,7 @@ public class BlockRuleCacheService {
     private BlockRuleCacheSnapshot readFromFile() {
         try {
             objectMapper.findAndRegisterModules();
-            Path path = Path.of(cacheFilePath).toAbsolutePath().normalize();
+            Path path = Path.of(cacheFilePath()).toAbsolutePath().normalize();
             if (!Files.isRegularFile(path)) return null;
             BlockRuleCacheSnapshot snapshot = objectMapper.readValue(path.toFile(), BlockRuleCacheSnapshot.class);
             if (snapshot != null && snapshot.getLoadedAt() == null) {

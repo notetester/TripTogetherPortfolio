@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.triptogether.config.RuntimeSettingMapper">
+
+    <resultMap id="RuntimeSettingMap" type="org.triptogether.config.RuntimeSettingVO">
+        <id property="settingIdx" column="setting_idx"/>
+        <result property="settingKey" column="setting_key"/>
+        <result property="settingGroup" column="setting_group"/>
+        <result property="displayName" column="display_name"/>
+        <result property="settingValue" column="setting_value"/>
+        <result property="fallbackValue" column="fallback_value"/>
+        <result property="valueType" column="value_type"/>
+        <result property="secret" column="is_secret"/>
+        <result property="editable" column="is_editable"/>
+        <result property="active" column="is_active"/>
+        <result property="description" column="description"/>
+        <result property="updatedByUserIdx" column="updated_by_user_idx"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="RuntimeSettingHistoryMap" type="org.triptogether.config.RuntimeSettingHistoryVO">
+        <id property="historyIdx" column="history_idx"/>
+        <result property="settingIdx" column="setting_idx"/>
+        <result property="settingKey" column="setting_key"/>
+        <result property="versionNo" column="version_no"/>
+        <result property="changeType" column="change_type"/>
+        <result property="actorUserIdx" column="actor_user_idx"/>
+        <result property="beforeValue" column="before_value"/>
+        <result property="afterValue" column="after_value"/>
+        <result property="beforeFallbackValue" column="before_fallback_value"/>
+        <result property="afterFallbackValue" column="after_fallback_value"/>
+        <result property="beforeConfigJson" column="before_config_json"/>
+        <result property="afterConfigJson" column="after_config_json"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="findActiveSettingByKey" resultMap="RuntimeSettingMap">
+        SELECT *
+        FROM APPLICATION_RUNTIME_SETTING
+        WHERE setting_key = #{settingKey}
+          AND is_active = 1
+        LIMIT 1
+    </select>
+
+    <select id="findRuntimeSettingByIdx" resultMap="RuntimeSettingMap">
+        SELECT *
+        FROM APPLICATION_RUNTIME_SETTING
+        WHERE setting_idx = #{settingIdx}
+        LIMIT 1
+    </select>
+
+    <select id="findRuntimeSettingByKey" resultMap="RuntimeSettingMap">
+        SELECT *
+        FROM APPLICATION_RUNTIME_SETTING
+        WHERE setting_key = #{settingKey}
+        LIMIT 1
+    </select>
+
+    <select id="findRuntimeSettings" resultMap="RuntimeSettingMap">
+        SELECT *
+        FROM APPLICATION_RUNTIME_SETTING
+        WHERE 1 = 1
+        <if test="settingGroup != null and settingGroup != ''">
+            AND setting_group = #{settingGroup}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                setting_key LIKE CONCAT('%', #{keyword}, '%')
+                OR display_name LIKE CONCAT('%', #{keyword}, '%')
+                OR description LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        <if test="includeInactive == false">
+            AND is_active = 1
+        </if>
+        ORDER BY setting_group ASC, setting_key ASC
+    </select>
+
+    <select id="findRuntimeSettingHistory" resultMap="RuntimeSettingHistoryMap">
+        SELECT *
+        FROM APPLICATION_RUNTIME_SETTING_HISTORY
+        WHERE 1 = 1
+        <if test="settingKey != null and settingKey != ''">
+            AND setting_key = #{settingKey}
+        </if>
+        ORDER BY created_at DESC, history_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <insert id="insertRuntimeSetting" useGeneratedKeys="true" keyProperty="settingIdx">
+        INSERT INTO APPLICATION_RUNTIME_SETTING
+        (setting_key, setting_group, display_name, setting_value, fallback_value, value_type,
+         is_secret, is_editable, is_active, description, updated_by_user_idx, created_at, updated_at)
+        VALUES
+        (#{settingKey}, #{settingGroup}, #{displayName}, #{settingValue}, #{fallbackValue}, #{valueType},
+         #{secret}, #{editable}, #{active}, #{description}, #{updatedByUserIdx}, NOW(), NOW())
+    </insert>
+
+    <update id="updateRuntimeSetting">
+        UPDATE APPLICATION_RUNTIME_SETTING
+        SET setting_group = #{settingGroup},
+            display_name = #{displayName},
+            setting_value = #{settingValue},
+            fallback_value = #{fallbackValue},
+            value_type = #{valueType},
+            is_secret = #{secret},
+            is_editable = #{editable},
+            is_active = #{active},
+            description = #{description},
+            updated_by_user_idx = #{updatedByUserIdx},
+            updated_at = NOW()
+        WHERE setting_idx = #{settingIdx}
+    </update>
+
+    <insert id="insertRuntimeSettingHistory">
+        INSERT INTO APPLICATION_RUNTIME_SETTING_HISTORY
+        (setting_idx, setting_key, version_no, change_type, actor_user_idx,
+         before_value, after_value, before_fallback_value, after_fallback_value,
+         before_config_json, after_config_json, created_at)
+        VALUES
+        (#{settingIdx}, #{settingKey},
+         (SELECT COALESCE(MAX(h.version_no), 0) + 1 FROM APPLICATION_RUNTIME_SETTING_HISTORY h WHERE h.setting_idx = #{settingIdx}),
+         #{changeType}, #{actorUserIdx},
+         #{beforeValue}, #{afterValue}, #{beforeFallbackValue}, #{afterFallbackValue},
+         #{beforeConfigJson}, #{afterConfigJson}, NOW())
+    </insert>
+
+</mapper>

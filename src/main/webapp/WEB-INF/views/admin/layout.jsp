@@ -101,6 +101,9 @@
                     <a class="adm-nav-item ${activeMenu=='loginRiskPolicies'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/policies">
                         <span class="adm-nav-icon">⚙️</span> 로그인 위험 정책
                     </a>
+                    <a class="adm-nav-item ${activeMenu=='runtimeSettings'?'active':''}" href="${pageContext.request.contextPath}/admin/runtime-settings">
+                        <span class="adm-nav-icon">🧩</span> <spring:message code="admin.layout.menu.runtimeSettings"/>
+                    </a>
                     <a class="adm-nav-item ${activeMenu=='loginRiskReviews'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/reviews">
                         <span class="adm-nav-icon">🧯</span> 로그인 위험 검토
                     </a>

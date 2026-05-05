@@ -82,6 +82,9 @@
 - 보호조치 안내 메일 이의제기 링크 TTL 정책화
 - 이의제기 관리자 목록 상세 모달 고도화
 - SECURITY_APPEAL_POLICY_HISTORY 정책 변경 이력/버전 관리
+- OAuth/메일/base-url/차단 캐시/인증 토큰 TTL/휴면 기준일 DB 우선 조회
+- APPLICATION_RUNTIME_SETTING_HISTORY 설정 변경 이력/버전 관리
+- APPLICATION_RUNTIME_SETTING DB 우선 런타임 설정 테이블/UI
 
 ## 남은 작업
 
@@ -141,3 +144,4 @@
 - `docs/security-appeal-email-verification-flow.md`
 - `docs/security-appeal-channel-policy.md`
 - `docs/security-policy-coverage-audit.md`
+- `docs/application-runtime-settings.md`

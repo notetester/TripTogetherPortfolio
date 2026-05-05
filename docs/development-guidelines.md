@@ -123,4 +123,13 @@
 - 전용 정책 테이블을 만들 경우, 가능한 한 함께 `*_HISTORY` 테이블을 두어 변경 전/후 스냅샷과 actor_user_idx를 남긴다.
 - 정책 화면에서 수정 가능한 값은 하드코딩 fallback이 있더라도 DB 기본 row를 우선 사용한다.
 - 초기설정관리/export-import 대상은 Provider 설정, 로그인 위험 정책, 보안 이의제기 정책, 시스템 정책 configJson을 우선 대상으로 삼는다.
-- 환경값/Secret/OAuth redirect URI는 정책 테이블보다 ENV/properties/Secret Manager로 관리한다.
+- 환경값/Secret/OAuth redirect URI도 `APPLICATION_RUNTIME_SETTING`에서 DB 우선값을 줄 수 있게 한다. 단, 값이 없으면 ENV/properties/Secret Manager fallback으로 동작해야 한다.
+
+
+## APPLICATION_RUNTIME_SETTING 원칙
+
+- properties/env 성격의 설정도 DB 우선값을 둘 수 있다.
+- 코드에서는 `RuntimeSettingService`를 통해 `setting_value -> fallback_value -> properties/default` 순서로 조회한다.
+- 테이블이 없거나 row가 없어도 서비스가 중단되지 않도록 fallback을 반드시 둔다.
+- 설정 변경 이력은 `APPLICATION_RUNTIME_SETTING_HISTORY`에 남긴다.
+- 민감값은 `is_secret`으로 표시하고, 실제 접근 제어는 관리자 권한 정책과 함께 고도화한다.

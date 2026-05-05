@@ -1,41 +1,46 @@
-# TripTogether Security Policy Coverage Audit
+# TripTogether Security / Runtime Policy Coverage Audit
 
 ## 이번 점검 기준
 
-- 관리자 UI에서 수정해야 하는 정책값이 코드 상수로 남아 있는지 확인했다.
-- 보안 이의제기 흐름과 직접 연결되는 값은 `SECURITY_APPEAL_POLICY`로 끌어올렸다.
-- 일반 인증/메일/OAuth 환경값은 별도 도메인으로 분류했다.
+프로젝트 소유자 결정에 따라 properties/env 성격의 설정도 DB 설정을 우선 사용할 수 있게 한다.  
+위험 여부를 코드에서 임의로 제한하지 않고, 정책 담당자가 관리자 UI에서 값을 잠그거나 수정할 수 있는 선택권을 제공한다.
 
-## 이번에 추가 정책화한 값
+## 이번에 DB 우선 설정으로 연결한 값
 
-| Value | Before | After |
+| Area | Before | After |
 |---|---|---|
-| 보호조치 안내 메일의 이의제기 링크 TTL | `plusDays(7)` | `SECURITY_APPEAL_POLICY.protected_appeal_token_ttl_days` |
-| 이의제기 정책 변경 이력 | 감사 로그 일부 | `SECURITY_APPEAL_POLICY_HISTORY` 버전 이력 |
-| 이의제기 상세 확인 | 목록 일부 텍스트 | 관리자 상세 모달 |
+| 메일 발신자 | `spring.mail.username` properties 직접 사용 | `APPLICATION_RUNTIME_SETTING.spring.mail.username` 우선 |
+| 앱 기준 URL | `app.base-url` properties 직접 사용 | `APPLICATION_RUNTIME_SETTING.app.base-url` 우선 |
+| 공개 기준 URL | `app.public-base-url` properties 직접 사용 | `APPLICATION_RUNTIME_SETTING.app.public-base-url` 우선 |
+| OAuth Kakao/Naver/Google client/secret/redirect/logout | `@Value` properties 직접 사용 | `APPLICATION_RUNTIME_SETTING.oauth.*` 우선 |
+| 차단 캐시 파일 경로 | `security.block.cache.file` properties 직접 사용 | `APPLICATION_RUNTIME_SETTING.security.block.cache.file` 우선 |
+| 아이디 찾기 토큰 TTL | 코드 `30분` | `APPLICATION_RUNTIME_SETTING.auth.email.find-id-token-ttl-minutes` |
+| 비밀번호 재설정 토큰 TTL | 코드 `30분` | `APPLICATION_RUNTIME_SETTING.auth.email.reset-password-token-ttl-minutes` |
+| 프로필 이메일 인증 토큰 TTL | 코드 `30분` | `APPLICATION_RUNTIME_SETTING.auth.email.profile-email-token-ttl-minutes` |
+| 휴면 기본 기준일 | 코드 `365일` | `APPLICATION_RUNTIME_SETTING.auth.dormant.inactive-days` |
 
-## 이미 관리자 UI에서 수정 가능한 보안 정책
+## fallback 원칙
 
-| Area | UI |
+```text
+DB setting_value
+→ DB fallback_value
+→ properties/@Value
+→ code default
+```
+
+설정 row가 없거나 테이블이 아직 생성되지 않았더라도 서비스가 바로 죽지 않도록 fallback을 유지한다.
+
+## 관리자 UI
+
+```text
+/admin/runtime-settings
+```
+
+## 남은 후보
+
+| Area | 상태 |
 |---|---|
-| 로그인 위험 정책 | `/admin/login-risk/policies` |
-| 보안 이의제기 채널 정책 | `/admin/login-risk/appeal-policy` |
-| Provider 설정 | `/admin/login-risk/provider-configs` |
-| 관리자 알림 설정 | `/admin/login-risk/notification-preferences` |
-| WAF 큐 재시도 | `/admin/login-risk/waf-queue` |
-| 정책 피드 업로드/API | `/admin/blocks` |
-
-## 남아 있는 고정값 후보
-
-| File / Area | Current | 판단 |
-|---|---|---|
-| `AuthServiceImpl` 이메일 인증/복구 토큰 TTL | 30분 | 일반 인증 정책. 별도 `AUTH_EMAIL_TOKEN_POLICY` 또는 기존 이메일 토큰 정책 UI로 분리 가능 |
-| `AuthServiceImpl.processDormantAccounts(365)` | 365일 | 이미 `AdminPolicyServiceImpl`의 시스템 정책 configJson에서 `inactiveDays`로 실행 가능 |
-| OAuth redirect/client 설정 | `@Value` properties | 정책이라기보다 환경/Secret 설정. 관리자 UI 저장보다는 ENV/설정 파일 유지 권장 |
-| `BlockRuleCacheService.security.block.cache.file` | properties | 운영 환경 설정. 정책 테이블보다 properties 유지가 적절 |
-| `INTERNAL_AI_GATEWAY` / `MOCK_WAF_SERVICE` | provider_code 상수 | 시연용 Provider 식별자. 실제 정책값이 아니라 Adapter 라우팅 키 |
-
-## 후속 권장
-
-- 일반 인증 메일 토큰 TTL도 UI에서 관리하려면 `AUTH_EMAIL_TOKEN_POLICY` 또는 `EMAIL_ACTION_POLICY` 전용 테이블을 별도로 만든다.
-- 시스템 정책 configJson은 이미 이력 테이블을 갖고 있으므로, 초기설정관리 화면을 만들 때 `AdminSystemPolicy`와 `SECURITY_APPEAL_POLICY`를 함께 export/import 대상으로 묶는다.
+| 실제 Cloudflare/Turnstile API 키 | Provider 설정/Runtime Setting 양쪽에서 관리 가능. 실제 운영 전 선택 필요 |
+| 외부 AI/정책기관 endpoint | 기존 Provider 설정 UI가 우선 담당 |
+| 관리자 권한별 설정 잠금 | `is_editable`, `is_secret`, 관리자 권한 체계로 추가 고도화 가능 |
+| 초기설정 export/import | 후속 작업 후보. Runtime Setting, Provider Config, Security Appeal Policy, Login Risk Policy를 묶는 방식 권장 |

@@ -18,6 +18,7 @@ import org.triptogether.auth.mapper.AuthMapper;
 import org.triptogether.admin.mapper.AdminMapper;
 import org.triptogether.config.ActivityLogInterceptor;
 import org.triptogether.config.IpBlockMapper;
+import org.triptogether.config.RuntimeSettingService;
 import org.triptogether.auth.vo.*;
 
 import java.net.URLEncoder;
@@ -41,28 +42,29 @@ public class AuthServiceImpl implements AuthService {
     private final RestTemplate restTemplate;
     private final JavaMailSender mailSender;
     private final LoginRiskPolicyService loginRiskPolicyService;
+    private final RuntimeSettingService runtimeSettingService;
 
-    @Value("${spring.mail.username}")           private String mailFrom;
-    @Value("${app.base-url}")                   private String baseUrl;
+    @Value("${spring.mail.username:}")           private String mailFrom;
+    @Value("${app.base-url:http://localhost:8080/TripTogether}")                   private String baseUrl;
 
     // ──── Kakao ────
-    @Value("${oauth.kakao.client-id}")       private String kakaoClientId;
-    @Value("${oauth.kakao.client-secret}")   private String kakaoClientSecret;
-    @Value("${oauth.kakao.redirect-uri}")    private String kakaoRedirectUri;
-    @Value("${oauth.kakao.link-redirect-uri}")  private String kakaoLinkRedirectUri;
-    @Value("${oauth.kakao.logout-redirect-uri}") private String kakaoLogoutRedirectUri;
+    @Value("${oauth.kakao.client-id:}")       private String kakaoClientId;
+    @Value("${oauth.kakao.client-secret:}")   private String kakaoClientSecret;
+    @Value("${oauth.kakao.redirect-uri:}")    private String kakaoRedirectUri;
+    @Value("${oauth.kakao.link-redirect-uri:}")  private String kakaoLinkRedirectUri;
+    @Value("${oauth.kakao.logout-redirect-uri:}") private String kakaoLogoutRedirectUri;
 
     // ──── Naver ────
-    @Value("${oauth.naver.client-id}")       private String naverClientId;
-    @Value("${oauth.naver.client-secret}")   private String naverClientSecret;
-    @Value("${oauth.naver.redirect-uri}")    private String naverRedirectUri;
-    @Value("${oauth.naver.link-redirect-uri}")  private String naverLinkRedirectUri;
+    @Value("${oauth.naver.client-id:}")       private String naverClientId;
+    @Value("${oauth.naver.client-secret:}")   private String naverClientSecret;
+    @Value("${oauth.naver.redirect-uri:}")    private String naverRedirectUri;
+    @Value("${oauth.naver.link-redirect-uri:}")  private String naverLinkRedirectUri;
 
     // ──── Google ───
-    @Value("${oauth.google.client-id}")      private String googleClientId;
-    @Value("${oauth.google.client-secret}")  private String googleClientSecret;
-    @Value("${oauth.google.redirect-uri}")   private String googleRedirectUri;
-    @Value("${oauth.google.link-redirect-uri}") private String googleLinkRedirectUri;
+    @Value("${oauth.google.client-id:}")      private String googleClientId;
+    @Value("${oauth.google.client-secret:}")  private String googleClientSecret;
+    @Value("${oauth.google.redirect-uri:}")   private String googleRedirectUri;
+    @Value("${oauth.google.link-redirect-uri:}") private String googleLinkRedirectUri;
 
     // ════════════════════════════════════════════
     // 일반 로그인
@@ -292,7 +294,8 @@ public class AuthServiceImpl implements AuthService {
                 ? context.getRequestId() : UUID.randomUUID().toString();
         String flowTraceId = resolveFlowTraceId(context, requestId);
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
+        int tokenTtlMinutes = authEmailTokenTtlMinutes("FIND_ID");
+        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(tokenTtlMinutes);
 
         EmailVerificationRequestVO request = EmailVerificationRequestVO.builder()
                 .requestId(requestId)
@@ -322,8 +325,8 @@ public class AuthServiceImpl implements AuthService {
         boolean sent = sendMail(normalizedEmail, "[TripTogether] 아이디 확인 요청 안내",
                 buildEmailHtml(
                         "아이디 확인 요청",
-                        "아래 버튼을 클릭하시면 로그인 아이디 힌트를 확인할 수 있습니다. 링크는 30분간 유효합니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.",
-                        baseUrl + "/auth/find-id/verify?token=" + token,
+                        "아래 버튼을 클릭하시면 로그인 아이디 힌트를 확인할 수 있습니다. 링크는 " + tokenTtlMinutes + "분간 유효합니다. 요청하지 않으셨다면 이 메일을 무시해 주세요.",
+                        baseUrl() + "/auth/find-id/verify?token=" + token,
                         "아이디 힌트 확인하기"
                 ));
 
@@ -421,7 +424,8 @@ public class AuthServiceImpl implements AuthService {
                 ? context.getRequestId() : UUID.randomUUID().toString();
         String flowTraceId = resolveFlowTraceId(context, requestId);
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
+        int tokenTtlMinutes = authEmailTokenTtlMinutes("RESET_PW");
+        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(tokenTtlMinutes);
 
         EmailVerificationRequestVO request = EmailVerificationRequestVO.builder()
                 .requestId(requestId)
@@ -449,8 +453,8 @@ public class AuthServiceImpl implements AuthService {
                 .build());
 
         boolean sent = sendMail(user.getUserEmail(), "[TripTogether] 비밀번호 재설정",
-                buildEmailHtml("비밀번호 재설정", "아래 버튼을 클릭하시면 비밀번호를 재설정할 수 있습니다. 링크는 30분간 유효합니다.",
-                        baseUrl + "/auth/reset-pw?token=" + token, "비밀번호 재설정하기"));
+                buildEmailHtml("비밀번호 재설정", "아래 버튼을 클릭하시면 비밀번호를 재설정할 수 있습니다. 링크는 " + tokenTtlMinutes + "분간 유효합니다.",
+                        baseUrl() + "/auth/reset-pw?token=" + token, "비밀번호 재설정하기"));
 
         if (!sent) {
             authMapper.cancelEmailVerificationRequest(request.getEmailVerificationRequestIdx());
@@ -546,7 +550,8 @@ public class AuthServiceImpl implements AuthService {
 
         String flowTraceId = resolveFlowTraceId(context, requestId);
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
+        int tokenTtlMinutes = authEmailTokenTtlMinutes("PROFILE_EMAIL");
+        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(tokenTtlMinutes);
         EmailVerificationRequestVO request = EmailVerificationRequestVO.builder()
                 .requestId(requestId)
                 .flowTraceId(flowTraceId)
@@ -573,8 +578,8 @@ public class AuthServiceImpl implements AuthService {
                 .build());
 
         boolean sent = sendMail(email, "[TripTogether] 이메일 인증",
-                buildEmailHtml("이메일 인증", "아래 버튼을 클릭하시면 이메일 인증이 완료됩니다. 인증 후 회원정보 수정 화면에서 저장해야 최종 반영됩니다.",
-                        baseUrl + "/auth/verify-email?token=" + token, "이메일 인증 완료"));
+                buildEmailHtml("이메일 인증", "아래 버튼을 클릭하시면 이메일 인증이 완료됩니다. 인증 후 회원정보 수정 화면에서 저장해야 최종 반영됩니다. 링크는 " + tokenTtlMinutes + "분간 유효합니다.",
+                        baseUrl() + "/auth/verify-email?token=" + token, "이메일 인증 완료"));
 
         if (!sent) {
             authMapper.cancelEmailVerificationRequest(request.getEmailVerificationRequestIdx());
@@ -831,16 +836,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String getKakaoAuthUrl() {
         return "https://kauth.kakao.com/oauth/authorize"
-                + "?client_id=" + kakaoClientId
-                + "&redirect_uri=" + encode(kakaoRedirectUri)
+                + "?client_id=" + kakaoClientId()
+                + "&redirect_uri=" + encode(kakaoRedirectUri())
                 + "&response_type=code";
     }
 
     @Override
     public String getKakaoAuthUrl(boolean linkMode) {
-        String redirectUri = linkMode ? kakaoLinkRedirectUri : kakaoRedirectUri;
+        String redirectUri = linkMode ? kakaoLinkRedirectUri() : kakaoRedirectUri();
         return "https://kauth.kakao.com/oauth/authorize"
-                + "?client_id=" + kakaoClientId
+                + "?client_id=" + kakaoClientId()
                 + "&redirect_uri=" + encode(redirectUri)
                 + "&response_type=code";
     }
@@ -848,8 +853,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String getKakaoLogoutUrl(String state) {
         StringBuilder url = new StringBuilder("https://kauth.kakao.com/oauth/logout")
-                .append("?client_id=").append(kakaoClientId)
-                .append("&logout_redirect_uri=").append(encode(kakaoLogoutRedirectUri));
+                .append("?client_id=").append(kakaoClientId())
+                .append("&logout_redirect_uri=").append(encode(kakaoLogoutRedirectUri()));
 
         if (state != null && !state.isBlank()) {
             url.append("&state=").append(encode(state));
@@ -861,16 +866,16 @@ public class AuthServiceImpl implements AuthService {
     public String getNaverAuthUrl(String state) {
         return "https://nid.naver.com/oauth2.0/authorize"
                 + "?response_type=code"
-                + "&client_id=" + naverClientId
-                + "&redirect_uri=" + encode(naverRedirectUri)
+                + "&client_id=" + naverClientId()
+                + "&redirect_uri=" + encode(naverRedirectUri())
                 + "&state=" + encode(state);
     }
 
     @Override
     public String getNaverAuthUrl(String state, boolean linkMode) {
-        String redirectUri = linkMode ? naverLinkRedirectUri : naverRedirectUri;
+        String redirectUri = linkMode ? naverLinkRedirectUri() : naverRedirectUri();
         return "https://nid.naver.com/oauth2.0/authorize"
-                + "?response_type=code&client_id=" + naverClientId
+                + "?response_type=code&client_id=" + naverClientId()
                 + "&redirect_uri=" + encode(redirectUri)
                 + "&state=" + encode(state);
     }
@@ -878,8 +883,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String getGoogleAuthUrl(String state) {
         return "https://accounts.google.com/o/oauth2/v2/auth"
-                + "?client_id=" + googleClientId
-                + "&redirect_uri=" + encode(googleRedirectUri)
+                + "?client_id=" + googleClientId()
+                + "&redirect_uri=" + encode(googleRedirectUri())
                 + "&response_type=code"
                 + "&scope=" + encode("openid email profile")
                 + "&state=" + encode(state);
@@ -887,9 +892,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String getGoogleAuthUrl(String state, boolean linkMode) {
-        String redirectUri = linkMode ? googleLinkRedirectUri : googleRedirectUri;
+        String redirectUri = linkMode ? googleLinkRedirectUri() : googleRedirectUri();
         return "https://accounts.google.com/o/oauth2/v2/auth"
-                + "?client_id=" + googleClientId
+                + "?client_id=" + googleClientId()
                 + "&redirect_uri=" + encode(redirectUri)
                 + "&response_type=code"
                 + "&scope=" + encode("openid email profile")
@@ -904,8 +909,8 @@ public class AuthServiceImpl implements AuthService {
         try {
             String url = "https://nid.naver.com/oauth2.0/token"
                     + "?grant_type=delete"
-                    + "&client_id=" + naverClientId
-                    + "&client_secret=" + naverClientSecret
+                    + "&client_id=" + naverClientId()
+                    + "&client_secret=" + naverClientSecret()
                     + "&access_token=" + encode(accessToken);
             restTemplate.getForObject(url, String.class);
             return true;
@@ -1192,17 +1197,17 @@ public class AuthServiceImpl implements AuthService {
     // 소셜 연동용 콜백 처리 (링크 모드)
     // ════════════════════════════════════════════
     public String[] extractKakaoInfo(String code) throws Exception {
-        String token = getKakaoAccessToken(code, kakaoLinkRedirectUri);
+        String token = getKakaoAccessToken(code, kakaoLinkRedirectUri());
         return extractKakao(getKakaoUserInfo(token));
     }
     public String[] extractNaverInfo(String code, String state) throws Exception {
-        String token = getNaverAccessToken(code, state, naverLinkRedirectUri);
+        String token = getNaverAccessToken(code, state, naverLinkRedirectUri());
         JsonObject resp = getNaverUserInfo(token).getAsJsonObject("response");
         return new String[]{ resp.get("id").getAsString(),
                 resp.has("email") ? resp.get("email").getAsString() : null, null };
     }
     public String[] extractGoogleInfo(String code) throws Exception {
-        String token = getGoogleAccessToken(code, googleLinkRedirectUri);
+        String token = getGoogleAccessToken(code, googleLinkRedirectUri());
         JsonObject info = getGoogleUserInfo(token);
         return new String[]{ info.get("sub").getAsString(),
                 info.has("email") ? info.get("email").getAsString() : null, null };
@@ -1364,7 +1369,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void processDormantAccounts() {
-        processDormantAccounts(365);
+        processDormantAccounts(runtimeSettingInt("auth.dormant.inactive-days", 365));
     }
 
     @Override
@@ -1405,9 +1410,9 @@ public class AuthServiceImpl implements AuthService {
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type",   "authorization_code");
-        params.add("client_id",    kakaoClientId);
-        params.add("client_secret", kakaoClientSecret);
-        params.add("redirect_uri", kakaoRedirectUri);
+        params.add("client_id",    kakaoClientId());
+        params.add("client_secret", kakaoClientSecret());
+        params.add("redirect_uri", kakaoRedirectUri());
         params.add("code",         code);
 
         ResponseEntity<String> res = restTemplate.postForEntity(
@@ -1423,8 +1428,8 @@ public class AuthServiceImpl implements AuthService {
         h.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> p = new LinkedMultiValueMap<>();
         p.add("grant_type", "authorization_code");
-        p.add("client_id", kakaoClientId);
-        p.add("client_secret", kakaoClientSecret);
+        p.add("client_id", kakaoClientId());
+        p.add("client_secret", kakaoClientSecret());
         p.add("redirect_uri", redirectUri);
         p.add("code", code);
         ResponseEntity<String> res = restTemplate.postForEntity(
@@ -1458,9 +1463,9 @@ public class AuthServiceImpl implements AuthService {
     private String getNaverAccessToken(String code, String state) {
         String url = "https://nid.naver.com/oauth2.0/token"
                 + "?grant_type=authorization_code"
-                + "&client_id=" + naverClientId
-                + "&client_secret=" + naverClientSecret
-                + "&redirect_uri=" + encode(naverRedirectUri)
+                + "&client_id=" + naverClientId()
+                + "&client_secret=" + naverClientSecret()
+                + "&redirect_uri=" + encode(naverRedirectUri())
                 + "&code=" + code
                 + "&state=" + encode(state);
         String res = restTemplate.getForObject(url, String.class);
@@ -1469,7 +1474,7 @@ public class AuthServiceImpl implements AuthService {
 
     private String getNaverAccessToken(String code, String state, String redirectUri) {
         String url = "https://nid.naver.com/oauth2.0/token?grant_type=authorization_code"
-                + "&client_id=" + naverClientId + "&client_secret=" + naverClientSecret
+                + "&client_id=" + naverClientId() + "&client_secret=" + naverClientSecret()
                 + "&redirect_uri=" + encode(redirectUri) + "&code=" + code + "&state=" + encode(state);
         String res = restTemplate.getForObject(url, String.class);
         return JsonParser.parseString(res).getAsJsonObject().get("access_token").getAsString();
@@ -1490,9 +1495,9 @@ public class AuthServiceImpl implements AuthService {
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code",          code);
-        params.add("client_id",     googleClientId);
-        params.add("client_secret", googleClientSecret);
-        params.add("redirect_uri",  googleRedirectUri);
+        params.add("client_id",     googleClientId());
+        params.add("client_secret", googleClientSecret());
+        params.add("redirect_uri",  googleRedirectUri());
         params.add("grant_type",    "authorization_code");
 
         ResponseEntity<String> res = restTemplate.postForEntity(
@@ -1506,8 +1511,8 @@ public class AuthServiceImpl implements AuthService {
     private String getGoogleAccessToken(String code, String redirectUri) {
         HttpHeaders h = new HttpHeaders(); h.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> p = new LinkedMultiValueMap<>();
-        p.add("code", code); p.add("client_id", googleClientId);
-        p.add("client_secret", googleClientSecret); p.add("redirect_uri", redirectUri);
+        p.add("code", code); p.add("client_id", googleClientId());
+        p.add("client_secret", googleClientSecret()); p.add("redirect_uri", redirectUri);
         p.add("grant_type", "authorization_code");
         ResponseEntity<String> res = restTemplate.postForEntity(
                 "https://oauth2.googleapis.com/token", new HttpEntity<>(p, h), String.class);
@@ -1530,7 +1535,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             var msg = mailSender.createMimeMessage();
             var helper = new MimeMessageHelper(msg, false, "UTF-8");
-            helper.setFrom(mailFrom);
+            helper.setFrom(mailFrom());
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(html, true);
@@ -1564,6 +1569,84 @@ public class AuthServiceImpl implements AuthService {
             </body>
             </html>
             """.formatted(title, desc, bodyHtml);
+    }
+
+
+    private String runtimeSetting(String key, String fallback) {
+        return runtimeSettingService.getValue(key, fallback);
+    }
+
+    private int runtimeSettingInt(String key, int fallback) {
+        return runtimeSettingService.getInt(key, fallback);
+    }
+
+    private String mailFrom() {
+        return runtimeSetting("spring.mail.username", mailFrom);
+    }
+
+    private String baseUrl() {
+        return runtimeSetting("app.base-url", baseUrl);
+    }
+
+    private int authEmailTokenTtlMinutes(String purpose) {
+        return switch (purpose == null ? "" : purpose) {
+            case "FIND_ID" -> runtimeSettingInt("auth.email.find-id-token-ttl-minutes", 30);
+            case "RESET_PW" -> runtimeSettingInt("auth.email.reset-password-token-ttl-minutes", 30);
+            case "PROFILE_EMAIL" -> runtimeSettingInt("auth.email.profile-email-token-ttl-minutes", 30);
+            default -> runtimeSettingInt("auth.email.default-token-ttl-minutes", 30);
+        };
+    }
+
+    private String kakaoClientId() {
+        return runtimeSetting("oauth.kakao.client-id", kakaoClientId);
+    }
+
+    private String kakaoClientSecret() {
+        return runtimeSetting("oauth.kakao.client-secret", kakaoClientSecret);
+    }
+
+    private String kakaoRedirectUri() {
+        return runtimeSetting("oauth.kakao.redirect-uri", kakaoRedirectUri);
+    }
+
+    private String kakaoLinkRedirectUri() {
+        return runtimeSetting("oauth.kakao.link-redirect-uri", kakaoLinkRedirectUri);
+    }
+
+    private String kakaoLogoutRedirectUri() {
+        return runtimeSetting("oauth.kakao.logout-redirect-uri", kakaoLogoutRedirectUri);
+    }
+
+    private String naverClientId() {
+        return runtimeSetting("oauth.naver.client-id", naverClientId);
+    }
+
+    private String naverClientSecret() {
+        return runtimeSetting("oauth.naver.client-secret", naverClientSecret);
+    }
+
+    private String naverRedirectUri() {
+        return runtimeSetting("oauth.naver.redirect-uri", naverRedirectUri);
+    }
+
+    private String naverLinkRedirectUri() {
+        return runtimeSetting("oauth.naver.link-redirect-uri", naverLinkRedirectUri);
+    }
+
+    private String googleClientId() {
+        return runtimeSetting("oauth.google.client-id", googleClientId);
+    }
+
+    private String googleClientSecret() {
+        return runtimeSetting("oauth.google.client-secret", googleClientSecret);
+    }
+
+    private String googleRedirectUri() {
+        return runtimeSetting("oauth.google.redirect-uri", googleRedirectUri);
+    }
+
+    private String googleLinkRedirectUri() {
+        return runtimeSetting("oauth.google.link-redirect-uri", googleLinkRedirectUri);
     }
 
     private String buildEmailHtml(String title, String desc, String link, String btnText) {

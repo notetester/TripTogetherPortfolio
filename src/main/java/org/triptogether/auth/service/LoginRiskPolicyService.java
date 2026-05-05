@@ -29,6 +29,7 @@ import org.triptogether.auth.vo.SecurityAppealPolicyHistoryVO;
 import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.config.BlockRuleCacheService;
+import org.triptogether.config.RuntimeSettingService;
 import org.triptogether.auth.risk.LoginRiskAssessmentProvider;
 import org.triptogether.auth.risk.LoginRiskAssessmentRequest;
 import org.triptogether.auth.risk.LoginRiskAssessmentResult;
@@ -57,6 +58,7 @@ public class LoginRiskPolicyService {
     private final JavaMailSender mailSender;
     private final MessageSource messageSource;
     private final BlockRuleCacheService blockRuleCacheService;
+    private final RuntimeSettingService runtimeSettingService;
     private final List<LoginRiskAssessmentProvider> assessmentProviders;
     private final List<WafSyncProvider> wafSyncProviders;
 
@@ -661,7 +663,7 @@ public class LoginRiskPolicyService {
                 submitterEmail.trim(),
                 LocalDateTime.now().plusMinutes(ratePolicy.verificationTokenTtlMinutes())
         );
-        String appealUrl = publicBaseUrl + "/security/appeal?token=" + token + "&lang=" + lang;
+        String appealUrl = publicBaseUrl() + "/security/appeal?token=" + token + "&lang=" + lang;
         String subject = msg(lang, "security.appeal.verify.mail.subject");
         String body = """
                 <div style="font-family:Arial,'Noto Sans KR',sans-serif;line-height:1.7;color:#111827">
@@ -1473,7 +1475,7 @@ public class LoginRiskPolicyService {
         String token = createAppealToken(user.getUserIdx(), "USER_BLOCK", "USER:" + user.getUserIdx(), null, null,
                 context == null ? null : context.getRequestId(), user.getUserEmail(),
                 LocalDateTime.now().plusDays(getAppealRateLimitConfig().protectedAppealTokenTtlDays()));
-        String appealUrl = publicBaseUrl + "/security/appeal?token=" + token + "&lang=" + lang;
+        String appealUrl = publicBaseUrl() + "/security/appeal?token=" + token + "&lang=" + lang;
         String html = protectionMailHtml(lang, user.getNickname(), reason, appealUrl);
         boolean sent = sendMail(user.getUserEmail(), subject, html);
         loginRiskPolicyMapper.insertRiskEvent(ACCOUNT_REPEAT_POLICY, sent ? "PROTECTION_MAIL_SENT" : "PROTECTION_MAIL_FAILED",
@@ -1486,11 +1488,24 @@ public class LoginRiskPolicyService {
                 sent ? msg(user.getPreferredLang(), "security.mail.protection.sent") : msg(user.getPreferredLang(), "security.mail.protection.failed"));
     }
 
+
+    private String runtimeSetting(String key, String fallback) {
+        return runtimeSettingService.getValue(key, fallback);
+    }
+
+    private String mailFrom() {
+        return runtimeSetting("spring.mail.username", mailFrom);
+    }
+
+    private String publicBaseUrl() {
+        return runtimeSetting("app.public-base-url", publicBaseUrl);
+    }
+
     private boolean sendMail(String to, String subject, String html) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
-            helper.setFrom(mailFrom);
+            helper.setFrom(mailFrom());
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(html, true);

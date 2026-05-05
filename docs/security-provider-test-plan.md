@@ -220,3 +220,19 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | appeals detail modal outside click | 모달 닫힌다 |
 | appeals detail modal Escape | 모달 닫힌다 |
 | user input in modal | `c:out`으로 escape 처리 |
+
+
+## 21. Application Runtime Settings 테스트
+
+| Case | Expected |
+|---|---|
+| `/admin/runtime-settings` open | 설정 목록과 변경 이력이 표시된다 |
+| setting_value set for `app.base-url` | 인증/복구 링크가 DB 값 기준으로 생성된다 |
+| setting_value empty, fallback_value set | fallback_value가 사용된다 |
+| row missing | properties/@Value 또는 코드 default가 사용된다 |
+| `auth.email.find-id-token-ttl-minutes` changed | 아이디 찾기 링크 만료 시간이 변경된다 |
+| `auth.email.reset-password-token-ttl-minutes` changed | 비밀번호 재설정 링크 만료 시간이 변경된다 |
+| `auth.email.profile-email-token-ttl-minutes` changed | 이메일 인증 링크 만료 시간이 변경된다 |
+| `security.block.cache.file` changed | 차단 캐시 파일 경로가 DB 값 기준으로 사용된다 |
+| OAuth redirect/client setting changed | 소셜 로그인 URL/token 요청이 DB 값 기준으로 생성된다 |
+| setting save | `APPLICATION_RUNTIME_SETTING_HISTORY` version_no 증가 |

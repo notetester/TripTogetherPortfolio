@@ -78,5 +78,13 @@
 
 - 보안 이의제기 정책은 `SECURITY_APPEAL_POLICY_HISTORY`로 버전 이력을 남긴다.
 - 보호조치 안내 메일의 이의제기 링크 TTL도 `SECURITY_APPEAL_POLICY`에 포함한다.
-- 모든 설정을 무조건 DB 정책화하지 않고, 환경/Secret 값은 별도 설정 체계를 유지한다.
+- properties/env 성격의 설정도 `APPLICATION_RUNTIME_SETTING`으로 DB 우선값을 제공한다. 값이 없으면 기존 ENV/properties/Secret fallback을 사용한다.
 - 향후 초기설정관리 화면은 Provider 설정, 로그인 위험 정책, 보안 이의제기 정책, 시스템 정책 configJson을 묶어 export/import하는 방향으로 확장한다.
+
+
+## 런타임 설정 DB 우선 결정
+
+- OAuth, 메일, base-url, 차단 캐시 경로, 인증 토큰 TTL, 휴면 기본 기준일은 DB 설정 우선으로 조회한다.
+- `APPLICATION_RUNTIME_SETTING`과 `APPLICATION_RUNTIME_SETTING_HISTORY`를 기준 테이블로 둔다.
+- 운영자가 값을 비워 두면 기존 properties/default fallback을 사용한다.
+- 위험 여부는 코드에서 막지 않고, `is_secret`, `is_editable`, 관리자 권한 체계로 통제한다.
