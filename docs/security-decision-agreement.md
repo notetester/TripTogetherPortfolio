@@ -72,3 +72,11 @@
 - `SECURITY_APPEAL_POLICY`를 전용 정책 테이블로 두고, 관리자 UI에서 명시적 필드명으로 수정한다.
 - 기존 `SECURITY_APPEAL_COOLDOWN` / `SECURITY_APPEAL_RATE_LIMIT` row는 초기 seed 승계용/레거시 호환용으로만 유지한다.
 - 실제 Cloudflare/Turnstile API 연동은 제외하되, 시연용 정책 토글과 Provider 코드는 보관한다.
+
+
+## 정책 변경 이력/초기설정관리 추가 결정
+
+- 보안 이의제기 정책은 `SECURITY_APPEAL_POLICY_HISTORY`로 버전 이력을 남긴다.
+- 보호조치 안내 메일의 이의제기 링크 TTL도 `SECURITY_APPEAL_POLICY`에 포함한다.
+- 모든 설정을 무조건 DB 정책화하지 않고, 환경/Secret 값은 별도 설정 체계를 유지한다.
+- 향후 초기설정관리 화면은 Provider 설정, 로그인 위험 정책, 보안 이의제기 정책, 시스템 정책 configJson을 묶어 export/import하는 방향으로 확장한다.

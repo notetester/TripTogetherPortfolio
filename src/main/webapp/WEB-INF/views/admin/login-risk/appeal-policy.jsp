@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="activeMenu" value="securityAppealPolicy"/>
@@ -77,6 +78,9 @@
                 <label><spring:message code="security.admin.appealPolicy.verificationTokenTtlMinutes"/>
                     <input class="adm-input" type="number" min="1" name="verificationTokenTtlMinutes" value="${policy.verificationTokenTtlMinutes}">
                 </label>
+                <label><spring:message code="security.admin.appealPolicy.protectedAppealTokenTtlDays"/>
+                    <input class="adm-input" type="number" min="1" name="protectedAppealTokenTtlDays" value="${policy.protectedAppealTokenTtlDays}">
+                </label>
                 <label><spring:message code="security.admin.appealPolicy.allowedEmailDomains"/>
                     <input class="adm-input" type="text" name="allowedEmailDomains" value="${fn:escapeXml(policy.allowedEmailDomains)}" placeholder="example.com,*.example.org">
                 </label>
@@ -119,4 +123,56 @@
             </div>
         </div>
     </form>
+
+    <div class="adm-card" style="margin-top:16px;">
+        <div class="adm-card-header">
+            <div>
+                <div class="adm-card-title"><spring:message code="security.admin.appealPolicy.history.title"/></div>
+                <div class="adm-muted"><spring:message code="security.admin.appealPolicy.history.desc"/></div>
+            </div>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-table-wrap">
+                <table class="adm-table">
+                    <thead>
+                    <tr>
+                        <th><spring:message code="security.admin.appealPolicy.history.version"/></th>
+                        <th><spring:message code="security.admin.appealPolicy.history.changeType"/></th>
+                        <th><spring:message code="security.admin.appealPolicy.history.actor"/></th>
+                        <th><spring:message code="security.admin.appealPolicy.history.changedAt"/></th>
+                        <th><spring:message code="security.admin.appealPolicy.history.snapshot"/></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="h" items="${policyHistories}">
+                        <tr>
+                            <td><c:out value="${h.versionNo}"/></td>
+                            <td><span class="adm-badge"><c:out value="${h.changeType}"/></span></td>
+                            <td><c:out value="${h.actorUserIdx}" default="-"/></td>
+                            <td><fmt:formatDate value="${h.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
+                            <td>
+                                <details>
+                                    <summary><spring:message code="security.admin.appealPolicy.history.showSnapshot"/></summary>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+                                        <div>
+                                            <div class="adm-muted"><spring:message code="security.admin.appealPolicy.history.before"/></div>
+                                            <pre style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.beforeConfigJson}"/></pre>
+                                        </div>
+                                        <div>
+                                            <div class="adm-muted"><spring:message code="security.admin.appealPolicy.history.after"/></div>
+                                            <pre style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.afterConfigJson}"/></pre>
+                                        </div>
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="${empty policyHistories}">
+                        <tr><td colspan="5" class="adm-empty"><spring:message code="security.admin.appealPolicy.history.empty"/></td></tr>
+                    </c:if>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

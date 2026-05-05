@@ -20,6 +20,7 @@ public class SecurityAppealPolicyVO {
     private Integer verificationWindowMinutes;
     private Integer maxVerificationEmails;
     private Integer verificationTokenTtlMinutes;
+    private Integer protectedAppealTokenTtlDays;
     private Integer resultLookupWindowMinutes;
     private Integer maxResultLookupFailures;
     private Integer resultLookupRetentionDays;

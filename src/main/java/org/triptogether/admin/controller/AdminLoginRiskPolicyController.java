@@ -58,6 +58,7 @@ public class AdminLoginRiskPolicyController {
     @GetMapping("/appeal-policy")
     public String appealPolicy(Model model) {
         model.addAttribute("policy", loginRiskPolicyService.getSecurityAppealPolicy());
+        model.addAttribute("policyHistories", loginRiskPolicyService.getSecurityAppealPolicyHistories(20));
         model.addAttribute("activeMenu", "securityAppealPolicy");
         model.addAttribute("pageTitleCode", "security.admin.appealPolicy.title");
         return "admin/login-risk/appeal-policy";
@@ -69,13 +70,14 @@ public class AdminLoginRiskPolicyController {
                                      @RequestParam(value = "allowMultipleOpenAppeals", required = false) String allowMultipleOpenAppeals,
                                      @RequestParam(value = "closedBlocksNewAppeals", required = false) String closedBlocksNewAppeals,
                                      @RequestParam(value = "captchaEnabled", required = false) String captchaEnabled,
+                                     HttpSession session,
                                      RedirectAttributes redirectAttributes,
                                      Locale locale) {
         policy.setActive(active != null);
         policy.setAllowMultipleOpenAppeals(allowMultipleOpenAppeals != null);
         policy.setClosedBlocksNewAppeals(closedBlocksNewAppeals != null);
         policy.setCaptchaEnabled(captchaEnabled != null);
-        loginRiskPolicyService.updateSecurityAppealPolicy(policy);
+        loginRiskPolicyService.updateSecurityAppealPolicy(policy, currentAdminIdx(session));
         redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.appealPolicySaved"));
         return "redirect:/admin/login-risk/appeal-policy";
     }

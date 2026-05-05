@@ -116,3 +116,11 @@
 - `LOGIN_RISK_POLICY`의 `SECURITY_APPEAL_COOLDOWN` / `SECURITY_APPEAL_RATE_LIMIT`는 레거시/초기 seed 승계용으로만 본다.
 - 인증 메일 발송 제한, 결과 조회 실패 제한, 동일 건 동시 접수 허용 수, CLOSED 후 추가 접수 차단, 이메일 도메인 제한은 모두 `/admin/login-risk/appeal-policy`에서 수정 가능해야 한다.
 - 실제 CAPTCHA/Turnstile API 연동 전까지는 `captcha_enabled`, `captcha_provider_code`를 시연용 설정값으로만 사용한다.
+
+
+## 정책 변경 이력/초기설정관리 원칙
+
+- 전용 정책 테이블을 만들 경우, 가능한 한 함께 `*_HISTORY` 테이블을 두어 변경 전/후 스냅샷과 actor_user_idx를 남긴다.
+- 정책 화면에서 수정 가능한 값은 하드코딩 fallback이 있더라도 DB 기본 row를 우선 사용한다.
+- 초기설정관리/export-import 대상은 Provider 설정, 로그인 위험 정책, 보안 이의제기 정책, 시스템 정책 configJson을 우선 대상으로 삼는다.
+- 환경값/Secret/OAuth redirect URI는 정책 테이블보다 ENV/properties/Secret Manager로 관리한다.

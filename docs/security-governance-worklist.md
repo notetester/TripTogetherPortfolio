@@ -78,6 +78,10 @@
 - SECURITY_APPEAL_POLICY 기반 Service 정책 판정 전환
 - 이의제기 정책값 명시 필드화: 인증 메일/결과 조회/동일 건 접수/CLOSED/도메인 제한
 - SECURITY_APPEAL_POLICY 전용 테이블 및 관리자 UI
+- 보안 정책 커버리지/고정값 감사 문서화
+- 보호조치 안내 메일 이의제기 링크 TTL 정책화
+- 이의제기 관리자 목록 상세 모달 고도화
+- SECURITY_APPEAL_POLICY_HISTORY 정책 변경 이력/버전 관리
 
 ## 남은 작업
 
@@ -136,3 +140,4 @@
 - `docs/security-notification-behavior.md`
 - `docs/security-appeal-email-verification-flow.md`
 - `docs/security-appeal-channel-policy.md`
+- `docs/security-policy-coverage-audit.md`

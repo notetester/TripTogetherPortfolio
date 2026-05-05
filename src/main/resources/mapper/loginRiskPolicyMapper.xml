@@ -243,6 +243,7 @@
         <result property="verificationWindowMinutes" column="verification_window_minutes"/>
         <result property="maxVerificationEmails" column="max_verification_emails"/>
         <result property="verificationTokenTtlMinutes" column="verification_token_ttl_minutes"/>
+        <result property="protectedAppealTokenTtlDays" column="protected_appeal_token_ttl_days"/>
         <result property="resultLookupWindowMinutes" column="result_lookup_window_minutes"/>
         <result property="maxResultLookupFailures" column="max_result_lookup_failures"/>
         <result property="resultLookupRetentionDays" column="result_lookup_retention_days"/>
@@ -255,6 +256,36 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
+
+
+    <resultMap id="SecurityAppealPolicyHistoryMap" type="org.triptogether.auth.vo.SecurityAppealPolicyHistoryVO">
+        <id property="historyIdx" column="history_idx"/>
+        <result property="policyIdx" column="policy_idx"/>
+        <result property="policyCode" column="policy_code"/>
+        <result property="versionNo" column="version_no"/>
+        <result property="changeType" column="change_type"/>
+        <result property="actorUserIdx" column="actor_user_idx"/>
+        <result property="beforeConfigJson" column="before_config_json"/>
+        <result property="afterConfigJson" column="after_config_json"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+
+    <select id="findSecurityAppealPolicyHistory" resultMap="SecurityAppealPolicyHistoryMap">
+        SELECT *
+        FROM SECURITY_APPEAL_POLICY_HISTORY
+        ORDER BY created_at DESC, history_idx DESC
+        LIMIT #{limit}
+    </select>
+
+    <insert id="insertSecurityAppealPolicyHistory">
+        INSERT INTO SECURITY_APPEAL_POLICY_HISTORY
+        (policy_idx, policy_code, version_no, change_type, actor_user_idx, before_config_json, after_config_json, created_at)
+        VALUES
+        (#{policyIdx}, #{policyCode},
+         (SELECT COALESCE(MAX(h.version_no), 0) + 1 FROM SECURITY_APPEAL_POLICY_HISTORY h WHERE h.policy_idx = #{policyIdx}),
+         #{changeType}, #{actorUserIdx}, #{beforeConfigJson}, #{afterConfigJson}, NOW())
+    </insert>
 
     <select id="findSecurityAppealPolicy" resultMap="SecurityAppealPolicyMap">
         SELECT *
@@ -275,6 +306,7 @@
             verification_window_minutes = #{verificationWindowMinutes},
             max_verification_emails = #{maxVerificationEmails},
             verification_token_ttl_minutes = #{verificationTokenTtlMinutes},
+            protected_appeal_token_ttl_days = #{protectedAppealTokenTtlDays},
             result_lookup_window_minutes = #{resultLookupWindowMinutes},
             max_result_lookup_failures = #{maxResultLookupFailures},
             result_lookup_retention_days = #{resultLookupRetentionDays},

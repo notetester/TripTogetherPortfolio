@@ -25,6 +25,7 @@ import org.triptogether.auth.vo.SecurityAppealVO;
 import org.triptogether.auth.vo.SecurityAppealFormVO;
 import org.triptogether.auth.vo.SecurityAppealTokenVO;
 import org.triptogether.auth.vo.SecurityAppealPolicyVO;
+import org.triptogether.auth.vo.SecurityAppealPolicyHistoryVO;
 import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.config.BlockRuleCacheService;
@@ -80,8 +81,18 @@ public class LoginRiskPolicyService {
         return policy == null ? defaultSecurityAppealPolicy() : policy;
     }
 
+    public List<SecurityAppealPolicyHistoryVO> getSecurityAppealPolicyHistories(int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 50));
+        return loginRiskPolicyMapper.findSecurityAppealPolicyHistory(safeLimit);
+    }
+
     @Transactional
     public void updateSecurityAppealPolicy(SecurityAppealPolicyVO policy) {
+        updateSecurityAppealPolicy(policy, null);
+    }
+
+    @Transactional
+    public void updateSecurityAppealPolicy(SecurityAppealPolicyVO policy, Long actorUserIdx) {
         SecurityAppealPolicyVO current = loginRiskPolicyMapper.findSecurityAppealPolicy();
         if (current == null) {
             throw new IllegalArgumentException(msg("ko", "security.appeal.policy.notFound"));
@@ -95,16 +106,28 @@ public class LoginRiskPolicyService {
         policy.setVerificationWindowMinutes(positiveOrDefault(policy.getVerificationWindowMinutes(), 60));
         policy.setMaxVerificationEmails(positiveOrDefault(policy.getMaxVerificationEmails(), 3));
         policy.setVerificationTokenTtlMinutes(positiveOrDefault(policy.getVerificationTokenTtlMinutes(), 30));
+        policy.setProtectedAppealTokenTtlDays(positiveOrDefault(policy.getProtectedAppealTokenTtlDays(), 7));
         policy.setResultLookupWindowMinutes(positiveOrDefault(policy.getResultLookupWindowMinutes(), 60));
         policy.setMaxResultLookupFailures(positiveOrDefault(policy.getMaxResultLookupFailures(), 5));
         policy.setResultLookupRetentionDays(nonNegativeOrDefault(policy.getResultLookupRetentionDays(), 365));
         policy.setAllowedEmailDomains(emptyToNull(policy.getAllowedEmailDomains()));
         policy.setBlockedEmailDomains(emptyToNull(policy.getBlockedEmailDomains()));
         policy.setCaptchaProviderCode(emptyToNull(policy.getCaptchaProviderCode()));
+        String beforeSnapshot = toAppealPolicySnapshot(current);
         loginRiskPolicyMapper.updateSecurityAppealPolicy(policy);
+        SecurityAppealPolicyVO updated = loginRiskPolicyMapper.findSecurityAppealPolicy();
+        String afterSnapshot = toAppealPolicySnapshot(updated == null ? policy : updated);
+        loginRiskPolicyMapper.insertSecurityAppealPolicyHistory(
+                current.getPolicyIdx(),
+                current.getPolicyCode(),
+                "UPDATE",
+                actorUserIdx,
+                beforeSnapshot,
+                afterSnapshot
+        );
         loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
                 "SECURITY_APPEAL_POLICY_UPDATE",
-                null,
+                actorUserIdx,
                 "SECURITY_APPEAL_POLICY",
                 current.getPolicyCode(),
                 "SECURITY_APPEAL_POLICY",
@@ -873,6 +896,7 @@ public class LoginRiskPolicyService {
                 positiveOrDefault(policy.getResultLookupWindowMinutes(), 60),
                 positiveOrDefault(policy.getMaxResultLookupFailures(), 5),
                 positiveOrDefault(policy.getVerificationTokenTtlMinutes(), 30),
+                positiveOrDefault(policy.getProtectedAppealTokenTtlDays(), 7),
                 policy.isAllowMultipleOpenAppeals(),
                 positiveOrDefault(policy.getMaxOpenAppealsPerCase(), 3),
                 policy.isClosedBlocksNewAppeals(),
@@ -911,6 +935,42 @@ public class LoginRiskPolicyService {
         }
     }
 
+
+    private String toAppealPolicySnapshot(SecurityAppealPolicyVO policy) {
+        if (policy == null) {
+            return "{}";
+        }
+        return "{"
+                + jsonPair("policyCode", policy.getPolicyCode()) + ","
+                + jsonPair("active", policy.isActive()) + ","
+                + jsonPair("allowMultipleOpenAppeals", policy.isAllowMultipleOpenAppeals()) + ","
+                + jsonPair("maxOpenAppealsPerCase", policy.getMaxOpenAppealsPerCase()) + ","
+                + jsonPair("closedBlocksNewAppeals", policy.isClosedBlocksNewAppeals()) + ","
+                + jsonPair("rejectedCooldownMinutes", policy.getRejectedCooldownMinutes()) + ","
+                + jsonPair("maxRejectedCount", policy.getMaxRejectedCount()) + ","
+                + jsonPair("ipDailyAppealLimit", policy.getIpDailyAppealLimit()) + ","
+                + jsonPair("verificationWindowMinutes", policy.getVerificationWindowMinutes()) + ","
+                + jsonPair("maxVerificationEmails", policy.getMaxVerificationEmails()) + ","
+                + jsonPair("verificationTokenTtlMinutes", policy.getVerificationTokenTtlMinutes()) + ","
+                + jsonPair("protectedAppealTokenTtlDays", policy.getProtectedAppealTokenTtlDays()) + ","
+                + jsonPair("resultLookupWindowMinutes", policy.getResultLookupWindowMinutes()) + ","
+                + jsonPair("maxResultLookupFailures", policy.getMaxResultLookupFailures()) + ","
+                + jsonPair("resultLookupRetentionDays", policy.getResultLookupRetentionDays()) + ","
+                + jsonPair("allowedEmailDomains", policy.getAllowedEmailDomains()) + ","
+                + jsonPair("blockedEmailDomains", policy.getBlockedEmailDomains()) + ","
+                + jsonPair("captchaEnabled", policy.isCaptchaEnabled()) + ","
+                + jsonPair("captchaProviderCode", policy.getCaptchaProviderCode())
+                + "}";
+    }
+
+    private String jsonPair(String key, Object value) {
+        return "\"" + escapeJson(key) + "\":\"" + escapeJson(value == null ? "" : String.valueOf(value)) + "\"";
+    }
+
+    private String escapeJson(String value) {
+        return value == null ? "" : value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
     private int positiveOrDefault(Integer value, int fallback) {
         return value != null && value > 0 ? value : fallback;
     }
@@ -932,6 +992,7 @@ public class LoginRiskPolicyService {
         policy.setVerificationWindowMinutes(60);
         policy.setMaxVerificationEmails(3);
         policy.setVerificationTokenTtlMinutes(30);
+        policy.setProtectedAppealTokenTtlDays(7);
         policy.setResultLookupWindowMinutes(60);
         policy.setMaxResultLookupFailures(5);
         policy.setResultLookupRetentionDays(365);
@@ -963,6 +1024,7 @@ public class LoginRiskPolicyService {
                                          int resultLookupWindowMinutes,
                                          int maxResultLookupFailures,
                                          int verificationTokenTtlMinutes,
+                                         int protectedAppealTokenTtlDays,
                                          boolean allowMultipleOpenAppeals,
                                          int maxOpenAppealsPerCase,
                                          boolean closedBlocksNewAppeals,
@@ -977,8 +1039,9 @@ public class LoginRiskPolicyService {
                                      Long sourceAssessmentIdx,
                                      String blockRequestId,
                                      String blockAccessRequestId) {
+        AppealRateLimitConfig ratePolicy = getAppealRateLimitConfig();
         return createAppealToken(userIdx, targetType, targetKey, sourceAssessmentIdx, blockRequestId,
-                blockAccessRequestId, null, LocalDateTime.now().plusDays(7));
+                blockAccessRequestId, null, LocalDateTime.now().plusDays(ratePolicy.protectedAppealTokenTtlDays()));
     }
 
     private String createAppealToken(Long userIdx,
@@ -1408,7 +1471,8 @@ public class LoginRiskPolicyService {
         String lang = normalizeLang(user.getPreferredLang());
         String subject = protectionMailSubject(lang);
         String token = createAppealToken(user.getUserIdx(), "USER_BLOCK", "USER:" + user.getUserIdx(), null, null,
-                context == null ? null : context.getRequestId(), user.getUserEmail(), LocalDateTime.now().plusDays(7));
+                context == null ? null : context.getRequestId(), user.getUserEmail(),
+                LocalDateTime.now().plusDays(getAppealRateLimitConfig().protectedAppealTokenTtlDays()));
         String appealUrl = publicBaseUrl + "/security/appeal?token=" + token + "&lang=" + lang;
         String html = protectionMailHtml(lang, user.getNickname(), reason, appealUrl);
         boolean sent = sendMail(user.getUserEmail(), subject, html);

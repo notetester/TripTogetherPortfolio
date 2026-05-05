@@ -14,6 +14,7 @@ import org.triptogether.auth.vo.SecurityAppealVO;
 import org.triptogether.auth.vo.SecurityAppealTokenVO;
 import org.triptogether.auth.vo.SecurityAppealFormVO;
 import org.triptogether.auth.vo.SecurityAppealPolicyVO;
+import org.triptogether.auth.vo.SecurityAppealPolicyHistoryVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,13 @@ public interface LoginRiskPolicyMapper {
 
     SecurityAppealPolicyVO findSecurityAppealPolicy();
     void updateSecurityAppealPolicy(SecurityAppealPolicyVO policy);
+    List<SecurityAppealPolicyHistoryVO> findSecurityAppealPolicyHistory(@Param("limit") int limit);
+    void insertSecurityAppealPolicyHistory(@Param("policyIdx") Long policyIdx,
+                                           @Param("policyCode") String policyCode,
+                                           @Param("changeType") String changeType,
+                                           @Param("actorUserIdx") Long actorUserIdx,
+                                           @Param("beforeConfigJson") String beforeConfigJson,
+                                           @Param("afterConfigJson") String afterConfigJson);
 
     Integer countRecentWrongPasswordByUser(@Param("userIdx") Long userIdx,
                                            @Param("since") LocalDateTime since);

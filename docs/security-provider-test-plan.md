@@ -207,3 +207,16 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | blocked_email_domains 설정 | 지정 도메인 이메일 인증 요청 차단 |
 | result_lookup_retention_days = 0 | 결과 조회 기간 제한 없음 |
 | captcha_enabled toggle | 실제 외부 호출 없이 정책값만 저장 |
+
+
+## 20. Appeal Policy History / Detail Modal 테스트
+
+| Case | Expected |
+|---|---|
+| appeal policy save | `SECURITY_APPEAL_POLICY_HISTORY` version_no 증가 |
+| appeal policy history open | 변경 전/후 JSON 스냅샷 표시 |
+| protected_appeal_token_ttl_days 변경 | 보호조치 안내 메일 이의제기 링크 TTL 변경 |
+| appeals detail button click | 상세 모달 열린다 |
+| appeals detail modal outside click | 모달 닫힌다 |
+| appeals detail modal Escape | 모달 닫힌다 |
+| user input in modal | `c:out`으로 escape 처리 |

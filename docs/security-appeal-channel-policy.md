@@ -67,3 +67,22 @@ appeal_status = CLOSED
 
 이번 작업은 실제 Cloudflare/Turnstile API를 호출하지 않는다.  
 다만 관리자 UI와 정책 테이블에 `captcha_enabled`, `captcha_provider_code`를 두어 운영 전 Provider 연결 시 바로 이어 붙일 수 있게 했다.
+
+
+## 변경 이력/버전 관리
+
+`SECURITY_APPEAL_POLICY` 수정 시 `SECURITY_APPEAL_POLICY_HISTORY`에 변경 전/후 JSON 스냅샷을 저장한다.
+
+```text
+/admin/login-risk/appeal-policy
+→ 저장
+→ SECURITY_APPEAL_POLICY 갱신
+→ SECURITY_APPEAL_POLICY_HISTORY version_no 증가
+```
+
+관리자 화면 하단에서 최근 20개의 정책 변경 이력을 확인할 수 있다.
+
+## 추가 TTL 정책
+
+보호조치 안내 메일에 포함되는 이의제기 링크 유효 기간은 `protected_appeal_token_ttl_days`로 관리한다.  
+기본값은 7일이다.

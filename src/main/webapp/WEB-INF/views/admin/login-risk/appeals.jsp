@@ -12,6 +12,20 @@
 <spring:message var="appealCloseComment" code="security.admin.comment.appealClosed"/>
 <%@ include file="../layout.jsp" %>
 
+<style>
+    .appeal-modal-backdrop[hidden] { display:none; }
+    .appeal-modal-backdrop { position:fixed; inset:0; z-index:2000; background:rgba(15,23,42,.55); display:flex; align-items:center; justify-content:center; padding:24px; }
+    .appeal-modal-card { width:min(920px, 96vw); max-height:88vh; overflow:auto; background:#fff; border-radius:20px; box-shadow:0 24px 70px rgba(15,23,42,.28); border:1px solid #e2e8f0; }
+    .appeal-modal-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; padding:20px 22px; border-bottom:1px solid #e2e8f0; }
+    .appeal-modal-body { padding:20px 22px; }
+    .appeal-modal-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .appeal-modal-item { border:1px solid #e2e8f0; border-radius:14px; padding:12px; background:#f8fafc; }
+    .appeal-modal-label { font-size:12px; color:#64748b; font-weight:700; margin-bottom:6px; }
+    .appeal-modal-value { white-space:pre-wrap; color:#0f172a; word-break:break-word; }
+    .appeal-modal-close { border:0; background:#e2e8f0; border-radius:10px; padding:8px 12px; cursor:pointer; font-weight:800; }
+    @media (max-width: 720px) { .appeal-modal-grid { grid-template-columns:1fr; } }
+</style>
+
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
@@ -99,6 +113,9 @@
                     </td>
                     <td><fmt:formatDate value="${a.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
                     <td>
+                        <button class="adm-btn js-appeal-modal-open" type="button" data-modal-id="appeal-modal-${a.appealIdx}">
+                            <spring:message code="security.admin.common.detail"/>
+                        </button>
                         <c:if test="${a.appealStatus == 'PENDING' || a.appealStatus == 'HOLD'}">
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/accept" style="display:inline;">
                                 <input type="hidden" name="comment" value="${appealAcceptComment}">
@@ -116,7 +133,6 @@
                                 <input type="hidden" name="comment" value="${appealCloseComment}">
                                 <button class="adm-btn" type="submit"><spring:message code="security.admin.common.closeAppeal"/></button>
                             </form>
-
                         </c:if>
                         <c:if test="${a.appealStatus != 'PENDING' && a.appealStatus != 'HOLD'}">
                             <small><c:out value="${a.reviewedByUserId}"/> / <fmt:formatDate value="${a.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></small>
@@ -129,6 +145,72 @@
                         </c:if>
                     </td>
                 </tr>
+                <tr style="display:none;"><td colspan="6">
+                    <div class="appeal-modal-backdrop" id="appeal-modal-${a.appealIdx}" hidden>
+                        <div class="appeal-modal-card" role="dialog" aria-modal="true" aria-labelledby="appeal-modal-title-${a.appealIdx}">
+                            <div class="appeal-modal-head">
+                                <div>
+                                    <h2 id="appeal-modal-title-${a.appealIdx}" style="margin:0;"><spring:message code="security.admin.appeals.detail.title"/></h2>
+                                    <div class="adm-muted"><spring:message code="security.admin.common.publicRequestId"/>: <c:out value="${a.publicRequestId}" default="-"/></div>
+                                </div>
+                                <button class="appeal-modal-close js-appeal-modal-close" type="button"><spring:message code="security.admin.common.close"/></button>
+                            </div>
+                            <div class="appeal-modal-body">
+                                <div class="appeal-modal-grid">
+                                    <div class="appeal-modal-item">
+                                        <div class="appeal-modal-label"><spring:message code="security.admin.common.status"/></div>
+                                        <div class="appeal-modal-value"><c:out value="${a.appealStatus}" default="-"/></div>
+                                    </div>
+                                    <div class="appeal-modal-item">
+                                        <div class="appeal-modal-label"><spring:message code="security.admin.common.user"/></div>
+                                        <div class="appeal-modal-value"><c:out value="${a.userId}" default="-"/> / <c:out value="${a.nickname}" default="-"/></div>
+                                    </div>
+                                    <div class="appeal-modal-item">
+                                        <div class="appeal-modal-label"><spring:message code="security.admin.common.target"/></div>
+                                        <div class="appeal-modal-value"><c:out value="${a.targetType}" default="-"/> / <c:out value="${a.targetKey}" default="-"/></div>
+                                    </div>
+                                    <div class="appeal-modal-item">
+                                        <div class="appeal-modal-label"><spring:message code="security.admin.common.contactEmail"/></div>
+                                        <div class="appeal-modal-value"><c:out value="${a.submitterEmail}" default="-"/></div>
+                                    </div>
+                                    <div class="appeal-modal-item">
+                                        <div class="appeal-modal-label"><spring:message code="security.admin.common.privateInquiry"/></div>
+                                        <div class="appeal-modal-value"><c:out value="${a.inquiryId}" default="-"/></div>
+                                    </div>
+                                    <div class="appeal-modal-item">
+                                        <div class="appeal-modal-label"><spring:message code="security.admin.common.blockAccessRequest"/></div>
+                                        <div class="appeal-modal-value"><c:out value="${a.blockAccessRequestId}" default="-"/></div>
+                                    </div>
+                                    <div class="appeal-modal-item">
+                                        <div class="appeal-modal-label"><spring:message code="security.admin.common.blockRequest"/></div>
+                                        <div class="appeal-modal-value"><c:out value="${a.blockRequestId}" default="-"/></div>
+                                    </div>
+                                    <div class="appeal-modal-item">
+                                        <div class="appeal-modal-label"><spring:message code="security.admin.common.submittedAt"/></div>
+                                        <div class="appeal-modal-value"><fmt:formatDate value="${a.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
+                                    </div>
+                                    <div class="appeal-modal-item">
+                                        <div class="appeal-modal-label"><spring:message code="security.admin.common.reviewedBy"/></div>
+                                        <div class="appeal-modal-value"><c:out value="${a.reviewedByUserId}" default="-"/> / <fmt:formatDate value="${a.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
+                                    </div>
+                                    <div class="appeal-modal-item">
+                                        <div class="appeal-modal-label"><spring:message code="security.admin.common.updatedAt"/></div>
+                                        <div class="appeal-modal-value"><fmt:formatDate value="${a.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
+                                    </div>
+                                </div>
+                                <div class="appeal-modal-item" style="margin-top:12px;">
+                                    <div class="appeal-modal-label"><spring:message code="security.admin.common.titleContent"/></div>
+                                    <div class="appeal-modal-value"><strong><c:out value="${a.appealTitle}" default="-"/></strong>
+<c:out value="${a.appealContent}" default="-"/></div>
+                                </div>
+                                <div class="appeal-modal-item" style="margin-top:12px;">
+                                    <div class="appeal-modal-label"><spring:message code="security.admin.common.reviewComment"/></div>
+                                    <div class="appeal-modal-value"><c:out value="${a.reviewComment}" default="-"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td></tr>
             </c:forEach>
             <c:if test="${empty appeals}">
                 <tr><td colspan="6" class="adm-empty"><spring:message code="security.admin.empty.appeals"/></td></tr>
@@ -137,3 +219,34 @@
         </table>
     </div>
 </div>
+
+<script>
+(function () {
+    const closeModal = function (modal) {
+        if (modal) modal.hidden = true;
+    };
+    const openModal = function (modal) {
+        if (modal) modal.hidden = false;
+    };
+    document.querySelectorAll('.js-appeal-modal-open').forEach(function (button) {
+        button.addEventListener('click', function () {
+            openModal(document.getElementById(button.dataset.modalId));
+        });
+    });
+    document.querySelectorAll('.js-appeal-modal-close').forEach(function (button) {
+        button.addEventListener('click', function () {
+            closeModal(button.closest('.appeal-modal-backdrop'));
+        });
+    });
+    document.querySelectorAll('.appeal-modal-backdrop').forEach(function (backdrop) {
+        backdrop.addEventListener('click', function (event) {
+            if (event.target === backdrop) closeModal(backdrop);
+        });
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            document.querySelectorAll('.appeal-modal-backdrop:not([hidden])').forEach(closeModal);
+        }
+    });
+})();
+</script>
