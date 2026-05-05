@@ -294,6 +294,18 @@
         <result property="targetSpotName"    column="target_spot_name"/>
     </resultMap>
 
+
+    <resultMap id="UnifiedPolicyHistoryMap" type="org.triptogether.admin.vo.UnifiedPolicyHistoryVO">
+        <result property="sourceType" column="source_type"/>
+        <result property="sourceId" column="source_id"/>
+        <result property="itemKey" column="item_key"/>
+        <result property="changeType" column="change_type"/>
+        <result property="actorUserIdx" column="actor_user_idx"/>
+        <result property="beforeConfigJson" column="before_config_json"/>
+        <result property="afterConfigJson" column="after_config_json"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
     <!-- ══════════════════════════════════════════
          회원 목록
     ══════════════════════════════════════════ -->
@@ -2344,5 +2356,89 @@
             NOW()
         )
     </insert>
+
+
+    <select id="findUnifiedPolicyHistories" resultMap="UnifiedPolicyHistoryMap">
+        SELECT *
+        FROM (
+            SELECT
+                'SYSTEM_POLICY' AS source_type,
+                h.history_idx AS source_id,
+                h.policy_code AS item_key,
+                h.change_type AS change_type,
+                h.changed_by_user_idx AS actor_user_idx,
+                h.before_config_json AS before_config_json,
+                h.after_config_json AS after_config_json,
+                h.changed_at AS created_at
+            FROM SYSTEM_POLICY_HISTORY h
+
+            UNION ALL
+
+            SELECT
+                'LOGIN_RISK_POLICY' AS source_type,
+                h.history_idx AS source_id,
+                h.policy_code AS item_key,
+                h.change_type AS change_type,
+                h.actor_user_idx AS actor_user_idx,
+                h.before_config_json AS before_config_json,
+                h.after_config_json AS after_config_json,
+                h.created_at AS created_at
+            FROM LOGIN_RISK_POLICY_HISTORY h
+
+            UNION ALL
+
+            SELECT
+                'SECURITY_APPEAL_POLICY' AS source_type,
+                h.history_idx AS source_id,
+                h.policy_code AS item_key,
+                h.change_type AS change_type,
+                h.actor_user_idx AS actor_user_idx,
+                h.before_config_json AS before_config_json,
+                h.after_config_json AS after_config_json,
+                h.created_at AS created_at
+            FROM SECURITY_APPEAL_POLICY_HISTORY h
+
+            UNION ALL
+
+            SELECT
+                'RUNTIME_SETTING' AS source_type,
+                h.history_idx AS source_id,
+                h.setting_key AS item_key,
+                h.change_type AS change_type,
+                h.actor_user_idx AS actor_user_idx,
+                h.before_config_json AS before_config_json,
+                h.after_config_json AS after_config_json,
+                h.created_at AS created_at
+            FROM APPLICATION_RUNTIME_SETTING_HISTORY h
+
+            UNION ALL
+
+            SELECT
+                'PROVIDER_CONFIG' AS source_type,
+                h.history_idx AS source_id,
+                h.provider_code AS item_key,
+                h.change_type AS change_type,
+                h.actor_user_idx AS actor_user_idx,
+                h.before_config_json AS before_config_json,
+                h.after_config_json AS after_config_json,
+                h.created_at AS created_at
+            FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG_HISTORY h
+        ) u
+        WHERE 1 = 1
+        <if test="sourceType != null and sourceType != ''">
+            AND u.source_type = #{sourceType}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                u.item_key LIKE CONCAT('%', #{keyword}, '%')
+                OR u.change_type LIKE CONCAT('%', #{keyword}, '%')
+                OR CAST(u.before_config_json AS CHAR) LIKE CONCAT('%', #{keyword}, '%')
+                OR CAST(u.after_config_json AS CHAR) LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY u.created_at DESC, u.source_id DESC
+        LIMIT #{limit}
+    </select>
+
 
 </mapper>

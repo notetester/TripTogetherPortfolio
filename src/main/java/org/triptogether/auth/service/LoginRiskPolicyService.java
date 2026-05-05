@@ -74,7 +74,28 @@ public class LoginRiskPolicyService {
 
     @Transactional
     public void updatePolicy(LoginRiskPolicyVO policy) {
+        updatePolicy(policy, null);
+    }
+
+    @Transactional
+    public void updatePolicy(LoginRiskPolicyVO policy, Long actorUserIdx) {
+        LoginRiskPolicyVO before = loginRiskPolicyMapper.findPolicyByIdx(policy.getPolicyIdx());
+        if (before == null) {
+            loginRiskPolicyMapper.updatePolicy(policy);
+            return;
+        }
+        policy.setPolicyCode(before.getPolicyCode());
+        String beforeSnapshot = toLoginRiskPolicySnapshot(before);
         loginRiskPolicyMapper.updatePolicy(policy);
+        LoginRiskPolicyVO after = loginRiskPolicyMapper.findPolicyByIdx(policy.getPolicyIdx());
+        loginRiskPolicyMapper.insertLoginRiskPolicyHistory(
+                before.getPolicyIdx(),
+                before.getPolicyCode(),
+                "UPDATE",
+                actorUserIdx,
+                beforeSnapshot,
+                toLoginRiskPolicySnapshot(after == null ? policy : after)
+        );
     }
 
 
@@ -405,17 +426,35 @@ public class LoginRiskPolicyService {
 
     @Transactional
     public void updateProviderConfig(SecurityAssessmentProviderConfigVO config) {
+        updateProviderConfig(config, null);
+    }
+
+    @Transactional
+    public void updateProviderConfig(SecurityAssessmentProviderConfigVO config, Long actorUserIdx) {
+        SecurityAssessmentProviderConfigVO before = loginRiskPolicyMapper.findProviderConfigByIdx(config.getProviderIdx());
+        String beforeSnapshot = toProviderConfigSnapshot(before);
         loginRiskPolicyMapper.updateProviderConfig(config);
+        SecurityAssessmentProviderConfigVO after = loginRiskPolicyMapper.findProviderConfigByIdx(config.getProviderIdx());
+        SecurityAssessmentProviderConfigVO effective = after == null ? config : after;
+        loginRiskPolicyMapper.insertProviderConfigHistory(
+                effective.getProviderIdx(),
+                effective.getProviderCode(),
+                effective.getProviderKind(),
+                "UPDATE",
+                actorUserIdx,
+                beforeSnapshot,
+                toProviderConfigSnapshot(effective)
+        );
         loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
                 "PROVIDER_CONFIG_UPDATE",
-                null,
+                actorUserIdx,
                 "PROVIDER",
-                config.getProviderCode(),
+                effective.getProviderCode(),
                 "SECURITY_ASSESSMENT_PROVIDER_CONFIG",
-                config.getProviderIdx(),
+                effective.getProviderIdx(),
                 "SECURITY.PROVIDER.CONFIG_UPDATE",
-                jsonArg("providerIdx", config.getProviderIdx(), "enabled", config.isEnabled()),
-                "enabled=" + config.isEnabled() + ", endpoint=" + config.getEndpointUrl()
+                jsonArg("providerIdx", effective.getProviderIdx(), "enabled", effective.isEnabled()),
+                "enabled=" + effective.isEnabled() + ", endpoint=" + effective.getEndpointUrl()
         );
     }
 
@@ -937,6 +976,54 @@ public class LoginRiskPolicyService {
         }
     }
 
+
+
+    private String toLoginRiskPolicySnapshot(LoginRiskPolicyVO policy) {
+        if (policy == null) {
+            return "{}";
+        }
+        return "{"
+                + jsonPair("policyIdx", policy.getPolicyIdx()) + ","
+                + jsonPair("policyCode", policy.getPolicyCode()) + ","
+                + jsonPair("policyName", policy.getPolicyName()) + ","
+                + jsonPair("policyType", policy.getPolicyType()) + ","
+                + jsonPair("active", policy.isActive()) + ","
+                + jsonPair("observationMinutes", policy.getObservationMinutes()) + ","
+                + jsonPair("thresholdCount", policy.getThresholdCount()) + ","
+                + jsonPair("distinctAccountThreshold", policy.getDistinctAccountThreshold()) + ","
+                + jsonPair("lockDurationMinutes", policy.getLockDurationMinutes()) + ","
+                + jsonPair("warningBeforeCount", policy.getWarningBeforeCount()) + ","
+                + jsonPair("resetOnSuccess", policy.isResetOnSuccess()) + ","
+                + jsonPair("actionType", policy.getActionType()) + ","
+                + jsonPair("requireAdminReview", policy.isRequireAdminReview()) + ","
+                + jsonPair("reviewSeverity", policy.getReviewSeverity()) + ","
+                + jsonPair("notificationCategory", policy.getNotificationCategory()) + ","
+                + jsonPair("aiAssistEnabled", policy.isAiAssistEnabled()) + ","
+                + jsonPair("aiRiskScoreThreshold", policy.getAiRiskScoreThreshold()) + ","
+                + jsonPair("wafSyncEnabled", policy.isWafSyncEnabled()) + ","
+                + jsonPair("description", policy.getDescription())
+                + "}";
+    }
+
+    private String toProviderConfigSnapshot(SecurityAssessmentProviderConfigVO provider) {
+        if (provider == null) {
+            return "{}";
+        }
+        return "{"
+                + jsonPair("providerIdx", provider.getProviderIdx()) + ","
+                + jsonPair("providerKind", provider.getProviderKind()) + ","
+                + jsonPair("providerCode", provider.getProviderCode()) + ","
+                + jsonPair("providerName", provider.getProviderName()) + ","
+                + jsonPair("enabled", provider.isEnabled()) + ","
+                + jsonPair("endpointUrl", provider.getEndpointUrl()) + ","
+                + jsonPair("apiKeyRef", provider.getApiKeyRef()) + ","
+                + jsonPair("modelName", provider.getModelName()) + ","
+                + jsonPair("timeoutMillis", provider.getTimeoutMillis()) + ","
+                + jsonPair("failOpen", provider.getFailOpen()) + ","
+                + jsonPair("status", provider.getStatus()) + ","
+                + jsonPair("description", provider.getDescription())
+                + "}";
+    }
 
     private String toAppealPolicySnapshot(SecurityAppealPolicyVO policy) {
         if (policy == null) {

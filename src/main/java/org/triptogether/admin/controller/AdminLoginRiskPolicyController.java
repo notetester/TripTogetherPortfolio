@@ -41,6 +41,7 @@ public class AdminLoginRiskPolicyController {
                                @RequestParam(value = "requireAdminReview", required = false) String requireAdminReview,
                                @RequestParam(value = "aiAssistEnabled", required = false) String aiAssistEnabled,
                                @RequestParam(value = "wafSyncEnabled", required = false) String wafSyncEnabled,
+                               HttpSession session,
                                RedirectAttributes redirectAttributes,
                                Locale locale) {
         policy.setPolicyIdx(policyIdx);
@@ -49,7 +50,7 @@ public class AdminLoginRiskPolicyController {
         policy.setRequireAdminReview(requireAdminReview != null);
         policy.setAiAssistEnabled(aiAssistEnabled != null);
         policy.setWafSyncEnabled(wafSyncEnabled != null);
-        loginRiskPolicyService.updatePolicy(policy);
+        loginRiskPolicyService.updatePolicy(policy, currentAdminIdx(session));
         redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.policySaved"));
         return "redirect:/admin/login-risk/policies";
     }
@@ -233,12 +234,13 @@ public class AdminLoginRiskPolicyController {
                                        SecurityAssessmentProviderConfigVO config,
                                        @RequestParam(value = "enabled", required = false) String enabled,
                                        @RequestParam(value = "failOpen", required = false) Integer failOpen,
+                                       HttpSession session,
                                        RedirectAttributes redirectAttributes,
                                       Locale locale) {
         config.setProviderIdx(providerIdx);
         config.setEnabled(enabled != null);
         config.setFailOpen(failOpen == null ? 1 : failOpen);
-        loginRiskPolicyService.updateProviderConfig(config);
+        loginRiskPolicyService.updateProviderConfig(config, currentAdminIdx(session));
         redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.providerSaved"));
         return "redirect:/admin/login-risk/provider-configs";
     }

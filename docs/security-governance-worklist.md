@@ -85,6 +85,10 @@
 - OAuth/메일/base-url/차단 캐시/인증 토큰 TTL/휴면 기준일 DB 우선 조회
 - APPLICATION_RUNTIME_SETTING_HISTORY 설정 변경 이력/버전 관리
 - APPLICATION_RUNTIME_SETTING DB 우선 런타임 설정 테이블/UI
+- layout.jsp 보안 메뉴 하드코딩/i18n attribute 패턴 정리
+- /admin/policy-history 통합 정책 이력 화면
+- SECURITY_ASSESSMENT_PROVIDER_CONFIG_HISTORY Provider 설정 변경 이력/버전 관리
+- LOGIN_RISK_POLICY_HISTORY 정책 변경 이력/버전 관리
 
 ## 남은 작업
 
@@ -145,3 +149,4 @@
 - `docs/security-appeal-channel-policy.md`
 - `docs/security-policy-coverage-audit.md`
 - `docs/application-runtime-settings.md`
+- `docs/unified-policy-history.md`

@@ -230,6 +230,33 @@
     </resultMap>
 
 
+
+    <resultMap id="LoginRiskPolicyHistoryMap" type="org.triptogether.auth.vo.LoginRiskPolicyHistoryVO">
+        <id property="historyIdx" column="history_idx"/>
+        <result property="policyIdx" column="policy_idx"/>
+        <result property="policyCode" column="policy_code"/>
+        <result property="versionNo" column="version_no"/>
+        <result property="changeType" column="change_type"/>
+        <result property="actorUserIdx" column="actor_user_idx"/>
+        <result property="beforeConfigJson" column="before_config_json"/>
+        <result property="afterConfigJson" column="after_config_json"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+
+    <resultMap id="ProviderConfigHistoryMap" type="org.triptogether.auth.vo.SecurityAssessmentProviderConfigHistoryVO">
+        <id property="historyIdx" column="history_idx"/>
+        <result property="providerIdx" column="provider_idx"/>
+        <result property="providerCode" column="provider_code"/>
+        <result property="providerKind" column="provider_kind"/>
+        <result property="versionNo" column="version_no"/>
+        <result property="changeType" column="change_type"/>
+        <result property="actorUserIdx" column="actor_user_idx"/>
+        <result property="beforeConfigJson" column="before_config_json"/>
+        <result property="afterConfigJson" column="after_config_json"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
     <resultMap id="SecurityAppealPolicyMap" type="org.triptogether.auth.vo.SecurityAppealPolicyVO">
         <id property="policyIdx" column="policy_idx"/>
         <result property="policyCode" column="policy_code"/>
@@ -355,6 +382,14 @@
     </select>
 
 
+    <select id="findPolicyByIdx" resultMap="LoginRiskPolicyMap">
+        SELECT *
+        FROM LOGIN_RISK_POLICY
+        WHERE policy_idx = #{policyIdx}
+        LIMIT 1
+    </select>
+
+
     <update id="updatePolicy">
         UPDATE LOGIN_RISK_POLICY
         SET policy_name = #{policyName},
@@ -376,6 +411,27 @@
             updated_at = NOW()
         WHERE policy_idx = #{policyIdx}
     </update>
+
+
+    <insert id="insertLoginRiskPolicyHistory">
+        INSERT INTO LOGIN_RISK_POLICY_HISTORY
+        (policy_idx, policy_code, version_no, change_type, actor_user_idx, before_config_json, after_config_json, created_at)
+        VALUES
+        (#{policyIdx}, #{policyCode},
+         (SELECT COALESCE(MAX(h.version_no), 0) + 1 FROM LOGIN_RISK_POLICY_HISTORY h WHERE h.policy_idx = #{policyIdx}),
+         #{changeType}, #{actorUserIdx}, #{beforeConfigJson}, #{afterConfigJson}, NOW())
+    </insert>
+
+    <select id="findLoginRiskPolicyHistory" resultMap="LoginRiskPolicyHistoryMap">
+        SELECT *
+        FROM LOGIN_RISK_POLICY_HISTORY
+        WHERE 1 = 1
+        <if test="policyCode != null and policyCode != ''">
+            AND policy_code = #{policyCode}
+        </if>
+        ORDER BY created_at DESC, history_idx DESC
+        LIMIT #{limit}
+    </select>
 
     <select id="countRecentWrongPasswordByUser" resultType="int">
         SELECT COUNT(*) FROM USER_LOGIN_HISTORY
@@ -923,6 +979,27 @@
         WHERE provider_idx = #{providerIdx}
     </update>
 
+
+
+    <insert id="insertProviderConfigHistory">
+        INSERT INTO SECURITY_ASSESSMENT_PROVIDER_CONFIG_HISTORY
+        (provider_idx, provider_code, provider_kind, version_no, change_type, actor_user_idx, before_config_json, after_config_json, created_at)
+        VALUES
+        (#{providerIdx}, #{providerCode}, #{providerKind},
+         (SELECT COALESCE(MAX(h.version_no), 0) + 1 FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG_HISTORY h WHERE h.provider_idx = #{providerIdx}),
+         #{changeType}, #{actorUserIdx}, #{beforeConfigJson}, #{afterConfigJson}, NOW())
+    </insert>
+
+    <select id="findProviderConfigHistory" resultMap="ProviderConfigHistoryMap">
+        SELECT *
+        FROM SECURITY_ASSESSMENT_PROVIDER_CONFIG_HISTORY
+        WHERE 1 = 1
+        <if test="providerCode != null and providerCode != ''">
+            AND provider_code = #{providerCode}
+        </if>
+        ORDER BY created_at DESC, history_idx DESC
+        LIMIT #{limit}
+    </select>
 
     <insert id="insertSecurityActionAudit">
         INSERT INTO SECURITY_ACTION_AUDIT

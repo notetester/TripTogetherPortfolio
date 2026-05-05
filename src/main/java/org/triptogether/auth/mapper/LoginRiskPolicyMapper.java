@@ -4,10 +4,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.triptogether.auth.vo.AdminNotificationPreferenceVO;
 import org.triptogether.auth.vo.LoginRiskPolicyVO;
+import org.triptogether.auth.vo.LoginRiskPolicyHistoryVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
 import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
+import org.triptogether.auth.vo.SecurityAssessmentProviderConfigHistoryVO;
 import org.triptogether.auth.vo.SecurityReviewVO;
 import org.triptogether.auth.vo.SecurityWafSyncQueueVO;
 import org.triptogether.auth.vo.SecurityAppealVO;
@@ -24,7 +26,16 @@ public interface LoginRiskPolicyMapper {
     List<LoginRiskPolicyVO> findPolicies(@Param("includeInactive") boolean includeInactive);
     LoginRiskPolicyVO findActivePolicyByCode(@Param("policyCode") String policyCode);
     LoginRiskPolicyVO findPolicyByCode(@Param("policyCode") String policyCode);
+    LoginRiskPolicyVO findPolicyByIdx(@Param("policyIdx") Long policyIdx);
     void updatePolicy(LoginRiskPolicyVO policy);
+    void insertLoginRiskPolicyHistory(@Param("policyIdx") Long policyIdx,
+                                      @Param("policyCode") String policyCode,
+                                      @Param("changeType") String changeType,
+                                      @Param("actorUserIdx") Long actorUserIdx,
+                                      @Param("beforeConfigJson") String beforeConfigJson,
+                                      @Param("afterConfigJson") String afterConfigJson);
+    List<LoginRiskPolicyHistoryVO> findLoginRiskPolicyHistory(@Param("policyCode") String policyCode,
+                                                              @Param("limit") int limit);
 
     SecurityAppealPolicyVO findSecurityAppealPolicy();
     void updateSecurityAppealPolicy(SecurityAppealPolicyVO policy);
@@ -222,6 +233,15 @@ public interface LoginRiskPolicyMapper {
     SecurityAssessmentProviderConfigVO findProviderConfigByIdx(@Param("providerIdx") Long providerIdx);
 
     void updateProviderConfig(SecurityAssessmentProviderConfigVO config);
+    void insertProviderConfigHistory(@Param("providerIdx") Long providerIdx,
+                                     @Param("providerCode") String providerCode,
+                                     @Param("providerKind") String providerKind,
+                                     @Param("changeType") String changeType,
+                                     @Param("actorUserIdx") Long actorUserIdx,
+                                     @Param("beforeConfigJson") String beforeConfigJson,
+                                     @Param("afterConfigJson") String afterConfigJson);
+    List<SecurityAssessmentProviderConfigHistoryVO> findProviderConfigHistory(@Param("providerCode") String providerCode,
+                                                                              @Param("limit") int limit);
 
     void insertSecurityActionAudit(@Param("actionType") String actionType,
                                    @Param("actorUserIdx") Long actorUserIdx,

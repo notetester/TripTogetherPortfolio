@@ -1,6 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="adminLogoutTitle" code="admin.layout.logoutTitle"/>
+<spring:message var="adminLanguageTitle" code="admin.layout.languageTitle"/>
+<spring:message var="adminThemeToggleTitle" code="admin.layout.themeToggleTitle"/>
+<spring:message var="adminMenuToggleLabel" code="admin.layout.menuToggle"/>
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <head>
@@ -99,34 +103,37 @@
                         <span class="adm-nav-icon">🧭</span> <spring:message code="admin.layout.menu.activityLogs"/>
                     </a>
                     <a class="adm-nav-item ${activeMenu=='loginRiskPolicies'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/policies">
-                        <span class="adm-nav-icon">⚙️</span> 로그인 위험 정책
+                        <span class="adm-nav-icon">⚙️</span> <spring:message code="security.admin.nav.policies"/>
                     </a>
                     <a class="adm-nav-item ${activeMenu=='runtimeSettings'?'active':''}" href="${pageContext.request.contextPath}/admin/runtime-settings">
                         <span class="adm-nav-icon">🧩</span> <spring:message code="admin.layout.menu.runtimeSettings"/>
                     </a>
+                    <a class="adm-nav-item ${activeMenu=='policyHistory'?'active':''}" href="${pageContext.request.contextPath}/admin/policy-history">
+                        <span class="adm-nav-icon">🧾</span> <spring:message code="admin.layout.menu.policyHistory"/>
+                    </a>
                     <a class="adm-nav-item ${activeMenu=='loginRiskReviews'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/reviews">
-                        <span class="adm-nav-icon">🧯</span> 로그인 위험 검토
+                        <span class="adm-nav-icon">🧯</span> <spring:message code="security.admin.nav.loginReviews"/>
                     </a>
                     <a class="adm-nav-item ${activeMenu=='loginRiskAssessments'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/assessments">
-                        <span class="adm-nav-icon">🧠</span> 외부 위험 판단
+                        <span class="adm-nav-icon">🧠</span> <spring:message code="security.admin.nav.assessments"/>
                     </a>
                     <a class="adm-nav-item ${activeMenu=='securityRiskAssessments'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">
-                        <span class="adm-nav-icon">🛡️</span> 보안 위험 판단
+                        <span class="adm-nav-icon">🛡️</span> <spring:message code="security.admin.nav.securityAssessments"/>
                     </a>
                     <a class="adm-nav-item ${activeMenu=='securityReviews'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">
-                        <span class="adm-nav-icon">🧾</span> 일반 보안 검토
+                        <span class="adm-nav-icon">🧾</span> <spring:message code="security.admin.nav.securityReviews"/>
                     </a>
                     <a class="adm-nav-item ${activeMenu=='securityProviderConfigs'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">
-                        <span class="adm-nav-icon">🔌</span> Provider 설정
+                        <span class="adm-nav-icon">🔌</span> <spring:message code="security.admin.nav.providerConfigs"/>
                     </a>
                     <a class="adm-nav-item ${activeMenu=='securityWafSync'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/waf-sync">
                         <span class="adm-nav-icon">🌐</span> <spring:message code="security.admin.nav.wafSync"/>
                     </a>
                     <a class="adm-nav-item ${activeMenu=='securityAppeals'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/appeals">
-                        <span class="adm-nav-icon">📮</span> 보안 이의제기
+                        <span class="adm-nav-icon">📮</span> <spring:message code="security.admin.nav.appeals"/>
                     </a>
                     <a class="adm-nav-item ${activeMenu=='adminNotificationPreferences'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences">
-                        <span class="adm-nav-icon">🔔</span> 알림 설정
+                        <span class="adm-nav-icon">🔔</span> <spring:message code="security.admin.nav.notificationPreferences"/>
                     </a>
                 </div>
             </div>
@@ -281,7 +288,7 @@
                     <div class="adm-user-name">${sessionScope.loginUser.nickname}</div>
                     <div class="adm-user-role"><spring:message code="admin.role.ADMIN"/></div>
                 </div>
-                <a href="${pageContext.request.contextPath}/auth/logout" class="adm-logout" title="<spring:message code="admin.layout.logoutTitle"/>">⏏</a>
+                <a href="${pageContext.request.contextPath}/auth/logout" class="adm-logout" title="${adminLogoutTitle}">⏏</a>
             </div>
         </div>
     </aside>
@@ -289,23 +296,23 @@
     <div class="adm-main">
         <div class="adm-topbar">
             <button type="button" class="adm-nav-toggle" id="sidebar-toggle"
-                    aria-label="메뉴" aria-expanded="false" aria-controls="adm-sidebar">
+                    aria-label="${adminMenuToggleLabel}" aria-expanded="false" aria-controls="adm-sidebar">
                 <span class="adm-nav-toggle-bar"></span>
                 <span class="adm-nav-toggle-bar"></span>
                 <span class="adm-nav-toggle-bar"></span>
             </button>
             <div class="adm-topbar-title">${pageTitle}</div>
             <div class="adm-topbar-controls">
-                <label class="adm-topbar-select-wrap" for="admLangSel" title="<spring:message code='admin.layout.languageTitle'/>">
+                <label class="adm-topbar-select-wrap" for="admLangSel" title="${adminLanguageTitle}">
                     <span class="adm-topbar-tool-label"><spring:message code="admin.layout.language"/></span>
-                    <select class="adm-select adm-topbar-select" id="admLangSel" aria-label="<spring:message code='admin.layout.languageTitle'/>">
+                    <select class="adm-select adm-topbar-select" id="admLangSel" aria-label="${adminLanguageTitle}">
                         <option value="ko" ${pageContext.response.locale.language == 'ko' ? 'selected' : ''}><spring:message code="header.lang.ko"/></option>
                         <option value="en" ${pageContext.response.locale.language == 'en' ? 'selected' : ''}><spring:message code="header.lang.en"/></option>
                         <option value="ja" ${pageContext.response.locale.language == 'ja' ? 'selected' : ''}><spring:message code="header.lang.ja"/></option>
                         <option value="zh" ${pageContext.response.locale.language == 'zh' ? 'selected' : ''}><spring:message code="header.lang.zh"/></option>
                     </select>
                 </label>
-                <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="<spring:message code="admin.layout.themeToggleTitle"/>">☀️ <spring:message code="admin.layout.theme.light"/></button>
+                <button class="sa-theme-btn" id="saThemeBtn" onclick="saToggleTheme()" title="${adminThemeToggleTitle}">☀️ <spring:message code="admin.layout.theme.light"/></button>
             </div>
             <div class="adm-topbar-path">
                 <span><spring:message code="admin.layout.path.admin"/></span>

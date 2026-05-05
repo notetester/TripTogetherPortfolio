@@ -88,3 +88,12 @@
 - `APPLICATION_RUNTIME_SETTING`과 `APPLICATION_RUNTIME_SETTING_HISTORY`를 기준 테이블로 둔다.
 - 운영자가 값을 비워 두면 기존 properties/default fallback을 사용한다.
 - 위험 여부는 코드에서 막지 않고, `is_secret`, `is_editable`, 관리자 권한 체계로 통제한다.
+
+
+## 통합 정책 이력 관리 결정
+
+- 정책 변경 이력은 도메인별 history table에 저장하고, 통합 화면은 UNION 조회로 제공한다.
+- 로그인 위험 정책은 `LOGIN_RISK_POLICY_HISTORY`로 버전 이력을 남긴다.
+- Provider 설정은 `SECURITY_ASSESSMENT_PROVIDER_CONFIG_HISTORY`로 버전 이력을 남긴다.
+- 통합 정책 이력 화면은 `/admin/policy-history`로 둔다.
+- 새 정책 도메인이 추가될 때는 전용 history table과 통합 이력 조회 편입을 함께 처리한다.

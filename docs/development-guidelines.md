@@ -133,3 +133,12 @@
 - 테이블이 없거나 row가 없어도 서비스가 중단되지 않도록 fallback을 반드시 둔다.
 - 설정 변경 이력은 `APPLICATION_RUNTIME_SETTING_HISTORY`에 남긴다.
 - 민감값은 `is_secret`으로 표시하고, 실제 접근 제어는 관리자 권한 정책과 함께 고도화한다.
+
+
+## 통합 정책 이력 원칙
+
+- 정책/설정 테이블은 가능하면 자기 전용 `*_HISTORY` 테이블을 가진다.
+- 변경 이력은 `actor_user_idx`, `change_type`, 변경 전/후 JSON snapshot, 생성 시각을 최소 단위로 남긴다.
+- 통합 조회는 `/admin/policy-history`에서 수행한다.
+- 새 정책 도메인이 추가되면 `AdminMapper.findUnifiedPolicyHistories`의 UNION 대상에 추가한다.
+- 통합 이력 화면의 JSON snapshot은 반드시 escape한다.

@@ -236,3 +236,17 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | `security.block.cache.file` changed | 차단 캐시 파일 경로가 DB 값 기준으로 사용된다 |
 | OAuth redirect/client setting changed | 소셜 로그인 URL/token 요청이 DB 값 기준으로 생성된다 |
 | setting save | `APPLICATION_RUNTIME_SETTING_HISTORY` version_no 증가 |
+
+
+## 22. Unified Policy History 테스트
+
+| Case | Expected |
+|---|---|
+| `/admin/policy-history` open | 여러 정책 도메인의 이력이 최신순으로 표시된다 |
+| sourceType = LOGIN_RISK_POLICY | 로그인 위험 정책 이력만 표시된다 |
+| sourceType = PROVIDER_CONFIG | Provider 설정 이력만 표시된다 |
+| login risk policy save | `LOGIN_RISK_POLICY_HISTORY` version_no 증가 |
+| provider config save | `SECURITY_ASSESSMENT_PROVIDER_CONFIG_HISTORY` version_no 증가 |
+| keyword search | item_key 또는 snapshot 내용 기준으로 필터링된다 |
+| snapshot output | `c:out`으로 escape 처리된다 |
+| layout navigation | 보안·감사 메뉴에서 통합 정책 이력으로 이동할 수 있다 |
