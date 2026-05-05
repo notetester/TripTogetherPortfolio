@@ -69,6 +69,11 @@
 - SECURITY_ACTION_APPEAL_TOKEN.submitter_email 기반 인증 이메일 귀속
 - publicRequestId + 인증 이메일 기반 비로그인 이의제기 결과 조회 화면
 - 이메일 인증 기반 비로그인/차단 이의제기 접수 흐름
+- AdminBlockServiceImpl 레거시 한국어 운영 메모/예외 문구 1차 전면 정리
+- publicRequestId 결과 조회 실패 감사 로그 및 rate-limit
+- 동일 차단 건 동시 PENDING/HOLD 접수 허용 수 정책화
+- 관리자 수동 이의제기 종결 CLOSED 상태
+- SECURITY_APPEAL_RATE_LIMIT 정책 row 기반 인증 링크/결과 조회 rate-limit
 
 ## 남은 작업
 
@@ -93,7 +98,6 @@
 - 보안 검토 큐 상세 모달 추가 고도화
 - Provider 헬스체크 결과 상세 화면 추가 고도화
 - CAPTCHA/Turnstile Provider 연동 검토
-- 이의제기 중복 접수 제한 정책 세부 문구/UX 고도화
 - WAF Provider별 재시도/실패 사유 UI 추가 고도화
 
 ### 검증
@@ -127,3 +131,4 @@
 - `docs/security-policy-feed-api-contract.md`
 - `docs/security-notification-behavior.md`
 - `docs/security-appeal-email-verification-flow.md`
+- `docs/security-appeal-channel-policy.md`

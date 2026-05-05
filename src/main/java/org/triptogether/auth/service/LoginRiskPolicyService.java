@@ -226,6 +226,7 @@ public class LoginRiskPolicyService {
             case "accept", "accepted" -> "ACCEPTED";
             case "reject", "rejected" -> "REJECTED";
             case "hold" -> "HOLD";
+            case "close", "closed" -> "CLOSED";
             default -> "HOLD";
         };
         SecurityAppealVO appeal = loginRiskPolicyMapper.findSecurityAppealByIdx(appealIdx);
@@ -569,6 +570,19 @@ public class LoginRiskPolicyService {
             throw new IllegalArgumentException(context.getErrorMessage());
         }
 
+        AppealRateLimitConfig ratePolicy = getAppealRateLimitConfig();
+        ensureAppealChannelOpen(context, firstNonBlank(context.getRequestId(), requestId), lang, ratePolicy);
+
+        LocalDateTime verificationWindowStart = LocalDateTime.now().minusMinutes(ratePolicy.rateLimitWindowMinutes());
+        Integer verificationCount = loginRiskPolicyMapper.countVerificationTokensAfter(
+                firstNonBlank(context.getRequestId(), requestId),
+                submitterEmail.trim(),
+                verificationWindowStart
+        );
+        if (ratePolicy.enabled() && verificationCount != null && verificationCount >= ratePolicy.maxVerificationEmails()) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.verificationRateLimited"));
+        }
+
         String token = createAppealToken(
                 context.getUserIdx(),
                 context.getTargetType(),
@@ -576,8 +590,8 @@ public class LoginRiskPolicyService {
                 context.getSourceAssessmentIdx(),
                 null,
                 firstNonBlank(context.getRequestId(), requestId),
-                submitterEmail,
-                LocalDateTime.now().plusMinutes(30)
+                submitterEmail.trim(),
+                LocalDateTime.now().plusMinutes(ratePolicy.verificationTokenTtlMinutes())
         );
         String appealUrl = publicBaseUrl + "/security/appeal?token=" + token + "&lang=" + lang;
         String subject = msg(lang, "security.appeal.verify.mail.subject");
@@ -642,16 +656,9 @@ public class LoginRiskPolicyService {
             throw new IllegalArgumentException(msg(lang, "security.appeal.error.emailVerificationRequired"));
         }
 
-        Integer duplicateCount = loginRiskPolicyMapper.countDuplicatePendingAppeal(
-                context.getTargetType(),
-                context.getTargetKey(),
-                firstNonBlank(context.getRequestId(), requestId)
-        );
-        if (duplicateCount != null && duplicateCount > 0) {
-            throw new IllegalArgumentException(msg(lang, "security.appeal.error.duplicatePending"));
-        }
-
         AppealPolicyConfig appealPolicy = getAppealPolicyConfig();
+        AppealRateLimitConfig ratePolicy = getAppealRateLimitConfig();
+        ensureAppealChannelOpen(context, firstNonBlank(context.getRequestId(), requestId), lang, ratePolicy);
         if (appealPolicy.enabled()) {
             Integer recentRejectedCount = loginRiskPolicyMapper.countRejectedAppealAfter(
                     context.getTargetType(),
@@ -782,6 +789,47 @@ public class LoginRiskPolicyService {
         );
     }
 
+    private AppealRateLimitConfig getAppealRateLimitConfig() {
+        LoginRiskPolicyVO policy = loginRiskPolicyMapper.findPolicyByCode("SECURITY_APPEAL_RATE_LIMIT");
+        if (policy == null) {
+            return new AppealRateLimitConfig(true, 60, 3, 5, 30, 3);
+        }
+        return new AppealRateLimitConfig(
+                policy.isActive(),
+                positiveOrDefault(policy.getObservationMinutes(), 60),
+                positiveOrDefault(policy.getThresholdCount(), 3),
+                positiveOrDefault(policy.getDistinctAccountThreshold(), 5),
+                positiveOrDefault(policy.getLockDurationMinutes(), 30),
+                positiveOrDefault(policy.getWarningBeforeCount(), 3)
+        );
+    }
+
+    private void ensureAppealChannelOpen(SecurityAppealFormVO context,
+                                         String requestId,
+                                         String lang,
+                                         AppealRateLimitConfig policy) {
+        if (context == null || !policy.enabled()) {
+            return;
+        }
+        Integer closedCount = loginRiskPolicyMapper.countClosedAppealsForCase(
+                context.getTargetType(),
+                context.getTargetKey(),
+                requestId
+        );
+        if (closedCount != null && closedCount > 0) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.channelClosed"));
+        }
+
+        Integer openCount = loginRiskPolicyMapper.countOpenAppealsForCase(
+                context.getTargetType(),
+                context.getTargetKey(),
+                requestId
+        );
+        if (openCount != null && openCount >= policy.maxOpenAppealsPerCase()) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.maxOpenAppeals"));
+        }
+    }
+
     private int positiveOrDefault(Integer value, int fallback) {
         return value != null && value > 0 ? value : fallback;
     }
@@ -801,6 +849,14 @@ public class LoginRiskPolicyService {
                                       int rejectedCooldownMinutes,
                                       int maxRejectedCount,
                                       int ipDailyLimit) {
+    }
+
+    private record AppealRateLimitConfig(boolean enabled,
+                                         int rateLimitWindowMinutes,
+                                         int maxVerificationEmails,
+                                         int maxResultLookupFailures,
+                                         int verificationTokenTtlMinutes,
+                                         int maxOpenAppealsPerCase) {
     }
 
     private String createAppealToken(Long userIdx,
@@ -847,13 +903,33 @@ public class LoginRiskPolicyService {
         if (!isValidEmail(submitterEmail)) {
             throw new IllegalArgumentException(msg(lang, "security.appeal.error.emailInvalid"));
         }
-        SecurityAppealVO appeal = loginRiskPolicyMapper.findSecurityAppealByPublicRequestId(publicRequestId);
-        if (appeal == null) {
-            throw new IllegalArgumentException(msg(lang, "security.appeal.result.error.notFound"));
+        AppealRateLimitConfig ratePolicy = getAppealRateLimitConfig();
+        String resultTargetKey = "PUBLIC_REQUEST:" + publicRequestId.trim();
+        Integer failedLookupCount = loginRiskPolicyMapper.countSecurityActionAuditAfter(
+                "SECURITY_APPEAL_RESULT_LOOKUP_FAILED",
+                "SECURITY_APPEAL_RESULT",
+                resultTargetKey,
+                LocalDateTime.now().minusMinutes(ratePolicy.rateLimitWindowMinutes())
+        );
+        if (ratePolicy.enabled() && failedLookupCount != null && failedLookupCount >= ratePolicy.maxResultLookupFailures()) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.result.error.rateLimited"));
         }
-        String storedEmail = firstNonBlank(appeal.getSubmitterEmail(),
+
+        SecurityAppealVO appeal = loginRiskPolicyMapper.findSecurityAppealByPublicRequestId(publicRequestId);
+        String storedEmail = appeal == null ? null : firstNonBlank(appeal.getSubmitterEmail(),
                 appeal.getUserIdx() == null ? null : loginRiskPolicyMapper.findUserEmailByUserIdx(appeal.getUserIdx()));
-        if (storedEmail == null || !storedEmail.equalsIgnoreCase(submitterEmail.trim())) {
+        if (appeal == null || storedEmail == null || !storedEmail.equalsIgnoreCase(submitterEmail.trim())) {
+            loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
+                    "SECURITY_APPEAL_RESULT_LOOKUP_FAILED",
+                    null,
+                    "SECURITY_APPEAL_RESULT",
+                    resultTargetKey,
+                    "SECURITY_ACTION_APPEAL",
+                    appeal == null ? null : appeal.getAppealIdx(),
+                    "SECURITY.APPEAL.RESULT_LOOKUP_FAILED",
+                    jsonArg("publicRequestId", publicRequestId, "email", maskEmail(submitterEmail)),
+                    msg(lang, "security.appeal.result.audit.lookupFailed")
+            );
             throw new IllegalArgumentException(msg(lang, "security.appeal.result.error.notFound"));
         }
         return appeal;

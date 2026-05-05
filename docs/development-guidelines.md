@@ -99,3 +99,12 @@
 - 인증 이메일은 `SECURITY_ACTION_APPEAL_TOKEN.submitter_email`에 저장하고, 정식 접수 시 `SECURITY_ACTION_APPEAL.submitter_email`로 넘긴다.
 - 결과 조회는 `publicRequestId`와 인증 이메일이 함께 일치할 때만 표시한다.
 - 운영 전에는 CAPTCHA/Turnstile을 `/security/appeal/verify` 앞단에 붙인다.
+
+
+## 이의제기 채널 정책 원칙
+
+- `SECURITY_APPEAL_COOLDOWN`은 반려 후 재접수/거절 누적/일일 제한 정책으로 사용한다.
+- `SECURITY_APPEAL_RATE_LIMIT`은 인증 링크 발송 제한, 결과 조회 실패 제한, 인증 링크 TTL, 동일 건 동시 접수 허용 수를 관리한다.
+- 동일 차단 건에 `CLOSED` 이의제기가 있으면 추가 인증/접수를 막는다.
+- 공용 IP 차단처럼 여러 사용자가 걸릴 수 있는 경우를 고려해 `warning_before_count`로 동시 접수 허용 수를 조절한다.
+- rate-limit 기록은 새 테이블보다 기존 `SECURITY_ACTION_AUDIT`와 토큰 테이블을 우선 재사용한다.

@@ -2,12 +2,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="activeMenu" value="securityAppeals"/>
 <spring:message var="pageTitle" code="security.admin.appeals.title"/>
 <spring:message var="keywordPlaceholder" code="security.admin.placeholder.accountTitleTarget"/>
 <spring:message var="appealAcceptComment" code="security.admin.comment.appealAccepted"/>
 <spring:message var="appealHoldComment" code="security.admin.comment.needMoreCheck"/>
 <spring:message var="appealRejectComment" code="security.admin.comment.appealRejected"/>
+<spring:message var="appealCloseComment" code="security.admin.comment.appealClosed"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -23,7 +25,7 @@
     </div>
 
     <c:if test="${not empty message}">
-        <div class="adm-alert success">${message}</div>
+        <div class="adm-alert success"><c:out value="${message}"/></div>
     </c:if>
 
     <form method="get" class="adm-card" style="margin-bottom:16px;">
@@ -35,13 +37,14 @@
                     <option value="HOLD" ${status == 'HOLD' ? 'selected' : ''}>HOLD</option>
                     <option value="ACCEPTED" ${status == 'ACCEPTED' ? 'selected' : ''}>ACCEPTED</option>
                     <option value="REJECTED" ${status == 'REJECTED' ? 'selected' : ''}>REJECTED</option>
+                    <option value="CLOSED" ${status == 'CLOSED' ? 'selected' : ''}>CLOSED</option>
                 </select>
             </label>
             <label><spring:message code="security.admin.common.targetType"/>
-                <input class="adm-input" type="text" name="targetType" value="${targetType}" placeholder="USER_BLOCK">
+                <input class="adm-input" type="text" name="targetType" value="${fn:escapeXml(targetType)}" placeholder="USER_BLOCK">
             </label>
             <label><spring:message code="security.admin.common.search"/>
-                <input class="adm-input" type="text" name="keyword" value="${keyword}" placeholder="${keywordPlaceholder}">
+                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${keywordPlaceholder}">
             </label>
             <div style="align-self:end;">
                 <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.search"/></button>
@@ -108,9 +111,20 @@
                                 <input type="hidden" name="comment" value="${appealRejectComment}">
                                 <button class="adm-btn danger" type="submit"><spring:message code="security.admin.common.rejectAppeal"/></button>
                             </form>
+                            <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/close" style="display:inline;">
+                                <input type="hidden" name="comment" value="${appealCloseComment}">
+                                <button class="adm-btn" type="submit"><spring:message code="security.admin.common.closeAppeal"/></button>
+                            </form>
+
                         </c:if>
                         <c:if test="${a.appealStatus != 'PENDING' && a.appealStatus != 'HOLD'}">
                             <small><c:out value="${a.reviewedByUserId}"/> / <fmt:formatDate value="${a.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></small>
+                            <c:if test="${a.appealStatus == 'REJECTED'}">
+                                <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/appeals/${a.appealIdx}/close" style="display:inline;margin-left:6px;">
+                                    <input type="hidden" name="comment" value="${appealCloseComment}">
+                                    <button class="adm-btn" type="submit"><spring:message code="security.admin.common.closeAppeal"/></button>
+                                </form>
+                            </c:if>
                         </c:if>
                     </td>
                 </tr>

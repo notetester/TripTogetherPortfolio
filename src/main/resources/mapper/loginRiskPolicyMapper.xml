@@ -867,7 +867,7 @@
             </if>
         </where>
         ORDER BY
-            CASE a.appeal_status WHEN 'PENDING' THEN 0 WHEN 'HOLD' THEN 1 WHEN 'ACCEPTED' THEN 2 ELSE 3 END,
+            CASE a.appeal_status WHEN 'PENDING' THEN 0 WHEN 'HOLD' THEN 1 WHEN 'REJECTED' THEN 2 WHEN 'ACCEPTED' THEN 3 WHEN 'CLOSED' THEN 4 ELSE 5 END,
             a.created_at DESC
     </select>
 
@@ -1157,6 +1157,56 @@
           </if>
     </select>
 
+
+
+    <select id="countClosedAppealsForCase" resultType="int">
+        SELECT COUNT(*)
+        FROM SECURITY_ACTION_APPEAL
+        WHERE appeal_status = 'CLOSED'
+          AND target_type = #{targetType}
+          AND target_key = #{targetKey}
+          <choose>
+            <when test="blockAccessRequestId != null and blockAccessRequestId != ''">
+              AND block_access_request_id = #{blockAccessRequestId}
+            </when>
+            <otherwise>
+              AND (block_access_request_id IS NULL OR block_access_request_id = '')
+            </otherwise>
+          </choose>
+    </select>
+
+    <select id="countOpenAppealsForCase" resultType="int">
+        SELECT COUNT(*)
+        FROM SECURITY_ACTION_APPEAL
+        WHERE appeal_status IN ('PENDING', 'HOLD')
+          AND target_type = #{targetType}
+          AND target_key = #{targetKey}
+          <choose>
+            <when test="blockAccessRequestId != null and blockAccessRequestId != ''">
+              AND block_access_request_id = #{blockAccessRequestId}
+            </when>
+            <otherwise>
+              AND (block_access_request_id IS NULL OR block_access_request_id = '')
+            </otherwise>
+          </choose>
+    </select>
+
+    <select id="countVerificationTokensAfter" resultType="int">
+        SELECT COUNT(*)
+        FROM SECURITY_ACTION_APPEAL_TOKEN
+        WHERE block_access_request_id = #{blockAccessRequestId}
+          AND submitter_email = #{submitterEmail}
+          AND created_at >= #{after}
+    </select>
+
+    <select id="countSecurityActionAuditAfter" resultType="int">
+        SELECT COUNT(*)
+        FROM SECURITY_ACTION_AUDIT
+        WHERE action_type = #{actionType}
+          AND target_type = #{targetType}
+          AND target_key = #{targetKey}
+          AND created_at >= #{after}
+    </select>
 
     <select id="countRejectedAppealAfter" resultType="int">
         SELECT COUNT(*)

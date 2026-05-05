@@ -289,7 +289,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
                                    String defaultDisableStrategy, String defaultEnableStrategy,
                                    String description, Long actorUserIdx) {
         if (isBlank(batchCode) || isBlank(batchName) || isBlank(sourceType)) {
-            throw new IllegalArgumentException("배치 코드, 배치명, 출처 유형은 필수입니다.");
+            throw new IllegalArgumentException("admin.blocks.error.batchRequired");
         }
 
         AdminIpBlockBatchVO batch = new AdminIpBlockBatchVO();
@@ -314,7 +314,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
                                    String description, Long actorUserIdx) {
         AdminIpBlockBatchVO batch = requireBatch(ipBlockBatchIdx);
         if (isBlank(batchCode) || isBlank(batchName) || isBlank(sourceType)) {
-            throw new IllegalArgumentException("배치 코드, 배치명, 출처 유형은 필수입니다.");
+            throw new IllegalArgumentException("admin.blocks.error.batchRequired");
         }
 
         batch.setBatchCode(batchCode.trim().toUpperCase());
@@ -334,7 +334,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     public void toggleIpBlockBatch(Long ipBlockBatchIdx, boolean active, String operationOption, String description, Long actorUserIdx) {
         AdminIpBlockBatchVO batch = requireBatch(ipBlockBatchIdx);
         if (batch.isActive() == active) {
-            throw new IllegalArgumentException(active ? "이미 활성화된 배치입니다." : "이미 비활성화된 배치입니다.");
+            throw new IllegalArgumentException(active ? "admin.blocks.error.batchAlreadyActive" : "admin.blocks.error.batchAlreadyInactive");
         }
 
         String resolvedOption = resolveBatchOperationOption(batch, active, operationOption);
@@ -377,7 +377,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
                 if ("CASCADE_ACTIVE_RULES".equals(resolvedOption)) {
                     if ("MANUAL_OVERRIDE".equalsIgnoreCase(before.getControlMode())) {
                         effect = "SKIPPED_MANUAL_OVERRIDE";
-                        memo = "관리자가 개별 예외로 전환한 규칙은 유지했습니다.";
+                        memo = "ADMIN_BLOCK.BATCH_RULE_MANUAL_OVERRIDE_KEPT";
                     } else if ("BATCH".equalsIgnoreCase(before.getControlMode()) && before.isActive()) {
                         rule.setActive(false);
                         rule.setReleasedAt(now);
@@ -385,7 +385,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
                         rule.setLastControlAction("BATCH_CASCADE_DISABLE");
                         rule.setLastControlByUserIdx(actorUserIdx);
                         rule.setLastControlAt(now);
-                        rule.setLastControlReason("배치 비활성화와 함께 개별 규칙도 비활성화");
+                        rule.setLastControlReason("ADMIN_BLOCK.BATCH_DISABLE_RULE_OFF");
                         rule.setBlockRequestId(UUID.randomUUID().toString());
                         effect = "RULE_DISABLED";
                         affectedRuleCount++;
@@ -394,14 +394,14 @@ public class AdminBlockServiceImpl implements AdminBlockService {
                     }
                 } else {
                     effect = "BATCH_ONLY";
-                    memo = "배치 상태만 비활성화하고 개별 규칙 상태는 유지했습니다.";
+                    memo = "ADMIN_BLOCK.BATCH_DISABLED_RULES_KEPT";
                 }
             } else {
                 if ("RESTORE_BATCH_CONTROL".equals(resolvedOption)) {
                     AdminIpBlockBatchOperationRuleVO disabledRule = lastDisabledRuleMap.get(rule.getIpBlocklistIdx());
                     if ("MANUAL_OVERRIDE".equalsIgnoreCase(before.getControlMode())) {
                         effect = "SKIPPED_MANUAL_OVERRIDE";
-                        memo = "관리자 수동 예외 규칙은 자동 복구하지 않았습니다.";
+                        memo = "ADMIN_BLOCK.MANUAL_OVERRIDE_NOT_AUTO_RESTORED";
                     } else if (disabledRule != null
                             && "BATCH".equalsIgnoreCase(before.getControlMode())
                             && !before.isActive()
@@ -412,7 +412,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
                         rule.setLastControlAction("BATCH_CASCADE_RESTORE");
                         rule.setLastControlByUserIdx(actorUserIdx);
                         rule.setLastControlAt(now);
-                        rule.setLastControlReason("이전 배치 비활성화로 꺼진 규칙 복구");
+                        rule.setLastControlReason("ADMIN_BLOCK.RESTORE_RULE_AFTER_BATCH_ENABLE");
                         rule.setBlockRequestId(UUID.randomUUID().toString());
                         effect = "RULE_ENABLED";
                         affectedRuleCount++;
@@ -432,7 +432,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
                         rule.setLastControlAction("FORCE_ENABLE");
                         rule.setLastControlByUserIdx(actorUserIdx);
                         rule.setLastControlAt(now);
-                        rule.setLastControlReason("배치 활성화 시 모든 규칙 강제 ON");
+                        rule.setLastControlReason("ADMIN_BLOCK.BATCH_ENABLE_FORCE_RULE_ON");
                         rule.setBlockRequestId(UUID.randomUUID().toString());
                         effect = "RULE_ENABLED";
                         affectedRuleCount++;
@@ -441,7 +441,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
                     }
                 } else {
                     effect = "BATCH_ONLY";
-                    memo = "배치 상태만 활성화하고 개별 규칙 상태는 유지했습니다.";
+                    memo = "ADMIN_BLOCK.BATCH_ENABLED_RULES_KEPT";
                 }
             }
 
@@ -502,35 +502,35 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         String targetKey;
         switch (normalizedType) {
             case "SINGLE_IP" -> {
-                if (isBlank(normalizedIp)) throw new IllegalArgumentException("단일 IP 규칙은 IP 주소가 필요합니다.");
+                if (isBlank(normalizedIp)) throw new IllegalArgumentException("admin.blocks.error.ipRequired");
                 representativeIp = normalizedIp;
                 targetKey = "IP:" + normalizedIp;
             }
             case "CIDR" -> {
                 if (isBlank(normalizedCidr) || !normalizedCidr.contains("/")) {
-                    throw new IllegalArgumentException("CIDR 규칙은 올바른 CIDR 표기가 필요합니다.");
+                    throw new IllegalArgumentException("admin.blocks.error.invalidCidr");
                 }
                 representativeIp = normalizedCidr.substring(0, normalizedCidr.indexOf('/')).trim();
                 targetKey = "CIDR:" + normalizedCidr;
             }
             case "RANGE" -> {
                 if (isBlank(normalizedRangeStart) || isBlank(normalizedRangeEnd)) {
-                    throw new IllegalArgumentException("범위 규칙은 시작 IP와 끝 IP가 필요합니다.");
+                    throw new IllegalArgumentException("admin.blocks.error.rangeRequired");
                 }
                 representativeIp = normalizedRangeStart;
                 targetKey = "RANGE:" + normalizedRangeStart + "~" + normalizedRangeEnd;
             }
             case "COUNTRY" -> {
-                if (isBlank(normalizedCountry)) throw new IllegalArgumentException("국가 규칙은 국가 코드가 필요합니다.");
+                if (isBlank(normalizedCountry)) throw new IllegalArgumentException("admin.blocks.error.countryRequired");
                 representativeIp = "COUNTRY:" + normalizedCountry;
                 targetKey = "COUNTRY:" + normalizedCountry;
             }
             case "ASN" -> {
-                if (isBlank(normalizedAsn)) throw new IllegalArgumentException("ASN 규칙은 ASN 코드가 필요합니다.");
+                if (isBlank(normalizedAsn)) throw new IllegalArgumentException("admin.blocks.error.asnRequired");
                 representativeIp = normalizedAsn;
                 targetKey = "ASN:" + normalizedAsn;
             }
-            default -> throw new IllegalArgumentException("지원하지 않는 매칭 방식입니다.");
+            default -> throw new IllegalArgumentException("admin.blocks.error.unsupportedMatchType");
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -838,7 +838,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         LocalDateTime now = LocalDateTime.now();
 
         if (expiresAt != null && !expiresAt.isAfter(now)) {
-            throw new IllegalArgumentException("만료 시각은 현재 시각 이후로 설정해주세요.");
+            throw new IllegalArgumentException("admin.blocks.error.expiryFutureRequired");
         }
 
         rule.setBlockRequestId(UUID.randomUUID().toString());
@@ -856,14 +856,14 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         if ("MANUAL_OVERRIDE".equalsIgnoreCase(rule.getControlMode())) {
             rule.setManualOverrideByUserIdx(actorUserIdx);
             rule.setManualOverrideAt(now);
-            rule.setManualOverrideReason("관리자가 정책 규칙을 수동 예외로 조정함");
+            rule.setManualOverrideReason("ADMIN_BLOCK.RULE_MANUAL_OVERRIDE_BY_ADMIN");
             rule.setLastControlReason(rule.getManualOverrideReason());
         } else {
             rule.setManualOverrideByUserIdx(null);
             rule.setManualOverrideByNickname(null);
             rule.setManualOverrideAt(null);
             rule.setManualOverrideReason(null);
-            rule.setLastControlReason("관리자가 정책 규칙 상세 설정을 수정함");
+            rule.setLastControlReason("ADMIN_BLOCK.RULE_DETAIL_UPDATED_BY_ADMIN");
         }
 
         boolean beforeBatchActive = before.getIpBlockBatchIdx() == null || Boolean.TRUE.equals(before.getBatchActive());
@@ -895,11 +895,11 @@ public class AdminBlockServiceImpl implements AdminBlockService {
             rule.setControlMode("MANUAL_OVERRIDE");
             rule.setManualOverrideByUserIdx(actorUserIdx);
             rule.setManualOverrideAt(now);
-            rule.setManualOverrideReason(active ? "관리자가 개별 규칙을 재활성화함" : "관리자가 개별 규칙을 비활성화함");
+            rule.setManualOverrideReason(active ? "ADMIN_BLOCK.RULE_REENABLED_BY_ADMIN" : "ADMIN_BLOCK.RULE_DISABLED_BY_ADMIN");
             rule.setLastControlReason(rule.getManualOverrideReason());
         } else {
             rule.setControlMode("MANUAL");
-            rule.setLastControlReason(active ? "관리자가 개별 규칙을 재활성화함" : "관리자가 개별 규칙을 비활성화함");
+            rule.setLastControlReason(active ? "ADMIN_BLOCK.RULE_REENABLED_BY_ADMIN" : "ADMIN_BLOCK.RULE_DISABLED_BY_ADMIN");
         }
 
         applyEffectiveState(rule, evaluateRule(rule, batchActive), "ADMIN", now);
@@ -915,7 +915,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     public void returnIpRuleToBatchControl(Long ipBlocklistIdx, Long actorUserIdx) {
         AdminIpBlockVO rule = requireRule(ipBlocklistIdx);
         if (rule.getIpBlockBatchIdx() == null) {
-            throw new IllegalArgumentException("배치에 속한 규칙만 배치 제어로 되돌릴 수 있습니다.");
+            throw new IllegalArgumentException("admin.blocks.error.batchRuleOnly");
         }
 
         AdminIpBlockVO before = snapshot(rule);
@@ -935,7 +935,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         rule.setLastControlAction("RETURN_TO_BATCH");
         rule.setLastControlByUserIdx(actorUserIdx);
         rule.setLastControlAt(now);
-        rule.setLastControlReason("관리자가 규칙을 배치 제어 상태로 복귀");
+        rule.setLastControlReason("ADMIN_BLOCK.RULE_RETURNED_TO_BATCH_CONTROL");
 
         applyEffectiveState(rule, evaluateRule(rule, batch.isActive()), "ADMIN", now);
         adminBlockMapper.updateIpBlockRule(rule);
@@ -950,7 +950,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         LocalDateTime now = LocalDateTime.now();
 
         if (active && expiresAt != null && !expiresAt.isAfter(now)) {
-            throw new IllegalArgumentException("차단 만료 시각은 현재 시각 이후로 설정해주세요.");
+            throw new IllegalArgumentException("admin.blocks.error.blockExpiryFutureRequired");
         }
 
         String normalizedReason = trimToNull(reason);
@@ -1001,7 +1001,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         current.setUpdatedByUserIdx(actorUserIdx);
         current.setEffectiveActive(active);
         current.setEffectiveStatus(active ? "EFFECTIVE" : "MANUAL_RELEASED");
-        current.setEffectiveStatusReason(active ? "관리자 수동 활성화" : "관리자 수동 해제");
+        current.setEffectiveStatusReason(active ? "ADMIN_BLOCK.USER_BLOCK_MANUAL_ACTIVE" : "ADMIN_BLOCK.USER_BLOCK_MANUAL_RELEASED");
         current.setEffectiveSyncedAt(now);
         current.setLastControlAction(active ? "MANUAL_ENABLE" : "RELEASE");
         current.setLastControlByUserIdx(actorUserIdx);
@@ -1034,7 +1034,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     @Override
     public void releaseUserBlock(String blockTargetKey, Long actorUserIdx) {
         AdminUserBlockVO current = adminBlockMapper.findUserBlockByTargetKey(blockTargetKey);
-        if (current == null) throw new IllegalArgumentException("현재 차단 상태를 찾을 수 없습니다.");
+        if (current == null) throw new IllegalArgumentException("admin.blocks.error.currentBlockNotFound");
 
         adminBlockMapper.updateUserBlocklistActiveByTargetKey(blockTargetKey, false, actorUserIdx, "RELEASED");
         adminBlockMapper.deactivateBlockHistoriesByTargetKey(blockTargetKey, actorUserIdx, "RELEASE");
@@ -1075,12 +1075,12 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     @Override
     public Map<String, Object> findCurrentSettingByHistory(Long historyBlockIdx) {
         if (historyBlockIdx == null) {
-            throw new IllegalArgumentException("차단 이력 식별자가 필요합니다.");
+            throw new IllegalArgumentException("admin.blocks.error.historyIdRequired");
         }
 
         AdminBlockHistoryVO history = adminBlockMapper.findBlockHistoryById(historyBlockIdx);
         if (history == null) {
-            throw new IllegalArgumentException("차단 이력을 찾을 수 없습니다.");
+            throw new IllegalArgumentException("admin.blocks.error.historyNotFound");
         }
 
         String resolvedType = resolveCurrentType(history);
@@ -1231,41 +1231,41 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     private String buildIpRuleUpdateReason(AdminIpBlockVO before, AdminIpBlockVO after) {
         List<String> changes = new ArrayList<>();
         if (!Objects.equals(before.getRuleAction(), after.getRuleAction())) {
-            changes.add("동작 " + before.getRuleActionLabel() + "→" + after.getRuleActionLabel());
+            changes.add("ruleAction " + before.getRuleActionLabel() + "→" + after.getRuleActionLabel());
         }
         if (!Objects.equals(before.getControlMode(), after.getControlMode())) {
-            changes.add("제어 " + before.getControlModeLabel() + "→" + after.getControlModeLabel());
+            changes.add("controlMode " + before.getControlModeLabel() + "→" + after.getControlModeLabel());
         }
         if (!Objects.equals(before.getBlockCategory(), after.getBlockCategory())) {
-            changes.add("분류 변경");
+            changes.add("categoryChanged");
         }
         if (!Objects.equals(before.getPriority(), after.getPriority())) {
-            changes.add("우선순위 " + before.getPriority() + "→" + after.getPriority());
+            changes.add("priority " + before.getPriority() + "→" + after.getPriority());
         }
         if (!Objects.equals(trimToNull(before.getReason()), trimToNull(after.getReason()))) {
-            changes.add("사유 수정");
+            changes.add("reasonUpdated");
         }
         if (!Objects.equals(trimToNull(before.getDetailMessage()), trimToNull(after.getDetailMessage()))) {
-            changes.add("상세 메모 수정");
+            changes.add("detailUpdated");
         }
         if (!Objects.equals(before.getExpiresAt(), after.getExpiresAt())) {
-            changes.add("만료 시각 변경");
+            changes.add("expiresAtUpdated");
         }
-        return changes.isEmpty() ? "관리자가 정책 규칙 상세 설정을 수정함" : String.join(" / ", changes);
+        return changes.isEmpty() ? "ADMIN_BLOCK.RULE_DETAIL_UPDATED_BY_ADMIN" : String.join(" / ", changes);
     }
 
     private String buildUserBlockControlReason(AdminUserBlockVO before, boolean active, String reason, LocalDateTime expiresAt) {
         List<String> changes = new ArrayList<>();
         if (before.isActive() != active) {
-            changes.add(active ? "차단 재적용" : "차단 해제");
+            changes.add(active ? "reapplyBlock" : "releaseBlock");
         }
         if (!Objects.equals(trimToNull(before.getReason()), trimToNull(reason))) {
-            changes.add("사유 수정");
+            changes.add("reasonUpdated");
         }
         if (!Objects.equals(before.getExpiresAt(), expiresAt)) {
-            changes.add("만료 시각 변경");
+            changes.add("expiresAtUpdated");
         }
-        return changes.isEmpty() ? "관리자가 회원 차단 설정을 수정함" : String.join(" / ", changes);
+        return changes.isEmpty() ? "ADMIN_BLOCK.USER_BLOCK_UPDATED_BY_ADMIN" : String.join(" / ", changes);
     }
 
     private String resolveEditableControlMode(String rawControlMode, AdminIpBlockBatchVO batch, String currentControlMode) {
@@ -1278,7 +1278,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
             return "BATCH";
         }
         if (normalized == null || !List.of("BATCH", "MANUAL_OVERRIDE").contains(normalized)) {
-            throw new IllegalArgumentException("지원하지 않는 규칙 제어 방식입니다.");
+            throw new IllegalArgumentException("admin.blocks.error.unsupportedControlMode");
         }
         return normalized;
     }
@@ -1305,16 +1305,16 @@ public class AdminBlockServiceImpl implements AdminBlockService {
 
     private EffectiveState evaluateRule(AdminIpBlockVO rule, boolean batchActive) {
         if (!rule.isActive()) {
-            return new EffectiveState(false, "RULE_INACTIVE", "관리자가 개별 규칙을 비활성화했습니다.");
+            return new EffectiveState(false, "RULE_INACTIVE", "ADMIN_BLOCK.RULE_INACTIVE_BY_ADMIN");
         }
         if (rule.getExpiresAt() != null && !rule.getExpiresAt().isAfter(LocalDateTime.now())) {
-            return new EffectiveState(false, "EXPIRED", "규칙 만료 시각이 지나 현재 평가 대상이 아닙니다.");
+            return new EffectiveState(false, "EXPIRED", "ADMIN_BLOCK.RULE_EXPIRED");
         }
         boolean controlledByBatch = rule.getIpBlockBatchIdx() != null && "BATCH".equalsIgnoreCase(rule.getControlMode());
         if (controlledByBatch && !batchActive) {
-            return new EffectiveState(false, "BATCH_INACTIVE", "배치가 비활성화되어 현재 평가 대상이 아닙니다.");
+            return new EffectiveState(false, "BATCH_INACTIVE", "ADMIN_BLOCK.BATCH_INACTIVE");
         }
-        return new EffectiveState(true, "EFFECTIVE", "현재 평가 대상입니다.");
+        return new EffectiveState(true, "EFFECTIVE", "ADMIN_BLOCK.EFFECTIVE");
     }
 
     private void applyEffectiveState(AdminIpBlockVO rule, EffectiveState state, String syncedBySource, LocalDateTime syncedAt) {
@@ -1339,19 +1339,19 @@ public class AdminBlockServiceImpl implements AdminBlockService {
 
     private AdminIpBlockVO requireRule(Long ipBlocklistIdx) {
         AdminIpBlockVO rule = adminBlockMapper.findIpBlockById(ipBlocklistIdx);
-        if (rule == null) throw new IllegalArgumentException("IP 정책 규칙을 찾을 수 없습니다.");
+        if (rule == null) throw new IllegalArgumentException("admin.blocks.error.ipRuleNotFound");
         return rule;
     }
 
     private AdminIpBlockBatchVO requireBatch(Long ipBlockBatchIdx) {
         AdminIpBlockBatchVO batch = adminBlockMapper.findIpBlockBatchById(ipBlockBatchIdx);
-        if (batch == null) throw new IllegalArgumentException("IP 배치를 찾을 수 없습니다.");
+        if (batch == null) throw new IllegalArgumentException("admin.blocks.error.batchNotFound");
         return batch;
     }
 
     private AdminUserBlockVO requireUserBlock(Long blockIdx) {
         AdminUserBlockVO block = adminBlockMapper.findUserBlockById(blockIdx);
-        if (block == null) throw new IllegalArgumentException("회원 차단 상태를 찾을 수 없습니다.");
+        if (block == null) throw new IllegalArgumentException("admin.blocks.error.userBlockNotFound");
         return block;
     }
 
@@ -1410,11 +1410,11 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         data.put("finalStateLabel", emptyFallback(rule.getFinalStateLabel(), "-"));
         data.put("ruleStateLabel", emptyFallback(rule.getRuleStateLabel(), "-"));
         data.put("batchStatusLabel", emptyFallback(rule.getBatchStatusLabel(), "-"));
-        data.put("batchName", emptyFallback(rule.getBatchName(), "개별 규칙"));
+        data.put("batchName", emptyFallback(rule.getBatchName(), "-"));
         data.put("batchCode", emptyFallback(rule.getBatchCode(), ""));
         data.put("batchId", toStringValue(rule.getIpBlockBatchIdx()));
         data.put("blockedAt", formatDisplayDateTime(rule.getBlockedAt(), "-"));
-        data.put("expiresDisplay", formatDisplayDateTime(rule.getExpiresAt(), "없음"));
+        data.put("expiresDisplay", formatDisplayDateTime(rule.getExpiresAt(), "-"));
         data.put("active", Boolean.toString(rule.isActive()));
         return data;
     }
@@ -1478,10 +1478,10 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         }
         String normalized = safeUpper(rawControlMode, "BATCH");
         if (normalized == null || !List.of("MANUAL", "BATCH", "MANUAL_OVERRIDE").contains(normalized)) {
-            throw new IllegalArgumentException("지원하지 않는 제어 모드입니다.");
+            throw new IllegalArgumentException("admin.blocks.error.unsupportedControlMode");
         }
         if ("MANUAL_OVERRIDE".equals(normalized) && ipBlockBatchIdx == null) {
-            throw new IllegalArgumentException("수동 예외는 배치 규칙에서만 사용할 수 있습니다.");
+            throw new IllegalArgumentException("admin.blocks.error.manualOverrideBatchOnly");
         }
         return normalized;
     }
@@ -1490,10 +1490,10 @@ public class AdminBlockServiceImpl implements AdminBlockService {
         String defaultValue = active ? batch.getDefaultEnableStrategy() : batch.getDefaultDisableStrategy();
         String normalized = safeUpper(requested, defaultValue);
         if (active && (normalized == null || !List.of("BATCH_ONLY", "RESTORE_BATCH_CONTROL", "FORCE_ENABLE_ALL").contains(normalized))) {
-            throw new IllegalArgumentException("지원하지 않는 배치 활성화 옵션입니다.");
+            throw new IllegalArgumentException("admin.blocks.error.unsupportedBatchEnableOption");
         }
         if (!active && (normalized == null || !List.of("BATCH_ONLY", "CASCADE_ACTIVE_RULES").contains(normalized))) {
-            throw new IllegalArgumentException("지원하지 않는 배치 비활성화 옵션입니다.");
+            throw new IllegalArgumentException("admin.blocks.error.unsupportedBatchDisableOption");
         }
         return normalized;
     }
@@ -1501,7 +1501,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     private String resolveBatchDisableStrategy(String value) {
         String normalized = safeUpper(value, "BATCH_ONLY");
         if (normalized == null || !List.of("BATCH_ONLY", "CASCADE_ACTIVE_RULES").contains(normalized)) {
-            throw new IllegalArgumentException("지원하지 않는 배치 OFF 기본 전략입니다.");
+            throw new IllegalArgumentException("admin.blocks.error.unsupportedBatchOffStrategy");
         }
         return normalized;
     }
@@ -1509,7 +1509,7 @@ public class AdminBlockServiceImpl implements AdminBlockService {
     private String resolveBatchEnableStrategy(String value) {
         String normalized = safeUpper(value, "BATCH_ONLY");
         if (normalized == null || !List.of("BATCH_ONLY", "RESTORE_BATCH_CONTROL", "FORCE_ENABLE_ALL").contains(normalized)) {
-            throw new IllegalArgumentException("지원하지 않는 배치 ON 기본 전략입니다.");
+            throw new IllegalArgumentException("admin.blocks.error.unsupportedBatchOnStrategy");
         }
         return normalized;
     }

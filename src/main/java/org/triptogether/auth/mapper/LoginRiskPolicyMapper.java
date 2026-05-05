@@ -304,6 +304,24 @@ public interface LoginRiskPolicyMapper {
                                         @Param("targetKey") String targetKey,
                                         @Param("blockAccessRequestId") String blockAccessRequestId);
 
+
+    Integer countClosedAppealsForCase(@Param("targetType") String targetType,
+                                      @Param("targetKey") String targetKey,
+                                      @Param("blockAccessRequestId") String blockAccessRequestId);
+
+    Integer countOpenAppealsForCase(@Param("targetType") String targetType,
+                                    @Param("targetKey") String targetKey,
+                                    @Param("blockAccessRequestId") String blockAccessRequestId);
+
+    Integer countVerificationTokensAfter(@Param("blockAccessRequestId") String blockAccessRequestId,
+                                         @Param("submitterEmail") String submitterEmail,
+                                         @Param("after") java.time.LocalDateTime after);
+
+    Integer countSecurityActionAuditAfter(@Param("actionType") String actionType,
+                                          @Param("targetType") String targetType,
+                                          @Param("targetKey") String targetKey,
+                                          @Param("after") java.time.LocalDateTime after);
+
     Integer countRejectedAppealAfter(@Param("targetType") String targetType,
                                      @Param("targetKey") String targetKey,
                                      @Param("blockAccessRequestId") String blockAccessRequestId,
