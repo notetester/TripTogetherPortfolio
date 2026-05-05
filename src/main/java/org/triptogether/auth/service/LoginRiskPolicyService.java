@@ -24,6 +24,7 @@ import org.triptogether.auth.vo.SecurityWafSyncQueueVO;
 import org.triptogether.auth.vo.SecurityAppealVO;
 import org.triptogether.auth.vo.SecurityAppealFormVO;
 import org.triptogether.auth.vo.SecurityAppealTokenVO;
+import org.triptogether.auth.vo.SecurityAppealPolicyVO;
 import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.config.BlockRuleCacheService;
@@ -71,6 +72,47 @@ public class LoginRiskPolicyService {
     @Transactional
     public void updatePolicy(LoginRiskPolicyVO policy) {
         loginRiskPolicyMapper.updatePolicy(policy);
+    }
+
+
+    public SecurityAppealPolicyVO getSecurityAppealPolicy() {
+        SecurityAppealPolicyVO policy = loginRiskPolicyMapper.findSecurityAppealPolicy();
+        return policy == null ? defaultSecurityAppealPolicy() : policy;
+    }
+
+    @Transactional
+    public void updateSecurityAppealPolicy(SecurityAppealPolicyVO policy) {
+        SecurityAppealPolicyVO current = loginRiskPolicyMapper.findSecurityAppealPolicy();
+        if (current == null) {
+            throw new IllegalArgumentException(msg("ko", "security.appeal.policy.notFound"));
+        }
+        policy.setPolicyIdx(current.getPolicyIdx());
+        policy.setPolicyCode(current.getPolicyCode());
+        policy.setMaxOpenAppealsPerCase(positiveOrDefault(policy.getMaxOpenAppealsPerCase(), 1));
+        policy.setRejectedCooldownMinutes(nonNegativeOrDefault(policy.getRejectedCooldownMinutes(), 10080));
+        policy.setMaxRejectedCount(positiveOrDefault(policy.getMaxRejectedCount(), 2));
+        policy.setIpDailyAppealLimit(positiveOrDefault(policy.getIpDailyAppealLimit(), 3));
+        policy.setVerificationWindowMinutes(positiveOrDefault(policy.getVerificationWindowMinutes(), 60));
+        policy.setMaxVerificationEmails(positiveOrDefault(policy.getMaxVerificationEmails(), 3));
+        policy.setVerificationTokenTtlMinutes(positiveOrDefault(policy.getVerificationTokenTtlMinutes(), 30));
+        policy.setResultLookupWindowMinutes(positiveOrDefault(policy.getResultLookupWindowMinutes(), 60));
+        policy.setMaxResultLookupFailures(positiveOrDefault(policy.getMaxResultLookupFailures(), 5));
+        policy.setResultLookupRetentionDays(nonNegativeOrDefault(policy.getResultLookupRetentionDays(), 365));
+        policy.setAllowedEmailDomains(emptyToNull(policy.getAllowedEmailDomains()));
+        policy.setBlockedEmailDomains(emptyToNull(policy.getBlockedEmailDomains()));
+        policy.setCaptchaProviderCode(emptyToNull(policy.getCaptchaProviderCode()));
+        loginRiskPolicyMapper.updateSecurityAppealPolicy(policy);
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
+                "SECURITY_APPEAL_POLICY_UPDATE",
+                null,
+                "SECURITY_APPEAL_POLICY",
+                current.getPolicyCode(),
+                "SECURITY_APPEAL_POLICY",
+                current.getPolicyIdx(),
+                "SECURITY.APPEAL_POLICY.UPDATE",
+                jsonArg("policyIdx", current.getPolicyIdx(), "active", policy.isActive()),
+                msg("ko", "security.appeal.policy.audit.updated")
+        );
     }
 
     public List<LoginRiskReviewVO> getReviewQueue(String status, String severity, String reviewType, String keyword) {
@@ -564,16 +606,19 @@ public class LoginRiskPolicyService {
         if (!isValidEmail(submitterEmail)) {
             throw new IllegalArgumentException(msg(lang, "security.appeal.error.emailInvalid"));
         }
+        AppealRateLimitConfig ratePolicy = getAppealRateLimitConfig();
+        if (!isEmailDomainAllowed(submitterEmail, ratePolicy.allowedEmailDomains(), ratePolicy.blockedEmailDomains())) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.emailDomainNotAllowed"));
+        }
 
         SecurityAppealFormVO context = getPublicAppealForm(null, requestId, lang);
         if (!context.isValid()) {
             throw new IllegalArgumentException(context.getErrorMessage());
         }
 
-        AppealRateLimitConfig ratePolicy = getAppealRateLimitConfig();
         ensureAppealChannelOpen(context, firstNonBlank(context.getRequestId(), requestId), lang, ratePolicy);
 
-        LocalDateTime verificationWindowStart = LocalDateTime.now().minusMinutes(ratePolicy.rateLimitWindowMinutes());
+        LocalDateTime verificationWindowStart = LocalDateTime.now().minusMinutes(ratePolicy.verificationWindowMinutes());
         Integer verificationCount = loginRiskPolicyMapper.countVerificationTokensAfter(
                 firstNonBlank(context.getRequestId(), requestId),
                 submitterEmail.trim(),
@@ -776,31 +821,64 @@ public class LoginRiskPolicyService {
         return maskedName + "@" + parts[1];
     }
 
-    private AppealPolicyConfig getAppealPolicyConfig() {
-        LoginRiskPolicyVO policy = loginRiskPolicyMapper.findPolicyByCode("SECURITY_APPEAL_COOLDOWN");
-        if (policy == null) {
-            return new AppealPolicyConfig(true, 10080, 2, 3);
+
+    private boolean isEmailDomainAllowed(String email, String allowedDomains, String blockedDomains) {
+        if (email == null || !email.contains("@")) {
+            return false;
         }
+        String domain = email.substring(email.lastIndexOf('@') + 1).trim().toLowerCase(Locale.ROOT);
+        if (matchesDomainList(domain, blockedDomains)) {
+            return false;
+        }
+        return allowedDomains == null || allowedDomains.isBlank() || matchesDomainList(domain, allowedDomains);
+    }
+
+    private boolean matchesDomainList(String domain, String csvDomains) {
+        if (domain == null || csvDomains == null || csvDomains.isBlank()) {
+            return false;
+        }
+        for (String item : csvDomains.split(",")) {
+            String rule = item == null ? "" : item.trim().toLowerCase(Locale.ROOT);
+            if (rule.isBlank()) {
+                continue;
+            }
+            if (rule.startsWith("*.")) {
+                String suffix = rule.substring(1);
+                if (domain.endsWith(suffix)) {
+                    return true;
+                }
+            } else if (domain.equals(rule)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private AppealPolicyConfig getAppealPolicyConfig() {
+        SecurityAppealPolicyVO policy = getSecurityAppealPolicy();
         return new AppealPolicyConfig(
                 policy.isActive(),
-                positiveOrDefault(policy.getObservationMinutes(), 10080),
-                positiveOrDefault(policy.getThresholdCount(), 2),
-                positiveOrDefault(policy.getDistinctAccountThreshold(), 3)
+                nonNegativeOrDefault(policy.getRejectedCooldownMinutes(), 10080),
+                positiveOrDefault(policy.getMaxRejectedCount(), 2),
+                positiveOrDefault(policy.getIpDailyAppealLimit(), 3)
         );
     }
 
     private AppealRateLimitConfig getAppealRateLimitConfig() {
-        LoginRiskPolicyVO policy = loginRiskPolicyMapper.findPolicyByCode("SECURITY_APPEAL_RATE_LIMIT");
-        if (policy == null) {
-            return new AppealRateLimitConfig(true, 60, 3, 5, 30, 3);
-        }
+        SecurityAppealPolicyVO policy = getSecurityAppealPolicy();
         return new AppealRateLimitConfig(
                 policy.isActive(),
-                positiveOrDefault(policy.getObservationMinutes(), 60),
-                positiveOrDefault(policy.getThresholdCount(), 3),
-                positiveOrDefault(policy.getDistinctAccountThreshold(), 5),
-                positiveOrDefault(policy.getLockDurationMinutes(), 30),
-                positiveOrDefault(policy.getWarningBeforeCount(), 3)
+                positiveOrDefault(policy.getVerificationWindowMinutes(), 60),
+                positiveOrDefault(policy.getMaxVerificationEmails(), 3),
+                positiveOrDefault(policy.getResultLookupWindowMinutes(), 60),
+                positiveOrDefault(policy.getMaxResultLookupFailures(), 5),
+                positiveOrDefault(policy.getVerificationTokenTtlMinutes(), 30),
+                policy.isAllowMultipleOpenAppeals(),
+                positiveOrDefault(policy.getMaxOpenAppealsPerCase(), 3),
+                policy.isClosedBlocksNewAppeals(),
+                nonNegativeOrDefault(policy.getResultLookupRetentionDays(), 365),
+                policy.getAllowedEmailDomains(),
+                policy.getBlockedEmailDomains()
         );
     }
 
@@ -811,13 +889,15 @@ public class LoginRiskPolicyService {
         if (context == null || !policy.enabled()) {
             return;
         }
-        Integer closedCount = loginRiskPolicyMapper.countClosedAppealsForCase(
-                context.getTargetType(),
-                context.getTargetKey(),
-                requestId
-        );
-        if (closedCount != null && closedCount > 0) {
-            throw new IllegalArgumentException(msg(lang, "security.appeal.error.channelClosed"));
+        if (policy.closedBlocksNewAppeals()) {
+            Integer closedCount = loginRiskPolicyMapper.countClosedAppealsForCase(
+                    context.getTargetType(),
+                    context.getTargetKey(),
+                    requestId
+            );
+            if (closedCount != null && closedCount > 0) {
+                throw new IllegalArgumentException(msg(lang, "security.appeal.error.channelClosed"));
+            }
         }
 
         Integer openCount = loginRiskPolicyMapper.countOpenAppealsForCase(
@@ -825,13 +905,39 @@ public class LoginRiskPolicyService {
                 context.getTargetKey(),
                 requestId
         );
-        if (openCount != null && openCount >= policy.maxOpenAppealsPerCase()) {
+        int openLimit = policy.allowMultipleOpenAppeals() ? policy.maxOpenAppealsPerCase() : 1;
+        if (openCount != null && openCount >= openLimit) {
             throw new IllegalArgumentException(msg(lang, "security.appeal.error.maxOpenAppeals"));
         }
     }
 
     private int positiveOrDefault(Integer value, int fallback) {
         return value != null && value > 0 ? value : fallback;
+    }
+
+    private int nonNegativeOrDefault(Integer value, int fallback) {
+        return value != null && value >= 0 ? value : fallback;
+    }
+
+    private SecurityAppealPolicyVO defaultSecurityAppealPolicy() {
+        SecurityAppealPolicyVO policy = new SecurityAppealPolicyVO();
+        policy.setPolicyCode("DEFAULT");
+        policy.setActive(true);
+        policy.setAllowMultipleOpenAppeals(true);
+        policy.setMaxOpenAppealsPerCase(3);
+        policy.setClosedBlocksNewAppeals(true);
+        policy.setRejectedCooldownMinutes(10080);
+        policy.setMaxRejectedCount(2);
+        policy.setIpDailyAppealLimit(3);
+        policy.setVerificationWindowMinutes(60);
+        policy.setMaxVerificationEmails(3);
+        policy.setVerificationTokenTtlMinutes(30);
+        policy.setResultLookupWindowMinutes(60);
+        policy.setMaxResultLookupFailures(5);
+        policy.setResultLookupRetentionDays(365);
+        policy.setCaptchaEnabled(false);
+        policy.setCaptchaProviderCode("MOCK_TURNSTILE");
+        return policy;
     }
 
     private boolean shouldWriteAppealSiteNotification(SecurityAppealVO appeal, String status) {
@@ -852,11 +958,17 @@ public class LoginRiskPolicyService {
     }
 
     private record AppealRateLimitConfig(boolean enabled,
-                                         int rateLimitWindowMinutes,
+                                         int verificationWindowMinutes,
                                          int maxVerificationEmails,
+                                         int resultLookupWindowMinutes,
                                          int maxResultLookupFailures,
                                          int verificationTokenTtlMinutes,
-                                         int maxOpenAppealsPerCase) {
+                                         boolean allowMultipleOpenAppeals,
+                                         int maxOpenAppealsPerCase,
+                                         boolean closedBlocksNewAppeals,
+                                         int resultLookupRetentionDays,
+                                         String allowedEmailDomains,
+                                         String blockedEmailDomains) {
     }
 
     private String createAppealToken(Long userIdx,
@@ -909,7 +1021,7 @@ public class LoginRiskPolicyService {
                 "SECURITY_APPEAL_RESULT_LOOKUP_FAILED",
                 "SECURITY_APPEAL_RESULT",
                 resultTargetKey,
-                LocalDateTime.now().minusMinutes(ratePolicy.rateLimitWindowMinutes())
+                LocalDateTime.now().minusMinutes(ratePolicy.resultLookupWindowMinutes())
         );
         if (ratePolicy.enabled() && failedLookupCount != null && failedLookupCount >= ratePolicy.maxResultLookupFailures()) {
             throw new IllegalArgumentException(msg(lang, "security.appeal.result.error.rateLimited"));
@@ -918,6 +1030,11 @@ public class LoginRiskPolicyService {
         SecurityAppealVO appeal = loginRiskPolicyMapper.findSecurityAppealByPublicRequestId(publicRequestId);
         String storedEmail = appeal == null ? null : firstNonBlank(appeal.getSubmitterEmail(),
                 appeal.getUserIdx() == null ? null : loginRiskPolicyMapper.findUserEmailByUserIdx(appeal.getUserIdx()));
+        if (appeal != null && ratePolicy.resultLookupRetentionDays() > 0
+                && appeal.getCreatedAt() != null
+                && appeal.getCreatedAt().isBefore(LocalDateTime.now().minusDays(ratePolicy.resultLookupRetentionDays()))) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.result.error.expired"));
+        }
         if (appeal == null || storedEmail == null || !storedEmail.equalsIgnoreCase(submitterEmail.trim())) {
             loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
                     "SECURITY_APPEAL_RESULT_LOOKUP_FAILED",

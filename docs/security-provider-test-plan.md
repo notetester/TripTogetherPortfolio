@@ -192,3 +192,18 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | same case has CLOSED appeal | 인증 링크 요청/이의제기 접수 차단 |
 | result lookup wrong email repeatedly | SECURITY_APPEAL_RESULT_LOOKUP_FAILED 감사 로그 누적 |
 | result lookup failed over distinct_account_threshold | 결과 조회 rate-limit 메시지 |
+
+
+## 19. Dedicated SECURITY_APPEAL_POLICY UI 테스트
+
+| Case | Expected |
+|---|---|
+| `/admin/login-risk/appeal-policy` open | DEFAULT 정책 row가 화면에 표시된다 |
+| max_open_appeals_per_case 변경 | 동일 차단 건 PENDING/HOLD 허용 수가 즉시 변경된다 |
+| allow_multiple_open_appeals off | 동일 차단 건은 1건만 PENDING/HOLD 허용 |
+| closed_blocks_new_appeals off | CLOSED가 있어도 추가 인증/접수 허용 |
+| verification_token_ttl_minutes 변경 | 새 인증 링크 만료 시간이 변경된다 |
+| allowed_email_domains 설정 | 지정 도메인 외 이메일 인증 요청 차단 |
+| blocked_email_domains 설정 | 지정 도메인 이메일 인증 요청 차단 |
+| result_lookup_retention_days = 0 | 결과 조회 기간 제한 없음 |
+| captcha_enabled toggle | 실제 외부 호출 없이 정책값만 저장 |

@@ -10,6 +10,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.triptogether.auth.service.LoginRiskPolicyService;
 import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
+import org.triptogether.auth.vo.SecurityAppealPolicyVO;
 import org.triptogether.auth.vo.UsersVO;
 
 import java.util.Collections;
@@ -51,6 +52,32 @@ public class AdminLoginRiskPolicyController {
         loginRiskPolicyService.updatePolicy(policy);
         redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.policySaved"));
         return "redirect:/admin/login-risk/policies";
+    }
+
+
+    @GetMapping("/appeal-policy")
+    public String appealPolicy(Model model) {
+        model.addAttribute("policy", loginRiskPolicyService.getSecurityAppealPolicy());
+        model.addAttribute("activeMenu", "securityAppealPolicy");
+        model.addAttribute("pageTitleCode", "security.admin.appealPolicy.title");
+        return "admin/login-risk/appeal-policy";
+    }
+
+    @PostMapping("/appeal-policy")
+    public String updateAppealPolicy(SecurityAppealPolicyVO policy,
+                                     @RequestParam(value = "active", required = false) String active,
+                                     @RequestParam(value = "allowMultipleOpenAppeals", required = false) String allowMultipleOpenAppeals,
+                                     @RequestParam(value = "closedBlocksNewAppeals", required = false) String closedBlocksNewAppeals,
+                                     @RequestParam(value = "captchaEnabled", required = false) String captchaEnabled,
+                                     RedirectAttributes redirectAttributes,
+                                     Locale locale) {
+        policy.setActive(active != null);
+        policy.setAllowMultipleOpenAppeals(allowMultipleOpenAppeals != null);
+        policy.setClosedBlocksNewAppeals(closedBlocksNewAppeals != null);
+        policy.setCaptchaEnabled(captchaEnabled != null);
+        loginRiskPolicyService.updateSecurityAppealPolicy(policy);
+        redirectAttributes.addFlashAttribute("message", msg(locale, "security.admin.flash.appealPolicySaved"));
+        return "redirect:/admin/login-risk/appeal-policy";
     }
 
     @GetMapping("/reviews")

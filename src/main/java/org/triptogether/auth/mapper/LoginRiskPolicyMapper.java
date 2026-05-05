@@ -13,6 +13,7 @@ import org.triptogether.auth.vo.SecurityWafSyncQueueVO;
 import org.triptogether.auth.vo.SecurityAppealVO;
 import org.triptogether.auth.vo.SecurityAppealTokenVO;
 import org.triptogether.auth.vo.SecurityAppealFormVO;
+import org.triptogether.auth.vo.SecurityAppealPolicyVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +24,9 @@ public interface LoginRiskPolicyMapper {
     LoginRiskPolicyVO findActivePolicyByCode(@Param("policyCode") String policyCode);
     LoginRiskPolicyVO findPolicyByCode(@Param("policyCode") String policyCode);
     void updatePolicy(LoginRiskPolicyVO policy);
+
+    SecurityAppealPolicyVO findSecurityAppealPolicy();
+    void updateSecurityAppealPolicy(SecurityAppealPolicyVO policy);
 
     Integer countRecentWrongPasswordByUser(@Param("userIdx") Long userIdx,
                                            @Param("since") LocalDateTime since);

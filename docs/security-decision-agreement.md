@@ -64,3 +64,11 @@
 - 공용 IP 차단을 고려해 동일 건 다중 접수 허용 수는 정책값으로 둔다.
 - 결과 조회 실패와 인증 링크 발송도 정책값으로 rate-limit한다.
 - CAPTCHA/Turnstile 연동은 이번 범위에서 제외하고, 운영 전 별도 Provider로 붙인다.
+
+
+## 이의제기 정책 전용 테이블 추가 결정
+
+- 기존 `LOGIN_RISK_POLICY`의 범용 숫자 필드에 이의제기 채널 정책을 계속 얹지 않는다.
+- `SECURITY_APPEAL_POLICY`를 전용 정책 테이블로 두고, 관리자 UI에서 명시적 필드명으로 수정한다.
+- 기존 `SECURITY_APPEAL_COOLDOWN` / `SECURITY_APPEAL_RATE_LIMIT` row는 초기 seed 승계용/레거시 호환용으로만 유지한다.
+- 실제 Cloudflare/Turnstile API 연동은 제외하되, 시연용 정책 토글과 Provider 코드는 보관한다.

@@ -229,6 +229,64 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
+
+    <resultMap id="SecurityAppealPolicyMap" type="org.triptogether.auth.vo.SecurityAppealPolicyVO">
+        <id property="policyIdx" column="policy_idx"/>
+        <result property="policyCode" column="policy_code"/>
+        <result property="active" column="is_active"/>
+        <result property="allowMultipleOpenAppeals" column="allow_multiple_open_appeals"/>
+        <result property="maxOpenAppealsPerCase" column="max_open_appeals_per_case"/>
+        <result property="closedBlocksNewAppeals" column="closed_blocks_new_appeals"/>
+        <result property="rejectedCooldownMinutes" column="rejected_cooldown_minutes"/>
+        <result property="maxRejectedCount" column="max_rejected_count"/>
+        <result property="ipDailyAppealLimit" column="ip_daily_appeal_limit"/>
+        <result property="verificationWindowMinutes" column="verification_window_minutes"/>
+        <result property="maxVerificationEmails" column="max_verification_emails"/>
+        <result property="verificationTokenTtlMinutes" column="verification_token_ttl_minutes"/>
+        <result property="resultLookupWindowMinutes" column="result_lookup_window_minutes"/>
+        <result property="maxResultLookupFailures" column="max_result_lookup_failures"/>
+        <result property="resultLookupRetentionDays" column="result_lookup_retention_days"/>
+        <result property="allowedEmailDomains" column="allowed_email_domains"/>
+        <result property="blockedEmailDomains" column="blocked_email_domains"/>
+        <result property="captchaEnabled" column="captcha_enabled"/>
+        <result property="captchaProviderCode" column="captcha_provider_code"/>
+        <result property="description" column="description"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+    <select id="findSecurityAppealPolicy" resultMap="SecurityAppealPolicyMap">
+        SELECT *
+        FROM SECURITY_APPEAL_POLICY
+        WHERE policy_code = 'DEFAULT'
+        LIMIT 1
+    </select>
+
+    <update id="updateSecurityAppealPolicy">
+        UPDATE SECURITY_APPEAL_POLICY
+        SET is_active = #{active},
+            allow_multiple_open_appeals = #{allowMultipleOpenAppeals},
+            max_open_appeals_per_case = #{maxOpenAppealsPerCase},
+            closed_blocks_new_appeals = #{closedBlocksNewAppeals},
+            rejected_cooldown_minutes = #{rejectedCooldownMinutes},
+            max_rejected_count = #{maxRejectedCount},
+            ip_daily_appeal_limit = #{ipDailyAppealLimit},
+            verification_window_minutes = #{verificationWindowMinutes},
+            max_verification_emails = #{maxVerificationEmails},
+            verification_token_ttl_minutes = #{verificationTokenTtlMinutes},
+            result_lookup_window_minutes = #{resultLookupWindowMinutes},
+            max_result_lookup_failures = #{maxResultLookupFailures},
+            result_lookup_retention_days = #{resultLookupRetentionDays},
+            allowed_email_domains = #{allowedEmailDomains},
+            blocked_email_domains = #{blockedEmailDomains},
+            captcha_enabled = #{captchaEnabled},
+            captcha_provider_code = #{captchaProviderCode},
+            description = #{description},
+            updated_at = NOW()
+        WHERE policy_idx = #{policyIdx}
+    </update>
+
     <select id="findPolicies" resultMap="LoginRiskPolicyMap">
         SELECT
             policy_idx, policy_code, policy_name, policy_type, is_active,

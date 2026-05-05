@@ -19,6 +19,7 @@
             <p class="adm-page-desc"><spring:message code="security.admin.appeals.desc"/></p>
         </div>
         <div class="adm-actions">
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/appeal-policy"><spring:message code="security.admin.nav.appealPolicy"/></a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments"><spring:message code="security.admin.nav.securityAssessments"/></a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews"><spring:message code="security.admin.nav.securityReviews"/></a>
         </div>

@@ -13,6 +13,7 @@
             <p class="adm-page-desc"><spring:message code="security.admin.policies.desc"/></p>
         </div>
         <div class="adm-actions">
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/appeal-policy"><spring:message code="security.admin.nav.appealPolicy"/></a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/reviews"><spring:message code="security.admin.nav.reviews"/></a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/assessments"><spring:message code="security.admin.nav.externalAssessments"/></a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/notification-preferences"><spring:message code="security.admin.nav.notifications"/></a>

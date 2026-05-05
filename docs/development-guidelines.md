@@ -108,3 +108,11 @@
 - 동일 차단 건에 `CLOSED` 이의제기가 있으면 추가 인증/접수를 막는다.
 - 공용 IP 차단처럼 여러 사용자가 걸릴 수 있는 경우를 고려해 `warning_before_count`로 동시 접수 허용 수를 조절한다.
 - rate-limit 기록은 새 테이블보다 기존 `SECURITY_ACTION_AUDIT`와 토큰 테이블을 우선 재사용한다.
+
+
+## SECURITY_APPEAL_POLICY 전용 정책 원칙
+
+- 이의제기 채널 정책의 기준 테이블은 `SECURITY_APPEAL_POLICY`다.
+- `LOGIN_RISK_POLICY`의 `SECURITY_APPEAL_COOLDOWN` / `SECURITY_APPEAL_RATE_LIMIT`는 레거시/초기 seed 승계용으로만 본다.
+- 인증 메일 발송 제한, 결과 조회 실패 제한, 동일 건 동시 접수 허용 수, CLOSED 후 추가 접수 차단, 이메일 도메인 제한은 모두 `/admin/login-risk/appeal-policy`에서 수정 가능해야 한다.
+- 실제 CAPTCHA/Turnstile API 연동 전까지는 `captcha_enabled`, `captcha_provider_code`를 시연용 설정값으로만 사용한다.

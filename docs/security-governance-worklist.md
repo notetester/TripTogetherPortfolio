@@ -74,6 +74,10 @@
 - 동일 차단 건 동시 PENDING/HOLD 접수 허용 수 정책화
 - 관리자 수동 이의제기 종결 CLOSED 상태
 - SECURITY_APPEAL_RATE_LIMIT 정책 row 기반 인증 링크/결과 조회 rate-limit
+- CAPTCHA/Turnstile 시연용 정책 토글 및 Provider 코드 보관
+- SECURITY_APPEAL_POLICY 기반 Service 정책 판정 전환
+- 이의제기 정책값 명시 필드화: 인증 메일/결과 조회/동일 건 접수/CLOSED/도메인 제한
+- SECURITY_APPEAL_POLICY 전용 테이블 및 관리자 UI
 
 ## 남은 작업
 
