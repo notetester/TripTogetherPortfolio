@@ -237,6 +237,7 @@ public interface LoginRiskPolicyMapper {
                                    @Param("sourceAssessmentIdx") Long sourceAssessmentIdx,
                                    @Param("blockRequestId") String blockRequestId,
                                    @Param("blockAccessRequestId") String blockAccessRequestId,
+                                   @Param("submitterEmail") String submitterEmail,
                                    @Param("expiresAt") java.time.LocalDateTime expiresAt);
 
     SecurityAppealTokenVO findAppealToken(@Param("token") String token,
@@ -267,6 +268,7 @@ public interface LoginRiskPolicyMapper {
                                            @Param("title") String title);
 
     SecurityAppealVO findSecurityAppealByIdx(@Param("appealIdx") Long appealIdx);
+    SecurityAppealVO findSecurityAppealByPublicRequestId(@Param("publicRequestId") String publicRequestId);
 
     void releaseUserBlockByTargetKey(@Param("targetKey") String targetKey,
                                      @Param("actorUserIdx") Long actorUserIdx,

@@ -163,3 +163,19 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | REJECTED + ACTIVE user | MYPAGE_FEED_NOTIFICATION 생성 |
 | REJECTED + blocked/non-active user | 사이트 내 알림 생략, 이메일 중심 |
 | HOLD + blocked/non-active user | 사이트 내 알림 생략, 이메일 중심 |
+
+
+
+## 17. Email Verified Appeal 테스트
+
+| Case | Expected |
+|---|---|
+| requestId valid + email valid | 인증 링크 메일 발송 |
+| requestId invalid | 인증 요청 차단 |
+| email invalid | 인증 요청 차단 |
+| token link valid | 이의제기 본문 작성 화면 표시 |
+| direct submit without token | emailVerificationRequired 오류 |
+| token submit | SECURITY_ACTION_APPEAL 정식 접수 |
+| used token resubmit | tokenInvalid 오류 |
+| result lookup publicRequestId + verified email | 처리 상태 표시 |
+| result lookup wrong email | notFound 오류 |

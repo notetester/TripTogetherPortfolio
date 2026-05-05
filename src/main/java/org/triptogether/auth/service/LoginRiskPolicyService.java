@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -47,6 +48,7 @@ public class LoginRiskPolicyService {
     private static final String ACCOUNT_REPEAT_POLICY = "ACCOUNT_REPEATED_LOCK_PROTECTION";
     private static final String IP_POLICY = "IP_FAILED_LOGIN_LOCK";
     private static final String IP_REVIEW_POLICY = "IP_SUSPICIOUS_LOGIN_REVIEW";
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
     private final LoginRiskPolicyMapper loginRiskPolicyMapper;
     private final AdminMapper adminMapper;
@@ -521,6 +523,8 @@ public class LoginRiskPolicyService {
                     .userIdx(tokenVO.getUserIdx())
                     .sourceAssessmentIdx(tokenVO.getSourceAssessmentIdx())
                     .requestId(tokenVO.getBlockAccessRequestId())
+                    .submitterEmail(tokenVO.getSubmitterEmail())
+                    .emailVerified(tokenVO.getSubmitterEmail() != null && !tokenVO.getSubmitterEmail().isBlank())
                     .pageLang(normalizeLang(lang))
                     .build();
         }
@@ -547,6 +551,71 @@ public class LoginRiskPolicyService {
                 .build();
     }
 
+
+    @Transactional
+    public void requestPublicAppealEmailVerification(String requestId,
+                                                     String submitterEmail,
+                                                     String pageLang) {
+        String lang = normalizeLang(pageLang);
+        if (requestId == null || requestId.isBlank()) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.targetMissing"));
+        }
+        if (!isValidEmail(submitterEmail)) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.emailInvalid"));
+        }
+
+        SecurityAppealFormVO context = getPublicAppealForm(null, requestId, lang);
+        if (!context.isValid()) {
+            throw new IllegalArgumentException(context.getErrorMessage());
+        }
+
+        String token = createAppealToken(
+                context.getUserIdx(),
+                context.getTargetType(),
+                context.getTargetKey(),
+                context.getSourceAssessmentIdx(),
+                null,
+                firstNonBlank(context.getRequestId(), requestId),
+                submitterEmail,
+                LocalDateTime.now().plusMinutes(30)
+        );
+        String appealUrl = publicBaseUrl + "/security/appeal?token=" + token + "&lang=" + lang;
+        String subject = msg(lang, "security.appeal.verify.mail.subject");
+        String body = """
+                <div style="font-family:Arial,'Noto Sans KR',sans-serif;line-height:1.7;color:#111827">
+                  <h2>%s</h2>
+                  <p>%s</p>
+                  <div style="padding:14px;border-radius:12px;background:#f1f5f9">
+                    <strong>%s</strong>: %s
+                  </div>
+                  <p><a href="%s" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700">%s</a></p>
+                  <p style="font-size:12px;color:#64748b">%s</p>
+                </div>
+                """.formatted(
+                msg(lang, "security.appeal.verify.mail.title"),
+                msg(lang, "security.appeal.verify.mail.body"),
+                msg(lang, "security.appeal.form.requestId"), requestId,
+                appealUrl,
+                msg(lang, "security.appeal.verify.mail.cta"),
+                msg(lang, "security.appeal.verify.mail.notice")
+        );
+        boolean sent = sendMail(submitterEmail, subject, body);
+        loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
+                sent ? "SECURITY_APPEAL_VERIFICATION_SENT" : "SECURITY_APPEAL_VERIFICATION_FAILED",
+                context.getUserIdx(),
+                context.getTargetType(),
+                context.getTargetKey(),
+                "SECURITY_ACTION_APPEAL_TOKEN",
+                null,
+                sent ? "SECURITY.APPEAL.VERIFICATION_SENT" : "SECURITY.APPEAL.VERIFICATION_FAILED",
+                jsonArg("requestId", requestId, "email", maskEmail(submitterEmail)),
+                sent ? msg(lang, "security.appeal.verify.audit.sent") : msg(lang, "security.appeal.verify.audit.failed")
+        );
+        if (!sent) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.mailSendFailed"));
+        }
+    }
+
     @Transactional
     public String submitPublicSecurityAppeal(String token,
                                              String requestId,
@@ -554,17 +623,23 @@ public class LoginRiskPolicyService {
                                              String appealContent,
                                              String submitterEmail,
                                              String pageLang) {
-        SecurityAppealFormVO context = getPublicAppealForm(token, requestId, pageLang);
+        String lang = normalizeLang(pageLang);
+        if (token == null || token.isBlank()) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.emailVerificationRequired"));
+        }
+
+        SecurityAppealFormVO context = getPublicAppealForm(token, requestId, lang);
         if (!context.isValid()) {
             throw new IllegalArgumentException(context.getErrorMessage());
         }
 
-        SecurityAppealTokenVO tokenVO = null;
-        if (token != null && !token.isBlank()) {
-            tokenVO = loginRiskPolicyMapper.findAppealToken(token, LocalDateTime.now());
-            if (tokenVO == null) {
-                throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.tokenInvalid"));
-            }
+        SecurityAppealTokenVO tokenVO = loginRiskPolicyMapper.findAppealToken(token, LocalDateTime.now());
+        if (tokenVO == null) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.tokenInvalid"));
+        }
+        submitterEmail = firstNonBlank(tokenVO.getSubmitterEmail(), submitterEmail);
+        if (!isValidEmail(submitterEmail)) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.emailVerificationRequired"));
         }
 
         Integer duplicateCount = loginRiskPolicyMapper.countDuplicatePendingAppeal(
@@ -573,7 +648,7 @@ public class LoginRiskPolicyService {
                 firstNonBlank(context.getRequestId(), requestId)
         );
         if (duplicateCount != null && duplicateCount > 0) {
-            throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.duplicatePending"));
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.duplicatePending"));
         }
 
         AppealPolicyConfig appealPolicy = getAppealPolicyConfig();
@@ -585,7 +660,7 @@ public class LoginRiskPolicyService {
                     LocalDateTime.now().minusMinutes(appealPolicy.rejectedCooldownMinutes())
             );
             if (recentRejectedCount != null && recentRejectedCount > 0) {
-                throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.rejectedCooldown"));
+                throw new IllegalArgumentException(msg(lang, "security.appeal.error.rejectedCooldown"));
             }
 
             Integer totalRejectedCount = loginRiskPolicyMapper.countRejectedAppeals(
@@ -594,7 +669,7 @@ public class LoginRiskPolicyService {
                     firstNonBlank(context.getRequestId(), requestId)
             );
             if (totalRejectedCount != null && totalRejectedCount >= appealPolicy.maxRejectedCount()) {
-                throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.permanentlyClosed"));
+                throw new IllegalArgumentException(msg(lang, "security.appeal.error.permanentlyClosed"));
             }
 
             if (context.getTargetKey() != null && context.getTargetKey().startsWith("IP:")) {
@@ -603,14 +678,14 @@ public class LoginRiskPolicyService {
                         LocalDateTime.now().toLocalDate().atStartOfDay()
                 );
                 if (todayIpAppealCount != null && todayIpAppealCount >= appealPolicy.ipDailyLimit()) {
-                    throw new IllegalArgumentException(msg(pageLang, "security.appeal.error.ipDailyLimit"));
+                    throw new IllegalArgumentException(msg(lang, "security.appeal.error.ipDailyLimit"));
                 }
             }
         }
 
         String publicRequestId = "SAP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
         Long inquiryId = null;
-        String title = firstNonBlank(appealTitle, msg(pageLang, "security.appeal.form.defaultTitle"));
+        String title = firstNonBlank(appealTitle, msg(lang, "security.appeal.form.defaultTitle"));
         String content = firstNonBlank(appealContent, "");
         String enrichedContent = """
                 %s
@@ -623,19 +698,19 @@ public class LoginRiskPolicyService {
 
                 %s
                 """.formatted(
-                msg(pageLang, "security.appeal.inquiry.header"),
-                msg(pageLang, "security.appeal.inquiry.publicRequestId"), publicRequestId,
-                msg(pageLang, "security.appeal.inquiry.targetType"), context.getTargetType(),
-                msg(pageLang, "security.appeal.inquiry.targetKey"), context.getTargetKey(),
-                msg(pageLang, "security.appeal.inquiry.blockRequestId"), tokenVO == null ? null : tokenVO.getBlockRequestId(),
-                msg(pageLang, "security.appeal.inquiry.blockAccessRequestId"), firstNonBlank(context.getRequestId(), requestId),
-                msg(pageLang, "security.appeal.inquiry.contactEmail"), firstNonBlank(submitterEmail, "-"),
+                msg(lang, "security.appeal.inquiry.header"),
+                msg(lang, "security.appeal.inquiry.publicRequestId"), publicRequestId,
+                msg(lang, "security.appeal.inquiry.targetType"), context.getTargetType(),
+                msg(lang, "security.appeal.inquiry.targetKey"), context.getTargetKey(),
+                msg(lang, "security.appeal.inquiry.blockRequestId"), tokenVO == null ? null : tokenVO.getBlockRequestId(),
+                msg(lang, "security.appeal.inquiry.blockAccessRequestId"), firstNonBlank(context.getRequestId(), requestId),
+                msg(lang, "security.appeal.inquiry.contactEmail"), firstNonBlank(submitterEmail, "-"),
                 content
         );
 
         if (context.getUserIdx() != null) {
-            loginRiskPolicyMapper.insertSecurityAppealInquiry(context.getUserIdx(), msg(pageLang, "security.appeal.inquiry.titlePrefix") + " " + title, enrichedContent);
-            inquiryId = loginRiskPolicyMapper.findLatestInquiryIdByUserAndTitle(context.getUserIdx(), msg(pageLang, "security.appeal.inquiry.titlePrefix") + " " + title);
+            loginRiskPolicyMapper.insertSecurityAppealInquiry(context.getUserIdx(), msg(lang, "security.appeal.inquiry.titlePrefix") + " " + title, enrichedContent);
+            inquiryId = loginRiskPolicyMapper.findLatestInquiryIdByUserAndTitle(context.getUserIdx(), msg(lang, "security.appeal.inquiry.titlePrefix") + " " + title);
         }
 
         loginRiskPolicyMapper.insertSecurityAppealPublic(
@@ -666,18 +741,33 @@ public class LoginRiskPolicyService {
                 null,
                 "SECURITY.APPEAL.SUBMITTED",
                 jsonArg("publicRequestId", publicRequestId, "requestId", firstNonBlank(context.getRequestId(), requestId)),
-                msg(pageLang, "security.appeal.audit.submitted")
+                msg(lang, "security.appeal.audit.submitted")
         );
 
         for (Long adminIdx : loginRiskPolicyMapper.findAdminNotificationTargets("BLOCK_REVIEW")) {
             loginRiskPolicyMapper.insertAdminNotification(adminIdx, "SECURITY_APPEAL", null,
-                    msg(pageLang, "security.appeal.inquiry.titlePrefix") + " " + title,
+                    msg(lang, "security.appeal.inquiry.titlePrefix") + " " + title,
                     "/admin/login-risk/appeals");
         }
 
         return publicRequestId;
     }
 
+
+
+    private boolean isValidEmail(String email) {
+        return email != null && EMAIL_PATTERN.matcher(email.trim()).matches();
+    }
+
+    private String maskEmail(String email) {
+        if (email == null || email.isBlank() || !email.contains("@")) {
+            return "";
+        }
+        String[] parts = email.split("@", 2);
+        String name = parts[0];
+        String maskedName = name.length() <= 2 ? name.charAt(0) + "*" : name.substring(0, 2) + "***";
+        return maskedName + "@" + parts[1];
+    }
 
     private AppealPolicyConfig getAppealPolicyConfig() {
         LoginRiskPolicyVO policy = loginRiskPolicyMapper.findPolicyByCode("SECURITY_APPEAL_COOLDOWN");
@@ -719,6 +809,18 @@ public class LoginRiskPolicyService {
                                      Long sourceAssessmentIdx,
                                      String blockRequestId,
                                      String blockAccessRequestId) {
+        return createAppealToken(userIdx, targetType, targetKey, sourceAssessmentIdx, blockRequestId,
+                blockAccessRequestId, null, LocalDateTime.now().plusDays(7));
+    }
+
+    private String createAppealToken(Long userIdx,
+                                     String targetType,
+                                     String targetKey,
+                                     Long sourceAssessmentIdx,
+                                     String blockRequestId,
+                                     String blockAccessRequestId,
+                                     String submitterEmail,
+                                     LocalDateTime expiresAt) {
         String token = UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", "");
         loginRiskPolicyMapper.insertSecurityAppealToken(
                 token,
@@ -728,9 +830,33 @@ public class LoginRiskPolicyService {
                 sourceAssessmentIdx,
                 blockRequestId,
                 blockAccessRequestId,
-                LocalDateTime.now().plusDays(7)
+                submitterEmail,
+                expiresAt
         );
         return token;
+    }
+
+
+    public SecurityAppealVO findPublicAppealResult(String publicRequestId,
+                                                   String submitterEmail,
+                                                   String pageLang) {
+        String lang = normalizeLang(pageLang);
+        if (publicRequestId == null || publicRequestId.isBlank()) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.result.error.requestRequired"));
+        }
+        if (!isValidEmail(submitterEmail)) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.error.emailInvalid"));
+        }
+        SecurityAppealVO appeal = loginRiskPolicyMapper.findSecurityAppealByPublicRequestId(publicRequestId);
+        if (appeal == null) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.result.error.notFound"));
+        }
+        String storedEmail = firstNonBlank(appeal.getSubmitterEmail(),
+                appeal.getUserIdx() == null ? null : loginRiskPolicyMapper.findUserEmailByUserIdx(appeal.getUserIdx()));
+        if (storedEmail == null || !storedEmail.equalsIgnoreCase(submitterEmail.trim())) {
+            throw new IllegalArgumentException(msg(lang, "security.appeal.result.error.notFound"));
+        }
+        return appeal;
     }
 
     public List<AdminNotificationPreferenceVO> getNotificationPreferences(Long adminUserIdx) {
@@ -1088,7 +1214,8 @@ public class LoginRiskPolicyService {
 
         String lang = normalizeLang(user.getPreferredLang());
         String subject = protectionMailSubject(lang);
-        String token = createAppealToken(user.getUserIdx(), "USER_BLOCK", "USER:" + user.getUserIdx(), null, null, context == null ? null : context.getRequestId());
+        String token = createAppealToken(user.getUserIdx(), "USER_BLOCK", "USER:" + user.getUserIdx(), null, null,
+                context == null ? null : context.getRequestId(), user.getUserEmail(), LocalDateTime.now().plusDays(7));
         String appealUrl = publicBaseUrl + "/security/appeal?token=" + token + "&lang=" + lang;
         String html = protectionMailHtml(lang, user.getNickname(), reason, appealUrl);
         boolean sent = sendMail(user.getUserEmail(), subject, html);

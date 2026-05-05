@@ -14,6 +14,8 @@ public class SecurityAppealFormVO {
     private String errorMessage;
     private String token;
     private String requestId;
+    private String submitterEmail;
+    private boolean emailVerified;
     private String targetType;
     private String targetKey;
     private Long userIdx;

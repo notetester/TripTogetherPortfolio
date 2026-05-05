@@ -177,6 +177,7 @@
         <result property="sourceAssessmentIdx" column="source_assessment_idx"/>
         <result property="blockRequestId" column="block_request_id"/>
         <result property="blockAccessRequestId" column="block_access_request_id"/>
+        <result property="submitterEmail" column="submitter_email"/>
         <result property="status" column="status"/>
         <result property="expiresAt" column="expires_at"/>
         <result property="usedAt" column="used_at"/>
@@ -185,6 +186,7 @@
 
     <resultMap id="SecurityAppealFormMap" type="org.triptogether.auth.vo.SecurityAppealFormVO">
         <result property="requestId" column="request_id"/>
+        <result property="submitterEmail" column="submitter_email"/>
         <result property="targetType" column="target_type"/>
         <result property="targetKey" column="target_key"/>
         <result property="userIdx" column="user_idx"/>
@@ -883,10 +885,10 @@
     <insert id="insertSecurityAppealToken">
         INSERT INTO SECURITY_ACTION_APPEAL_TOKEN
         (token, user_idx, target_type, target_key, source_assessment_idx,
-         block_request_id, block_access_request_id, status, expires_at, created_at)
+         block_request_id, block_access_request_id, submitter_email, status, expires_at, created_at)
         VALUES
         (#{token}, #{userIdx}, #{targetType}, #{targetKey}, #{sourceAssessmentIdx},
-         #{blockRequestId}, #{blockAccessRequestId}, 'ACTIVE', #{expiresAt}, NOW())
+         #{blockRequestId}, #{blockAccessRequestId}, #{submitterEmail}, 'ACTIVE', #{expiresAt}, NOW())
     </insert>
 
     <select id="findAppealToken" resultMap="SecurityAppealTokenMap">
@@ -969,6 +971,20 @@
         LEFT JOIN USERS u ON u.user_idx = a.user_idx
         LEFT JOIN USERS reviewer ON reviewer.user_idx = a.reviewed_by_user_idx
         WHERE a.appeal_idx = #{appealIdx}
+    </select>
+
+
+    <select id="findSecurityAppealByPublicRequestId" resultMap="SecurityAppealMap">
+        SELECT
+            a.*,
+            u.user_id,
+            u.nickname,
+            reviewer.user_id AS reviewed_by_user_id
+        FROM SECURITY_ACTION_APPEAL a
+        LEFT JOIN USERS u ON u.user_idx = a.user_idx
+        LEFT JOIN USERS reviewer ON reviewer.user_idx = a.reviewed_by_user_idx
+        WHERE a.public_request_id = #{publicRequestId}
+        LIMIT 1
     </select>
 
     <update id="releaseUserBlockByTargetKey">

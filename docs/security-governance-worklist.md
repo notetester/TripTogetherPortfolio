@@ -66,6 +66,9 @@
 - 보안 이의제기 결과 사이트 내 알림 조건부 적재 로직
 - SECURITY_APPEAL_COOLDOWN 정책 row 기반 이의제기 제한값 UI 수정 연동
 - 정책 피드 JSON API 수신 계약 및 `/admin/blocks/policy-feed/api` 구현
+- SECURITY_ACTION_APPEAL_TOKEN.submitter_email 기반 인증 이메일 귀속
+- publicRequestId + 인증 이메일 기반 비로그인 이의제기 결과 조회 화면
+- 이메일 인증 기반 비로그인/차단 이의제기 접수 흐름
 
 ## 남은 작업
 
@@ -89,7 +92,7 @@
 
 - 보안 검토 큐 상세 모달 추가 고도화
 - Provider 헬스체크 결과 상세 화면 추가 고도화
-- 차단/이의제기 처리 결과 publicRequestId 기반 비로그인 결과 조회 화면 검토
+- CAPTCHA/Turnstile Provider 연동 검토
 - 이의제기 중복 접수 제한 정책 세부 문구/UX 고도화
 - WAF Provider별 재시도/실패 사유 UI 추가 고도화
 
@@ -123,3 +126,4 @@
 - `docs/security-decision-agreement.md`
 - `docs/security-policy-feed-api-contract.md`
 - `docs/security-notification-behavior.md`
+- `docs/security-appeal-email-verification-flow.md`

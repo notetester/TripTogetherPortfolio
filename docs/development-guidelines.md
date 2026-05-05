@@ -89,3 +89,13 @@
 - 사용자가 차단 상태라 확인할 수 없는 사이트 내 알림은 무조건 쌓지 않는다.
 - 이의제기 ACCEPTED처럼 사용자가 다시 접근 가능해지는 경우에는 사이트 내 알림을 남긴다.
 - REJECTED/HOLD는 사용자 계정 상태가 ACTIVE인 경우에만 사이트 내 알림을 남기고, 차단 계정은 이메일/publicRequestId 중심으로 안내한다.
+
+
+
+## 이메일 인증 기반 이의제기 원칙
+
+- requestId만으로 곧바로 이의제기를 접수하지 않는다.
+- 비로그인/IP 차단/인증 이메일이 없는 사용자 차단은 이메일 소유권 검증 후에만 본문 제출을 허용한다.
+- 인증 이메일은 `SECURITY_ACTION_APPEAL_TOKEN.submitter_email`에 저장하고, 정식 접수 시 `SECURITY_ACTION_APPEAL.submitter_email`로 넘긴다.
+- 결과 조회는 `publicRequestId`와 인증 이메일이 함께 일치할 때만 표시한다.
+- 운영 전에는 CAPTCHA/Turnstile을 `/security/appeal/verify` 앞단에 붙인다.

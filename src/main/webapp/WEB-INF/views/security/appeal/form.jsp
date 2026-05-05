@@ -51,8 +51,9 @@
             <input type="hidden" name="lang" value="${fn:escapeXml(pageLang)}">
 
             <label><spring:message code="security.appeal.form.email"/>
-                <input type="email" name="submitterEmail" placeholder="${emailPlaceholder}">
+                <input type="email" name="submitterEmail" value="${fn:escapeXml(form.submitterEmail)}" readonly>
             </label>
+            <p class="note"><spring:message code="security.appeal.form.emailVerifiedNotice"/></p>
 
             <label><spring:message code="security.appeal.form.subject"/>
                 <input type="text" name="appealTitle" required maxlength="200" value="${defaultTitle}">

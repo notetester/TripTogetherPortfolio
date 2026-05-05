@@ -14,6 +14,7 @@ public class SecurityAppealTokenVO {
     private Long sourceAssessmentIdx;
     private String blockRequestId;
     private String blockAccessRequestId;
+    private String submitterEmail;
     private String status;
     private LocalDateTime expiresAt;
     private LocalDateTime usedAt;

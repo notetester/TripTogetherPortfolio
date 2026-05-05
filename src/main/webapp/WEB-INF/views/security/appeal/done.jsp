@@ -21,6 +21,7 @@
     <p><spring:message code="security.appeal.done.lead"/></p>
     <div class="code"><c:out value="${publicRequestId}"/></div>
     <p><spring:message code="security.appeal.done.notice"/></p>
+    <a href="${pageContext.request.contextPath}/security/appeal/result?lang=${pageLang}"><spring:message code="security.appeal.result.lookupLink"/></a>
     <a href="${pageContext.request.contextPath}/"><spring:message code="security.appeal.done.home"/></a>
 </main>
 </body>
