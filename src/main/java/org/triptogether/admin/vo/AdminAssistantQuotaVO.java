@@ -23,4 +23,8 @@ public class AdminAssistantQuotaVO {
 
     /** JOIN으로 채움 (DB 컬럼 아님) - 마지막 수정자 표시용 */
     private String updaterNickname;
+    public Date getUpdatedAtDate() {
+        return updatedAt;
+    }
+
 }

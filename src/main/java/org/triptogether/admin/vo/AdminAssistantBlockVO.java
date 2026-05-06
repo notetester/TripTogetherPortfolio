@@ -24,4 +24,12 @@ public class AdminAssistantBlockVO {
     private String blockedByNickname;
     /** JOIN으로 채움 (DB 컬럼 아님) - USER 차단일 때 대상 유저 닉네임 */
     private String targetNickname;
+    public Date getBlockedAtDate() {
+        return blockedAt;
+    }
+
+    public Date getExpiresAtDate() {
+        return expiresAt;
+    }
+
 }

@@ -45,4 +45,28 @@ public class MyPageFlightBookingDto {
     private String status;
     private String cancelReason;
     private Date createdAt;
+    public Date getArrivalTimeDate() {
+        return arrivalTime;
+    }
+
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
+    public Date getDepartureTimeDate() {
+        return departureTime;
+    }
+
+    public Date getPaidAtDate() {
+        return paidAt;
+    }
+
+    public Date getReturnArrivalTimeDate() {
+        return returnArrivalTime;
+    }
+
+    public Date getReturnDepartureTimeDate() {
+        return returnDepartureTime;
+    }
+
 }

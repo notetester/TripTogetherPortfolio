@@ -26,4 +26,8 @@ public class AdminAssistantSessionVO {
 
     private Integer messageCount;
     private Date lastMessageAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

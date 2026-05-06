@@ -11,4 +11,8 @@ public class MyPageReviewDto {
     private int    rating;
     private String content;
     private Date   createdAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

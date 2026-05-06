@@ -14,4 +14,8 @@ public class MyPageCommunityDto {
     private int    viewCount;
     private String postStatus;
     private Date   createdAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

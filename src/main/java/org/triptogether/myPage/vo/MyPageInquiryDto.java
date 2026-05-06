@@ -12,4 +12,8 @@ public class MyPageInquiryDto {
     private int    isPrivate;
     private int    viewCount;
     private Date   createdAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

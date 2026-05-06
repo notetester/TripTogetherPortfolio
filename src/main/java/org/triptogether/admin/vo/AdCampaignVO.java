@@ -33,4 +33,12 @@ public class AdCampaignVO {
 
     /** JOIN 으로 채움 (DB 컬럼 아님) — 등록자 닉네임 표시용 */
     private String  creatorNickname;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAtDate() {
+        return updatedAt;
+    }
+
 }

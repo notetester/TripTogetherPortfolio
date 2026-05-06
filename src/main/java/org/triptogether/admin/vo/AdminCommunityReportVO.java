@@ -15,4 +15,8 @@ public class AdminCommunityReportVO {
     private Date createdAt;
     private Date resolvedAt;            // 처리 완료 시각
     private String resolveAction;       // 처리 내용 (게시글 삭제 / 작성자 차단 등)
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

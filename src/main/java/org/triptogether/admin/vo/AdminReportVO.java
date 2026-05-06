@@ -47,4 +47,8 @@ public class AdminReportVO {
 
     private Date   createdAt;         // 신고 등록 일시
     private Date   resolvedAt;        // 처리 완료 일시
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

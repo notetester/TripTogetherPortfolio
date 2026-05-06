@@ -21,4 +21,12 @@ public class AdminCourseVO {
     private int spotCount;
     private Date createdAt;
     private Date updatedAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAtDate() {
+        return updatedAt;
+    }
+
 }

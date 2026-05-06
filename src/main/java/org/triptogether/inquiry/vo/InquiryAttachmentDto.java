@@ -10,4 +10,8 @@ public class InquiryAttachmentDto {
     private String fileUrl;
     private String fileName;
     private Date createdAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

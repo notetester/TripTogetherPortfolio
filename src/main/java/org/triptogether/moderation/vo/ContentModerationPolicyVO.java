@@ -40,4 +40,8 @@ public class ContentModerationPolicyVO {
             default:       return 0.8;
         }
     }
+    public Date getUpdatedAtDate() {
+        return updatedAt;
+    }
+
 }

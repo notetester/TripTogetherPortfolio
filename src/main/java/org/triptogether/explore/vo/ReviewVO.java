@@ -31,4 +31,8 @@ public class ReviewVO {
     private String profileBadgeClass;
     private String profileBadgeLabel;
     private String bubbleClass;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

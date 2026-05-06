@@ -29,4 +29,8 @@ public class FeedNotificationDto {
 
     /** 읽음 여부 (false: 안읽음, true: 읽음) */
     private Boolean isRead;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

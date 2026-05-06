@@ -32,4 +32,12 @@ public class InquiryAnswerDto {
 
     /** 답변 수정 일시 */
     private Date updatedAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAtDate() {
+        return updatedAt;
+    }
+
 }

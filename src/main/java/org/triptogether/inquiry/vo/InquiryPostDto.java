@@ -62,4 +62,16 @@ public class InquiryPostDto {
 
     /** AI 독성 감지 플래그 (0: 정상, 1: AI 독성 감지됨 → BLUR 처리) */
     private boolean aiFlagged;
+    public Date getCancelledAtDate() {
+        return cancelledAt;
+    }
+
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAtDate() {
+        return updatedAt;
+    }
+
 }

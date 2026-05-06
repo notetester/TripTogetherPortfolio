@@ -11,4 +11,8 @@ public class MyPageReportDto {
     private String reason;
     private String status;
     private Date   createdAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

@@ -21,4 +21,8 @@ public class AdminExploreReviewVO {
     public String getDisplayStatus() {
         return reviewBlock != null && reviewBlock == 1 ? "BLOCKED" : "ACTIVE";
     }
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

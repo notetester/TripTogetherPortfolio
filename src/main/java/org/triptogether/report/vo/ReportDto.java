@@ -65,4 +65,12 @@ public class ReportDto {
 
     /** 유저 신고 출처 ID (post_id / comment_id) */
     private Long sourceId;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAtDate() {
+        return updatedAt;
+    }
+
 }

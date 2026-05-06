@@ -26,4 +26,8 @@ public class AdminAssistantMessageVO {
     private String content;
     private Integer commentOrder;
     private Date createdAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

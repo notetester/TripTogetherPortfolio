@@ -26,4 +26,12 @@ public class AdminCommunityPostVO {
     private String thumbUrl;        // 대표 이미지 URL (sort_order=1)
     private String tipCategory;     // 팁 카테고리 (postType=tip일 때만 사용)
     private int authorResolveCount30d; // 작성자의 최근 30일 신고 처리 건수 (위험도 지표)
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAtDate() {
+        return updatedAt;
+    }
+
 }

@@ -24,4 +24,8 @@ public class AdminAssistantModerationVO {
     private String nickname;
     private String content;
     private Date messageCreatedAt;
+    public Date getCheckedAtDate() {
+        return checkedAt;
+    }
+
 }

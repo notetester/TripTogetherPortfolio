@@ -15,4 +15,8 @@ public class AdminCourseSpotVO {
     private String spotName;     // SPOT_TRAVEL.name (있으면)
     private String spotRegion;   // SPOT_TRAVEL.region
     private Date createdAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

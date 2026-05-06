@@ -34,4 +34,12 @@ public class MyPagePackageBookingDto {
     private Date bookedAt;
     private Date cancelledAt;
     private String cancelReason;
+    public Date getBookedAtDate() {
+        return bookedAt;
+    }
+
+    public Date getCancelledAtDate() {
+        return cancelledAt;
+    }
+
 }

@@ -30,4 +30,8 @@ public class AdminExploreSpotVO {
     public String getDisplayStatus() {
         return spotActive != null && spotActive == 1 ? "DELETED" : "ACTIVE";
     }
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

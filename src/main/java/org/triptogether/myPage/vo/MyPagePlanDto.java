@@ -13,4 +13,8 @@ public class MyPagePlanDto {
     private Boolean isPublic;
     private String  planSource;
     private Date    createdAt;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
 }

@@ -44,4 +44,8 @@ public class InquiryAnswerHistoryDto {
 
     /** UPDATE / DELETE */
     private String changeType;
+    public Date getChangedAtDate() {
+        return changedAt;
+    }
+
 }

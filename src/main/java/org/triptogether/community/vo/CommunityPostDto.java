@@ -53,4 +53,12 @@ public class CommunityPostDto {
     private String profileBadgeClass;
     private String profileBadgeLabel;
     private String bubbleClass;
+    public Date getCreatedAtDate() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAtDate() {
+        return updatedAt;
+    }
+
 }
