@@ -473,7 +473,8 @@ public class LoginRiskPolicyService {
         for (SecurityAssessmentProviderConfigVO provider : providers) {
             String beforeStatus = provider.getStatus();
             ProviderHealth health = evaluateProviderHealth(provider);
-            loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), health.status(), health.description());
+            String healthDetail = dbText(health.description(), 1000);
+            loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), health.status(), healthDetail);
             loginRiskPolicyMapper.insertProviderHealthCheckHistory(
                     provider.getProviderIdx(),
                     provider.getProviderCode(),
@@ -482,7 +483,7 @@ public class LoginRiskPolicyService {
                     beforeStatus,
                     health.status(),
                     null,
-                    health.description()
+                    healthDetail
             );
         }
     }
@@ -496,7 +497,8 @@ public class LoginRiskPolicyService {
 
         String beforeStatus = provider.getStatus();
         ProviderHealth health = evaluateProviderHealth(provider);
-        loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), health.status(), health.description());
+        String healthDetail = dbText(health.description(), 1000);
+        loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), health.status(), healthDetail);
         loginRiskPolicyMapper.insertProviderHealthCheckHistory(
                 provider.getProviderIdx(),
                 provider.getProviderCode(),
@@ -505,7 +507,7 @@ public class LoginRiskPolicyService {
                 beforeStatus,
                 health.status(),
                 actorUserIdx,
-                health.description()
+                healthDetail
         );
         loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
                 "PROVIDER_HEALTH_CHECK",
@@ -516,7 +518,7 @@ public class LoginRiskPolicyService {
                 provider.getProviderIdx(),
                 "SECURITY.PROVIDER.HEALTH_CHECK",
                 jsonArg("providerIdx", provider.getProviderIdx(), "status", health.status()),
-                health.description()
+                healthDetail
         );
     }
 
@@ -541,8 +543,8 @@ public class LoginRiskPolicyService {
             WafSyncResult result = applyWafSyncProviders(item);
             loginRiskPolicyMapper.updateWafSyncStatus(
                     item.getSyncIdx(),
-                    result.getStatus(),
-                    result.getMessage()
+                    safeWafStatus(result.getStatus()),
+                    dbText(result.getMessage(), 1000)
             );
         }
     }
@@ -1702,6 +1704,23 @@ public class LoginRiskPolicyService {
 
     private String localizedRemainingMessage(String preferredLang, int remaining) {
         return msg(preferredLang, "security.login.remainingAttempts", remaining);
+    }
+
+    private String safeWafStatus(String status) {
+        if (status == null || status.isBlank()) {
+            return "EXTERNAL_PROVIDER_PENDING";
+        }
+        return status.length() <= 40 ? status : status.substring(0, 40);
+    }
+
+    private String dbText(String value, int maxLength) {
+        if (value == null || maxLength <= 0) {
+            return value;
+        }
+        if (value.length() <= maxLength) {
+            return value;
+        }
+        return value.substring(0, Math.max(0, maxLength - 20)) + "...[truncated]";
     }
 
     private String msg(String lang, String code, Object... args) {

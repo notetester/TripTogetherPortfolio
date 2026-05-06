@@ -1287,7 +1287,7 @@
     <update id="updateProviderHealth">
         UPDATE SECURITY_ASSESSMENT_PROVIDER_CONFIG
         SET status = #{status},
-            description = COALESCE(#{description}, description),
+            description = COALESCE(#{lastCheckDetail}, description),
             last_checked_at = NOW(),
             updated_at = NOW()
         WHERE provider_idx = #{providerIdx}
