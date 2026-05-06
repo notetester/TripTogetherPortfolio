@@ -299,3 +299,16 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | diff button click | before/after JSON의 변경된 key가 표시된다 |
 | no changed key | 변경 없음 메시지가 표시된다 |
 | invalid JSON snapshot | JSON 해석 오류 메시지가 표시된다 |
+
+## 27. WAF Mock/Demo Provider Routing 테스트
+
+| Case | Expected |
+|---|---|
+| DEMO_* WAF provider with mock:// endpoint | External HTTP request is not sent; result is SYNCED / MOCK_SYNCED |
+| MOCK_WAF_SERVICE provider | External HTTP request is not sent; result is SYNCED / MOCK_SYNCED |
+| providerCode contains _MOCK_ | External HTTP request is not sent; result is SYNCED / MOCK_SYNCED |
+| modelName starts with mock- | External HTTP request is not sent; result is SYNCED / MOCK_SYNCED |
+| endpointUrl starts with mock:// | External HTTP request is not sent; result is SYNCED / MOCK_SYNCED |
+| generic WAF HTTP provider with https:// endpoint | GenericWafCdnHttpAdapter handles the provider normally |
+| generic WAF HTTP provider with unsupported scheme | WafSyncHttpClient rejects before HttpRequest construction |
+| LOGIN_RISK_WAF_SYNC_QUEUE.status = EXTERNAL_PROVIDER_PENDING | DB column accepts the value after varchar(40) migration |

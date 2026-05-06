@@ -25,6 +25,14 @@ public class WafSyncHttpClient {
 
     public WafSyncResult call(SecurityAssessmentProviderConfigVO provider, SecurityWafSyncQueueVO item) {
         try {
+            String endpoint = resolveEndpoint(provider.getEndpointUrl(), item);
+            WafSyncResult localMockResult = handleLocalMockProvider(provider, item, endpoint);
+            if (localMockResult != null) {
+                return localMockResult;
+            }
+
+            URI endpointUri = validateExternalHttpEndpoint(provider, endpoint);
+
             Map<String, Object> payload = new LinkedHashMap<>();
             payload.put("providerCode", provider.getProviderCode());
             payload.put("providerKind", provider.getProviderKind());
@@ -37,7 +45,7 @@ public class WafSyncHttpClient {
 
             String apiKey = secretResolver.resolve(provider.getApiKeyRef());
             HttpRequest.Builder builder = HttpRequest.newBuilder()
-                    .uri(URI.create(resolveEndpoint(provider.getEndpointUrl(), item)))
+                    .uri(endpointUri)
                     .timeout(Duration.ofMillis(provider.getTimeoutMillis() == null ? 3000 : provider.getTimeoutMillis()))
                     .header("Content-Type", "application/json");
 
@@ -86,7 +94,6 @@ public class WafSyncHttpClient {
         }
     }
 
-
     private String resolveEndpoint(String endpointUrl, SecurityWafSyncQueueVO item) {
         if (endpointUrl == null) {
             return "";
@@ -98,6 +105,46 @@ public class WafSyncHttpClient {
                 .replace("{syncAction}", safe(item.getSyncAction()))
                 .replace("{targetType}", safe(item.getTargetType()))
                 .replace("{targetValue}", safe(item.getTargetValue()));
+    }
+
+    private WafSyncResult handleLocalMockProvider(SecurityAssessmentProviderConfigVO provider,
+                                                  SecurityWafSyncQueueVO item,
+                                                  String endpoint) {
+        if (!MockWafSyncAdapter.isWafSyncProviderKind(provider.getProviderKind())) {
+            return null;
+        }
+        if (!MockWafSyncAdapter.isDemoOrMockProvider(provider)
+                && !MockWafSyncAdapter.hasMockEndpoint(provider)
+                && !MockWafSyncAdapter.hasMockModel(provider)
+                && !safe(endpoint).trim().toLowerCase().startsWith("mock://")) {
+            return null;
+        }
+
+        log.info("[WAF] demo/mock provider handled locally without external request syncIdx={} provider={} endpoint={}",
+                item.getSyncIdx(), provider.getProviderCode(), endpoint);
+        return WafSyncResult.builder()
+                .handled(true)
+                .success(true)
+                .status("SYNCED")
+                .message(detail(provider, "MOCK_SYNCED",
+                        "Demo/mock WAF endpoint was handled locally without an external HTTP request. endpoint=" + safe(endpoint)))
+                .build();
+    }
+
+    private URI validateExternalHttpEndpoint(SecurityAssessmentProviderConfigVO provider, String endpoint) {
+        if (endpoint == null || endpoint.isBlank()) {
+            throw new IllegalArgumentException("WAF sync endpointUrl is blank");
+        }
+
+        URI uri = URI.create(endpoint);
+        String scheme = uri.getScheme();
+        if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+            throw new IllegalArgumentException("Unsupported WAF sync endpoint scheme: "
+                    + safe(scheme)
+                    + "; providerCode=" + safe(provider.getProviderCode())
+                    + "; endpoint=" + safe(endpoint));
+        }
+        return uri;
     }
 
     private String resolveMethod(SecurityAssessmentProviderConfigVO provider, SecurityWafSyncQueueVO item) {

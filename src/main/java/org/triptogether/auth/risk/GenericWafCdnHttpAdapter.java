@@ -15,7 +15,9 @@ public class GenericWafCdnHttpAdapter implements WafSyncAdapter {
 
     @Override
     public boolean supports(SecurityAssessmentProviderConfigVO provider, SecurityWafSyncQueueVO item) {
-        return hasEndpoint(provider) && (
+        return hasEndpoint(provider)
+                && isExternalHttpEndpoint(provider)
+                && (
                 "WAF_CDN".equals(provider.getProviderKind())
                         || "WAF".equals(provider.getProviderKind())
                         || "CDN".equals(provider.getProviderKind())
@@ -29,5 +31,10 @@ public class GenericWafCdnHttpAdapter implements WafSyncAdapter {
     }
     private boolean hasEndpoint(SecurityAssessmentProviderConfigVO provider) {
         return provider.getEndpointUrl() != null && !provider.getEndpointUrl().isBlank();
+    }
+
+    private boolean isExternalHttpEndpoint(SecurityAssessmentProviderConfigVO provider) {
+        String endpointUrl = provider.getEndpointUrl() == null ? "" : provider.getEndpointUrl().trim().toLowerCase();
+        return endpointUrl.startsWith("http://") || endpointUrl.startsWith("https://");
     }
 }

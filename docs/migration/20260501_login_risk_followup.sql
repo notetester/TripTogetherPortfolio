@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `LOGIN_RISK_WAF_SYNC_QUEUE` (
   `sync_action` varchar(20) NOT NULL COMMENT 'BLOCK / ALLOW / REMOVE',
   `target_type` varchar(20) NOT NULL COMMENT 'IP / CIDR / COUNTRY / ASN',
   `target_value` varchar(120) NOT NULL,
-  `status` varchar(20) NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING / SYNCED / FAILED / SKIPPED',
+  `status` varchar(40) NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING / SYNCED / FAILED / SKIPPED / EXTERNAL_PROVIDER_PENDING',
   `detail_message` varchar(1000) DEFAULT NULL,
   `synced_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
