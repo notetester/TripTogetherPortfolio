@@ -42,6 +42,29 @@ CREATE TABLE IF NOT EXISTS `AD_CAMPAIGN` (
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
+-- 테이블 team1_db.ADMIN_ACTION_AUDIT 구조 내보내기
+CREATE TABLE IF NOT EXISTS `ADMIN_ACTION_AUDIT` (
+  `admin_action_audit_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '관리자 조치 감사 PK',
+  `action_type` varchar(80) NOT NULL COMMENT '조치 유형',
+  `action_domain` varchar(60) NOT NULL COMMENT '업무 도메인',
+  `actor_user_idx` bigint DEFAULT NULL COMMENT '수행 관리자 user_idx',
+  `target_type` varchar(60) DEFAULT NULL COMMENT '대상 유형',
+  `target_id` varchar(120) DEFAULT NULL COMMENT '대상 식별자',
+  `reason_code` varchar(120) DEFAULT NULL COMMENT '표준 사유 코드',
+  `reason_args` json DEFAULT NULL COMMENT '사유 인자 JSON',
+  `detail_summary` varchar(1000) DEFAULT NULL COMMENT '감사 요약',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시각',
+  PRIMARY KEY (`admin_action_audit_idx`),
+  KEY `idx_aaa_domain_created` (`action_domain`,`created_at`),
+  KEY `idx_aaa_type_created` (`action_type`,`created_at`),
+  KEY `idx_aaa_actor_created` (`actor_user_idx`,`created_at`),
+  KEY `idx_aaa_target` (`target_type`,`target_id`),
+  KEY `idx_aaa_reason_created` (`reason_code`,`created_at`),
+  CONSTRAINT `fk_aaa_actor` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 외 일반 관리자 조치 reason_code 감사 로그';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
 -- 테이블 team1_db.ADMIN_ASSISTANT_BLOCK 구조 내보내기
 CREATE TABLE IF NOT EXISTS `ADMIN_ASSISTANT_BLOCK` (
   `block_id` bigint NOT NULL AUTO_INCREMENT,
@@ -163,7 +186,7 @@ CREATE TABLE IF NOT EXISTS `ADMIN_PERMISSION` (
   CONSTRAINT `fk_ap_request_by` FOREIGN KEY (`granted_request_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_ap_updated_by` FOREIGN KEY (`updated_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_ap_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='관리자 세부 권한';
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='관리자 세부 권한';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -451,6 +474,57 @@ CREATE TABLE IF NOT EXISTS `ADMIN_TRANSLATION_SOURCE_SNAPSHOT` (
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
+-- 테이블 team1_db.APPLICATION_RUNTIME_SETTING 구조 내보내기
+CREATE TABLE IF NOT EXISTS `APPLICATION_RUNTIME_SETTING` (
+  `setting_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '런타임 설정 PK',
+  `setting_key` varchar(160) NOT NULL COMMENT '설정 키. 예: oauth.kakao.client-id',
+  `setting_group` varchar(60) NOT NULL DEFAULT 'GENERAL' COMMENT '설정 그룹',
+  `display_name` varchar(160) NOT NULL COMMENT '관리자 표시명',
+  `setting_value` text COMMENT 'DB 우선 설정값',
+  `fallback_value` text COMMENT 'DB 설정값이 비어 있을 때 사용할 fallback',
+  `value_type` varchar(30) NOT NULL DEFAULT 'STRING' COMMENT 'STRING / NUMBER / BOOLEAN / URL / SECRET',
+  `is_secret` tinyint(1) NOT NULL DEFAULT '0' COMMENT '민감 설정 여부',
+  `is_editable` tinyint(1) NOT NULL DEFAULT '1' COMMENT '관리자 UI 수정 허용 여부',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT '설정 활성 여부',
+  `description` varchar(1000) DEFAULT NULL COMMENT '설정 설명',
+  `updated_by_user_idx` bigint DEFAULT NULL COMMENT '마지막 수정 관리자',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시각',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 시각',
+  PRIMARY KEY (`setting_idx`),
+  UNIQUE KEY `uk_ars_setting_key` (`setting_key`),
+  KEY `idx_ars_group_key` (`setting_group`,`setting_key`),
+  KEY `idx_ars_active` (`is_active`,`setting_group`),
+  KEY `idx_ars_updated_by` (`updated_by_user_idx`,`updated_at`),
+  CONSTRAINT `fk_ars_updated_by` FOREIGN KEY (`updated_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='DB 우선 런타임 설정';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 team1_db.APPLICATION_RUNTIME_SETTING_HISTORY 구조 내보내기
+CREATE TABLE IF NOT EXISTS `APPLICATION_RUNTIME_SETTING_HISTORY` (
+  `history_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '런타임 설정 변경 이력 PK',
+  `setting_idx` bigint NOT NULL COMMENT 'APPLICATION_RUNTIME_SETTING.setting_idx',
+  `setting_key` varchar(160) NOT NULL COMMENT '설정 키',
+  `version_no` int NOT NULL COMMENT '설정별 버전 번호',
+  `change_type` varchar(30) NOT NULL COMMENT 'CREATE / UPDATE / IMPORT / RESET',
+  `actor_user_idx` bigint DEFAULT NULL COMMENT '수정 관리자 user_idx',
+  `before_value` text COMMENT '변경 전 설정값',
+  `after_value` text COMMENT '변경 후 설정값',
+  `before_fallback_value` text COMMENT '변경 전 fallback',
+  `after_fallback_value` text COMMENT '변경 후 fallback',
+  `before_config_json` json DEFAULT NULL COMMENT '변경 전 전체 스냅샷',
+  `after_config_json` json DEFAULT NULL COMMENT '변경 후 전체 스냅샷',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '이력 생성 시각',
+  PRIMARY KEY (`history_idx`),
+  KEY `idx_arsh_setting_version` (`setting_idx`,`version_no`),
+  KEY `idx_arsh_key_created` (`setting_key`,`created_at`),
+  KEY `idx_arsh_actor_created` (`actor_user_idx`,`created_at`),
+  CONSTRAINT `fk_arsh_actor` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_arsh_setting` FOREIGN KEY (`setting_idx`) REFERENCES `APPLICATION_RUNTIME_SETTING` (`setting_idx`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='DB 우선 런타임 설정 변경 이력';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
 -- 테이블 team1_db.BLOCK_ACCESS_LOG 구조 내보내기
 CREATE TABLE IF NOT EXISTS `BLOCK_ACCESS_LOG` (
   `block_access_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '차단 접근 로그 PK',
@@ -493,6 +567,7 @@ CREATE TABLE IF NOT EXISTS `BLOCK_ACCESS_LOG` (
   `is_source_user_match` tinyint(1) DEFAULT NULL COMMENT '요청 사용자와 기준 사용자가 일치하는지',
   `is_source_ip_match` tinyint(1) DEFAULT NULL COMMENT '요청 IP와 기준 IP가 일치하는지',
   `is_source_user_ip_intersection` tinyint(1) DEFAULT NULL COMMENT '기준 사용자와 기준 IP가 모두 일치하는지',
+  `source_assessment_idx` bigint DEFAULT NULL COMMENT '차단 원천 보안 판단 ID',
   PRIMARY KEY (`block_access_idx`),
   KEY `idx_bal_request_id` (`request_id`),
   KEY `idx_bal_user_created` (`user_idx`,`created_at`),
@@ -507,8 +582,9 @@ CREATE TABLE IF NOT EXISTS `BLOCK_ACCESS_LOG` (
   KEY `idx_bal_source_action_group` (`source_action_group_id`,`created_at`),
   KEY `idx_bal_source_user_ip` (`source_user_idx`,`source_ip_address`,`created_at`),
   KEY `idx_bal_source_intersection` (`is_source_user_ip_intersection`,`created_at`),
+  KEY `idx_bal_source_assessment` (`source_assessment_idx`),
   CONSTRAINT `fk_bal_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='IP/회원 차단으로 거부된 요청 전용 로그';
+) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='IP/회원 차단으로 거부된 요청 전용 로그';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1153,7 +1229,7 @@ CREATE TABLE IF NOT EXISTS `IP_BLOCK_BATCH` (
   KEY `idx_ibb_active_source` (`is_active`,`source_type`),
   CONSTRAINT `fk_ibb_created_by` FOREIGN KEY (`created_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_ibb_updated_by` FOREIGN KEY (`updated_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='전역 IP 차단 규칙을 배치 단위로 묶어 관리하는 테이블';
+) ENGINE=InnoDB AUTO_INCREMENT=1013 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='전역 IP 차단 규칙을 배치 단위로 묶어 관리하는 테이블';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1289,7 +1365,7 @@ CREATE TABLE IF NOT EXISTS `IP_BLOCKLIST` (
   CONSTRAINT `fk_ipb_source_blocklist` FOREIGN KEY (`source_blocklist_idx`) REFERENCES `USER_BLOCKLIST` (`block_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_ipb_source_history` FOREIGN KEY (`source_history_block_idx`) REFERENCES `USER_BLOCK_HISTORY` (`block_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_ipb_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=4028 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='IP 차단 목록';
+) ENGINE=InnoDB AUTO_INCREMENT=4058 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='IP 차단 목록';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1390,7 +1466,7 @@ CREATE TABLE IF NOT EXISTS `LOGIN_RISK_EVENT` (
   KEY `idx_lre_ip_created` (`ip_address`,`created_at`),
   KEY `idx_lre_request_id` (`request_id`),
   CONSTRAINT `fk_lre_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 위험 정책 판정 이벤트';
+) ENGINE=InnoDB AUTO_INCREMENT=210 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 위험 정책 판정 이벤트';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1428,7 +1504,7 @@ CREATE TABLE IF NOT EXISTS `LOGIN_RISK_EXTERNAL_ASSESSMENT` (
   KEY `idx_lrea_user_created` (`user_idx`,`created_at`),
   KEY `idx_lrea_ip_created` (`ip_address`,`created_at`),
   CONSTRAINT `fk_lrea_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 위험 외부/보조 판단 결과';
+) ENGINE=InnoDB AUTO_INCREMENT=175 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 위험 외부/보조 판단 결과';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1459,7 +1535,28 @@ CREATE TABLE IF NOT EXISTS `LOGIN_RISK_POLICY` (
   UNIQUE KEY `uk_lrp_policy_code` (`policy_code`),
   KEY `idx_lrp_active_type` (`is_active`,`policy_type`),
   KEY `idx_lrp_ai_waf` (`ai_assist_enabled`,`waf_sync_enabled`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 실패/위험 판단 정책';
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 실패/위험 판단 정책';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 team1_db.LOGIN_RISK_POLICY_HISTORY 구조 내보내기
+CREATE TABLE IF NOT EXISTS `LOGIN_RISK_POLICY_HISTORY` (
+  `history_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '로그인 위험 정책 변경 이력 PK',
+  `policy_idx` bigint NOT NULL COMMENT 'LOGIN_RISK_POLICY.policy_idx',
+  `policy_code` varchar(80) NOT NULL COMMENT '정책 코드',
+  `version_no` int NOT NULL COMMENT '정책별 버전 번호',
+  `change_type` varchar(30) NOT NULL COMMENT 'CREATE / UPDATE / IMPORT / RESET',
+  `actor_user_idx` bigint DEFAULT NULL COMMENT '수정 관리자 user_idx',
+  `before_config_json` json DEFAULT NULL COMMENT '변경 전 정책 스냅샷',
+  `after_config_json` json DEFAULT NULL COMMENT '변경 후 정책 스냅샷',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '이력 생성 시각',
+  PRIMARY KEY (`history_idx`),
+  KEY `idx_lrph_policy_version` (`policy_idx`,`version_no`),
+  KEY `idx_lrph_code_created` (`policy_code`,`created_at`),
+  KEY `idx_lrph_actor_created` (`actor_user_idx`,`created_at`),
+  CONSTRAINT `fk_lrph_actor` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_lrph_policy` FOREIGN KEY (`policy_idx`) REFERENCES `LOGIN_RISK_POLICY` (`policy_idx`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로그인 위험 정책 변경 이력/버전';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1491,7 +1588,7 @@ CREATE TABLE IF NOT EXISTS `LOGIN_RISK_REVIEW_QUEUE` (
   KEY `fk_lrr_reviewed_by` (`reviewed_by_user_idx`),
   CONSTRAINT `fk_lrr_reviewed_by` FOREIGN KEY (`reviewed_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_lrr_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='관리자 검토가 필요한 로그인 위험 건';
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='관리자 검토가 필요한 로그인 위험 건';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1512,7 +1609,7 @@ CREATE TABLE IF NOT EXISTS `LOGIN_RISK_WAF_SYNC_QUEUE` (
   KEY `idx_lrws_status_created` (`status`,`created_at`),
   KEY `idx_lrws_target` (`target_type`,`target_value`),
   KEY `idx_lrws_source` (`source_type`,`source_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='외부 WAF/CDN 동기화 후보 큐';
+) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='외부 WAF/CDN 동기화 후보 큐';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1697,6 +1794,21 @@ CREATE TABLE IF NOT EXISTS `SALARY_CHANGE_AUDIT` (
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
+-- 테이블 team1_db.SCHEMA_MIGRATION_HISTORY 구조 내보내기
+CREATE TABLE IF NOT EXISTS `SCHEMA_MIGRATION_HISTORY` (
+  `migration_id` varchar(120) NOT NULL,
+  `description` varchar(500) DEFAULT NULL,
+  `checksum_hint` varchar(128) DEFAULT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'APPLIED' COMMENT 'APPLIED / FAILED / ROLLED_BACK / MANUAL_CHECK_REQUIRED',
+  `applied_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `applied_by` varchar(100) DEFAULT NULL,
+  `notes` varchar(1000) DEFAULT NULL,
+  PRIMARY KEY (`migration_id`),
+  KEY `idx_smh_status_applied` (`status`,`applied_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='수동 SQL 마이그레이션 적용 이력';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
 -- 테이블 team1_db.SECURITY_ACTION_APPEAL 구조 내보내기
 CREATE TABLE IF NOT EXISTS `SECURITY_ACTION_APPEAL` (
   `appeal_idx` bigint NOT NULL AUTO_INCREMENT,
@@ -1712,15 +1824,56 @@ CREATE TABLE IF NOT EXISTS `SECURITY_ACTION_APPEAL` (
   `review_comment` varchar(1000) DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `appeal_token_idx` bigint DEFAULT NULL COMMENT 'SECURITY_ACTION_APPEAL_TOKEN.token_idx',
+  `block_request_id` varchar(36) DEFAULT NULL COMMENT '차단 규칙 생성 요청 ID',
+  `block_access_request_id` varchar(36) DEFAULT NULL COMMENT '차단 접근 로그 request_id',
+  `inquiry_id` bigint DEFAULT NULL COMMENT '연동된 비공개 문의 ID',
+  `submitter_email` varchar(200) DEFAULT NULL COMMENT '비로그인/토큰 접수 연락 이메일',
+  `public_request_id` varchar(40) DEFAULT NULL COMMENT '사용자에게 표시하는 접수번호',
   PRIMARY KEY (`appeal_idx`),
   KEY `idx_saa2_status_created` (`appeal_status`,`created_at`),
   KEY `idx_saa2_user_created` (`user_idx`,`created_at`),
   KEY `idx_saa2_target` (`target_type`,`target_key`),
   KEY `idx_saa2_assessment` (`source_assessment_idx`),
   KEY `fk_security_action_appeal_reviewed_by` (`reviewed_by_user_idx`),
+  KEY `idx_saa2_token` (`appeal_token_idx`),
+  KEY `idx_saa2_block_request` (`block_request_id`),
+  KEY `idx_saa2_block_access_request` (`block_access_request_id`),
+  KEY `idx_saa2_public_request` (`public_request_id`),
+  KEY `idx_saa2_inquiry` (`inquiry_id`),
+  KEY `idx_saa2_duplicate_guard` (`target_type`,`target_key`,`block_access_request_id`,`appeal_status`),
+  KEY `idx_saa_public_request` (`public_request_id`),
   CONSTRAINT `fk_security_action_appeal_reviewed_by` FOREIGN KEY (`reviewed_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_security_action_appeal_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 조치 이의제기/오탐 검토';
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 조치 이의제기/오탐 검토';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 team1_db.SECURITY_ACTION_APPEAL_TOKEN 구조 내보내기
+CREATE TABLE IF NOT EXISTS `SECURITY_ACTION_APPEAL_TOKEN` (
+  `token_idx` bigint NOT NULL AUTO_INCREMENT,
+  `token` varchar(128) NOT NULL,
+  `user_idx` bigint DEFAULT NULL,
+  `target_type` varchar(40) NOT NULL COMMENT 'USER_BLOCK / IP_BLOCK / CONTENT_MODERATION',
+  `target_key` varchar(160) NOT NULL,
+  `source_assessment_idx` bigint DEFAULT NULL,
+  `block_request_id` varchar(36) DEFAULT NULL,
+  `block_access_request_id` varchar(36) DEFAULT NULL,
+  `submitter_email` varchar(320) DEFAULT NULL COMMENT '이의제기 제출 전 인증한 이메일',
+  `status` varchar(20) NOT NULL DEFAULT 'ACTIVE' COMMENT 'ACTIVE / USED / EXPIRED / REVOKED',
+  `expires_at` datetime NOT NULL,
+  `used_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`token_idx`),
+  UNIQUE KEY `uk_saat_token` (`token`),
+  KEY `idx_saat_user_created` (`user_idx`,`created_at`),
+  KEY `idx_saat_target` (`target_type`,`target_key`),
+  KEY `idx_saat_status_expires` (`status`,`expires_at`),
+  KEY `idx_saat_assessment` (`source_assessment_idx`),
+  KEY `idx_saat_submitter_email_created` (`submitter_email`,`created_at`),
+  CONSTRAINT `fk_security_action_appeal_token_assessment` FOREIGN KEY (`source_assessment_idx`) REFERENCES `SECURITY_RISK_ASSESSMENT` (`assessment_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_security_action_appeal_token_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 조치 이의제기 이메일/차단 안내 접수 토큰';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1736,13 +1889,68 @@ CREATE TABLE IF NOT EXISTS `SECURITY_ACTION_AUDIT` (
   `summary` varchar(300) DEFAULT NULL,
   `detail_message` varchar(1000) DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `reason_code` varchar(100) DEFAULT NULL COMMENT '감사 사유 코드. 예: SECURITY.APPEAL.ACCEPTED',
+  `reason_args` json DEFAULT NULL COMMENT '감사 사유 파라미터 JSON',
   PRIMARY KEY (`audit_idx`),
   KEY `idx_saa_action_created` (`action_type`,`created_at`),
   KEY `idx_saa_actor_created` (`actor_user_idx`,`created_at`),
   KEY `idx_saa_target` (`target_type`,`target_key`,`created_at`),
   KEY `idx_saa_source` (`source_type`,`source_id`),
+  KEY `idx_saa_reason_code` (`reason_code`,`created_at`),
   CONSTRAINT `fk_security_action_audit_actor` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 판단/검토/차단 집행 감사 로그';
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 판단/검토/차단 집행 감사 로그';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 team1_db.SECURITY_APPEAL_POLICY 구조 내보내기
+CREATE TABLE IF NOT EXISTS `SECURITY_APPEAL_POLICY` (
+  `policy_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '보안 이의제기 정책 PK',
+  `policy_code` varchar(60) NOT NULL DEFAULT 'DEFAULT' COMMENT '정책 코드. 현재 DEFAULT 단일 정책 사용',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT '정책 활성 여부',
+  `allow_multiple_open_appeals` tinyint(1) NOT NULL DEFAULT '1' COMMENT '동일 차단 건의 복수 PENDING/HOLD 접수 허용 여부',
+  `max_open_appeals_per_case` int NOT NULL DEFAULT '3' COMMENT '동일 차단 건 동시 PENDING/HOLD 접수 허용 수',
+  `closed_blocks_new_appeals` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'CLOSED 처리된 동일 차단 건의 추가 접수 차단 여부',
+  `rejected_cooldown_minutes` int NOT NULL DEFAULT '10080' COMMENT 'REJECTED 후 재접수 제한 시간(분)',
+  `max_rejected_count` int NOT NULL DEFAULT '2' COMMENT '동일 차단 건 최대 반려 횟수',
+  `ip_daily_appeal_limit` int NOT NULL DEFAULT '3' COMMENT '동일 IP 대상 일일 이의제기 접수 제한',
+  `verification_window_minutes` int NOT NULL DEFAULT '60' COMMENT '인증 메일 발송 제한 관찰 시간(분)',
+  `max_verification_emails` int NOT NULL DEFAULT '3' COMMENT '동일 requestId/email 인증 메일 발송 한도',
+  `verification_token_ttl_minutes` int NOT NULL DEFAULT '30' COMMENT '이메일 인증 링크 유효 시간(분)',
+  `protected_appeal_token_ttl_days` int NOT NULL DEFAULT '7' COMMENT '계정 보호 조치 안내 메일의 이의제기 링크 유효 기간(일)',
+  `result_lookup_window_minutes` int NOT NULL DEFAULT '60' COMMENT '결과 조회 실패 제한 관찰 시간(분)',
+  `max_result_lookup_failures` int NOT NULL DEFAULT '5' COMMENT 'publicRequestId 결과 조회 실패 허용 횟수',
+  `result_lookup_retention_days` int NOT NULL DEFAULT '365' COMMENT '비로그인 결과 조회 가능 기간(일). 0이면 제한 없음',
+  `allowed_email_domains` varchar(1000) DEFAULT NULL COMMENT '허용 이메일 도메인 CSV. 비어 있으면 전체 허용',
+  `blocked_email_domains` varchar(1000) DEFAULT NULL COMMENT '차단 이메일 도메인 CSV',
+  `captcha_enabled` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'CAPTCHA/Turnstile 사용 준비 토글. 실제 연동은 별도 Provider',
+  `captcha_provider_code` varchar(80) DEFAULT 'MOCK_TURNSTILE' COMMENT 'CAPTCHA Provider 코드',
+  `description` varchar(1000) DEFAULT NULL COMMENT '관리자 설명',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시각',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 시각',
+  PRIMARY KEY (`policy_idx`),
+  UNIQUE KEY `uk_sap_policy_code` (`policy_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 이의제기 채널/쿨타임/rate-limit 전용 정책';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 team1_db.SECURITY_APPEAL_POLICY_HISTORY 구조 내보내기
+CREATE TABLE IF NOT EXISTS `SECURITY_APPEAL_POLICY_HISTORY` (
+  `history_idx` bigint NOT NULL AUTO_INCREMENT COMMENT '정책 변경 이력 PK',
+  `policy_idx` bigint NOT NULL COMMENT 'SECURITY_APPEAL_POLICY.policy_idx',
+  `policy_code` varchar(60) NOT NULL COMMENT '정책 코드',
+  `version_no` int NOT NULL COMMENT '정책별 버전 번호',
+  `change_type` varchar(30) NOT NULL COMMENT 'CREATE / UPDATE / RESET / IMPORT',
+  `actor_user_idx` bigint DEFAULT NULL COMMENT '수정 관리자 user_idx',
+  `before_config_json` json DEFAULT NULL COMMENT '변경 전 정책 스냅샷',
+  `after_config_json` json DEFAULT NULL COMMENT '변경 후 정책 스냅샷',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '이력 생성 시각',
+  PRIMARY KEY (`history_idx`),
+  KEY `idx_saph_policy_version` (`policy_idx`,`version_no`),
+  KEY `idx_saph_policy_created` (`policy_code`,`created_at`),
+  KEY `idx_saph_actor_created` (`actor_user_idx`,`created_at`),
+  CONSTRAINT `fk_saph_actor` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_saph_policy` FOREIGN KEY (`policy_idx`) REFERENCES `SECURITY_APPEAL_POLICY` (`policy_idx`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 이의제기 정책 변경 이력/버전';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1766,7 +1974,54 @@ CREATE TABLE IF NOT EXISTS `SECURITY_ASSESSMENT_PROVIDER_CONFIG` (
   PRIMARY KEY (`provider_idx`),
   UNIQUE KEY `uk_sapc_provider_code` (`provider_code`),
   KEY `idx_sapc_enabled_kind` (`is_enabled`,`provider_kind`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 판단 Provider 연결 설정';
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 판단 Provider 연결 설정';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 team1_db.SECURITY_ASSESSMENT_PROVIDER_CONFIG_HISTORY 구조 내보내기
+CREATE TABLE IF NOT EXISTS `SECURITY_ASSESSMENT_PROVIDER_CONFIG_HISTORY` (
+  `history_idx` bigint NOT NULL AUTO_INCREMENT COMMENT 'Provider 설정 변경 이력 PK',
+  `provider_idx` bigint NOT NULL COMMENT 'SECURITY_ASSESSMENT_PROVIDER_CONFIG.provider_idx',
+  `provider_code` varchar(80) NOT NULL COMMENT 'Provider 코드',
+  `provider_kind` varchar(40) NOT NULL COMMENT 'Provider 종류',
+  `version_no` int NOT NULL COMMENT 'Provider별 버전 번호',
+  `change_type` varchar(30) NOT NULL COMMENT 'CREATE / UPDATE / HEALTH_CHECK / IMPORT / RESET',
+  `actor_user_idx` bigint DEFAULT NULL COMMENT '수정 관리자 user_idx',
+  `before_config_json` json DEFAULT NULL COMMENT '변경 전 설정 스냅샷',
+  `after_config_json` json DEFAULT NULL COMMENT '변경 후 설정 스냅샷',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '이력 생성 시각',
+  PRIMARY KEY (`history_idx`),
+  KEY `idx_sapch_provider_version` (`provider_idx`,`version_no`),
+  KEY `idx_sapch_code_created` (`provider_code`,`created_at`),
+  KEY `idx_sapch_kind_created` (`provider_kind`,`created_at`),
+  KEY `idx_sapch_actor_created` (`actor_user_idx`,`created_at`),
+  CONSTRAINT `fk_sapch_actor` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_sapch_provider` FOREIGN KEY (`provider_idx`) REFERENCES `SECURITY_ASSESSMENT_PROVIDER_CONFIG` (`provider_idx`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='보안 평가 Provider 설정 변경 이력/버전';
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 team1_db.SECURITY_PROVIDER_HEALTH_CHECK_HISTORY 구조 내보내기
+CREATE TABLE IF NOT EXISTS `SECURITY_PROVIDER_HEALTH_CHECK_HISTORY` (
+  `health_history_idx` bigint NOT NULL AUTO_INCREMENT COMMENT 'Provider 헬스체크 이력 PK',
+  `provider_idx` bigint NOT NULL COMMENT 'SECURITY_ASSESSMENT_PROVIDER_CONFIG.provider_idx',
+  `provider_code` varchar(80) NOT NULL COMMENT 'Provider 코드',
+  `provider_kind` varchar(40) NOT NULL COMMENT 'Provider 종류',
+  `check_source` varchar(30) NOT NULL COMMENT 'MANUAL / SCHEDULED',
+  `status_before` varchar(30) DEFAULT NULL COMMENT '점검 전 상태',
+  `status_after` varchar(30) NOT NULL COMMENT '점검 후 상태',
+  `actor_user_idx` bigint DEFAULT NULL COMMENT '수동 점검 관리자 user_idx. 스케줄러는 NULL',
+  `detail_message` varchar(1000) DEFAULT NULL COMMENT '점검 상세 메시지',
+  `checked_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '점검 시각',
+  PRIMARY KEY (`health_history_idx`),
+  KEY `idx_sphh_provider_checked` (`provider_idx`,`checked_at`),
+  KEY `idx_sphh_code_checked` (`provider_code`,`checked_at`),
+  KEY `idx_sphh_kind_checked` (`provider_kind`,`checked_at`),
+  KEY `idx_sphh_source_checked` (`check_source`,`checked_at`),
+  KEY `idx_sphh_actor_checked` (`actor_user_idx`,`checked_at`),
+  CONSTRAINT `fk_sphh_actor` FOREIGN KEY (`actor_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
+  CONSTRAINT `fk_sphh_provider` FOREIGN KEY (`provider_idx`) REFERENCES `SECURITY_ASSESSMENT_PROVIDER_CONFIG` (`provider_idx`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=145 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Provider 수동/스케줄러 헬스체크 결과 이력';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1797,7 +2052,7 @@ CREATE TABLE IF NOT EXISTS `SECURITY_REVIEW_QUEUE` (
   CONSTRAINT `fk_security_review_queue_assessment` FOREIGN KEY (`assessment_idx`) REFERENCES `SECURITY_RISK_ASSESSMENT` (`assessment_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_security_review_queue_reviewed_by` FOREIGN KEY (`reviewed_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_security_review_queue_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='일반 보안 위험 관리자 검토 큐';
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='일반 보안 위험 관리자 검토 큐';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -1839,7 +2094,7 @@ CREATE TABLE IF NOT EXISTS `SECURITY_RISK_ASSESSMENT` (
   KEY `idx_sra_user_created` (`user_idx`,`created_at`),
   KEY `idx_sra_ip_created` (`ip_address`,`created_at`),
   CONSTRAINT `fk_sra_user` FOREIGN KEY (`user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='AI/알고리즘/상위 정책기관 기반 일반 보안 위험 판단 결과';
+) ENGINE=InnoDB AUTO_INCREMENT=226 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='AI/알고리즘/상위 정책기관 기반 일반 보안 위험 판단 결과';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -2087,7 +2342,7 @@ CREATE TABLE IF NOT EXISTS `SYSTEM_POLICY_HISTORY` (
   KEY `fk_system_policy_history_changed_by` (`changed_by_user_idx`),
   CONSTRAINT `fk_system_policy_history_changed_by` FOREIGN KEY (`changed_by_user_idx`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_system_policy_history_code` FOREIGN KEY (`policy_code`) REFERENCES `SYSTEM_POLICY` (`policy_code`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='운영 정책 변경 및 실행 이력';
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='운영 정책 변경 및 실행 이력';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -2873,7 +3128,7 @@ CREATE TABLE IF NOT EXISTS `USERS` (
   KEY `idx_users_admin_permission_code` (`admin_permission_code`),
   CONSTRAINT `fk_admin_manager` FOREIGN KEY (`admin_manager`) REFERENCES `USERS` (`user_idx`) ON DELETE SET NULL,
   CONSTRAINT `fk_users_admin_permission_code` FOREIGN KEY (`admin_permission_code`) REFERENCES `ADMIN_PERMISSION_CODE_POLICY` (`admin_permission_code`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=155 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='회원 정보';
+) ENGINE=InnoDB AUTO_INCREMENT=193 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='회원 정보';
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
