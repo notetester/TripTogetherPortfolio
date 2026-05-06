@@ -142,3 +142,11 @@
 - 통합 조회는 `/admin/policy-history`에서 수행한다.
 - 새 정책 도메인이 추가되면 `AdminMapper.findUnifiedPolicyHistories`의 UNION 대상에 추가한다.
 - 통합 이력 화면의 JSON snapshot은 반드시 escape한다.
+
+
+## 운영 UI 상세 모달 고도화 원칙
+
+- 목록에 긴 detailMessage, Provider 응답, 판단 근거가 표시되는 경우 상세 모달을 제공한다.
+- 모달은 닫기 버튼, 바깥 클릭, Escape 키 닫기를 지원한다.
+- 재시도/승인 같은 destructive 또는 상태 변경 액션은 상세 정보 확인 후 수행할 수 있게 배치한다.
+- 상세 모달에서 사용자/외부 입력값은 반드시 escape한다.

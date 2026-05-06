@@ -89,6 +89,10 @@
 - /admin/policy-history 통합 정책 이력 화면
 - SECURITY_ASSESSMENT_PROVIDER_CONFIG_HISTORY Provider 설정 변경 이력/버전 관리
 - LOGIN_RISK_POLICY_HISTORY 정책 변경 이력/버전 관리
+- 잔여 작업 감사 문서화
+- 보안 검토 큐 상세 모달 실제 markup/바깥 클릭 닫기 보강
+- WAF 동기화 큐 상세 모달 및 재시도 판단 보조 UI
+- Provider 설정 상세 모달 및 통합 정책 이력 연결
 
 ## 남은 작업
 
@@ -110,10 +114,8 @@
 
 ### UI/운영 고도화
 
-- 보안 검토 큐 상세 모달 추가 고도화
-- Provider 헬스체크 결과 상세 화면 추가 고도화
+- Provider 헬스체크 전용 상세 이력 테이블/화면 검토
 - CAPTCHA/Turnstile Provider 연동 검토
-- WAF Provider별 재시도/실패 사유 UI 추가 고도화
 
 ### 검증
 
@@ -150,3 +152,4 @@
 - `docs/security-policy-coverage-audit.md`
 - `docs/application-runtime-settings.md`
 - `docs/unified-policy-history.md`
+- `docs/remaining-work-audit.md`

@@ -250,3 +250,18 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | keyword search | item_key 또는 snapshot 내용 기준으로 필터링된다 |
 | snapshot output | `c:out`으로 escape 처리된다 |
 | layout navigation | 보안·감사 메뉴에서 통합 정책 이력으로 이동할 수 있다 |
+
+
+## 23. Remaining UI Detail Enhancements 테스트
+
+| Case | Expected |
+|---|---|
+| provider detail button click | Provider 상세 모달이 열린다 |
+| provider detail outside click | Provider 상세 모달이 닫힌다 |
+| provider history button click | `/admin/policy-history?sourceType=PROVIDER_CONFIG`로 이동한다 |
+| WAF sync detail button click | WAF 상세 모달이 열린다 |
+| WAF sync detail outside click | WAF 상세 모달이 닫힌다 |
+| WAF sync retry | 기존 재시도 POST가 정상 실행된다 |
+| security review detail button click | 보안 검토 상세 모달이 열린다 |
+| security review outside click | 보안 검토 상세 모달이 닫힌다 |
+| detail fields | 모든 사용자/외부 입력값은 `c:out`으로 escape 처리된다 |

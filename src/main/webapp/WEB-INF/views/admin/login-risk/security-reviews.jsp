@@ -22,9 +22,26 @@
     .review-detail-pre { white-space:pre-wrap; line-height:1.65; }
 </style>
 <script>
-    function openSecurityReviewDetail(id) { document.getElementById(id).classList.add("is-open"); }
-    function closeSecurityReviewDetail(id) { document.getElementById(id).classList.remove("is-open"); }
-    document.addEventListener("keydown", function(e) { if (e.key === "Escape") { document.querySelectorAll(".review-detail-modal.is-open").forEach(function(m) { m.classList.remove("is-open"); }); } });
+    function openSecurityReviewDetail(id) {
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.add("is-open");
+    }
+    function closeSecurityReviewDetail(id) {
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.remove("is-open");
+    }
+    document.addEventListener("click", function(e) {
+        if (e.target && e.target.classList && e.target.classList.contains("review-detail-modal")) {
+            e.target.classList.remove("is-open");
+        }
+    });
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            document.querySelectorAll(".review-detail-modal.is-open").forEach(function(m) {
+                m.classList.remove("is-open");
+            });
+        }
+    });
 </script>
 
 <div class="adm-content">
@@ -129,6 +146,58 @@
                         </c:if>
                     </td>
                 </tr>
+                <tr style="display:none;"><td colspan="7">
+                    <div class="review-detail-modal" id="securityReviewDetail${r.reviewIdx}">
+                        <div class="review-detail-card" role="dialog" aria-modal="true" aria-labelledby="securityReviewTitle${r.reviewIdx}">
+                            <div class="adm-card-header" style="padding:0 0 14px;border-bottom:1px solid #e2e8f0;">
+                                <div>
+                                    <h2 id="securityReviewTitle${r.reviewIdx}" style="margin:0;"><spring:message code="security.admin.securityReviews.detailTitle"/></h2>
+                                    <div class="adm-muted">#<c:out value="${r.reviewIdx}"/> · <c:out value="${r.reviewStatus}"/> · <c:out value="${r.severity}"/></div>
+                                </div>
+                                <button class="adm-btn" type="button" onclick="closeSecurityReviewDetail('securityReviewDetail${r.reviewIdx}')"><spring:message code="security.admin.common.close"/></button>
+                            </div>
+                            <div class="review-detail-grid">
+                                <div class="review-detail-item">
+                                    <strong><spring:message code="security.admin.common.reviewType"/></strong>
+                                    <div><c:out value="${r.reviewType}" default="-"/> / <c:out value="${r.assessmentScope}" default="-"/></div>
+                                </div>
+                                <div class="review-detail-item">
+                                    <strong><spring:message code="security.admin.common.target"/></strong>
+                                    <div><c:out value="${r.subjectType}" default="-"/>: <c:out value="${r.subjectKey}" default="-"/></div>
+                                </div>
+                                <div class="review-detail-item">
+                                    <strong><spring:message code="security.admin.common.user"/></strong>
+                                    <div><c:out value="${r.userId}" default="-"/> / <c:out value="${r.nickname}" default="-"/></div>
+                                </div>
+                                <div class="review-detail-item">
+                                    <strong><spring:message code="security.admin.common.ipAddress"/></strong>
+                                    <div><c:out value="${r.ipAddress}" default="-"/></div>
+                                </div>
+                                <div class="review-detail-item">
+                                    <strong><spring:message code="security.admin.common.createdAt"/></strong>
+                                    <div><fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
+                                </div>
+                                <div class="review-detail-item">
+                                    <strong><spring:message code="security.admin.common.reviewedBy"/></strong>
+                                    <div><c:out value="${r.reviewedByUserId}" default="-"/> / <fmt:formatDate value="${r.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
+                                </div>
+                            </div>
+                            <div class="review-detail-item" style="margin-top:12px;">
+                                <strong><spring:message code="security.admin.common.summaryEvidence"/></strong>
+                                <div class="review-detail-pre"><c:out value="${r.summary}" default="-"/></div>
+                            </div>
+                            <div class="review-detail-item" style="margin-top:12px;">
+                                <strong><spring:message code="security.admin.common.detailMessage"/></strong>
+                                <div class="review-detail-pre"><c:out value="${r.detailMessage}" default="-"/></div>
+                            </div>
+                            <div class="review-detail-item" style="margin-top:12px;">
+                                <strong><spring:message code="security.admin.common.reviewComment"/></strong>
+                                <div class="review-detail-pre"><c:out value="${r.reviewComment}" default="-"/></div>
+                            </div>
+                        </div>
+                    </div>
+                </td></tr>
+
             </c:forEach>
             <c:if test="${empty reviews}">
                 <tr><td colspan="7" class="adm-empty"><spring:message code="security.admin.empty.reviews"/></td></tr>
