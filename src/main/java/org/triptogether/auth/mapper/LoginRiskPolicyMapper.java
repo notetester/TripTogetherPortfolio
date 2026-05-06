@@ -234,6 +234,11 @@ public interface LoginRiskPolicyMapper {
     SecurityAssessmentProviderConfigVO findProviderConfigByIdx(@Param("providerIdx") Long providerIdx);
     SecurityAssessmentProviderConfigVO findProviderConfigByCode(@Param("providerCode") String providerCode);
 
+    List<SecurityAssessmentProviderConfigVO> findProviderConfigsForHealthCheck();
+    void updateProviderHealth(@Param("providerIdx") Long providerIdx,
+                              @Param("status") String status,
+                              @Param("lastCheckDetail") String lastCheckDetail);
+
     void updateProviderConfig(SecurityAssessmentProviderConfigVO config);
     void insertProviderConfigHistory(@Param("providerIdx") Long providerIdx,
                                      @Param("providerCode") String providerCode,
