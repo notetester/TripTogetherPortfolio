@@ -16,6 +16,7 @@ import org.triptogether.auth.vo.SocialTempVO;
 import org.triptogether.auth.vo.UserRole;
 import org.triptogether.auth.vo.UsersVO;
 import org.triptogether.config.ActivityLogInterceptor;
+import org.triptogether.config.RuntimeSettingService;
 import org.triptogether.superAdmin.mapper.SuperAdminMapper;
 import org.triptogether.superAdmin.vo.SuperAdminPermissionVO;
 
