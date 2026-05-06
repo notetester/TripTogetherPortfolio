@@ -3,35 +3,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="autoMsg_d8203c1220" code="courses.ai.pageTitle"/>
-<spring:message var="autoMsg_64f806d85e" code="courses.ai.subtitle.line1"/>
-<spring:message var="autoMsg_c1a22099b2" code="courses.ai.destination"/>
-<spring:message var="autoMsg_abebfb9d4b" code="courses.ai.companion"/>
-<spring:message var="autoMsg_66ce3d3b63" code="courses.ai.select.placeholder"/>
-<spring:message var="autoMsg_29c6568f86" code="courses.ai.companion.solo"/>
-<spring:message var="autoMsg_eef6393039" code="courses.ai.companion.friends"/>
-<spring:message var="autoMsg_3fb1fe3523" code="courses.ai.companion.couple"/>
-<spring:message var="autoMsg_7201f3f897" code="courses.ai.companion.family"/>
-<spring:message var="autoMsg_28ddc328ed" code="courses.ai.companion.parents"/>
-<spring:message var="autoMsg_2e3191aae1" code="courses.ai.startDate"/>
-<spring:message var="autoMsg_daee4d6c54" code="course.write.dateFormatHint"/>
-<spring:message var="autoMsg_2a0384f48c" code="courses.ai.endDate"/>
-<spring:message var="autoMsg_a7179285f8" code="courses.ai.style"/>
-<spring:message var="autoMsg_cc44deb473" code="courses.ai.style.food"/>
-<spring:message var="autoMsg_5b7ffa3314" code="courses.ai.style.cafe"/>
-<spring:message var="autoMsg_35bf9d0696" code="courses.ai.style.healing"/>
-<spring:message var="autoMsg_9346b54fdc" code="courses.ai.style.activity"/>
-<spring:message var="autoMsg_1eaa05828e" code="courses.ai.style.sightseeing"/>
-<spring:message var="autoMsg_dd447eccd8" code="courses.ai.style.photo"/>
-<spring:message var="autoMsg_a35555f2cb" code="courses.ai.style.relaxed"/>
-<spring:message var="autoMsg_62554c2fd5" code="courses.ai.budget"/>
-<spring:message var="autoMsg_eeb4773614" code="courses.ai.budget.low"/>
-<spring:message var="autoMsg_5b26a15131" code="courses.ai.budget.medium"/>
-<spring:message var="autoMsg_dc022934f9" code="courses.ai.budget.high"/>
-<spring:message var="autoMsg_b45b93de80" code="courses.ai.request"/>
-<spring:message var="autoMsg_1986f15c23" code="courses.ai.submit"/>
-<spring:message var="autoMsg_2a72f147dd" code="courses.ai.loading.title"/>
-<spring:message var="autoMsg_2d627bccb8" code="courses.ai.loading.text1"/>
 <%@ include file="../common/header.jsp" %>
 
 <spring:message code="courses.ai.destination.placeholder" var="aiDestinationPlaceholder"/>
@@ -42,7 +13,7 @@
 <html lang="${pageContext.response.locale.language}">
 <head>
   <meta charset="UTF-8">
-  <title>${autoMsg_d8203c1220}</title>
+  <title><spring:message code="courses.ai.pageTitle"/></title>
   <style>
     * {
       box-sizing: border-box;
@@ -236,9 +207,9 @@
     <spring:message code="course.write.backToList"/>
   </a>
 
-  <h1>${autoMsg_d8203c1220}</h1>
+  <h1><spring:message code="courses.ai.pageTitle"/></h1>
   <div class="sub-text">
-    ${autoMsg_64f806d85e} <br>
+    <spring:message code="courses.ai.subtitle.line1"/> <br>
     <spring:message code="courses.ai.subtitle.line2"/>
   </div>
 
@@ -252,7 +223,7 @@
     <div class="form-grid">
 
       <div class="form-group">
-        <label for="destination">${autoMsg_c1a22099b2}</label>
+        <label for="destination"><spring:message code="courses.ai.destination"/></label>
         <input type="text"
                id="destination"
                name="destination"
@@ -261,61 +232,61 @@
       </div>
 
       <div class="form-group">
-        <label for="companion">${autoMsg_abebfb9d4b}</label>
+        <label for="companion"><spring:message code="courses.ai.companion"/></label>
         <select id="companion" name="companion">
-          <option value="">${autoMsg_66ce3d3b63}</option>
-          <option value="혼자" <c:if test="${requestDto.companion eq '혼자'}">selected</c:if>>${autoMsg_29c6568f86}</option>
-          <option value="친구" <c:if test="${requestDto.companion eq '친구'}">selected</c:if>>${autoMsg_eef6393039}</option>
-          <option value="연인" <c:if test="${requestDto.companion eq '연인'}">selected</c:if>>${autoMsg_3fb1fe3523}</option>
-          <option value="가족" <c:if test="${requestDto.companion eq '가족'}">selected</c:if>>${autoMsg_7201f3f897}</option>
-          <option value="부모님" <c:if test="${requestDto.companion eq '부모님'}">selected</c:if>>${autoMsg_28ddc328ed}</option>
+          <option value=""><spring:message code="courses.ai.select.placeholder"/></option>
+          <option value="혼자" <c:if test="${requestDto.companion eq '혼자'}">selected</c:if>><spring:message code="courses.ai.companion.solo"/></option>
+          <option value="친구" <c:if test="${requestDto.companion eq '친구'}">selected</c:if>><spring:message code="courses.ai.companion.friends"/></option>
+          <option value="연인" <c:if test="${requestDto.companion eq '연인'}">selected</c:if>><spring:message code="courses.ai.companion.couple"/></option>
+          <option value="가족" <c:if test="${requestDto.companion eq '가족'}">selected</c:if>><spring:message code="courses.ai.companion.family"/></option>
+          <option value="부모님" <c:if test="${requestDto.companion eq '부모님'}">selected</c:if>><spring:message code="courses.ai.companion.parents"/></option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="startDate">${autoMsg_2e3191aae1}</label>
+        <label for="startDate"><spring:message code="courses.ai.startDate"/></label>
         <input type="date"
                id="startDate"
                name="startDate"
                value="${requestDto.startDate}">
-        <div class="hint">${autoMsg_daee4d6c54}</div>
+        <div class="hint"><spring:message code="course.write.dateFormatHint"/></div>
       </div>
 
       <div class="form-group">
-        <label for="endDate">${autoMsg_2a0384f48c}</label>
+        <label for="endDate"><spring:message code="courses.ai.endDate"/></label>
         <input type="date"
                id="endDate"
                name="endDate"
                value="${requestDto.endDate}">
-        <div class="hint">${autoMsg_daee4d6c54}</div>
+        <div class="hint"><spring:message code="course.write.dateFormatHint"/></div>
       </div>
 
       <div class="form-group">
-        <label for="style">${autoMsg_a7179285f8}</label>
+        <label for="style"><spring:message code="courses.ai.style"/></label>
         <select id="style" name="style">
-          <option value="">${autoMsg_66ce3d3b63}</option>
-          <option value="맛집 중심" <c:if test="${requestDto.style eq '맛집 중심'}">selected</c:if>>${autoMsg_cc44deb473}</option>
-          <option value="감성 카페" <c:if test="${requestDto.style eq '감성 카페'}">selected</c:if>>${autoMsg_5b7ffa3314}</option>
-          <option value="힐링 여행" <c:if test="${requestDto.style eq '힐링 여행'}">selected</c:if>>${autoMsg_35bf9d0696}</option>
-          <option value="액티비티" <c:if test="${requestDto.style eq '액티비티'}">selected</c:if>>${autoMsg_9346b54fdc}</option>
-          <option value="관광지 중심" <c:if test="${requestDto.style eq '관광지 중심'}">selected</c:if>>${autoMsg_1eaa05828e}</option>
-          <option value="사진/포토스팟" <c:if test="${requestDto.style eq '사진/포토스팟'}">selected</c:if>>${autoMsg_dd447eccd8}</option>
-          <option value="여유로운 일정" <c:if test="${requestDto.style eq '여유로운 일정'}">selected</c:if>>${autoMsg_a35555f2cb}</option>
+          <option value=""><spring:message code="courses.ai.select.placeholder"/></option>
+          <option value="맛집 중심" <c:if test="${requestDto.style eq '맛집 중심'}">selected</c:if>><spring:message code="courses.ai.style.food"/></option>
+          <option value="감성 카페" <c:if test="${requestDto.style eq '감성 카페'}">selected</c:if>><spring:message code="courses.ai.style.cafe"/></option>
+          <option value="힐링 여행" <c:if test="${requestDto.style eq '힐링 여행'}">selected</c:if>><spring:message code="courses.ai.style.healing"/></option>
+          <option value="액티비티" <c:if test="${requestDto.style eq '액티비티'}">selected</c:if>><spring:message code="courses.ai.style.activity"/></option>
+          <option value="관광지 중심" <c:if test="${requestDto.style eq '관광지 중심'}">selected</c:if>><spring:message code="courses.ai.style.sightseeing"/></option>
+          <option value="사진/포토스팟" <c:if test="${requestDto.style eq '사진/포토스팟'}">selected</c:if>><spring:message code="courses.ai.style.photo"/></option>
+          <option value="여유로운 일정" <c:if test="${requestDto.style eq '여유로운 일정'}">selected</c:if>><spring:message code="courses.ai.style.relaxed"/></option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="budget">${autoMsg_62554c2fd5}</label>
+        <label for="budget"><spring:message code="courses.ai.budget"/></label>
         <select id="budget" name="budget">
-          <option value="">${autoMsg_66ce3d3b63}</option>
-          <option value="낮음" <c:if test="${requestDto.budget eq '낮음'}">selected</c:if>>${autoMsg_eeb4773614}</option>
-          <option value="중간" <c:if test="${requestDto.budget eq '중간'}">selected</c:if>>${autoMsg_5b26a15131}</option>
-          <option value="높음" <c:if test="${requestDto.budget eq '높음'}">selected</c:if>>${autoMsg_dc022934f9}</option>
+          <option value=""><spring:message code="courses.ai.select.placeholder"/></option>
+          <option value="낮음" <c:if test="${requestDto.budget eq '낮음'}">selected</c:if>><spring:message code="courses.ai.budget.low"/></option>
+          <option value="중간" <c:if test="${requestDto.budget eq '중간'}">selected</c:if>><spring:message code="courses.ai.budget.medium"/></option>
+          <option value="높음" <c:if test="${requestDto.budget eq '높음'}">selected</c:if>><spring:message code="courses.ai.budget.high"/></option>
         </select>
       </div>
 
       <div class="form-group full">
-        <label for="requestText">${autoMsg_b45b93de80}</label>
+        <label for="requestText"><spring:message code="courses.ai.request"/></label>
         <textarea id="requestText"
                   name="requestText"
                   placeholder="${aiRequestPlaceholder}">${requestDto.requestText}</textarea>
@@ -325,7 +296,7 @@
       </div>
 
       <div class="btn-area full">
-        <button type="submit" class="submit-btn">${autoMsg_1986f15c23}</button>
+        <button type="submit" class="submit-btn"><spring:message code="courses.ai.submit"/></button>
       </div>
 
     </div>
@@ -335,9 +306,9 @@
 <div id="loadingOverlay" class="loading-overlay" style="display:none;">
   <div class="loading-card">
     <div class="loading-spinner"></div>
-    <div class="loading-title">${autoMsg_2a72f147dd}</div>
+    <div class="loading-title"><spring:message code="courses.ai.loading.title"/></div>
     <div class="loading-text">
-      ${autoMsg_2d627bccb8}<br>
+      <spring:message code="courses.ai.loading.text1"/><br>
       <spring:message code="courses.ai.loading.text2"/>
     </div>
   </div>

@@ -1,31 +1,16 @@
+<spring:message var="inquiryWriteSubjectPlaceholderMsg" code="inquiry.write.subject.placeholder"/>
+<spring:message var="inquiryWriteContentPlaceholderMsg" code="inquiry.write.content.placeholder"/>
+<spring:message var="inquiryWriteErrorCategoryMsg" code="inquiry.write.error.category" javaScriptEscape="true"/>
+<spring:message var="inquiryWriteErrorTitleMsg" code="inquiry.write.error.title" javaScriptEscape="true"/>
+<spring:message var="inquiryWriteErrorTitleLengthMsg" code="inquiry.write.error.title.length" javaScriptEscape="true"/>
+<spring:message var="inquiryWriteErrorContentMsg" code="inquiry.write.error.content" javaScriptEscape="true"/>
+<spring:message var="inquiryWriteErrorContentLengthMsg" code="inquiry.write.error.content.length" javaScriptEscape="true"/>
+<spring:message var="inquiryWriteFailMsg" code="inquiry.write.fail" javaScriptEscape="true"/>
+<spring:message var="inquiryWriteServerMsg" code="inquiry.write.server" javaScriptEscape="true"/>
 ﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_aabadf521f" code="inquiry.write.back"/>
-<spring:message var="autoMsg_359579dc32" code="inquiry.write.title"/>
-<spring:message var="autoMsg_9219163926" code="inquiry.write.subtitle"/>
-<spring:message var="autoMsg_b278c3a55c" code="inquiry.write.type"/>
-<spring:message var="autoMsg_fdaedfc189" code="inquiry.write.type.placeholder"/>
-<spring:message var="autoMsg_1619b9a8fb" code="inquiry.write.type.service"/>
-<spring:message var="autoMsg_e95a797c85" code="inquiry.write.type.payment"/>
-<spring:message var="autoMsg_e08ced083d" code="inquiry.write.type.account"/>
-<spring:message var="autoMsg_4673bb90d0" code="inquiry.write.type.bug"/>
-<spring:message var="autoMsg_93a82e67b6" code="inquiry.write.type.etc"/>
-<spring:message var="autoMsg_106b493be2" code="inquiry.write.subject"/>
-<spring:message var="autoMsg_9de3bd82ea" code="inquiry.write.subject.placeholder"/>
-<spring:message var="autoMsg_74767cf17c" code="inquiry.write.content"/>
-<spring:message var="autoMsg_cea4ae59ac" code="inquiry.write.content.placeholder"/>
-<spring:message var="autoMsg_298a7111ee" code="inquiry.write.attach"/>
-<spring:message var="autoMsg_5c8511811e" code="inquiry.write.attach.help"/>
-<spring:message var="autoMsg_8591605faf" code="inquiry.write.private"/>
-<spring:message var="autoMsg_cace258834" code="inquiry.write.private.help"/>
-<spring:message var="autoMsg_e9cda1afe6" code="inquiry.write.error.category" javaScriptEscape="true"/>
-<spring:message var="autoMsg_68aee64efd" code="inquiry.write.error.title" javaScriptEscape="true"/>
-<spring:message var="autoMsg_3038a04aaa" code="inquiry.write.error.title.length" javaScriptEscape="true"/>
-<spring:message var="autoMsg_71a9b4b3c1" code="inquiry.write.error.content" javaScriptEscape="true"/>
-<spring:message var="autoMsg_e9d37d7a87" code="inquiry.write.error.content.length" javaScriptEscape="true"/>
-<spring:message var="autoMsg_3f048b03f0" code="inquiry.write.fail" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f51fc3f17f" code="inquiry.write.server" javaScriptEscape="true"/>
+
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="inquiry/inquiry.css"/>
@@ -35,43 +20,43 @@
   <div class="inq-write-inner">
     <div class="inq-write-header">
       <button class="inq-back-btn" onclick="location.href='${pageContext.request.contextPath}/inquiry/list'">
-        &#8592; ${autoMsg_aabadf521f}
+        &#8592; <spring:message code="inquiry.write.back"/>
       </button>
-      <h1>${autoMsg_359579dc32}</h1>
-      <p>${autoMsg_9219163926}</p>
+      <h1><spring:message code="inquiry.write.title"/></h1>
+      <p><spring:message code="inquiry.write.subtitle"/></p>
     </div>
 
     <div class="inq-write-card">
       <div class="inq-form-group">
         <label class="inq-form-label" for="category">
-          ${autoMsg_b278c3a55c} <span class="inq-required">*</span>
+          <spring:message code="inquiry.write.type"/> <span class="inq-required">*</span>
         </label>
         <select class="inq-form-select" id="category" name="category">
-          <option value="">${autoMsg_fdaedfc189}</option>
-          <option value="service">${autoMsg_1619b9a8fb}</option>
-          <option value="payment">${autoMsg_e95a797c85}</option>
-          <option value="account">${autoMsg_e08ced083d}</option>
-          <option value="bug">${autoMsg_4673bb90d0}</option>
-          <option value="etc">${autoMsg_93a82e67b6}</option>
+          <option value=""><spring:message code="inquiry.write.type.placeholder"/></option>
+          <option value="service"><spring:message code="inquiry.write.type.service"/></option>
+          <option value="payment"><spring:message code="inquiry.write.type.payment"/></option>
+          <option value="account"><spring:message code="inquiry.write.type.account"/></option>
+          <option value="bug"><spring:message code="inquiry.write.type.bug"/></option>
+          <option value="etc"><spring:message code="inquiry.write.type.etc"/></option>
         </select>
         <div class="inq-field-msg" id="categoryMsg"></div>
       </div>
 
       <div class="inq-form-group">
         <label class="inq-form-label" for="title">
-          ${autoMsg_106b493be2} <span class="inq-required">*</span>
+          <spring:message code="inquiry.write.subject"/> <span class="inq-required">*</span>
         </label>
         <input class="inq-form-input" type="text" id="title" name="title"
-               placeholder="${autoMsg_9de3bd82ea}" maxlength="200">
+               placeholder="${inquiryWriteSubjectPlaceholderMsg}" maxlength="200">
         <div class="inq-field-msg" id="titleMsg"></div>
       </div>
 
       <div class="inq-form-group">
         <label class="inq-form-label" for="content">
-          ${autoMsg_74767cf17c} <span class="inq-required">*</span>
+          <spring:message code="inquiry.write.content"/> <span class="inq-required">*</span>
         </label>
         <textarea class="inq-form-textarea" id="content" name="content"
-                  placeholder="${autoMsg_cea4ae59ac}"
+                  placeholder="${inquiryWriteContentPlaceholderMsg}"
                   rows="10" maxlength="5000"></textarea>
         <div class="inq-textarea-footer">
           <div class="inq-field-msg" id="contentMsg"></div>
@@ -80,7 +65,7 @@
       </div>
 
       <div class="inq-form-group">
-        <label class="inq-form-label">${autoMsg_298a7111ee} <span style="font-size:12px;color:var(--gray-400);">${autoMsg_5c8511811e}</span></label>
+        <label class="inq-form-label"><spring:message code="inquiry.write.attach"/> <span style="font-size:12px;color:var(--gray-400);"><spring:message code="inquiry.write.attach.help"/></span></label>
         <input type="file" class="inq-form-input" id="images" name="images" multiple accept=".jpg,.jpeg,.png,.gif,.webp">
         <div class="inq-attach-preview" id="attachPreview"></div>
       </div>
@@ -89,9 +74,9 @@
         <label class="inq-private-toggle">
           <input type="checkbox" id="isPrivate">
           <span class="inq-toggle-slider"></span>
-          <span class="inq-toggle-label">${autoMsg_8591605faf}</span>
+          <span class="inq-toggle-label"><spring:message code="inquiry.write.private"/></span>
         </label>
-        <div class="inq-private-hint">${autoMsg_cace258834}</div>
+        <div class="inq-private-hint"><spring:message code="inquiry.write.private.help"/></div>
       </div>
 
       <div class="inq-write-actions">
@@ -134,23 +119,23 @@
 
     let valid = true;
     if (!category) {
-      setMsg('categoryMsg', '${autoMsg_e9cda1afe6}', 'error');
+      setMsg('categoryMsg', '${inquiryWriteErrorCategoryMsg}', 'error');
       valid = false;
     } else { clearMsg('categoryMsg'); }
 
     if (!title) {
-      setMsg('titleMsg', '${autoMsg_68aee64efd}', 'error');
+      setMsg('titleMsg', '${inquiryWriteErrorTitleMsg}', 'error');
       valid = false;
     } else if (title.length < 5) {
-      setMsg('titleMsg', '${autoMsg_3038a04aaa}', 'error');
+      setMsg('titleMsg', '${inquiryWriteErrorTitleLengthMsg}', 'error');
       valid = false;
     } else { clearMsg('titleMsg'); }
 
     if (!content) {
-      setMsg('contentMsg', '${autoMsg_71a9b4b3c1}', 'error');
+      setMsg('contentMsg', '${inquiryWriteErrorContentMsg}', 'error');
       valid = false;
     } else if (content.length < 10) {
-      setMsg('contentMsg', '${autoMsg_e9d37d7a87}', 'error');
+      setMsg('contentMsg', '${inquiryWriteErrorContentLengthMsg}', 'error');
       valid = false;
     } else { clearMsg('contentMsg'); }
 
@@ -176,12 +161,12 @@
       if (data.success) {
         location.href = ctx + '/inquiry/' + data.inquiryId;
       } else {
-        alert('${autoMsg_3f048b03f0}');
+        alert('${inquiryWriteFailMsg}');
         btn.disabled = false;
         btn.classList.remove('loading');
       }
     } catch (e) {
-      alert('${autoMsg_f51fc3f17f}');
+      alert('${inquiryWriteServerMsg}');
       btn.disabled = false;
       btn.classList.remove('loading');
     }

@@ -3,16 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_25a7e66901" code="package.list.eyebrow"/>
-<spring:message var="autoMsg_fbeca4995e" code="package.list.title"/>
-<spring:message var="autoMsg_2bf0ec0175" code="package.list.approvedEyebrow"/>
-<spring:message var="autoMsg_becd14d42e" code="package.list.empty"/>
-<spring:message var="autoMsg_5f1a38d8bb" code="package.list.emptyDesc"/>
-<spring:message var="autoMsg_b10d147a7a" code="package.list.noSummary"/>
-<spring:message var="autoMsg_6c2ed8af15" code="package.common.priceLabel"/>
-<spring:message var="autoMsg_a2d40716e1" code="package.common.spotLabel"/>
-<spring:message var="autoMsg_7396e744ab" code="package.common.scheduleLabel"/>
-<spring:message var="autoMsg_357c90d249" code="package.common.always"/>
+
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="packages/packages.css"/>
@@ -57,15 +48,15 @@
 <main class="pkg-wrap">
     <section class="pkg-hero">
         <div>
-            <p class="pkg-eyebrow">${autoMsg_25a7e66901}</p>
-            <h1>${autoMsg_fbeca4995e}</h1>
+            <p class="pkg-eyebrow"><spring:message code="package.list.eyebrow"/></p>
+            <h1><spring:message code="package.list.title"/></h1>
         </div>
     </section>
 
     <section class="pkg-panel">
         <div class="pkg-section-title">
             <div>
-                <span>${autoMsg_2bf0ec0175}</span>
+                <span><spring:message code="package.list.approvedEyebrow"/></span>
                 <h2>
                     <c:choose>
                         <c:when test="${localeLanguage eq 'en'}">Travel Packages</c:when>
@@ -96,8 +87,8 @@
         <c:choose>
             <c:when test="${empty packageList}">
                 <div class="pkg-empty">
-                    <strong>${autoMsg_becd14d42e}</strong>
-                    <p>${autoMsg_5f1a38d8bb}</p>
+                    <strong><spring:message code="package.list.empty"/></strong>
+                    <p><spring:message code="package.list.emptyDesc"/></p>
                 </div>
             </c:when>
             <c:otherwise>
@@ -120,26 +111,26 @@
                                 <p class="pkg-summary">
                                     <c:choose>
                                         <c:when test="${not empty pkg.packageSummary}">${fn:escapeXml(pkg.packageSummary)}</c:when>
-                                        <c:otherwise>${autoMsg_b10d147a7a}</c:otherwise>
+                                        <c:otherwise><spring:message code="package.list.noSummary"/></c:otherwise>
                                     </c:choose>
                                 </p>
                                 <dl class="pkg-meta">
                                     <div>
-                                        <dt>${autoMsg_6c2ed8af15}</dt>
+                                        <dt><spring:message code="package.common.priceLabel"/></dt>
                                         <dd><fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(pkg.currencyCode)}</dd>
                                     </div>
                                     <div>
-                                        <dt>${autoMsg_a2d40716e1}</dt>
+                                        <dt><spring:message code="package.common.spotLabel"/></dt>
                                         <dd>${fn:escapeXml(pkg.spotName)}</dd>
                                     </div>
                                     <div>
-                                        <dt>${autoMsg_7396e744ab}</dt>
+                                        <dt><spring:message code="package.common.scheduleLabel"/></dt>
                                         <dd>
                                             <c:choose>
                                                 <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                                                     ${pkg.startDate} ~ ${pkg.endDate}
                                                 </c:when>
-                                                <c:otherwise>${autoMsg_357c90d249}</c:otherwise>
+                                                <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
                                             </c:choose>
                                         </dd>
                                     </div>

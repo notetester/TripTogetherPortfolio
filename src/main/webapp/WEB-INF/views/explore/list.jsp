@@ -4,103 +4,59 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="autoMsg_8041ede2ea" code="explore.title"/>
-<spring:message var="autoMsg_b38c941255" code="explore.search.placeholder"/>
-<spring:message var="autoMsg_0df152f5ff" code="explore.search.clear"/>
-<spring:message var="autoMsg_8f6539f0e2" code="explore.note"/>
-<spring:message var="autoMsg_6e5448e5d3" code="explore.add"/>
-<spring:message var="autoMsg_7cb719780a" code="explore.tab.all"/>
-<spring:message var="autoMsg_65a5e25f1c" code="explore.tab.region"/>
-<spring:message var="autoMsg_178490935c" code="explore.tab.theme"/>
-<spring:message var="autoMsg_e50133cbc3" code="explore.tab.rating"/>
-<spring:message var="autoMsg_c10ebcd8af" code="explore.tab.likes"/>
-<spring:message var="autoMsg_2b1d23f6f4" code="explore.tab.favorite"/>
-<spring:message var="autoMsg_81e199e4b5" code="explore.tab.ai"/>
-<spring:message var="autoMsg_5867e0985b" code="explore.modal.title"/>
-<spring:message var="autoMsg_067f60c40b" code="explore.modal.subtitle"/>
-<spring:message var="autoMsg_f524957d4a" code="explore.modal.close"/>
-<spring:message var="autoMsg_de8289515f" code="explore.form.location"/>
-<spring:message var="autoMsg_04af56888e" code="explore.form.location.help"/>
-<spring:message var="autoMsg_de94e2d5ea" code="explore.form.name"/>
-<spring:message var="autoMsg_8daf7ee7df" code="explore.form.name.placeholder"/>
-<spring:message var="autoMsg_e82baee995" code="explore.form.region"/>
-<spring:message var="autoMsg_1bd7446af9" code="explore.form.region.placeholder"/>
-<spring:message var="autoMsg_8eda3f0e83" code="explore.form.address"/>
-<spring:message var="autoMsg_9fd8fd1a70" code="explore.form.address.placeholder"/>
-<spring:message var="autoMsg_9b15a50577" code="explore.form.lat"/>
-<spring:message var="autoMsg_86bfcbc8e8" code="explore.form.lng"/>
-<spring:message var="autoMsg_0d9816cb9c" code="explore.form.description"/>
-<spring:message var="autoMsg_2cbbdaf83b" code="explore.form.description.placeholder"/>
-<spring:message var="autoMsg_f5c6258a66" code="explore.form.tags"/>
-<spring:message var="autoMsg_ffea614172" code="explore.form.tags.help"/>
-<spring:message var="autoMsg_4a23a0082e" code="explore.form.image"/>
-<spring:message var="autoMsg_8b3b356025" code="explore.form.image.preview"/>
-<spring:message var="autoMsg_3acc5ff8ad" code="explore.form.image.placeholder"/>
-<spring:message var="autoMsg_5c56134a32" code="explore.form.image.help"/>
-<spring:message var="autoMsg_f07e9c4f37" code="explore.cancel"/>
-<spring:message var="autoMsg_f3c909686d" code="explore.save"/>
-<spring:message var="autoMsg_0cdd517717" code="explore.count"/>
-<spring:message var="autoMsg_33f3c33db1" code="explore.search.result"/>
-<spring:message var="autoMsg_27e054de6f" code="explore.empty.search"/>
-<spring:message var="autoMsg_78eef0cea2" code="explore.filter.region"/>
-<spring:message var="autoMsg_883d9f00d8" code="explore.filter.allRegion"/>
-<spring:message var="autoMsg_b5981a23ab" code="explore.empty.region"/>
-<spring:message var="autoMsg_d72f8812e1" code="explore.filter.theme"/>
-<spring:message var="autoMsg_b137a6e00e" code="explore.filter.allTheme"/>
-<spring:message var="autoMsg_f10ea13b00" code="explore.empty.theme"/>
-<spring:message var="autoMsg_9ae4274bf2" code="explore.rating.top"/>
-<spring:message var="autoMsg_3fd96cf610" code="explore.empty.rating"/>
-<spring:message var="autoMsg_a81a026646" code="explore.likes.top"/>
-<spring:message var="autoMsg_280da2615c" code="explore.empty.likes"/>
-<spring:message var="autoMsg_1d11517d41" code="explore.favorite.mine"/>
-<spring:message var="autoMsg_fa8af91c99" code="explore.empty.favorite"/>
-<spring:message var="autoMsg_63d69a8fc4" code="explore.ai.title"/>
-<spring:message var="autoMsg_81589f173b" code="explore.ai.loading"/>
-<spring:message var="autoMsg_a2554391b1" code="explore.ai.empty"/>
 <c:set var ="pageCSS" value="explore/explore.css"/>
 <%@ include file="../common/header.jsp" %>
 
+<spring:message var="exploreSearchPlaceholderMsg" code="explore.search.placeholder"/>
+<spring:message var="exploreSearchClearMsg" code="explore.search.clear"/>
+<spring:message var="exploreModalCloseMsg" code="explore.modal.close"/>
+<spring:message var="exploreFormNamePlaceholderMsg" code="explore.form.name.placeholder"/>
+<spring:message var="exploreFormRegionPlaceholderMsg" code="explore.form.region.placeholder"/>
+<spring:message var="exploreFormAddressPlaceholderMsg" code="explore.form.address.placeholder"/>
+<spring:message var="exploreFormDescriptionPlaceholderMsg" code="explore.form.description.placeholder"/>
+<spring:message var="exploreFormImagePreviewMsg" code="explore.form.image.preview"/>
+<spring:message var="exploreAiTitleMsg" code="explore.ai.title"/>
 <body>
 <div class="exp-header">
   <div class="exp-header-inner">
-    <h1>&#128205; ${autoMsg_8041ede2ea}</h1>
+    <h1>&#128205; <spring:message code="explore.title"/></h1>
 
     <div class="search-wrap">
       <span class="search-icon">&#128269;</span>
       <input type="text"
              id="searchInput"
              class="search-input"
-             placeholder="${autoMsg_b38c941255}"
+             placeholder="${exploreSearchPlaceholderMsg}"
              value="${fn:escapeXml(search.keyword)}"
              autocomplete="off"/>
       <button class="search-clear ${not empty search.keyword ? 'visible' : ''}"
               id="searchClear"
-              title="${autoMsg_0df152f5ff}">&#215;</button>
+              title="${exploreSearchClearMsg}">&#215;</button>
       <%-- Suggest dropdown rendered via AJAX --%>
       <ul class="suggest-dropdown" id="suggestDropdown"></ul>
     </div>
 
     <div class="exp-header-actions">
-      <p class="exp-header-note">${autoMsg_8f6539f0e2}</p>
+      <p class="exp-header-note"><spring:message code="explore.note"/></p>
       <c:if test="${not empty sessionScope.loginUser}">
         <button type="button" class="exp-primary-btn" id="openSpotWriteBtn">
-          &#9998; ${autoMsg_6e5448e5d3}
+          &#9998; <spring:message code="explore.add"/>
         </button>
       </c:if>
     </div>
 
     <div class="exp-tab-bar" role="tablist">
-      <button class="exp-tab-btn ${search.tab == 'all' ? 'active' : ''}" data-tab="all" role="tab">&#10024; ${autoMsg_7cb719780a}</button>
-      <button class="exp-tab-btn ${search.tab == 'region' ? 'active' : ''}" data-tab="region" role="tab">&#128205; ${autoMsg_65a5e25f1c}</button>
-      <button class="exp-tab-btn ${search.tab == 'theme' ? 'active' : ''}" data-tab="theme" role="tab">&#128506; ${autoMsg_178490935c}</button>
-      <button class="exp-tab-btn ${search.tab == 'rating' ? 'active' : ''}" data-tab="rating" role="tab">&#11088; ${autoMsg_e50133cbc3}</button>
-      <button class="exp-tab-btn ${search.tab == 'likes' ? 'active' : ''}" data-tab="likes" role="tab">&#10084; ${autoMsg_c10ebcd8af}</button>
+      <button class="exp-tab-btn ${search.tab == 'all' ? 'active' : ''}" data-tab="all" role="tab">&#10024; <spring:message code="explore.tab.all"/></button>
+      <button class="exp-tab-btn ${search.tab == 'region' ? 'active' : ''}" data-tab="region" role="tab">&#128205; <spring:message code="explore.tab.region"/></button>
+      <button class="exp-tab-btn ${search.tab == 'theme' ? 'active' : ''}" data-tab="theme" role="tab">&#128506; <spring:message code="explore.tab.theme"/></button>
+      <button class="exp-tab-btn ${search.tab == 'rating' ? 'active' : ''}" data-tab="rating" role="tab">&#11088; <spring:message code="explore.tab.rating"/></button>
+      <button class="exp-tab-btn ${search.tab == 'likes' ? 'active' : ''}" data-tab="likes" role="tab">&#10084; <spring:message code="explore.tab.likes"/></button>
       <%-- Favorite tab is shown only to logged-in users --%>
       <c:if test="${not empty sessionScope.loginUser}">
-        <button class="exp-tab-btn ${search.tab == 'favorite' ? 'active' : ''}" data-tab="favorite" role="tab">&#x1F4CC; ${autoMsg_2b1d23f6f4}</button>
+        <button class="exp-tab-btn ${search.tab == 'favorite' ? 'active' : ''}" data-tab="favorite" role="tab">&#x1F4CC; <spring:message code="explore.tab.favorite"/></button>
       </c:if>
       <c:if test="${not empty sessionScope.loginUser}">
-        <button class="exp-tab-btn ${search.tab == 'ai' ? 'active' : ''}" data-tab="ai" role="tab">&#x1F916; ${autoMsg_81e199e4b5}</button>
+        <button class="exp-tab-btn ${search.tab == 'ai' ? 'active' : ''}" data-tab="ai" role="tab">&#x1F916; <spring:message code="explore.tab.ai"/></button>
       </c:if>
     </div>
   </div>
@@ -111,10 +67,10 @@
   <div class="spot-write-dialog">
     <div class="spot-write-head">
       <div>
-        <h2>${autoMsg_5867e0985b}</h2>
-        <p>${autoMsg_067f60c40b}</p>
+        <h2><spring:message code="explore.modal.title"/></h2>
+        <p><spring:message code="explore.modal.subtitle"/></p>
       </div>
-      <button type="button" class="spot-write-close" id="closeSpotWriteBtn" aria-label="${autoMsg_f524957d4a}">&#215;</button>
+      <button type="button" class="spot-write-close" id="closeSpotWriteBtn" aria-label="${exploreModalCloseMsg}">&#215;</button>
     </div>
 
     <c:if test="${not empty writeError}">
@@ -127,30 +83,30 @@
       <c:set var="selectedWriteTags" value="${empty writeForm.tags ? '' : fn:join(writeForm.tags, '|')}"/>
       <div class="spot-write-grid">
         <div class="spot-write-fields">
-        <label class="spot-write-label">${autoMsg_de8289515f}</label>
+        <label class="spot-write-label"><spring:message code="explore.form.location"/></label>
           <%-- Google Places API injects PlaceAutocompleteElement here --%>
           <div id="spotLocationSearchWrap"></div>
-          <p class="spot-write-help">${autoMsg_04af56888e}</p>
+          <p class="spot-write-help"><spring:message code="explore.form.location.help"/></p>
 
-          <label class="spot-write-label" for="spotName">${autoMsg_de94e2d5ea}</label>
+          <label class="spot-write-label" for="spotName"><spring:message code="explore.form.name"/></label>
           <input type="text" id="spotName" name="name" maxlength="100"
-                 value="${fn:escapeXml(writeForm.name)}" placeholder="${autoMsg_8daf7ee7df}" required>
+                 value="${fn:escapeXml(writeForm.name)}" placeholder="${exploreFormNamePlaceholderMsg}" required>
 
-          <label class="spot-write-label" for="spotRegion">${autoMsg_e82baee995}</label>
+          <label class="spot-write-label" for="spotRegion"><spring:message code="explore.form.region"/></label>
           <input type="text" id="spotRegion" name="region" maxlength="100"
-                 value="${fn:escapeXml(writeForm.region)}" placeholder="${autoMsg_1bd7446af9}" required>
+                 value="${fn:escapeXml(writeForm.region)}" placeholder="${exploreFormRegionPlaceholderMsg}" required>
 
-          <label class="spot-write-label" for="spotAddress">${autoMsg_8eda3f0e83}</label>
+          <label class="spot-write-label" for="spotAddress"><spring:message code="explore.form.address"/></label>
           <input type="text" id="spotAddress" name="address" maxlength="255"
-                 value="${fn:escapeXml(writeForm.address)}" placeholder="${autoMsg_9fd8fd1a70}" required>
+                 value="${fn:escapeXml(writeForm.address)}" placeholder="${exploreFormAddressPlaceholderMsg}" required>
 
           <div class="spot-write-coords">
             <div>
-              <label class="spot-write-label" for="spotLatitude">${autoMsg_9b15a50577}</label>
+              <label class="spot-write-label" for="spotLatitude"><spring:message code="explore.form.lat"/></label>
               <input type="text" id="spotLatitude" value="${writeForm.latitude}" readonly>
             </div>
             <div>
-              <label class="spot-write-label" for="spotLongitude">${autoMsg_86bfcbc8e8}</label>
+              <label class="spot-write-label" for="spotLongitude"><spring:message code="explore.form.lng"/></label>
               <input type="text" id="spotLongitude" value="${writeForm.longitude}" readonly>
             </div>
           </div>
@@ -158,10 +114,10 @@
           <input type="hidden" id="spotLatitudeHidden" name="latitude" value="${writeForm.latitude}">
           <input type="hidden" id="spotLongitudeHidden" name="longitude" value="${writeForm.longitude}">
 
-          <label class="spot-write-label" for="spotDescription">${autoMsg_0d9816cb9c}</label>
+          <label class="spot-write-label" for="spotDescription"><spring:message code="explore.form.description"/></label>
           <textarea id="spotDescription" name="description" maxlength="2000"
-                    placeholder="${autoMsg_2cbbdaf83b}" required>${fn:escapeXml(writeForm.description)}</textarea>
-          <label class="spot-write-label">${autoMsg_f5c6258a66}</label>
+                    placeholder="${exploreFormDescriptionPlaceholderMsg}" required>${fn:escapeXml(writeForm.description)}</textarea>
+          <label class="spot-write-label"><spring:message code="explore.form.tags"/></label>
           <div class="spot-write-tag-picker">
             <c:forEach var="tag" items="${writeTagList}">
               <label class="spot-write-tag-option">
@@ -171,21 +127,21 @@
               </label>
             </c:forEach>
           </div>
-          <p class="spot-write-help">${autoMsg_ffea614172}</p>
+          <p class="spot-write-help"><spring:message code="explore.form.tags.help"/></p>
         </div>
 
         <%-- Image upload area --%>
         <div class="spot-write-image-wrap">
-          <label class="spot-write-label">${autoMsg_4a23a0082e}</label>
+          <label class="spot-write-label"><spring:message code="explore.form.image"/></label>
           <div class="spot-image-upload-area" id="spotImageDropZone">
             <div class="spot-image-preview" id="spotImagePreview" style="display:none;">
-              <img id="spotPreviewImg" src="" alt="${autoMsg_8b3b356025}">
+              <img id="spotPreviewImg" src="" alt="${exploreFormImagePreviewMsg}">
               <button type="button" class="spot-image-remove-btn" id="spotImageRemoveBtn">&#215;</button>
             </div>
             <div class="spot-image-placeholder" id="spotImagePlaceholder">
               <span style="font-size:48px;">&#128247;</span>
-              <p>${autoMsg_3acc5ff8ad}</p>
-              <p class="spot-write-help">${autoMsg_5c56134a32}</p>
+              <p><spring:message code="explore.form.image.placeholder"/></p>
+              <p class="spot-write-help"><spring:message code="explore.form.image.help"/></p>
             </div>
             <input type="file" id="spotImageFile" name="image"
                    accept=".jpg,.jpeg,.png,.gif,.webp" style="display:none;">
@@ -194,8 +150,8 @@
       </div>
 
       <div class="spot-write-actions">
-        <button type="button" class="exp-secondary-btn" id="cancelSpotWriteBtn">${autoMsg_f07e9c4f37}</button>
-        <button type="submit" class="exp-primary-btn">${autoMsg_f3c909686d}</button>
+        <button type="button" class="exp-secondary-btn" id="cancelSpotWriteBtn"><spring:message code="explore.cancel"/></button>
+        <button type="submit" class="exp-primary-btn"><spring:message code="explore.save"/></button>
       </div>
     </form>
   </div>
@@ -206,9 +162,9 @@
   <div id="tab-all" class="tab-panel ${search.tab == 'all' ? 'active' : ''}">
     <div class="result-bar">
       <p class="result-count">
-        <strong>${totalCount}</strong>${autoMsg_0cdd517717}
+        <strong>${totalCount}</strong><spring:message code="explore.count"/>
         <c:if test="${not empty search.keyword}">
-          "<strong>${fn:escapeXml(search.keyword)}</strong>" ${autoMsg_33f3c33db1}
+          "<strong>${fn:escapeXml(search.keyword)}</strong>" <spring:message code="explore.search.result"/>
         </c:if>
       </p>
     </div>
@@ -222,7 +178,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#128205;</div>
-            <p>${autoMsg_27e054de6f}</p>
+            <p><spring:message code="explore.empty.search"/></p>
           </div>
         </c:otherwise>
       </c:choose>
@@ -231,7 +187,7 @@
 
   <div id="tab-region" class="tab-panel ${search.tab == 'region' ? 'active' : ''}">
     <div class="filter-row" id="regionFilters">
-      <button class="filter-btn ${empty search.region ? 'active' : ''}" data-region="">${autoMsg_7cb719780a}</button>
+      <button class="filter-btn ${empty search.region ? 'active' : ''}" data-region=""><spring:message code="explore.tab.all"/></button>
       <c:forEach var="r" items="${regionList}">
         <button class="filter-btn ${search.region == r ? 'active' : ''}" data-region="${r}">${r}</button>
       </c:forEach>
@@ -240,11 +196,11 @@
       <p class="result-count">
         <c:choose>
           <c:when test="${not empty search.region}">
-            ${autoMsg_78eef0cea2} <strong>${fn:escapeXml(search.region)}</strong>
+            <spring:message code="explore.filter.region"/> <strong>${fn:escapeXml(search.region)}</strong>
           </c:when>
-          <c:otherwise>${autoMsg_883d9f00d8}</c:otherwise>
+          <c:otherwise><spring:message code="explore.filter.allRegion"/></c:otherwise>
         </c:choose>
-        , <strong>${totalCount}</strong>${autoMsg_0cdd517717}
+        , <strong>${totalCount}</strong><spring:message code="explore.count"/>
       </p>
     </div>
     <div class="spot-grid" id="grid-region">
@@ -257,7 +213,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#127758;</div>
-            <p>${autoMsg_b5981a23ab}</p>
+            <p><spring:message code="explore.empty.region"/></p>
           </div>
         </c:otherwise>
       </c:choose>
@@ -266,7 +222,7 @@
 
   <div id="tab-theme" class="tab-panel ${search.tab == 'theme' ? 'active' : ''}">
     <div class="filter-row" id="themeFilters">
-      <button class="filter-btn ${empty search.theme ? 'active' : ''}" data-theme="">${autoMsg_7cb719780a}</button>
+      <button class="filter-btn ${empty search.theme ? 'active' : ''}" data-theme=""><spring:message code="explore.tab.all"/></button>
       <c:forEach var="tag" items="${tagList}">
         <button class="filter-btn ${search.theme == tag ? 'active' : ''}" data-theme="${tag}">${tag}</button>
       </c:forEach>
@@ -275,11 +231,11 @@
       <p class="result-count">
         <c:choose>
           <c:when test="${not empty search.theme}">
-            ${autoMsg_d72f8812e1} <strong>${fn:escapeXml(search.theme)}</strong>
+            <spring:message code="explore.filter.theme"/> <strong>${fn:escapeXml(search.theme)}</strong>
           </c:when>
-          <c:otherwise>${autoMsg_b137a6e00e}</c:otherwise>
+          <c:otherwise><spring:message code="explore.filter.allTheme"/></c:otherwise>
         </c:choose>
-        , <strong>${totalCount}</strong>${autoMsg_0cdd517717}
+        , <strong>${totalCount}</strong><spring:message code="explore.count"/>
       </p>
     </div>
     <div class="spot-grid" id="grid-theme">
@@ -292,7 +248,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#127914;</div>
-            <p>${autoMsg_f10ea13b00}</p>
+            <p><spring:message code="explore.empty.theme"/></p>
           </div>
         </c:otherwise>
       </c:choose>
@@ -301,7 +257,7 @@
 
   <div id="tab-rating" class="tab-panel ${search.tab == 'rating' ? 'active' : ''}">
     <div class="result-bar">
-      <p class="result-count">${autoMsg_9ae4274bf2}: <strong>${totalCount}</strong>${autoMsg_0cdd517717}</p>
+      <p class="result-count"><spring:message code="explore.rating.top"/>: <strong>${totalCount}</strong><spring:message code="explore.count"/></p>
     </div>
     <div class="spot-grid" id="grid-rating">
       <c:choose>
@@ -313,7 +269,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#x1F4CC;</div>
-            <p>${autoMsg_3fd96cf610}</p>
+            <p><spring:message code="explore.empty.rating"/></p>
           </div>
         </c:otherwise>
       </c:choose>
@@ -322,7 +278,7 @@
 
   <div id="tab-likes" class="tab-panel ${search.tab == 'likes' ? 'active' : ''}">
     <div class="result-bar">
-      <p class="result-count">${autoMsg_a81a026646}: <strong>${totalCount}</strong>${autoMsg_0cdd517717}</p>
+      <p class="result-count"><spring:message code="explore.likes.top"/>: <strong>${totalCount}</strong><spring:message code="explore.count"/></p>
     </div>
     <div class="spot-grid" id="grid-likes">
       <c:choose>
@@ -334,7 +290,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#10084;</div>
-            <p>${autoMsg_280da2615c}</p>
+            <p><spring:message code="explore.empty.likes"/></p>
           </div>
         </c:otherwise>
       </c:choose>
@@ -345,7 +301,7 @@
   <c:if test="${not empty sessionScope.loginUser}">
   <div id="tab-favorite" class="tab-panel ${search.tab == 'favorite' ? 'active' : ''}">
     <div class="result-bar">
-      <p class="result-count">&#x1F4CC; ${autoMsg_1d11517d41}: <strong>${totalCount}</strong>${autoMsg_0cdd517717}</p>
+      <p class="result-count">&#x1F4CC; <spring:message code="explore.favorite.mine"/>: <strong>${totalCount}</strong><spring:message code="explore.count"/></p>
     </div>
     <div class="spot-grid" id="grid-favorite">
       <c:choose>
@@ -359,7 +315,7 @@
         <c:otherwise>
           <div class="empty-state" style="grid-column:1/-1">
             <div class="empty-icon">&#x1F4CC;</div>
-            <p>${autoMsg_fa8af91c99}</p>
+            <p><spring:message code="explore.empty.favorite"/></p>
             <p style="font-size:14px;color:var(--gray-400);margin-top:8px;">
               <spring:message code="explore.empty.favorite.help"/>
             </p>
@@ -374,18 +330,18 @@
   <div id="tab-ai" class="tab-panel ${search.tab == 'ai' ? 'active' : ''}">
     <div class="result-bar">
       <p class="result-count">
-        <span id="aiResultLabel">${autoMsg_63d69a8fc4}</span>
+        <span id="aiResultLabel">${exploreAiTitleMsg}</span>
       </p>
     </div>
     <div id="aiLoadingMsg" style="text-align:center;padding:60px 24px;color:var(--gray-400);">
       <div style="font-size:40px;margin-bottom:12px;">&#x1F916;</div>
-      <p style="font-size:15px;">${autoMsg_81589f173b}</p>
+      <p style="font-size:15px;"><spring:message code="explore.ai.loading"/></p>
     </div>
     <div class="spot-grid" id="aiGrid" style="display:none;"></div>
     <div id="aiEmptyMsg" style="display:none;text-align:center;padding:60px 24px;color:var(--gray-400);">
       <div style="font-size:40px;margin-bottom:12px;">&#x1F4CC;</div>
       <p style="font-size:15px;">
-        ${autoMsg_a2554391b1}<br>
+        <spring:message code="explore.ai.empty"/><br>
         <spring:message code="explore.ai.empty.help"/>
       </p>
       <button class="exp-tab-btn" style="margin-top:16px;background:#fff;border:1.5px solid var(--blue);color:var(--blue);"
@@ -1063,7 +1019,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <script>
 (function() {
   var CTX_AI = '${pageContext.request.contextPath}';
-  var AI_DEFAULT_TITLE = '${autoMsg_63d69a8fc4}';
+  var AI_DEFAULT_TITLE = '${exploreAiTitleMsg}';
 
   function escHtml(str) {
     if (!str) return '';

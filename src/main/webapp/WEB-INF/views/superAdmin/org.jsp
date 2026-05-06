@@ -2,23 +2,21 @@
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_f80102861a" code="superAdmin.org.cardTitle"/>
-<spring:message var="autoMsg_40f40760e8" code="superAdmin.org.cardDescription"/>
-<spring:message var="autoMsg_576113a76e" code="superAdmin.org.empty"/>
-<spring:message var="autoMsg_f04c89067a" code="admin.common.edit" javaScriptEscape="true"/>
+
 <c:set var="activeMenu" value="org"/>
+<spring:message var="adminCommonEditMsg" code="admin.common.edit" javaScriptEscape="true"/>
 <spring:message code="superAdmin.org.pageTitle" var="pageTitle"/>
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">${autoMsg_f80102861a}</div>
-            <div style="font-size:13px;color:#94a3b8;">${autoMsg_40f40760e8}</div>
+            <div class="adm-card-title"><spring:message code="superAdmin.org.cardTitle"/></div>
+            <div style="font-size:13px;color:#94a3b8;"><spring:message code="superAdmin.org.cardDescription"/></div>
         </div>
         <div class="adm-card-body">
             <div id="org-chart"></div>
-            <div id="org-empty" style="display:none;text-align:center;padding:60px;color:#94a3b8;">${autoMsg_576113a76e}</div>
+            <div id="org-empty" style="display:none;text-align:center;padding:60px;color:#94a3b8;"><spring:message code="superAdmin.org.empty"/></div>
         </div>
     </div>
 </div>
@@ -89,7 +87,7 @@ function renderNode(node, depth) {
         + '<div class="sa-org-name">' + node.nickname + '</div>'
         + title + dept + permBadge
         + '</div>'
-        + '<a href="' + CTX + '/superAdmin/members/' + node.userIdx + '/edit" class="sa-org-edit">${autoMsg_f04c89067a}</a>'
+        + '<a href="' + CTX + '/superAdmin/members/' + node.userIdx + '/edit" class="sa-org-edit">${adminCommonEditMsg}</a>'
         + '</div>'
         + childrenHtml
         + '</div>';

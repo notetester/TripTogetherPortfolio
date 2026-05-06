@@ -1,28 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_f3d3126408" code="error.blocked.pageTitle"/>
-<spring:message var="autoMsg_232df8ae74" code="error.blocked.badge"/>
-<spring:message var="autoMsg_c87c47b9c3" code="error.blocked.language"/>
-<spring:message var="autoMsg_273365c647" code="error.blocked.title"/>
-<spring:message var="autoMsg_ab510c05d8" code="error.blocked.lead"/>
-<spring:message var="autoMsg_fb3bb199c5" code="error.blocked.description"/>
-<spring:message var="autoMsg_8e844e51aa" code="error.blocked.contact"/>
-<spring:message var="autoMsg_17c99ed816" code="error.blocked.supportInfo"/>
-<spring:message var="autoMsg_19d435ccce" code="error.blocked.requestId"/>
-<spring:message var="autoMsg_22246f576c" code="error.blocked.restrictionType"/>
-<spring:message var="autoMsg_6eab05090d" code="${restrictionTypeCode}"/>
-<spring:message var="autoMsg_de6b6e5690" code="error.blocked.ip"/>
-<spring:message var="autoMsg_09f6859071" code="error.blocked.appeal"/>
-<spring:message var="autoMsg_9fe56439ed" code="error.blocked.home"/>
-<spring:message var="autoMsg_2405934047" code="error.blocked.support"/>
-<spring:message var="autoMsg_4fd714e9a5" code="error.blocked.notice"/>
+
+<spring:message var="errorBlockedLanguageMsg" code="error.blocked.language"/>
 <!DOCTYPE html>
 <html lang="${pageLang}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${autoMsg_f3d3126408}</title>
+    <title><spring:message code="error.blocked.pageTitle"/></title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -213,8 +199,8 @@
 
 <main class="blocked-card">
     <div class="topbar">
-        <span class="badge">${autoMsg_232df8ae74}</span>
-        <nav class="language-switch" aria-label="${autoMsg_c87c47b9c3}">
+        <span class="badge"><spring:message code="error.blocked.badge"/></span>
+        <nav class="language-switch" aria-label="${errorBlockedLanguageMsg}">
             <a href="${langKoUrl}" class="${pageLang eq 'ko' ? 'active' : ''}">KO</a>
             <a href="${langEnUrl}" class="${pageLang eq 'en' ? 'active' : ''}">EN</a>
             <a href="${langJaUrl}" class="${pageLang eq 'ja' ? 'active' : ''}">JA</a>
@@ -222,32 +208,32 @@
         </nav>
     </div>
 
-    <h1>${autoMsg_273365c647}</h1>
-    <p class="lead">${autoMsg_ab510c05d8}</p>
-    <p class="lead">${autoMsg_fb3bb199c5}</p>
-    <p class="lead">${autoMsg_8e844e51aa}</p>
+    <h1><spring:message code="error.blocked.title"/></h1>
+    <p class="lead"><spring:message code="error.blocked.lead"/></p>
+    <p class="lead"><spring:message code="error.blocked.description"/></p>
+    <p class="lead"><spring:message code="error.blocked.contact"/></p>
 
     <section class="support-box" aria-labelledby="supportInfoTitle">
-        <p id="supportInfoTitle" class="support-title">${autoMsg_17c99ed816}</p>
+        <p id="supportInfoTitle" class="support-title"><spring:message code="error.blocked.supportInfo"/></p>
         <dl class="info-grid">
-            <dt>${autoMsg_19d435ccce}</dt>
+            <dt><spring:message code="error.blocked.requestId"/></dt>
             <dd><c:out value="${requestId}" default="-"/></dd>
 
-            <dt>${autoMsg_22246f576c}</dt>
-            <dd>${autoMsg_6eab05090d}</dd>
+            <dt><spring:message code="error.blocked.restrictionType"/></dt>
+            <dd><spring:message code="${restrictionTypeCode}"/></dd>
 
-            <dt>${autoMsg_de6b6e5690}</dt>
+            <dt><spring:message code="error.blocked.ip"/></dt>
             <dd><c:out value="${clientIp}" default="-"/></dd>
         </dl>
     </section>
 
     <div class="actions">
-        <a class="btn btn-primary" href="${appealUrl}">${autoMsg_09f6859071}</a>
-        <a class="btn" href="${pageContext.request.contextPath}/">${autoMsg_9fe56439ed}</a>
-        <a class="btn" href="${pageContext.request.contextPath}/inquiry/list">${autoMsg_2405934047}</a>
+        <a class="btn btn-primary" href="${appealUrl}"><spring:message code="error.blocked.appeal"/></a>
+        <a class="btn" href="${pageContext.request.contextPath}/"><spring:message code="error.blocked.home"/></a>
+        <a class="btn" href="${pageContext.request.contextPath}/inquiry/list"><spring:message code="error.blocked.support"/></a>
     </div>
 
-    <p class="note">${autoMsg_4fd714e9a5}</p>
+    <p class="note"><spring:message code="error.blocked.notice"/></p>
 </main>
 </body>
 </html>

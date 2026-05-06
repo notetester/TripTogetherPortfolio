@@ -3,49 +3,13 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_7c792eb648" code="admin.community.detail.postTitle"/>
-<spring:message var="autoMsg_07ae8ceba4" code="admin.community.status.active"/>
-<spring:message var="autoMsg_96ec68e1d7" code="admin.community.status.blocked"/>
-<spring:message var="autoMsg_7943a1c4f8" code="admin.community.status.deleted"/>
-<spring:message var="autoMsg_8de4b0f65e" code="admin.community.action.block"/>
-<spring:message var="autoMsg_d8017a4af8" code="admin.community.action.delete"/>
-<spring:message var="autoMsg_a38ea41025" code="admin.community.postType.review"/>
-<spring:message var="autoMsg_a180f25463" code="admin.community.postType.photo"/>
-<spring:message var="autoMsg_0fd05d80fb" code="admin.community.postType.tip"/>
-<spring:message var="autoMsg_a3400f2efd" code="admin.community.postType.question"/>
-<spring:message var="autoMsg_0e0eece918" code="admin.translation.label.communityPostTitle"/>
-<spring:message var="autoMsg_4d8e8fa1e0" code="admin.translation.label.communityPostContent"/>
-<spring:message var="autoMsg_4bad9b5f8c" code="admin.community.column.reportCount"/>
-<spring:message var="autoMsg_8565df9c29" code="admin.common.countSuffix"/>
-<spring:message var="autoMsg_72fdd17123" code="admin.community.detail.reportId"/>
-<spring:message var="autoMsg_6d5b2256d0" code="admin.reports.reporter"/>
-<spring:message var="autoMsg_ca03ccd6e8" code="admin.common.reason"/>
-<spring:message var="autoMsg_3ff52a1ed1" code="admin.reports.reportedAt"/>
-<spring:message var="autoMsg_9b652c886d" code="admin.common.status"/>
-<spring:message var="autoMsg_472fad996e" code="admin.reports.resolvedAt"/>
-<spring:message var="autoMsg_96c2a6a292" code="admin.reports.reason.spam"/>
-<spring:message var="autoMsg_92c8a0fbf1" code="admin.reports.reason.abuse"/>
-<spring:message var="autoMsg_311dd41dcf" code="admin.reports.reason.privacy"/>
-<spring:message var="autoMsg_419d38d1d9" code="admin.reports.reason.adult"/>
-<spring:message var="autoMsg_7f1a2e5af2" code="admin.reports.reason.illegal"/>
-<spring:message var="autoMsg_51ac36033c" code="admin.reports.status.resolved"/>
-<spring:message var="autoMsg_29ffb64243" code="admin.reports.status.dismissed"/>
-<spring:message var="autoMsg_ca6160daa4" code="admin.community.detail.reportStatusPending"/>
-<spring:message var="autoMsg_eeb24eeb5e" code="admin.community.detail.commentsTitle"/>
-<spring:message var="autoMsg_d5f8e7f719" code="admin.community.accountBlocked"/>
-<spring:message var="autoMsg_609b6a64e7" code="admin.community.rowResolved30d"/>
-<spring:message var="autoMsg_fa1fd3d4ca" code="admin.translation.label.communityCommentContent"/>
-<spring:message var="autoMsg_a30b96625f" code="admin.community.kind.reply"/>
-<spring:message var="autoMsg_2322698068" code="admin.common.userId"/>
-<spring:message var="autoMsg_c6a6640a78" code="admin.common.nickname"/>
-<spring:message var="autoMsg_2c2560fa6f" code="admin.community.detail.accountStatus.active"/>
-<spring:message var="autoMsg_d2d214eebf" code="admin.community.detail.accountStatus.blocked"/>
-<spring:message var="autoMsg_6cdb3138da" code="admin.community.detail.accountStatus.dormant"/>
-<spring:message var="autoMsg_cf5929bd0c" code="admin.community.detail.accountStatus.deleted"/>
-<spring:message var="autoMsg_e3b242589a" code="admin.community.detail.recentResolvedCount"/>
-<spring:message var="autoMsg_2722b3c9fc" code="admin.community.action.block" javaScriptEscape="true"/>
-<spring:message var="autoMsg_3bf7bc9bcb" code="admin.community.action.delete" javaScriptEscape="true"/>
+
 <c:set var="activeMenu" value="community"/>
+<spring:message var="adminTranslationLabelCommunityPostTitleMsg" code="admin.translation.label.communityPostTitle"/>
+<spring:message var="adminTranslationLabelCommunityPostContentMsg" code="admin.translation.label.communityPostContent"/>
+<spring:message var="adminTranslationLabelCommunityCommentContentMsg" code="admin.translation.label.communityCommentContent"/>
+<spring:message var="adminCommunityActionBlockMsg" code="admin.community.action.block" javaScriptEscape="true"/>
+<spring:message var="adminCommunityActionDeleteMsg" code="admin.community.action.delete" javaScriptEscape="true"/>
 <spring:message code="admin.community.detail.pageTitle" var="adminCommunityDetailPageTitle"/>
 <spring:message code="admin.community.detail.backToList" var="adminCommunityDetailBackToList"/>
 <spring:message code="admin.community.detail.notFound" var="adminCommunityDetailNotFound"/>
@@ -100,13 +64,13 @@
                 <%-- 게시글 카드 --%>
                 <div class="adm-card" style="margin-bottom:20px;">
                     <div class="adm-card-head">
-                        <div class="adm-card-title">${autoMsg_7c792eb648}</div>
+                        <div class="adm-card-title"><spring:message code="admin.community.detail.postTitle"/></div>
                         <div style="display:flex;gap:8px;align-items:center;">
                             <span class="status-badge ${post.postStatus}">
                                 <c:choose>
-                                    <c:when test="${post.postStatus == 'ACTIVE'}">${autoMsg_07ae8ceba4}</c:when>
-                                    <c:when test="${post.postStatus == 'BLOCKED'}">${autoMsg_96ec68e1d7}</c:when>
-                                    <c:when test="${post.postStatus == 'DELETED'}">${autoMsg_7943a1c4f8}</c:when>
+                                    <c:when test="${post.postStatus == 'ACTIVE'}"><spring:message code="admin.community.status.active"/></c:when>
+                                    <c:when test="${post.postStatus == 'BLOCKED'}"><spring:message code="admin.community.status.blocked"/></c:when>
+                                    <c:when test="${post.postStatus == 'DELETED'}"><spring:message code="admin.community.status.deleted"/></c:when>
                                     <c:otherwise>${post.postStatus}</c:otherwise>
                                 </c:choose>
                             </span>
@@ -120,13 +84,13 @@
                                 <button class="adm-btn adm-btn-ghost"
                                         style="font-size:12px;color:#f87171;border-color:#f87171;"
                                         data-id="${post.postId}"
-                                        onclick="actionPost(this.getAttribute('data-id'), 'block')">${autoMsg_8de4b0f65e}</button>
+                                        onclick="actionPost(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
                             </c:if>
                             <c:if test="${post.postStatus != 'DELETED'}">
                                 <button class="adm-btn adm-btn-ghost"
                                         style="font-size:12px;color:#64748b;"
                                         data-id="${post.postId}"
-                                        onclick="actionPost(this.getAttribute('data-id'), 'delete')">${autoMsg_d8017a4af8}</button>
+                                        onclick="actionPost(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
                             </c:if>
                         </div>
                     </div>
@@ -134,10 +98,10 @@
                         <div style="margin-bottom:8px;">
                             <span class="adm-post-type-badge">
                                 <c:choose>
-                                    <c:when test="${post.postType == 'review'}">${autoMsg_a38ea41025}</c:when>
-                                    <c:when test="${post.postType == 'photo'}">${autoMsg_a180f25463}</c:when>
-                                    <c:when test="${post.postType == 'tip'}">${autoMsg_0fd05d80fb}</c:when>
-                                    <c:when test="${post.postType == 'question'}">${autoMsg_a3400f2efd}</c:when>
+                                    <c:when test="${post.postType == 'review'}"><spring:message code="admin.community.postType.review"/></c:when>
+                                    <c:when test="${post.postType == 'photo'}"><spring:message code="admin.community.postType.photo"/></c:when>
+                                    <c:when test="${post.postType == 'tip'}"><spring:message code="admin.community.postType.tip"/></c:when>
+                                    <c:when test="${post.postType == 'question'}"><spring:message code="admin.community.postType.question"/></c:when>
                                     <c:otherwise>${post.postType}</c:otherwise>
                                 </c:choose>
                             </span>
@@ -145,7 +109,7 @@
                         </div>
                         <h3 class="adm-detail-title">${post.title}</h3>
                         <div class="adm-tr-inline js-admin-translation-widget"
-                             data-label="${autoMsg_0e0eece918}"
+                             data-label="${adminTranslationLabelCommunityPostTitleMsg}"
                              data-source-type="COMMUNITY_POST"
                              data-source-idx="${post.postId}"
                              data-field-name="title"
@@ -153,7 +117,7 @@
                              data-source-text="${fn:escapeXml(post.title)}"></div>
                         <div class="adm-detail-body">${post.content}</div>
                         <div class="adm-tr-inline js-admin-translation-widget"
-                             data-label="${autoMsg_4d8e8fa1e0}"
+                             data-label="${adminTranslationLabelCommunityPostContentMsg}"
                              data-source-type="COMMUNITY_POST"
                              data-source-idx="${post.postId}"
                              data-field-name="content"
@@ -165,7 +129,7 @@
                             <span>❤ ${post.likeCount}</span>
                             <span>💬 ${post.commentCount}</span>
                             <c:if test="${post.reportCount > 0}">
-                                <span style="color:#f87171;">🚨 ${autoMsg_4bad9b5f8c} ${post.reportCount}${autoMsg_8565df9c29}</span>
+                                <span style="color:#f87171;">🚨 <spring:message code="admin.community.column.reportCount"/> ${post.reportCount}<spring:message code="admin.common.countSuffix"/></span>
                             </c:if>
                             <span>
                                 <fmt:formatDate value="${post.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/>
@@ -178,7 +142,7 @@
                 <div class="adm-card" style="margin-bottom:20px;">
                     <div class="adm-card-head">
                         <div class="adm-card-title">${adminCommunityDetailReportHistory}</div>
-                        <div style="font-size:12px;color:#64748b;">${fn:length(reports)}${autoMsg_8565df9c29}</div>
+                        <div style="font-size:12px;color:#64748b;">${fn:length(reports)}<spring:message code="admin.common.countSuffix"/></div>
                     </div>
                     <c:choose>
                         <c:when test="${empty reports}">
@@ -189,12 +153,12 @@
                                 <table class="adm-table">
                                     <thead>
                                     <tr>
-                                        <th>${autoMsg_72fdd17123}</th>
-                                        <th>${autoMsg_6d5b2256d0}</th>
-                                        <th>${autoMsg_ca03ccd6e8}</th>
-                                        <th>${autoMsg_3ff52a1ed1}</th>
-                                        <th>${autoMsg_9b652c886d}</th>
-                                        <th>${autoMsg_472fad996e}</th>
+                                        <th><spring:message code="admin.community.detail.reportId"/></th>
+                                        <th><spring:message code="admin.reports.reporter"/></th>
+                                        <th><spring:message code="admin.common.reason"/></th>
+                                        <th><spring:message code="admin.reports.reportedAt"/></th>
+                                        <th><spring:message code="admin.common.status"/></th>
+                                        <th><spring:message code="admin.reports.resolvedAt"/></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -216,11 +180,11 @@
                                                 <a class="adm-cell-link adm-cell-link--inline"
                                                    href="${pageContext.request.contextPath}/admin/reports/${r.reportId}">
                                                 <c:choose>
-                                                    <c:when test="${r.reason == 'spam'}">${autoMsg_96c2a6a292}</c:when>
-                                                    <c:when test="${r.reason == 'abuse'}">${autoMsg_92c8a0fbf1}</c:when>
-                                                    <c:when test="${r.reason == 'privacy'}">${autoMsg_311dd41dcf}</c:when>
-                                                    <c:when test="${r.reason == 'adult'}">${autoMsg_419d38d1d9}</c:when>
-                                                    <c:when test="${r.reason == 'illegal'}">${autoMsg_7f1a2e5af2}</c:when>
+                                                    <c:when test="${r.reason == 'spam'}"><spring:message code="admin.reports.reason.spam"/></c:when>
+                                                    <c:when test="${r.reason == 'abuse'}"><spring:message code="admin.reports.reason.abuse"/></c:when>
+                                                    <c:when test="${r.reason == 'privacy'}"><spring:message code="admin.reports.reason.privacy"/></c:when>
+                                                    <c:when test="${r.reason == 'adult'}"><spring:message code="admin.reports.reason.adult"/></c:when>
+                                                    <c:when test="${r.reason == 'illegal'}"><spring:message code="admin.reports.reason.illegal"/></c:when>
                                                     <c:otherwise>${r.reason}</c:otherwise>
                                                 </c:choose>
                                                 </a>
@@ -236,9 +200,9 @@
                                                    class="adm-cell-link adm-cell-link--inline status-badge ${r.status}"
                                                    style="font-size:11px;">
                                                     <c:choose>
-                                                        <c:when test="${r.status == 'RESOLVED'}">${autoMsg_51ac36033c}</c:when>
-                                                        <c:when test="${r.status == 'DISMISSED'}">${autoMsg_29ffb64243}</c:when>
-                                                        <c:otherwise>${autoMsg_ca6160daa4}</c:otherwise>
+                                                        <c:when test="${r.status == 'RESOLVED'}"><spring:message code="admin.reports.status.resolved"/></c:when>
+                                                        <c:when test="${r.status == 'DISMISSED'}"><spring:message code="admin.reports.status.dismissed"/></c:when>
+                                                        <c:otherwise><spring:message code="admin.community.detail.reportStatusPending"/></c:otherwise>
                                                     </c:choose>
                                                 </a>
                                             </td>
@@ -268,8 +232,8 @@
                 <%-- 댓글 목록 카드 --%>
                 <div class="adm-card">
                     <div class="adm-card-head">
-                        <div class="adm-card-title">${autoMsg_eeb24eeb5e}</div>
-                        <div style="font-size:12px;color:#64748b;">${fn:length(comments)}${autoMsg_8565df9c29}</div>
+                        <div class="adm-card-title"><spring:message code="admin.community.detail.commentsTitle"/></div>
+                        <div style="font-size:12px;color:#64748b;">${fn:length(comments)}<spring:message code="admin.common.countSuffix"/></div>
                     </div>
                     <c:choose>
                         <c:when test="${empty comments}">
@@ -306,22 +270,22 @@
                                                     </c:choose>
                                                 </span>
                                                 <c:if test="${comment.accountStatus == 'BLOCKED'}">
-                                                    <span class="adm-inline-danger">${autoMsg_d5f8e7f719}</span>
+                                                    <span class="adm-inline-danger"><spring:message code="admin.community.accountBlocked"/></span>
                                                 </c:if>
                                                 <c:if test="${comment.authorResolveCount30d > 0}">
                                                     <span class="adm-inline-warning">
-                                                        ⚠ ${autoMsg_609b6a64e7}
+                                                        ⚠ <spring:message code="admin.community.rowResolved30d"/>
                                                     </span>
                                                 </c:if>
                                                 <span class="status-badge ${comment.commentStatus}" style="font-size:10px;">
                                                     <c:choose>
-                                                        <c:when test="${comment.commentStatus == 'ACTIVE'}">${autoMsg_07ae8ceba4}</c:when>
-                                                        <c:when test="${comment.commentStatus == 'BLOCKED'}">${autoMsg_96ec68e1d7}</c:when>
+                                                        <c:when test="${comment.commentStatus == 'ACTIVE'}"><spring:message code="admin.community.status.active"/></c:when>
+                                                        <c:when test="${comment.commentStatus == 'BLOCKED'}"><spring:message code="admin.community.status.blocked"/></c:when>
                                                         <c:otherwise>${comment.commentStatus}</c:otherwise>
                                                     </c:choose>
                                                 </span>
                                                 <c:if test="${comment.reportCount > 0}">
-                                                    <span style="font-size:10px;color:#f87171;">🚨 ${comment.reportCount}${autoMsg_8565df9c29}</span>
+                                                    <span style="font-size:10px;color:#f87171;">🚨 ${comment.reportCount}<spring:message code="admin.common.countSuffix"/></span>
                                                 </c:if>
                                             </div>
                                             <%-- 댓글 액션 --%>
@@ -331,7 +295,7 @@
                                                         <button class="adm-row-btn danger"
                                                                 type="button"
                                                                 data-id="${comment.commentId}"
-                                                                onclick="actionComment(this.getAttribute('data-id'), 'block')">${autoMsg_8de4b0f65e}</button>
+                                                                onclick="actionComment(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
                                                         <div class="action-menu-wrap">
                                                             <button class="adm-row-btn detail adm-row-btn-more"
                                                                     type="button"
@@ -340,7 +304,7 @@
                                                                 <button class="action-menu-item danger"
                                                                         type="button"
                                                                         data-id="${comment.commentId}"
-                                                                        onclick="actionComment(this.getAttribute('data-id'), 'delete')">${autoMsg_d8017a4af8}</button>
+                                                                        onclick="actionComment(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -350,7 +314,7 @@
                                                         <button class="adm-row-btn danger"
                                                                 type="button"
                                                                 data-id="${comment.commentId}"
-                                                                onclick="actionComment(this.getAttribute('data-id'), 'delete')">${autoMsg_d8017a4af8}</button>
+                                                                onclick="actionComment(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
                                                     </div>
                                                 </c:otherwise>
                                             </c:choose>
@@ -359,7 +323,7 @@
                                         <div style="font-size:13px;color:#cbd5e1;line-height:1.6;">${comment.content}</div>
                                         <c:if test="${not empty comment.content}">
                                             <div class="adm-tr-inline js-admin-translation-widget"
-                                                 data-label="${autoMsg_fa1fd3d4ca}"
+                                                 data-label="${adminTranslationLabelCommunityCommentContentMsg}"
                                                  data-source-type="COMMUNITY_COMMENT"
                                                  data-source-idx="${comment.commentId}"
                                                  data-field-name="content"
@@ -369,7 +333,7 @@
                                         <div style="font-size:11px;color:#475569;margin-top:4px;">
                                             <fmt:formatDate value="${comment.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/>
                                             <c:if test="${not empty comment.parentCommentId}">
-                                                <span style="margin-left:8px;color:#334155;">↩ ${autoMsg_a30b96625f}</span>
+                                                <span style="margin-left:8px;color:#334155;">↩ <spring:message code="admin.community.kind.reply"/></span>
                                             </c:if>
                                         </div>
                                     </div>
@@ -390,7 +354,7 @@
                         <div class="adm-side-section">
 
                             <div>
-                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${autoMsg_2322698068}</div>
+                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.userId"/></div>
                                 <button type="button"
                                         class="adm-inline-link js-open-member-context"
                                         data-user-idx="${post.userIdx}"
@@ -398,7 +362,7 @@
                             </div>
 
                             <div>
-                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${autoMsg_c6a6640a78}</div>
+                                <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.nickname"/></div>
                                 <button type="button"
                                         class="adm-inline-link js-open-member-context"
                                         data-user-idx="${post.userIdx}"
@@ -424,10 +388,10 @@
                                 <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${adminCommunityDetailAccountStatus}</div>
                                 <span class="status-badge ${post.accountStatus}">
                                     <c:choose>
-                                        <c:when test="${post.accountStatus == 'ACTIVE'}">${autoMsg_2c2560fa6f}</c:when>
-                                        <c:when test="${post.accountStatus == 'BLOCKED'}">${autoMsg_d2d214eebf}</c:when>
-                                        <c:when test="${post.accountStatus == 'DORMANT'}">${autoMsg_6cdb3138da}</c:when>
-                                        <c:when test="${post.accountStatus == 'DELETED'}">${autoMsg_cf5929bd0c}</c:when>
+                                        <c:when test="${post.accountStatus == 'ACTIVE'}"><spring:message code="admin.community.detail.accountStatus.active"/></c:when>
+                                        <c:when test="${post.accountStatus == 'BLOCKED'}"><spring:message code="admin.community.detail.accountStatus.blocked"/></c:when>
+                                        <c:when test="${post.accountStatus == 'DORMANT'}"><spring:message code="admin.community.detail.accountStatus.dormant"/></c:when>
+                                        <c:when test="${post.accountStatus == 'DELETED'}"><spring:message code="admin.community.detail.accountStatus.deleted"/></c:when>
                                         <c:otherwise>${post.accountStatus}</c:otherwise>
                                     </c:choose>
                                 </span>
@@ -436,7 +400,7 @@
                             <c:if test="${post.authorResolveCount30d > 0}">
                                 <div class="adm-warning-box">
                                     <div style="font-size:11px;font-weight:600;margin-bottom:4px;">⚠ ${adminCommunityDetailRecentResolvedTitle}</div>
-                                    <div style="font-size:13px;">${autoMsg_e3b242589a}</div>
+                                    <div style="font-size:13px;"><spring:message code="admin.community.detail.recentResolvedCount"/></div>
                                 </div>
                             </c:if>
 
@@ -470,8 +434,8 @@ var COMMUNITY_DETAIL_MSG = {
     confirmCommentAction: '${fn:escapeXml(adminCommunityDetailConfirmCommentAction)}',
     confirmBlockAuthor: '${fn:escapeXml(adminCommunityDetailConfirmBlockAuthor)}',
     actionFailed: '${fn:escapeXml(adminCommunityDetailActionFailed)}',
-    block: '${autoMsg_2722b3c9fc}',
-    delete: '${autoMsg_3bf7bc9bcb}'
+    block: '${adminCommunityActionBlockMsg}',
+    delete: '${adminCommunityActionDeleteMsg}'
 };
 
 function actionPost(postId, action) {

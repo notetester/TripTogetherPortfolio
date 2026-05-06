@@ -3,32 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_9d708285de" code="package.manage.eyebrow"/>
-<spring:message var="autoMsg_d23c63b50d" code="package.manage.title"/>
-<spring:message var="autoMsg_e585f0e557" code="package.manage.desc"/>
-<spring:message var="autoMsg_39adf077eb" code="package.manage.productsEyebrow"/>
-<spring:message var="autoMsg_8f8eac8af5" code="package.manage.myProducts"/>
-<spring:message var="autoMsg_ee8c5a44fa" code="package.manage.editNotice"/>
-<spring:message var="autoMsg_5c953f1a59" code="package.manage.empty"/>
-<spring:message var="autoMsg_edcfd685ac" code="package.manage.emptyDesc"/>
-<spring:message var="autoMsg_165e6590da" code="package.status.expired"/>
-<spring:message var="autoMsg_e1970540d9" code="package.status.approved"/>
-<spring:message var="autoMsg_e52690a20a" code="package.status.pending"/>
-<spring:message var="autoMsg_9fb3816ed7" code="package.status.rejected"/>
-<spring:message var="autoMsg_f8427debd2" code="package.status.draft"/>
-<spring:message var="autoMsg_2032aa9f6f" code="package.status.blocked"/>
-<spring:message var="autoMsg_3393af786f" code="package.manage.noSummary"/>
-<spring:message var="autoMsg_3d8d122c83" code="package.common.priceLabel"/>
-<spring:message var="autoMsg_716c76c8ad" code="package.common.operationDate"/>
-<spring:message var="autoMsg_a89496e116" code="package.common.always"/>
-<spring:message var="autoMsg_0c422480d7" code="package.common.peopleLabel"/>
-<spring:message var="autoMsg_f1121e1ede" code="package.common.maxPeople"/>
-<spring:message var="autoMsg_8f9bd2c551" code="package.manage.rejectReasonLabel"/>
-<spring:message var="autoMsg_39a3c893c9" code="package.manage.submitRequest"/>
-<spring:message var="autoMsg_21f65c7f0e" code="package.manage.pendingReview"/>
-<spring:message var="autoMsg_4cd242b13f" code="package.manage.expiredHidden"/>
-<spring:message var="autoMsg_517d45a628" code="package.manage.approvedVisible"/>
-<spring:message var="autoMsg_6199a6af61" code="package.revision.pending"/>
+
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <c:set var="pageCSS" value="packages/packages.css"/>
@@ -39,9 +14,9 @@
 <main class="pkg-wrap">
     <section class="pkg-hero">
         <div>
-            <p class="pkg-eyebrow">${autoMsg_9d708285de}</p>
-            <h1>${autoMsg_d23c63b50d}</h1>
-            <p>${autoMsg_e585f0e557}</p>
+            <p class="pkg-eyebrow"><spring:message code="package.manage.eyebrow"/></p>
+            <h1><spring:message code="package.manage.title"/></h1>
+            <p><spring:message code="package.manage.desc"/></p>
         </div>
         <a class="pkg-primary-link" href="${pageContext.request.contextPath}/packages/manage/write">
             <spring:message code="package.manage.newPackage"/>
@@ -58,17 +33,17 @@
 
         <div class="pkg-section-title">
             <div>
-                <span>${autoMsg_39adf077eb}</span>
-                <h2>${autoMsg_8f8eac8af5}</h2>
+                <span><spring:message code="package.manage.productsEyebrow"/></span>
+                <h2><spring:message code="package.manage.myProducts"/></h2>
             </div>
-            <p>${autoMsg_ee8c5a44fa}</p>
+            <p><spring:message code="package.manage.editNotice"/></p>
         </div>
 
         <c:choose>
             <c:when test="${empty packageList}">
                 <div class="pkg-empty">
-                    <strong>${autoMsg_5c953f1a59}</strong>
-                    <p>${autoMsg_edcfd685ac}</p>
+                    <strong><spring:message code="package.manage.empty"/></strong>
+                    <p><spring:message code="package.manage.emptyDesc"/></p>
                     <a href="${pageContext.request.contextPath}/packages/manage/write">
                         <spring:message code="package.manage.createLink"/>
                     </a>
@@ -85,12 +60,12 @@
                                 </c:if>
                                 <span class="pkg-status pkg-status--${displayStatusClass}">
                                     <c:choose>
-                                        <c:when test="${displayStatusClass eq 'EXPIRED'}">${autoMsg_165e6590da}</c:when>
-                                        <c:when test="${displayStatusClass eq 'APPROVED'}">${autoMsg_e1970540d9}</c:when>
-                                        <c:when test="${displayStatusClass eq 'PENDING'}">${autoMsg_e52690a20a}</c:when>
-                                        <c:when test="${displayStatusClass eq 'REJECTED'}">${autoMsg_9fb3816ed7}</c:when>
-                                        <c:when test="${displayStatusClass eq 'DRAFT'}">${autoMsg_f8427debd2}</c:when>
-                                        <c:when test="${displayStatusClass eq 'BLOCKED'}">${autoMsg_2032aa9f6f}</c:when>
+                                        <c:when test="${displayStatusClass eq 'EXPIRED'}"><spring:message code="package.status.expired"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'APPROVED'}"><spring:message code="package.status.approved"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'PENDING'}"><spring:message code="package.status.pending"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'REJECTED'}"><spring:message code="package.status.rejected"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'DRAFT'}"><spring:message code="package.status.draft"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'BLOCKED'}"><spring:message code="package.status.blocked"/></c:when>
                                         <c:otherwise>${fn:escapeXml(pkg.packageStatus)}</c:otherwise>
                                     </c:choose>
                                 </span>
@@ -114,32 +89,32 @@
                                 <p class="pkg-summary">
                                     <c:choose>
                                         <c:when test="${not empty pkg.packageSummary}">${fn:escapeXml(pkg.packageSummary)}</c:when>
-                                        <c:otherwise>${autoMsg_3393af786f}</c:otherwise>
+                                        <c:otherwise><spring:message code="package.manage.noSummary"/></c:otherwise>
                                     </c:choose>
                                 </p>
 
                                 <dl class="pkg-meta">
                                     <div>
-                                        <dt>${autoMsg_3d8d122c83}</dt>
+                                        <dt><spring:message code="package.common.priceLabel"/></dt>
                                         <dd><fmt:formatNumber value="${pkg.packagePrice}" pattern="#,##0"/> ${fn:escapeXml(pkg.currencyCode)}</dd>
                                     </div>
                                     <div>
-                                        <dt>${autoMsg_716c76c8ad}</dt>
+                                        <dt><spring:message code="package.common.operationDate"/></dt>
                                         <dd>
                                             <c:choose>
                                                 <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                                                     ${pkg.startDate} ~ ${pkg.endDate}
                                                 </c:when>
-                                                <c:otherwise>${autoMsg_a89496e116}</c:otherwise>
+                                                <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
                                             </c:choose>
                                         </dd>
                                     </div>
                                     <div>
-                                        <dt>${autoMsg_0c422480d7}</dt>
+                                        <dt><spring:message code="package.common.peopleLabel"/></dt>
                                         <dd>
                                             <spring:message code="package.common.minPeople" arguments="${pkg.minPeople}"/>
                                             <c:if test="${not empty pkg.maxPeople}">
-                                                / ${autoMsg_f1121e1ede}
+                                                / <spring:message code="package.common.maxPeople"/>
                                             </c:if>
                                         </dd>
                                     </div>
@@ -147,7 +122,7 @@
 
                                 <c:if test="${pkg.packageStatus eq 'REJECTED' and not empty pkg.rejectReason}">
                                     <div class="pkg-reject">
-                                        <strong>${autoMsg_8f9bd2c551}</strong>
+                                        <strong><spring:message code="package.manage.rejectReasonLabel"/></strong>
                                         <p>${fn:escapeXml(pkg.rejectReason)}</p>
                                     </div>
                                 </c:if>
@@ -160,24 +135,24 @@
                                     </a>
                                     <form method="post" action="${pageContext.request.contextPath}/packages/manage/${pkg.packageIdx}/submit"
                                           data-confirm="${packageSubmitConfirm}">
-                                        <button type="submit">${autoMsg_39a3c893c9}</button>
+                                        <button type="submit"><spring:message code="package.manage.submitRequest"/></button>
                                     </form>
                                 </c:if>
                                 <c:if test="${pkg.packageStatus eq 'PENDING'}">
-                                    <span class="pkg-waiting">${autoMsg_21f65c7f0e}</span>
+                                    <span class="pkg-waiting"><spring:message code="package.manage.pendingReview"/></span>
                                 </c:if>
                                 <c:if test="${pkg.packageStatus eq 'APPROVED'}">
                                     <c:choose>
                                         <c:when test="${pkg.expired}">
-                                            <span class="pkg-expired">${autoMsg_4cd242b13f}</span>
+                                            <span class="pkg-expired"><spring:message code="package.manage.expiredHidden"/></span>
                                         </c:when>
                                         <c:otherwise>
-                                            <span class="pkg-approved">${autoMsg_517d45a628}</span>
+                                            <span class="pkg-approved"><spring:message code="package.manage.approvedVisible"/></span>
                                         </c:otherwise>
                                     </c:choose>
                                     <c:choose>
                                         <c:when test="${pkg.revisionPending}">
-                                            <span class="pkg-waiting">${autoMsg_6199a6af61}</span>
+                                            <span class="pkg-waiting"><spring:message code="package.revision.pending"/></span>
                                         </c:when>
                                         <c:otherwise>
                                             <a href="${pageContext.request.contextPath}/packages/manage/${pkg.packageIdx}/edit">

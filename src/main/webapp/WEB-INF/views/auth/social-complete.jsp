@@ -1,44 +1,16 @@
+<spring:message var="authRegisterNicknamePlaceholderMsg" code="auth.register.nickname.placeholder"/>
+<spring:message var="authRegisterNicknameRuleMsg" code="auth.register.nickname.rule" javaScriptEscape="true"/>
+<spring:message var="authRegisterNicknameDuplicateMsg" code="auth.register.nickname.duplicate" javaScriptEscape="true"/>
+<spring:message var="authRegisterNicknameOkMsg" code="auth.register.nickname.ok" javaScriptEscape="true"/>
+<spring:message var="authRegisterNicknameRequiredMsg" code="auth.register.nickname.required" javaScriptEscape="true"/>
+<spring:message var="authRegisterNationalityRequiredMsg" code="auth.register.nationality.required" javaScriptEscape="true"/>
+<spring:message var="authRegisterLanguageRequiredMsg" code="auth.register.language.required" javaScriptEscape="true"/>
+<spring:message var="authCommonErrorPrefixMsg" code="auth.common.errorPrefix" javaScriptEscape="true"/>
+<spring:message var="authRegisterServerMsg" code="auth.register.server" javaScriptEscape="true"/>
 ﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_93c5bf4f2c" code="auth.social.title"/>
-<spring:message var="autoMsg_96753a3e42" code="auth.social.subtitle"/>
-<spring:message var="autoMsg_71635c4ff1" code="auth.social.linkedEmail"/>
-<spring:message var="autoMsg_3d0493b6df" code="auth.social.emailConflictTitle"/>
-<spring:message var="autoMsg_698a8de978" code="auth.social.emailConflictBody"/>
-<spring:message var="autoMsg_5d18463485" code="auth.social.emailReferenceTitle"/>
-<spring:message var="autoMsg_8cd0b47542" code="auth.social.emailReferenceBody"/>
-<spring:message var="autoMsg_ffeccd3254" code="auth.social.emailMissingTitle"/>
-<spring:message var="autoMsg_bae3aa1adb" code="auth.social.emailMissingBody"/>
-<spring:message var="autoMsg_b64ba1d853" code="auth.register.nickname"/>
-<spring:message var="autoMsg_c927c4d217" code="auth.register.nickname.placeholder"/>
-<spring:message var="autoMsg_1d9dd87dca" code="auth.register.nationality"/>
-<spring:message var="autoMsg_91972fbc66" code="auth.register.nationality.placeholder"/>
-<spring:message var="autoMsg_0814d9940e" code="auth.register.nationality.option.kr"/>
-<spring:message var="autoMsg_faca1f9d83" code="auth.register.nationality.option.us"/>
-<spring:message var="autoMsg_187d2275c5" code="auth.register.nationality.option.jp"/>
-<spring:message var="autoMsg_5ba3fdf7ff" code="auth.register.nationality.option.cn"/>
-<spring:message var="autoMsg_e87624e016" code="auth.register.nationality.option.gb"/>
-<spring:message var="autoMsg_72a942ba63" code="auth.register.nationality.option.fr"/>
-<spring:message var="autoMsg_96fb864746" code="auth.register.nationality.option.de"/>
-<spring:message var="autoMsg_3a199d80a7" code="auth.register.nationality.option.au"/>
-<spring:message var="autoMsg_ce0fa54cb9" code="auth.register.nationality.option.ca"/>
-<spring:message var="autoMsg_e0383b1245" code="auth.register.nationality.option.other"/>
-<spring:message var="autoMsg_4c9fa90bf1" code="auth.register.language"/>
-<spring:message var="autoMsg_bf465a6c00" code="auth.register.language.placeholder"/>
-<spring:message var="autoMsg_1a1da7a31a" code="auth.register.language.option.ko"/>
-<spring:message var="autoMsg_7b80d5cdf6" code="auth.register.language.option.en"/>
-<spring:message var="autoMsg_9c683a74c9" code="auth.register.language.option.ja"/>
-<spring:message var="autoMsg_3629c56522" code="auth.register.language.option.zh"/>
-<spring:message var="autoMsg_846ed7b09b" code="auth.social.backToLogin"/>
-<spring:message var="autoMsg_2eb9893aa2" code="auth.register.nickname.rule" javaScriptEscape="true"/>
-<spring:message var="autoMsg_5a132b06b9" code="auth.register.nickname.duplicate" javaScriptEscape="true"/>
-<spring:message var="autoMsg_0de62eb4ce" code="auth.register.nickname.ok" javaScriptEscape="true"/>
-<spring:message var="autoMsg_21f1f8662c" code="auth.register.nickname.required" javaScriptEscape="true"/>
-<spring:message var="autoMsg_ba072e5129" code="auth.register.nationality.required" javaScriptEscape="true"/>
-<spring:message var="autoMsg_96cabee644" code="auth.register.language.required" javaScriptEscape="true"/>
-<spring:message var="autoMsg_483d246c30" code="auth.common.errorPrefix" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b0e90b04c8" code="auth.register.server" javaScriptEscape="true"/>
+
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
 <html lang="${pageContext.response.locale.language}">
@@ -68,32 +40,32 @@
       </span>
     </div>
 
-    <h1 class="auth-title">${autoMsg_93c5bf4f2c}</h1>
-    <p class="auth-sub">${autoMsg_96753a3e42}</p>
+    <h1 class="auth-title"><spring:message code="auth.social.title"/></h1>
+    <p class="auth-sub"><spring:message code="auth.social.subtitle"/></p>
 
     <c:if test="${socialEmailNotice.emailAvailable}">
       <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--gray-600);margin-bottom:16px;">
-        ${autoMsg_71635c4ff1} <strong>${socialEmailNotice.socialEmail}</strong>
+        <spring:message code="auth.social.linkedEmail"/> <strong>${socialEmailNotice.socialEmail}</strong>
       </div>
     </c:if>
 
     <c:choose>
       <c:when test="${socialEmailNotice.noticeType == 'RECOMMEND_LINK'}">
         <div style="background:#fff7ed;border:1px solid #fdba74;border-radius:10px;padding:12px 14px;font-size:13px;color:#9a3412;line-height:1.7;margin-bottom:16px;">
-          <div style="font-weight:700;margin-bottom:4px;">${autoMsg_3d0493b6df}</div>
-          <div>${autoMsg_698a8de978}</div>
+          <div style="font-weight:700;margin-bottom:4px;"><spring:message code="auth.social.emailConflictTitle"/></div>
+          <div><spring:message code="auth.social.emailConflictBody"/></div>
         </div>
       </c:when>
       <c:when test="${socialEmailNotice.noticeType == 'REFERENCE'}">
         <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:13px;color:#1d4ed8;line-height:1.7;margin-bottom:16px;">
-          <div style="font-weight:700;margin-bottom:4px;">${autoMsg_5d18463485}</div>
-          <div>${autoMsg_8cd0b47542}</div>
+          <div style="font-weight:700;margin-bottom:4px;"><spring:message code="auth.social.emailReferenceTitle"/></div>
+          <div><spring:message code="auth.social.emailReferenceBody"/></div>
         </div>
       </c:when>
       <c:otherwise>
         <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:12px 14px;font-size:13px;color:#334155;line-height:1.7;margin-bottom:16px;">
-          <div style="font-weight:700;margin-bottom:4px;">${autoMsg_ffeccd3254}</div>
-          <div>${autoMsg_bae3aa1adb}</div>
+          <div style="font-weight:700;margin-bottom:4px;"><spring:message code="auth.social.emailMissingTitle"/></div>
+          <div><spring:message code="auth.social.emailMissingBody"/></div>
         </div>
       </c:otherwise>
     </c:choose>
@@ -101,37 +73,37 @@
     <div id="socialCompleteError" class="auth-error-banner"></div>
 
     <div class="form-group">
-      <label class="form-label" for="nickname">${autoMsg_b64ba1d853}<span style="color:#ef4444">*</span></label>
-      <input class="form-input" type="text" id="nickname" name="nickname" placeholder="${autoMsg_c927c4d217}" value="${socialTemp.nickname}" maxlength="20">
+      <label class="form-label" for="nickname"><spring:message code="auth.register.nickname"/><span style="color:#ef4444">*</span></label>
+      <input class="form-input" type="text" id="nickname" name="nickname" placeholder="${authRegisterNicknamePlaceholderMsg}" value="${socialTemp.nickname}" maxlength="20">
       <div class="field-msg" id="nicknameMsg"></div>
     </div>
 
     <div class="form-group">
-      <label class="form-label" for="nationality">${autoMsg_1d9dd87dca} <span style="color:#ef4444">*</span></label>
+      <label class="form-label" for="nationality"><spring:message code="auth.register.nationality"/> <span style="color:#ef4444">*</span></label>
       <select class="form-select" id="nationality" name="nationality">
-        <option value="">${autoMsg_91972fbc66}</option>
-        <option value="KR">${autoMsg_0814d9940e}</option>
-        <option value="US">${autoMsg_faca1f9d83}</option>
-        <option value="JP">${autoMsg_187d2275c5}</option>
-        <option value="CN">${autoMsg_5ba3fdf7ff}</option>
-        <option value="GB">${autoMsg_e87624e016}</option>
-        <option value="FR">${autoMsg_72a942ba63}</option>
-        <option value="DE">${autoMsg_96fb864746}</option>
-        <option value="AU">${autoMsg_3a199d80a7}</option>
-        <option value="CA">${autoMsg_ce0fa54cb9}</option>
-        <option value="OTHER">${autoMsg_e0383b1245}</option>
+        <option value=""><spring:message code="auth.register.nationality.placeholder"/></option>
+        <option value="KR"><spring:message code="auth.register.nationality.option.kr"/></option>
+        <option value="US"><spring:message code="auth.register.nationality.option.us"/></option>
+        <option value="JP"><spring:message code="auth.register.nationality.option.jp"/></option>
+        <option value="CN"><spring:message code="auth.register.nationality.option.cn"/></option>
+        <option value="GB"><spring:message code="auth.register.nationality.option.gb"/></option>
+        <option value="FR"><spring:message code="auth.register.nationality.option.fr"/></option>
+        <option value="DE"><spring:message code="auth.register.nationality.option.de"/></option>
+        <option value="AU"><spring:message code="auth.register.nationality.option.au"/></option>
+        <option value="CA"><spring:message code="auth.register.nationality.option.ca"/></option>
+        <option value="OTHER"><spring:message code="auth.register.nationality.option.other"/></option>
       </select>
       <div class="field-msg" id="nationalityMsg"></div>
     </div>
 
     <div class="form-group">
-      <label class="form-label" for="preferredLang">${autoMsg_4c9fa90bf1} <span style="color:#ef4444">*</span></label>
+      <label class="form-label" for="preferredLang"><spring:message code="auth.register.language"/> <span style="color:#ef4444">*</span></label>
       <select class="form-select" id="preferredLang" name="preferredLang">
-        <option value="">${autoMsg_bf465a6c00}</option>
-        <option value="ko">${autoMsg_1a1da7a31a}</option>
-        <option value="en">${autoMsg_7b80d5cdf6}</option>
-        <option value="ja">${autoMsg_9c683a74c9}</option>
-        <option value="zh">${autoMsg_3629c56522}</option>
+        <option value=""><spring:message code="auth.register.language.placeholder"/></option>
+        <option value="ko"><spring:message code="auth.register.language.option.ko"/></option>
+        <option value="en"><spring:message code="auth.register.language.option.en"/></option>
+        <option value="ja"><spring:message code="auth.register.language.option.ja"/></option>
+        <option value="zh"><spring:message code="auth.register.language.option.zh"/></option>
       </select>
       <div class="field-msg" id="langMsg"></div>
     </div>
@@ -141,7 +113,7 @@
     </button>
 
     <div class="auth-footer">
-      <a href="${pageContext.request.contextPath}/auth/login">${autoMsg_846ed7b09b}</a>
+      <a href="${pageContext.request.contextPath}/auth/login"><spring:message code="auth.social.backToLogin"/></a>
     </div>
   </div>
 </div>
@@ -158,7 +130,7 @@
     if (v.length < 2 || v.length > 20) {
       input.className = 'form-input error';
       msgEl.className = 'field-msg error';
-      msgEl.textContent = '${autoMsg_2eb9893aa2}';
+      msgEl.textContent = '${authRegisterNicknameRuleMsg}';
       return;
     }
 
@@ -169,11 +141,11 @@
       if (data.duplicate) {
         input.className = 'form-input error';
         msgEl.className = 'field-msg error';
-        msgEl.textContent = '${autoMsg_5a132b06b9}';
+        msgEl.textContent = '${authRegisterNicknameDuplicateMsg}';
       } else {
         input.className = 'form-input success';
         msgEl.className = 'field-msg success';
-        msgEl.textContent = '${autoMsg_0de62eb4ce}';
+        msgEl.textContent = '${authRegisterNicknameOkMsg}';
       }
     }, 500);
   });
@@ -184,9 +156,9 @@
     const preferredLang = document.getElementById('preferredLang').value;
     const errorBanner = document.getElementById('socialCompleteError');
 
-    if (!nickname) { showFieldError('nickname', 'nicknameMsg', '${autoMsg_21f1f8662c}'); return; }
-    if (!nationality) { showFieldError('nationality', 'nationalityMsg', '${autoMsg_ba072e5129}'); return; }
-    if (!preferredLang) { showFieldError('preferredLang', 'langMsg', '${autoMsg_96cabee644}'); return; }
+    if (!nickname) { showFieldError('nickname', 'nicknameMsg', '${authRegisterNicknameRequiredMsg}'); return; }
+    if (!nationality) { showFieldError('nationality', 'nationalityMsg', '${authRegisterNationalityRequiredMsg}'); return; }
+    if (!preferredLang) { showFieldError('preferredLang', 'langMsg', '${authRegisterLanguageRequiredMsg}'); return; }
 
     this.classList.add('loading');
     this.disabled = true;
@@ -202,11 +174,11 @@
       if (data.success) {
         location.href = data.redirect;
       } else {
-        errorBanner.textContent = '${autoMsg_483d246c30} ' + (data.message || '${autoMsg_b0e90b04c8}');
+        errorBanner.textContent = '${authCommonErrorPrefixMsg} ' + (data.message || '${authRegisterServerMsg}');
         errorBanner.classList.add('show');
       }
     } catch (e) {
-      errorBanner.textContent = '${autoMsg_483d246c30} ${autoMsg_b0e90b04c8}';
+      errorBanner.textContent = '${authCommonErrorPrefixMsg} ${authRegisterServerMsg}';
       errorBanner.classList.add('show');
     } finally {
       this.classList.remove('loading');

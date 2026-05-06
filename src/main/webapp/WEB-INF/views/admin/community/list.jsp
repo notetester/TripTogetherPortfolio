@@ -3,68 +3,16 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_e986d30bcd" code="admin.community.tab.posts"/>
-<spring:message var="autoMsg_519bfc7905" code="admin.community.tab.comments"/>
-<spring:message var="autoMsg_b03318e978" code="admin.community.kpi.activePosts"/>
-<spring:message var="autoMsg_ee4cbbc833" code="admin.community.kpi.totalPosts"/>
-<spring:message var="autoMsg_15ef06b762" code="admin.community.kpi.blockedPosts"/>
-<spring:message var="autoMsg_a4c0d74ded" code="admin.community.kpi.deletedPosts"/>
-<spring:message var="autoMsg_31b94cbad0" code="admin.community.kpi.activeComments"/>
-<spring:message var="autoMsg_68cbfa37f0" code="admin.community.kpi.blockedComments"/>
-<spring:message var="autoMsg_60c7903c78" code="admin.community.kpi.pendingReports"/>
-<spring:message var="autoMsg_9747193897" code="admin.community.kpi.resolvedReports30d"/>
-<spring:message var="autoMsg_784962e950" code="admin.community.filter.status"/>
-<spring:message var="autoMsg_091d56acc9" code="admin.common.all"/>
-<spring:message var="autoMsg_a3bcb29a0c" code="admin.community.status.active"/>
-<spring:message var="autoMsg_81b8994d7e" code="admin.community.status.blocked"/>
-<spring:message var="autoMsg_2d5c6767f8" code="admin.community.status.deleted"/>
-<spring:message var="autoMsg_5467147e32" code="admin.community.filter.type"/>
-<spring:message var="autoMsg_eac82ebab4" code="admin.community.postType.review"/>
-<spring:message var="autoMsg_7973be7817" code="admin.community.postType.photo"/>
-<spring:message var="autoMsg_4e4bc634e1" code="admin.community.postType.tip"/>
-<spring:message var="autoMsg_01fca1a4ed" code="admin.community.postType.question"/>
-<spring:message var="autoMsg_4470083b06" code="admin.community.filter.sort"/>
-<spring:message var="autoMsg_9eea6940ae" code="admin.community.sort.createdAt"/>
-<spring:message var="autoMsg_7954a9725c" code="admin.community.sort.reportCount"/>
-<spring:message var="autoMsg_1859a5b778" code="admin.community.filter.flagged"/>
-<spring:message var="autoMsg_e40dd36b65" code="admin.community.flagged.flagged"/>
-<spring:message var="autoMsg_937a07f78f" code="admin.common.search"/>
-<spring:message var="autoMsg_d82c7aa047" code="admin.community.searchType.title"/>
-<spring:message var="autoMsg_8b2ef02b58" code="admin.community.searchType.content"/>
-<spring:message var="autoMsg_0bb651f55c" code="admin.community.searchType.nickname"/>
-<spring:message var="autoMsg_6959a41bb9" code="admin.community.searchType.userId"/>
-<spring:message var="autoMsg_401b717497" code="admin.community.filter.searchPlaceholder"/>
-<spring:message var="autoMsg_62120563c4" code="admin.common.searchButton"/>
-<spring:message var="autoMsg_4ed053a375" code="admin.common.reset"/>
-<spring:message var="autoMsg_79ee78af33" code="admin.community.list.postsTitle"/>
-<spring:message var="autoMsg_b65a795373" code="admin.common.totalCount"/>
-<spring:message var="autoMsg_50c330202a" code="admin.community.action.bulkBlock"/>
-<spring:message var="autoMsg_efcdd3f829" code="admin.community.action.bulkDelete"/>
-<spring:message var="autoMsg_28e018d8fd" code="admin.community.column.id"/>
-<spring:message var="autoMsg_e9f2e860b8" code="admin.community.column.author"/>
-<spring:message var="autoMsg_ed9e29b7c1" code="admin.community.column.ip"/>
-<spring:message var="autoMsg_8bd69b96da" code="admin.community.column.title"/>
-<spring:message var="autoMsg_9b6994bcdd" code="admin.community.column.type"/>
-<spring:message var="autoMsg_df71264448" code="admin.community.column.reportCount"/>
-<spring:message var="autoMsg_531053a642" code="admin.common.status"/>
-<spring:message var="autoMsg_d7acd014e2" code="admin.community.column.createdAt"/>
-<spring:message var="autoMsg_40157ac017" code="admin.common.action"/>
-<spring:message var="autoMsg_855fdf4b6a" code="admin.community.accountBlocked"/>
-<spring:message var="autoMsg_ad5de23893" code="admin.community.rowResolved30d"/>
-<spring:message var="autoMsg_c2de3079ea" code="admin.common.sameValue"/>
-<spring:message var="autoMsg_3398e8bd8b" code="admin.community.action.block"/>
-<spring:message var="autoMsg_0c3c7ba108" code="admin.community.action.delete"/>
-<spring:message var="autoMsg_ce0fe32fcf" code="admin.common.noResults"/>
-<spring:message var="autoMsg_67b5a87e64" code="admin.common.pageStatus"/>
-<spring:message var="autoMsg_4782142ecc" code="admin.community.viewSite"/>
-<spring:message var="autoMsg_cbba8877c3" code="admin.community.confirm.postAction" javaScriptEscape="true"/>
-<spring:message var="autoMsg_a4213d693f" code="admin.community.confirm.bulkAction" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b4348ffa3f" code="admin.community.bulk.selectedCount" javaScriptEscape="true"/>
-<spring:message var="autoMsg_9335fa9cbb" code="admin.community.action.block" javaScriptEscape="true"/>
-<spring:message var="autoMsg_c4f82a7ae9" code="admin.community.action.delete" javaScriptEscape="true"/>
-<spring:message var="autoMsg_4a3f3c8e04" code="admin.community.label.lastIp" javaScriptEscape="true"/>
-<spring:message var="autoMsg_310f901f6f" code="admin.community.authorModal.recentResolved" javaScriptEscape="true"/>
+
 <c:set var="activeMenu" value="community"/>
+<spring:message var="adminCommunityFilterSearchPlaceholderMsg" code="admin.community.filter.searchPlaceholder"/>
+<spring:message var="adminCommunityConfirmPostActionMsg" code="admin.community.confirm.postAction" javaScriptEscape="true"/>
+<spring:message var="adminCommunityConfirmBulkActionMsg" code="admin.community.confirm.bulkAction" javaScriptEscape="true"/>
+<spring:message var="adminCommunityBulkSelectedCountMsg" code="admin.community.bulk.selectedCount" javaScriptEscape="true"/>
+<spring:message var="adminCommunityActionBlockMsg" code="admin.community.action.block" javaScriptEscape="true"/>
+<spring:message var="adminCommunityActionDeleteMsg" code="admin.community.action.delete" javaScriptEscape="true"/>
+<spring:message var="adminCommunityLabelLastIpMsg" code="admin.community.label.lastIp" javaScriptEscape="true"/>
+<spring:message var="adminCommunityAuthorModalRecentResolvedMsg" code="admin.community.authorModal.recentResolved" javaScriptEscape="true"/>
 <spring:message code="admin.community.pageTitle" var="adminCommunityPageTitle"/>
 <spring:message code="admin.common.nickname" var="adminCommonNickname"/>
 <spring:message code="admin.common.userId" var="adminCommonUserId"/>
@@ -88,31 +36,31 @@
 
     <%-- ── 탭 바 ── --%>
     <div class="adm-tabs adm-admin-tabs">
-        <a class="adm-tab adm-tab-link active" href="${pageContext.request.contextPath}/admin/community">📝 ${autoMsg_e986d30bcd}</a>
-        <a class="adm-tab adm-tab-link" href="${pageContext.request.contextPath}/admin/community/comments">💬 ${autoMsg_519bfc7905}</a>
+        <a class="adm-tab adm-tab-link active" href="${pageContext.request.contextPath}/admin/community">📝 <spring:message code="admin.community.tab.posts"/></a>
+        <a class="adm-tab adm-tab-link" href="${pageContext.request.contextPath}/admin/community/comments">💬 <spring:message code="admin.community.tab.comments"/></a>
     </div>
 
     <%-- ── 통계 카드 ── --%>
     <div class="adm-summary-grid">
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label">${autoMsg_b03318e978}</div>
+            <div class="adm-summary-label"><spring:message code="admin.community.kpi.activePosts"/></div>
             <div class="adm-summary-value is-primary">${stats.activePosts}</div>
-            <div class="adm-summary-sub">${autoMsg_ee4cbbc833}</div>
+            <div class="adm-summary-sub"><spring:message code="admin.community.kpi.totalPosts"/></div>
         </div>
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label">${autoMsg_15ef06b762}</div>
+            <div class="adm-summary-label"><spring:message code="admin.community.kpi.blockedPosts"/></div>
             <div class="adm-summary-value is-danger">${stats.blockedPosts}</div>
-            <div class="adm-summary-sub">${autoMsg_a4c0d74ded}</div>
+            <div class="adm-summary-sub"><spring:message code="admin.community.kpi.deletedPosts"/></div>
         </div>
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label">${autoMsg_31b94cbad0}</div>
+            <div class="adm-summary-label"><spring:message code="admin.community.kpi.activeComments"/></div>
             <div class="adm-summary-value is-success">${stats.activeComments}</div>
-            <div class="adm-summary-sub">${autoMsg_68cbfa37f0}</div>
+            <div class="adm-summary-sub"><spring:message code="admin.community.kpi.blockedComments"/></div>
         </div>
         <div class="adm-card adm-summary-card">
-            <div class="adm-summary-label">${autoMsg_60c7903c78}</div>
+            <div class="adm-summary-label"><spring:message code="admin.community.kpi.pendingReports"/></div>
             <div class="adm-summary-value is-warning">${stats.pendingReports}</div>
-            <div class="adm-summary-sub">${autoMsg_9747193897}</div>
+            <div class="adm-summary-sub"><spring:message code="admin.community.kpi.resolvedReports30d"/></div>
         </div>
     </div>
 
@@ -122,55 +70,55 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/community" id="searchForm">
                 <div class="adm-filter-bar" style="flex-wrap:wrap;gap:12px;">
                     <div>
-                        <div class="adm-filter-label">${autoMsg_784962e950}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.community.filter.status"/></div>
                         <select class="adm-select" name="status">
-                            <option value="ALL"     ${search.status=='ALL'     ?'selected':''}>${autoMsg_091d56acc9}</option>
-                            <option value="ACTIVE"  ${search.status=='ACTIVE'  ?'selected':''}>${autoMsg_a3bcb29a0c}</option>
-                            <option value="BLOCKED" ${search.status=='BLOCKED' ?'selected':''}>${autoMsg_81b8994d7e}</option>
-                            <option value="DELETED" ${search.status=='DELETED' ?'selected':''}>${autoMsg_2d5c6767f8}</option>
+                            <option value="ALL"     ${search.status=='ALL'     ?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="ACTIVE"  ${search.status=='ACTIVE'  ?'selected':''}><spring:message code="admin.community.status.active"/></option>
+                            <option value="BLOCKED" ${search.status=='BLOCKED' ?'selected':''}><spring:message code="admin.community.status.blocked"/></option>
+                            <option value="DELETED" ${search.status=='DELETED' ?'selected':''}><spring:message code="admin.community.status.deleted"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">${autoMsg_5467147e32}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.community.filter.type"/></div>
                         <select class="adm-select" name="postType">
-                            <option value="ALL"      ${search.postType=='ALL'      ?'selected':''}>${autoMsg_091d56acc9}</option>
-                            <option value="review"   ${search.postType=='review'   ?'selected':''}>${autoMsg_eac82ebab4}</option>
-                            <option value="photo"    ${search.postType=='photo'    ?'selected':''}>${autoMsg_7973be7817}</option>
-                            <option value="tip"      ${search.postType=='tip'      ?'selected':''}>${autoMsg_4e4bc634e1}</option>
-                            <option value="question" ${search.postType=='question' ?'selected':''}>${autoMsg_01fca1a4ed}</option>
+                            <option value="ALL"      ${search.postType=='ALL'      ?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="review"   ${search.postType=='review'   ?'selected':''}><spring:message code="admin.community.postType.review"/></option>
+                            <option value="photo"    ${search.postType=='photo'    ?'selected':''}><spring:message code="admin.community.postType.photo"/></option>
+                            <option value="tip"      ${search.postType=='tip'      ?'selected':''}><spring:message code="admin.community.postType.tip"/></option>
+                            <option value="question" ${search.postType=='question' ?'selected':''}><spring:message code="admin.community.postType.question"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">${autoMsg_4470083b06}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.community.filter.sort"/></div>
                         <select class="adm-select" name="sortBy">
-                            <option value="createdAt"   ${search.sortBy=='createdAt'   ?'selected':''}>${autoMsg_9eea6940ae}</option>
-                            <option value="reportCount" ${search.sortBy=='reportCount' ?'selected':''}>${autoMsg_7954a9725c}</option>
+                            <option value="createdAt"   ${search.sortBy=='createdAt'   ?'selected':''}><spring:message code="admin.community.sort.createdAt"/></option>
+                            <option value="reportCount" ${search.sortBy=='reportCount' ?'selected':''}><spring:message code="admin.community.sort.reportCount"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">${autoMsg_1859a5b778}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.community.filter.flagged"/></div>
                         <select class="adm-select" name="flagged">
-                            <option value="ALL"     ${search.flagged=='ALL'     ?'selected':''}>${autoMsg_091d56acc9}</option>
-                            <option value="FLAGGED" ${search.flagged=='FLAGGED' ?'selected':''}>${autoMsg_e40dd36b65}</option>
+                            <option value="ALL"     ${search.flagged=='ALL'     ?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="FLAGGED" ${search.flagged=='FLAGGED' ?'selected':''}><spring:message code="admin.community.flagged.flagged"/></option>
                         </select>
                     </div>
                     <div style="flex:1;min-width:200px;">
-                        <div class="adm-filter-label">${autoMsg_937a07f78f}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="searchType" style="width:110px;">
-                                <option value="all"      ${search.searchType=='all'      ?'selected':''}>${autoMsg_091d56acc9}</option>
-                                <option value="title"    ${search.searchType=='title'    ?'selected':''}>${autoMsg_d82c7aa047}</option>
-                                <option value="content"  ${search.searchType=='content'  ?'selected':''}>${autoMsg_8b2ef02b58}</option>
-                                <option value="nickname" ${search.searchType=='nickname' ?'selected':''}>${autoMsg_0bb651f55c}</option>
-                                <option value="userId"   ${search.searchType=='userId'   ?'selected':''}>${autoMsg_6959a41bb9}</option>
+                                <option value="all"      ${search.searchType=='all'      ?'selected':''}><spring:message code="admin.common.all"/></option>
+                                <option value="title"    ${search.searchType=='title'    ?'selected':''}><spring:message code="admin.community.searchType.title"/></option>
+                                <option value="content"  ${search.searchType=='content'  ?'selected':''}><spring:message code="admin.community.searchType.content"/></option>
+                                <option value="nickname" ${search.searchType=='nickname' ?'selected':''}><spring:message code="admin.community.searchType.nickname"/></option>
+                                <option value="userId"   ${search.searchType=='userId'   ?'selected':''}><spring:message code="admin.community.searchType.userId"/></option>
                             </select>
                             <input class="adm-input" type="text" name="keyword" value="${search.keyword}"
-                                   placeholder="${autoMsg_401b717497}" style="flex:1;">
+                                   placeholder="${adminCommunityFilterSearchPlaceholderMsg}" style="flex:1;">
                         </div>
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:6px;">
-                        <button class="adm-btn adm-btn-primary" type="submit">${autoMsg_62120563c4}</button>
-                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/community">${autoMsg_4ed053a375}</a>
+                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/community"><spring:message code="admin.common.reset"/></a>
                     </div>
                 </div>
             </form>
@@ -181,16 +129,16 @@
     <div class="adm-card">
         <div class="adm-card-head">
             <div style="display:flex;align-items:center;gap:12px;">
-                <div class="adm-card-title">${autoMsg_79ee78af33}</div>
-                <div class="adm-muted-note">${autoMsg_b65a795373}</div>
+                <div class="adm-card-title"><spring:message code="admin.community.list.postsTitle"/></div>
+                <div class="adm-muted-note"><spring:message code="admin.common.totalCount"/></div>
             </div>
             <%-- 일괄 처리 버튼 --%>
             <div id="bulkBar" style="display:none;gap:8px;align-items:center;">
                 <span id="bulkCount" style="font-size:12px;color:#94a3b8;"></span>
                 <button class="adm-btn adm-btn-ghost" style="color:#f87171;border-color:#f87171;"
-                        onclick="bulkAction('block')">${autoMsg_50c330202a}</button>
+                        onclick="bulkAction('block')"><spring:message code="admin.community.action.bulkBlock"/></button>
                 <button class="adm-btn adm-btn-ghost" style="color:#64748b;"
-                        onclick="bulkAction('delete')">${autoMsg_efcdd3f829}</button>
+                        onclick="bulkAction('delete')"><spring:message code="admin.community.action.bulkDelete"/></button>
             </div>
         </div>
         <div class="adm-table-wrap">
@@ -198,15 +146,15 @@
                 <thead>
                 <tr>
                     <th style="width:36px;"><input type="checkbox" id="checkAll"></th>
-                    <th style="width:60px;">${autoMsg_28e018d8fd}</th>
-                    <th>${autoMsg_e9f2e860b8}</th>
-                    <th>${autoMsg_ed9e29b7c1}</th>
-                    <th>${autoMsg_8bd69b96da}</th>
-                    <th style="width:80px;">${autoMsg_9b6994bcdd}</th>
-                    <th style="width:60px;">${autoMsg_df71264448}</th>
-                    <th style="width:80px;">${autoMsg_531053a642}</th>
-                    <th style="width:130px;">${autoMsg_d7acd014e2}</th>
-                    <th style="width:100px;">${autoMsg_40157ac017}</th>
+                    <th style="width:60px;"><spring:message code="admin.community.column.id"/></th>
+                    <th><spring:message code="admin.community.column.author"/></th>
+                    <th><spring:message code="admin.community.column.ip"/></th>
+                    <th><spring:message code="admin.community.column.title"/></th>
+                    <th style="width:80px;"><spring:message code="admin.community.column.type"/></th>
+                    <th style="width:60px;"><spring:message code="admin.community.column.reportCount"/></th>
+                    <th style="width:80px;"><spring:message code="admin.common.status"/></th>
+                    <th style="width:130px;"><spring:message code="admin.community.column.createdAt"/></th>
+                    <th style="width:100px;"><spring:message code="admin.common.action"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -230,7 +178,7 @@
                             <div style="font-weight:600;font-size:13px;color:#7dd3fc;">${p.nickname}</div>
                             <div style="font-size:11px;color:#64748b;">${p.userId}</div>
                             <c:if test="${p.accountStatus == 'BLOCKED'}">
-                                <span class="adm-inline-danger">${autoMsg_855fdf4b6a}</span>
+                                <span class="adm-inline-danger"><spring:message code="admin.community.accountBlocked"/></span>
                             </c:if>
                         </td>
 
@@ -260,7 +208,7 @@
                             </a>
                             <c:if test="${p.authorResolveCount30d > 0}">
                                 <span class="adm-inline-warning">
-                                    ⚠ ${autoMsg_ad5de23893}
+                                    ⚠ <spring:message code="admin.community.rowResolved30d"/>
                                 </span>
                             </c:if>
                         </td>
@@ -269,13 +217,13 @@
                         <td style="font-size:12px;color:#94a3b8;white-space:nowrap;">
                             <button type="button" class="adm-cell-link" data-param-name="postType" data-param-value="${p.postType}" onclick="applySelectFilter(this)">
                                 <span><c:choose>
-                                    <c:when test="${p.postType == 'review'}">${autoMsg_eac82ebab4}</c:when>
-                                    <c:when test="${p.postType == 'photo'}">${autoMsg_7973be7817}</c:when>
-                                    <c:when test="${p.postType == 'tip'}">${autoMsg_4e4bc634e1}</c:when>
-                                    <c:when test="${p.postType == 'question'}">${autoMsg_01fca1a4ed}</c:when>
+                                    <c:when test="${p.postType == 'review'}"><spring:message code="admin.community.postType.review"/></c:when>
+                                    <c:when test="${p.postType == 'photo'}"><spring:message code="admin.community.postType.photo"/></c:when>
+                                    <c:when test="${p.postType == 'tip'}"><spring:message code="admin.community.postType.tip"/></c:when>
+                                    <c:when test="${p.postType == 'question'}"><spring:message code="admin.community.postType.question"/></c:when>
                                     <c:otherwise>${p.postType}</c:otherwise>
                                 </c:choose></span>
-                                <span class="adm-cell-link-note">${autoMsg_c2de3079ea}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
                             </button>
                         </td>
 
@@ -303,9 +251,9 @@
                             <a href="${pageContext.request.contextPath}/admin/community/posts/${p.postId}"
                                class="adm-cell-link adm-cell-link--inline status-badge ${p.postStatus}">
                                 <c:choose>
-                                    <c:when test="${p.postStatus == 'ACTIVE'}">${autoMsg_a3bcb29a0c}</c:when>
-                                    <c:when test="${p.postStatus == 'BLOCKED'}">${autoMsg_81b8994d7e}</c:when>
-                                    <c:when test="${p.postStatus == 'DELETED'}">${autoMsg_2d5c6767f8}</c:when>
+                                    <c:when test="${p.postStatus == 'ACTIVE'}"><spring:message code="admin.community.status.active"/></c:when>
+                                    <c:when test="${p.postStatus == 'BLOCKED'}"><spring:message code="admin.community.status.blocked"/></c:when>
+                                    <c:when test="${p.postStatus == 'DELETED'}"><spring:message code="admin.community.status.deleted"/></c:when>
                                     <c:otherwise>${p.postStatus}</c:otherwise>
                                 </c:choose>
                             </a>
@@ -327,7 +275,7 @@
                                         <button class="adm-row-btn danger"
                                                 type="button"
                                                 data-id="${p.postId}"
-                                                onclick="actionPost(this.getAttribute('data-id'), 'block')">${autoMsg_3398e8bd8b}</button>
+                                                onclick="actionPost(this.getAttribute('data-id'), 'block')"><spring:message code="admin.community.action.block"/></button>
                                         <c:if test="${p.postStatus != 'DELETED'}">
                                             <div class="action-menu-wrap">
                                                 <button class="adm-row-btn detail adm-row-btn-more"
@@ -337,7 +285,7 @@
                                                     <button class="action-menu-item danger"
                                                             type="button"
                                                             data-id="${p.postId}"
-                                                            onclick="actionPost(this.getAttribute('data-id'), 'delete')">${autoMsg_0c3c7ba108}</button>
+                                                            onclick="actionPost(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
                                                 </div>
                                             </div>
                                         </c:if>
@@ -348,7 +296,7 @@
                                         <button class="adm-row-btn danger"
                                                 type="button"
                                                 data-id="${p.postId}"
-                                                onclick="actionPost(this.getAttribute('data-id'), 'delete')">${autoMsg_0c3c7ba108}</button>
+                                                onclick="actionPost(this.getAttribute('data-id'), 'delete')"><spring:message code="admin.community.action.delete"/></button>
                                     </div>
                                 </c:when>
                                 <c:otherwise>
@@ -359,7 +307,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;">${autoMsg_ce0fe32fcf}</td></tr>
+                    <tr><td colspan="10" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -377,7 +325,7 @@
                 <c:if test="${paging.next}">
                     <button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button>
                 </c:if>
-                <span class="adm-page-info">${autoMsg_67b5a87e64}</span>
+                <span class="adm-page-info"><spring:message code="admin.common.pageStatus"/></span>
             </div>
         </c:if>
     </div>
@@ -385,7 +333,7 @@
     <%-- ── 유저 화면 바로가기 ── --%>
     <div style="margin-top:16px;padding:0 10px;">
         <a class="adm-nav-item adm-nav-ext" href="${pageContext.request.contextPath}/community/list" target="_blank">
-            <span class="adm-nav-icon">↗️</span> ${autoMsg_4782142ecc}
+            <span class="adm-nav-icon">↗️</span> <spring:message code="admin.community.viewSite"/>
         </a>
     </div>
 </div>
@@ -395,21 +343,21 @@ var ctx = '${pageContext.request.contextPath}';
 var COMMUNITY_POST_MSG = {
     noSelection: '${fn:escapeXml(adminCommunityNoSelection)}',
     actionFailed: '${fn:escapeXml(adminCommunityActionFailed)}',
-    confirmPostAction: '${autoMsg_cbba8877c3}',
-    confirmBulkAction: '${autoMsg_a4213d693f}',
-    selectedCount: '${autoMsg_b4348ffa3f}',
-    block: '${autoMsg_9335fa9cbb}',
-    delete: '${autoMsg_c4f82a7ae9}',
+    confirmPostAction: '${adminCommunityConfirmPostActionMsg}',
+    confirmBulkAction: '${adminCommunityConfirmBulkActionMsg}',
+    selectedCount: '${adminCommunityBulkSelectedCountMsg}',
+    block: '${adminCommunityActionBlockMsg}',
+    delete: '${adminCommunityActionDeleteMsg}',
     blocked: '${fn:escapeXml(adminCommonBlockedLabel)}',
     active: '${fn:escapeXml(adminCommonActiveLabel)}',
     nickname: '${fn:escapeXml(adminCommonNickname)}',
     userId: '${fn:escapeXml(adminCommonUserId)}',
     accountStatus: '${fn:escapeXml(adminCommonAccountStatus)}',
-    lastIp: '${autoMsg_4a3f3c8e04}',
+    lastIp: '${adminCommunityLabelLastIpMsg}',
     memberInfoView: '${fn:escapeXml(adminCommonMemberInfoView)}',
     blockAccount: '${fn:escapeXml(adminCommonBlockAccount)}',
     confirmBlock: '${fn:escapeXml(adminCommunityConfirmBlockUser)}',
-    recentResolved: '${autoMsg_310f901f6f}',
+    recentResolved: '${adminCommunityAuthorModalRecentResolvedMsg}',
     modalTitle: '${fn:escapeXml(adminCommunityAuthorModalTitle)}'
 };
 

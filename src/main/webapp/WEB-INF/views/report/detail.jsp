@@ -2,60 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_bf9ae2c0e3" code="report.common.target.post"/>
-<spring:message var="autoMsg_d7a242e91e" code="report.common.target.comment"/>
-<spring:message var="autoMsg_b000c6cb0b" code="report.common.target.review"/>
-<spring:message var="autoMsg_d6290dafc6" code="report.common.target.user"/>
-<spring:message var="autoMsg_cdc6e6c0f3" code="report.common.status.inReview"/>
-<spring:message var="autoMsg_607101300d" code="report.common.status.resolved"/>
-<spring:message var="autoMsg_35531f0dc7" code="report.common.status.dismissed"/>
-<spring:message var="autoMsg_926ebbaa35" code="report.detail.title.post"/>
-<spring:message var="autoMsg_2a8fd4df41" code="report.detail.title.comment"/>
-<spring:message var="autoMsg_adac598f2b" code="report.detail.title.review"/>
-<spring:message var="autoMsg_846e55d10c" code="report.detail.title.user"/>
-<spring:message var="autoMsg_f41a380186" code="report.detail.title.default"/>
-<spring:message var="autoMsg_3bb807a1e6" code="report.detail.label.reason"/>
-<spring:message var="autoMsg_fbf2cc1940" code="report.common.reason.spam"/>
-<spring:message var="autoMsg_30ea4b8644" code="report.common.reason.abuse"/>
-<spring:message var="autoMsg_7239221909" code="report.common.reason.privacy"/>
-<spring:message var="autoMsg_59258cd841" code="report.common.reason.adult"/>
-<spring:message var="autoMsg_c33a09d790" code="report.common.reason.illegal"/>
-<spring:message var="autoMsg_5e57d8aea5" code="report.common.reason.other"/>
-<spring:message var="autoMsg_77d29fa794" code="report.detail.label.userDescription"/>
-<spring:message var="autoMsg_b3ff2b9567" code="report.detail.label.description"/>
-<spring:message var="autoMsg_51653e8937" code="report.detail.label.target"/>
-<spring:message var="autoMsg_0ff5ed546c" code="report.common.deletedPost"/>
-<spring:message var="autoMsg_8164f73d61" code="report.detail.info.authorPrefix"/>
-<spring:message var="autoMsg_61c9d0d8b9" code="report.common.deletedComment"/>
-<spring:message var="autoMsg_3e754ba8bb" code="report.common.post"/>
-<spring:message var="autoMsg_8688aa61ee" code="report.detail.info.commentSuffix"/>
-<spring:message var="autoMsg_1358075a93" code="report.common.deletedReview"/>
-<spring:message var="autoMsg_56d67fd3ae" code="report.common.spot"/>
-<spring:message var="autoMsg_2885f3da80" code="report.detail.info.reviewSuffix"/>
-<spring:message var="autoMsg_c030ec1e32" code="report.common.unknownUser"/>
-<spring:message var="autoMsg_1864b81744" code="report.detail.info.source"/>
-<spring:message var="autoMsg_2015361e9a" code="report.detail.info.reporter"/>
-<spring:message var="autoMsg_6328ce1c16" code="report.detail.result.resolved.title"/>
-<spring:message var="autoMsg_6aa7fe85d9" code="report.detail.result.resolved.body"/>
-<spring:message var="autoMsg_949709b9bf" code="report.detail.result.dismissed.title"/>
-<spring:message var="autoMsg_7bb652f126" code="report.detail.result.dismissed.body"/>
-<spring:message var="autoMsg_81c2b0bf91" code="report.detail.result.cancelled.title"/>
-<spring:message var="autoMsg_c908874328" code="report.detail.result.cancelled.body"/>
-<spring:message var="autoMsg_befe430e70" code="report.detail.result.pending.title"/>
-<spring:message var="autoMsg_86570accd6" code="report.detail.result.pending.subtitle"/>
-<spring:message var="autoMsg_71d17bf9b8" code="report.detail.admin.title"/>
-<spring:message var="autoMsg_259e8ce92f" code="report.detail.admin.action.deleteAndBlock.post"/>
-<spring:message var="autoMsg_3b266ee781" code="report.detail.admin.action.deleteContent.post"/>
-<spring:message var="autoMsg_73efb53f03" code="report.detail.admin.action.blockAuthor"/>
-<spring:message var="autoMsg_c67002c90c" code="report.detail.admin.action.deleteAndBlock.comment"/>
-<spring:message var="autoMsg_c383a7e2ab" code="report.detail.admin.action.deleteContent.comment"/>
-<spring:message var="autoMsg_47383177b5" code="report.detail.admin.action.deleteAndBlock.review"/>
-<spring:message var="autoMsg_9553fe2a1e" code="report.detail.admin.action.deleteContent.review"/>
-<spring:message var="autoMsg_f34eef7b95" code="report.detail.admin.action.blockUser"/>
-<spring:message var="autoMsg_387eb05122" code="report.detail.admin.action.revert"/>
-<spring:message var="autoMsg_b732fad9e7" code="report.detail.action.edit"/>
-<spring:message var="autoMsg_45642e6f1f" code="report.detail.action.delete"/>
-<spring:message var="autoMsg_182249a72f" code="report.detail.action.cancelReport"/>
+
 <%--
   =============================================
   신고 상세 페이지
@@ -127,16 +74,16 @@
           <%-- 대상 유형 태그 --%>
           <c:choose>
             <c:when test="${report.targetType eq 'post'}">
-              <span class="rpt-type-tag type-post">${autoMsg_bf9ae2c0e3} #${report.targetId}</span>
+              <span class="rpt-type-tag type-post"><spring:message code="report.common.target.post"/> #${report.targetId}</span>
             </c:when>
             <c:when test="${report.targetType eq 'comment'}">
-              <span class="rpt-type-tag type-comment">${autoMsg_d7a242e91e} #${report.targetId}</span>
+              <span class="rpt-type-tag type-comment"><spring:message code="report.common.target.comment"/> #${report.targetId}</span>
             </c:when>
             <c:when test="${report.targetType eq 'review'}">
-              <span class="rpt-type-tag type-review">${autoMsg_b000c6cb0b} #${report.targetId}</span>
+              <span class="rpt-type-tag type-review"><spring:message code="report.common.target.review"/> #${report.targetId}</span>
             </c:when>
             <c:when test="${report.targetType eq 'user'}">
-              <span class="rpt-type-tag type-user">${autoMsg_d6290dafc6} #${report.targetId}</span>
+              <span class="rpt-type-tag type-user"><spring:message code="report.common.target.user"/> #${report.targetId}</span>
             </c:when>
             <c:otherwise>
               <span class="rpt-type-tag">${report.targetType} #${report.targetId}</span>
@@ -146,9 +93,9 @@
           <%-- 처리 상태 뱃지 --%>
           <span class="rpt-status-badge ${report.status}">
             <c:choose>
-              <c:when test="${report.status eq 'IN_REVIEW'}">${autoMsg_cdc6e6c0f3}</c:when>
-              <c:when test="${report.status eq 'RESOLVED'}">${autoMsg_607101300d}</c:when>
-              <c:when test="${report.status eq 'DISMISSED'}">${autoMsg_35531f0dc7}</c:when>
+              <c:when test="${report.status eq 'IN_REVIEW'}"><spring:message code="report.common.status.inReview"/></c:when>
+              <c:when test="${report.status eq 'RESOLVED'}"><spring:message code="report.common.status.resolved"/></c:when>
+              <c:when test="${report.status eq 'DISMISSED'}"><spring:message code="report.common.status.dismissed"/></c:when>
               <c:otherwise>${report.status}</c:otherwise>
             </c:choose>
           </span>
@@ -157,11 +104,11 @@
         <%-- 제목 --%>
         <h1 class="rpt-detail-title">
           <c:choose>
-            <c:when test="${report.targetType eq 'post'}">${autoMsg_926ebbaa35}</c:when>
-            <c:when test="${report.targetType eq 'comment'}">${autoMsg_2a8fd4df41}</c:when>
-            <c:when test="${report.targetType eq 'review'}">${autoMsg_adac598f2b}</c:when>
-            <c:when test="${report.targetType eq 'user'}">${autoMsg_846e55d10c}</c:when>
-            <c:otherwise>${autoMsg_f41a380186}</c:otherwise>
+            <c:when test="${report.targetType eq 'post'}"><spring:message code="report.detail.title.post"/></c:when>
+            <c:when test="${report.targetType eq 'comment'}"><spring:message code="report.detail.title.comment"/></c:when>
+            <c:when test="${report.targetType eq 'review'}"><spring:message code="report.detail.title.review"/></c:when>
+            <c:when test="${report.targetType eq 'user'}"><spring:message code="report.detail.title.user"/></c:when>
+            <c:otherwise><spring:message code="report.detail.title.default"/></c:otherwise>
           </c:choose>
         </h1>
 
@@ -177,15 +124,15 @@
         <%-- 게시글/댓글 신고: 사유 코드 표시 --%>
         <c:if test="${report.targetType ne 'user'}">
           <div class="rpt-detail-row">
-            <span class="rpt-detail-label">${autoMsg_3bb807a1e6}</span>
+            <span class="rpt-detail-label"><spring:message code="report.detail.label.reason"/></span>
             <span class="rpt-detail-value">
               <c:choose>
-                <c:when test="${report.reason eq 'spam'}">${autoMsg_fbf2cc1940}</c:when>
-                <c:when test="${report.reason eq 'abuse'}">${autoMsg_30ea4b8644}</c:when>
-                <c:when test="${report.reason eq 'privacy'}">${autoMsg_7239221909}</c:when>
-                <c:when test="${report.reason eq 'adult'}">${autoMsg_59258cd841}</c:when>
-                <c:when test="${report.reason eq 'illegal'}">${autoMsg_c33a09d790}</c:when>
-                <c:when test="${report.reason eq 'other'}">${autoMsg_5e57d8aea5}</c:when>
+                <c:when test="${report.reason eq 'spam'}"><spring:message code="report.common.reason.spam"/></c:when>
+                <c:when test="${report.reason eq 'abuse'}"><spring:message code="report.common.reason.abuse"/></c:when>
+                <c:when test="${report.reason eq 'privacy'}"><spring:message code="report.common.reason.privacy"/></c:when>
+                <c:when test="${report.reason eq 'adult'}"><spring:message code="report.common.reason.adult"/></c:when>
+                <c:when test="${report.reason eq 'illegal'}"><spring:message code="report.common.reason.illegal"/></c:when>
+                <c:when test="${report.reason eq 'other'}"><spring:message code="report.common.reason.other"/></c:when>
                 <c:otherwise>
                   <c:choose>
                     <c:when test="${not empty report.reason}">${report.reason}</c:when>
@@ -202,8 +149,8 @@
           <div class="rpt-detail-row">
             <span class="rpt-detail-label">
               <c:choose>
-                <c:when test="${report.targetType eq 'user'}">${autoMsg_77d29fa794}</c:when>
-                <c:otherwise>${autoMsg_b3ff2b9567}</c:otherwise>
+                <c:when test="${report.targetType eq 'user'}"><spring:message code="report.detail.label.userDescription"/></c:when>
+                <c:otherwise><spring:message code="report.detail.label.description"/></c:otherwise>
               </c:choose>
             </span>
             <span class="rpt-detail-value rpt-detail-desc">${report.description}</span>
@@ -212,7 +159,7 @@
 
         <%-- 신고 대상 정보 --%>
         <div class="rpt-detail-row">
-          <span class="rpt-detail-label">${autoMsg_51653e8937}</span>
+          <span class="rpt-detail-label"><spring:message code="report.detail.label.target"/></span>
           <span class="rpt-detail-value">
             <c:choose>
 
@@ -220,7 +167,7 @@
               <c:when test="${report.targetType eq 'post'}">
                 <c:choose>
                   <c:when test="${targetDeleted}">
-                    <span style="color:var(--gray-400);">${autoMsg_0ff5ed546c}</span>
+                    <span style="color:var(--gray-400);"><spring:message code="report.common.deletedPost"/></span>
                   </c:when>
                   <c:otherwise>
                     <a href="${pageContext.request.contextPath}/community/${targetPostId}"
@@ -228,7 +175,7 @@
                       ${targetTitle}
                     </a>
                     <c:if test="${not empty targetNickname}">
-                      <span style="color:var(--gray-500);font-size:13px;"> — ${autoMsg_8164f73d61} ${targetNickname}</span>
+                      <span style="color:var(--gray-500);font-size:13px;"> — <spring:message code="report.detail.info.authorPrefix"/> ${targetNickname}</span>
                     </c:if>
                   </c:otherwise>
                 </c:choose>
@@ -238,16 +185,16 @@
               <c:when test="${report.targetType eq 'comment'}">
                 <c:choose>
                   <c:when test="${targetDeleted}">
-                    <span style="color:var(--gray-400);">${autoMsg_61c9d0d8b9}</span>
+                    <span style="color:var(--gray-400);"><spring:message code="report.common.deletedComment"/></span>
                   </c:when>
                   <c:otherwise>
                     <a href="${pageContext.request.contextPath}/community/${targetPostId}"
                        style="color:#3b82f6;text-decoration:underline;">
-                      ${autoMsg_3e754ba8bb} #${targetPostId}
+                      <spring:message code="report.common.post"/> #${targetPostId}
                     </a>
-                    <span style="color:var(--gray-500);font-size:13px;">${autoMsg_8688aa61ee}</span>
+                    <span style="color:var(--gray-500);font-size:13px;"><spring:message code="report.detail.info.commentSuffix"/></span>
                     <c:if test="${not empty targetNickname}">
-                      <span style="color:var(--gray-500);font-size:13px;"> — ${autoMsg_8164f73d61} ${targetNickname}</span>
+                      <span style="color:var(--gray-500);font-size:13px;"> — <spring:message code="report.detail.info.authorPrefix"/> ${targetNickname}</span>
                     </c:if>
                     <div style="margin-top:4px;font-size:13px;color:var(--gray-600);background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${targetContent}"</div>
                   </c:otherwise>
@@ -258,16 +205,16 @@
               <c:when test="${report.targetType eq 'review'}">
                 <c:choose>
                   <c:when test="${targetDeleted}">
-                    <span style="color:var(--gray-400);">${autoMsg_1358075a93}</span>
+                    <span style="color:var(--gray-400);"><spring:message code="report.common.deletedReview"/></span>
                   </c:when>
                   <c:otherwise>
                     <a href="${pageContext.request.contextPath}/detail/${targetSpotId}"
                        style="color:#3b82f6;text-decoration:underline;">
-                      ${autoMsg_56d67fd3ae} #${targetSpotId}
+                      <spring:message code="report.common.spot"/> #${targetSpotId}
                     </a>
-                    <span style="color:var(--gray-500);font-size:13px;">${autoMsg_2885f3da80}</span>
+                    <span style="color:var(--gray-500);font-size:13px;"><spring:message code="report.detail.info.reviewSuffix"/></span>
                     <c:if test="${not empty targetNickname}">
-                      <span style="color:var(--gray-500);font-size:13px;"> — ${autoMsg_8164f73d61} ${targetNickname}</span>
+                      <span style="color:var(--gray-500);font-size:13px;"> — <spring:message code="report.detail.info.authorPrefix"/> ${targetNickname}</span>
                     </c:if>
                     <c:if test="${not empty targetContent}">
                       <div style="margin-top:4px;font-size:13px;color:var(--gray-600);background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${targetContent}"</div>
@@ -283,18 +230,18 @@
                     <span>${targetNickname}</span>
                   </c:when>
                   <c:otherwise>
-                    <span style="color:var(--gray-400);">${autoMsg_c030ec1e32}</span>
+                    <span style="color:var(--gray-400);"><spring:message code="report.common.unknownUser"/></span>
                   </c:otherwise>
                 </c:choose>
                 <%-- 신고 출처 (어떤 게시글/댓글에서 신고했는지) --%>
                 <c:if test="${not empty report.sourceType}">
                   <div style="margin-top:6px;font-size:13px;color:var(--gray-500);">
-                    ${autoMsg_1864b81744}:
+                    <spring:message code="report.detail.info.source"/>:
                     <c:choose>
                       <c:when test="${report.sourceType eq 'post'}">
                         <c:choose>
                           <c:when test="${sourceDeleted}">
-                            <span style="color:var(--gray-400);">${autoMsg_0ff5ed546c}</span>
+                            <span style="color:var(--gray-400);"><spring:message code="report.common.deletedPost"/></span>
                           </c:when>
                           <c:otherwise>
                             <a href="${pageContext.request.contextPath}/community/${sourcePostId}"
@@ -305,14 +252,14 @@
                       <c:when test="${report.sourceType eq 'comment'}">
                         <c:choose>
                           <c:when test="${sourceDeleted}">
-                            <span style="color:var(--gray-400);">${autoMsg_61c9d0d8b9}</span>
+                            <span style="color:var(--gray-400);"><spring:message code="report.common.deletedComment"/></span>
                           </c:when>
                           <c:otherwise>
                             <a href="${pageContext.request.contextPath}/community/${sourcePostId}"
                                style="color:#3b82f6;text-decoration:underline;">
-                              ${autoMsg_3e754ba8bb} #${sourcePostId}
+                              <spring:message code="report.common.post"/> #${sourcePostId}
                             </a>
-                            <span>${autoMsg_8688aa61ee}</span>
+                            <span><spring:message code="report.detail.info.commentSuffix"/></span>
                             <div style="margin-top:4px;background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${sourceContent}"</div>
                           </c:otherwise>
                         </c:choose>
@@ -320,14 +267,14 @@
                       <c:when test="${report.sourceType eq 'review'}">
                         <c:choose>
                           <c:when test="${sourceDeleted}">
-                            <span style="color:var(--gray-400);">${autoMsg_1358075a93}</span>
+                            <span style="color:var(--gray-400);"><spring:message code="report.common.deletedReview"/></span>
                           </c:when>
                           <c:otherwise>
                             <a href="${pageContext.request.contextPath}/detail/${sourceSpotId}"
                                style="color:#3b82f6;text-decoration:underline;">
-                              ${autoMsg_56d67fd3ae} #${sourceSpotId}
+                              <spring:message code="report.common.spot"/> #${sourceSpotId}
                             </a>
-                            <span>${autoMsg_2885f3da80}</span>
+                            <span><spring:message code="report.detail.info.reviewSuffix"/></span>
                             <c:if test="${not empty sourceContent}">
                               <div style="margin-top:4px;background:var(--gray-50);padding:6px 10px;border-radius:6px;border-left:3px solid var(--gray-200);">"${sourceContent}"</div>
                             </c:if>
@@ -346,7 +293,7 @@
         <%-- 어드민 전용: 신고자 정보 (관리자모드일 때만 표시) --%>
         <c:if test="${isAdmin and isAdminMode}">
           <div class="rpt-detail-row">
-            <span class="rpt-detail-label">${autoMsg_2015361e9a}</span>
+            <span class="rpt-detail-label"><spring:message code="report.detail.info.reporter"/></span>
             <span class="rpt-detail-value">${report.nickname} (#${report.userIdx})</span>
           </div>
         </c:if>
@@ -363,14 +310,14 @@
           <div class="rpt-result-head">
             <span class="rpt-result-icon">&#9989;</span>
             <div>
-              <div class="rpt-result-title">${autoMsg_6328ce1c16}</div>
+              <div class="rpt-result-title"><spring:message code="report.detail.result.resolved.title"/></div>
               <c:if test="${not empty report.resolvedAt}">
                 <div class="rpt-result-meta"><fmt:formatDate value="${report.resolvedAt}" pattern="yyyy-MM-dd HH:mm"/></div>
               </c:if>
             </div>
           </div>
           <div class="rpt-result-body">
-            ${autoMsg_6aa7fe85d9}<c:if test="${not empty report.resolveAction}"> (${report.resolveAction})</c:if>
+            <spring:message code="report.detail.result.resolved.body"/><c:if test="${not empty report.resolveAction}"> (${report.resolveAction})</c:if>
           </div>
         </div>
       </c:when>
@@ -380,13 +327,13 @@
           <div class="rpt-result-head">
             <span class="rpt-result-icon">&#10060;</span>
             <div>
-              <div class="rpt-result-title">${autoMsg_949709b9bf}</div>
+              <div class="rpt-result-title"><spring:message code="report.detail.result.dismissed.title"/></div>
               <c:if test="${not empty report.resolvedAt}">
                 <div class="rpt-result-meta"><fmt:formatDate value="${report.resolvedAt}" pattern="yyyy-MM-dd HH:mm"/></div>
               </c:if>
             </div>
           </div>
-          <div class="rpt-result-body">${autoMsg_7bb652f126}</div>
+          <div class="rpt-result-body"><spring:message code="report.detail.result.dismissed.body"/></div>
         </div>
       </c:when>
 
@@ -395,21 +342,21 @@
           <div class="rpt-result-head">
             <span class="rpt-result-icon">✖</span>
             <div>
-              <div class="rpt-result-title">${autoMsg_81c2b0bf91}</div>
+              <div class="rpt-result-title"><spring:message code="report.detail.result.cancelled.title"/></div>
               <c:if test="${not empty report.updatedAt}">
                 <div class="rpt-result-meta"><fmt:formatDate value="${report.updatedAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
               </c:if>
             </div>
           </div>
-          <div class="rpt-result-body">${autoMsg_c908874328}</div>
+          <div class="rpt-result-body"><spring:message code="report.detail.result.cancelled.body"/></div>
         </div>
       </c:when>
 
       <c:otherwise>
         <div class="rpt-no-result">
           <div class="rpt-no-result-icon">🔍</div>
-          <div class="rpt-no-result-msg">${autoMsg_befe430e70}</div>
-          <div class="rpt-no-result-sub">${autoMsg_86570accd6}</div>
+          <div class="rpt-no-result-msg"><spring:message code="report.detail.result.pending.title"/></div>
+          <div class="rpt-no-result-sub"><spring:message code="report.detail.result.pending.subtitle"/></div>
         </div>
       </c:otherwise>
     </c:choose>
@@ -420,7 +367,7 @@
          ============================================= --%>
     <c:if test="${isAdmin and isAdminMode}">
       <div class="rpt-admin-form">
-        <div class="rpt-admin-form-title">${autoMsg_71d17bf9b8}</div>
+        <div class="rpt-admin-form-title"><spring:message code="report.detail.admin.title"/></div>
 
         <c:choose>
 
@@ -430,9 +377,9 @@
             <%-- 게시글 신고 --%>
             <c:if test="${report.targetType eq 'post'}">
               <div class="rpt-admin-action-bar">
-                <button class="rpt-btn-danger" id="btnDeleteAndBlock">${autoMsg_259e8ce92f}</button>
-                <button class="rpt-btn-danger" id="btnDeleteContent">${autoMsg_3b266ee781}</button>
-                <button class="rpt-btn-danger" id="btnBlockAuthor">${autoMsg_73efb53f03}</button>
+                <button class="rpt-btn-danger" id="btnDeleteAndBlock"><spring:message code="report.detail.admin.action.deleteAndBlock.post"/></button>
+                <button class="rpt-btn-danger" id="btnDeleteContent"><spring:message code="report.detail.admin.action.deleteContent.post"/></button>
+                <button class="rpt-btn-danger" id="btnBlockAuthor"><spring:message code="report.detail.admin.action.blockAuthor"/></button>
               </div>
               <div class="rpt-admin-action-bar">
                 <button class="rpt-btn-cancel" id="btnDismiss">${reportKeepDismiss}</button>
@@ -442,9 +389,9 @@
             <%-- 댓글 신고 --%>
             <c:if test="${report.targetType eq 'comment'}">
               <div class="rpt-admin-action-bar">
-                <button class="rpt-btn-danger" id="btnDeleteAndBlock">${autoMsg_c67002c90c}</button>
-                <button class="rpt-btn-danger" id="btnDeleteContent">${autoMsg_c383a7e2ab}</button>
-                <button class="rpt-btn-danger" id="btnBlockAuthor">${autoMsg_73efb53f03}</button>
+                <button class="rpt-btn-danger" id="btnDeleteAndBlock"><spring:message code="report.detail.admin.action.deleteAndBlock.comment"/></button>
+                <button class="rpt-btn-danger" id="btnDeleteContent"><spring:message code="report.detail.admin.action.deleteContent.comment"/></button>
+                <button class="rpt-btn-danger" id="btnBlockAuthor"><spring:message code="report.detail.admin.action.blockAuthor"/></button>
               </div>
               <div class="rpt-admin-action-bar">
                 <button class="rpt-btn-cancel" id="btnDismiss">${reportKeepDismiss}</button>
@@ -454,9 +401,9 @@
             <%-- 여행지 리뷰 신고 --%>
             <c:if test="${report.targetType eq 'review'}">
               <div class="rpt-admin-action-bar">
-                <button class="rpt-btn-danger" id="btnDeleteAndBlock">${autoMsg_47383177b5}</button>
-                <button class="rpt-btn-danger" id="btnDeleteContent">${autoMsg_9553fe2a1e}</button>
-                <button class="rpt-btn-danger" id="btnBlockAuthor">${autoMsg_73efb53f03}</button>
+                <button class="rpt-btn-danger" id="btnDeleteAndBlock"><spring:message code="report.detail.admin.action.deleteAndBlock.review"/></button>
+                <button class="rpt-btn-danger" id="btnDeleteContent"><spring:message code="report.detail.admin.action.deleteContent.review"/></button>
+                <button class="rpt-btn-danger" id="btnBlockAuthor"><spring:message code="report.detail.admin.action.blockAuthor"/></button>
               </div>
               <div class="rpt-admin-action-bar">
                 <button class="rpt-btn-cancel" id="btnDismiss">${reportKeepDismiss}</button>
@@ -466,7 +413,7 @@
             <%-- 유저 신고 --%>
             <c:if test="${report.targetType eq 'user'}">
               <div class="rpt-admin-action-bar">
-                <button class="rpt-btn-danger" id="btnBlockUser">${autoMsg_f34eef7b95}</button>
+                <button class="rpt-btn-danger" id="btnBlockUser"><spring:message code="report.detail.admin.action.blockUser"/></button>
               </div>
               <div class="rpt-admin-action-bar">
                 <button class="rpt-btn-cancel" id="btnDismiss">${reportKeepDismiss}</button>
@@ -478,7 +425,7 @@
           <%-- 처리완료/반려 → 반려취소 버튼 --%>
           <c:otherwise>
             <div class="rpt-admin-action-bar">
-              <button class="rpt-btn-warn" id="btnRevertToPending">${autoMsg_387eb05122}</button>
+              <button class="rpt-btn-warn" id="btnRevertToPending"><spring:message code="report.detail.admin.action.revert"/></button>
             </div>
           </c:otherwise>
 
@@ -495,14 +442,14 @@
           <%-- post/comment 신고: 사유 선택 --%>
           <c:if test="${report.targetType ne 'user'}">
             <div class="rpt-form-group">
-              <label class="rpt-form-label">${autoMsg_3bb807a1e6}</label>
+              <label class="rpt-form-label"><spring:message code="report.detail.label.reason"/></label>
               <select class="rpt-form-select" id="editReason">
-                <option value="spam"    ${report.reason eq 'spam'    ? 'selected' : ''}>${autoMsg_fbf2cc1940}</option>
-                <option value="abuse"   ${report.reason eq 'abuse'   ? 'selected' : ''}>${autoMsg_30ea4b8644}</option>
-                <option value="privacy" ${report.reason eq 'privacy' ? 'selected' : ''}>${autoMsg_7239221909}</option>
-                <option value="adult"   ${report.reason eq 'adult'   ? 'selected' : ''}>${autoMsg_59258cd841}</option>
-                <option value="illegal" ${report.reason eq 'illegal' ? 'selected' : ''}>${autoMsg_c33a09d790}</option>
-                <option value="other"   ${report.reason eq 'other'   ? 'selected' : ''}>${autoMsg_5e57d8aea5}</option>
+                <option value="spam"    ${report.reason eq 'spam'    ? 'selected' : ''}><spring:message code="report.common.reason.spam"/></option>
+                <option value="abuse"   ${report.reason eq 'abuse'   ? 'selected' : ''}><spring:message code="report.common.reason.abuse"/></option>
+                <option value="privacy" ${report.reason eq 'privacy' ? 'selected' : ''}><spring:message code="report.common.reason.privacy"/></option>
+                <option value="adult"   ${report.reason eq 'adult'   ? 'selected' : ''}><spring:message code="report.common.reason.adult"/></option>
+                <option value="illegal" ${report.reason eq 'illegal' ? 'selected' : ''}><spring:message code="report.common.reason.illegal"/></option>
+                <option value="other"   ${report.reason eq 'other'   ? 'selected' : ''}><spring:message code="report.common.reason.other"/></option>
               </select>
             </div>
           </c:if>
@@ -510,8 +457,8 @@
           <div class="rpt-form-group">
             <label class="rpt-form-label">
               <c:choose>
-                <c:when test="${report.targetType eq 'user'}">${autoMsg_77d29fa794}</c:when>
-                <c:otherwise>${autoMsg_b3ff2b9567}</c:otherwise>
+                <c:when test="${report.targetType eq 'user'}"><spring:message code="report.detail.label.userDescription"/></c:when>
+                <c:otherwise><spring:message code="report.detail.label.description"/></c:otherwise>
               </c:choose>
             </label>
             <textarea class="rpt-form-textarea" id="editDescription" rows="6">${report.description}</textarea>
@@ -541,24 +488,24 @@
 
       <%-- IN_REVIEW: 수정 + 삭제 + 신고 취소 --%>
       <c:if test="${isOwner and report.status eq 'IN_REVIEW'}">
-        <button class="rpt-btn-cancel" id="editBtn">${autoMsg_b732fad9e7}</button>
+        <button class="rpt-btn-cancel" id="editBtn"><spring:message code="report.detail.action.edit"/></button>
         <button class="rpt-btn-submit" id="deleteBtn"
-                style="background:#ef4444;">${autoMsg_45642e6f1f}</button>
+                style="background:#ef4444;"><spring:message code="report.detail.action.delete"/></button>
         <button class="rpt-btn-submit" id="cancelReportBtn"
-                style="background:#f59e0b;">${autoMsg_182249a72f}</button>
+                style="background:#f59e0b;"><spring:message code="report.detail.action.cancelReport"/></button>
       </c:if>
 
       <%-- CANCELLED: 삭제만 --%>
       <c:if test="${isOwner and report.status eq 'CANCELLED'}">
         <button class="rpt-btn-submit" id="deleteBtn"
-                style="background:#ef4444;">${autoMsg_45642e6f1f}</button>
+                style="background:#ef4444;"><spring:message code="report.detail.action.delete"/></button>
       </c:if>
 
       <%-- 어드민: 삭제 (상태 무관, 관리자모드 + 소유자가 아닐 때만)
            소유자이면 위 소유자 블록에 삭제 버튼이 이미 있으므로 중복 방지 --%>
       <c:if test="${isAdmin and isAdminMode and not isOwner}">
         <button class="rpt-btn-submit" id="deleteBtn"
-                style="background:#ef4444;">${autoMsg_45642e6f1f}</button>
+                style="background:#ef4444;"><spring:message code="report.detail.action.delete"/></button>
       </c:if>
     </div>
 

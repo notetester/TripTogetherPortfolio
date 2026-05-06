@@ -3,27 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<spring:message var="autoMsg_9febddd01d" code="security.admin.provider.title"/>
-<spring:message var="autoMsg_7735a7b8f3" code="security.admin.provider.desc"/>
-<spring:message var="autoMsg_8a7397d015" code="security.admin.nav.securityAssessments"/>
-<spring:message var="autoMsg_9a73787e5e" code="security.admin.nav.securityReviews"/>
-<spring:message var="autoMsg_98238b1b07" code="admin.layout.menu.policyHistory"/>
-<spring:message var="autoMsg_05c7d64ab8" code="security.admin.common.status"/>
-<spring:message var="autoMsg_48b072a019" code="security.admin.provider.displayName"/>
-<spring:message var="autoMsg_a3b72a9943" code="security.admin.provider.endpointUrl"/>
-<spring:message var="autoMsg_399e5d8ed6" code="security.admin.provider.apiKeyRef"/>
-<spring:message var="autoMsg_e5b96b5450" code="security.admin.provider.modelName"/>
-<spring:message var="autoMsg_0e03d8063b" code="security.admin.provider.timeoutMillis"/>
-<spring:message var="autoMsg_fb4bb90c87" code="security.admin.provider.failPolicy"/>
-<spring:message var="autoMsg_e4da3c67a4" code="security.admin.provider.failOpen"/>
-<spring:message var="autoMsg_de04fbc4ef" code="security.admin.provider.failClosed"/>
-<spring:message var="autoMsg_86e3f315b5" code="security.admin.common.description"/>
-<spring:message var="autoMsg_b5e2e05e6f" code="security.admin.provider.externalCallNotice"/>
-<spring:message var="autoMsg_2710a126bd" code="security.admin.provider.lastCheckedAt"/>
-<spring:message var="autoMsg_45f717f53c" code="security.admin.common.save"/>
-<spring:message var="autoMsg_7e736b444f" code="security.admin.provider.detailTitle"/>
-<spring:message var="autoMsg_d0ceb3e6eb" code="security.admin.common.close"/>
-<spring:message var="autoMsg_8736823379" code="security.admin.common.enabled"/>
+
 <c:set var="activeMenu" value="securityProviderConfigs"/>
 <spring:message var="pageTitle" code="security.admin.provider.title"/>
 <spring:message var="providerEndpointPlaceholder" code="security.admin.provider.endpointPlaceholder"/>
@@ -47,13 +27,13 @@
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1>${autoMsg_9febddd01d}</h1>
-            <p class="adm-page-desc">${autoMsg_7735a7b8f3}</p>
+            <h1><spring:message code="security.admin.provider.title"/></h1>
+            <p class="adm-page-desc"><spring:message code="security.admin.provider.desc"/></p>
         </div>
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${autoMsg_8a7397d015}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews">${autoMsg_9a73787e5e}</a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history?sourceType=PROVIDER_CONFIG">${autoMsg_98238b1b07}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments"><spring:message code="security.admin.nav.securityAssessments"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-reviews"><spring:message code="security.admin.nav.securityReviews"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/policy-history?sourceType=PROVIDER_CONFIG"><spring:message code="admin.layout.menu.policyHistory"/></a>
         </div>
     </div>
 
@@ -66,7 +46,7 @@
             <div class="adm-card-header">
                 <div>
                     <div class="adm-card-title"><c:out value="${p.providerName}"/></div>
-                    <div class="adm-muted"><c:out value="${p.providerKind}"/> · <c:out value="${p.providerCode}"/> · ${autoMsg_05c7d64ab8} <c:out value="${p.status}"/></div>
+                    <div class="adm-muted"><c:out value="${p.providerKind}"/> · <c:out value="${p.providerCode}"/> · <spring:message code="security.admin.common.status"/> <c:out value="${p.status}"/></div>
                 </div>
                 <label class="adm-check">
                     <input type="checkbox" name="enabled" ${p.enabled ? 'checked' : ''}>
@@ -77,38 +57,38 @@
                 <input type="hidden" name="providerCode" value="${fn:escapeXml(p.providerCode)}">
                 <input type="hidden" name="providerKind" value="${fn:escapeXml(p.providerKind)}">
                 <div class="adm-form-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;">
-                    <label>${autoMsg_48b072a019}
+                    <label><spring:message code="security.admin.provider.displayName"/>
                         <input class="adm-input" type="text" name="providerName" value="${fn:escapeXml(p.providerName)}">
                     </label>
-                    <label>${autoMsg_a3b72a9943}
+                    <label><spring:message code="security.admin.provider.endpointUrl"/>
                         <input class="adm-input" type="text" name="endpointUrl" value="${fn:escapeXml(p.endpointUrl)}" placeholder="${providerEndpointPlaceholder}">
                     </label>
-                    <label>${autoMsg_399e5d8ed6}
+                    <label><spring:message code="security.admin.provider.apiKeyRef"/>
                         <input class="adm-input" type="text" name="apiKeyRef" value="${fn:escapeXml(p.apiKeyRef)}" placeholder="${providerApiKeyRefPlaceholder}">
                     </label>
-                    <label>${autoMsg_e5b96b5450}
+                    <label><spring:message code="security.admin.provider.modelName"/>
                         <input class="adm-input" type="text" name="modelName" value="${fn:escapeXml(p.modelName)}">
                     </label>
-                    <label>${autoMsg_0e03d8063b}
+                    <label><spring:message code="security.admin.provider.timeoutMillis"/>
                         <input class="adm-input" type="number" name="timeoutMillis" value="${fn:escapeXml(p.timeoutMillis)}">
                     </label>
-                    <label>${autoMsg_fb4bb90c87}
+                    <label><spring:message code="security.admin.provider.failPolicy"/>
                         <select class="adm-input" name="failOpen">
-                            <option value="1" ${p.failOpen == 1 ? 'selected' : ''}>${autoMsg_e4da3c67a4}</option>
-                            <option value="0" ${p.failOpen == 0 ? 'selected' : ''}>${autoMsg_de04fbc4ef}</option>
+                            <option value="1" ${p.failOpen == 1 ? 'selected' : ''}><spring:message code="security.admin.provider.failOpen"/></option>
+                            <option value="0" ${p.failOpen == 0 ? 'selected' : ''}><spring:message code="security.admin.provider.failClosed"/></option>
                         </select>
                     </label>
                 </div>
-                <label style="display:block;margin-top:12px;">${autoMsg_86e3f315b5}
+                <label style="display:block;margin-top:12px;"><spring:message code="security.admin.common.description"/>
                     <textarea class="adm-input" name="description" rows="2"><c:out value="${p.description}"/></textarea>
                 </label>
                 <div class="adm-muted" style="margin-top:8px;line-height:1.7;">
-                    ${autoMsg_b5e2e05e6f}<br>
-                    ${autoMsg_2710a126bd}:
+                    <spring:message code="security.admin.provider.externalCallNotice"/><br>
+                    <spring:message code="security.admin.provider.lastCheckedAt"/>:
                     <fmt:formatDate value="${p.lastCheckedAtDate}" pattern="yyyy-MM-dd HH:mm"/>
                 </div>
                 <div class="adm-actions" style="margin-top:12px;">
-                    <button class="adm-btn primary" type="submit">${autoMsg_45f717f53c}</button>
+                    <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.save"/></button>
                     <button class="adm-btn" type="submit"
                             formmethod="post"
                             formaction="${pageContext.request.contextPath}/admin/login-risk/provider-configs/${p.providerIdx}/check">
@@ -128,48 +108,48 @@
             <div class="provider-detail-card" role="dialog" aria-modal="true" aria-labelledby="provider-detail-title-${p.providerIdx}">
                 <div class="provider-detail-head">
                     <div>
-                        <h2 id="provider-detail-title-${p.providerIdx}" style="margin:0;">${autoMsg_7e736b444f}</h2>
+                        <h2 id="provider-detail-title-${p.providerIdx}" style="margin:0;"><spring:message code="security.admin.provider.detailTitle"/></h2>
                         <div class="adm-muted"><c:out value="${p.providerKind}"/> · <c:out value="${p.providerCode}"/></div>
                     </div>
-                    <button class="provider-detail-close js-provider-modal-close" type="button">${autoMsg_d0ceb3e6eb}</button>
+                    <button class="provider-detail-close js-provider-modal-close" type="button"><spring:message code="security.admin.common.close"/></button>
                 </div>
                 <div class="provider-detail-body">
                     <div class="provider-detail-grid">
                         <div class="provider-detail-item">
-                            <div class="provider-detail-label">${autoMsg_48b072a019}</div>
+                            <div class="provider-detail-label"><spring:message code="security.admin.provider.displayName"/></div>
                             <div class="provider-detail-value"><c:out value="${p.providerName}" default="-"/></div>
                         </div>
                         <div class="provider-detail-item">
-                            <div class="provider-detail-label">${autoMsg_05c7d64ab8}</div>
-                            <div class="provider-detail-value"><c:out value="${p.status}" default="-"/> / ${autoMsg_8736823379}: <c:out value="${p.enabled}"/></div>
+                            <div class="provider-detail-label"><spring:message code="security.admin.common.status"/></div>
+                            <div class="provider-detail-value"><c:out value="${p.status}" default="-"/> / <spring:message code="security.admin.common.enabled"/>: <c:out value="${p.enabled}"/></div>
                         </div>
                         <div class="provider-detail-item">
-                            <div class="provider-detail-label">${autoMsg_a3b72a9943}</div>
+                            <div class="provider-detail-label"><spring:message code="security.admin.provider.endpointUrl"/></div>
                             <div class="provider-detail-value"><c:out value="${p.endpointUrl}" default="-"/></div>
                         </div>
                         <div class="provider-detail-item">
-                            <div class="provider-detail-label">${autoMsg_399e5d8ed6}</div>
+                            <div class="provider-detail-label"><spring:message code="security.admin.provider.apiKeyRef"/></div>
                             <div class="provider-detail-value"><c:out value="${p.apiKeyRef}" default="-"/></div>
                         </div>
                         <div class="provider-detail-item">
-                            <div class="provider-detail-label">${autoMsg_e5b96b5450}</div>
+                            <div class="provider-detail-label"><spring:message code="security.admin.provider.modelName"/></div>
                             <div class="provider-detail-value"><c:out value="${p.modelName}" default="-"/></div>
                         </div>
                         <div class="provider-detail-item">
-                            <div class="provider-detail-label">${autoMsg_0e03d8063b}</div>
+                            <div class="provider-detail-label"><spring:message code="security.admin.provider.timeoutMillis"/></div>
                             <div class="provider-detail-value"><c:out value="${p.timeoutMillis}" default="-"/></div>
                         </div>
                         <div class="provider-detail-item">
-                            <div class="provider-detail-label">${autoMsg_fb4bb90c87}</div>
+                            <div class="provider-detail-label"><spring:message code="security.admin.provider.failPolicy"/></div>
                             <div class="provider-detail-value"><c:out value="${p.failOpen}" default="-"/></div>
                         </div>
                         <div class="provider-detail-item">
-                            <div class="provider-detail-label">${autoMsg_2710a126bd}</div>
+                            <div class="provider-detail-label"><spring:message code="security.admin.provider.lastCheckedAt"/></div>
                             <div class="provider-detail-value"><fmt:formatDate value="${p.lastCheckedAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
                         </div>
                     </div>
                     <div class="provider-detail-item" style="margin-top:12px;">
-                        <div class="provider-detail-label">${autoMsg_86e3f315b5}</div>
+                        <div class="provider-detail-label"><spring:message code="security.admin.common.description"/></div>
                         <div class="provider-detail-value"><c:out value="${p.description}" default="-"/></div>
                     </div>
                 </div>

@@ -3,171 +3,130 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_1d837fc9ef" code="admin.aiHelper.assistant.kpi.totalSessions"/>
-<spring:message var="autoMsg_11036ade17" code="admin.aiHelper.assistant.kpi.totalMessages"/>
-<spring:message var="autoMsg_a1596c104b" code="admin.aiHelper.assistant.kpi.todaySessions"/>
-<spring:message var="autoMsg_256cf0d0e8" code="admin.aiHelper.assistant.kpi.uniqueUsers"/>
-<spring:message var="autoMsg_d9bfc784f6" code="admin.aiHelper.assistant.section.sessions"/>
-<spring:message var="autoMsg_85f4fe9638" code="admin.aiHelper.assistant.searchPlaceholder"/>
-<spring:message var="autoMsg_fc9a750120" code="admin.common.search"/>
-<spring:message var="autoMsg_4a50c0da4d" code="admin.common.reset"/>
-<spring:message var="autoMsg_d517b45abc" code="admin.common.totalCountFormat"/>
-<spring:message var="autoMsg_05f3bf97cd" code="admin.aiHelper.assistant.table.sessionId"/>
-<spring:message var="autoMsg_c4bf33cd8c" code="admin.aiHelper.assistant.table.title"/>
-<spring:message var="autoMsg_226b45aaa8" code="admin.aiHelper.assistant.table.user"/>
-<spring:message var="autoMsg_c7ecd0bbd2" code="admin.aiHelper.assistant.table.messageCount"/>
-<spring:message var="autoMsg_d801abe036" code="admin.aiHelper.assistant.table.createdAt"/>
-<spring:message var="autoMsg_6d7faccf52" code="admin.aiHelper.assistant.table.lastActive"/>
-<spring:message var="autoMsg_83fdb475aa" code="admin.aiHelper.assistant.table.actions"/>
-<spring:message var="autoMsg_c9c3c69a62" code="admin.aiHelper.assistant.action.delete"/>
-<spring:message var="autoMsg_7914798292" code="admin.aiHelper.assistant.empty.sessions"/>
-<spring:message var="autoMsg_78724903ef" code="admin.aiHelper.assistant.userPrefix"/>
-<spring:message var="autoMsg_4be5f8035d" code="admin.aiHelper.assistant.userDeleted"/>
-<spring:message var="autoMsg_2e5ad1eb4b" code="admin.aiHelper.assistant.action.view"/>
-<spring:message var="autoMsg_8c0e684ac7" code="admin.aiHelper.assistant.table.id"/>
-<spring:message var="autoMsg_6674f134ab" code="admin.aiHelper.assistant.table.session"/>
-<spring:message var="autoMsg_74f1deaa4f" code="admin.aiHelper.assistant.table.role"/>
-<spring:message var="autoMsg_3c2ee5a31f" code="admin.aiHelper.assistant.table.content"/>
-<spring:message var="autoMsg_107b4e7167" code="admin.common.time"/>
-<spring:message var="autoMsg_471b6bc54d" code="admin.aiHelper.assistant.empty.messages"/>
-<spring:message var="autoMsg_719a769f7b" code="admin.aiHelper.assistant.role.user"/>
-<spring:message var="autoMsg_c758a16a32" code="admin.aiHelper.assistant.role.ai"/>
-<spring:message var="autoMsg_03c62fad79" code="admin.aiHelper.assistant.action.viewSession"/>
-<spring:message var="autoMsg_b6f99d72a0" code="admin.aiHelper.assistant.modal.title"/>
-<spring:message var="autoMsg_9fa4a10958" code="admin.common.close"/>
-<spring:message var="autoMsg_68c52172bf" code="admin.aiHelper.assistant.modal.title" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f7549c416a" code="admin.aiHelper.assistant.role.user" javaScriptEscape="true"/>
-<spring:message var="autoMsg_398976cb54" code="admin.aiHelper.assistant.role.ai" javaScriptEscape="true"/>
-<spring:message var="autoMsg_3a01f01cb7" code="admin.aiHelper.assistant.empty.messages" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f7a1a7c79f" code="admin.aiHelper.assistant.message.viewFailed" javaScriptEscape="true"/>
-<spring:message var="autoMsg_a22344eab3" code="admin.aiHelper.assistant.message.viewError" javaScriptEscape="true"/>
-<spring:message var="autoMsg_d1fdbc9e4c" code="admin.aiHelper.assistant.message.deleteConfirm" javaScriptEscape="true"/>
-<spring:message var="autoMsg_7813cd4618" code="admin.aiHelper.assistant.message.deleteDone" javaScriptEscape="true"/>
-<spring:message var="autoMsg_3fdc6b6b84" code="admin.aiHelper.assistant.message.deleteFailed" javaScriptEscape="true"/>
-<spring:message var="autoMsg_6f4ee82308" code="admin.aiHelper.assistant.message.deleteError" javaScriptEscape="true"/>
-<spring:message var="autoMsg_41c8b18c68" code="admin.aiHelper.assistant.table.session" javaScriptEscape="true"/>
-<spring:message var="autoMsg_8ba8c9744c" code="admin.context.memberTitle"/>
-<spring:message var="autoMsg_7909424450" code="admin.common.loading"/>
-<spring:message var="autoMsg_3ca5070f8b" code="admin.members.blockModalTitle"/>
-<spring:message var="autoMsg_013dec296a" code="admin.context.action.blockType"/>
-<spring:message var="autoMsg_c8a85ca33f" code="admin.context.blockType.userOnly"/>
-<spring:message var="autoMsg_4b5192b105" code="admin.context.blockType.ipOnly"/>
-<spring:message var="autoMsg_2f59c8466f" code="admin.context.blockType.userIp"/>
-<spring:message var="autoMsg_69be94d747" code="admin.members.blockedIpLabel"/>
-<spring:message var="autoMsg_091d6d5342" code="admin.context.action.blockIpPlaceholder"/>
-<spring:message var="autoMsg_0c010a72a7" code="admin.members.blockExpiresLabel"/>
-<spring:message var="autoMsg_30d5f51691" code="admin.members.blockReasonLabel"/>
-<spring:message var="autoMsg_6f6966ec8c" code="admin.context.action.reasonPlaceholder"/>
-<spring:message var="autoMsg_e84c919d06" code="admin.context.action.applyBlock"/>
-<spring:message var="autoMsg_253c63fe7e" code="admin.common.loading" javaScriptEscape="true"/>
-<spring:message var="autoMsg_ef8ca10d2e" code="admin.common.close" javaScriptEscape="true"/>
-<spring:message var="autoMsg_c6cdc97702" code="admin.common.error" javaScriptEscape="true"/>
-<spring:message var="autoMsg_21b49d597f" code="admin.common.yes" javaScriptEscape="true"/>
-<spring:message var="autoMsg_457bb3ee55" code="admin.common.no" javaScriptEscape="true"/>
-<spring:message var="autoMsg_bdeb3ff468" code="admin.members.none" javaScriptEscape="true"/>
-<spring:message var="autoMsg_4afe69411b" code="admin.members.noLinkedProvider" javaScriptEscape="true"/>
-<spring:message var="autoMsg_fb16b791ca" code="admin.members.verifiedMember" javaScriptEscape="true"/>
-<spring:message var="autoMsg_1db340d986" code="admin.members.unverifiedMember" javaScriptEscape="true"/>
-<spring:message var="autoMsg_52183393f5" code="admin.status.ACTIVE" javaScriptEscape="true"/>
-<spring:message var="autoMsg_d149070646" code="admin.status.DORMANT" javaScriptEscape="true"/>
-<spring:message var="autoMsg_7b3fdf99d7" code="admin.status.BLOCKED" javaScriptEscape="true"/>
-<spring:message var="autoMsg_92b42875e4" code="admin.status.DELETED" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f223637b4f" code="admin.members.blockModalTitleSuffix" javaScriptEscape="true"/>
-<spring:message var="autoMsg_d0345e3b42" code="admin.members.blockResponseParseError" javaScriptEscape="true"/>
-<spring:message var="autoMsg_0e1bce7cbd" code="admin.members.statusResponseParseError" javaScriptEscape="true"/>
-<spring:message var="autoMsg_7e0b27fd85" code="admin.members.roleResponseParseError" javaScriptEscape="true"/>
-<spring:message var="autoMsg_06e616392e" code="admin.members.blockTargetMissing" javaScriptEscape="true"/>
-<spring:message var="autoMsg_06cb7a177d" code="admin.common.applying" javaScriptEscape="true"/>
-<spring:message var="autoMsg_c01e180fb6" code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>
-<spring:message var="autoMsg_0e96b80e32" code="admin.context.memberTitle" javaScriptEscape="true"/>
-<spring:message var="autoMsg_2db66dcba4" code="admin.members.detailTitleSuffix" javaScriptEscape="true"/>
-<spring:message var="autoMsg_83c280f74d" code="admin.context.tab.info" javaScriptEscape="true"/>
-<spring:message var="autoMsg_08b598000c" code="admin.context.tab.logins" javaScriptEscape="true"/>
-<spring:message var="autoMsg_6568a17618" code="admin.context.tab.security" javaScriptEscape="true"/>
-<spring:message var="autoMsg_d8b98f50a5" code="admin.members.emailHistoryTab" javaScriptEscape="true"/>
-<spring:message var="autoMsg_49717bdcc3" code="admin.context.tab.activity" javaScriptEscape="true"/>
-<spring:message var="autoMsg_bc476310b4" code="admin.context.tab.blocks" javaScriptEscape="true"/>
-<spring:message var="autoMsg_d41ec3d119" code="admin.context.tab.actions" javaScriptEscape="true"/>
-<spring:message var="autoMsg_c550eefd6f" code="admin.role.USER" javaScriptEscape="true"/>
-<spring:message var="autoMsg_165ac700ca" code="admin.role.BUSINESS" javaScriptEscape="true"/>
-<spring:message var="autoMsg_0a4a91f56b" code="admin.role.PARTNER" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b0124e54de" code="admin.role.BOT" javaScriptEscape="true"/>
-<spring:message var="autoMsg_c9c455e017" code="admin.role.ADMIN" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b9dac2b648" code="admin.role.SUPERADMIN" javaScriptEscape="true"/>
-<spring:message var="autoMsg_ac26867537" code="admin.role.SYSTEM" javaScriptEscape="true"/>
-<spring:message var="autoMsg_d783f8943a" code="admin.social.kakao" javaScriptEscape="true"/>
-<spring:message var="autoMsg_5ee6c782fb" code="admin.social.naver" javaScriptEscape="true"/>
-<spring:message var="autoMsg_d8bdd2bb13" code="admin.social.google" javaScriptEscape="true"/>
-<spring:message var="autoMsg_68c9b31d7a" code="admin.context.requireBlockedIp" javaScriptEscape="true"/>
-<spring:message var="autoMsg_7b1eb93122" code="admin.context.toast.saveBlockFail" javaScriptEscape="true"/>
-<spring:message var="autoMsg_eaa3e240dd" code="admin.context.toast.saveBlockError" javaScriptEscape="true"/>
-<spring:message var="autoMsg_49ca501476" code="admin.members.confirmStatusChangePrefix" javaScriptEscape="true"/>
-<spring:message var="autoMsg_53524744c1" code="admin.members.confirmStatusChangeSuffix" javaScriptEscape="true"/>
-<spring:message var="autoMsg_714dd6cdfd" code="admin.context.toast.saveStatusSuccess" javaScriptEscape="true"/>
-<spring:message var="autoMsg_8ab94f7a93" code="admin.context.toast.saveStatusFail" javaScriptEscape="true"/>
-<spring:message var="autoMsg_4c38fa11cf" code="admin.members.roleContextMissing" javaScriptEscape="true"/>
-<spring:message var="autoMsg_97ee27510a" code="admin.members.roleAlreadySelected" javaScriptEscape="true"/>
-<spring:message var="autoMsg_55aae9ece7" code="admin.context.requireRoleReason" javaScriptEscape="true"/>
-<spring:message var="autoMsg_54f89dbcd7" code="admin.members.confirmRoleChangeSuffix" javaScriptEscape="true"/>
-<spring:message var="autoMsg_e024e75c04" code="admin.context.toast.saveRoleSuccess" javaScriptEscape="true"/>
-<spring:message var="autoMsg_132afc3fae" code="admin.context.toast.saveRoleFail" javaScriptEscape="true"/>
-<spring:message var="autoMsg_6e7908a131" code="admin.context.inputValue" javaScriptEscape="true"/>
-<spring:message var="autoMsg_6da221e920" code="admin.context.targetEmail" javaScriptEscape="true"/>
-<spring:message var="autoMsg_20256a70ff" code="admin.context.empty.security" javaScriptEscape="true"/>
-<spring:message var="autoMsg_164d27d733" code="admin.context.requestEmail" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b2de2778a0" code="admin.context.empty.emailRequests" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f73db93f03" code="admin.context.used" javaScriptEscape="true"/>
-<spring:message var="autoMsg_2c0810f41f" code="admin.context.unused" javaScriptEscape="true"/>
-<spring:message var="autoMsg_462a4510b6" code="admin.context.empty.emailTokens" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b77b17cdb9" code="admin.context.uri" javaScriptEscape="true"/>
-<spring:message var="autoMsg_858857619e" code="admin.context.empty.activity" javaScriptEscape="true"/>
-<spring:message var="autoMsg_5d51d592f0" code="admin.common.reason" javaScriptEscape="true"/>
-<spring:message var="autoMsg_d5cdcda789" code="admin.context.empty.blocks" javaScriptEscape="true"/>
-<spring:message var="autoMsg_a109d9412c" code="admin.context.action.profileTitle" javaScriptEscape="true"/>
-<spring:message var="autoMsg_335a1a946b" code="admin.context.nickname" javaScriptEscape="true"/>
-<spring:message var="autoMsg_e45369d899" code="admin.context.nationality" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f52b713072" code="admin.context.preferredLanguage" javaScriptEscape="true"/>
-<spring:message var="autoMsg_0250d6a792" code="admin.context.action.saveProfile" javaScriptEscape="true"/>
-<spring:message var="autoMsg_e54de24db0" code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>
-<spring:message var="autoMsg_619bafe209" code="admin.members.accountStatus" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b6e5544935" code="admin.common.apply" javaScriptEscape="true"/>
-<spring:message var="autoMsg_ddb933bb9f" code="admin.common.role" javaScriptEscape="true"/>
-<spring:message var="autoMsg_ba1453a702" code="admin.context.action.roleReason" javaScriptEscape="true"/>
-<spring:message var="autoMsg_5300a33c4c" code="admin.context.action.roleReasonPlaceholder" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f662f24078" code="admin.context.action.changeRole" javaScriptEscape="true"/>
-<spring:message var="autoMsg_fd158e3839" code="admin.context.action.quickBlockTitle" javaScriptEscape="true"/>
-<spring:message var="autoMsg_707665880c" code="admin.context.action.blockType" javaScriptEscape="true"/>
-<spring:message var="autoMsg_09080890cc" code="admin.context.blockType.userOnly" javaScriptEscape="true"/>
-<spring:message var="autoMsg_98ed1ec0e5" code="admin.context.blockType.ipOnly" javaScriptEscape="true"/>
-<spring:message var="autoMsg_2f038284eb" code="admin.context.blockType.userIp" javaScriptEscape="true"/>
-<spring:message var="autoMsg_ee8f88048b" code="admin.context.blockedIp" javaScriptEscape="true"/>
-<spring:message var="autoMsg_1b85b3e15a" code="admin.context.action.blockIpPlaceholder" javaScriptEscape="true"/>
-<spring:message var="autoMsg_e4ad9cca5c" code="admin.context.action.blockExpires" javaScriptEscape="true"/>
-<spring:message var="autoMsg_08c05d0c56" code="admin.context.action.applyBlock" javaScriptEscape="true"/>
-<spring:message var="autoMsg_122067e8b3" code="admin.context.tab.emailRequests" javaScriptEscape="true"/>
-<spring:message var="autoMsg_1a6c821aa5" code="admin.context.tab.emailTokens" javaScriptEscape="true"/>
-<spring:message var="autoMsg_73de82b486" code="admin.context.memberNo" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f87663ab41" code="admin.context.userId" javaScriptEscape="true"/>
-<spring:message var="autoMsg_4ea1c2e5bd" code="admin.context.email" javaScriptEscape="true"/>
-<spring:message var="autoMsg_cec47cb0cc" code="admin.members.emailVerified" javaScriptEscape="true"/>
-<spring:message var="autoMsg_2d559812bd" code="admin.members.emailLoginEnabled" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f1925a9904" code="admin.members.passwordLoginEnabled" javaScriptEscape="true"/>
-<spring:message var="autoMsg_9ade7a11d7" code="admin.context.createdAt" javaScriptEscape="true"/>
-<spring:message var="autoMsg_7d65a7e1d3" code="admin.members.socialLinked" javaScriptEscape="true"/>
-<spring:message var="autoMsg_cf03ed66d8" code="admin.members.loginSuccess" javaScriptEscape="true"/>
-<spring:message var="autoMsg_3005542d6a" code="admin.members.loginFailure" javaScriptEscape="true"/>
-<spring:message var="autoMsg_09617c89ac" code="admin.context.lastLogin" javaScriptEscape="true"/>
-<spring:message var="autoMsg_d0f759d4f1" code="admin.context.empty.logins" javaScriptEscape="true"/>
-<spring:message var="autoMsg_a5c0d5d7ed" code="admin.logs.success" javaScriptEscape="true"/>
-<spring:message var="autoMsg_24aba6ad80" code="admin.logs.failure" javaScriptEscape="true"/>
-<spring:message var="autoMsg_d6d2379f8a" code="admin.common.time" javaScriptEscape="true"/>
-<spring:message var="autoMsg_28ef9de7fd" code="admin.logs.provider" javaScriptEscape="true"/>
-<spring:message var="autoMsg_72f23d3c96" code="admin.logs.failReason" javaScriptEscape="true"/>
-<spring:message var="autoMsg_6b4e253a09" code="admin.common.ip" javaScriptEscape="true"/>
-<spring:message var="autoMsg_44def9b86a" code="admin.context.toast.saveProfileSuccess" javaScriptEscape="true"/>
-<spring:message var="autoMsg_93ad924e95" code="admin.context.toast.saveProfileFail" javaScriptEscape="true"/>
-<spring:message var="autoMsg_01dba7d82b" code="admin.context.toast.saveProfileError" javaScriptEscape="true"/>
+
 <c:set var="activeMenu" value="aiHelper"/>
+<spring:message var="adminAiHelperAssistantSearchPlaceholderMsg" code="admin.aiHelper.assistant.searchPlaceholder"/>
+<spring:message var="adminAiHelperAssistantModalTitleMsg" code="admin.aiHelper.assistant.modal.title" javaScriptEscape="true"/>
+<spring:message var="adminAiHelperAssistantRoleUserMsg" code="admin.aiHelper.assistant.role.user" javaScriptEscape="true"/>
+<spring:message var="adminAiHelperAssistantRoleAiMsg" code="admin.aiHelper.assistant.role.ai" javaScriptEscape="true"/>
+<spring:message var="adminAiHelperAssistantEmptyMessagesMsg" code="admin.aiHelper.assistant.empty.messages" javaScriptEscape="true"/>
+<spring:message var="adminAiHelperAssistantMessageViewFailedMsg" code="admin.aiHelper.assistant.message.viewFailed" javaScriptEscape="true"/>
+<spring:message var="adminAiHelperAssistantMessageViewErrorMsg" code="admin.aiHelper.assistant.message.viewError" javaScriptEscape="true"/>
+<spring:message var="adminAiHelperAssistantMessageDeleteConfirmMsg" code="admin.aiHelper.assistant.message.deleteConfirm" javaScriptEscape="true"/>
+<spring:message var="adminAiHelperAssistantMessageDeleteDoneMsg" code="admin.aiHelper.assistant.message.deleteDone" javaScriptEscape="true"/>
+<spring:message var="adminAiHelperAssistantMessageDeleteFailedMsg" code="admin.aiHelper.assistant.message.deleteFailed" javaScriptEscape="true"/>
+<spring:message var="adminAiHelperAssistantMessageDeleteErrorMsg" code="admin.aiHelper.assistant.message.deleteError" javaScriptEscape="true"/>
+<spring:message var="adminAiHelperAssistantTableSessionMsg" code="admin.aiHelper.assistant.table.session" javaScriptEscape="true"/>
+<spring:message var="adminContextActionBlockIpPlaceholderMsg" code="admin.context.action.blockIpPlaceholder"/>
+<spring:message var="adminContextActionReasonPlaceholderMsg" code="admin.context.action.reasonPlaceholder"/>
+<spring:message var="adminCommonLoadingMsg" code="admin.common.loading" javaScriptEscape="true"/>
+<spring:message var="adminCommonCloseMsg" code="admin.common.close" javaScriptEscape="true"/>
+<spring:message var="adminCommonErrorMsg" code="admin.common.error" javaScriptEscape="true"/>
+<spring:message var="adminCommonYesMsg" code="admin.common.yes" javaScriptEscape="true"/>
+<spring:message var="adminCommonNoMsg" code="admin.common.no" javaScriptEscape="true"/>
+<spring:message var="adminMembersNoneMsg" code="admin.members.none" javaScriptEscape="true"/>
+<spring:message var="adminMembersNoLinkedProviderMsg" code="admin.members.noLinkedProvider" javaScriptEscape="true"/>
+<spring:message var="adminMembersVerifiedMemberMsg" code="admin.members.verifiedMember" javaScriptEscape="true"/>
+<spring:message var="adminMembersUnverifiedMemberMsg" code="admin.members.unverifiedMember" javaScriptEscape="true"/>
+<spring:message var="adminStatusACTIVEMsg" code="admin.status.ACTIVE" javaScriptEscape="true"/>
+<spring:message var="adminStatusDORMANTMsg" code="admin.status.DORMANT" javaScriptEscape="true"/>
+<spring:message var="adminStatusBLOCKEDMsg" code="admin.status.BLOCKED" javaScriptEscape="true"/>
+<spring:message var="adminStatusDELETEDMsg" code="admin.status.DELETED" javaScriptEscape="true"/>
+<spring:message var="adminMembersBlockModalTitleSuffixMsg" code="admin.members.blockModalTitleSuffix" javaScriptEscape="true"/>
+<spring:message var="adminMembersBlockResponseParseErrorMsg" code="admin.members.blockResponseParseError" javaScriptEscape="true"/>
+<spring:message var="adminMembersStatusResponseParseErrorMsg" code="admin.members.statusResponseParseError" javaScriptEscape="true"/>
+<spring:message var="adminMembersRoleResponseParseErrorMsg" code="admin.members.roleResponseParseError" javaScriptEscape="true"/>
+<spring:message var="adminMembersBlockTargetMissingMsg" code="admin.members.blockTargetMissing" javaScriptEscape="true"/>
+<spring:message var="adminCommonApplyingMsg" code="admin.common.applying" javaScriptEscape="true"/>
+<spring:message var="adminContextToastSaveBlockSuccessMsg" code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>
+<spring:message var="adminContextMemberTitleMsg" code="admin.context.memberTitle" javaScriptEscape="true"/>
+<spring:message var="adminMembersDetailTitleSuffixMsg" code="admin.members.detailTitleSuffix" javaScriptEscape="true"/>
+<spring:message var="adminContextTabInfoMsg" code="admin.context.tab.info" javaScriptEscape="true"/>
+<spring:message var="adminContextTabLoginsMsg" code="admin.context.tab.logins" javaScriptEscape="true"/>
+<spring:message var="adminContextTabSecurityMsg" code="admin.context.tab.security" javaScriptEscape="true"/>
+<spring:message var="adminMembersEmailHistoryTabMsg" code="admin.members.emailHistoryTab" javaScriptEscape="true"/>
+<spring:message var="adminContextTabActivityMsg" code="admin.context.tab.activity" javaScriptEscape="true"/>
+<spring:message var="adminContextTabBlocksMsg" code="admin.context.tab.blocks" javaScriptEscape="true"/>
+<spring:message var="adminContextTabActionsMsg" code="admin.context.tab.actions" javaScriptEscape="true"/>
+<spring:message var="adminRoleUSERMsg" code="admin.role.USER" javaScriptEscape="true"/>
+<spring:message var="adminRoleBUSINESSMsg" code="admin.role.BUSINESS" javaScriptEscape="true"/>
+<spring:message var="adminRolePARTNERMsg" code="admin.role.PARTNER" javaScriptEscape="true"/>
+<spring:message var="adminRoleBOTMsg" code="admin.role.BOT" javaScriptEscape="true"/>
+<spring:message var="adminRoleADMINMsg" code="admin.role.ADMIN" javaScriptEscape="true"/>
+<spring:message var="adminRoleSUPERADMINMsg" code="admin.role.SUPERADMIN" javaScriptEscape="true"/>
+<spring:message var="adminRoleSYSTEMMsg" code="admin.role.SYSTEM" javaScriptEscape="true"/>
+<spring:message var="adminSocialKakaoMsg" code="admin.social.kakao" javaScriptEscape="true"/>
+<spring:message var="adminSocialNaverMsg" code="admin.social.naver" javaScriptEscape="true"/>
+<spring:message var="adminSocialGoogleMsg" code="admin.social.google" javaScriptEscape="true"/>
+<spring:message var="adminContextRequireBlockedIpMsg" code="admin.context.requireBlockedIp" javaScriptEscape="true"/>
+<spring:message var="adminContextToastSaveBlockFailMsg" code="admin.context.toast.saveBlockFail" javaScriptEscape="true"/>
+<spring:message var="adminContextToastSaveBlockErrorMsg" code="admin.context.toast.saveBlockError" javaScriptEscape="true"/>
+<spring:message var="adminMembersConfirmStatusChangePrefixMsg" code="admin.members.confirmStatusChangePrefix" javaScriptEscape="true"/>
+<spring:message var="adminMembersConfirmStatusChangeSuffixMsg" code="admin.members.confirmStatusChangeSuffix" javaScriptEscape="true"/>
+<spring:message var="adminContextToastSaveStatusSuccessMsg" code="admin.context.toast.saveStatusSuccess" javaScriptEscape="true"/>
+<spring:message var="adminContextToastSaveStatusFailMsg" code="admin.context.toast.saveStatusFail" javaScriptEscape="true"/>
+<spring:message var="adminMembersRoleContextMissingMsg" code="admin.members.roleContextMissing" javaScriptEscape="true"/>
+<spring:message var="adminMembersRoleAlreadySelectedMsg" code="admin.members.roleAlreadySelected" javaScriptEscape="true"/>
+<spring:message var="adminContextRequireRoleReasonMsg" code="admin.context.requireRoleReason" javaScriptEscape="true"/>
+<spring:message var="adminMembersConfirmRoleChangeSuffixMsg" code="admin.members.confirmRoleChangeSuffix" javaScriptEscape="true"/>
+<spring:message var="adminContextToastSaveRoleSuccessMsg" code="admin.context.toast.saveRoleSuccess" javaScriptEscape="true"/>
+<spring:message var="adminContextToastSaveRoleFailMsg" code="admin.context.toast.saveRoleFail" javaScriptEscape="true"/>
+<spring:message var="adminContextInputValueMsg" code="admin.context.inputValue" javaScriptEscape="true"/>
+<spring:message var="adminContextTargetEmailMsg" code="admin.context.targetEmail" javaScriptEscape="true"/>
+<spring:message var="adminContextEmptySecurityMsg" code="admin.context.empty.security" javaScriptEscape="true"/>
+<spring:message var="adminContextRequestEmailMsg" code="admin.context.requestEmail" javaScriptEscape="true"/>
+<spring:message var="adminContextEmptyEmailRequestsMsg" code="admin.context.empty.emailRequests" javaScriptEscape="true"/>
+<spring:message var="adminContextUsedMsg" code="admin.context.used" javaScriptEscape="true"/>
+<spring:message var="adminContextUnusedMsg" code="admin.context.unused" javaScriptEscape="true"/>
+<spring:message var="adminContextEmptyEmailTokensMsg" code="admin.context.empty.emailTokens" javaScriptEscape="true"/>
+<spring:message var="adminContextUriMsg" code="admin.context.uri" javaScriptEscape="true"/>
+<spring:message var="adminContextEmptyActivityMsg" code="admin.context.empty.activity" javaScriptEscape="true"/>
+<spring:message var="adminCommonReasonMsg" code="admin.common.reason" javaScriptEscape="true"/>
+<spring:message var="adminContextEmptyBlocksMsg" code="admin.context.empty.blocks" javaScriptEscape="true"/>
+<spring:message var="adminContextActionProfileTitleMsg" code="admin.context.action.profileTitle" javaScriptEscape="true"/>
+<spring:message var="adminContextNicknameMsg" code="admin.context.nickname" javaScriptEscape="true"/>
+<spring:message var="adminContextNationalityMsg" code="admin.context.nationality" javaScriptEscape="true"/>
+<spring:message var="adminContextPreferredLanguageMsg" code="admin.context.preferredLanguage" javaScriptEscape="true"/>
+<spring:message var="adminContextActionSaveProfileMsg" code="admin.context.action.saveProfile" javaScriptEscape="true"/>
+<spring:message var="adminContextActionStatusRoleTitleMsg" code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>
+<spring:message var="adminMembersAccountStatusMsg" code="admin.members.accountStatus" javaScriptEscape="true"/>
+<spring:message var="adminCommonApplyMsg" code="admin.common.apply" javaScriptEscape="true"/>
+<spring:message var="adminCommonRoleMsg" code="admin.common.role" javaScriptEscape="true"/>
+<spring:message var="adminContextActionRoleReasonMsg" code="admin.context.action.roleReason" javaScriptEscape="true"/>
+<spring:message var="adminContextActionRoleReasonPlaceholderMsg" code="admin.context.action.roleReasonPlaceholder" javaScriptEscape="true"/>
+<spring:message var="adminContextActionChangeRoleMsg" code="admin.context.action.changeRole" javaScriptEscape="true"/>
+<spring:message var="adminContextActionQuickBlockTitleMsg" code="admin.context.action.quickBlockTitle" javaScriptEscape="true"/>
+<spring:message var="adminContextActionBlockTypeMsg" code="admin.context.action.blockType" javaScriptEscape="true"/>
+<spring:message var="adminContextBlockTypeUserOnlyMsg" code="admin.context.blockType.userOnly" javaScriptEscape="true"/>
+<spring:message var="adminContextBlockTypeIpOnlyMsg" code="admin.context.blockType.ipOnly" javaScriptEscape="true"/>
+<spring:message var="adminContextBlockTypeUserIpMsg" code="admin.context.blockType.userIp" javaScriptEscape="true"/>
+<spring:message var="adminContextBlockedIpMsg" code="admin.context.blockedIp" javaScriptEscape="true"/>
+<spring:message var="adminContextActionBlockIpPlaceholderMsg2" code="admin.context.action.blockIpPlaceholder" javaScriptEscape="true"/>
+<spring:message var="adminContextActionBlockExpiresMsg" code="admin.context.action.blockExpires" javaScriptEscape="true"/>
+<spring:message var="adminContextActionApplyBlockMsg" code="admin.context.action.applyBlock" javaScriptEscape="true"/>
+<spring:message var="adminContextTabEmailRequestsMsg" code="admin.context.tab.emailRequests" javaScriptEscape="true"/>
+<spring:message var="adminContextTabEmailTokensMsg" code="admin.context.tab.emailTokens" javaScriptEscape="true"/>
+<spring:message var="adminContextMemberNoMsg" code="admin.context.memberNo" javaScriptEscape="true"/>
+<spring:message var="adminContextUserIdMsg" code="admin.context.userId" javaScriptEscape="true"/>
+<spring:message var="adminContextEmailMsg" code="admin.context.email" javaScriptEscape="true"/>
+<spring:message var="adminMembersEmailVerifiedMsg" code="admin.members.emailVerified" javaScriptEscape="true"/>
+<spring:message var="adminMembersEmailLoginEnabledMsg" code="admin.members.emailLoginEnabled" javaScriptEscape="true"/>
+<spring:message var="adminMembersPasswordLoginEnabledMsg" code="admin.members.passwordLoginEnabled" javaScriptEscape="true"/>
+<spring:message var="adminContextCreatedAtMsg" code="admin.context.createdAt" javaScriptEscape="true"/>
+<spring:message var="adminMembersSocialLinkedMsg" code="admin.members.socialLinked" javaScriptEscape="true"/>
+<spring:message var="adminMembersLoginSuccessMsg" code="admin.members.loginSuccess" javaScriptEscape="true"/>
+<spring:message var="adminMembersLoginFailureMsg" code="admin.members.loginFailure" javaScriptEscape="true"/>
+<spring:message var="adminContextLastLoginMsg" code="admin.context.lastLogin" javaScriptEscape="true"/>
+<spring:message var="adminContextEmptyLoginsMsg" code="admin.context.empty.logins" javaScriptEscape="true"/>
+<spring:message var="adminLogsSuccessMsg" code="admin.logs.success" javaScriptEscape="true"/>
+<spring:message var="adminLogsFailureMsg" code="admin.logs.failure" javaScriptEscape="true"/>
+<spring:message var="adminCommonTimeMsg" code="admin.common.time" javaScriptEscape="true"/>
+<spring:message var="adminLogsProviderMsg" code="admin.logs.provider" javaScriptEscape="true"/>
+<spring:message var="adminLogsFailReasonMsg" code="admin.logs.failReason" javaScriptEscape="true"/>
+<spring:message var="adminCommonIpMsg" code="admin.common.ip" javaScriptEscape="true"/>
+<spring:message var="adminContextToastSaveProfileSuccessMsg" code="admin.context.toast.saveProfileSuccess" javaScriptEscape="true"/>
+<spring:message var="adminContextToastSaveProfileFailMsg" code="admin.context.toast.saveProfileFail" javaScriptEscape="true"/>
+<spring:message var="adminContextToastSaveProfileErrorMsg" code="admin.context.toast.saveProfileError" javaScriptEscape="true"/>
 <spring:message code="admin.aiHelper.assistant.pageTitle" var="pageTitle"/>
 <%@ include file="../layout.jsp" %>
 
@@ -208,52 +167,52 @@
     <c:if test="${tab == 'dashboard'}">
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px;">
             <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">🧭 ${autoMsg_1d837fc9ef}</div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">🧭 <spring:message code="admin.aiHelper.assistant.kpi.totalSessions"/></div>
                 <div style="font-size:24px;font-weight:700;color:#38bdf8;">${stats.totalSessions}</div>
             </div>
             <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">💬 ${autoMsg_11036ade17}</div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">💬 <spring:message code="admin.aiHelper.assistant.kpi.totalMessages"/></div>
                 <div style="font-size:24px;font-weight:700;color:#0ea5e9;">${stats.totalMessages}</div>
             </div>
             <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">📅 ${autoMsg_a1596c104b}</div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">📅 <spring:message code="admin.aiHelper.assistant.kpi.todaySessions"/></div>
                 <div style="font-size:24px;font-weight:700;color:#10b981;">${stats.todaySessions}</div>
             </div>
             <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">👤 ${autoMsg_256cf0d0e8}</div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">👤 <spring:message code="admin.aiHelper.assistant.kpi.uniqueUsers"/></div>
                 <div style="font-size:24px;font-weight:700;color:#8b5cf6;">${stats.uniqueUsers}</div>
             </div>
         </div>
 
         <%-- ── 대화 세션 목록 (대시보드 내 통합) ── --%>
-        <div style="font-size:14px;font-weight:700;margin:8px 0 12px;">${autoMsg_d9bfc784f6}</div>
+        <div style="font-size:14px;font-weight:700;margin:8px 0 12px;"><spring:message code="admin.aiHelper.assistant.section.sessions"/></div>
 
         <div class="adm-card" style="padding:16px;margin-bottom:16px;">
             <form method="get" action="${pageContext.request.contextPath}/admin/ai-helper" style="display:flex;gap:8px;">
                 <input type="hidden" name="tab" value="dashboard"/>
-                <input type="text" name="keyword" value="${keyword}" placeholder="${autoMsg_85f4fe9638}" class="adm-input" style="flex:1;"/>
-                <button type="submit" class="adm-btn">${autoMsg_fc9a750120}</button>
+                <input type="text" name="keyword" value="${keyword}" placeholder="${adminAiHelperAssistantSearchPlaceholderMsg}" class="adm-input" style="flex:1;"/>
+                <button type="submit" class="adm-btn"><spring:message code="admin.common.search"/></button>
                 <c:if test="${not empty keyword}">
-                    <a href="${pageContext.request.contextPath}/admin/ai-helper" class="adm-btn adm-btn-ghost">${autoMsg_4a50c0da4d}</a>
+                    <a href="${pageContext.request.contextPath}/admin/ai-helper" class="adm-btn adm-btn-ghost"><spring:message code="admin.common.reset"/></a>
                 </c:if>
             </form>
-            <div style="font-size:12px;color:#64748b;margin-top:8px;">${autoMsg_d517b45abc}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:8px;"><spring:message code="admin.common.totalCountFormat"/></div>
         </div>
 
         <div class="adm-card" style="padding:0;overflow-x:auto;">
             <table class="adm-table" style="width:100%;">
                 <thead>
                     <tr>
-                        <th>${autoMsg_05f3bf97cd}</th>
-                        <th>${autoMsg_c4bf33cd8c}</th>
-                        <th>${autoMsg_226b45aaa8}</th>
-                        <th>${autoMsg_c7ecd0bbd2}</th>
-                        <th>${autoMsg_d801abe036}</th>
-                        <th>${autoMsg_6d7faccf52}</th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.sessionId"/></th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.title"/></th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.user"/></th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.messageCount"/></th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.createdAt"/></th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.lastActive"/></th>
                         <th style="width:130px;">
                             <div style="display:flex;gap:4px;justify-content:flex-end;">
-                                <span style="font-size:11px;padding:3px 8px;">${autoMsg_83fdb475aa}</span>
-                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;">${autoMsg_c9c3c69a62}</span>
+                                <span style="font-size:11px;padding:3px 8px;"><spring:message code="admin.aiHelper.assistant.table.actions"/></span>
+                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;"><spring:message code="admin.aiHelper.assistant.action.delete"/></span>
                             </div>
                         </th>
                     </tr>
@@ -261,7 +220,7 @@
                 <tbody>
                     <c:choose>
                         <c:when test="${empty sessions}">
-                            <tr><td colspan="7" style="text-align:center;padding:40px;color:#94a3b8;">${autoMsg_7914798292}</td></tr>
+                            <tr><td colspan="7" style="text-align:center;padding:40px;color:#94a3b8;"><spring:message code="admin.aiHelper.assistant.empty.sessions"/></td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="s" items="${sessions}">
@@ -288,7 +247,7 @@
                                                 </button>
                                             </c:when>
                                             <c:otherwise>
-                                                <span style="color:#94a3b8;">${autoMsg_78724903ef} #${s.userIdx} (${autoMsg_4be5f8035d})</span>
+                                                <span style="color:#94a3b8;"><spring:message code="admin.aiHelper.assistant.userPrefix"/> #${s.userIdx} (<spring:message code="admin.aiHelper.assistant.userDeleted"/>)</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -320,7 +279,7 @@
                                             <button type="button"
                                                     class="adm-row-btn detail"
                                                     data-session-id="${s.chatPostIdx}"
-                                                    onclick="viewAssistantMessages(this.dataset.sessionId)">${autoMsg_2e5ad1eb4b}</button>
+                                                    onclick="viewAssistantMessages(this.dataset.sessionId)"><spring:message code="admin.aiHelper.assistant.action.view"/></button>
                                             <div class="action-menu-wrap">
                                                 <button type="button"
                                                         class="adm-row-btn detail adm-row-btn-more"
@@ -329,7 +288,7 @@
                                                     <button type="button"
                                                             class="action-menu-item danger"
                                                             data-session-id="${s.chatPostIdx}"
-                                                            onclick="deleteAssistantSession(this.dataset.sessionId)">${autoMsg_c9c3c69a62}</button>
+                                                            onclick="deleteAssistantSession(this.dataset.sessionId)"><spring:message code="admin.aiHelper.assistant.action.delete"/></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -361,22 +320,22 @@
             <div style="font-size:13px;color:#475569;line-height:1.6;">
                 <spring:message code="admin.aiHelper.assistant.messagesDescription"/>
             </div>
-            <div style="font-size:12px;color:#64748b;margin-top:8px;">${autoMsg_d517b45abc}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:8px;"><spring:message code="admin.common.totalCountFormat"/></div>
         </div>
 
         <div class="adm-card" style="padding:0;overflow-x:auto;">
             <table class="adm-table" style="width:100%;">
                 <thead>
                     <tr>
-                        <th>${autoMsg_8c0e684ac7}</th>
-                        <th>${autoMsg_6674f134ab}</th>
-                        <th>${autoMsg_74f1deaa4f}</th>
-                        <th>${autoMsg_226b45aaa8}</th>
-                        <th>${autoMsg_3c2ee5a31f}</th>
-                        <th>${autoMsg_107b4e7167}</th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.id"/></th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.session"/></th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.role"/></th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.user"/></th>
+                        <th><spring:message code="admin.aiHelper.assistant.table.content"/></th>
+                        <th><spring:message code="admin.common.time"/></th>
                         <th style="width:100px;">
                             <div style="display:flex;gap:4px;justify-content:flex-end;">
-                                <span style="font-size:11px;padding:3px 8px;">${autoMsg_83fdb475aa}</span>
+                                <span style="font-size:11px;padding:3px 8px;"><spring:message code="admin.aiHelper.assistant.table.actions"/></span>
                             </div>
                         </th>
                     </tr>
@@ -384,7 +343,7 @@
                 <tbody>
                     <c:choose>
                         <c:when test="${empty messages}">
-                            <tr><td colspan="7" style="text-align:center;padding:40px;color:#94a3b8;">${autoMsg_471b6bc54d}</td></tr>
+                            <tr><td colspan="7" style="text-align:center;padding:40px;color:#94a3b8;"><spring:message code="admin.aiHelper.assistant.empty.messages"/></td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="m" items="${messages}">
@@ -407,10 +366,10 @@
                                     <td>
                                         <c:choose>
                                             <c:when test="${m.commentRole == 'USER'}">
-                                                <span style="padding:2px 8px;border-radius:4px;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:600;">${autoMsg_719a769f7b}</span>
+                                                <span style="padding:2px 8px;border-radius:4px;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:600;"><spring:message code="admin.aiHelper.assistant.role.user"/></span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span style="padding:2px 8px;border-radius:4px;background:#ccfbf1;color:#0f766e;font-size:11px;font-weight:600;">${autoMsg_c758a16a32}</span>
+                                                <span style="padding:2px 8px;border-radius:4px;background:#ccfbf1;color:#0f766e;font-size:11px;font-weight:600;"><spring:message code="admin.aiHelper.assistant.role.ai"/></span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -423,7 +382,7 @@
                                                     ${m.nickname}
                                                 </button>
                                             </c:when>
-                                            <c:otherwise><span style="color:#94a3b8;">${autoMsg_78724903ef} #${m.userIdx}</span></c:otherwise>
+                                            <c:otherwise><span style="color:#94a3b8;"><spring:message code="admin.aiHelper.assistant.userPrefix"/> #${m.userIdx}</span></c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td style="max-width:500px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;">
@@ -450,7 +409,7 @@
                                             <button type="button"
                                                     class="adm-row-btn detail"
                                                     data-session-id="${m.chatPostIdx}"
-                                                    onclick="viewAssistantMessages(this.dataset.sessionId)">${autoMsg_03c62fad79}</button>
+                                                    onclick="viewAssistantMessages(this.dataset.sessionId)"><spring:message code="admin.aiHelper.assistant.action.viewSession"/></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -747,8 +706,8 @@
 <div id="asstMsgModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
     <div style="background:#fff;width:720px;max-width:90vw;max-height:80vh;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
         <div style="padding:16px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
-            <h3 id="asstMsgModalTitle" style="margin:0;font-size:16px;">${autoMsg_b6f99d72a0}</h3>
-            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('asstMsgModal').style.display='none'">${autoMsg_9fa4a10958}</button>
+            <h3 id="asstMsgModalTitle" style="margin:0;font-size:16px;"><spring:message code="admin.aiHelper.assistant.modal.title"/></h3>
+            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('asstMsgModal').style.display='none'"><spring:message code="admin.common.close"/></button>
         </div>
         <div id="asstMsgModalBody" style="padding:16px;overflow-y:auto;flex:1;"></div>
     </div>
@@ -758,17 +717,17 @@
 (function () {
     const ctx = '${pageContext.request.contextPath}';
     const assistantMessages = {
-        modalTitle: '${autoMsg_68c52172bf}',
-        roleUser: '${autoMsg_f7549c416a}',
-        roleAi: '${autoMsg_398976cb54}',
-        empty: '${autoMsg_3a01f01cb7}',
-        viewFailed: '${autoMsg_f7a1a7c79f}',
-        viewError: '${autoMsg_a22344eab3}',
-        deleteConfirm: '${autoMsg_d1fdbc9e4c}',
-        deleteDone: '${autoMsg_7813cd4618}',
-        deleteFailed: '${autoMsg_3fdc6b6b84}',
-        deleteError: '${autoMsg_6f4ee82308}',
-        sessionLabel: '${autoMsg_41c8b18c68}'
+        modalTitle: '${adminAiHelperAssistantModalTitleMsg}',
+        roleUser: '${adminAiHelperAssistantRoleUserMsg}',
+        roleAi: '${adminAiHelperAssistantRoleAiMsg}',
+        empty: '${adminAiHelperAssistantEmptyMessagesMsg}',
+        viewFailed: '${adminAiHelperAssistantMessageViewFailedMsg}',
+        viewError: '${adminAiHelperAssistantMessageViewErrorMsg}',
+        deleteConfirm: '${adminAiHelperAssistantMessageDeleteConfirmMsg}',
+        deleteDone: '${adminAiHelperAssistantMessageDeleteDoneMsg}',
+        deleteFailed: '${adminAiHelperAssistantMessageDeleteFailedMsg}',
+        deleteError: '${adminAiHelperAssistantMessageDeleteErrorMsg}',
+        sessionLabel: '${adminAiHelperAssistantTableSessionMsg}'
     };
 
     window.viewAssistantMessages = async function (sessionId) {
@@ -959,14 +918,14 @@
 <div class="adm-modal-overlay" id="detailModal">
     <div class="adm-modal">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="modalTitle">${autoMsg_8ba8c9744c}</div>
+            <div class="adm-modal-title" id="modalTitle"><spring:message code="admin.context.memberTitle"/></div>
             <button class="adm-modal-close" onclick="closeDetail()">✕</button>
         </div>
         <div class="adm-modal-body" id="modalBody">
-            <div style="text-align:center;padding:40px;color:#475569;">${autoMsg_7909424450}</div>
+            <div style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.loading"/></div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeDetail()">${autoMsg_9fa4a10958}</button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeDetail()"><spring:message code="admin.common.close"/></button>
         </div>
     </div>
 </div>
@@ -975,35 +934,35 @@
 <div class="adm-modal-overlay" id="blockModal">
     <div class="adm-modal" style="max-width:520px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="blockModalTitle">${autoMsg_3ca5070f8b}</div>
+            <div class="adm-modal-title" id="blockModalTitle"><spring:message code="admin.members.blockModalTitle"/></div>
             <button class="adm-modal-close" onclick="closeBlockModal()">✕</button>
         </div>
         <div class="adm-modal-body">
             <input type="hidden" id="blockUserIdx">
             <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">${autoMsg_013dec296a}</label>
+                <label class="form-label"><spring:message code="admin.context.action.blockType"/></label>
                 <select id="blockType" class="adm-select" style="width:100%;" onchange="handleBlockTypeChange()">
-                    <option value="USER_ONLY">${autoMsg_c8a85ca33f}</option>
-                    <option value="IP_ONLY">${autoMsg_4b5192b105}</option>
-                    <option value="USER_IP">${autoMsg_2f59c8466f}</option>
+                    <option value="USER_ONLY"><spring:message code="admin.context.blockType.userOnly"/></option>
+                    <option value="IP_ONLY"><spring:message code="admin.context.blockType.ipOnly"/></option>
+                    <option value="USER_IP"><spring:message code="admin.context.blockType.userIp"/></option>
                 </select>
             </div>
             <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">${autoMsg_69be94d747}</label>
-                <input id="blockedIp" class="adm-input" type="text" placeholder="${autoMsg_091d6d5342}">
+                <label class="form-label"><spring:message code="admin.members.blockedIpLabel"/></label>
+                <input id="blockedIp" class="adm-input" type="text" placeholder="${adminContextActionBlockIpPlaceholderMsg}">
             </div>
             <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">${autoMsg_0c010a72a7}</label>
+                <label class="form-label"><spring:message code="admin.members.blockExpiresLabel"/></label>
                 <input id="blockedUntil" class="adm-input" type="datetime-local">
             </div>
             <div class="form-group">
-                <label class="form-label">${autoMsg_30d5f51691}</label>
-                <textarea id="blockedReason" class="adm-input" style="min-height:90px;resize:vertical;" placeholder="${autoMsg_6f6966ec8c}"></textarea>
+                <label class="form-label"><spring:message code="admin.members.blockReasonLabel"/></label>
+                <textarea id="blockedReason" class="adm-input" style="min-height:90px;resize:vertical;" placeholder="${adminContextActionReasonPlaceholderMsg}"></textarea>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeBlockModal()">${autoMsg_9fa4a10958}</button>
-            <button id="blockSubmitBtn" class="adm-btn adm-btn-primary" type="button" onclick="submitBlock()">${autoMsg_e84c919d06}</button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeBlockModal()"><spring:message code="admin.common.close"/></button>
+            <button id="blockSubmitBtn" class="adm-btn adm-btn-primary" type="button" onclick="submitBlock()"><spring:message code="admin.context.action.applyBlock"/></button>
         </div>
     </div>
 </div>
@@ -1012,35 +971,35 @@
 const ctx = '${pageContext.request.contextPath}';
 const ADMIN_MEMBER_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
 const ADMIN_MEMBER_MSG = {
-    loading: '${autoMsg_253c63fe7e}',
-    close: '${autoMsg_ef8ca10d2e}',
-    error: '${autoMsg_c6cdc97702}',
-    yes: '${autoMsg_21b49d597f}',
-    no: '${autoMsg_457bb3ee55}',
-    none: '${autoMsg_bdeb3ff468}',
-    noLinkedProvider: '${autoMsg_4afe69411b}',
-    verifiedMember: '${autoMsg_fb16b791ca}',
-    unverifiedMember: '${autoMsg_1db340d986}',
-    statusActive: '${autoMsg_52183393f5}',
-    statusDormant: '${autoMsg_d149070646}',
-    statusBlocked: '${autoMsg_7b3fdf99d7}',
-    statusDeleted: '${autoMsg_92b42875e4}',
-    blockModalTitleSuffix: '${autoMsg_f223637b4f}',
-    parsingBlockResponse: '${autoMsg_d0345e3b42}',
-    parsingStatusResponse: '${autoMsg_0e1bce7cbd}',
-    parsingRoleResponse: '${autoMsg_7e0b27fd85}',
-    missingBlockTarget: '${autoMsg_06e616392e}',
-    applying: '${autoMsg_06cb7a177d}',
-    blockApplied: '${autoMsg_c01e180fb6}',
-    memberDetailsTitle: '${autoMsg_0e96b80e32}',
-    memberDetailsSuffix: '${autoMsg_2db66dcba4}',
-    infoTab: '${autoMsg_83c280f74d}',
-    loginTab: '${autoMsg_08b598000c}',
-    securityTab: '${autoMsg_6568a17618}',
-    emailHistoryTab: '${autoMsg_d8b98f50a5}',
-    activityTab: '${autoMsg_49717bdcc3}',
-    blockTab: '${autoMsg_bc476310b4}',
-    actionsTab: '${autoMsg_d41ec3d119}'
+    loading: '${adminCommonLoadingMsg}',
+    close: '${adminCommonCloseMsg}',
+    error: '${adminCommonErrorMsg}',
+    yes: '${adminCommonYesMsg}',
+    no: '${adminCommonNoMsg}',
+    none: '${adminMembersNoneMsg}',
+    noLinkedProvider: '${adminMembersNoLinkedProviderMsg}',
+    verifiedMember: '${adminMembersVerifiedMemberMsg}',
+    unverifiedMember: '${adminMembersUnverifiedMemberMsg}',
+    statusActive: '${adminStatusACTIVEMsg}',
+    statusDormant: '${adminStatusDORMANTMsg}',
+    statusBlocked: '${adminStatusBLOCKEDMsg}',
+    statusDeleted: '${adminStatusDELETEDMsg}',
+    blockModalTitleSuffix: '${adminMembersBlockModalTitleSuffixMsg}',
+    parsingBlockResponse: '${adminMembersBlockResponseParseErrorMsg}',
+    parsingStatusResponse: '${adminMembersStatusResponseParseErrorMsg}',
+    parsingRoleResponse: '${adminMembersRoleResponseParseErrorMsg}',
+    missingBlockTarget: '${adminMembersBlockTargetMissingMsg}',
+    applying: '${adminCommonApplyingMsg}',
+    blockApplied: '${adminContextToastSaveBlockSuccessMsg}',
+    memberDetailsTitle: '${adminContextMemberTitleMsg}',
+    memberDetailsSuffix: '${adminMembersDetailTitleSuffixMsg}',
+    infoTab: '${adminContextTabInfoMsg}',
+    loginTab: '${adminContextTabLoginsMsg}',
+    securityTab: '${adminContextTabSecurityMsg}',
+    emailHistoryTab: '${adminMembersEmailHistoryTabMsg}',
+    activityTab: '${adminContextTabActivityMsg}',
+    blockTab: '${adminContextTabBlocksMsg}',
+    actionsTab: '${adminContextTabActionsMsg}'
 };
 
 function escapeHtml(value) {
@@ -1106,13 +1065,13 @@ function buildRoleBadge(role) {
 
 function roleLabel(role) {
     const labels = {
-        USER: '${autoMsg_c550eefd6f}',
-        BUSINESS: '${autoMsg_165ac700ca}',
-        PARTNER: '${autoMsg_0a4a91f56b}',
-        BOT: '${autoMsg_b0124e54de}',
-        ADMIN: '${autoMsg_c9c455e017}',
-        SUPERADMIN: '${autoMsg_b9dac2b648}',
-        SYSTEM: '${autoMsg_ac26867537}'
+        USER: '${adminRoleUSERMsg}',
+        BUSINESS: '${adminRoleBUSINESSMsg}',
+        PARTNER: '${adminRolePARTNERMsg}',
+        BOT: '${adminRoleBOTMsg}',
+        ADMIN: '${adminRoleADMINMsg}',
+        SUPERADMIN: '${adminRoleSUPERADMINMsg}',
+        SYSTEM: '${adminRoleSYSTEMMsg}'
     };
     return labels[role] || role || '—';
 }
@@ -1124,17 +1083,17 @@ function buildSocialHtml(linkedProviders) {
 
     const providerMap = {
         KAKAO: {
-            label: '${autoMsg_d783f8943a}',
+            label: '${adminSocialKakaoMsg}',
             className: 'kakao',
             icon: '<span class="adm-social-icon kakao-mark">k</span>'
         },
         NAVER: {
-            label: '${autoMsg_5ee6c782fb}',
+            label: '${adminSocialNaverMsg}',
             className: 'naver',
             icon: '<span class="adm-social-icon naver-mark">N</span>'
         },
         GOOGLE: {
-            label: '${autoMsg_d8bdd2bb13}',
+            label: '${adminSocialGoogleMsg}',
             className: 'google',
             icon: '<span class="adm-social-icon google-mark"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>'
         }
@@ -1228,7 +1187,7 @@ async function submitBlock() {
         return;
     }
     if ((blockType === 'IP_ONLY' || blockType === 'USER_IP') && !blockedIp) {
-        adm_toast('${autoMsg_68c9b31d7a}', 'error');
+        adm_toast('${adminContextRequireBlockedIpMsg}', 'error');
         document.getElementById('blockedIp').focus();
         return;
     }
@@ -1255,14 +1214,14 @@ async function submitBlock() {
 
         if (res.ok && data && data.success) {
             closeBlockModal();
-            adm_toast(ADMIN_MEMBER_MSG.blockApplied || '${autoMsg_c01e180fb6}');
+            adm_toast(ADMIN_MEMBER_MSG.blockApplied || '${adminContextToastSaveBlockSuccessMsg}');
             setTimeout(() => location.reload(), 800);
         } else {
-            adm_toast((data && data.message) || '${autoMsg_7b1eb93122}', 'error');
+            adm_toast((data && data.message) || '${adminContextToastSaveBlockFailMsg}', 'error');
         }
     } catch (e) {
         console.error(e);
-        adm_toast(e.message || '${autoMsg_eaa3e240dd}', 'error');
+        adm_toast(e.message || '${adminContextToastSaveBlockErrorMsg}', 'error');
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
@@ -1277,7 +1236,7 @@ async function changeStatus(userIdx, status, el) {
         BLOCKED: ADMIN_MEMBER_MSG.statusBlocked,
         DELETED: ADMIN_MEMBER_MSG.statusDeleted
     };
-    if (!confirm('${autoMsg_49ca501476}' + ' "' + (labels[status] || status) + '" ' + '${autoMsg_53524744c1}')) return;
+    if (!confirm('${adminMembersConfirmStatusChangePrefixMsg}' + ' "' + (labels[status] || status) + '" ' + '${adminMembersConfirmStatusChangeSuffixMsg}')) return;
 
     const menu = el.closest('.action-menu');
     if (menu) menu.classList.remove('open');
@@ -1297,10 +1256,10 @@ async function changeStatus(userIdx, status, el) {
     }
 
     if (res.ok && data.success) {
-        adm_toast(data.message || '${autoMsg_714dd6cdfd}');
+        adm_toast(data.message || '${adminContextToastSaveStatusSuccessMsg}');
         setTimeout(() => location.reload(), 800);
     } else {
-        adm_toast(data.message || '${autoMsg_8ab94f7a93}', 'error');
+        adm_toast(data.message || '${adminContextToastSaveStatusFailMsg}', 'error');
     }
 }
 
@@ -1317,15 +1276,15 @@ function changeRoleFromMenu(button) {
     const reason = reasonInput ? reasonInput.value.trim() : '';
 
     if (!role || !userIdx) {
-        adm_toast('${autoMsg_4c38fa11cf}', 'error');
+        adm_toast('${adminMembersRoleContextMissingMsg}', 'error');
         return;
     }
     if (role === currentRole) {
-        adm_toast('${autoMsg_97ee27510a}', 'error');
+        adm_toast('${adminMembersRoleAlreadySelectedMsg}', 'error');
         return;
     }
     if (!reason) {
-        adm_toast('${autoMsg_55aae9ece7}', 'error');
+        adm_toast('${adminContextRequireRoleReasonMsg}', 'error');
         if (reasonInput) reasonInput.focus();
         return;
     }
@@ -1334,7 +1293,7 @@ function changeRoleFromMenu(button) {
 }
 
 async function changeRole(userIdx, role, reason, el) {
-    if (!confirm('"' + roleLabel(role) + '" ' + '${autoMsg_54f89dbcd7}')) return;
+    if (!confirm('"' + roleLabel(role) + '" ' + '${adminMembersConfirmRoleChangeSuffixMsg}')) return;
 
     const menu = el.closest('.action-menu');
     if (menu) menu.classList.remove('open');
@@ -1354,10 +1313,10 @@ async function changeRole(userIdx, role, reason, el) {
     }
 
     if (res.ok && data.success) {
-        adm_toast(data.message || '${autoMsg_e024e75c04}');
+        adm_toast(data.message || '${adminContextToastSaveRoleSuccessMsg}');
         setTimeout(() => location.reload(), 800);
     } else {
-        adm_toast(data.message || '${autoMsg_132afc3fae}', 'error');
+        adm_toast(data.message || '${adminContextToastSaveRoleFailMsg}', 'error');
     }
 }
 
@@ -1376,10 +1335,10 @@ function buildSecurityRows(items) {
             + '<div><strong>' + escapeHtml(item.eventType || '-') + '</strong> / ' + escapeHtml(item.eventStage || '-') + '</div>'
             + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.occurredAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${autoMsg_6e7908a131}: ' + escapeHtml(item.inputIdentifier || '-') + '</div>'
-            + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">${autoMsg_6da221e920}: ' + escapeHtml(item.targetEmail || '-') + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${adminContextInputValueMsg}: ' + escapeHtml(item.inputIdentifier || '-') + '</div>'
+            + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">${adminContextTargetEmailMsg}: ' + escapeHtml(item.targetEmail || '-') + '</div>'
             + '</div>';
-    }, '${autoMsg_20256a70ff}');
+    }, '${adminContextEmptySecurityMsg}');
 }
 
 function buildEmailRequestRows(items) {
@@ -1390,9 +1349,9 @@ function buildEmailRequestRows(items) {
             + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.status || '-') + '</div>'
             + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.requestedAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${autoMsg_164d27d733}: ' + escapeHtml(item.pendingEmail || '-') + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${adminContextRequestEmailMsg}: ' + escapeHtml(item.pendingEmail || '-') + '</div>'
             + '</div>';
-    }, '${autoMsg_b2de2778a0}');
+    }, '${adminContextEmptyEmailRequestsMsg}');
 }
 
 function buildEmailTokenRows(items) {
@@ -1400,12 +1359,12 @@ function buildEmailTokenRows(items) {
         return ''
             + '<div class="adm-context-record">'
             + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
-            + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.used ? '${autoMsg_f73db93f03}' : '${autoMsg_2c0810f41f}') + '</div>'
+            + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.used ? '${adminContextUsedMsg}' : '${adminContextUnusedMsg}') + '</div>'
             + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${autoMsg_6da221e920}: ' + escapeHtml(item.email || '-') + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${adminContextTargetEmailMsg}: ' + escapeHtml(item.email || '-') + '</div>'
             + '</div>';
-    }, '${autoMsg_462a4510b6}');
+    }, '${adminContextEmptyEmailTokensMsg}');
 }
 
 function buildActivityRows(items) {
@@ -1416,9 +1375,9 @@ function buildActivityRows(items) {
             + '<div><strong>' + escapeHtml(item.activityCode || '-') + '</strong> / ' + escapeHtml(item.activityDomain || item.activityType || '-') + '</div>'
             + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${autoMsg_b77b17cdb9}: ' + escapeHtml(item.requestUri || '-') + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${adminContextUriMsg}: ' + escapeHtml(item.requestUri || '-') + '</div>'
             + '</div>';
-    }, '${autoMsg_858857619e}');
+    }, '${adminContextEmptyActivityMsg}');
 }
 
 function buildBlockRows(items) {
@@ -1429,10 +1388,10 @@ function buildBlockRows(items) {
             + '<div><strong>' + escapeHtml(item.blockType || '-') + '</strong> / ' + escapeHtml(item.active ? 'ACTIVE' : 'INACTIVE') + '</div>'
             + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.blockedAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${autoMsg_5d51d592f0}: ' + escapeHtml(item.reason || '-') + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${adminCommonReasonMsg}: ' + escapeHtml(item.reason || '-') + '</div>'
             + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">IP: ' + escapeHtml(item.blockedIp || '-') + '</div>'
             + '</div>';
-    }, '${autoMsg_d5cdcda789}');
+    }, '${adminContextEmptyBlocksMsg}');
 }
 
 function buildChatbotLinkClickRows(items) {
@@ -1458,29 +1417,29 @@ function buildActionTab(m) {
     return ''
         + '<div class="adm-context-actions-grid">'
         + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '${autoMsg_a109d9412c}' + '</div>'
-        + '<div class="detail-label">' + '${autoMsg_335a1a946b}' + '</div><input id="memberProfileNickname" class="adm-input" type="text" value="' + escapeHtml(m.nickname || '') + '">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_e45369d899}' + '</div><input id="memberProfileNationality" class="adm-input" type="text" value="' + escapeHtml(m.nationality || '') + '">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_f52b713072}' + '</div><input id="memberProfileLang" class="adm-input" type="text" value="' + escapeHtml(m.preferredLang || '') + '">'
-        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberProfile(' + escapeHtml(m.userIdx) + ', this)">' + '${autoMsg_0250d6a792}' + '</button>'
+        + '<div style="font-weight:700;margin-bottom:10px;">' + '${adminContextActionProfileTitleMsg}' + '</div>'
+        + '<div class="detail-label">' + '${adminContextNicknameMsg}' + '</div><input id="memberProfileNickname" class="adm-input" type="text" value="' + escapeHtml(m.nickname || '') + '">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${adminContextNationalityMsg}' + '</div><input id="memberProfileNationality" class="adm-input" type="text" value="' + escapeHtml(m.nationality || '') + '">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${adminContextPreferredLanguageMsg}' + '</div><input id="memberProfileLang" class="adm-input" type="text" value="' + escapeHtml(m.preferredLang || '') + '">'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberProfile(' + escapeHtml(m.userIdx) + ', this)">' + '${adminContextActionSaveProfileMsg}' + '</button>'
         + '</div>'
         + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '${autoMsg_e54de24db0}' + '</div>'
-        + '<div class="detail-label">' + '${autoMsg_619bafe209}' + '</div>'
-        + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE">${autoMsg_52183393f5}</option><option value="DORMANT">${autoMsg_d149070646}</option><option value="BLOCKED">${autoMsg_7b3fdf99d7}</option><option value="DELETED">${autoMsg_92b42875e4}</option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '${autoMsg_b6e5544935}' + '</button></div>'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_ddb933bb9f}' + '</div>'
-        + '<select id="memberRoleSelect" class="adm-select" style="width:100%;"><option value="USER">${autoMsg_c550eefd6f}</option><option value="BUSINESS">${autoMsg_165ac700ca}</option><option value="PARTNER">${autoMsg_0a4a91f56b}</option><option value="BOT">${autoMsg_b0124e54de}</option><option value="ADMIN">${autoMsg_c9c455e017}</option></select>'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_ba1453a702}' + '</div>'
-        + '<input id="memberRoleReason" class="adm-input" type="text" maxlength="500" placeholder="' + '${autoMsg_5300a33c4c}' + '">'
-        + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '${autoMsg_f662f24078}' + '</button>'
+        + '<div style="font-weight:700;margin-bottom:10px;">' + '${adminContextActionStatusRoleTitleMsg}' + '</div>'
+        + '<div class="detail-label">' + '${adminMembersAccountStatusMsg}' + '</div>'
+        + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE">${adminStatusACTIVEMsg}</option><option value="DORMANT">${adminStatusDORMANTMsg}</option><option value="BLOCKED">${adminStatusBLOCKEDMsg}</option><option value="DELETED">${adminStatusDELETEDMsg}</option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '${adminCommonApplyMsg}' + '</button></div>'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${adminCommonRoleMsg}' + '</div>'
+        + '<select id="memberRoleSelect" class="adm-select" style="width:100%;"><option value="USER">${adminRoleUSERMsg}</option><option value="BUSINESS">${adminRoleBUSINESSMsg}</option><option value="PARTNER">${adminRolePARTNERMsg}</option><option value="BOT">${adminRoleBOTMsg}</option><option value="ADMIN">${adminRoleADMINMsg}</option></select>'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${adminContextActionRoleReasonMsg}' + '</div>'
+        + '<input id="memberRoleReason" class="adm-input" type="text" maxlength="500" placeholder="' + '${adminContextActionRoleReasonPlaceholderMsg}' + '">'
+        + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '${adminContextActionChangeRoleMsg}' + '</button>'
         + '</div>'
         + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '${autoMsg_fd158e3839}' + '</div>'
-        + '<div class="detail-label">' + '${autoMsg_707665880c}' + '</div><select id="detailBlockType" class="adm-select" style="width:100%;"><option value="USER_ONLY">' + '${autoMsg_09080890cc}' + '</option><option value="IP_ONLY">' + '${autoMsg_98ed1ec0e5}' + '</option><option value="USER_IP">' + '${autoMsg_2f038284eb}' + '</option></select>'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_ee8f88048b}' + '</div><input id="detailBlockedIp" class="adm-input" type="text" placeholder="' + '${autoMsg_1b85b3e15a}' + '">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_e4ad9cca5c}' + '</div><input id="detailBlockedUntil" class="adm-input" type="datetime-local">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_5d51d592f0}' + '</div><textarea id="detailBlockedReason" class="adm-input" style="min-height:88px;resize:vertical;"></textarea>'
-        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="submitDetailBlock(' + escapeHtml(m.userIdx) + ', this)">' + '${autoMsg_08c05d0c56}' + '</button>'
+        + '<div style="font-weight:700;margin-bottom:10px;">' + '${adminContextActionQuickBlockTitleMsg}' + '</div>'
+        + '<div class="detail-label">' + '${adminContextActionBlockTypeMsg}' + '</div><select id="detailBlockType" class="adm-select" style="width:100%;"><option value="USER_ONLY">' + '${adminContextBlockTypeUserOnlyMsg}' + '</option><option value="IP_ONLY">' + '${adminContextBlockTypeIpOnlyMsg}' + '</option><option value="USER_IP">' + '${adminContextBlockTypeUserIpMsg}' + '</option></select>'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${adminContextBlockedIpMsg}' + '</div><input id="detailBlockedIp" class="adm-input" type="text" placeholder="' + '${adminContextActionBlockIpPlaceholderMsg2}' + '">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${adminContextActionBlockExpiresMsg}' + '</div><input id="detailBlockedUntil" class="adm-input" type="datetime-local">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${adminCommonReasonMsg}' + '</div><textarea id="detailBlockedReason" class="adm-input" style="min-height:88px;resize:vertical;"></textarea>'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="submitDetailBlock(' + escapeHtml(m.userIdx) + ', this)">' + '${adminContextActionApplyBlockMsg}' + '</button>'
         + '</div>'
         + '</div>';
 }
@@ -1544,8 +1503,8 @@ async function openDetail(userIdx, defaultTab) {
     document.getElementById('tab-security').innerHTML = buildSecurityRows(securityAudits);
     document.getElementById('tab-emails').innerHTML = ''
         + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">'
-        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '${autoMsg_122067e8b3}' + '</div>' + buildEmailRequestRows(emailRequests) + '</div>'
-        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '${autoMsg_1a6c821aa5}' + '</div>' + buildEmailTokenRows(emailTokens) + '</div>'
+        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '${adminContextTabEmailRequestsMsg}' + '</div>' + buildEmailRequestRows(emailRequests) + '</div>'
+        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '${adminContextTabEmailTokensMsg}' + '</div>' + buildEmailTokenRows(emailTokens) + '</div>'
         + '</div>';
     document.getElementById('tab-activity').innerHTML = buildActivityRows(activityLogs);
     document.getElementById('tab-blocks').innerHTML = buildBlockRows(recentBlocks);
@@ -1565,34 +1524,34 @@ function buildInfoTab(m) {
 
     return ''
         + '<div class="detail-grid">'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_73de82b486}' + '</div><div class="detail-value">#' + escapeHtml(m.userIdx) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_f87663ab41}' + '</div><div class="detail-value">' + formatNullable(m.userId) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_335a1a946b}' + '</div><div class="detail-value">' + formatNullable(m.nickname) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_4ea1c2e5bd}' + '</div><div class="detail-value" style="font-size:12px;">' + formatNullable(m.userEmail) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_619bafe209}' + '</div><div class="detail-value">' + statusBadge + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_ddb933bb9f}' + '</div><div class="detail-value">' + roleBadge + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_e45369d899}' + '</div><div class="detail-value">' + formatNullable(m.nationality) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_f52b713072}' + '</div><div class="detail-value">' + formatNullable(m.preferredLang) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_cec47cb0cc}' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailVerified) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_2d559812bd}' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailLoginEnabled) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_f1925a9904}' + '</div><div class="detail-value">' + formatBooleanBadge(m.passwordEnabled) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_9ade7a11d7}' + '</div><div class="detail-value" style="font-size:12px;">' + formatDateTime(m.createdAt) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminContextMemberNoMsg}' + '</div><div class="detail-value">#' + escapeHtml(m.userIdx) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminContextUserIdMsg}' + '</div><div class="detail-value">' + formatNullable(m.userId) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminContextNicknameMsg}' + '</div><div class="detail-value">' + formatNullable(m.nickname) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminContextEmailMsg}' + '</div><div class="detail-value" style="font-size:12px;">' + formatNullable(m.userEmail) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminMembersAccountStatusMsg}' + '</div><div class="detail-value">' + statusBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminCommonRoleMsg}' + '</div><div class="detail-value">' + roleBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminContextNationalityMsg}' + '</div><div class="detail-value">' + formatNullable(m.nationality) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminContextPreferredLanguageMsg}' + '</div><div class="detail-value">' + formatNullable(m.preferredLang) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminMembersEmailVerifiedMsg}' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailVerified) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminMembersEmailLoginEnabledMsg}' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailLoginEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminMembersPasswordLoginEnabledMsg}' + '</div><div class="detail-value">' + formatBooleanBadge(m.passwordEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${adminContextCreatedAtMsg}' + '</div><div class="detail-value" style="font-size:12px;">' + formatDateTime(m.createdAt) + '</div></div>'
         + '</div>'
         + '<div class="detail-item" style="margin-top:12px;">'
-        + '<div class="detail-label">' + '${autoMsg_7d65a7e1d3}' + '</div>'
+        + '<div class="detail-label">' + '${adminMembersSocialLinkedMsg}' + '</div>'
         + '<div class="detail-value" style="margin-top:4px;">' + socialHtml + '</div>'
         + '</div>'
         + '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">'
         + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${autoMsg_cf03ed66d8}' + '</div>'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${adminMembersLoginSuccessMsg}' + '</div>'
         + '<div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">' + escapeHtml(m.loginSuccessCount ?? 0) + '</div>'
         + '</div>'
         + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${autoMsg_3005542d6a}' + '</div>'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${adminMembersLoginFailureMsg}' + '</div>'
         + '<div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">' + escapeHtml(m.loginFailCount ?? 0) + '</div>'
         + '</div>'
         + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${autoMsg_09617c89ac}' + '</div>'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${adminContextLastLoginMsg}' + '</div>'
         + '<div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">' + escapeHtml(lastLoginText) + '</div>'
         + '</div>'
         + '</div>';
@@ -1600,15 +1559,15 @@ function buildInfoTab(m) {
 
 function buildHistTab(history) {
     if (!history.length) {
-        return '<div style="text-align:center;padding:32px;color:#475569;">' + '${autoMsg_d0f759d4f1}' + '</div>';
+        return '<div style="text-align:center;padding:32px;color:#475569;">' + '${adminContextEmptyLoginsMsg}' + '</div>';
     }
 
     const methodMap = {
-        ID: '${autoMsg_f87663ab41}',
-        EMAIL: '${autoMsg_4ea1c2e5bd}',
-        KAKAO: '${autoMsg_d783f8943a}',
-        NAVER: '${autoMsg_5ee6c782fb}',
-        GOOGLE: '${autoMsg_d8bdd2bb13}'
+        ID: '${adminContextUserIdMsg}',
+        EMAIL: '${adminContextEmailMsg}',
+        KAKAO: '${adminSocialKakaoMsg}',
+        NAVER: '${adminSocialNaverMsg}',
+        GOOGLE: '${adminSocialGoogleMsg}'
     };
 
     let rows = '';
@@ -1618,7 +1577,7 @@ function buildHistTab(history) {
             + '<tr>'
             + '<td>' + escapeHtml(formatHistoryDateTime(item.loginAt)) + '</td>'
             + '<td>' + escapeHtml(methodMap[item.loginMethod] || item.loginMethod || '—') + '</td>'
-            + '<td class="' + (ok ? 'h-success' : 'h-fail') + '">' + (ok ? '✅ ' + '${autoMsg_a5c0d5d7ed}' : '❌ ' + '${autoMsg_24aba6ad80}') + '</td>'
+            + '<td class="' + (ok ? 'h-success' : 'h-fail') + '">' + (ok ? '✅ ' + '${adminLogsSuccessMsg}' : '❌ ' + '${adminLogsFailureMsg}') + '</td>'
             + '<td>' + escapeHtml(item.failReason || '—') + '</td>'
             + '<td style="font-size:11px;color:#475569;">' + escapeHtml(item.ipAddress || '—') + '</td>'
             + '</tr>';
@@ -1627,7 +1586,7 @@ function buildHistTab(history) {
     return ''
         + '<div style="overflow-x:auto;max-height:340px;overflow-y:auto;">'
         + '<table class="history-table">'
-        + '<thead><tr><th>' + '${autoMsg_d6d2379f8a}' + '</th><th>' + '${autoMsg_28ef9de7fd}' + '</th><th>' + '${autoMsg_a5c0d5d7ed}' + '</th><th>' + '${autoMsg_72f23d3c96}' + '</th><th>${autoMsg_6b4e253a09}</th></tr></thead>'
+        + '<thead><tr><th>' + '${adminCommonTimeMsg}' + '</th><th>' + '${adminLogsProviderMsg}' + '</th><th>' + '${adminLogsSuccessMsg}' + '</th><th>' + '${adminLogsFailReasonMsg}' + '</th><th>${adminCommonIpMsg}</th></tr></thead>'
         + '<tbody>' + rows + '</tbody>'
         + '</table>'
         + '</div>';
@@ -1656,14 +1615,14 @@ async function saveMemberProfile(userIdx, button) {
         });
         const data = await res.json();
         if (res.ok && data.success) {
-            adm_toast(data.message || '${autoMsg_44def9b86a}');
+            adm_toast(data.message || '${adminContextToastSaveProfileSuccessMsg}');
             setTimeout(() => location.reload(), 700);
         } else {
-            adm_toast(data.message || '${autoMsg_93ad924e95}', 'error');
+            adm_toast(data.message || '${adminContextToastSaveProfileFailMsg}', 'error');
         }
     } catch (e) {
         console.error(e);
-        adm_toast('${autoMsg_01dba7d82b}', 'error');
+        adm_toast('${adminContextToastSaveProfileErrorMsg}', 'error');
     } finally {
         button.disabled = false;
     }
@@ -1678,7 +1637,7 @@ function applyRoleFromDetail(userIdx, button) {
     const role = document.getElementById('memberRoleSelect').value;
     const reason = document.getElementById('memberRoleReason').value.trim();
     if (!reason) {
-        adm_toast('${autoMsg_55aae9ece7}', 'error');
+        adm_toast('${adminContextRequireRoleReasonMsg}', 'error');
         return;
     }
     changeRole(userIdx, role, reason, button);
@@ -1691,7 +1650,7 @@ async function submitDetailBlock(userIdx, button) {
     const reason = document.getElementById('detailBlockedReason').value.trim();
 
     if ((blockType === 'IP_ONLY' || blockType === 'USER_IP') && !blockedIp) {
-        adm_toast('${autoMsg_68c9b31d7a}', 'error');
+        adm_toast('${adminContextRequireBlockedIpMsg}', 'error');
         return;
     }
 
@@ -1704,14 +1663,14 @@ async function submitDetailBlock(userIdx, button) {
         });
         const data = await res.json();
         if (res.ok && data.success) {
-            adm_toast(data.message || '${autoMsg_c01e180fb6}');
+            adm_toast(data.message || '${adminContextToastSaveBlockSuccessMsg}');
             setTimeout(() => location.reload(), 700);
         } else {
-            adm_toast(data.message || '${autoMsg_7b1eb93122}', 'error');
+            adm_toast(data.message || '${adminContextToastSaveBlockFailMsg}', 'error');
         }
     } catch (e) {
         console.error(e);
-        adm_toast('${autoMsg_eaa3e240dd}', 'error');
+        adm_toast('${adminContextToastSaveBlockErrorMsg}', 'error');
     } finally {
         button.disabled = false;
     }

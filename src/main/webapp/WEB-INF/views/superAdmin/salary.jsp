@@ -2,112 +2,46 @@
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_c42a5e83ae" code="superAdmin.salary.cardTitle"/>
-<spring:message var="autoMsg_824f29ff27" code="superAdmin.salary.cardDescription"/>
-<spring:message var="autoMsg_1e2f82da6b" code="superAdmin.salary.filter.keywordPlaceholder"/>
-<spring:message var="autoMsg_2cadae8687" code="superAdmin.salary.filter.departmentPlaceholder"/>
-<spring:message var="autoMsg_ef442f769a" code="superAdmin.salary.filter.permissionPlaceholder"/>
-<spring:message var="autoMsg_26c63a4826" code="superAdmin.salary.filter.accountStatusAll"/>
-<spring:message var="autoMsg_9cfa19741d" code="admin.status.ACTIVE"/>
-<spring:message var="autoMsg_0d35892572" code="admin.status.BLOCKED"/>
-<spring:message var="autoMsg_36ef8f126c" code="admin.status.DORMANT"/>
-<spring:message var="autoMsg_ad99f84c88" code="admin.status.DELETED"/>
-<spring:message var="autoMsg_9ad2529f9c" code="superAdmin.salary.action.search"/>
-<spring:message var="autoMsg_c3c2a5b8ae" code="superAdmin.salary.action.reset"/>
-<spring:message var="autoMsg_0a0af26aeb" code="superAdmin.salary.action.uploadExcel"/>
-<spring:message var="autoMsg_cbedaf44f2" code="superAdmin.salary.table.count"/>
-<spring:message var="autoMsg_4948a772d9" code="superAdmin.salary.table.nickname"/>
-<spring:message var="autoMsg_a31adc6294" code="superAdmin.salary.table.department"/>
-<spring:message var="autoMsg_3bc6d27609" code="superAdmin.salary.table.team"/>
-<spring:message var="autoMsg_da5201320c" code="superAdmin.salary.table.positionCode"/>
-<spring:message var="autoMsg_d863e3f81a" code="superAdmin.salary.table.title"/>
-<spring:message var="autoMsg_2f204788d2" code="superAdmin.salary.table.rank"/>
-<spring:message var="autoMsg_1a6c01855f" code="superAdmin.salary.table.seniority"/>
-<spring:message var="autoMsg_022ea809f7" code="superAdmin.salary.table.tier"/>
-<spring:message var="autoMsg_473b670549" code="superAdmin.salary.table.level"/>
-<spring:message var="autoMsg_cc3cddb498" code="superAdmin.salary.table.band"/>
-<spring:message var="autoMsg_51a56bd0af" code="superAdmin.salary.table.grade"/>
-<spring:message var="autoMsg_6ca2e74e95" code="superAdmin.salary.table.step"/>
-<spring:message var="autoMsg_19b3443b13" code="superAdmin.salary.table.effectivePermission"/>
-<spring:message var="autoMsg_63143af798" code="superAdmin.salary.table.manager"/>
-<spring:message var="autoMsg_e946eb1016" code="superAdmin.salary.table.actions"/>
-<spring:message var="autoMsg_1341417b27" code="superAdmin.salary.action.edit"/>
-<spring:message var="autoMsg_21117d53e9" code="superAdmin.salary.empty"/>
-<spring:message var="autoMsg_ffb41aa8fe" code="superAdmin.salary.modal.editTitle"/>
-<spring:message var="autoMsg_01a1a455c3" code="superAdmin.salary.section.seniority"/>
-<spring:message var="autoMsg_c6b16a8fb5" code="superAdmin.salary.option.select"/>
-<spring:message var="autoMsg_b461adc12e" code="superAdmin.salary.seniority.associate"/>
-<spring:message var="autoMsg_247125ea87" code="superAdmin.salary.seniority.junior"/>
-<spring:message var="autoMsg_80c17ab457" code="superAdmin.salary.seniority.mid"/>
-<spring:message var="autoMsg_61e0ef2a7f" code="superAdmin.salary.seniority.senior"/>
-<spring:message var="autoMsg_68015cb58d" code="superAdmin.salary.seniority.lead"/>
-<spring:message var="autoMsg_ce4a74ec7e" code="superAdmin.salary.seniority.principal"/>
-<spring:message var="autoMsg_05ebb13caf" code="superAdmin.salary.seniority.staff"/>
-<spring:message var="autoMsg_7a3f34462f" code="superAdmin.salary.seniority.fellow"/>
-<spring:message var="autoMsg_570ff8d2b1" code="superAdmin.salary.section.tier"/>
-<spring:message var="autoMsg_f5fc46452e" code="superAdmin.salary.section.level"/>
-<spring:message var="autoMsg_4ec61f3338" code="superAdmin.salary.section.band"/>
-<spring:message var="autoMsg_478b29a27d" code="superAdmin.salary.section.grade"/>
-<spring:message var="autoMsg_30e575cbaa" code="superAdmin.salary.section.step"/>
-<spring:message var="autoMsg_1657921108" code="superAdmin.salary.step.1"/>
-<spring:message var="autoMsg_84da388511" code="superAdmin.salary.step.2"/>
-<spring:message var="autoMsg_81840b237b" code="superAdmin.salary.step.3"/>
-<spring:message var="autoMsg_1d0c59f4cd" code="superAdmin.salary.step.4"/>
-<spring:message var="autoMsg_972234ce7a" code="superAdmin.salary.step.5"/>
-<spring:message var="autoMsg_52d288c7d9" code="superAdmin.salary.step.6"/>
-<spring:message var="autoMsg_8cb2c06353" code="superAdmin.salary.step.7"/>
-<spring:message var="autoMsg_8b9ba45382" code="superAdmin.salary.step.8"/>
-<spring:message var="autoMsg_372898fe85" code="superAdmin.salary.step.9"/>
-<spring:message var="autoMsg_18b0dc0a76" code="superAdmin.salary.step.10"/>
-<spring:message var="autoMsg_973fba1b43" code="superAdmin.salary.step.11"/>
-<spring:message var="autoMsg_b74c6634e1" code="superAdmin.salary.step.12"/>
-<spring:message var="autoMsg_a2ae034f1d" code="superAdmin.salary.step.13"/>
-<spring:message var="autoMsg_0df4351eaa" code="superAdmin.salary.step.14"/>
-<spring:message var="autoMsg_db591ded80" code="superAdmin.salary.step.15"/>
-<spring:message var="autoMsg_8e9c51d784" code="admin.common.cancel"/>
-<spring:message var="autoMsg_df410ddc82" code="admin.common.save"/>
-<spring:message var="autoMsg_6298dad309" code="superAdmin.salary.modal.previewTitle"/>
-<spring:message var="autoMsg_d2e66c6c07" code="superAdmin.salary.preview.row"/>
-<spring:message var="autoMsg_c4c5b3b297" code="superAdmin.salary.table.state"/>
-<spring:message var="autoMsg_6981705ef7" code="superAdmin.salary.table.email"/>
-<spring:message var="autoMsg_dd665cf361" code="superAdmin.salary.table.changedContent"/>
-<spring:message var="autoMsg_2e5c819b3c" code="superAdmin.salary.action.apply"/>
-<spring:message var="autoMsg_a15c77af05" code="superAdmin.salary.editTitleSuffix" javaScriptEscape="true"/>
-<spring:message var="autoMsg_8128d782f8" code="superAdmin.salary.toastSaved" javaScriptEscape="true"/>
-<spring:message var="autoMsg_9ecf8ff203" code="superAdmin.salary.toastSaveFailed" javaScriptEscape="true"/>
-<spring:message var="autoMsg_277579cf67" code="superAdmin.salary.preview.toastValidating" javaScriptEscape="true"/>
-<spring:message var="autoMsg_26f9a3c69c" code="superAdmin.salary.preview.previewFailed" javaScriptEscape="true"/>
-<spring:message var="autoMsg_6ca10e2fa7" code="superAdmin.salary.preview.networkError" javaScriptEscape="true"/>
-<spring:message var="autoMsg_755087fb1a" code="superAdmin.salary.preview.summary.total" javaScriptEscape="true"/>
-<spring:message var="autoMsg_8e91fc0db1" code="superAdmin.salary.preview.summary.changed" javaScriptEscape="true"/>
-<spring:message var="autoMsg_da7d1320fc" code="superAdmin.salary.preview.summary.unchanged" javaScriptEscape="true"/>
-<spring:message var="autoMsg_cedf63ca99" code="superAdmin.salary.preview.summary.error" javaScriptEscape="true"/>
-<spring:message var="autoMsg_baa7474a77" code="superAdmin.salary.preview.errorExcluded" javaScriptEscape="true"/>
-<spring:message var="autoMsg_43d99b32ef" code="superAdmin.salary.preview.change" javaScriptEscape="true"/>
-<spring:message var="autoMsg_74b9891d10" code="superAdmin.salary.preview.error" javaScriptEscape="true"/>
-<spring:message var="autoMsg_7a4d4dcc13" code="superAdmin.salary.preview.unchanged" javaScriptEscape="true"/>
-<spring:message var="autoMsg_79819e4adc" code="superAdmin.salary.preview.noChanges" javaScriptEscape="true"/>
-<spring:message var="autoMsg_0cecd9b7d2" code="superAdmin.salary.preview.willApply" javaScriptEscape="true"/>
-<spring:message var="autoMsg_52ec820513" code="superAdmin.salary.preview.noRowsToApply" javaScriptEscape="true"/>
-<spring:message var="autoMsg_47808fa097" code="superAdmin.salary.preview.applyConfirm" javaScriptEscape="true"/>
-<spring:message var="autoMsg_09984a8396" code="superAdmin.salary.preview.applyCompleted" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b38f175947" code="superAdmin.salary.preview.applyFailed" javaScriptEscape="true"/>
-<spring:message var="autoMsg_a973886010" code="superAdmin.salary.section.seniority" javaScriptEscape="true"/>
-<spring:message var="autoMsg_20d3dc73a3" code="superAdmin.salary.section.tier" javaScriptEscape="true"/>
-<spring:message var="autoMsg_4b860e09fb" code="superAdmin.salary.section.level" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f8617dee7a" code="superAdmin.salary.section.band" javaScriptEscape="true"/>
-<spring:message var="autoMsg_8423abb3a0" code="superAdmin.salary.section.grade" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b2c4bcffde" code="superAdmin.salary.section.step" javaScriptEscape="true"/>
-<spring:message var="autoMsg_6851ee13ae" code="superAdmin.salary.preview.row" javaScriptEscape="true"/>
+
 <c:set var="activeMenu" value="salary"/>
+<spring:message var="superadminSalaryFilterKeywordPlaceholderMsg" code="superAdmin.salary.filter.keywordPlaceholder"/>
+<spring:message var="superadminSalaryFilterDepartmentPlaceholderMsg" code="superAdmin.salary.filter.departmentPlaceholder"/>
+<spring:message var="superadminSalaryFilterPermissionPlaceholderMsg" code="superAdmin.salary.filter.permissionPlaceholder"/>
+<spring:message var="superadminSalaryEditTitleSuffixMsg" code="superAdmin.salary.editTitleSuffix" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryToastSavedMsg" code="superAdmin.salary.toastSaved" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryToastSaveFailedMsg" code="superAdmin.salary.toastSaveFailed" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewToastValidatingMsg" code="superAdmin.salary.preview.toastValidating" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewPreviewFailedMsg" code="superAdmin.salary.preview.previewFailed" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewNetworkErrorMsg" code="superAdmin.salary.preview.networkError" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewSummaryTotalMsg" code="superAdmin.salary.preview.summary.total" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewSummaryChangedMsg" code="superAdmin.salary.preview.summary.changed" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewSummaryUnchangedMsg" code="superAdmin.salary.preview.summary.unchanged" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewSummaryErrorMsg" code="superAdmin.salary.preview.summary.error" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewErrorExcludedMsg" code="superAdmin.salary.preview.errorExcluded" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewChangeMsg" code="superAdmin.salary.preview.change" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewErrorMsg" code="superAdmin.salary.preview.error" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewUnchangedMsg" code="superAdmin.salary.preview.unchanged" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewNoChangesMsg" code="superAdmin.salary.preview.noChanges" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewWillApplyMsg" code="superAdmin.salary.preview.willApply" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewNoRowsToApplyMsg" code="superAdmin.salary.preview.noRowsToApply" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewApplyConfirmMsg" code="superAdmin.salary.preview.applyConfirm" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewApplyCompletedMsg" code="superAdmin.salary.preview.applyCompleted" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewApplyFailedMsg" code="superAdmin.salary.preview.applyFailed" javaScriptEscape="true"/>
+<spring:message var="superadminSalarySectionSeniorityMsg" code="superAdmin.salary.section.seniority" javaScriptEscape="true"/>
+<spring:message var="superadminSalarySectionTierMsg" code="superAdmin.salary.section.tier" javaScriptEscape="true"/>
+<spring:message var="superadminSalarySectionLevelMsg" code="superAdmin.salary.section.level" javaScriptEscape="true"/>
+<spring:message var="superadminSalarySectionBandMsg" code="superAdmin.salary.section.band" javaScriptEscape="true"/>
+<spring:message var="superadminSalarySectionGradeMsg" code="superAdmin.salary.section.grade" javaScriptEscape="true"/>
+<spring:message var="superadminSalarySectionStepMsg" code="superAdmin.salary.section.step" javaScriptEscape="true"/>
+<spring:message var="superadminSalaryPreviewRowMsg" code="superAdmin.salary.preview.row" javaScriptEscape="true"/>
 <spring:message code="superAdmin.salary.pageTitle" var="pageTitle"/>
 <%@ include file="layout.jsp" %>
 
 <div class="adm-content">
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">${autoMsg_c42a5e83ae}</div>
-            <div style="font-size:13px;color:#94a3b8;">${autoMsg_824f29ff27}</div>
+            <div class="adm-card-title"><spring:message code="superAdmin.salary.cardTitle"/></div>
+            <div style="font-size:13px;color:#94a3b8;"><spring:message code="superAdmin.salary.cardDescription"/></div>
         </div>
         <div class="adm-card-body" style="padding:0;">
 
@@ -115,53 +49,53 @@
             <form method="get" action="${pageContext.request.contextPath}/superAdmin/salary" class="sa-salary-toolbar" id="salaryFilterForm">
                 <input type="text" name="keyword"
                        value="${fn:escapeXml(search.keyword)}"
-                       placeholder="${autoMsg_1e2f82da6b}" class="adm-input" style="width:220px;">
+                       placeholder="${superadminSalaryFilterKeywordPlaceholderMsg}" class="adm-input" style="width:220px;">
                 <input type="text" name="filterDepartment"
                        value="${fn:escapeXml(search.filterDepartment)}"
-                       placeholder="${autoMsg_2cadae8687}" class="adm-input" style="width:140px;">
+                       placeholder="${superadminSalaryFilterDepartmentPlaceholderMsg}" class="adm-input" style="width:140px;">
                 <input type="text" name="filterPermissionCode"
                        value="${fn:escapeXml(search.filterPermissionCode)}"
-                       placeholder="${autoMsg_ef442f769a}" class="adm-input" style="width:140px;">
+                       placeholder="${superadminSalaryFilterPermissionPlaceholderMsg}" class="adm-input" style="width:140px;">
                 <select name="filterAccountStatus" class="adm-select" style="width:130px;">
-                    <option value="">${autoMsg_26c63a4826}</option>
-                    <option value="ACTIVE"   <c:if test="${search.filterAccountStatus == 'ACTIVE'}">selected</c:if>>${autoMsg_9cfa19741d}</option>
-                    <option value="BLOCKED"  <c:if test="${search.filterAccountStatus == 'BLOCKED'}">selected</c:if>>${autoMsg_0d35892572}</option>
-                    <option value="DORMANT"  <c:if test="${search.filterAccountStatus == 'DORMANT'}">selected</c:if>>${autoMsg_36ef8f126c}</option>
-                    <option value="DELETED"  <c:if test="${search.filterAccountStatus == 'DELETED'}">selected</c:if>>${autoMsg_ad99f84c88}</option>
+                    <option value=""><spring:message code="superAdmin.salary.filter.accountStatusAll"/></option>
+                    <option value="ACTIVE"   <c:if test="${search.filterAccountStatus == 'ACTIVE'}">selected</c:if>><spring:message code="admin.status.ACTIVE"/></option>
+                    <option value="BLOCKED"  <c:if test="${search.filterAccountStatus == 'BLOCKED'}">selected</c:if>><spring:message code="admin.status.BLOCKED"/></option>
+                    <option value="DORMANT"  <c:if test="${search.filterAccountStatus == 'DORMANT'}">selected</c:if>><spring:message code="admin.status.DORMANT"/></option>
+                    <option value="DELETED"  <c:if test="${search.filterAccountStatus == 'DELETED'}">selected</c:if>><spring:message code="admin.status.DELETED"/></option>
                 </select>
                 <input type="hidden" name="pageSize" value="${search.pageSize}">
-                <button type="submit" class="adm-btn adm-btn-primary">${autoMsg_9ad2529f9c}</button>
-                <a href="${pageContext.request.contextPath}/superAdmin/salary" class="adm-btn adm-btn-ghost">${autoMsg_c3c2a5b8ae}</a>
+                <button type="submit" class="adm-btn adm-btn-primary"><spring:message code="superAdmin.salary.action.search"/></button>
+                <a href="${pageContext.request.contextPath}/superAdmin/salary" class="adm-btn adm-btn-ghost"><spring:message code="superAdmin.salary.action.reset"/></a>
                 <button type="button" class="adm-btn adm-btn-ghost" style="margin-left:auto;"
-                        onclick="triggerSalaryUpload()">${autoMsg_0a0af26aeb}</button>
+                        onclick="triggerSalaryUpload()"><spring:message code="superAdmin.salary.action.uploadExcel"/></button>
                 <input type="file" id="salaryUploadInput" accept=".xlsx,.xls" style="display:none;"
                        onchange="handleSalaryFile(event)">
                 <a href="${pageContext.request.contextPath}/superAdmin/salary/export?keyword=${fn:escapeXml(search.keyword)}&filterDepartment=${fn:escapeXml(search.filterDepartment)}&filterPermissionCode=${fn:escapeXml(search.filterPermissionCode)}&filterAccountStatus=${fn:escapeXml(search.filterAccountStatus)}"
                    class="adm-btn adm-btn-ghost">
                     <spring:message code="superAdmin.salary.action.exportExcel"/>
                 </a>
-                <span style="font-size:13px;color:#94a3b8;">${autoMsg_cbedaf44f2}</span>
+                <span style="font-size:13px;color:#94a3b8;"><spring:message code="superAdmin.salary.table.count"/></span>
             </form>
 
             <div style="overflow-x:auto;">
                 <table class="sa-salary-table" id="salaryTable">
                     <thead>
                         <tr>
-                            <th>${autoMsg_4948a772d9}</th>
-                            <th>${autoMsg_a31adc6294}</th>
-                            <th>${autoMsg_3bc6d27609}</th>
-                            <th>${autoMsg_da5201320c}</th>
-                            <th>${autoMsg_d863e3f81a}</th>
-                            <th>${autoMsg_2f204788d2}</th>
-                            <th>${autoMsg_1a6c01855f}</th>
-                            <th>${autoMsg_022ea809f7}</th>
-                            <th>${autoMsg_473b670549}</th>
-                            <th>${autoMsg_cc3cddb498}</th>
-                            <th>${autoMsg_51a56bd0af}</th>
-                            <th>${autoMsg_6ca2e74e95}</th>
-                            <th>${autoMsg_19b3443b13}</th>
-                            <th>${autoMsg_63143af798}</th>
-                            <th>${autoMsg_e946eb1016}</th>
+                            <th><spring:message code="superAdmin.salary.table.nickname"/></th>
+                            <th><spring:message code="superAdmin.salary.table.department"/></th>
+                            <th><spring:message code="superAdmin.salary.table.team"/></th>
+                            <th><spring:message code="superAdmin.salary.table.positionCode"/></th>
+                            <th><spring:message code="superAdmin.salary.table.title"/></th>
+                            <th><spring:message code="superAdmin.salary.table.rank"/></th>
+                            <th><spring:message code="superAdmin.salary.table.seniority"/></th>
+                            <th><spring:message code="superAdmin.salary.table.tier"/></th>
+                            <th><spring:message code="superAdmin.salary.table.level"/></th>
+                            <th><spring:message code="superAdmin.salary.table.band"/></th>
+                            <th><spring:message code="superAdmin.salary.table.grade"/></th>
+                            <th><spring:message code="superAdmin.salary.table.step"/></th>
+                            <th><spring:message code="superAdmin.salary.table.effectivePermission"/></th>
+                            <th><spring:message code="superAdmin.salary.table.manager"/></th>
+                            <th><spring:message code="superAdmin.salary.table.actions"/></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -207,7 +141,7 @@
                             <td>${fn:escapeXml(m.adminManagerNickname)}</td>
                             <td>
                                 <button class="adm-btn adm-btn-sm adm-btn-ghost"
-                                        onclick="openSalaryEdit(this.closest('tr'))">${autoMsg_1341417b27}</button>
+                                        onclick="openSalaryEdit(this.closest('tr'))"><spring:message code="superAdmin.salary.action.edit"/></button>
                             </td>
                         </tr>
                         </c:forEach>
@@ -216,7 +150,7 @@
             </div>
 
             <c:if test="${empty salaryList}">
-                <div style="text-align:center;padding:60px;color:#94a3b8;">${autoMsg_21117d53e9}</div>
+                <div style="text-align:center;padding:60px;color:#94a3b8;"><spring:message code="superAdmin.salary.empty"/></div>
             </c:if>
 
             <%-- 페이징 --%>
@@ -237,82 +171,82 @@
 <div class="adm-modal-overlay" id="salaryEditModal">
     <div class="adm-modal" style="width:480px;max-width:95vw;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="salaryEditTitle">${autoMsg_ffb41aa8fe}</div>
+            <div class="adm-modal-title" id="salaryEditTitle"><spring:message code="superAdmin.salary.modal.editTitle"/></div>
             <button class="adm-modal-close" onclick="closeModal('salaryEditModal')">✕</button>
         </div>
         <div class="adm-modal-body">
             <div class="sa-salary-edit-grid">
                 <div class="sa-form-group">
-                    <label class="sa-form-label">${autoMsg_01a1a455c3}</label>
+                    <label class="sa-form-label"><spring:message code="superAdmin.salary.section.seniority"/></label>
                     <select class="adm-select sa-full-select" id="se_seniority">
-                        <option value="">${autoMsg_c6b16a8fb5}</option>
-                        <option value="어소시에이트">${autoMsg_b461adc12e}</option>
-                        <option value="주니어">${autoMsg_247125ea87}</option>
-                        <option value="미드레벨">${autoMsg_80c17ab457}</option>
-                        <option value="시니어">${autoMsg_61e0ef2a7f}</option>
-                        <option value="리드">${autoMsg_68015cb58d}</option>
-                        <option value="프린시펄">${autoMsg_ce4a74ec7e}</option>
-                        <option value="스태프">${autoMsg_05ebb13caf}</option>
-                        <option value="펠로우">${autoMsg_7a3f34462f}</option>
+                        <option value=""><spring:message code="superAdmin.salary.option.select"/></option>
+                        <option value="어소시에이트"><spring:message code="superAdmin.salary.seniority.associate"/></option>
+                        <option value="주니어"><spring:message code="superAdmin.salary.seniority.junior"/></option>
+                        <option value="미드레벨"><spring:message code="superAdmin.salary.seniority.mid"/></option>
+                        <option value="시니어"><spring:message code="superAdmin.salary.seniority.senior"/></option>
+                        <option value="리드"><spring:message code="superAdmin.salary.seniority.lead"/></option>
+                        <option value="프린시펄"><spring:message code="superAdmin.salary.seniority.principal"/></option>
+                        <option value="스태프"><spring:message code="superAdmin.salary.seniority.staff"/></option>
+                        <option value="펠로우"><spring:message code="superAdmin.salary.seniority.fellow"/></option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">${autoMsg_570ff8d2b1}</label>
+                    <label class="sa-form-label"><spring:message code="superAdmin.salary.section.tier"/></label>
                     <select class="adm-select sa-full-select" id="se_tier">
-                        <option value="">${autoMsg_c6b16a8fb5}</option>
+                        <option value=""><spring:message code="superAdmin.salary.option.select"/></option>
                         <option>T1</option><option>T2</option><option>T3</option><option>T4</option><option>T5</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">${autoMsg_f5fc46452e}</label>
+                    <label class="sa-form-label"><spring:message code="superAdmin.salary.section.level"/></label>
                     <select class="adm-select sa-full-select" id="se_level">
-                        <option value="">${autoMsg_c6b16a8fb5}</option>
+                        <option value=""><spring:message code="superAdmin.salary.option.select"/></option>
                         <option>L1</option><option>L2</option><option>L3</option><option>L4</option>
                         <option>L5</option><option>L6</option><option>L7</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">${autoMsg_4ec61f3338}</label>
+                    <label class="sa-form-label"><spring:message code="superAdmin.salary.section.band"/></label>
                     <select class="adm-select sa-full-select" id="se_band">
-                        <option value="">${autoMsg_c6b16a8fb5}</option>
+                        <option value=""><spring:message code="superAdmin.salary.option.select"/></option>
                         <option>B1</option><option>B2</option><option>B3</option><option>B4</option><option>B5</option>
                         <option>B6</option><option>B7</option><option>B8</option><option>B9</option><option>B10</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">${autoMsg_478b29a27d}</label>
+                    <label class="sa-form-label"><spring:message code="superAdmin.salary.section.grade"/></label>
                     <select class="adm-select sa-full-select" id="se_grade">
-                        <option value="">${autoMsg_c6b16a8fb5}</option>
+                        <option value=""><spring:message code="superAdmin.salary.option.select"/></option>
                         <option>G1</option><option>G2</option><option>G3</option><option>G4</option><option>G5</option>
                         <option>G6</option><option>G7</option><option>G8</option><option>G9</option><option>G10</option>
                     </select>
                 </div>
                 <div class="sa-form-group">
-                    <label class="sa-form-label">${autoMsg_30e575cbaa}</label>
+                    <label class="sa-form-label"><spring:message code="superAdmin.salary.section.step"/></label>
                     <select class="adm-select sa-full-select" id="se_step">
-                        <option value="">${autoMsg_c6b16a8fb5}</option>
-                        <option value="1호봉">${autoMsg_1657921108}</option>
-                        <option value="2호봉">${autoMsg_84da388511}</option>
-                        <option value="3호봉">${autoMsg_81840b237b}</option>
-                        <option value="4호봉">${autoMsg_1d0c59f4cd}</option>
-                        <option value="5호봉">${autoMsg_972234ce7a}</option>
-                        <option value="6호봉">${autoMsg_52d288c7d9}</option>
-                        <option value="7호봉">${autoMsg_8cb2c06353}</option>
-                        <option value="8호봉">${autoMsg_8b9ba45382}</option>
-                        <option value="9호봉">${autoMsg_372898fe85}</option>
-                        <option value="10호봉">${autoMsg_18b0dc0a76}</option>
-                        <option value="11호봉">${autoMsg_973fba1b43}</option>
-                        <option value="12호봉">${autoMsg_b74c6634e1}</option>
-                        <option value="13호봉">${autoMsg_a2ae034f1d}</option>
-                        <option value="14호봉">${autoMsg_0df4351eaa}</option>
-                        <option value="15호봉">${autoMsg_db591ded80}</option>
+                        <option value=""><spring:message code="superAdmin.salary.option.select"/></option>
+                        <option value="1호봉"><spring:message code="superAdmin.salary.step.1"/></option>
+                        <option value="2호봉"><spring:message code="superAdmin.salary.step.2"/></option>
+                        <option value="3호봉"><spring:message code="superAdmin.salary.step.3"/></option>
+                        <option value="4호봉"><spring:message code="superAdmin.salary.step.4"/></option>
+                        <option value="5호봉"><spring:message code="superAdmin.salary.step.5"/></option>
+                        <option value="6호봉"><spring:message code="superAdmin.salary.step.6"/></option>
+                        <option value="7호봉"><spring:message code="superAdmin.salary.step.7"/></option>
+                        <option value="8호봉"><spring:message code="superAdmin.salary.step.8"/></option>
+                        <option value="9호봉"><spring:message code="superAdmin.salary.step.9"/></option>
+                        <option value="10호봉"><spring:message code="superAdmin.salary.step.10"/></option>
+                        <option value="11호봉"><spring:message code="superAdmin.salary.step.11"/></option>
+                        <option value="12호봉"><spring:message code="superAdmin.salary.step.12"/></option>
+                        <option value="13호봉"><spring:message code="superAdmin.salary.step.13"/></option>
+                        <option value="14호봉"><spring:message code="superAdmin.salary.step.14"/></option>
+                        <option value="15호봉"><spring:message code="superAdmin.salary.step.15"/></option>
                     </select>
                 </div>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost"   onclick="closeModal('salaryEditModal')">${autoMsg_8e9c51d784}</button>
-            <button class="adm-btn adm-btn-primary"  onclick="saveSalary()">${autoMsg_df410ddc82}</button>
+            <button class="adm-btn adm-btn-ghost"   onclick="closeModal('salaryEditModal')"><spring:message code="admin.common.cancel"/></button>
+            <button class="adm-btn adm-btn-primary"  onclick="saveSalary()"><spring:message code="admin.common.save"/></button>
         </div>
     </div>
 </div>
@@ -321,7 +255,7 @@
 <div class="adm-modal-overlay" id="salaryUploadPreviewModal">
     <div class="adm-modal" style="width:1100px;max-width:98vw;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title">${autoMsg_6298dad309}</div>
+            <div class="adm-modal-title"><spring:message code="superAdmin.salary.modal.previewTitle"/></div>
             <button class="adm-modal-close" onclick="closeModal('salaryUploadPreviewModal')">✕</button>
         </div>
         <div class="adm-modal-body">
@@ -331,11 +265,11 @@
                 <table class="sa-salary-table" id="salaryPreviewTable" style="font-size:12px;">
                     <thead>
                         <tr>
-                            <th style="width:50px;">${autoMsg_d2e66c6c07}</th>
-                            <th style="width:90px;">${autoMsg_c4c5b3b297}</th>
-                            <th style="width:120px;">${autoMsg_4948a772d9}</th>
-                            <th style="width:200px;">${autoMsg_6981705ef7}</th>
-                            <th>${autoMsg_dd665cf361}</th>
+                            <th style="width:50px;"><spring:message code="superAdmin.salary.preview.row"/></th>
+                            <th style="width:90px;"><spring:message code="superAdmin.salary.table.state"/></th>
+                            <th style="width:120px;"><spring:message code="superAdmin.salary.table.nickname"/></th>
+                            <th style="width:200px;"><spring:message code="superAdmin.salary.table.email"/></th>
+                            <th><spring:message code="superAdmin.salary.table.changedContent"/></th>
                         </tr>
                     </thead>
                     <tbody id="salaryPreviewTbody"></tbody>
@@ -343,8 +277,8 @@
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeModal('salaryUploadPreviewModal')">${autoMsg_8e9c51d784}</button>
-            <button class="adm-btn adm-btn-primary" id="salaryApplyBtn" onclick="applySalaryUpload()">${autoMsg_2e5c819b3c}</button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeModal('salaryUploadPreviewModal')"><spring:message code="admin.common.cancel"/></button>
+            <button class="adm-btn adm-btn-primary" id="salaryApplyBtn" onclick="applySalaryUpload()"><spring:message code="superAdmin.salary.action.apply"/></button>
         </div>
     </div>
 </div>
@@ -354,34 +288,34 @@ const CTX = '${pageContext.request.contextPath}';
 let currentSalaryIdx = null;
 let salaryPreviewRows = [];
 const SALARY_MESSAGES = {
-    editTitleSuffix: '${autoMsg_a15c77af05}',
-    saved: '${autoMsg_8128d782f8}',
-    saveFailed: '${autoMsg_9ecf8ff203}',
-    validating: '${autoMsg_277579cf67}',
-    previewFailed: '${autoMsg_26f9a3c69c}',
-    networkError: '${autoMsg_6ca10e2fa7}',
-    total: '${autoMsg_755087fb1a}',
-    changed: '${autoMsg_8e91fc0db1}',
-    unchanged: '${autoMsg_da7d1320fc}',
-    error: '${autoMsg_cedf63ca99}',
-    errorExcluded: '${autoMsg_baa7474a77}',
-    statusChange: '${autoMsg_43d99b32ef}',
-    statusError: '${autoMsg_74b9891d10}',
-    statusUnchanged: '${autoMsg_7a4d4dcc13}',
-    genericError: '${autoMsg_74b9891d10}',
-    noChanges: '${autoMsg_79819e4adc}',
-    willApply: '${autoMsg_0cecd9b7d2}',
-    noRowsToApply: '${autoMsg_52ec820513}',
-    applyConfirm: '${autoMsg_47808fa097}',
-    appliedCompleted: '${autoMsg_09984a8396}',
-    applyFailed: '${autoMsg_b38f175947}',
+    editTitleSuffix: '${superadminSalaryEditTitleSuffixMsg}',
+    saved: '${superadminSalaryToastSavedMsg}',
+    saveFailed: '${superadminSalaryToastSaveFailedMsg}',
+    validating: '${superadminSalaryPreviewToastValidatingMsg}',
+    previewFailed: '${superadminSalaryPreviewPreviewFailedMsg}',
+    networkError: '${superadminSalaryPreviewNetworkErrorMsg}',
+    total: '${superadminSalaryPreviewSummaryTotalMsg}',
+    changed: '${superadminSalaryPreviewSummaryChangedMsg}',
+    unchanged: '${superadminSalaryPreviewSummaryUnchangedMsg}',
+    error: '${superadminSalaryPreviewSummaryErrorMsg}',
+    errorExcluded: '${superadminSalaryPreviewErrorExcludedMsg}',
+    statusChange: '${superadminSalaryPreviewChangeMsg}',
+    statusError: '${superadminSalaryPreviewErrorMsg}',
+    statusUnchanged: '${superadminSalaryPreviewUnchangedMsg}',
+    genericError: '${superadminSalaryPreviewErrorMsg}',
+    noChanges: '${superadminSalaryPreviewNoChangesMsg}',
+    willApply: '${superadminSalaryPreviewWillApplyMsg}',
+    noRowsToApply: '${superadminSalaryPreviewNoRowsToApplyMsg}',
+    applyConfirm: '${superadminSalaryPreviewApplyConfirmMsg}',
+    appliedCompleted: '${superadminSalaryPreviewApplyCompletedMsg}',
+    applyFailed: '${superadminSalaryPreviewApplyFailedMsg}',
     fieldLabels: {
-        Seniority: '${autoMsg_a973886010}',
-        Tier: '${autoMsg_20d3dc73a3}',
-        Level: '${autoMsg_4b860e09fb}',
-        Band: '${autoMsg_f8617dee7a}',
-        Grade: '${autoMsg_8423abb3a0}',
-        Step: '${autoMsg_b2c4bcffde}'
+        Seniority: '${superadminSalarySectionSeniorityMsg}',
+        Tier: '${superadminSalarySectionTierMsg}',
+        Level: '${superadminSalarySectionLevelMsg}',
+        Band: '${superadminSalarySectionBandMsg}',
+        Grade: '${superadminSalarySectionGradeMsg}',
+        Step: '${superadminSalarySectionStepMsg}'
     }
 };
 
@@ -458,7 +392,7 @@ function renderSalaryPreview(preview) {
     const totalCnt     = preview.totalCount     || salaryPreviewRows.length;
 
     document.getElementById('salaryPreviewSummary').innerHTML =
-        '<span>' + SALARY_MESSAGES.total + ' <b>' + totalCnt + '</b>' + '${autoMsg_6851ee13ae}' + '</span>' +
+        '<span>' + SALARY_MESSAGES.total + ' <b>' + totalCnt + '</b>' + '${superadminSalaryPreviewRowMsg}' + '</span>' +
         '<span style="color:#2563eb;">' + SALARY_MESSAGES.changed + ' <b>' + changeCnt + '</b></span>' +
         '<span style="color:#64748b;">' + SALARY_MESSAGES.unchanged + ' <b>' + unchangedCnt + '</b></span>' +
         '<span style="color:#dc2626;">' + SALARY_MESSAGES.error + ' <b>' + errorCnt + '</b></span>';

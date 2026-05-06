@@ -3,27 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_4fa44b1e4f" code="package.form.eyebrow"/>
-<spring:message var="autoMsg_adfd3087e7" code="package.form.revisionTitle"/>
-<spring:message var="autoMsg_92098b0e06" code="package.form.editTitle"/>
-<spring:message var="autoMsg_dd6771fa52" code="package.form.createTitle"/>
-<spring:message var="autoMsg_1892bedcf8" code="package.form.revisionDesc"/>
-<spring:message var="autoMsg_804e9c54a2" code="package.form.defaultDesc"/>
-<spring:message var="autoMsg_35cee31c94" code="package.form.spot"/>
-<spring:message var="autoMsg_ff5ac867bd" code="package.form.spotHelp"/>
-<spring:message var="autoMsg_b096ecc5d2" code="package.form.title"/>
-<spring:message var="autoMsg_e23b81a7f1" code="package.form.summary"/>
-<spring:message var="autoMsg_50e5eb0a65" code="package.form.price"/>
-<spring:message var="autoMsg_3113741833" code="package.form.currency"/>
-<spring:message var="autoMsg_9dfe9b3da0" code="package.form.startDate"/>
-<spring:message var="autoMsg_749d245ba4" code="package.form.endDate"/>
-<spring:message var="autoMsg_c0960f66b6" code="package.form.minPeople"/>
-<spring:message var="autoMsg_8b272c5200" code="package.form.maxPeople"/>
-<spring:message var="autoMsg_003c1dcb21" code="package.form.mainImage"/>
-<spring:message var="autoMsg_4dc7cccb04" code="package.form.currentImage"/>
-<spring:message var="autoMsg_3fc3e6f505" code="package.form.keepImageHelp"/>
-<spring:message var="autoMsg_93ed2cdddc" code="package.form.imageHelp"/>
-<spring:message var="autoMsg_81c265ee24" code="package.form.content"/>
+
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="packages/packages.css"/>
@@ -38,18 +18,18 @@
 <main class="pkg-wrap">
     <section class="pkg-hero pkg-hero--form">
         <div>
-            <p class="pkg-eyebrow">${autoMsg_4fa44b1e4f}</p>
+            <p class="pkg-eyebrow"><spring:message code="package.form.eyebrow"/></p>
             <h1>
                 <c:choose>
-                    <c:when test="${formMode eq 'REVISION'}">${autoMsg_adfd3087e7}</c:when>
-                    <c:when test="${formMode eq 'EDIT'}">${autoMsg_92098b0e06}</c:when>
-                    <c:otherwise>${autoMsg_dd6771fa52}</c:otherwise>
+                    <c:when test="${formMode eq 'REVISION'}"><spring:message code="package.form.revisionTitle"/></c:when>
+                    <c:when test="${formMode eq 'EDIT'}"><spring:message code="package.form.editTitle"/></c:when>
+                    <c:otherwise><spring:message code="package.form.createTitle"/></c:otherwise>
                 </c:choose>
             </h1>
             <p>
                 <c:choose>
-                    <c:when test="${formMode eq 'REVISION'}">${autoMsg_1892bedcf8}</c:when>
-                    <c:otherwise>${autoMsg_804e9c54a2}</c:otherwise>
+                    <c:when test="${formMode eq 'REVISION'}"><spring:message code="package.form.revisionDesc"/></c:when>
+                    <c:otherwise><spring:message code="package.form.defaultDesc"/></c:otherwise>
                 </c:choose>
             </p>
         </div>
@@ -75,7 +55,7 @@
         <form class="pkg-form" method="post" action="${formAction}" enctype="multipart/form-data">
             <div class="pkg-form-grid">
                 <label class="pkg-field pkg-field--wide">
-                    <span>${autoMsg_35cee31c94} <em>*</em></span>
+                    <span><spring:message code="package.form.spot"/> <em>*</em></span>
                     <select name="spotIdx" required>
                         <option value="">${packageSpotPlaceholder}</option>
                         <c:forEach var="spot" items="${spotOptions}">
@@ -84,56 +64,56 @@
                             </option>
                         </c:forEach>
                     </select>
-                    <small>${autoMsg_ff5ac867bd}</small>
+                    <small><spring:message code="package.form.spotHelp"/></small>
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span>${autoMsg_b096ecc5d2} <em>*</em></span>
+                    <span><spring:message code="package.form.title"/> <em>*</em></span>
                     <input type="text" name="packageTitle" maxlength="150" required
                            value="${packageForm.packageTitle}" placeholder="${packageTitlePlaceholder}">
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span>${autoMsg_e23b81a7f1}</span>
+                    <span><spring:message code="package.form.summary"/></span>
                     <input type="text" name="packageSummary" maxlength="300"
                            value="${packageForm.packageSummary}" placeholder="${packageSummaryPlaceholder}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>${autoMsg_50e5eb0a65} <em>*</em></span>
+                    <span><spring:message code="package.form.price"/> <em>*</em></span>
                     <input type="number" name="packagePrice" min="0" required
                            value="${empty packageForm.packagePrice ? 0 : packageForm.packagePrice}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>${autoMsg_3113741833}</span>
+                    <span><spring:message code="package.form.currency"/></span>
                     <input type="text" name="currencyCode" maxlength="10"
                            value="${empty packageForm.currencyCode ? 'KRW' : packageForm.currencyCode}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>${autoMsg_9dfe9b3da0}</span>
+                    <span><spring:message code="package.form.startDate"/></span>
                     <input type="date" name="startDate" value="${packageForm.startDate}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>${autoMsg_749d245ba4}</span>
+                    <span><spring:message code="package.form.endDate"/></span>
                     <input type="date" name="endDate" value="${packageForm.endDate}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>${autoMsg_c0960f66b6} <em>*</em></span>
+                    <span><spring:message code="package.form.minPeople"/> <em>*</em></span>
                     <input type="number" name="minPeople" min="1" required
                            value="${empty packageForm.minPeople ? 1 : packageForm.minPeople}">
                 </label>
 
                 <label class="pkg-field">
-                    <span>${autoMsg_8b272c5200}</span>
+                    <span><spring:message code="package.form.maxPeople"/></span>
                     <input type="number" name="maxPeople" min="1" value="${packageForm.maxPeople}">
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span>${autoMsg_003c1dcb21}</span>
+                    <span><spring:message code="package.form.mainImage"/></span>
                     <c:if test="${not empty packageForm.mainImagePath}">
                         <c:set var="mainImagePreviewPath" value="${pageContext.request.contextPath}${packageForm.mainImagePath}"/>
                         <c:if test="${fn:startsWith(packageForm.mainImagePath, 'http://') or fn:startsWith(packageForm.mainImagePath, 'https://')}">
@@ -142,18 +122,18 @@
                         <div class="pkg-current-image">
                             <img src="${mainImagePreviewPath}" alt="${packageCurrentImageLabel}">
                             <div>
-                                <strong>${autoMsg_4dc7cccb04}</strong>
-                                <small>${autoMsg_3fc3e6f505}</small>
+                                <strong><spring:message code="package.form.currentImage"/></strong>
+                                <small><spring:message code="package.form.keepImageHelp"/></small>
                             </div>
                         </div>
                     </c:if>
                     <input type="hidden" name="mainImagePath" value="${packageForm.mainImagePath}">
                     <input type="file" name="mainImageFile" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp">
-                    <small>${autoMsg_93ed2cdddc}</small>
+                    <small><spring:message code="package.form.imageHelp"/></small>
                 </label>
 
                 <label class="pkg-field pkg-field--wide">
-                    <span>${autoMsg_81c265ee24} <em>*</em></span>
+                    <span><spring:message code="package.form.content"/> <em>*</em></span>
                     <textarea name="packageContent" rows="12" required
                               placeholder="${packageContentPlaceholder}">${packageForm.packageContent}</textarea>
                 </label>

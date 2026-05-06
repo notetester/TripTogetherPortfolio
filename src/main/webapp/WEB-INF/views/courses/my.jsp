@@ -4,29 +4,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="autoMsg_e77e50c8fc" code="course.my.title"/>
-<spring:message var="autoMsg_f1a5ec2dee" code="course.my.desc"/>
-<spring:message var="autoMsg_6ccdf0dbd4" code="course.action.create"/>
-<spring:message var="autoMsg_3498c9197b" code="course.action.manualCreate"/>
-<spring:message var="autoMsg_4496af1863" code="course.action.aiCreate"/>
-<spring:message var="autoMsg_bbc3cf0a0b" code="course.filter.all"/>
-<spring:message var="autoMsg_0cfa218e2e" code="course.badge.manual"/>
-<spring:message var="autoMsg_a469b983c3" code="course.badge.aiRecommend"/>
-<spring:message var="autoMsg_43c890cee2" code="course.filter.allPeriod"/>
-<spring:message var="autoMsg_081cdac73c" code="course.filter.upcoming"/>
-<spring:message var="autoMsg_816cdd129c" code="course.filter.now"/>
-<spring:message var="autoMsg_62fe6b8a89" code="course.filter.past"/>
-<spring:message var="autoMsg_22f5806837" code="course.filter.allYear"/>
-<spring:message var="autoMsg_c2186a4c7d" code="course.filter.status"/>
-<spring:message var="autoMsg_19051f1f41" code="course.badge.public"/>
-<spring:message var="autoMsg_58674a7da8" code="course.badge.private"/>
-<spring:message var="autoMsg_9aac20cf24" code="course.filter.noResult.title"/>
-<spring:message var="autoMsg_024c33dc97" code="course.filter.noResult.desc"/>
-<spring:message var="autoMsg_df4c0bba57" code="course.action.detail"/>
-<spring:message var="autoMsg_eab6f2c190" code="course.action.edit"/>
-<spring:message var="autoMsg_9251cc0b60" code="course.action.delete"/>
-<spring:message var="autoMsg_4d95825ec1" code="course.my.empty.title"/>
-<spring:message var="autoMsg_a41e317544" code="course.my.empty.desc"/>
 <spring:message code="course.confirm.delete" var="courseDeleteConfirm"/>
 <spring:message code="course.filter.placeholder" var="courseFilterPlaceholder"/>
 <spring:message code="course.common.yearSuffix" javaScriptEscape="true" var="courseYearSuffixJs"/>
@@ -633,17 +610,17 @@
 <div class="courses-page">
     <div class="page-header">
         <div>
-            <h1 class="page-title">${autoMsg_e77e50c8fc}</h1>
-            <p class="page-desc">${autoMsg_f1a5ec2dee}</p>
+            <h1 class="page-title"><spring:message code="course.my.title"/></h1>
+            <p class="page-desc"><spring:message code="course.my.desc"/></p>
         </div>
 
         <div class="create-action-wrap">
             <button type="button" class="create-action-btn" id="createActionBtn">
-                + ${autoMsg_6ccdf0dbd4} <span>▾</span>
+                + <spring:message code="course.action.create"/> <span>▾</span>
             </button>
             <div class="create-menu" id="createMenu">
-                <a href="${pageContext.request.contextPath}/courses/write">${autoMsg_3498c9197b}</a>
-                <a href="${pageContext.request.contextPath}/courses/ai/form">${autoMsg_4496af1863}</a>
+                <a href="${pageContext.request.contextPath}/courses/write"><spring:message code="course.action.manualCreate"/></a>
+                <a href="${pageContext.request.contextPath}/courses/ai/form"><spring:message code="course.action.aiCreate"/></a>
             </div>
         </div>
     </div>
@@ -661,9 +638,9 @@
             <div class="filter-panel">
                 <div class="filter-top">
                     <div class="source-tabs" id="sourceTabs">
-                        <button type="button" class="tab-btn active" data-source="all">${autoMsg_bbc3cf0a0b}</button>
-                        <button type="button" class="tab-btn" data-source="MANUAL">${autoMsg_0cfa218e2e}</button>
-                        <button type="button" class="tab-btn" data-source="AI">${autoMsg_a469b983c3}</button>
+                        <button type="button" class="tab-btn active" data-source="all"><spring:message code="course.filter.all"/></button>
+                        <button type="button" class="tab-btn" data-source="MANUAL"><spring:message code="course.badge.manual"/></button>
+                        <button type="button" class="tab-btn" data-source="AI"><spring:message code="course.badge.aiRecommend"/></button>
                     </div>
 
                     <div class="plan-count">
@@ -676,20 +653,20 @@
                 <div class="filter-bottom">
                     <div class="filter-select-group">
                         <select id="tripStatusFilter" class="filter-select">
-                            <option value="all">${autoMsg_43c890cee2}</option>
-                            <option value="upcoming">${autoMsg_081cdac73c}</option>
-                            <option value="now">${autoMsg_816cdd129c}</option>
-                            <option value="past">${autoMsg_62fe6b8a89}</option>
+                            <option value="all"><spring:message code="course.filter.allPeriod"/></option>
+                            <option value="upcoming"><spring:message code="course.filter.upcoming"/></option>
+                            <option value="now"><spring:message code="course.filter.now"/></option>
+                            <option value="past"><spring:message code="course.filter.past"/></option>
                         </select>
 
                         <select id="yearFilter" class="filter-select">
-                            <option value="all">${autoMsg_22f5806837}</option>
+                            <option value="all"><spring:message code="course.filter.allYear"/></option>
                         </select>
 
                         <select id="visibilityFilter" class="filter-select">
-                            <option value="all">${autoMsg_c2186a4c7d}</option>
-                            <option value="public">${autoMsg_19051f1f41}</option>
-                            <option value="private">${autoMsg_58674a7da8}</option>
+                            <option value="all"><spring:message code="course.filter.status"/></option>
+                            <option value="public"><spring:message code="course.badge.public"/></option>
+                            <option value="private"><spring:message code="course.badge.private"/></option>
                         </select>
                     </div>
 
@@ -703,8 +680,8 @@
             </div>
 
             <div class="no-result-box" id="noResultBox">
-                <h3>${autoMsg_9aac20cf24}</h3>
-                <p>${autoMsg_024c33dc97}</p>
+                <h3><spring:message code="course.filter.noResult.title"/></h3>
+                <p><spring:message code="course.filter.noResult.desc"/></p>
             </div>
 
             <div class="plan-grid" id="planGrid">
@@ -759,14 +736,14 @@
                             <div class="quick-action-wrap">
                                 <button type="button" class="quick-action-btn">⋯</button>
                                 <div class="quick-menu">
-                                    <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}">${autoMsg_df4c0bba57}</a>
-                                    <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}">${autoMsg_eab6f2c190}</a>
+                                    <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}"><spring:message code="course.action.detail"/></a>
+                                    <a href="${pageContext.request.contextPath}/courses/edit?planId=${plan.plan_id}"><spring:message code="course.action.edit"/></a>
                                     <form method="post"
                                           action="${pageContext.request.contextPath}/courses/delete"
                                           class="js-delete-plan-form"
                                           data-confirm="${courseDeleteConfirm}">
                                         <input type="hidden" name="planId" value="${plan.plan_id}">
-                                        <button type="submit" class="delete-btn">${autoMsg_9251cc0b60}</button>
+                                        <button type="submit" class="delete-btn"><spring:message code="course.action.delete"/></button>
                                     </form>
                                 </div>
                             </div>
@@ -777,19 +754,19 @@
 
                             <c:choose>
                                 <c:when test="${sourceValue eq 'AI'}">
-                                    <span class="badge ai">${autoMsg_a469b983c3}</span>
+                                    <span class="badge ai"><spring:message code="course.badge.aiRecommend"/></span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="badge manual">${autoMsg_0cfa218e2e}</span>
+                                    <span class="badge manual"><spring:message code="course.badge.manual"/></span>
                                 </c:otherwise>
                             </c:choose>
 
                             <c:choose>
                                 <c:when test="${visibilityValue eq 'public'}">
-                                    <span class="badge public">${autoMsg_19051f1f41}</span>
+                                    <span class="badge public"><spring:message code="course.badge.public"/></span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="badge private">${autoMsg_58674a7da8}</span>
+                                    <span class="badge private"><spring:message code="course.badge.private"/></span>
                                 </c:otherwise>
                             </c:choose>
                         </div>
@@ -813,7 +790,7 @@
 
                         <div class="card-bottom">
                             <a href="${pageContext.request.contextPath}/courses/detail?planId=${plan.plan_id}" class="detail-link">
-                                ${autoMsg_df4c0bba57} →
+                                <spring:message code="course.action.detail"/> →
                             </a>
                         </div>
                     </div>
@@ -823,11 +800,11 @@
 
         <c:otherwise>
             <div class="empty-state">
-                <h2>${autoMsg_4d95825ec1}</h2>
-                <p>${autoMsg_a41e317544}</p>
+                <h2><spring:message code="course.my.empty.title"/></h2>
+                <p><spring:message code="course.my.empty.desc"/></p>
                 <div class="empty-btn-group">
-                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-btn primary">${autoMsg_3498c9197b}</a>
-                    <a href="${pageContext.request.contextPath}/courses/ai/form" class="empty-btn secondary">${autoMsg_4496af1863}</a>
+                    <a href="${pageContext.request.contextPath}/courses/write" class="empty-btn primary"><spring:message code="course.action.manualCreate"/></a>
+                    <a href="${pageContext.request.contextPath}/courses/ai/form" class="empty-btn secondary"><spring:message code="course.action.aiCreate"/></a>
                 </div>
             </div>
         </c:otherwise>

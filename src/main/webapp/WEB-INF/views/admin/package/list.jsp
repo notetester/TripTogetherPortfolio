@@ -3,42 +3,10 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_81795f2227" code="package.admin.title"/>
-<spring:message var="autoMsg_7a64a86225" code="package.admin.desc"/>
-<spring:message var="autoMsg_5b8574b1c8" code="package.admin.filterStatus"/>
-<spring:message var="autoMsg_1e8be09c49" code="package.admin.filterAll"/>
-<spring:message var="autoMsg_38f1e5f2d8" code="package.status.pending"/>
-<spring:message var="autoMsg_0c27c049e7" code="package.status.approved"/>
-<spring:message var="autoMsg_4bb06cfe16" code="package.status.rejected"/>
-<spring:message var="autoMsg_2e797241a3" code="package.status.draft"/>
-<spring:message var="autoMsg_c88e991e6c" code="package.status.blocked"/>
-<spring:message var="autoMsg_4e95897a13" code="package.admin.search"/>
-<spring:message var="autoMsg_47534ba876" code="package.admin.reset"/>
-<spring:message var="autoMsg_f86dadab39" code="package.revision.adminTitle"/>
-<spring:message var="autoMsg_fcecfdf019" code="package.revision.adminDesc"/>
-<spring:message var="autoMsg_983127c227" code="package.revision.beforeAfter"/>
-<spring:message var="autoMsg_a09196db66" code="package.revision.sellerSpot"/>
-<spring:message var="autoMsg_ce3e9b45f1" code="package.revision.pricePeriod"/>
-<spring:message var="autoMsg_a2e5490060" code="package.revision.requestedAt"/>
-<spring:message var="autoMsg_eea5590277" code="package.revision.review"/>
-<spring:message var="autoMsg_4213d6d07d" code="package.revision.current"/>
-<spring:message var="autoMsg_6f12843ca6" code="package.revision.requested"/>
-<spring:message var="autoMsg_455e7753dc" code="package.common.always"/>
-<spring:message var="autoMsg_9ef749634f" code="package.common.maxPeople"/>
-<spring:message var="autoMsg_9113763d55" code="package.admin.thPackage"/>
-<spring:message var="autoMsg_800a89a8ee" code="package.admin.thSeller"/>
-<spring:message var="autoMsg_ace3212e4c" code="package.admin.thSpot"/>
-<spring:message var="autoMsg_248de702ee" code="package.admin.thPriceSchedule"/>
-<spring:message var="autoMsg_8caf765f67" code="package.admin.thStatus"/>
-<spring:message var="autoMsg_837f8d409f" code="package.admin.thReview"/>
-<spring:message var="autoMsg_f2f287a1c9" code="package.admin.noImage"/>
-<spring:message var="autoMsg_c73e0310c9" code="package.admin.registeredAt"/>
-<spring:message var="autoMsg_8c5544b485" code="package.status.expired"/>
-<spring:message var="autoMsg_38fbdf9b75" code="admin.packages.confirmApprove" javaScriptEscape="true"/>
-<spring:message var="autoMsg_eefd577c93" code="package.admin.approve"/>
-<spring:message var="autoMsg_655c3be121" code="admin.packages.rejectReasonPlaceholder"/>
-<spring:message var="autoMsg_5637ef73ea" code="package.admin.notPending"/>
+
 <c:set var="activeMenu" value="packages"/>
+<spring:message var="adminPackagesConfirmApproveMsg" code="admin.packages.confirmApprove" javaScriptEscape="true"/>
+<spring:message var="adminPackagesRejectReasonPlaceholderMsg" code="admin.packages.rejectReasonPlaceholder"/>
 <spring:message code="package.admin.title" var="adminPackagesPageTitle"/>
 <c:set var="pageTitle"  value="${adminPackagesPageTitle}"/>
 <spring:message code="package.revision.rejectReason" var="revisionRejectReasonPlaceholder"/>
@@ -49,8 +17,8 @@
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1>${autoMsg_81795f2227}</h1>
-            <p>${autoMsg_7a64a86225}</p>
+            <h1><spring:message code="package.admin.title"/></h1>
+            <p><spring:message code="package.admin.desc"/></p>
         </div>
     </div>
 
@@ -66,20 +34,20 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/packages">
                 <div class="adm-filter-bar">
                     <div>
-                        <div class="adm-filter-label">${autoMsg_5b8574b1c8}</div>
+                        <div class="adm-filter-label"><spring:message code="package.admin.filterStatus"/></div>
                         <select class="adm-select" name="status">
-                            <option value="ALL" ${status eq 'ALL' ? 'selected' : ''}>${autoMsg_1e8be09c49}</option>
-                            <option value="PENDING" ${status eq 'PENDING' ? 'selected' : ''}>${autoMsg_38f1e5f2d8}</option>
-                            <option value="APPROVED" ${status eq 'APPROVED' ? 'selected' : ''}>${autoMsg_0c27c049e7}</option>
-                            <option value="REJECTED" ${status eq 'REJECTED' ? 'selected' : ''}>${autoMsg_4bb06cfe16}</option>
-                            <option value="DRAFT" ${status eq 'DRAFT' ? 'selected' : ''}>${autoMsg_2e797241a3}</option>
-                            <option value="BLOCKED" ${status eq 'BLOCKED' ? 'selected' : ''}>${autoMsg_c88e991e6c}</option>
+                            <option value="ALL" ${status eq 'ALL' ? 'selected' : ''}><spring:message code="package.admin.filterAll"/></option>
+                            <option value="PENDING" ${status eq 'PENDING' ? 'selected' : ''}><spring:message code="package.status.pending"/></option>
+                            <option value="APPROVED" ${status eq 'APPROVED' ? 'selected' : ''}><spring:message code="package.status.approved"/></option>
+                            <option value="REJECTED" ${status eq 'REJECTED' ? 'selected' : ''}><spring:message code="package.status.rejected"/></option>
+                            <option value="DRAFT" ${status eq 'DRAFT' ? 'selected' : ''}><spring:message code="package.status.draft"/></option>
+                            <option value="BLOCKED" ${status eq 'BLOCKED' ? 'selected' : ''}><spring:message code="package.status.blocked"/></option>
                         </select>
                     </div>
                     <div style="display:flex;gap:6px;align-items:flex-end;">
-                        <button type="submit" class="adm-btn adm-btn-primary">${autoMsg_4e95897a13}</button>
+                        <button type="submit" class="adm-btn adm-btn-primary"><spring:message code="package.admin.search"/></button>
                         <a href="${pageContext.request.contextPath}/admin/packages"
-                           class="adm-btn adm-btn-ghost">${autoMsg_47534ba876}</a>
+                           class="adm-btn adm-btn-ghost"><spring:message code="package.admin.reset"/></a>
                     </div>
                 </div>
             </form>
@@ -90,10 +58,10 @@
         <div class="adm-card-body">
             <div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:14px;">
                 <div>
-                    <h2 style="margin:0;color:#e2e8f0;font-size:18px;">${autoMsg_f86dadab39}</h2>
-                    <p style="margin:6px 0 0;color:#94a3b8;font-size:13px;">${autoMsg_fcecfdf019}</p>
+                    <h2 style="margin:0;color:#e2e8f0;font-size:18px;"><spring:message code="package.revision.adminTitle"/></h2>
+                    <p style="margin:6px 0 0;color:#94a3b8;font-size:13px;"><spring:message code="package.revision.adminDesc"/></p>
                 </div>
-                <span class="status-badge PENDING">${autoMsg_38f1e5f2d8}</span>
+                <span class="status-badge PENDING"><spring:message code="package.status.pending"/></span>
             </div>
 
             <c:choose>
@@ -107,11 +75,11 @@
                         <table class="adm-table">
                             <thead>
                             <tr>
-                                <th>${autoMsg_983127c227}</th>
-                                <th>${autoMsg_a09196db66}</th>
-                                <th>${autoMsg_ce3e9b45f1}</th>
-                                <th>${autoMsg_a2e5490060}</th>
-                                <th>${autoMsg_eea5590277}</th>
+                                <th><spring:message code="package.revision.beforeAfter"/></th>
+                                <th><spring:message code="package.revision.sellerSpot"/></th>
+                                <th><spring:message code="package.revision.pricePeriod"/></th>
+                                <th><spring:message code="package.revision.requestedAt"/></th>
+                                <th><spring:message code="package.revision.review"/></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -121,9 +89,9 @@
                                         <button type="button"
                                                 class="adm-cell-link"
                                                 onclick="focusPackageReviewAction('revision-${revision.packageRevisionIdx}')">
-                                            <span style="font-size:12px;color:#94a3b8;">${autoMsg_4213d6d07d}</span>
+                                            <span style="font-size:12px;color:#94a3b8;"><spring:message code="package.revision.current"/></span>
                                             <span style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(revision.currentPackageTitle)}</span>
-                                            <span style="font-size:12px;color:#38bdf8;margin-top:6px;">${autoMsg_6f12843ca6}</span>
+                                            <span style="font-size:12px;color:#38bdf8;margin-top:6px;"><spring:message code="package.revision.requested"/></span>
                                             <span style="font-weight:800;color:#e2e8f0;">${fn:escapeXml(revision.packageTitle)}</span>
                                             <c:if test="${not empty revision.packageSummary}">
                                                 <span style="font-size:12px;color:#94a3b8;margin-top:4px;max-width:420px;">
@@ -156,13 +124,13 @@
                                                     <c:when test="${not empty revision.startDate or not empty revision.endDate}">
                                                         ${revision.startDate} ~ ${revision.endDate}
                                                     </c:when>
-                                                    <c:otherwise>${autoMsg_455e7753dc}</c:otherwise>
+                                                    <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
                                                 </c:choose>
                                             </span>
                                             <span style="font-size:12px;color:#94a3b8;">
                                                 <spring:message code="package.common.minPeople" arguments="${revision.minPeople}"/>
                                                 <c:if test="${not empty revision.maxPeople}">
-                                                    / ${autoMsg_9ef749634f}
+                                                    / <spring:message code="package.common.maxPeople"/>
                                                 </c:if>
                                             </span>
                                         </button>
@@ -221,12 +189,12 @@
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th>${autoMsg_9113763d55}</th>
-                    <th>${autoMsg_800a89a8ee}</th>
-                    <th>${autoMsg_ace3212e4c}</th>
-                    <th>${autoMsg_248de702ee}</th>
-                    <th>${autoMsg_8caf765f67}</th>
-                    <th>${autoMsg_837f8d409f}</th>
+                    <th><spring:message code="package.admin.thPackage"/></th>
+                    <th><spring:message code="package.admin.thSeller"/></th>
+                    <th><spring:message code="package.admin.thSpot"/></th>
+                    <th><spring:message code="package.admin.thPriceSchedule"/></th>
+                    <th><spring:message code="package.admin.thStatus"/></th>
+                    <th><spring:message code="package.admin.thReview"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -242,7 +210,7 @@
                                                  style="width:100%;height:100%;object-fit:cover;">
                                         </c:when>
                                         <c:otherwise>
-                                            <div style="height:100%;display:grid;place-items:center;color:#94a3b8;font-size:11px;font-weight:800;">${autoMsg_f2f287a1c9}</div>
+                                            <div style="height:100%;display:grid;place-items:center;color:#94a3b8;font-size:11px;font-weight:800;"><spring:message code="package.admin.noImage"/></div>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -257,7 +225,7 @@
                                             ${fn:escapeXml(pkg.packageSummary)}
                                         </div>
                                     </c:if>
-                                    <div style="font-size:11px;color:#64748b;margin-top:4px;">${autoMsg_c73e0310c9}</div>
+                                    <div style="font-size:11px;color:#64748b;margin-top:4px;"><spring:message code="package.admin.registeredAt"/></div>
                                 </div>
                             </div>
                         </td>
@@ -290,12 +258,12 @@
                                         <c:when test="${not empty pkg.startDate or not empty pkg.endDate}">
                                             ${pkg.startDate} ~ ${pkg.endDate}
                                         </c:when>
-                                        <c:otherwise>${autoMsg_455e7753dc}</c:otherwise>
+                                        <c:otherwise><spring:message code="package.common.always"/></c:otherwise>
                                     </c:choose>
                                 </span>
                                 <span style="font-size:12px;color:#94a3b8;">
                                     <spring:message code="package.common.minPeople" arguments="${pkg.minPeople}"/>
-                                    <c:if test="${not empty pkg.maxPeople}"> / ${autoMsg_9ef749634f}</c:if>
+                                    <c:if test="${not empty pkg.maxPeople}"> / <spring:message code="package.common.maxPeople"/></c:if>
                                 </span>
                             </button>
                         </td>
@@ -309,12 +277,12 @@
                                     onclick="focusPackageReviewAction('package-${pkg.packageIdx}')">
                                 <span class="status-badge ${displayStatusClass}">
                                     <c:choose>
-                                        <c:when test="${displayStatusClass eq 'EXPIRED'}">${autoMsg_8c5544b485}</c:when>
-                                        <c:when test="${displayStatusClass eq 'PENDING'}">${autoMsg_38f1e5f2d8}</c:when>
-                                        <c:when test="${displayStatusClass eq 'APPROVED'}">${autoMsg_0c27c049e7}</c:when>
-                                        <c:when test="${displayStatusClass eq 'REJECTED'}">${autoMsg_4bb06cfe16}</c:when>
-                                        <c:when test="${displayStatusClass eq 'DRAFT'}">${autoMsg_2e797241a3}</c:when>
-                                        <c:when test="${displayStatusClass eq 'BLOCKED'}">${autoMsg_c88e991e6c}</c:when>
+                                        <c:when test="${displayStatusClass eq 'EXPIRED'}"><spring:message code="package.status.expired"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'PENDING'}"><spring:message code="package.status.pending"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'APPROVED'}"><spring:message code="package.status.approved"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'REJECTED'}"><spring:message code="package.status.rejected"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'DRAFT'}"><spring:message code="package.status.draft"/></c:when>
+                                        <c:when test="${displayStatusClass eq 'BLOCKED'}"><spring:message code="package.status.blocked"/></c:when>
                                         <c:otherwise>${fn:escapeXml(pkg.packageStatus)}</c:otherwise>
                                     </c:choose>
                                 </span>
@@ -336,7 +304,7 @@
                                     <div class="adm-row-actions" id="package-action-package-${pkg.packageIdx}">
                                             <form method="post" action="${pageContext.request.contextPath}/admin/packages/${pkg.packageIdx}/approve">
                                                 <button type="submit" class="adm-row-btn detail"
-                                                    onclick="return confirm('${autoMsg_38fbdf9b75}');">${autoMsg_eefd577c93}</button>
+                                                    onclick="return confirm('${adminPackagesConfirmApproveMsg}');"><spring:message code="package.admin.approve"/></button>
                                             </form>
                                         <div class="action-menu-wrap">
                                             <button type="button"
@@ -353,7 +321,7 @@
                                                            class="adm-input"
                                                            name="rejectReason"
                                                            maxlength="500"
-                                                           placeholder="${autoMsg_655c3be121}"
+                                                           placeholder="${adminPackagesRejectReasonPlaceholderMsg}"
                                                            required>
                                                     <button type="submit" class="action-menu-item danger">
                                                         <spring:message code="package.admin.reject"/>
@@ -364,7 +332,7 @@
                                     </div>
                                 </c:when>
                                 <c:otherwise>
-                                    <span style="color:#64748b;font-size:12px;">${autoMsg_5637ef73ea}</span>
+                                    <span style="color:#64748b;font-size:12px;"><spring:message code="package.admin.notPending"/></span>
                                 </c:otherwise>
                             </c:choose>
                         </td>

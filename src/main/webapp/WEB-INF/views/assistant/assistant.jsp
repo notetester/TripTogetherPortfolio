@@ -2,18 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:message var="autoMsg_ee47f5fc81" code="assistant.side.name"/>
-<spring:message var="autoMsg_2fe2879810" code="assistant.side.desc"/>
-<spring:message var="autoMsg_05a4e30341" code="assistant.quick.title"/>
-<spring:message var="autoMsg_5e07ba0727" code="assistant.history.title"/>
-<spring:message var="autoMsg_5e8547ad1d" code="assistant.history.empty"/>
-<spring:message var="autoMsg_ecc0544aa6" code="assistant.history.loginGuide"/>
-<spring:message var="autoMsg_a625b6e24a" code="assistant.header.title"/>
-<spring:message var="autoMsg_45e1475329" code="assistant.header.subtitle"/>
-<spring:message var="autoMsg_5fb06f0b89" code="assistant.greeting.line1"/>
-<spring:message var="autoMsg_a24ca3ed7a" code="assistant.greeting.line2"/>
-<spring:message var="autoMsg_20c9f1aeb9" code="assistant.greeting.line3"/>
-<spring:message var="autoMsg_95437a9455" code="assistant.hint"/>
 <c:set var="pageCSS" value="assistant/assistant.css" />
 <%@ include file="../common/header.jsp" %>
 
@@ -153,7 +141,7 @@
         <div class="side-header">
             <div class="ai-avatar">✈️</div>
             <div class="ai-info">
-                <div class="ai-name">${autoMsg_ee47f5fc81}</div>
+                <div class="ai-name"><spring:message code="assistant.side.name"/></div>
                 <div class="ai-status">
                     <span class="dot"></span>
                     <spring:message code="assistant.side.status" />
@@ -162,10 +150,10 @@
         </div>
 
         <div class="side-desc">
-            <p>${autoMsg_2fe2879810}</p>
+            <p><spring:message code="assistant.side.desc"/></p>
         </div>
 
-        <div class="quick-title">${autoMsg_05a4e30341}</div>
+        <div class="quick-title"><spring:message code="assistant.quick.title"/></div>
         <div class="quick-btns">
             <button class="qb" onclick="sendQuick('${msgQuickTokyo}')">
                 <spring:message code="assistant.quick.tokyo.label" />
@@ -189,7 +177,7 @@
 
         <div class="history-section">
             <div class="history-header">
-                <span class="history-title">${autoMsg_5e07ba0727}</span>
+                <span class="history-title"><spring:message code="assistant.history.title"/></span>
             </div>
 
             <c:choose>
@@ -222,12 +210,12 @@
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <p class="history-empty">${autoMsg_5e8547ad1d}</p>
+                            <p class="history-empty"><spring:message code="assistant.history.empty"/></p>
                         </c:otherwise>
                     </c:choose>
                 </c:when>
                 <c:otherwise>
-                    <p class="history-login-guide">${autoMsg_ecc0544aa6}</p>
+                    <p class="history-login-guide"><spring:message code="assistant.history.loginGuide"/></p>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -240,17 +228,17 @@
     <%-- ===================== 메인 채팅 영역 ===================== --%>
     <main class="chat-main">
         <div class="chat-header">
-            <h2>${autoMsg_a625b6e24a}</h2>
-            <span class="chat-sub">${autoMsg_45e1475329}</span>
+            <h2><spring:message code="assistant.header.title"/></h2>
+            <span class="chat-sub"><spring:message code="assistant.header.subtitle"/></span>
         </div>
 
         <div class="chat-body" id="chatBody">
             <div class="msg-row ai">
                 <div class="msg-avatar">✈️</div>
                 <div class="msg-bubble">
-                    ${autoMsg_5fb06f0b89}<br><br>
-                    ${autoMsg_a24ca3ed7a}<br>
-                    ${autoMsg_20c9f1aeb9}<br><br>
+                    <spring:message code="assistant.greeting.line1"/><br><br>
+                    <spring:message code="assistant.greeting.line2"/><br>
+                    <spring:message code="assistant.greeting.line3"/><br><br>
                     <spring:message code="assistant.greeting.line4" />
                 </div>
             </div>
@@ -270,7 +258,7 @@
                     <span id="sendIcon">➤</span>
                 </button>
             </div>
-            <div class="chat-hint">${autoMsg_95437a9455}</div>
+            <div class="chat-hint"><spring:message code="assistant.hint"/></div>
         </div>
     </main>
 </div>

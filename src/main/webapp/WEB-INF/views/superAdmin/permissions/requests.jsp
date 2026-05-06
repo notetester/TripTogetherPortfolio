@@ -3,17 +3,14 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_6d14572ac6" code="superAdmin.permissions.requests.cardTitle"/>
-<spring:message var="autoMsg_b2ecba6480" code="superAdmin.permissions.requests.requester"/>
-<spring:message var="autoMsg_a3e436964e" code="superAdmin.permissions.requests.action.approve"/>
-<spring:message var="autoMsg_8e0cdd68cc" code="superAdmin.permissions.requests.action.reject"/>
-<spring:message var="autoMsg_e799062bc9" code="superAdmin.permissions.requests.confirmApprove" javaScriptEscape="true"/>
-<spring:message var="autoMsg_e1fec176d7" code="superAdmin.permissions.requests.confirmReject" javaScriptEscape="true"/>
-<spring:message var="autoMsg_e59c4516b6" code="superAdmin.permissions.requests.toastApproved" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b43c0ec0af" code="superAdmin.permissions.requests.toastApproveFail" javaScriptEscape="true"/>
-<spring:message var="autoMsg_f66f86d8d9" code="superAdmin.permissions.requests.toastRejected" javaScriptEscape="true"/>
-<spring:message var="autoMsg_ef3a390863" code="superAdmin.permissions.requests.toastRejectFail" javaScriptEscape="true"/>
+
 <c:set var="activeMenu" value="requests"/>
+<spring:message var="superadminPermissionsRequestsConfirmApproveMsg" code="superAdmin.permissions.requests.confirmApprove" javaScriptEscape="true"/>
+<spring:message var="superadminPermissionsRequestsConfirmRejectMsg" code="superAdmin.permissions.requests.confirmReject" javaScriptEscape="true"/>
+<spring:message var="superadminPermissionsRequestsToastApprovedMsg" code="superAdmin.permissions.requests.toastApproved" javaScriptEscape="true"/>
+<spring:message var="superadminPermissionsRequestsToastApproveFailMsg" code="superAdmin.permissions.requests.toastApproveFail" javaScriptEscape="true"/>
+<spring:message var="superadminPermissionsRequestsToastRejectedMsg" code="superAdmin.permissions.requests.toastRejected" javaScriptEscape="true"/>
+<spring:message var="superadminPermissionsRequestsToastRejectFailMsg" code="superAdmin.permissions.requests.toastRejectFail" javaScriptEscape="true"/>
 <spring:message code="superAdmin.permissions.requests.pageTitle" var="pageTitle"/>
 <%@ include file="../layout.jsp" %>
 
@@ -21,7 +18,7 @@
 
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title">${autoMsg_6d14572ac6}</div>
+            <div class="adm-card-title"><spring:message code="superAdmin.permissions.requests.cardTitle"/></div>
             <div style="font-size:13px;color:#94a3b8;">
                 <spring:message code="superAdmin.permissions.requests.cardDescription"/>
             </div>
@@ -42,7 +39,7 @@
                             <div class="sa-req-perm-code">${fn:escapeXml(req.permissionCode)}</div>
                         </div>
                         <div class="sa-req-meta">
-                            <div>${autoMsg_b2ecba6480}: ${not empty req.requestedByNickname ? fn:escapeXml(req.requestedByNickname) : '-'}</div>
+                            <div><spring:message code="superAdmin.permissions.requests.requester"/>: ${not empty req.requestedByNickname ? fn:escapeXml(req.requestedByNickname) : '-'}</div>
                             <div><fmt:formatDate value="${req.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
                             <c:if test="${not empty req.description}">
                                 <div style="color:#64748b;margin-top:2px;">${fn:escapeXml(req.description)}</div>
@@ -51,10 +48,10 @@
                         <div style="display:flex;gap:8px;">
                             <button class="adm-btn adm-btn-sm adm-btn-primary"
                                     data-id="${req.adminPermissionIdx}"
-                                    onclick="approveRequest(this.getAttribute('data-id'), this)">${autoMsg_a3e436964e}</button>
+                                    onclick="approveRequest(this.getAttribute('data-id'), this)"><spring:message code="superAdmin.permissions.requests.action.approve"/></button>
                             <button class="adm-btn adm-btn-sm adm-btn-danger"
                                     data-id="${req.adminPermissionIdx}"
-                                    onclick="rejectRequest(this.getAttribute('data-id'), this)">${autoMsg_8e0cdd68cc}</button>
+                                    onclick="rejectRequest(this.getAttribute('data-id'), this)"><spring:message code="superAdmin.permissions.requests.action.reject"/></button>
                         </div>
                     </div>
                     </c:forEach>
@@ -71,12 +68,12 @@
 <script>
 const CTX = '${pageContext.request.contextPath}';
 const REQUEST_MESSAGES = {
-    confirmApprove: '${autoMsg_e799062bc9}',
-    confirmReject: '${autoMsg_e1fec176d7}',
-    approved: '${autoMsg_e59c4516b6}',
-    approveFail: '${autoMsg_b43c0ec0af}',
-    rejected: '${autoMsg_f66f86d8d9}',
-    rejectFail: '${autoMsg_ef3a390863}'
+    confirmApprove: '${superadminPermissionsRequestsConfirmApproveMsg}',
+    confirmReject: '${superadminPermissionsRequestsConfirmRejectMsg}',
+    approved: '${superadminPermissionsRequestsToastApprovedMsg}',
+    approveFail: '${superadminPermissionsRequestsToastApproveFailMsg}',
+    rejected: '${superadminPermissionsRequestsToastRejectedMsg}',
+    rejectFail: '${superadminPermissionsRequestsToastRejectFailMsg}'
 };
 
 function approveRequest(adminPermissionIdx, btn) {

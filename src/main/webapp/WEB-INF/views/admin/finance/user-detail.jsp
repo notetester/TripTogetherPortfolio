@@ -3,23 +3,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_002bc9ae0b" code="admin.finance.userDetail.title"/>
-<spring:message var="autoMsg_2ad83a801c" code="admin.finance.userDetail.backToList"/>
-<spring:message var="autoMsg_fabf0e9a17" code="admin.finance.users.status.active"/>
-<spring:message var="autoMsg_147f6350d4" code="admin.finance.users.status.blocked"/>
-<spring:message var="autoMsg_b3a2fdc5f4" code="admin.finance.userDetail.cash"/>
-<spring:message var="autoMsg_5c17fcabbd" code="admin.finance.userDetail.mileage"/>
-<spring:message var="autoMsg_b8d827f288" code="admin.finance.userDetail.point"/>
-<spring:message var="autoMsg_6410461e35" code="admin.finance.userDetail.col.changedAt"/>
-<spring:message var="autoMsg_b80119f702" code="admin.finance.userDetail.col.assetType"/>
-<spring:message var="autoMsg_0e91ac66cb" code="admin.finance.userDetail.col.changeType"/>
-<spring:message var="autoMsg_a4fe1b2df0" code="admin.finance.userDetail.col.amount"/>
-<spring:message var="autoMsg_599f6a09b4" code="admin.finance.userDetail.col.balanceAfter"/>
-<spring:message var="autoMsg_c7decd52de" code="admin.finance.userDetail.col.detail"/>
-<spring:message var="autoMsg_608c721778" code="admin.finance.userDetail.col.method"/>
-<spring:message var="autoMsg_77d660baab" code="admin.finance.userDetail.col.status"/>
+
 <c:set var="activeMenu" value="finance"/>
-<c:set var="pageTitle">${autoMsg_002bc9ae0b}</c:set>
+<c:set var="pageTitle"><spring:message code="admin.finance.userDetail.title"/></c:set>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -29,7 +15,7 @@
 
     <a href="${pageContext.request.contextPath}/admin/finance" class="adm-btn adm-btn-ghost"
        style="margin-bottom:16px;display:inline-block;">
-        ← ${autoMsg_2ad83a801c}
+        ← <spring:message code="admin.finance.userDetail.backToList"/>
     </a>
 
     <%-- 사용자 기본 정보 --%>
@@ -41,10 +27,10 @@
             </span>
             <c:choose>
                 <c:when test="${user.accountStatus eq 'ACTIVE'}">
-                    <span class="adm-badge adm-badge-green">${autoMsg_fabf0e9a17}</span>
+                    <span class="adm-badge adm-badge-green"><spring:message code="admin.finance.users.status.active"/></span>
                 </c:when>
                 <c:when test="${user.accountStatus eq 'BLOCKED'}">
-                    <span class="adm-badge" style="background:#fee2e2;color:#b91c1c;">${autoMsg_147f6350d4}</span>
+                    <span class="adm-badge" style="background:#fee2e2;color:#b91c1c;"><spring:message code="admin.finance.users.status.blocked"/></span>
                 </c:when>
                 <c:otherwise>
                     <span class="adm-badge">${user.accountStatus}</span>
@@ -60,7 +46,7 @@
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;">
         <div class="adm-card" style="padding:20px;">
             <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
-                💰 ${autoMsg_b3a2fdc5f4}
+                💰 <spring:message code="admin.finance.userDetail.cash"/>
             </div>
             <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
                 <fmt:formatNumber value="${user.cashBalance}" pattern="#,###"/>
@@ -68,7 +54,7 @@
         </div>
         <div class="adm-card" style="padding:20px;">
             <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
-                ✈️ ${autoMsg_5c17fcabbd}
+                ✈️ <spring:message code="admin.finance.userDetail.mileage"/>
             </div>
             <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
                 <fmt:formatNumber value="${user.mileageBalance}" pattern="#,###"/>
@@ -76,7 +62,7 @@
         </div>
         <div class="adm-card" style="padding:20px;">
             <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;">
-                ⭐ ${autoMsg_b8d827f288}
+                ⭐ <spring:message code="admin.finance.userDetail.point"/>
             </div>
             <div class="adm-fin-num" style="font-size:22px;font-weight:700;">
                 <fmt:formatNumber value="${user.pointBalance}" pattern="#,###"/>
@@ -100,12 +86,12 @@
                     <table class="adm-table" style="width:100%;">
                         <thead>
                             <tr>
-                                <th style="width:160px;">${autoMsg_6410461e35}</th>
-                                <th style="width:90px;">${autoMsg_b80119f702}</th>
-                                <th style="width:110px;">${autoMsg_0e91ac66cb}</th>
-                                <th style="width:130px;text-align:right;">${autoMsg_a4fe1b2df0}</th>
-                                <th style="width:130px;text-align:right;">${autoMsg_599f6a09b4}</th>
-                                <th>${autoMsg_c7decd52de}</th>
+                                <th style="width:160px;"><spring:message code="admin.finance.userDetail.col.changedAt"/></th>
+                                <th style="width:90px;"><spring:message code="admin.finance.userDetail.col.assetType"/></th>
+                                <th style="width:110px;"><spring:message code="admin.finance.userDetail.col.changeType"/></th>
+                                <th style="width:130px;text-align:right;"><spring:message code="admin.finance.userDetail.col.amount"/></th>
+                                <th style="width:130px;text-align:right;"><spring:message code="admin.finance.userDetail.col.balanceAfter"/></th>
+                                <th><spring:message code="admin.finance.userDetail.col.detail"/></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -144,10 +130,10 @@
                     <table class="adm-table" style="width:100%;">
                         <thead>
                             <tr>
-                                <th style="width:160px;">${autoMsg_6410461e35}</th>
-                                <th>${autoMsg_608c721778}</th>
-                                <th>${autoMsg_77d660baab}</th>
-                                <th style="width:130px;text-align:right;">${autoMsg_a4fe1b2df0}</th>
+                                <th style="width:160px;"><spring:message code="admin.finance.userDetail.col.changedAt"/></th>
+                                <th><spring:message code="admin.finance.userDetail.col.method"/></th>
+                                <th><spring:message code="admin.finance.userDetail.col.status"/></th>
+                                <th style="width:130px;text-align:right;"><spring:message code="admin.finance.userDetail.col.amount"/></th>
                             </tr>
                         </thead>
                         <tbody>

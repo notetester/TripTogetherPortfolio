@@ -1,12 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_46469d67aa" code="mypage.editConfirm.title"/>
-<spring:message var="autoMsg_fe4e3b04bd" code="mypage.editConfirm.subtitle"/>
-<spring:message var="autoMsg_4f7a5f0ed9" code="mypage.password.current"/>
-<spring:message var="autoMsg_8d37122b9c" code="mypage.password.current.placeholder"/>
+
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
+<spring:message var="mypagePasswordCurrentPlaceholderMsg" code="mypage.password.current.placeholder"/>
 <html lang="ko">
 <body>
 <spring:message code="mypage.common.cancel" var="mypageCancelLabel"/>
@@ -26,17 +24,17 @@
       <div style="width:60px;height:60px;background:var(--blue-light);border-radius:50%;
                   display:flex;align-items:center;justify-content:center;
                   margin:0 auto 16px;font-size:28px;">🛡️</div>
-      <h1 class="auth-title" style="margin-bottom:8px;">${autoMsg_46469d67aa}</h1>
-      <p class="auth-sub" style="margin-bottom:0;">${autoMsg_fe4e3b04bd}</p>
+      <h1 class="auth-title" style="margin-bottom:8px;"><spring:message code="mypage.editConfirm.title"/></h1>
+      <p class="auth-sub" style="margin-bottom:0;"><spring:message code="mypage.editConfirm.subtitle"/></p>
     </div>
 
     <div id="errorBanner" class="auth-error-banner"></div>
 
     <div class="form-group">
-      <label class="form-label" for="password">${autoMsg_4f7a5f0ed9}</label>
+      <label class="form-label" for="password"><spring:message code="mypage.password.current"/></label>
       <div class="pw-wrap">
         <input class="form-input" type="password" id="password"
-               placeholder="${autoMsg_8d37122b9c}" autocomplete="current-password">
+               placeholder="${mypagePasswordCurrentPlaceholderMsg}" autocomplete="current-password">
         <button type="button" class="pw-toggle" id="pwToggle">👁</button>
       </div>
     </div>

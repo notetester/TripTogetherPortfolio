@@ -3,60 +3,19 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_43fbbe4765" code="admin.common.search"/>
-<spring:message var="autoMsg_80d53474e6" code="admin.security.searchPlaceholder"/>
-<spring:message var="autoMsg_8e0ae10185" code="admin.logs.success"/>
-<spring:message var="autoMsg_7076bbc65a" code="admin.common.all"/>
-<spring:message var="autoMsg_4396547332" code="admin.common.success"/>
-<spring:message var="autoMsg_b56b40e80e" code="admin.common.fail"/>
-<spring:message var="autoMsg_fb96228926" code="admin.security.eventType"/>
-<spring:message var="autoMsg_949e3ef70b" code="admin.security.eventType.findId"/>
-<spring:message var="autoMsg_f1d9e88727" code="admin.security.eventType.findPassword"/>
-<spring:message var="autoMsg_da904dc9fe" code="admin.security.eventType.resetPassword"/>
-<spring:message var="autoMsg_78784cd58b" code="admin.security.eventType.passwordChange"/>
-<spring:message var="autoMsg_4589794850" code="admin.security.eventType.emailVerify"/>
-<spring:message var="autoMsg_4f2984c127" code="admin.security.eventType.emailLoginToggle"/>
-<spring:message var="autoMsg_52ffa5a6ca" code="admin.security.stage"/>
-<spring:message var="autoMsg_4837b93310" code="admin.security.stage.request"/>
-<spring:message var="autoMsg_51ee8e918c" code="admin.security.stage.issue"/>
-<spring:message var="autoMsg_4736e42989" code="admin.security.stage.verify"/>
-<spring:message var="autoMsg_3abb2e4afe" code="admin.security.stage.complete"/>
-<spring:message var="autoMsg_7b08a203f8" code="admin.common.searchButton"/>
-<spring:message var="autoMsg_74f0d21a9c" code="admin.common.reset"/>
-<spring:message var="autoMsg_549ebe4630" code="admin.common.totalCount"/>
-<spring:message var="autoMsg_f499ec71fa" code="admin.common.export"/>
-<spring:message var="autoMsg_9e26c9110b" code="admin.common.exportAll"/>
-<spring:message var="autoMsg_7ba7fab06f" code="admin.common.exportFiltered"/>
-<spring:message var="autoMsg_e849f53569" code="admin.common.exportSelected"/>
-<spring:message var="autoMsg_bcf57a4b2e" code="admin.blocks.mode.label"/>
-<spring:message var="autoMsg_5ca7a74e5e" code="admin.blocks.mode.tipClient"/>
-<spring:message var="autoMsg_deafe21b83" code="admin.blocks.mode.client"/>
-<spring:message var="autoMsg_c0c5affdfd" code="admin.blocks.mode.tipServer"/>
-<spring:message var="autoMsg_bee2025dd2" code="admin.blocks.mode.server"/>
-<spring:message var="autoMsg_7412fe3c9d" code="admin.common.pageSize"/>
-<spring:message var="autoMsg_be10370ce4" code="admin.common.selectedCount"/>
-<spring:message var="autoMsg_598849a7a1" code="admin.common.clearSelection"/>
-<spring:message var="autoMsg_00e1e31931" code="admin.common.time"/>
-<spring:message var="autoMsg_8b69017288" code="admin.security.targetMember"/>
-<spring:message var="autoMsg_0f52313ee1" code="admin.security.actor"/>
-<spring:message var="autoMsg_519c6918d9" code="admin.context.inputValue"/>
-<spring:message var="autoMsg_258c2c3652" code="admin.context.targetEmail"/>
-<spring:message var="autoMsg_005e5e108d" code="admin.common.result"/>
-<spring:message var="autoMsg_79eefd9703" code="admin.common.reason"/>
-<spring:message var="autoMsg_fc792c14ad" code="admin.common.ip"/>
-<spring:message var="autoMsg_0f4728b0c0" code="admin.security.correlationId"/>
-<spring:message var="autoMsg_7eab91f841" code="admin.common.prev"/>
-<spring:message var="autoMsg_71a0fb020e" code="admin.common.next"/>
-<spring:message var="autoMsg_c6bc5566a9" code="admin.security.historyTitle"/>
-<spring:message var="autoMsg_af16c287ca" code="admin.common.close"/>
-<spring:message var="autoMsg_e6202f6055" code="admin.common.loadFailed" javaScriptEscape="true"/>
-<spring:message var="autoMsg_11a423d313" code="admin.common.loadAllFailed" javaScriptEscape="true"/>
-<spring:message var="autoMsg_58eab77510" code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>
-<spring:message var="autoMsg_3b06864ede" code="admin.common.totalCountFormat" javaScriptEscape="true"/>
-<spring:message var="autoMsg_0e68d86725" code="admin.common.currentCountFormat" javaScriptEscape="true"/>
-<spring:message var="autoMsg_5a558b55eb" code="admin.common.noResults" javaScriptEscape="true"/>
-<spring:message var="autoMsg_ed2b82c41f" code="admin.security.historyTitle" javaScriptEscape="true"/>
+
 <c:set var="activeMenu" value="security"/>
+<spring:message var="adminSecuritySearchPlaceholderMsg" code="admin.security.searchPlaceholder"/>
+<spring:message var="adminBlocksModeLabelMsg" code="admin.blocks.mode.label"/>
+<spring:message var="adminBlocksModeTipClientMsg" code="admin.blocks.mode.tipClient"/>
+<spring:message var="adminBlocksModeTipServerMsg" code="admin.blocks.mode.tipServer"/>
+<spring:message var="adminCommonLoadFailedMsg" code="admin.common.loadFailed" javaScriptEscape="true"/>
+<spring:message var="adminCommonLoadAllFailedMsg" code="admin.common.loadAllFailed" javaScriptEscape="true"/>
+<spring:message var="adminBlocksJsDashSortResetMsg" code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>
+<spring:message var="adminCommonTotalCountFormatMsg" code="admin.common.totalCountFormat" javaScriptEscape="true"/>
+<spring:message var="adminCommonCurrentCountFormatMsg" code="admin.common.currentCountFormat" javaScriptEscape="true"/>
+<spring:message var="adminCommonNoResultsMsg" code="admin.common.noResults" javaScriptEscape="true"/>
+<spring:message var="adminSecurityHistoryTitleMsg" code="admin.security.historyTitle" javaScriptEscape="true"/>
 <spring:message code="admin.security.pageTitle" var="adminSecurityPageTitle"/>
 <c:set var="pageTitle" value="${adminSecurityPageTitle}"/>
 <%@ include file="../layout.jsp" %>
@@ -67,43 +26,43 @@
             <form id="securitySearchForm" method="get" action="${pageContext.request.contextPath}/admin/security">
                 <div class="adm-filter-bar">
                     <div class="adm-search-box" style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label">${autoMsg_43fbbe4765}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
                         <span class="adm-search-ico">🔍</span>
-                        <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="${autoMsg_80d53474e6}">
+                        <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="${adminSecuritySearchPlaceholderMsg}">
                     </div>
                     <div>
-                        <div class="adm-filter-label">${autoMsg_8e0ae10185}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.logs.success"/></div>
                         <select class="adm-select" name="success">
-                            <option value="ALL" ${search.success=='ALL'?'selected':''}>${autoMsg_7076bbc65a}</option>
-                            <option value="SUCCESS" ${search.success=='SUCCESS'?'selected':''}>${autoMsg_4396547332}</option>
-                            <option value="FAIL" ${search.success=='FAIL'?'selected':''}>${autoMsg_b56b40e80e}</option>
+                            <option value="ALL" ${search.success=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="SUCCESS" ${search.success=='SUCCESS'?'selected':''}><spring:message code="admin.common.success"/></option>
+                            <option value="FAIL" ${search.success=='FAIL'?'selected':''}><spring:message code="admin.common.fail"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">${autoMsg_fb96228926}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.security.eventType"/></div>
                         <select class="adm-select" name="eventType">
-                            <option value="ALL" ${search.eventType=='ALL'?'selected':''}>${autoMsg_7076bbc65a}</option>
-                            <option value="FIND_ID" ${search.eventType=='FIND_ID'?'selected':''}>${autoMsg_949e3ef70b}</option>
-                            <option value="FIND_PASSWORD" ${search.eventType=='FIND_PASSWORD'?'selected':''}>${autoMsg_f1d9e88727}</option>
-                            <option value="RESET_PASSWORD" ${search.eventType=='RESET_PASSWORD'?'selected':''}>${autoMsg_da904dc9fe}</option>
-                            <option value="PASSWORD_CHANGE" ${search.eventType=='PASSWORD_CHANGE'?'selected':''}>${autoMsg_78784cd58b}</option>
-                            <option value="EMAIL_VERIFY" ${search.eventType=='EMAIL_VERIFY'?'selected':''}>${autoMsg_4589794850}</option>
-                            <option value="EMAIL_LOGIN_TOGGLE" ${search.eventType=='EMAIL_LOGIN_TOGGLE'?'selected':''}>${autoMsg_4f2984c127}</option>
+                            <option value="ALL" ${search.eventType=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="FIND_ID" ${search.eventType=='FIND_ID'?'selected':''}><spring:message code="admin.security.eventType.findId"/></option>
+                            <option value="FIND_PASSWORD" ${search.eventType=='FIND_PASSWORD'?'selected':''}><spring:message code="admin.security.eventType.findPassword"/></option>
+                            <option value="RESET_PASSWORD" ${search.eventType=='RESET_PASSWORD'?'selected':''}><spring:message code="admin.security.eventType.resetPassword"/></option>
+                            <option value="PASSWORD_CHANGE" ${search.eventType=='PASSWORD_CHANGE'?'selected':''}><spring:message code="admin.security.eventType.passwordChange"/></option>
+                            <option value="EMAIL_VERIFY" ${search.eventType=='EMAIL_VERIFY'?'selected':''}><spring:message code="admin.security.eventType.emailVerify"/></option>
+                            <option value="EMAIL_LOGIN_TOGGLE" ${search.eventType=='EMAIL_LOGIN_TOGGLE'?'selected':''}><spring:message code="admin.security.eventType.emailLoginToggle"/></option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label">${autoMsg_52ffa5a6ca}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.security.stage"/></div>
                         <select class="adm-select" name="eventStage">
-                            <option value="ALL" ${search.eventStage=='ALL'?'selected':''}>${autoMsg_7076bbc65a}</option>
-                            <option value="REQUEST" ${search.eventStage=='REQUEST'?'selected':''}>${autoMsg_4837b93310}</option>
-                            <option value="ISSUE" ${search.eventStage=='ISSUE'?'selected':''}>${autoMsg_51ee8e918c}</option>
-                            <option value="VERIFY" ${search.eventStage=='VERIFY'?'selected':''}>${autoMsg_4736e42989}</option>
-                            <option value="COMPLETE" ${search.eventStage=='COMPLETE'?'selected':''}>${autoMsg_3abb2e4afe}</option>
+                            <option value="ALL" ${search.eventStage=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="REQUEST" ${search.eventStage=='REQUEST'?'selected':''}><spring:message code="admin.security.stage.request"/></option>
+                            <option value="ISSUE" ${search.eventStage=='ISSUE'?'selected':''}><spring:message code="admin.security.stage.issue"/></option>
+                            <option value="VERIFY" ${search.eventStage=='VERIFY'?'selected':''}><spring:message code="admin.security.stage.verify"/></option>
+                            <option value="COMPLETE" ${search.eventStage=='COMPLETE'?'selected':''}><spring:message code="admin.security.stage.complete"/></option>
                         </select>
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:8px;">
-                        <button class="adm-btn adm-btn-primary" type="submit">${autoMsg_7b08a203f8}</button>
-                        <button class="adm-btn adm-btn-ghost" type="button" onclick="resetSecurityFilters()">${autoMsg_74f0d21a9c}</button>
+                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
+                        <button class="adm-btn adm-btn-ghost" type="button" onclick="resetSecurityFilters()"><spring:message code="admin.common.reset"/></button>
                     </div>
 
                     <input type="hidden" name="page" value="${search.page}">
@@ -121,7 +80,7 @@
         <div class="adm-card-head">
             <div class="adm-card-title">
                 <spring:message code="admin.security.historyTitle"/>
-                <span id="securityTotalLabel" class="adm-section-total-inline">${autoMsg_549ebe4630}</span>
+                <span id="securityTotalLabel" class="adm-section-total-inline"><spring:message code="admin.common.totalCount"/></span>
             </div>
             <div class="adm-section-head-actions">
                 <select class="adm-select" id="securityExportFormat" style="width:90px;">
@@ -129,11 +88,11 @@
                     <option value="excel">Excel</option>
                 </select>
                 <div class="adm-export-menu">
-                    <button type="button" class="adm-btn adm-btn-ghost js-security-export-toggle">${autoMsg_f499ec71fa} ▾</button>
+                    <button type="button" class="adm-btn adm-btn-ghost js-security-export-toggle"><spring:message code="admin.common.export"/> ▾</button>
                     <div id="securityExportDropdown" class="adm-export-dropdown">
-                        <button type="button" onclick="exportSecurityAudits('all')">${autoMsg_9e26c9110b}</button>
-                        <button type="button" onclick="exportSecurityAudits('search')">${autoMsg_7ba7fab06f}</button>
-                        <button type="button" id="securityExportSelectedBtn" disabled onclick="exportSecurityAudits('selected')">${autoMsg_e849f53569} (0)</button>
+                        <button type="button" onclick="exportSecurityAudits('all')"><spring:message code="admin.common.exportAll"/></button>
+                        <button type="button" onclick="exportSecurityAudits('search')"><spring:message code="admin.common.exportFiltered"/></button>
+                        <button type="button" id="securityExportSelectedBtn" disabled onclick="exportSecurityAudits('selected')"><spring:message code="admin.common.exportSelected"/> (0)</button>
                     </div>
                 </div>
             </div>
@@ -142,21 +101,21 @@
         <div class="adm-local-toolbar adm-managed-local-toolbar">
             <div class="adm-local-toolbar-group adm-managed-toolbar-actions">
                 <button type="button" class="adm-dash-sort-reset js-security-sort-reset" id="securitySortResetBtn" style="display:none;" onclick="resetSecuritySort()"></button>
-                <select class="adm-select js-security-section-mode" id="securityModeSelect" title="${autoMsg_bcf57a4b2e}">
-                    <option value="client" title="${autoMsg_5ca7a74e5e}">${autoMsg_deafe21b83}</option>
-                    <option value="server" title="${autoMsg_c0c5affdfd}">${autoMsg_bee2025dd2}</option>
+                <select class="adm-select js-security-section-mode" id="securityModeSelect" title="${adminBlocksModeLabelMsg}">
+                    <option value="client" title="${adminBlocksModeTipClientMsg}"><spring:message code="admin.blocks.mode.client"/></option>
+                    <option value="server" title="${adminBlocksModeTipServerMsg}"><spring:message code="admin.blocks.mode.server"/></option>
                 </select>
                 <select class="adm-select js-security-page-size" id="securitySizeSelect" style="width:90px;" onchange="changeSecuritySize(this.value)">
-                    <option value="30" ${search.size==30 ? 'selected' : ''}>${autoMsg_7412fe3c9d}</option>
-                    <option value="50" ${search.size==50 ? 'selected' : ''}>${autoMsg_7412fe3c9d}</option>
-                    <option value="100" ${search.size==100 ? 'selected' : ''}>${autoMsg_7412fe3c9d}</option>
+                    <option value="30" ${search.size==30 ? 'selected' : ''}><spring:message code="admin.common.pageSize"/></option>
+                    <option value="50" ${search.size==50 ? 'selected' : ''}><spring:message code="admin.common.pageSize"/></option>
+                    <option value="100" ${search.size==100 ? 'selected' : ''}><spring:message code="admin.common.pageSize"/></option>
                 </select>
             </div>
         </div>
 
         <div id="securityBulkBar" class="adm-audit-bulk-bar" style="display:none;">
-            <span><strong id="securityBulkCount">0</strong>${autoMsg_be10370ce4}</span>
-            <button type="button" class="adm-btn adm-btn-ghost" onclick="clearSecuritySelection()">${autoMsg_598849a7a1}</button>
+            <span><strong id="securityBulkCount">0</strong><spring:message code="admin.common.selectedCount"/></span>
+            <button type="button" class="adm-btn adm-btn-ghost" onclick="clearSecuritySelection()"><spring:message code="admin.common.clearSelection"/></button>
         </div>
 
         <div class="adm-table-wrap">
@@ -179,17 +138,17 @@
                 <thead>
                 <tr>
                     <th class="adm-check-cell"><input type="checkbox" id="securityCheckAll" class="adm-check" onchange="toggleAllSecurity(this)"></th>
-                    <th class="js-security-sort" data-sort="time" onclick="securitySortBy('time')">${autoMsg_00e1e31931}</th>
-                    <th class="js-security-sort" data-sort="targetMember" onclick="securitySortBy('targetMember')">${autoMsg_8b69017288}</th>
-                    <th class="js-security-sort" data-sort="actor" onclick="securitySortBy('actor')">${autoMsg_0f52313ee1}</th>
-                    <th class="js-security-sort" data-sort="eventType" onclick="securitySortBy('eventType')">${autoMsg_fb96228926}</th>
-                    <th class="js-security-sort" data-sort="eventStage" onclick="securitySortBy('eventStage')">${autoMsg_52ffa5a6ca}</th>
-                    <th class="js-security-sort" data-sort="input" onclick="securitySortBy('input')">${autoMsg_519c6918d9}</th>
-                    <th class="js-security-sort" data-sort="targetEmail" onclick="securitySortBy('targetEmail')">${autoMsg_258c2c3652}</th>
-                    <th class="js-security-sort" data-sort="success" onclick="securitySortBy('success')">${autoMsg_005e5e108d}</th>
-                    <th class="js-security-sort" data-sort="reason" onclick="securitySortBy('reason')">${autoMsg_79eefd9703}</th>
-                    <th class="js-security-sort" data-sort="ip" onclick="securitySortBy('ip')">${autoMsg_fc792c14ad}</th>
-                    <th class="js-security-sort" data-sort="requestId" onclick="securitySortBy('requestId')">${autoMsg_0f4728b0c0}</th>
+                    <th class="js-security-sort" data-sort="time" onclick="securitySortBy('time')"><spring:message code="admin.common.time"/></th>
+                    <th class="js-security-sort" data-sort="targetMember" onclick="securitySortBy('targetMember')"><spring:message code="admin.security.targetMember"/></th>
+                    <th class="js-security-sort" data-sort="actor" onclick="securitySortBy('actor')"><spring:message code="admin.security.actor"/></th>
+                    <th class="js-security-sort" data-sort="eventType" onclick="securitySortBy('eventType')"><spring:message code="admin.security.eventType"/></th>
+                    <th class="js-security-sort" data-sort="eventStage" onclick="securitySortBy('eventStage')"><spring:message code="admin.security.stage"/></th>
+                    <th class="js-security-sort" data-sort="input" onclick="securitySortBy('input')"><spring:message code="admin.context.inputValue"/></th>
+                    <th class="js-security-sort" data-sort="targetEmail" onclick="securitySortBy('targetEmail')"><spring:message code="admin.context.targetEmail"/></th>
+                    <th class="js-security-sort" data-sort="success" onclick="securitySortBy('success')"><spring:message code="admin.common.result"/></th>
+                    <th class="js-security-sort" data-sort="reason" onclick="securitySortBy('reason')"><spring:message code="admin.common.reason"/></th>
+                    <th class="js-security-sort" data-sort="ip" onclick="securitySortBy('ip')"><spring:message code="admin.common.ip"/></th>
+                    <th class="js-security-sort" data-sort="requestId" onclick="securitySortBy('requestId')"><spring:message code="admin.security.correlationId"/></th>
                     <th></th>
                 </tr>
                 </thead>
@@ -202,9 +161,9 @@
         <div class="adm-local-pagination" data-section="securityAudits" id="securityPaging">
             <div class="adm-local-page-info js-security-page-info" data-section="securityAudits">총 ${total}건 / 현재 ${fn:length(list)}건</div>
             <div class="adm-local-page-actions">
-                <button type="button" class="adm-btn adm-btn-ghost js-security-prev" onclick="goSecurityPage(securitySectionState.page - 1)">${autoMsg_7eab91f841}</button>
+                <button type="button" class="adm-btn adm-btn-ghost js-security-prev" onclick="goSecurityPage(securitySectionState.page - 1)"><spring:message code="admin.common.prev"/></button>
                 <span class="js-security-page-state" data-section="securityAudits">${paging.currentPage} / ${paging.totalPage}</span>
-                <button type="button" class="adm-btn adm-btn-ghost js-security-next" onclick="goSecurityPage(securitySectionState.page + 1)">${autoMsg_71a0fb020e}</button>
+                <button type="button" class="adm-btn adm-btn-ghost js-security-next" onclick="goSecurityPage(securitySectionState.page + 1)"><spring:message code="admin.common.next"/></button>
             </div>
         </div>
     </div>
@@ -213,12 +172,12 @@
 <div id="securityDetailModal" class="adm-modal-overlay" onclick="closeSecurityDetailModal()">
     <div class="adm-modal adm-context-modal adm-context-modal-wide" onclick="event.stopPropagation()">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="securityDetailModalTitle">${autoMsg_c6bc5566a9}</div>
+            <div class="adm-modal-title" id="securityDetailModalTitle"><spring:message code="admin.security.historyTitle"/></div>
             <button class="adm-modal-close" type="button" onclick="closeSecurityDetailModal()">✕</button>
         </div>
         <div class="adm-modal-body" id="securityDetailModalContent" style="padding:20px 24px;max-height:72vh;overflow-y:auto;"></div>
         <div class="adm-modal-foot" style="justify-content:flex-end;">
-            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeSecurityDetailModal()">${autoMsg_af16c287ca}</button>
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeSecurityDetailModal()"><spring:message code="admin.common.close"/></button>
         </div>
     </div>
 </div>
@@ -229,13 +188,13 @@ const SECURITY_MODE_STORAGE = 'admSecurityAuditSectionMode';
 const SECURITY_CLIENT_MAX_SIZE = 10000;
 const SECURITY_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
 const SECURITY_MSG = {
-    loadFailed: '${autoMsg_e6202f6055}',
-    loadAllFailed: '${autoMsg_11a423d313}',
-    dashSortReset: '${autoMsg_58eab77510}',
-    totalCountFormat: '${autoMsg_3b06864ede}',
-    currentCountFormat: '${autoMsg_0e68d86725}',
-    noResults: '${autoMsg_5a558b55eb}',
-    historyTitle: '${autoMsg_ed2b82c41f}'
+    loadFailed: '${adminCommonLoadFailedMsg}',
+    loadAllFailed: '${adminCommonLoadAllFailedMsg}',
+    dashSortReset: '${adminBlocksJsDashSortResetMsg}',
+    totalCountFormat: '${adminCommonTotalCountFormatMsg}',
+    currentCountFormat: '${adminCommonCurrentCountFormatMsg}',
+    noResults: '${adminCommonNoResultsMsg}',
+    historyTitle: '${adminSecurityHistoryTitleMsg}'
 };
 
 var securitySectionState = {

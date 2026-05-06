@@ -3,47 +3,15 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:message var="autoMsg_260c6d24ee" code="admin.explore.reviews.kpi.total"/>
-<spring:message var="autoMsg_5e6a9dc28b" code="admin.explore.reviews.kpi.activeCount"/>
-<spring:message var="autoMsg_aab3db60c6" code="admin.explore.reviews.kpi.blocked"/>
-<spring:message var="autoMsg_77563de209" code="admin.explore.reviews.kpi.blockedSub"/>
-<spring:message var="autoMsg_845afd0f3a" code="admin.explore.filter.status"/>
-<spring:message var="autoMsg_55e4530dbb" code="admin.common.all"/>
-<spring:message var="autoMsg_5b19f026f3" code="admin.explore.reviewStatus.active"/>
-<spring:message var="autoMsg_0b41edb71e" code="admin.explore.reviewStatus.blocked"/>
-<spring:message var="autoMsg_d5a1393999" code="admin.explore.filter.search"/>
-<spring:message var="autoMsg_092022ef1e" code="admin.explore.searchType.name"/>
-<spring:message var="autoMsg_4505e2f17d" code="admin.explore.searchType.nickname"/>
-<spring:message var="autoMsg_fc2e2bf1a8" code="admin.explore.searchType.content"/>
-<spring:message var="autoMsg_f36c72281f" code="admin.explore.filter.searchPlaceholder"/>
-<spring:message var="autoMsg_e0948362a7" code="admin.common.searchButton"/>
-<spring:message var="autoMsg_7db80b238a" code="admin.common.reset"/>
-<spring:message var="autoMsg_1f71a8d245" code="admin.explore.reviews.listTitle"/>
-<spring:message var="autoMsg_e09dc29116" code="admin.common.totalCount"/>
-<spring:message var="autoMsg_74a1e690b8" code="admin.explore.reviews.action.bulkBlock"/>
-<spring:message var="autoMsg_18b5b16224" code="admin.explore.detail.reviewId"/>
-<spring:message var="autoMsg_61ffe92508" code="admin.explore.reviews.table.spot"/>
-<spring:message var="autoMsg_c011c8fe23" code="admin.explore.reviews.table.author"/>
-<spring:message var="autoMsg_cd6fd68c3b" code="admin.explore.reviews.table.rating"/>
-<spring:message var="autoMsg_6332d99417" code="admin.explore.reviews.table.content"/>
-<spring:message var="autoMsg_507049e3b8" code="admin.common.status"/>
-<spring:message var="autoMsg_b782543b3e" code="admin.explore.reviews.table.createdAt"/>
-<spring:message var="autoMsg_79c9e8813d" code="admin.common.action"/>
-<spring:message var="autoMsg_1ea813c1da" code="admin.explore.detail.userView"/>
-<spring:message var="autoMsg_61a02fb94c" code="admin.common.actionLabel"/>
-<spring:message var="autoMsg_3283be2b04" code="admin.translation.label.exploreReviewContent"/>
-<spring:message var="autoMsg_237b4dd8b8" code="admin.explore.reviews.action.block"/>
-<spring:message var="autoMsg_1cdd01a2b2" code="admin.common.viewDetail"/>
-<spring:message var="autoMsg_e00f70f1fd" code="admin.explore.reviews.empty"/>
-<spring:message var="autoMsg_ef62d2ec73" code="admin.common.previous"/>
-<spring:message var="autoMsg_d838622d57" code="admin.common.next"/>
-<spring:message var="autoMsg_240e8a88d1" code="admin.common.pageStatus"/>
-<spring:message var="autoMsg_207442f011" code="admin.explore.reviews.bulk.selected" javaScriptEscape="true"/>
-<spring:message var="autoMsg_dfe0c8648a" code="admin.explore.reviews.confirm.blockOne" javaScriptEscape="true"/>
-<spring:message var="autoMsg_042123602a" code="admin.explore.reviews.confirm.blockBulk" javaScriptEscape="true"/>
-<spring:message var="autoMsg_971975bb25" code="admin.explore.reviews.error.requestFailed" javaScriptEscape="true"/>
-<spring:message var="autoMsg_b56236b4e2" code="admin.explore.reviews.error.noSelection" javaScriptEscape="true"/>
+
 <c:set var="activeMenu" value="explore"/>
+<spring:message var="adminExploreFilterSearchPlaceholderMsg" code="admin.explore.filter.searchPlaceholder"/>
+<spring:message var="adminTranslationLabelExploreReviewContentMsg" code="admin.translation.label.exploreReviewContent"/>
+<spring:message var="adminExploreReviewsBulkSelectedMsg" code="admin.explore.reviews.bulk.selected" javaScriptEscape="true"/>
+<spring:message var="adminExploreReviewsConfirmBlockOneMsg" code="admin.explore.reviews.confirm.blockOne" javaScriptEscape="true"/>
+<spring:message var="adminExploreReviewsConfirmBlockBulkMsg" code="admin.explore.reviews.confirm.blockBulk" javaScriptEscape="true"/>
+<spring:message var="adminExploreReviewsErrorRequestFailedMsg" code="admin.explore.reviews.error.requestFailed" javaScriptEscape="true"/>
+<spring:message var="adminExploreReviewsErrorNoSelectionMsg" code="admin.explore.reviews.error.noSelection" javaScriptEscape="true"/>
 <spring:message code="admin.explore.reviews.pageTitle" var="adminExploreReviewsPageTitle"/>
 <c:set var="pageTitle" value="${adminExploreReviewsPageTitle}"/>
 <%@ include file="../layout.jsp" %>
@@ -60,14 +28,14 @@
 
     <div class="adm-summary-grid" style="grid-template-columns:repeat(2, minmax(0, 1fr));">
         <div class="adm-summary-card">
-            <div class="adm-summary-label">${autoMsg_260c6d24ee}</div>
+            <div class="adm-summary-label"><spring:message code="admin.explore.reviews.kpi.total"/></div>
             <div class="adm-summary-value">${stats.totalReviews}</div>
-            <div class="adm-summary-sub">${autoMsg_5e6a9dc28b}</div>
+            <div class="adm-summary-sub"><spring:message code="admin.explore.reviews.kpi.activeCount"/></div>
         </div>
         <div class="adm-summary-card">
-            <div class="adm-summary-label">${autoMsg_aab3db60c6}</div>
+            <div class="adm-summary-label"><spring:message code="admin.explore.reviews.kpi.blocked"/></div>
             <div class="adm-summary-value">${stats.blockedReviews}</div>
-            <div class="adm-summary-sub">${autoMsg_77563de209}</div>
+            <div class="adm-summary-sub"><spring:message code="admin.explore.reviews.kpi.blockedSub"/></div>
         </div>
     </div>
 
@@ -76,28 +44,28 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/explore/reviews">
                 <div class="adm-filter-bar" style="flex-wrap:wrap;gap:12px;">
                     <div>
-                        <div class="adm-filter-label">${autoMsg_845afd0f3a}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.explore.filter.status"/></div>
                         <select class="adm-select" name="reviewStatus">
-                            <option value="ALL" ${search.reviewStatus=='ALL'?'selected':''}>${autoMsg_55e4530dbb}</option>
-                            <option value="ACTIVE" ${search.reviewStatus=='ACTIVE'?'selected':''}>${autoMsg_5b19f026f3}</option>
-                            <option value="BLOCKED" ${search.reviewStatus=='BLOCKED'?'selected':''}>${autoMsg_0b41edb71e}</option>
+                            <option value="ALL" ${search.reviewStatus=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
+                            <option value="ACTIVE" ${search.reviewStatus=='ACTIVE'?'selected':''}><spring:message code="admin.explore.reviewStatus.active"/></option>
+                            <option value="BLOCKED" ${search.reviewStatus=='BLOCKED'?'selected':''}><spring:message code="admin.explore.reviewStatus.blocked"/></option>
                         </select>
                     </div>
                     <div style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label">${autoMsg_d5a1393999}</div>
+                        <div class="adm-filter-label"><spring:message code="admin.explore.filter.search"/></div>
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="searchType" style="width:120px;">
-                                <option value="all" ${search.searchType=='all'?'selected':''}>${autoMsg_55e4530dbb}</option>
-                                <option value="name" ${search.searchType=='name'?'selected':''}>${autoMsg_092022ef1e}</option>
-                                <option value="nickname" ${search.searchType=='nickname'?'selected':''}>${autoMsg_4505e2f17d}</option>
-                                <option value="content" ${search.searchType=='content'?'selected':''}>${autoMsg_fc2e2bf1a8}</option>
+                                <option value="all" ${search.searchType=='all'?'selected':''}><spring:message code="admin.common.all"/></option>
+                                <option value="name" ${search.searchType=='name'?'selected':''}><spring:message code="admin.explore.searchType.name"/></option>
+                                <option value="nickname" ${search.searchType=='nickname'?'selected':''}><spring:message code="admin.explore.searchType.nickname"/></option>
+                                <option value="content" ${search.searchType=='content'?'selected':''}><spring:message code="admin.explore.searchType.content"/></option>
                             </select>
-                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${autoMsg_f36c72281f}" style="flex:1;">
+                            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${adminExploreFilterSearchPlaceholderMsg}" style="flex:1;">
                         </div>
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:6px;">
-                        <button class="adm-btn adm-btn-primary" type="submit">${autoMsg_e0948362a7}</button>
-                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/reviews">${autoMsg_7db80b238a}</a>
+                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/explore/reviews"><spring:message code="admin.common.reset"/></a>
                     </div>
                 </div>
             </form>
@@ -107,12 +75,12 @@
     <div class="adm-card">
         <div class="adm-card-head">
             <div style="display:flex;align-items:center;gap:12px;">
-                <div class="adm-card-title">${autoMsg_1f71a8d245}</div>
-                <div class="adm-muted-inline">${autoMsg_e09dc29116}</div>
+                <div class="adm-card-title"><spring:message code="admin.explore.reviews.listTitle"/></div>
+                <div class="adm-muted-inline"><spring:message code="admin.common.totalCount"/></div>
             </div>
             <div id="bulkBar" style="display:none;gap:8px;align-items:center;">
                 <span id="bulkCount" class="adm-muted-inline"></span>
-                <button class="adm-btn adm-btn-ghost" type="button" onclick="bulkAction('block')">${autoMsg_74a1e690b8}</button>
+                <button class="adm-btn adm-btn-ghost" type="button" onclick="bulkAction('block')"><spring:message code="admin.explore.reviews.action.bulkBlock"/></button>
             </div>
         </div>
         <div class="adm-table-wrap">
@@ -120,14 +88,14 @@
                 <thead>
                 <tr>
                     <th style="width:36px;"><input type="checkbox" id="checkAll"></th>
-                    <th style="width:70px;">${autoMsg_18b5b16224}</th>
-                    <th style="width:180px;">${autoMsg_61ffe92508}</th>
-                    <th style="width:120px;">${autoMsg_c011c8fe23}</th>
-                    <th style="width:70px;">${autoMsg_cd6fd68c3b}</th>
-                    <th>${autoMsg_6332d99417}</th>
-                    <th style="width:80px;">${autoMsg_507049e3b8}</th>
-                    <th style="width:90px;">${autoMsg_b782543b3e}</th>
-                    <th style="width:90px;">${autoMsg_79c9e8813d}</th>
+                    <th style="width:70px;"><spring:message code="admin.explore.detail.reviewId"/></th>
+                    <th style="width:180px;"><spring:message code="admin.explore.reviews.table.spot"/></th>
+                    <th style="width:120px;"><spring:message code="admin.explore.reviews.table.author"/></th>
+                    <th style="width:70px;"><spring:message code="admin.explore.reviews.table.rating"/></th>
+                    <th><spring:message code="admin.explore.reviews.table.content"/></th>
+                    <th style="width:80px;"><spring:message code="admin.common.status"/></th>
+                    <th style="width:90px;"><spring:message code="admin.explore.reviews.table.createdAt"/></th>
+                    <th style="width:90px;"><spring:message code="admin.common.action"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -138,7 +106,7 @@
                         <td>
                             <a href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}" class="adm-cell-link">
                                 <span style="font-weight:700;color:#e2e8f0;">${fn:escapeXml(review.spotName)}</span>
-                                <span class="adm-cell-link-note">${autoMsg_1ea813c1da}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.explore.detail.userView"/></span>
                             </a>
                         </td>
                         <td>
@@ -162,7 +130,7 @@
                                     class="adm-cell-link js-focus-review-action"
                                     data-review-idx="${review.reviewIdx}">
                                 <span style="font-size:12px;color:#d97706;">${review.rating}/5</span>
-                                <span class="adm-cell-link-note">${autoMsg_61a02fb94c}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
                             </button>
                         </td>
                         <td>
@@ -175,11 +143,11 @@
                                         <c:otherwise>${fn:escapeXml(review.content)}</c:otherwise>
                                     </c:choose>
                                 </span>
-                                <span class="adm-cell-link-note">${autoMsg_61a02fb94c}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
                             </button>
                             <c:if test="${not empty review.content}">
                                 <div class="adm-tr-inline js-admin-translation-widget"
-                                     data-label="${autoMsg_3283be2b04}"
+                                     data-label="${adminTranslationLabelExploreReviewContentMsg}"
                                      data-source-type="EXPLORE_REVIEW"
                                      data-source-idx="${review.reviewIdx}"
                                      data-field-name="content"
@@ -193,11 +161,11 @@
                                     data-review-idx="${review.reviewIdx}">
                                 <span class="status-badge ${review.displayStatus}">
                                     <c:choose>
-                                        <c:when test="${review.displayStatus == 'ACTIVE'}">${autoMsg_5b19f026f3}</c:when>
-                                        <c:otherwise>${autoMsg_0b41edb71e}</c:otherwise>
+                                        <c:when test="${review.displayStatus == 'ACTIVE'}"><spring:message code="admin.explore.reviewStatus.active"/></c:when>
+                                        <c:otherwise><spring:message code="admin.explore.reviewStatus.blocked"/></c:otherwise>
                                     </c:choose>
                                 </span>
-                                <span class="adm-cell-link-note">${autoMsg_61a02fb94c}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
                             </button>
                         </td>
                         <td>
@@ -205,31 +173,31 @@
                                     class="adm-cell-link js-focus-review-action"
                                     data-review-idx="${review.reviewIdx}">
                                 <span class="adm-muted-inline"><fmt:formatDate value="${review.createdAtDate}" type="date" dateStyle="short"/></span>
-                                <span class="adm-cell-link-note">${autoMsg_61a02fb94c}</span>
+                                <span class="adm-cell-link-note"><spring:message code="admin.common.actionLabel"/></span>
                             </button>
                         </td>
                         <td>
                             <div id="review-action-${review.reviewIdx}" class="adm-row-actions" style="justify-content:flex-start;">
                                 <c:if test="${review.displayStatus != 'BLOCKED'}">
-                                    <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="actionReview(this, 'block')">${autoMsg_237b4dd8b8}</button>
+                                    <button class="adm-btn adm-btn-ghost" type="button" style="font-size:11px;padding:3px 8px;" data-id="${review.reviewIdx}" onclick="actionReview(this, 'block')"><spring:message code="admin.explore.reviews.action.block"/></button>
                                 </c:if>
-                                <a class="adm-row-btn more" href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}">${autoMsg_1cdd01a2b2}</a>
+                                <a class="adm-row-btn more" href="${pageContext.request.contextPath}/admin/explore/spots/${review.spotIdx}"><spring:message code="admin.common.viewDetail"/></a>
                             </div>
                         </td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="9" style="text-align:center;padding:40px;color:#475569;">${autoMsg_e00f70f1fd}</td></tr>
+                    <tr><td colspan="9" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.explore.reviews.empty"/></td></tr>
                 </c:if>
                 </tbody>
             </table>
         </div>
         <c:if test="${paging.totalPage > 1}">
             <div class="adm-paging">
-                <c:if test="${paging.prev}"><button class="adm-page-btn" type="button" onclick="goPage(${paging.startPage - 1})">${autoMsg_ef62d2ec73}</button></c:if>
+                <c:if test="${paging.prev}"><button class="adm-page-btn" type="button" onclick="goPage(${paging.startPage - 1})"><spring:message code="admin.common.previous"/></button></c:if>
                 <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="pg"><button class="adm-page-btn ${pg == paging.currentPage ? 'active' : ''}" type="button" onclick="goPage(${pg})">${pg}</button></c:forEach>
-                <c:if test="${paging.next}"><button class="adm-page-btn" type="button" onclick="goPage(${paging.endPage + 1})">${autoMsg_d838622d57}</button></c:if>
-                <span class="adm-page-info">${autoMsg_240e8a88d1}</span>
+                <c:if test="${paging.next}"><button class="adm-page-btn" type="button" onclick="goPage(${paging.endPage + 1})"><spring:message code="admin.common.next"/></button></c:if>
+                <span class="adm-page-info"><spring:message code="admin.common.pageStatus"/></span>
             </div>
         </c:if>
     </div>
@@ -238,11 +206,11 @@
 <script>
 var ctx = '${pageContext.request.contextPath}';
 var EXPLORE_REVIEW_MSG = {
-    bulkSelectedTemplate: '${autoMsg_207442f011}',
-    confirmBlockOne: '${autoMsg_dfe0c8648a}',
-    confirmBlockBulk: '${autoMsg_042123602a}',
-    requestFailed: '${autoMsg_971975bb25}',
-    noSelection: '${autoMsg_b56236b4e2}'
+    bulkSelectedTemplate: '${adminExploreReviewsBulkSelectedMsg}',
+    confirmBlockOne: '${adminExploreReviewsConfirmBlockOneMsg}',
+    confirmBlockBulk: '${adminExploreReviewsConfirmBlockBulkMsg}',
+    requestFailed: '${adminExploreReviewsErrorRequestFailedMsg}',
+    noSelection: '${adminExploreReviewsErrorNoSelectionMsg}'
 };
 
 document.getElementById('checkAll').addEventListener('change', function() {
