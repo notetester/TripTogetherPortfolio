@@ -4,6 +4,8 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<spring:message var="autoMsg_9e699d28b4" code="explore.card.favorite"/>
+<spring:message var="autoMsg_679f1a6de9" code="explore.card.like"/>
 <div class="spot-card" data-spot-idx="${spot.spotIdx}">
 
   <div class="spot-card__img-wrap">
@@ -16,14 +18,14 @@
     <div class="spot-card__actions">
       <button class="action-btn fav-btn ${spot.favorited ? 'active' : ''}"
               type="button"
-              title="<spring:message code='explore.card.favorite'/>"
-              aria-label="<spring:message code='explore.card.favorite'/>">
+              title="${autoMsg_9e699d28b4}"
+              aria-label="${autoMsg_9e699d28b4}">
         <c:out value="${spot.favorited ? '⭐' : '☆'}"/>
       </button>
       <button class="action-btn like-btn ${spot.liked ? 'active' : ''}"
               type="button"
-              title="<spring:message code='explore.card.like'/>"
-              aria-label="<spring:message code='explore.card.like'/>">
+              title="${autoMsg_679f1a6de9}"
+              aria-label="${autoMsg_679f1a6de9}">
         <c:out value="${spot.liked ? '❤️' : '🤍'}"/>
       </button>
     </div>

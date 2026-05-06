@@ -3,6 +3,24 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_8a70a829fc" code="admin.context.socialOnly"/>
+<spring:message var="autoMsg_ac364e69f4" code="admin.members.emailVerified"/>
+<spring:message var="autoMsg_a5ccba6f9f" code="admin.members.verifiedMember"/>
+<spring:message var="autoMsg_3897932640" code="admin.members.unverifiedMember"/>
+<spring:message var="autoMsg_dd28ebab21" code="admin.role.USER"/>
+<spring:message var="autoMsg_10b14dd567" code="admin.role.BUSINESS"/>
+<spring:message var="autoMsg_d740009534" code="admin.role.PARTNER"/>
+<spring:message var="autoMsg_927f470241" code="admin.role.BOT"/>
+<spring:message var="autoMsg_7d5dc5f2ef" code="admin.role.ADMIN"/>
+<spring:message var="autoMsg_da1f9425dc" code="admin.role.SUPERADMIN"/>
+<spring:message var="autoMsg_ca1c49f563" code="admin.role.SYSTEM"/>
+<spring:message var="autoMsg_d27488efc6" code="admin.social.kakao"/>
+<spring:message var="autoMsg_ed754fee99" code="admin.social.naver"/>
+<spring:message var="autoMsg_8f1a7806a2" code="admin.social.google"/>
+<spring:message var="autoMsg_e62b74d40f" code="admin.members.noLinkedProvider"/>
+<spring:message var="autoMsg_706bbfd38c" code="admin.members.none"/>
+<spring:message var="autoMsg_4195aed390" code="admin.members.detail"/>
+<spring:message var="autoMsg_c18b471db7" code="admin.context.action.roleReasonPlaceholder"/>
 <spring:message code="admin.status.ACTIVE" var="memberStatusActive"/>
 <spring:message code="admin.status.DORMANT" var="memberStatusDormant"/>
 <spring:message code="admin.status.BLOCKED" var="memberStatusBlocked"/>
@@ -49,7 +67,7 @@
                                                     @${m.userId}
                                                 </button>
                                             </c:when>
-                                            <c:otherwise><span style="color:#475569;"><spring:message code="admin.context.socialOnly"/></span></c:otherwise>
+                                            <c:otherwise><span style="color:#475569;">${autoMsg_8a70a829fc}</span></c:otherwise>
                                         </c:choose>
                                     </div>
                                 </div>
@@ -67,15 +85,15 @@
                                     <c:when test="${not empty m.userEmail}">
                                         <span style="font-size:12px;">${m.userEmail}</span>
                                         <c:if test="${m.emailVerified}">
-                                            <span style="color:#4ade80;font-size:10px;">✓ <spring:message code="admin.members.emailVerified"/></span>
+                                            <span style="color:#4ade80;font-size:10px;">✓ ${autoMsg_ac364e69f4}</span>
                                         </c:if>
                                     </c:when>
                                     <c:otherwise><span style="color:#475569;font-size:12px;">—</span></c:otherwise>
                                 </c:choose>
                                 <span class="adm-cell-link-note">
                                     <c:choose>
-                                        <c:when test="${m.verifiedMember}"><spring:message code="admin.members.verifiedMember"/></c:when>
-                                        <c:otherwise><spring:message code="admin.members.unverifiedMember"/></c:otherwise>
+                                        <c:when test="${m.verifiedMember}">${autoMsg_a5ccba6f9f}</c:when>
+                                        <c:otherwise>${autoMsg_3897932640}</c:otherwise>
                                     </c:choose>
                                 </span>
                             </button>
@@ -102,13 +120,13 @@
                                     data-focus-section="statusRole">
                                 <span class="role-badge ${m.userRole}">
                                     <c:choose>
-                                        <c:when test="${m.userRole eq 'USER'}"><spring:message code="admin.role.USER"/></c:when>
-                                        <c:when test="${m.userRole eq 'BUSINESS'}"><spring:message code="admin.role.BUSINESS"/></c:when>
-                                        <c:when test="${m.userRole eq 'PARTNER'}"><spring:message code="admin.role.PARTNER"/></c:when>
-                                        <c:when test="${m.userRole eq 'BOT'}"><spring:message code="admin.role.BOT"/></c:when>
-                                        <c:when test="${m.userRole eq 'ADMIN'}"><spring:message code="admin.role.ADMIN"/></c:when>
-                                        <c:when test="${m.userRole eq 'SUPERADMIN'}"><spring:message code="admin.role.SUPERADMIN"/></c:when>
-                                        <c:when test="${m.userRole eq 'SYSTEM'}"><spring:message code="admin.role.SYSTEM"/></c:when>
+                                        <c:when test="${m.userRole eq 'USER'}">${autoMsg_dd28ebab21}</c:when>
+                                        <c:when test="${m.userRole eq 'BUSINESS'}">${autoMsg_10b14dd567}</c:when>
+                                        <c:when test="${m.userRole eq 'PARTNER'}">${autoMsg_d740009534}</c:when>
+                                        <c:when test="${m.userRole eq 'BOT'}">${autoMsg_927f470241}</c:when>
+                                        <c:when test="${m.userRole eq 'ADMIN'}">${autoMsg_7d5dc5f2ef}</c:when>
+                                        <c:when test="${m.userRole eq 'SUPERADMIN'}">${autoMsg_da1f9425dc}</c:when>
+                                        <c:when test="${m.userRole eq 'SYSTEM'}">${autoMsg_ca1c49f563}</c:when>
                                         <c:otherwise>${m.userRole}</c:otherwise>
                                     </c:choose>
                                 </span>
@@ -127,19 +145,19 @@
                                     data-focus-section="social">
                                 <div class="adm-social-list is-compact">
                                     <c:if test="${hasKakao}">
-                                        <span class="adm-social-pill kakao" title="<spring:message code='admin.social.kakao'/>">
+                                        <span class="adm-social-pill kakao" title="${autoMsg_d27488efc6}">
                                             <span class="adm-social-icon kakao-mark">k</span>
-                                            <span class="adm-social-label"><spring:message code="admin.social.kakao"/></span>
+                                            <span class="adm-social-label">${autoMsg_d27488efc6}</span>
                                         </span>
                                     </c:if>
                                     <c:if test="${hasNaver}">
-                                        <span class="adm-social-pill naver" title="<spring:message code='admin.social.naver'/>">
+                                        <span class="adm-social-pill naver" title="${autoMsg_ed754fee99}">
                                             <span class="adm-social-icon naver-mark">N</span>
-                                            <span class="adm-social-label"><spring:message code="admin.social.naver"/></span>
+                                            <span class="adm-social-label">${autoMsg_ed754fee99}</span>
                                         </span>
                                     </c:if>
                                     <c:if test="${hasGoogle}">
-                                        <span class="adm-social-pill google" title="<spring:message code='admin.social.google'/>">
+                                        <span class="adm-social-pill google" title="${autoMsg_8f1a7806a2}">
                                             <span class="adm-social-icon google-mark">
                                                 <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
                                                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -148,11 +166,11 @@
                                                     <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
                                                 </svg>
                                             </span>
-                                            <span class="adm-social-label"><spring:message code="admin.social.google"/></span>
+                                            <span class="adm-social-label">${autoMsg_8f1a7806a2}</span>
                                         </span>
                                     </c:if>
                                     <c:if test="${empty m.linkedProviders}">
-                                        <span class="adm-social-empty"><spring:message code="admin.members.noLinkedProvider"/></span>
+                                        <span class="adm-social-empty">${autoMsg_e62b74d40f}</span>
                                     </c:if>
                                 </div>
                             </button>
@@ -170,7 +188,7 @@
                                         <c:when test="${m.lastLoginAt != null}">
                                             <fmt:formatDate value="${m.lastLoginAtDate}" pattern="MM.dd HH:mm"/>
                                         </c:when>
-                                        <c:otherwise><span style="color:#475569;"><spring:message code="admin.members.none"/></span></c:otherwise>
+                                        <c:otherwise><span style="color:#475569;">${autoMsg_706bbfd38c}</span></c:otherwise>
                                     </c:choose>
                                 </span>
                                 <span class="adm-cell-link-note">✅${m.loginSuccessCount} / ❌${m.loginFailCount}</span>
@@ -193,7 +211,7 @@
                         <td>
                             <div class="adm-row-actions">
                                 <button class="adm-row-btn detail"
-                                        onclick="openDetail(${m.userIdx})"><spring:message code="admin.members.detail"/></button>
+                                        onclick="openDetail(${m.userIdx})">${autoMsg_4195aed390}</button>
                                 <c:if test="${m.userRole != 'SYSTEM' and m.userRole != 'SUPERADMIN'}">
                                 <div class="action-menu-wrap">
                                     <button class="adm-row-btn detail adm-row-btn-more"
@@ -235,16 +253,16 @@
                                         </div>
                                         <div class="role-change-box">
                                             <select class="adm-select role-change-select" data-current-role="${m.userRole}">
-                                                <option value="USER" ${m.userRole == 'USER' ? 'selected' : ''}><spring:message code="admin.role.USER"/></option>
-                                                <option value="BUSINESS" ${m.userRole == 'BUSINESS' ? 'selected' : ''}><spring:message code="admin.role.BUSINESS"/></option>
-                                                <option value="PARTNER" ${m.userRole == 'PARTNER' ? 'selected' : ''}><spring:message code="admin.role.PARTNER"/></option>
-                                                <option value="BOT" ${m.userRole == 'BOT' ? 'selected' : ''}><spring:message code="admin.role.BOT"/></option>
-                                                <option value="ADMIN" ${m.userRole == 'ADMIN' ? 'selected' : ''}><spring:message code="admin.role.ADMIN"/></option>
+                                                <option value="USER" ${m.userRole == 'USER' ? 'selected' : ''}>${autoMsg_dd28ebab21}</option>
+                                                <option value="BUSINESS" ${m.userRole == 'BUSINESS' ? 'selected' : ''}>${autoMsg_10b14dd567}</option>
+                                                <option value="PARTNER" ${m.userRole == 'PARTNER' ? 'selected' : ''}>${autoMsg_d740009534}</option>
+                                                <option value="BOT" ${m.userRole == 'BOT' ? 'selected' : ''}>${autoMsg_927f470241}</option>
+                                                <option value="ADMIN" ${m.userRole == 'ADMIN' ? 'selected' : ''}>${autoMsg_7d5dc5f2ef}</option>
                                             </select>
                                             <input class="adm-input role-change-reason"
                                                    type="text"
                                                    maxlength="500"
-                                                   placeholder="<spring:message code='admin.context.action.roleReasonPlaceholder'/>">
+                                                   placeholder="${autoMsg_c18b471db7}">
                                             <button class="action-menu-item role-change-submit"
                                                     data-user-idx="${m.userIdx}"
                                                     onclick="changeRoleFromMenu(this)">

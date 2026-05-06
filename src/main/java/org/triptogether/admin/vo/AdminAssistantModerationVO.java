@@ -28,4 +28,8 @@ public class AdminAssistantModerationVO {
         return checkedAt;
     }
 
+    public java.util.Date getMessageCreatedAtDate() {
+        return messageCreatedAt;
+    }
+
 }

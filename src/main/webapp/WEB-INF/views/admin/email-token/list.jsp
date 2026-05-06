@@ -3,6 +3,34 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_35b1b7ace2" code="admin.common.search"/>
+<spring:message var="autoMsg_66143c1de4" code="admin.emailTokens.searchPlaceholder"/>
+<spring:message var="autoMsg_83788a9b38" code="admin.emailRequests.purpose"/>
+<spring:message var="autoMsg_077468c9c3" code="admin.common.all"/>
+<spring:message var="autoMsg_ed21bfd7db" code="admin.emailRequests.purpose.profileEmail"/>
+<spring:message var="autoMsg_649d01dd0d" code="admin.emailRequests.purpose.findId"/>
+<spring:message var="autoMsg_762f8687da" code="admin.emailRequests.purpose.resetPw"/>
+<spring:message var="autoMsg_8b0515f0cc" code="admin.emailRequests.purpose.verify"/>
+<spring:message var="autoMsg_bb30cb71aa" code="admin.emailTokens.used"/>
+<spring:message var="autoMsg_60b5b82a43" code="admin.context.used"/>
+<spring:message var="autoMsg_1ee421783e" code="admin.context.unused"/>
+<spring:message var="autoMsg_af02d1d63e" code="admin.common.searchButton"/>
+<spring:message var="autoMsg_c838be1aeb" code="admin.common.reset"/>
+<spring:message var="autoMsg_2717c163bd" code="admin.emailTokens.historyTitle"/>
+<spring:message var="autoMsg_47fbf069c1" code="admin.common.totalCount"/>
+<spring:message var="autoMsg_cd55387b80" code="admin.emailTokens.createdAt"/>
+<spring:message var="autoMsg_ebf6aa5fb6" code="admin.common.member"/>
+<spring:message var="autoMsg_8370e8aeaf" code="admin.context.targetEmail"/>
+<spring:message var="autoMsg_7828cf076b" code="admin.emailTokens.usedAt"/>
+<spring:message var="autoMsg_f3e7c9dedb" code="admin.context.expiresAt"/>
+<spring:message var="autoMsg_aceb91d1a4" code="admin.context.requestId"/>
+<spring:message var="autoMsg_2d994072a2" code="admin.common.sameDate"/>
+<spring:message var="autoMsg_f610bf7e8a" code="admin.emailRequests.unknownRequest"/>
+<spring:message var="autoMsg_d7ac444500" code="admin.common.sameValue"/>
+<spring:message var="autoMsg_987d92feed" code="admin.common.sameEmail"/>
+<spring:message var="autoMsg_85e512636d" code="admin.common.trace"/>
+<spring:message var="autoMsg_1ef956b6fe" code="admin.common.noResults"/>
+<spring:message var="autoMsg_2237c5f80f" code="admin.common.pageStatus"/>
 <c:set var="activeMenu" value="emailTokens"/>
 <spring:message code="admin.emailTokens.pageTitle" var="adminEmailTokensPageTitle"/>
 <c:set var="pageTitle" value="${adminEmailTokensPageTitle}"/>
@@ -13,31 +41,31 @@
       <form method="get" action="${pageContext.request.contextPath}/admin/email-tokens">
         <div class="adm-filter-bar">
           <div class="adm-search-box" style="flex:1;min-width:220px;">
-            <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
+            <div class="adm-filter-label">${autoMsg_35b1b7ace2}</div>
             <span class="adm-search-ico">🔍</span>
-            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="<spring:message code='admin.emailTokens.searchPlaceholder'/>">
+            <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${autoMsg_66143c1de4}">
           </div>
           <div>
-            <div class="adm-filter-label"><spring:message code="admin.emailRequests.purpose"/></div>
+            <div class="adm-filter-label">${autoMsg_83788a9b38}</div>
             <select class="adm-select" name="purpose">
-              <option value="ALL" ${search.purpose=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-              <option value="PROFILE_EMAIL" ${search.purpose=='PROFILE_EMAIL'?'selected':''}><spring:message code="admin.emailRequests.purpose.profileEmail"/></option>
-              <option value="FIND_ID" ${search.purpose=='FIND_ID'?'selected':''}><spring:message code="admin.emailRequests.purpose.findId"/></option>
-              <option value="RESET_PW" ${search.purpose=='RESET_PW'?'selected':''}><spring:message code="admin.emailRequests.purpose.resetPw"/></option>
-              <option value="VERIFY" ${search.purpose=='VERIFY'?'selected':''}><spring:message code="admin.emailRequests.purpose.verify"/></option>
+              <option value="ALL" ${search.purpose=='ALL'?'selected':''}>${autoMsg_077468c9c3}</option>
+              <option value="PROFILE_EMAIL" ${search.purpose=='PROFILE_EMAIL'?'selected':''}>${autoMsg_ed21bfd7db}</option>
+              <option value="FIND_ID" ${search.purpose=='FIND_ID'?'selected':''}>${autoMsg_649d01dd0d}</option>
+              <option value="RESET_PW" ${search.purpose=='RESET_PW'?'selected':''}>${autoMsg_762f8687da}</option>
+              <option value="VERIFY" ${search.purpose=='VERIFY'?'selected':''}>${autoMsg_8b0515f0cc}</option>
             </select>
           </div>
           <div>
-            <div class="adm-filter-label"><spring:message code="admin.emailTokens.used"/></div>
+            <div class="adm-filter-label">${autoMsg_bb30cb71aa}</div>
             <select class="adm-select" name="used">
-              <option value="ALL" ${search.used=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-              <option value="USED" ${search.used=='USED'?'selected':''}><spring:message code="admin.context.used"/></option>
-              <option value="UNUSED" ${search.used=='UNUSED'?'selected':''}><spring:message code="admin.context.unused"/></option>
+              <option value="ALL" ${search.used=='ALL'?'selected':''}>${autoMsg_077468c9c3}</option>
+              <option value="USED" ${search.used=='USED'?'selected':''}>${autoMsg_60b5b82a43}</option>
+              <option value="UNUSED" ${search.used=='UNUSED'?'selected':''}>${autoMsg_1ee421783e}</option>
             </select>
           </div>
           <div style="display:flex;align-items:flex-end;gap:8px;">
-            <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
-            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/email-tokens"><spring:message code="admin.common.reset"/></a>
+            <button class="adm-btn adm-btn-primary" type="submit">${autoMsg_af02d1d63e}</button>
+            <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/email-tokens">${autoMsg_c838be1aeb}</a>
           </div>
         </div>
       </form>
@@ -45,20 +73,20 @@
   </div>
   <div class="adm-card">
     <div class="adm-card-head">
-      <div class="adm-card-title"><spring:message code="admin.emailTokens.historyTitle"/></div>
-      <div style="font-size:12px;color:#64748b;"><spring:message code="admin.common.totalCount" arguments="${total}"/></div>
+      <div class="adm-card-title">${autoMsg_2717c163bd}</div>
+      <div style="font-size:12px;color:#64748b;">${autoMsg_47fbf069c1}</div>
     </div>
     <div class="adm-table-wrap">
       <table class="adm-table">
         <thead><tr>
-          <th data-sort="time" onclick="sortBy('time')"><spring:message code="admin.emailTokens.createdAt"/><span class="sort-ico">▼</span></th>
-          <th data-sort="member" onclick="sortBy('member')"><spring:message code="admin.common.member"/><span class="sort-ico">▼</span></th>
-          <th data-sort="purpose" onclick="sortBy('purpose')"><spring:message code="admin.emailRequests.purpose"/><span class="sort-ico">▼</span></th>
-          <th data-sort="targetEmail" onclick="sortBy('targetEmail')"><spring:message code="admin.context.targetEmail"/><span class="sort-ico">▼</span></th>
-          <th data-sort="used" onclick="sortBy('used')"><spring:message code="admin.emailTokens.used"/><span class="sort-ico">▼</span></th>
-          <th data-sort="usedAt" onclick="sortBy('usedAt')"><spring:message code="admin.emailTokens.usedAt"/><span class="sort-ico">▼</span></th>
-          <th data-sort="expiresAt" onclick="sortBy('expiresAt')"><spring:message code="admin.context.expiresAt"/><span class="sort-ico">▼</span></th>
-          <th data-sort="requestId" onclick="sortBy('requestId')"><spring:message code="admin.context.requestId"/><span class="sort-ico">▼</span></th>
+          <th data-sort="time" onclick="sortBy('time')">${autoMsg_cd55387b80}<span class="sort-ico">▼</span></th>
+          <th data-sort="member" onclick="sortBy('member')">${autoMsg_ebf6aa5fb6}<span class="sort-ico">▼</span></th>
+          <th data-sort="purpose" onclick="sortBy('purpose')">${autoMsg_83788a9b38}<span class="sort-ico">▼</span></th>
+          <th data-sort="targetEmail" onclick="sortBy('targetEmail')">${autoMsg_8370e8aeaf}<span class="sort-ico">▼</span></th>
+          <th data-sort="used" onclick="sortBy('used')">${autoMsg_bb30cb71aa}<span class="sort-ico">▼</span></th>
+          <th data-sort="usedAt" onclick="sortBy('usedAt')">${autoMsg_7828cf076b}<span class="sort-ico">▼</span></th>
+          <th data-sort="expiresAt" onclick="sortBy('expiresAt')">${autoMsg_f3e7c9dedb}<span class="sort-ico">▼</span></th>
+          <th data-sort="requestId" onclick="sortBy('requestId')">${autoMsg_aceb91d1a4}<span class="sort-ico">▼</span></th>
           <th></th>
         </tr></thead>
         <tbody>
@@ -75,7 +103,7 @@
                       data-date="${itemDateFilter}"
                       onclick="filterByDate(this.dataset.date)">
                 <span>${itemTimeDisplay}</span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                <span class="adm-cell-link-note">${autoMsg_2d994072a2}</span>
               </button>
             </td>
             <td>
@@ -85,7 +113,7 @@
                   <div class="mem-uid"><button type="button" class="adm-inline-link js-open-member-context" data-user-idx="${item.userIdx}" data-default-tab="emailTokens" style="color:#94a3b8;">@${item.userId}</button></div>
                 </c:when>
                 <c:otherwise>
-                  <div class="mem-name"><spring:message code="admin.emailRequests.unknownRequest"/></div>
+                  <div class="mem-name">${autoMsg_f610bf7e8a}</div>
                   <div class="mem-uid">-</div>
                 </c:otherwise>
               </c:choose>
@@ -93,28 +121,28 @@
             <td>
               <button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="${item.purpose}" onclick="applySelectFilter(this)">
                 <span><c:choose>
-                  <c:when test="${item.purpose == 'PROFILE_EMAIL'}"><spring:message code="admin.emailRequests.purpose.profileEmail"/></c:when>
-                  <c:when test="${item.purpose == 'FIND_ID'}"><spring:message code="admin.emailRequests.purpose.findId"/></c:when>
-                  <c:when test="${item.purpose == 'RESET_PW'}"><spring:message code="admin.emailRequests.purpose.resetPw"/></c:when>
-                  <c:when test="${item.purpose == 'VERIFY'}"><spring:message code="admin.emailRequests.purpose.verify"/></c:when>
+                  <c:when test="${item.purpose == 'PROFILE_EMAIL'}">${autoMsg_ed21bfd7db}</c:when>
+                  <c:when test="${item.purpose == 'FIND_ID'}">${autoMsg_649d01dd0d}</c:when>
+                  <c:when test="${item.purpose == 'RESET_PW'}">${autoMsg_762f8687da}</c:when>
+                  <c:when test="${item.purpose == 'VERIFY'}">${autoMsg_8b0515f0cc}</c:when>
                   <c:otherwise><c:out value="${item.purpose}"/></c:otherwise>
                 </c:choose></span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                <span class="adm-cell-link-note">${autoMsg_d7ac444500}</span>
               </button>
             </td>
             <td>
               <button type="button" class="adm-cell-link" data-keyword="${item.email}" onclick="applyKeywordFilter(this)">
                 <span><c:out value="${item.email}"/></span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameEmail"/></span>
+                <span class="adm-cell-link-note">${autoMsg_987d92feed}</span>
               </button>
             </td>
             <td>
               <button type="button" class="adm-cell-link" data-param-name="used" data-param-value="${item.used ? 'USED' : 'UNUSED'}" onclick="applySelectFilter(this)">
                 <span><c:choose>
-                  <c:when test="${item.used}"><spring:message code="admin.context.used"/></c:when>
-                  <c:otherwise><spring:message code="admin.context.unused"/></c:otherwise>
+                  <c:when test="${item.used}">${autoMsg_60b5b82a43}</c:when>
+                  <c:otherwise>${autoMsg_1ee421783e}</c:otherwise>
                 </c:choose></span>
-                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                <span class="adm-cell-link-note">${autoMsg_d7ac444500}</span>
               </button>
             </td>
             <td>
@@ -124,7 +152,7 @@
                           data-date="${itemUsedAtDateFilter}"
                           onclick="filterByDate(this.dataset.date)">
                     <span>${itemUsedAtDisplay}</span>
-                    <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                    <span class="adm-cell-link-note">${autoMsg_2d994072a2}</span>
                   </button>
                 </c:when>
                 <c:otherwise>-</c:otherwise>
@@ -137,7 +165,7 @@
                           data-date="${itemExpiredAtDateFilter}"
                           onclick="filterByDate(this.dataset.date)">
                     <span>${itemExpiredAtDisplay}</span>
-                    <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                    <span class="adm-cell-link-note">${autoMsg_2d994072a2}</span>
                   </button>
                 </c:when>
                 <c:otherwise>-</c:otherwise>
@@ -149,7 +177,7 @@
                       onclick="openRelatedHistory('email-verifications', this)">
                 <span style="font-size:12px;color:#64748b;"><c:out value="${item.requestId}"/></span>
                 <c:if test="${not empty item.flowTraceId}">
-                  <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
+                  <span class="adm-cell-link-note">${autoMsg_85e512636d}: <c:out value="${item.flowTraceId}"/></span>
                 </c:if>
               </button>
             </td>
@@ -170,10 +198,10 @@
             </td>
           </tr>
         </c:forEach>
-        <c:if test="${empty list}"><tr><td colspan="9" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr></c:if>
+        <c:if test="${empty list}"><tr><td colspan="9" style="text-align:center;padding:40px;color:#475569;">${autoMsg_1ef956b6fe}</td></tr></c:if>
       </tbody></table>
     </div>
-    <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info"><spring:message code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/></span></div></c:if>
+    <c:if test="${paging.totalPage > 1}"><div class="adm-paging"><c:if test="${paging.prev}"><button class="adm-page-btn" onclick="goPage(${paging.startPage - 1})">‹</button></c:if><c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="p"><button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button></c:forEach><c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if><span class="adm-page-info">${autoMsg_2237c5f80f}</span></div></c:if>
   </div>
 </div>
 
@@ -241,7 +269,7 @@ function openRelatedHistory(path, button) {
 }
 function openTokenDetail(btn) {
   var d = btn.dataset;
-  showRowDetail('<spring:message code="admin.emailTokens.historyTitle"/>', [
+  showRowDetail('${autoMsg_2717c163bd}', [
     ['발급 시각', d.time],
     ['회원', d.user],
     ['목적', d.purpose],

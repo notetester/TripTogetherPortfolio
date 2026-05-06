@@ -14,4 +14,9 @@ public class ViewHistoryItemDto {
     private String  subtitle;
     private String  thumbnailUrl;
     private Boolean available;
+
+    public java.util.Date getViewedAtDate() {
+        return viewedAt;
+    }
+
 }

@@ -4,6 +4,136 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<spring:message var="autoMsg_f390677e39" code="detail.review.countSuffix"/>
+<spring:message var="autoMsg_18cfc8ff7e" code="detail.like.count"/>
+<spring:message var="autoMsg_7ba379cfc1" code="detail.back"/>
+<spring:message var="autoMsg_59ee812003" code="detail.fav.done"/>
+<spring:message var="autoMsg_27c009e3de" code="detail.fav.do"/>
+<spring:message var="autoMsg_b1f2f74725" code="detail.like.done"/>
+<spring:message var="autoMsg_719fd9e790" code="detail.like.do"/>
+<spring:message var="autoMsg_71a7cd69f0" code="detail.ai.plan"/>
+<spring:message var="autoMsg_27bfcab9ef" code="detail.edit.admin"/>
+<spring:message var="autoMsg_9631b4c050" code="detail.edit.mine"/>
+<spring:message var="autoMsg_ff14ce1d34" code="detail.edit.admin.desc"/>
+<spring:message var="autoMsg_ef8f21a2de" code="detail.edit.user.desc"/>
+<spring:message var="autoMsg_33fe4192c2" code="detail.edit.open"/>
+<spring:message var="autoMsg_d9ccc0deff" code="detail.delete.confirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7bcf2698e9" code="detail.delete"/>
+<spring:message var="autoMsg_4255caff58" code="detail.edit.title"/>
+<spring:message var="autoMsg_c9a31553cb" code="detail.edit.subtitle"/>
+<spring:message var="autoMsg_b4f959ac1c" code="explore.form.name"/>
+<spring:message var="autoMsg_7731772680" code="detail.info.region"/>
+<spring:message var="autoMsg_5e30f0ac47" code="detail.info.address"/>
+<spring:message var="autoMsg_d881a9788e" code="explore.form.lat"/>
+<spring:message var="autoMsg_8c08226022" code="explore.form.lng"/>
+<spring:message var="autoMsg_a923a49edb" code="explore.form.description"/>
+<spring:message var="autoMsg_a120b29936" code="explore.form.image"/>
+<spring:message var="autoMsg_aaab74708a" code="explore.form.tags"/>
+<spring:message var="autoMsg_6970b19300" code="explore.cancel"/>
+<spring:message var="autoMsg_ed0223cde6" code="explore.save"/>
+<spring:message var="autoMsg_1e1668a583" code="detail.info.title"/>
+<spring:message var="autoMsg_1da30e62a1" code="detail.info.rating"/>
+<spring:message var="autoMsg_3b90a30247" code="detail.review.title"/>
+<spring:message var="autoMsg_f3d5734333" code="explore.count"/>
+<spring:message var="autoMsg_bcc6e7d1f2" code="detail.info.noReview"/>
+<spring:message var="autoMsg_a71efec490" code="detail.info.like"/>
+<spring:message var="autoMsg_ebf9e656d7" code="detail.intro.title"/>
+<spring:message var="autoMsg_abe7e7a95a" code="detail.tags.title"/>
+<spring:message var="autoMsg_7d5a4da44c" code="detail.package.imageAlt" javaScriptEscape="true"/>
+<spring:message var="autoMsg_77f86a125f" code="detail.location.title"/>
+<spring:message var="autoMsg_2ecc46d7bc" code="detail.review.total"/>
+<spring:message var="autoMsg_7486c5c523" code="detail.review.write"/>
+<spring:message var="autoMsg_ee3088460b" code="detail.review.placeholder"/>
+<spring:message var="autoMsg_a2cd1a61bf" code="detail.review.submit"/>
+<spring:message var="autoMsg_c795565e05" code="detail.review.written"/>
+<spring:message var="autoMsg_d0ab6c7989" code="detail.review.login.need"/>
+<spring:message var="autoMsg_63e8959397" code="detail.review.login"/>
+<spring:message var="autoMsg_f0ebac93ca" code="detail.review.admin.selectAll"/>
+<spring:message var="autoMsg_8daba712e1" code="detail.review.admin.help"/>
+<spring:message var="autoMsg_ca78d9f589" code="community.detail.userReport"/>
+<spring:message var="autoMsg_94fa83bd66" code="community.detail.report"/>
+<spring:message var="autoMsg_b1124bd3b4" code="detail.review.delete"/>
+<spring:message var="autoMsg_a985a82f30" code="detail.review.block"/>
+<spring:message var="autoMsg_6cceb0a144" code="detail.ai.title"/>
+<spring:message var="autoMsg_c5e15f91f8" code="detail.explore.more"/>
+<spring:message var="autoMsg_09687754cb" code="community.detail.report.title"/>
+<spring:message var="autoMsg_22acf32472" code="community.detail.report.reason"/>
+<spring:message var="autoMsg_ec939a1fb7" code="community.detail.report.reason.choose"/>
+<spring:message var="autoMsg_892b5724bb" code="community.detail.report.reason.spam"/>
+<spring:message var="autoMsg_bce59fbfd9" code="community.detail.report.reason.abuse"/>
+<spring:message var="autoMsg_c095d8c7ce" code="community.detail.report.reason.privacy"/>
+<spring:message var="autoMsg_d97082c998" code="community.detail.report.reason.illegal"/>
+<spring:message var="autoMsg_24ca2dc020" code="community.detail.report.reason.other"/>
+<spring:message var="autoMsg_77a41fec80" code="community.detail.report.description"/>
+<spring:message var="autoMsg_9b0abd03a8" code="community.detail.report.description.placeholder"/>
+<spring:message var="autoMsg_ad8ea8e20e" code="community.detail.cancel"/>
+<spring:message var="autoMsg_f59b85e3ad" code="community.detail.report.submit"/>
+<spring:message var="autoMsg_84a57dc4cd" code="community.detail.userReport.title"/>
+<spring:message var="autoMsg_465c990282" code="community.detail.userReport.description"/>
+<spring:message var="autoMsg_f44c70ae24" code="community.detail.userReport.placeholder"/>
+<spring:message var="autoMsg_0533c80ab2" code="detail.common.error" javaScriptEscape="true"/>
+<spring:message var="autoMsg_5b3b4d0f7a" code="detail.common.loginRequired" javaScriptEscape="true"/>
+<spring:message var="autoMsg_d49baedede" code="detail.edit.tags.max" javaScriptEscape="true"/>
+<spring:message var="autoMsg_11c3b20f7d" code="detail.fav.added" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b1fd0ed5a0" code="detail.fav.removed" javaScriptEscape="true"/>
+<spring:message var="autoMsg_5214d1ab65" code="detail.like.added" javaScriptEscape="true"/>
+<spring:message var="autoMsg_788bdb83fc" code="detail.like.removed" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7f8633fbc9" code="detail.review.submit.loading" javaScriptEscape="true"/>
+<spring:message var="autoMsg_1ab2849ef2" code="detail.review.submit.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_f5789cadc1" code="detail.review.submit.success" javaScriptEscape="true"/>
+<spring:message var="autoMsg_ead131b839" code="detail.review.delete.confirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_0643fc5936" code="detail.review.delete.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_22f8071df6" code="detail.review.delete.success" javaScriptEscape="true"/>
+<spring:message var="autoMsg_0c60c7802a" code="detail.review.empty.visible" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7a7196f900" code="detail.review.block.confirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b64f9ce751" code="detail.review.block.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_1266d379f9" code="detail.review.block.success" javaScriptEscape="true"/>
+<spring:message var="autoMsg_a6dd1feffa" code="detail.review.block.none" javaScriptEscape="true"/>
+<spring:message var="autoMsg_d558dd7f7d" code="detail.review.block.bulkConfirmAll" javaScriptEscape="true"/>
+<spring:message var="autoMsg_0b4625057f" code="detail.review.block.bulkConfirmSelected" javaScriptEscape="true"/>
+<spring:message var="autoMsg_5fa2784d11" code="detail.review.block.bulkSuccess" javaScriptEscape="true"/>
+<spring:message var="autoMsg_3b8a3f2b5d" code="detail.review.admin.blockSelected" javaScriptEscape="true"/>
+<spring:message var="autoMsg_5bd7c4703c" code="detail.review.like.success" javaScriptEscape="true"/>
+<spring:message var="autoMsg_486a5fd302" code="detail.review.write" javaScriptEscape="true"/>
+<spring:message var="autoMsg_104523f557" code="detail.review.submit" javaScriptEscape="true"/>
+<spring:message var="autoMsg_48a1167ef8" code="detail.review.empty" javaScriptEscape="true"/>
+<spring:message var="autoMsg_0005bf699e" code="detail.package.booking.loginAction" javaScriptEscape="true"/>
+<spring:message var="autoMsg_37e76eae10" code="detail.package.booking.action" javaScriptEscape="true"/>
+<spring:message var="autoMsg_bc8c678d03" code="detail.package.booking.loginRequired" javaScriptEscape="true"/>
+<spring:message var="autoMsg_0b814dda73" code="detail.package.booking.insufficientCash" javaScriptEscape="true"/>
+<spring:message var="autoMsg_8eeec2a018" code="detail.package.booking.processing" javaScriptEscape="true"/>
+<spring:message var="autoMsg_672a4ede58" code="detail.package.booking.error" javaScriptEscape="true"/>
+<spring:message var="autoMsg_10e9dc3c7d" code="detail.package.booking.success" javaScriptEscape="true"/>
+<spring:message var="autoMsg_71e904bade" code="detail.flight.dateRequired" javaScriptEscape="true"/>
+<spring:message var="autoMsg_cd44f0d7cf" code="detail.flight.returnDateInvalid" javaScriptEscape="true"/>
+<spring:message var="autoMsg_91a3993f6d" code="detail.flight.noDiscount" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2040f14ea0" code="detail.flight.loading" javaScriptEscape="true"/>
+<spring:message var="autoMsg_571aeb4cc3" code="detail.flight.empty" javaScriptEscape="true"/>
+<spring:message var="autoMsg_663d9e9bea" code="detail.flight.loadFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4c6166fa9b" code="detail.flight.outboundLabel" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2732585e57" code="detail.flight.returnLabel" javaScriptEscape="true"/>
+<spring:message var="autoMsg_df1bd59f60" code="detail.flight.departLabel" javaScriptEscape="true"/>
+<spring:message var="autoMsg_43a23027a2" code="detail.flight.arriveLabel" javaScriptEscape="true"/>
+<spring:message var="autoMsg_c9215db6ab" code="detail.flight.mileageLimit" javaScriptEscape="true"/>
+<spring:message var="autoMsg_ca5547106e" code="detail.flight.loginRequired" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4bed199b34" code="detail.flight.selectOffer" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b84d9ec61f" code="detail.flight.purchaseFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_ce05461c95" code="detail.flight.purchaseError" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b48c522b0e" code="detail.flight.purchaseSuccess" javaScriptEscape="true"/>
+<spring:message var="autoMsg_92d7f2a24d" code="detail.location.noCoordinates" javaScriptEscape="true"/>
+<spring:message var="autoMsg_cbc4a42159" code="detail.ai.loadFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_11daf76bca" code="community.detail.report.reasonRequired" javaScriptEscape="true"/>
+<spring:message var="autoMsg_920f39533f" code="community.detail.report.submitted" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4fb166adbe" code="community.detail.request.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_c3447494a0" code="community.detail.userReport.minLength" javaScriptEscape="true"/>
+<spring:message var="autoMsg_385faf859f" code="detail.fav.done" javaScriptEscape="true"/>
+<spring:message var="autoMsg_3335ae8313" code="detail.fav.do" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9a1bf4bea9" code="detail.like.done" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9e04b6024d" code="detail.like.do" javaScriptEscape="true"/>
+<spring:message var="autoMsg_16702be3c7" code="detail.review.placeholder" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7fd241d1aa" code="detail.ai.desc"/>
+<spring:message var="autoMsg_52ebf8001d" code="detail.ai.trending.title"/>
+<spring:message var="autoMsg_b50aa39cea" code="detail.ai.trending.desc"/>
 <c:set var="pageCSS" value="explore/explore.css"/>
 <%@ include file="../common/header.jsp" %>
 
@@ -866,9 +996,9 @@ html { scrollbar-gutter: stable; }
       <span class="det-hero-rat">
         <span class="star">&#11088;</span>
         <fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/>
-        <span style="font-size:13px;opacity:.8">(${spot.reviewCount}<spring:message code="detail.review.countSuffix"/>)</span>
+        <span style="font-size:13px;opacity:.8">(${spot.reviewCount}${autoMsg_f390677e39})</span>
       </span>
-      <span>&#10084; ${spot.likeCount} <spring:message code="detail.like.count"/></span>
+      <span>&#10084; ${spot.likeCount} ${autoMsg_18cfc8ff7e}</span>
     </div>
   </div>
 </div>
@@ -877,7 +1007,7 @@ html { scrollbar-gutter: stable; }
 <div class="det-body">
 
   <button class="det-back-btn" onclick="history.back()">
-    &#8592; <spring:message code="detail.back"/>
+    &#8592; ${autoMsg_7ba379cfc1}
   </button>
 
   <!-- 액션 버튼 -->
@@ -887,8 +1017,8 @@ html { scrollbar-gutter: stable; }
       <span class="det-action-icon">${spot.favorited ? '⭐' : '☆'}</span>
       <span class="det-action-label">
         <c:choose>
-          <c:when test="${spot.favorited}"><spring:message code="detail.fav.done"/></c:when>
-          <c:otherwise><spring:message code="detail.fav.do"/></c:otherwise>
+          <c:when test="${spot.favorited}">${autoMsg_59ee812003}</c:when>
+          <c:otherwise>${autoMsg_27c009e3de}</c:otherwise>
         </c:choose>
       </span>
     </button>
@@ -897,14 +1027,14 @@ html { scrollbar-gutter: stable; }
       <span class="det-action-icon">${spot.liked ? '❤️' : '🤍'}</span>
       <span class="det-action-label">
         <c:choose>
-          <c:when test="${spot.liked}"><spring:message code="detail.like.done"/></c:when>
-          <c:otherwise><spring:message code="detail.like.do"/></c:otherwise>
+          <c:when test="${spot.liked}">${autoMsg_b1f2f74725}</c:when>
+          <c:otherwise>${autoMsg_719fd9e790}</c:otherwise>
         </c:choose>
       </span>
     </button>
     <button class="det-action-btn"
             onclick="location.href='${pageContext.request.contextPath}/assistant'">
-      &#10024; <spring:message code="detail.ai.plan"/>
+      &#10024; ${autoMsg_71a7cd69f0}
     </button>
   </div>
 
@@ -914,21 +1044,21 @@ html { scrollbar-gutter: stable; }
         <strong>
           ${isAdminMode ? '🛡️ ' : '✏️ '}
           <c:choose>
-            <c:when test="${isAdminMode}"><spring:message code="detail.edit.admin"/></c:when>
-            <c:otherwise><spring:message code="detail.edit.mine"/></c:otherwise>
+            <c:when test="${isAdminMode}">${autoMsg_27bfcab9ef}</c:when>
+            <c:otherwise>${autoMsg_9631b4c050}</c:otherwise>
           </c:choose>
         </strong><br>
         <c:choose>
-          <c:when test="${isAdminMode}"><spring:message code="detail.edit.admin.desc"/></c:when>
-          <c:otherwise><spring:message code="detail.edit.user.desc"/></c:otherwise>
+          <c:when test="${isAdminMode}">${autoMsg_ff14ce1d34}</c:when>
+          <c:otherwise>${autoMsg_ef8f21a2de}</c:otherwise>
         </c:choose>
       </div>
       <div class="det-admin-actions">
-        <button type="button" class="det-admin-btn" id="openAdminEditBtn"><spring:message code="detail.edit.open"/></button>
+        <button type="button" class="det-admin-btn" id="openAdminEditBtn">${autoMsg_33fe4192c2}</button>
         <c:if test="${isAdminMode}">
           <form method="post" action="${pageContext.request.contextPath}/detail/${spot.spotIdx}/admin/delete"
-                onsubmit="return confirm('<spring:message code="detail.delete.confirm" javaScriptEscape="true"/>');">
-            <button type="submit" class="det-admin-btn danger"><spring:message code="detail.delete"/></button>
+                onsubmit="return confirm('${autoMsg_d9ccc0deff}');">
+            <button type="submit" class="det-admin-btn danger">${autoMsg_7bcf2698e9}</button>
           </form>
         </c:if>
       </div>
@@ -940,8 +1070,8 @@ html { scrollbar-gutter: stable; }
       <div class="det-admin-dialog">
         <div class="det-admin-head">
           <div>
-            <h3><spring:message code="detail.edit.title"/></h3>
-            <p><spring:message code="detail.edit.subtitle"/></p>
+            <h3>${autoMsg_4255caff58}</h3>
+            <p>${autoMsg_c9a31553cb}</p>
           </div>
           <button type="button" class="det-admin-close" id="closeAdminEditBtn">&#215;</button>
         </div>
@@ -956,40 +1086,40 @@ html { scrollbar-gutter: stable; }
               id="adminEditForm">
           <div class="det-admin-grid">
             <div class="det-admin-field">
-              <label for="adminSpotName"><spring:message code="explore.form.name"/></label>
+              <label for="adminSpotName">${autoMsg_b4f959ac1c}</label>
               <input type="text" id="adminSpotName" name="name" maxlength="100"
                      value="${fn:escapeXml(adminEditForm.name)}" required>
             </div>
             <div class="det-admin-field">
-              <label for="adminSpotRegion"><spring:message code="detail.info.region"/></label>
+              <label for="adminSpotRegion">${autoMsg_7731772680}</label>
               <input type="text" id="adminSpotRegion" name="region" maxlength="100"
                      value="${fn:escapeXml(adminEditForm.region)}" required>
             </div>
             <div class="det-admin-field full">
-              <label for="adminSpotAddress"><spring:message code="detail.info.address"/></label>
+              <label for="adminSpotAddress">${autoMsg_5e30f0ac47}</label>
               <input type="text" id="adminSpotAddress" name="address" maxlength="255"
                      value="${fn:escapeXml(adminEditForm.address)}" required>
             </div>
             <div class="det-admin-field">
-              <label for="adminSpotLat"><spring:message code="explore.form.lat"/></label>
+              <label for="adminSpotLat">${autoMsg_d881a9788e}</label>
               <input type="number" id="adminSpotLat" name="latitude" step="0.000001"
                      value="${adminEditForm.latitude}" required>
             </div>
             <div class="det-admin-field">
-              <label for="adminSpotLng"><spring:message code="explore.form.lng"/></label>
+              <label for="adminSpotLng">${autoMsg_8c08226022}</label>
               <input type="number" id="adminSpotLng" name="longitude" step="0.000001"
                      value="${adminEditForm.longitude}" required>
             </div>
             <div class="det-admin-field full">
-              <label for="adminSpotDesc"><spring:message code="explore.form.description"/></label>
+              <label for="adminSpotDesc">${autoMsg_a923a49edb}</label>
               <textarea id="adminSpotDesc" name="description" maxlength="2000" required>${fn:escapeXml(adminEditForm.description)}</textarea>
             </div>
             <div class="det-admin-field full">
-              <label for="adminSpotImage"><spring:message code="explore.form.image"/></label>
+              <label for="adminSpotImage">${autoMsg_a120b29936}</label>
               <input type="file" id="adminSpotImage" name="image" accept=".jpg,.jpeg,.png,.gif,.webp">
             </div>
             <div class="det-admin-field full">
-              <label><spring:message code="explore.form.tags"/></label>
+              <label>${autoMsg_aaab74708a}</label>
               <div class="det-admin-tag-box">
                 <c:forEach var="tag" items="${writeTagList}">
                   <label class="det-admin-tag">
@@ -1004,8 +1134,8 @@ html { scrollbar-gutter: stable; }
             </div>
           </div>
           <div class="det-admin-foot">
-            <button type="button" class="det-action-btn" id="cancelAdminEditBtn"><spring:message code="explore.cancel"/></button>
-            <button type="submit" class="det-action-btn active"><spring:message code="explore.save"/></button>
+            <button type="button" class="det-action-btn" id="cancelAdminEditBtn">${autoMsg_6970b19300}</button>
+            <button type="submit" class="det-action-btn active">${autoMsg_ed0223cde6}</button>
           </div>
         </form>
       </div>
@@ -1014,36 +1144,36 @@ html { scrollbar-gutter: stable; }
 
   <!-- 기본 정보 -->
   <div class="det-section">
-    <h2>&#127760; <spring:message code="detail.info.title"/></h2>
+    <h2>&#127760; ${autoMsg_1e1668a583}</h2>
     <div class="info-grid">
       <c:if test="${not empty spot.region}">
         <div class="info-row">
-          <span class="info-label"><spring:message code="detail.info.region"/></span>
+          <span class="info-label">${autoMsg_7731772680}</span>
           <span class="info-value">${fn:escapeXml(spot.region)}</span>
         </div>
       </c:if>
       <c:if test="${not empty spot.address}">
         <div class="info-row">
-          <span class="info-label"><spring:message code="detail.info.address"/></span>
+          <span class="info-label">${autoMsg_5e30f0ac47}</span>
           <span class="info-value">${fn:escapeXml(spot.address)}</span>
         </div>
       </c:if>
       <div class="info-row">
-        <span class="info-label"><spring:message code="detail.info.rating"/></span>
+        <span class="info-label">${autoMsg_1da30e62a1}</span>
         <span class="info-value">
           &#11088;
           <c:choose>
             <c:when test="${spot.reviewCount > 0}">
               <fmt:formatNumber value="${spot.ratingAvg}" pattern="#,##0.0"/> / 5.0
-              &nbsp;(<spring:message code="detail.review.title"/> ${spot.reviewCount}<spring:message code="explore.count"/>)
+              &nbsp;(${autoMsg_3b90a30247} ${spot.reviewCount}${autoMsg_f3d5734333})
             </c:when>
-            <c:otherwise><spring:message code="detail.info.noReview"/></c:otherwise>
+            <c:otherwise>${autoMsg_bcc6e7d1f2}</c:otherwise>
           </c:choose>
         </span>
       </div>
       <div class="info-row">
-        <span class="info-label"><spring:message code="detail.info.like"/></span>
-        <span class="info-value">&#10084; ${spot.likeCount}<spring:message code="explore.count"/></span>
+        <span class="info-label">${autoMsg_a71efec490}</span>
+        <span class="info-value">&#10084; ${spot.likeCount}${autoMsg_f3d5734333}</span>
       </div>
     </div>
   </div>
@@ -1051,7 +1181,7 @@ html { scrollbar-gutter: stable; }
   <!-- 소개 -->
   <c:if test="${not empty spot.description}">
     <div class="det-section">
-      <h2>&#128214; <spring:message code="detail.intro.title"/></h2>
+      <h2>&#128214; ${autoMsg_ebf9e656d7}</h2>
       <p class="det-desc">${fn:escapeXml(spot.description)}</p>
     </div>
   </c:if>
@@ -1059,7 +1189,7 @@ html { scrollbar-gutter: stable; }
   <!-- 태그 -->
   <c:if test="${not empty spot.tags}">
     <div class="det-section">
-      <h2>&#127914; <spring:message code="detail.tags.title"/></h2>
+      <h2>&#127914; ${autoMsg_abe7e7a95a}</h2>
       <div class="det-tags">
         <c:forEach var="tag" items="${spot.tags}">
           <span class="spot-tag">${fn:escapeXml(tag)}</span>
@@ -1357,7 +1487,7 @@ html { scrollbar-gutter: stable; }
         if (imagePath) {
           var image = document.createElement('img');
           image.src = imagePath;
-          image.alt = data.title || '<spring:message code="detail.package.imageAlt" javaScriptEscape="true"/>';
+          image.alt = data.title || '${autoMsg_7d5a4da44c}';
           modalHero.prepend(image);
         }
 
@@ -1488,7 +1618,7 @@ html { scrollbar-gutter: stable; }
   <!-- 위치 -->
   <c:if test="${not empty spot.latitude and not empty spot.longitude and spot.latitude != 0 and spot.longitude != 0}">
     <div class="det-section">
-      <h2>&#128506; <spring:message code="detail.location.title"/></h2>
+      <h2>&#128506; ${autoMsg_77f86a125f}</h2>
 
       <!-- 지도 컨테이너 -->
       <div class="flight-map-wrap">
@@ -1592,7 +1722,7 @@ html { scrollbar-gutter: stable; }
 
   <!-- 리뷰 섹션 -->
   <div class="det-section">
-    <h2>&#128172; <spring:message code="detail.review.title"/></h2>
+    <h2>&#128172; ${autoMsg_3b90a30247}</h2>
 
     <!-- 리뷰 요약 -->
     <div class="review-summary-wrap">
@@ -1615,7 +1745,7 @@ html { scrollbar-gutter: stable; }
             <c:otherwise>☆☆☆☆☆</c:otherwise>
           </c:choose>
         </div>
-        <div class="review-sub"><spring:message code="detail.review.total" arguments="${spot.reviewCount}"/></div>
+        <div class="review-sub">${autoMsg_2ecc46d7bc}</div>
       </div>
     </div>
 
@@ -1625,7 +1755,7 @@ html { scrollbar-gutter: stable; }
       <%-- 로그인했고 아직 리뷰를 작성하지 않은 경우 작성 폼 표시 --%>
       <c:when test="${canWrite}">
         <div class="review-form-box" id="reviewFormBox">
-          <h3>&#9997; <spring:message code="detail.review.write"/></h3>
+          <h3>&#9997; ${autoMsg_7486c5c523}</h3>
           <div class="star-picker" id="starPicker">
             <span class="sp" data-v="1">&#9733;</span>
             <span class="sp" data-v="2">&#9733;</span>
@@ -1634,10 +1764,10 @@ html { scrollbar-gutter: stable; }
             <span class="sp" data-v="5">&#9733;</span>
           </div>
           <textarea class="review-textarea" id="reviewContent"
-                    maxlength="500" placeholder="<spring:message code="detail.review.placeholder"/>"></textarea>
+                    maxlength="500" placeholder="${autoMsg_ee3088460b}"></textarea>
           <div class="review-form-foot">
             <span class="review-char"><span id="charCount">0</span> / 500</span>
-            <button class="review-submit-btn" id="reviewSubmitBtn" disabled><spring:message code="detail.review.submit"/></button>
+            <button class="review-submit-btn" id="reviewSubmitBtn" disabled>${autoMsg_a2cd1a61bf}</button>
           </div>
         </div>
       </c:when>
@@ -1646,14 +1776,14 @@ html { scrollbar-gutter: stable; }
         <div id="alreadyReviewBox"
              style="background:var(--gray-50);border-radius:10px;padding:16px 20px;margin-bottom:28px;
                     font-size:14px;color:var(--gray-500);border:1px solid var(--gray-200);">
-          &#10003; <spring:message code="detail.review.written"/>
+          &#10003; ${autoMsg_c795565e05}
         </div>
       </c:when>
       <%-- 비로그인 시 로그인 유도 --%>
       <c:otherwise>
         <div class="review-login-box">
-          <p>&#128172; <spring:message code="detail.review.login.need"/></p>
-          <a href="${pageContext.request.contextPath}/auth/login" class="review-login-link"><spring:message code="detail.review.login"/></a>
+          <p>&#128172; ${autoMsg_d0ab6c7989}</p>
+          <a href="${pageContext.request.contextPath}/auth/login" class="review-login-link">${autoMsg_63e8959397}</a>
         </div>
       </c:otherwise>
     </c:choose>
@@ -1665,9 +1795,9 @@ html { scrollbar-gutter: stable; }
         <div class="review-admin-left">
           <label class="review-admin-select-all">
             <input type="checkbox" id="reviewSelectAll">
-            <span><spring:message code="detail.review.admin.selectAll"/></span>
+            <span>${autoMsg_f0ebac93ca}</span>
           </label>
-          <span class="review-sub"><spring:message code="detail.review.admin.help"/></span>
+          <span class="review-sub">${autoMsg_8daba712e1}</span>
         </div>
         <button type="button" class="review-admin-bulk-btn" id="blockSelectedReviewsBtn" disabled>
           <spring:message code="detail.review.admin.blockSelected"/>
@@ -1700,7 +1830,7 @@ html { scrollbar-gutter: stable; }
                         <span class="review-user-report-link rpt-user-link"
                               data-user-idx="${rv.userIdx}"
                               data-source-type="review"
-                              data-source-id="${rv.reviewIdx}"><spring:message code="community.detail.userReport"/></span>
+                              data-source-id="${rv.reviewIdx}">${autoMsg_ca78d9f589}</span>
                       </c:if>
                     </div>
                     <div class="review-date">
@@ -1730,18 +1860,18 @@ html { scrollbar-gutter: stable; }
                   <c:if test="${not empty sessionScope.loginUser and rv.userIdx ne loginUserIdx and not isAdminMode}">
                     <button type="button"
                             class="review-report-btn"
-                            data-review-report-idx="${rv.reviewIdx}"><spring:message code="community.detail.report"/></button>
+                            data-review-report-idx="${rv.reviewIdx}">${autoMsg_94fa83bd66}</button>
                   </c:if>
                   <c:if test="${rv.userIdx == loginUserIdx}">
                     <button class="review-delete-btn"
                             data-review-idx="${rv.reviewIdx}"
-                            data-spot-idx="${spot.spotIdx}"><spring:message code="detail.review.delete"/></button>
+                            data-spot-idx="${spot.spotIdx}">${autoMsg_b1124bd3b4}</button>
                   </c:if>
                   <c:if test="${isAdminMode}">
                     <button class="det-admin-review-btn"
                             type="button"
                             data-block-review-idx="${rv.reviewIdx}"
-                            data-block-spot-idx="${spot.spotIdx}"><spring:message code="detail.review.block"/></button>
+                            data-block-spot-idx="${spot.spotIdx}">${autoMsg_a985a82f30}</button>
                   </c:if>
                 </div>
               </div>
@@ -1762,7 +1892,7 @@ html { scrollbar-gutter: stable; }
   <!-- AI 맞춤 여행지 추천 섹션 <로그인 사용자만> -->
   <c:if test="${isLoggedIn}">
   <div class="det-section" id="aiRecommendSection">
-    <h2 id="aiRecTitle"><spring:message code="detail.ai.title"/></h2>
+    <h2 id="aiRecTitle">${autoMsg_6cceb0a144}</h2>
     <p id="aiRecDesc" style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">
       <spring:message code="detail.ai.desc"/>
     </p>
@@ -1784,7 +1914,7 @@ html { scrollbar-gutter: stable; }
     <button class="det-action-btn"
             onclick="location.href='${pageContext.request.contextPath}/explore'"
             style="margin:0 auto;">
-      &#128269; <spring:message code="detail.explore.more"/>
+      &#128269; ${autoMsg_c5e15f91f8}
     </button>
   </div>
 
@@ -1796,46 +1926,46 @@ html { scrollbar-gutter: stable; }
 
 <div id="rpt-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
-    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;"><spring:message code="community.detail.report.title"/></div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;">${autoMsg_09687754cb}</div>
     <input type="hidden" id="rptTargetType" value="">
     <input type="hidden" id="rptTargetId" value="">
     <div style="margin-bottom:16px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;"><spring:message code="community.detail.report.reason"/> <span style="color:#ef4444;">*</span></label>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">${autoMsg_22acf32472} <span style="color:#ef4444;">*</span></label>
       <select id="rptReason" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;">
-        <option value=""><spring:message code="community.detail.report.reason.choose"/></option>
-        <option value="spam"><spring:message code="community.detail.report.reason.spam"/></option>
-        <option value="abuse"><spring:message code="community.detail.report.reason.abuse"/></option>
-        <option value="privacy"><spring:message code="community.detail.report.reason.privacy"/></option>
-        <option value="illegal"><spring:message code="community.detail.report.reason.illegal"/></option>
-        <option value="etc"><spring:message code="community.detail.report.reason.other"/></option>
+        <option value="">${autoMsg_ec939a1fb7}</option>
+        <option value="spam">${autoMsg_892b5724bb}</option>
+        <option value="abuse">${autoMsg_bce59fbfd9}</option>
+        <option value="privacy">${autoMsg_c095d8c7ce}</option>
+        <option value="illegal">${autoMsg_d97082c998}</option>
+        <option value="etc">${autoMsg_24ca2dc020}</option>
       </select>
       <div id="rptReasonMsg" style="font-size:12px;color:#ef4444;margin-top:6px;"></div>
     </div>
     <div style="margin-bottom:20px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;"><spring:message code="community.detail.report.description"/></label>
-      <textarea id="rptDescription" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="<spring:message code='community.detail.report.description.placeholder'/>"></textarea>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">${autoMsg_77a41fec80}</label>
+      <textarea id="rptDescription" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="${autoMsg_9b0abd03a8}"></textarea>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button type="button" id="rptCancelBtn" class="det-action-btn"><spring:message code="community.detail.cancel"/></button>
-      <button type="button" id="rptSubmitBtn" class="det-action-btn active"><spring:message code="community.detail.report.submit"/></button>
+      <button type="button" id="rptCancelBtn" class="det-action-btn">${autoMsg_ad8ea8e20e}</button>
+      <button type="button" id="rptSubmitBtn" class="det-action-btn active">${autoMsg_f59b85e3ad}</button>
     </div>
   </div>
 </div>
 
 <div id="rpt-user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
-    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;"><spring:message code="community.detail.userReport.title"/></div>
-    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;"><spring:message code="community.detail.userReport.description"/></div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;">${autoMsg_84a57dc4cd}</div>
+    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">${autoMsg_465c990282}</div>
     <input type="hidden" id="rptUserTargetIdx" value="">
     <input type="hidden" id="rptUserSourceType" value="">
     <input type="hidden" id="rptUserSourceId" value="">
     <div style="margin-bottom:20px;">
-      <textarea id="rptUserDescription" rows="6" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="<spring:message code='community.detail.userReport.placeholder'/>"></textarea>
+      <textarea id="rptUserDescription" rows="6" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;" placeholder="${autoMsg_f44c70ae24}"></textarea>
       <div id="rptUserDescMsg" style="font-size:12px;color:#ef4444;margin-top:6px;"></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button type="button" id="rptUserCancelBtn" class="det-action-btn"><spring:message code="community.detail.cancel"/></button>
-      <button type="button" id="rptUserSubmitBtn" class="det-action-btn active"><spring:message code="community.detail.report.submit"/></button>
+      <button type="button" id="rptUserCancelBtn" class="det-action-btn">${autoMsg_ad8ea8e20e}</button>
+      <button type="button" id="rptUserSubmitBtn" class="det-action-btn active">${autoMsg_f59b85e3ad}</button>
     </div>
   </div>
 </div>
@@ -1850,61 +1980,61 @@ html { scrollbar-gutter: stable; }
   const spotIdx  = '${spot.spotIdx}';
   const loginUserIdx = '${loginUserIdx}';
   const detailMessages = window.detailMessages = {
-    genericError: '<spring:message code="detail.common.error" javaScriptEscape="true"/>',
-    loginRequired: '<spring:message code="detail.common.loginRequired" javaScriptEscape="true"/>',
-    tagLimit: '<spring:message code="detail.edit.tags.max" javaScriptEscape="true"/>',
-    favAdded: '<spring:message code="detail.fav.added" javaScriptEscape="true"/>',
-    favRemoved: '<spring:message code="detail.fav.removed" javaScriptEscape="true"/>',
-    likeAdded: '<spring:message code="detail.like.added" javaScriptEscape="true"/>',
-    likeRemoved: '<spring:message code="detail.like.removed" javaScriptEscape="true"/>',
-    reviewSubmitLoading: '<spring:message code="detail.review.submit.loading" javaScriptEscape="true"/>',
-    reviewSubmitFail: '<spring:message code="detail.review.submit.fail" javaScriptEscape="true"/>',
-    reviewSubmitSuccess: '<spring:message code="detail.review.submit.success" javaScriptEscape="true"/>',
-    reviewDeleteConfirm: '<spring:message code="detail.review.delete.confirm" javaScriptEscape="true"/>',
-    reviewDeleteFail: '<spring:message code="detail.review.delete.fail" javaScriptEscape="true"/>',
-    reviewDeleteSuccess: '<spring:message code="detail.review.delete.success" javaScriptEscape="true"/>',
-    reviewEmptyVisible: '<spring:message code="detail.review.empty.visible" javaScriptEscape="true"/>',
-    reviewBlockConfirm: '<spring:message code="detail.review.block.confirm" javaScriptEscape="true"/>',
-    reviewBlockFail: '<spring:message code="detail.review.block.fail" javaScriptEscape="true"/>',
-    reviewBlockSuccess: '<spring:message code="detail.review.block.success" javaScriptEscape="true"/>',
-    reviewBlockNone: '<spring:message code="detail.review.block.none" javaScriptEscape="true"/>',
-    reviewBlockBulkConfirmAll: '<spring:message code="detail.review.block.bulkConfirmAll" javaScriptEscape="true"/>',
-    reviewBlockBulkConfirmSelected: '<spring:message code="detail.review.block.bulkConfirmSelected" javaScriptEscape="true"/>',
-    reviewBlockBulkSuccessTemplate: '<spring:message code="detail.review.block.bulkSuccess" javaScriptEscape="true"/>',
-    reviewBlockSelectedLabel: '<spring:message code="detail.review.admin.blockSelected" javaScriptEscape="true"/>',
-    reviewLikeSuccess: '<spring:message code="detail.review.like.success" javaScriptEscape="true"/>',
-    reviewWriteTitle: '<spring:message code="detail.review.write" javaScriptEscape="true"/>',
-    reviewSubmitLabel: '<spring:message code="detail.review.submit" javaScriptEscape="true"/>',
-    reviewEmptyHtml: '<spring:message code="detail.review.empty" javaScriptEscape="true"/>',
-    packageLoginAction: '<spring:message code="detail.package.booking.loginAction" javaScriptEscape="true"/>',
-    packageBookingAction: '<spring:message code="detail.package.booking.action" javaScriptEscape="true"/>',
-    packageLoginRequired: '<spring:message code="detail.package.booking.loginRequired" javaScriptEscape="true"/>',
-    packageInsufficientCash: '<spring:message code="detail.package.booking.insufficientCash" javaScriptEscape="true"/>',
-    packageProcessing: '<spring:message code="detail.package.booking.processing" javaScriptEscape="true"/>',
-    packageError: '<spring:message code="detail.package.booking.error" javaScriptEscape="true"/>',
-    packageSuccessTemplate: '<spring:message code="detail.package.booking.success" javaScriptEscape="true"/>',
-    flightDateRequired: '<spring:message code="detail.flight.dateRequired" javaScriptEscape="true"/>',
-    flightReturnInvalid: '<spring:message code="detail.flight.returnDateInvalid" javaScriptEscape="true"/>',
-    flightNoDiscount: '<spring:message code="detail.flight.noDiscount" javaScriptEscape="true"/>',
-    flightLoading: '<spring:message code="detail.flight.loading" javaScriptEscape="true"/>',
-    flightEmpty: '<spring:message code="detail.flight.empty" javaScriptEscape="true"/>',
-    flightLoadFail: '<spring:message code="detail.flight.loadFail" javaScriptEscape="true"/>',
-    flightOutboundLabel: '<spring:message code="detail.flight.outboundLabel" javaScriptEscape="true"/>',
-    flightReturnLabel: '<spring:message code="detail.flight.returnLabel" javaScriptEscape="true"/>',
-    flightDepartLabel: '<spring:message code="detail.flight.departLabel" javaScriptEscape="true"/>',
-    flightArriveLabel: '<spring:message code="detail.flight.arriveLabel" javaScriptEscape="true"/>',
-    flightMileageLimitTemplate: '<spring:message code="detail.flight.mileageLimit" javaScriptEscape="true"/>',
-    flightLoginRequired: '<spring:message code="detail.flight.loginRequired" javaScriptEscape="true"/>',
-    flightSelectOffer: '<spring:message code="detail.flight.selectOffer" javaScriptEscape="true"/>',
-    flightPurchaseFail: '<spring:message code="detail.flight.purchaseFail" javaScriptEscape="true"/>',
-    flightPurchaseError: '<spring:message code="detail.flight.purchaseError" javaScriptEscape="true"/>',
-    flightPurchaseSuccessTemplate: '<spring:message code="detail.flight.purchaseSuccess" javaScriptEscape="true"/>',
-    locationNoCoordinates: '<spring:message code="detail.location.noCoordinates" javaScriptEscape="true"/>',
-    aiLoadFail: '<spring:message code="detail.ai.loadFail" javaScriptEscape="true"/>',
-    reportReasonRequired: '<spring:message code="community.detail.report.reasonRequired" javaScriptEscape="true"/>',
-    reportSubmitted: '<spring:message code="community.detail.report.submitted" javaScriptEscape="true"/>',
-    requestFail: '<spring:message code="community.detail.request.fail" javaScriptEscape="true"/>',
-    userReportMinLength: '<spring:message code="community.detail.userReport.minLength" javaScriptEscape="true"/>'
+    genericError: '${autoMsg_0533c80ab2}',
+    loginRequired: '${autoMsg_5b3b4d0f7a}',
+    tagLimit: '${autoMsg_d49baedede}',
+    favAdded: '${autoMsg_11c3b20f7d}',
+    favRemoved: '${autoMsg_b1fd0ed5a0}',
+    likeAdded: '${autoMsg_5214d1ab65}',
+    likeRemoved: '${autoMsg_788bdb83fc}',
+    reviewSubmitLoading: '${autoMsg_7f8633fbc9}',
+    reviewSubmitFail: '${autoMsg_1ab2849ef2}',
+    reviewSubmitSuccess: '${autoMsg_f5789cadc1}',
+    reviewDeleteConfirm: '${autoMsg_ead131b839}',
+    reviewDeleteFail: '${autoMsg_0643fc5936}',
+    reviewDeleteSuccess: '${autoMsg_22f8071df6}',
+    reviewEmptyVisible: '${autoMsg_0c60c7802a}',
+    reviewBlockConfirm: '${autoMsg_7a7196f900}',
+    reviewBlockFail: '${autoMsg_b64f9ce751}',
+    reviewBlockSuccess: '${autoMsg_1266d379f9}',
+    reviewBlockNone: '${autoMsg_a6dd1feffa}',
+    reviewBlockBulkConfirmAll: '${autoMsg_d558dd7f7d}',
+    reviewBlockBulkConfirmSelected: '${autoMsg_0b4625057f}',
+    reviewBlockBulkSuccessTemplate: '${autoMsg_5fa2784d11}',
+    reviewBlockSelectedLabel: '${autoMsg_3b8a3f2b5d}',
+    reviewLikeSuccess: '${autoMsg_5bd7c4703c}',
+    reviewWriteTitle: '${autoMsg_486a5fd302}',
+    reviewSubmitLabel: '${autoMsg_104523f557}',
+    reviewEmptyHtml: '${autoMsg_48a1167ef8}',
+    packageLoginAction: '${autoMsg_0005bf699e}',
+    packageBookingAction: '${autoMsg_37e76eae10}',
+    packageLoginRequired: '${autoMsg_bc8c678d03}',
+    packageInsufficientCash: '${autoMsg_0b814dda73}',
+    packageProcessing: '${autoMsg_8eeec2a018}',
+    packageError: '${autoMsg_672a4ede58}',
+    packageSuccessTemplate: '${autoMsg_10e9dc3c7d}',
+    flightDateRequired: '${autoMsg_71e904bade}',
+    flightReturnInvalid: '${autoMsg_cd44f0d7cf}',
+    flightNoDiscount: '${autoMsg_91a3993f6d}',
+    flightLoading: '${autoMsg_2040f14ea0}',
+    flightEmpty: '${autoMsg_571aeb4cc3}',
+    flightLoadFail: '${autoMsg_663d9e9bea}',
+    flightOutboundLabel: '${autoMsg_4c6166fa9b}',
+    flightReturnLabel: '${autoMsg_2732585e57}',
+    flightDepartLabel: '${autoMsg_df1bd59f60}',
+    flightArriveLabel: '${autoMsg_43a23027a2}',
+    flightMileageLimitTemplate: '${autoMsg_c9215db6ab}',
+    flightLoginRequired: '${autoMsg_ca5547106e}',
+    flightSelectOffer: '${autoMsg_4bed199b34}',
+    flightPurchaseFail: '${autoMsg_b84d9ec61f}',
+    flightPurchaseError: '${autoMsg_ce05461c95}',
+    flightPurchaseSuccessTemplate: '${autoMsg_b48c522b0e}',
+    locationNoCoordinates: '${autoMsg_92d7f2a24d}',
+    aiLoadFail: '${autoMsg_cbc4a42159}',
+    reportReasonRequired: '${autoMsg_11daf76bca}',
+    reportSubmitted: '${autoMsg_920f39533f}',
+    requestFail: '${autoMsg_4fb166adbe}',
+    userReportMinLength: '${autoMsg_c3447494a0}'
   };
   function formatMessage(template) {
     var args = Array.prototype.slice.call(arguments, 1);
@@ -1999,15 +2129,15 @@ html { scrollbar-gutter: stable; }
 
   favBtn && favBtn.addEventListener('click', function () {
     toggleAction('/explore/favorite/' + spotIdx, this,
-                 '<spring:message code="detail.fav.done" javaScriptEscape="true"/>',
-                 '<spring:message code="detail.fav.do" javaScriptEscape="true"/>',
+                 '${autoMsg_385faf859f}',
+                 '${autoMsg_3335ae8313}',
                  detailMessages.favAdded, detailMessages.favRemoved, 'favorited');
   });
 
   likeBtn && likeBtn.addEventListener('click', function () {
     toggleAction('/explore/like/' + spotIdx, this,
-                 '<spring:message code="detail.like.done" javaScriptEscape="true"/>',
-                 '<spring:message code="detail.like.do" javaScriptEscape="true"/>',
+                 '${autoMsg_9a1bf4bea9}',
+                 '${autoMsg_9e04b6024d}',
                  detailMessages.likeAdded, detailMessages.likeRemoved, 'liked');
   });
 
@@ -2269,7 +2399,7 @@ html { scrollbar-gutter: stable; }
           <span class="sp" data-v="5">★</span>
         </div>
         <textarea class="review-textarea" id="reviewContent"
-                  maxlength="500" placeholder="<spring:message code='detail.review.placeholder' javaScriptEscape='true'/>"></textarea>
+                  maxlength="500" placeholder="${autoMsg_16702be3c7}"></textarea>
         <div class="review-form-foot">
           <span class="review-char"><span id="charCount">0</span> / 500</span>
           <button class="review-submit-btn" id="reviewSubmitBtn" disabled>${detailMessages.reviewSubmitLabel}</button>
@@ -2978,10 +3108,10 @@ function initMap() {
 (function() {
   var CTX_REC      = '${pageContext.request.contextPath}';
   var SPOT_IDX_REC = '${spot.spotIdx}';
-  var AI_DEFAULT_TITLE = '<spring:message code="detail.ai.title"/>';
-  var AI_DEFAULT_DESC = '<spring:message code="detail.ai.desc"/>';
-  var AI_TRENDING_TITLE = '<spring:message code="detail.ai.trending.title"/>';
-  var AI_TRENDING_DESC = '<spring:message code="detail.ai.trending.desc"/>';
+  var AI_DEFAULT_TITLE = '${autoMsg_6cceb0a144}';
+  var AI_DEFAULT_DESC = '${autoMsg_7fd241d1aa}';
+  var AI_TRENDING_TITLE = '${autoMsg_52ebf8001d}';
+  var AI_TRENDING_DESC = '${autoMsg_b50aa39cea}';
   var pageEnter    = Date.now();
   var logSent      = false;
 

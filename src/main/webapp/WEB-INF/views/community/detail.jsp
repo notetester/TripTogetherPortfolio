@@ -2,6 +2,104 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<spring:message var="autoMsg_7917e854ff" code="community.detail.back"/>
+<spring:message var="autoMsg_e2a87fe724" code="community.detail.userReport"/>
+<spring:message var="autoMsg_7fdfe423a5" code="community.detail.user.unblock"/>
+<spring:message var="autoMsg_3ce7c05fe1" code="community.detail.user.block"/>
+<spring:message var="autoMsg_61e976fea7" code="community.detail.post.unblock"/>
+<spring:message var="autoMsg_ce9822ebea" code="community.detail.post.block"/>
+<spring:message var="autoMsg_3cf7258dd5" code="community.type.review"/>
+<spring:message var="autoMsg_8a8067743c" code="community.type.photo"/>
+<spring:message var="autoMsg_7167639b99" code="community.type.tip"/>
+<spring:message var="autoMsg_923efc922c" code="community.type.question"/>
+<spring:message var="autoMsg_ba31f06ae4" code="community.detail.edit"/>
+<spring:message var="autoMsg_c27b87f5a6" code="community.detail.delete"/>
+<spring:message var="autoMsg_b4cc513024" code="community.badge.ai"/>
+<spring:message var="autoMsg_0af85cb7a9" code="community.detail.tipCategory"/>
+<spring:message var="autoMsg_2c366e34b3" code="community.detail.tip.transport"/>
+<spring:message var="autoMsg_f9062453fd" code="community.detail.tip.accom"/>
+<spring:message var="autoMsg_fef3732dd0" code="community.detail.tip.food"/>
+<spring:message var="autoMsg_8d4d7decd2" code="community.detail.tip.money"/>
+<spring:message var="autoMsg_fa32c9371d" code="community.detail.tip.safety"/>
+<spring:message var="autoMsg_b6e6f06dfb" code="community.detail.tip.etc"/>
+<spring:message var="autoMsg_9070ab3a59" code="community.detail.question.solved"/>
+<spring:message var="autoMsg_c7bc1af95c" code="community.detail.question.unsolved"/>
+<spring:message var="autoMsg_0b38fe76d8" code="community.detail.autoImage"/>
+<spring:message var="autoMsg_47eb681bd5" code="community.detail.report"/>
+<spring:message var="autoMsg_6d4e50fb66" code="community.detail.comments.total"/>
+<spring:message var="autoMsg_e9a16e8b8d" code="community.detail.comments.sort.created"/>
+<spring:message var="autoMsg_7287455907" code="community.detail.comments.sort.latest"/>
+<spring:message var="autoMsg_715606ec81" code="community.detail.comments.sort.replies"/>
+<spring:message var="autoMsg_17511e6c54" code="community.detail.comments.viewPost"/>
+<spring:message var="autoMsg_32f38cd4d0" code="community.detail.comments.close"/>
+<spring:message var="autoMsg_9a1d8799a8" code="community.detail.comments.refresh"/>
+<spring:message var="autoMsg_de189e6eb1" code="community.admin.selectAll"/>
+<spring:message var="autoMsg_f9efcfed06" code="community.admin.delete"/>
+<spring:message var="autoMsg_5bd80c8ada" code="community.detail.comments.block"/>
+<spring:message var="autoMsg_6c78210daf" code="community.detail.comments.block.user"/>
+<spring:message var="autoMsg_219c39e727" code="community.detail.comments.block.ip"/>
+<spring:message var="autoMsg_abb4754fe2" code="community.detail.comments.block.both"/>
+<spring:message var="autoMsg_c020ad3077" code="community.detail.comments.blockDelete"/>
+<spring:message var="autoMsg_30f22c3a42" code="community.detail.comments.blockDelete.user"/>
+<spring:message var="autoMsg_8cc2a999ee" code="community.detail.comments.blockDelete.ip"/>
+<spring:message var="autoMsg_71d052342e" code="community.detail.comments.blockDelete.both"/>
+<spring:message var="autoMsg_5cc10d97df" code="community.detail.comments.empty"/>
+<spring:message var="autoMsg_9e64595082" code="community.detail.comment.unblock"/>
+<spring:message var="autoMsg_0c942b773f" code="community.detail.comment.block"/>
+<spring:message var="autoMsg_c06f5a4c15" code="community.detail.comment.accepted"/>
+<spring:message var="autoMsg_ee75a23ef6" code="community.detail.comment.accept"/>
+<spring:message var="autoMsg_6434ace69d" code="community.detail.comment.delete"/>
+<spring:message var="autoMsg_c4b3d53639" code="community.detail.report.blocked"/>
+<spring:message var="autoMsg_619141f877" code="community.detail.badge.comment.blocked"/>
+<spring:message var="autoMsg_02581992de" code="community.badge.user"/>
+<spring:message var="autoMsg_74f25ad5f0" code="community.detail.reply"/>
+<spring:message var="autoMsg_c9df7cca98" code="community.detail.reply.placeholder"/>
+<spring:message var="autoMsg_9445210307" code="community.detail.cancel"/>
+<spring:message var="autoMsg_26437bfd6a" code="community.detail.submit"/>
+<spring:message var="autoMsg_63d33e34be" code="community.blocked.ai"/>
+<spring:message var="autoMsg_c5285ade9f" code="community.blocked.report"/>
+<spring:message var="autoMsg_2494e57e57" code="community.detail.comment.placeholder"/>
+<spring:message var="autoMsg_b72bc391c0" code="community.detail.comment.loginRequiredPrefix"/>
+<spring:message var="autoMsg_2bb083c5f9" code="community.detail.comment.loginLink"/>
+<spring:message var="autoMsg_90e3ca39d9" code="community.detail.comment.loginRequiredSuffix"/>
+<spring:message var="autoMsg_afb553ff1d" code="community.detail.related.title"/>
+<spring:message var="autoMsg_fd3b4f043b" code="community.latest.title"/>
+<spring:message var="autoMsg_9f801f8ebd" code="community.latest.empty"/>
+<spring:message var="autoMsg_fc6257a564" code="community.search.all"/>
+<spring:message var="autoMsg_43b7158f66" code="community.search.title"/>
+<spring:message var="autoMsg_9d7259d01e" code="community.search.content"/>
+<spring:message var="autoMsg_dfcfefc0d1" code="community.search.tag"/>
+<spring:message var="autoMsg_fe79a8a777" code="community.search.author"/>
+<spring:message var="autoMsg_94406afbba" code="community.search.comment"/>
+<spring:message var="autoMsg_23b57e0d30" code="community.search.placeholder"/>
+<spring:message var="autoMsg_063c60af9c" code="community.detail.comments.close" javaScriptEscape="true"/>
+<spring:message var="autoMsg_5693ea868b" code="community.detail.comments.open" javaScriptEscape="true"/>
+<spring:message var="autoMsg_1dd92f03a4" code="community.admin.selected" javaScriptEscape="true"/>
+<spring:message var="autoMsg_8631a3a17f" code="community.admin.delete" javaScriptEscape="true"/>
+<spring:message var="autoMsg_f6f9917438" code="community.detail.comments.block.user" javaScriptEscape="true"/>
+<spring:message var="autoMsg_8d18b11091" code="community.detail.comments.block.ip" javaScriptEscape="true"/>
+<spring:message var="autoMsg_f1e5401960" code="community.detail.comments.block.both" javaScriptEscape="true"/>
+<spring:message var="autoMsg_5a6f235bae" code="community.detail.comments.blockDelete.user" javaScriptEscape="true"/>
+<spring:message var="autoMsg_5d68a9ba55" code="community.detail.comments.blockDelete.ip" javaScriptEscape="true"/>
+<spring:message var="autoMsg_f9729b7a6b" code="community.detail.comments.blockDelete.both" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4f2d9101e4" code="community.admin.delete.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_83df01f46f" code="community.admin.clearBlur.confirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9df1634059" code="community.admin.clearBlur.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_c7407047d9" code="community.detail.report.title"/>
+<spring:message var="autoMsg_7884295f58" code="community.detail.report.reason"/>
+<spring:message var="autoMsg_371c0a977e" code="community.detail.report.reason.choose"/>
+<spring:message var="autoMsg_d354a18112" code="community.detail.report.reason.spam"/>
+<spring:message var="autoMsg_4f1b16c8e9" code="community.detail.report.reason.abuse"/>
+<spring:message var="autoMsg_344c841afe" code="community.detail.report.reason.privacy"/>
+<spring:message var="autoMsg_94a2ad5830" code="community.detail.report.reason.adult"/>
+<spring:message var="autoMsg_715ebce729" code="community.detail.report.reason.illegal"/>
+<spring:message var="autoMsg_60f0bab9c8" code="community.detail.report.reason.other"/>
+<spring:message var="autoMsg_f54c635454" code="community.detail.report.description"/>
+<spring:message var="autoMsg_1df989b8ce" code="community.detail.report.description.placeholder"/>
+<spring:message var="autoMsg_fdf3d05d7b" code="community.detail.report.submit"/>
+<spring:message var="autoMsg_57d9adce02" code="community.detail.userReport.title"/>
+<spring:message var="autoMsg_3494a8f28d" code="community.detail.userReport.description"/>
+<spring:message var="autoMsg_1b11f968dd" code="community.detail.userReport.placeholder"/>
 <%--
   커뮤니티 상세 페이지
   model 필요:
@@ -55,7 +153,7 @@
 <div class="detail-wrap">
 
   <button class="back-btn" onclick="location.href='${pageContext.request.contextPath}/community/list'">
-    &#8592; <spring:message code="community.detail.back"/>
+    &#8592; ${autoMsg_7917e854ff}
   </button>
 
   <main class="detail-main">
@@ -78,7 +176,7 @@
               <c:if test="${not empty post.profileBadgeLabel}">
                 <span class="tt-profile-badge ${post.profileBadgeClass}">${post.profileBadgeLabel}</span>
               </c:if>
-              <span class="comment-author-link rpt-user-link" data-user-idx="${post.userIdx}" data-source-type="post" data-source-id="${post.postId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
+              <span class="comment-author-link rpt-user-link" data-user-idx="${post.userIdx}" data-source-type="post" data-source-id="${post.postId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;">${autoMsg_e2a87fe724}</span>
             </c:if>
             <c:if test="${empty sessionScope.loginUser or isOwner or isAdminMode}">
               <span class="detail-author-name tt-nickname ${post.nicknameColorClass} ${post.nicknameEffectClass}">${post.nickname}</span>
@@ -89,18 +187,18 @@
             <c:if test="${isAdminMode and not isOwner}">
               <c:choose>
                 <c:when test="${post.accountStatus eq 'BLOCKED'}">
-                  <button class="block-btn unblock" onclick="unblockUser(${post.userIdx})"><spring:message code="community.detail.user.unblock"/></button>
+                  <button class="block-btn unblock" onclick="unblockUser(${post.userIdx})">${autoMsg_7fdfe423a5}</button>
                 </c:when>
                 <c:otherwise>
-                  <button class="block-btn" onclick="blockUser(${post.userIdx})"><spring:message code="community.detail.user.block"/></button>
+                  <button class="block-btn" onclick="blockUser(${post.userIdx})">${autoMsg_3ce7c05fe1}</button>
                 </c:otherwise>
               </c:choose>
               <c:choose>
                 <c:when test="${post.postStatus eq 'BLOCKED'}">
-                  <button class="block-btn unblock" onclick="unblockPost(${post.postId})"><spring:message code="community.detail.post.unblock"/></button>
+                  <button class="block-btn unblock" onclick="unblockPost(${post.postId})">${autoMsg_61e976fea7}</button>
                 </c:when>
                 <c:otherwise>
-                  <button class="block-btn" onclick="blockPost(${post.postId})"><spring:message code="community.detail.post.block"/></button>
+                  <button class="block-btn" onclick="blockPost(${post.postId})">${autoMsg_ce9822ebea}</button>
                 </c:otherwise>
               </c:choose>
             </c:if>
@@ -111,17 +209,17 @@
         </div>
         <span class="detail-type-badge type-${post.postType}">
           <c:choose>
-            <c:when test="${post.postType eq 'review'}"><spring:message code="community.type.review"/></c:when>
-            <c:when test="${post.postType eq 'photo'}"><spring:message code="community.type.photo"/></c:when>
-            <c:when test="${post.postType eq 'tip'}"><spring:message code="community.type.tip"/></c:when>
-            <c:when test="${post.postType eq 'question'}"><spring:message code="community.type.question"/></c:when>
+            <c:when test="${post.postType eq 'review'}">${autoMsg_3cf7258dd5}</c:when>
+            <c:when test="${post.postType eq 'photo'}">${autoMsg_8a8067743c}</c:when>
+            <c:when test="${post.postType eq 'tip'}">${autoMsg_7167639b99}</c:when>
+            <c:when test="${post.postType eq 'question'}">${autoMsg_923efc922c}</c:when>
           </c:choose>
         </span>
         <c:if test="${isOwner or isAdminMode}">
           <div class="detail-actions">
             <button class="action-btn edit-btn"
-                    onclick="location.href='${pageContext.request.contextPath}/community/edit/${post.postId}'"><spring:message code="community.detail.edit"/></button>
-            <button class="action-btn delete-btn" onclick="deletePost(${post.postId})"><spring:message code="community.detail.delete"/></button>
+                    onclick="location.href='${pageContext.request.contextPath}/community/edit/${post.postId}'">${autoMsg_ba31f06ae4}</button>
+            <button class="action-btn delete-btn" onclick="deletePost(${post.postId})">${autoMsg_c27b87f5a6}</button>
             <c:if test="${isAdminMode and (post.aiFlagged or post.reportCount >= reportThreshold)}">
               <button class="action-btn" onclick="adminClearPostBlur(event, ${post.postId})">
                 <spring:message code="community.admin.clearBlur"/>
@@ -130,22 +228,22 @@
           </div>
         </c:if>
         <c:if test="${isAdminMode and post.aiFlagged}">
-          <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+          <span class="blocked-badge">${autoMsg_b4cc513024}</span>
         </c:if>
       </div>
 
       <%-- 유형별 추가 정보 --%>
       <c:if test="${post.postType eq 'tip' and not empty tipCategory}">
         <div class="detail-type-extra">
-          <span class="type-extra-label"><spring:message code="community.detail.tipCategory"/></span>
+          <span class="type-extra-label">${autoMsg_0af85cb7a9}</span>
           <span class="type-extra-value">
             <c:choose>
-              <c:when test="${tipCategory eq 'transport'}"><spring:message code="community.detail.tip.transport"/></c:when>
-              <c:when test="${tipCategory eq 'accom'}"><spring:message code="community.detail.tip.accom"/></c:when>
-              <c:when test="${tipCategory eq 'food'}"><spring:message code="community.detail.tip.food"/></c:when>
-              <c:when test="${tipCategory eq 'money'}"><spring:message code="community.detail.tip.money"/></c:when>
-              <c:when test="${tipCategory eq 'safety'}"><spring:message code="community.detail.tip.safety"/></c:when>
-              <c:otherwise><spring:message code="community.detail.tip.etc"/></c:otherwise>
+              <c:when test="${tipCategory eq 'transport'}">${autoMsg_2c366e34b3}</c:when>
+              <c:when test="${tipCategory eq 'accom'}">${autoMsg_f9062453fd}</c:when>
+              <c:when test="${tipCategory eq 'food'}">${autoMsg_fef3732dd0}</c:when>
+              <c:when test="${tipCategory eq 'money'}">${autoMsg_8d4d7decd2}</c:when>
+              <c:when test="${tipCategory eq 'safety'}">${autoMsg_fa32c9371d}</c:when>
+              <c:otherwise>${autoMsg_b6e6f06dfb}</c:otherwise>
             </c:choose>
           </span>
         </div>
@@ -153,8 +251,8 @@
       <c:if test="${post.postType eq 'question'}">
         <div class="detail-type-extra">
           <c:choose>
-            <c:when test="${isSolved}"><span class="solved-badge solved"><spring:message code="community.detail.question.solved"/></span></c:when>
-            <c:otherwise><span class="solved-badge unsolved"><spring:message code="community.detail.question.unsolved"/></span></c:otherwise>
+            <c:when test="${isSolved}"><span class="solved-badge solved">${autoMsg_9070ab3a59}</span></c:when>
+            <c:otherwise><span class="solved-badge unsolved">${autoMsg_c7bc1af95c}</span></c:otherwise>
           </c:choose>
         </div>
       </c:if>
@@ -181,7 +279,7 @@
           </c:forEach>
         </div>
         <c:if test="${imageList[0].autoImage}">
-          <p class="comm-auto-image-caption"><spring:message code="community.detail.autoImage"/></p>
+          <p class="comm-auto-image-caption">${autoMsg_0b38fe76d8}</p>
         </c:if>
       </c:if>
 
@@ -222,7 +320,7 @@
         <span class="comment-count-badge">&#128172; ${post.commentCount}</span>
         <span class="view-count-badge">&#128065; ${post.viewCount}</span>
         <c:if test="${not empty sessionScope.loginUser and not isOwner}">
-          <button class="report-btn" data-post-id="${post.postId}" onclick="openReportModal('post', this.getAttribute('data-post-id'))"><spring:message code="community.detail.report"/></button>
+          <button class="report-btn" data-post-id="${post.postId}" onclick="openReportModal('post', this.getAttribute('data-post-id'))">${autoMsg_47eb681bd5}</button>
         </c:if>
       </div>
 
@@ -260,17 +358,17 @@
       <%-- 댓글 상단 툴바 --%>
       <div class="comm-comment-toolbar" id="commentToolbarTop">
         <div class="comm-toolbar-left">
-          <span class="comm-comment-total"><spring:message code="community.detail.comments.total" arguments="${post.commentCount}"/></span>
+          <span class="comm-comment-total">${autoMsg_6d4e50fb66}</span>
           <div class="comm-sort-btns">
-            <button class="comm-sort-btn active" data-sort="created" onclick="sortComments('created')"><spring:message code="community.detail.comments.sort.created"/></button>
-            <button class="comm-sort-btn" data-sort="latest" onclick="sortComments('latest')"><spring:message code="community.detail.comments.sort.latest"/></button>
-            <button class="comm-sort-btn" data-sort="replies" onclick="sortComments('replies')"><spring:message code="community.detail.comments.sort.replies"/></button>
+            <button class="comm-sort-btn active" data-sort="created" onclick="sortComments('created')">${autoMsg_e9a16e8b8d}</button>
+            <button class="comm-sort-btn" data-sort="latest" onclick="sortComments('latest')">${autoMsg_7287455907}</button>
+            <button class="comm-sort-btn" data-sort="replies" onclick="sortComments('replies')">${autoMsg_715606ec81}</button>
           </div>
         </div>
         <div class="comm-toolbar-right">
-          <button class="comm-tool-btn" onclick="scrollToPost()"><spring:message code="community.detail.comments.viewPost"/></button>
-          <button class="comm-tool-btn" id="commToggleBtnTop" onclick="toggleCommentSection()"><spring:message code="community.detail.comments.close"/></button>
-          <button class="comm-tool-btn" onclick="refreshComments()"><spring:message code="community.detail.comments.refresh"/></button>
+          <button class="comm-tool-btn" onclick="scrollToPost()">${autoMsg_17511e6c54}</button>
+          <button class="comm-tool-btn" id="commToggleBtnTop" onclick="toggleCommentSection()">${autoMsg_32f38cd4d0}</button>
+          <button class="comm-tool-btn" onclick="refreshComments()">${autoMsg_9a1d8799a8}</button>
         </div>
       </div>
 
@@ -278,25 +376,25 @@
       <c:if test="${isAdminMode}">
         <div class="comm-admin-toolbar" id="adminCommentToolbar">
           <label class="comm-admin-chk-all">
-            <input type="checkbox" id="chkAllComment"> <spring:message code="community.admin.selectAll"/>
+            <input type="checkbox" id="chkAllComment"> ${autoMsg_de189e6eb1}
           </label>
           <span class="comm-admin-selected-count" id="selectedCommentCount">${communitySelectedZeroLabel}</span>
           <div class="comm-admin-actions">
-            <button class="comm-admin-btn btn-delete" onclick="doBulkCommentAction('delete')"><spring:message code="community.admin.delete"/></button>
+            <button class="comm-admin-btn btn-delete" onclick="doBulkCommentAction('delete')">${autoMsg_f9efcfed06}</button>
             <div class="comm-admin-dropdown">
-              <button class="comm-admin-btn btn-block-user"><spring:message code="community.detail.comments.block"/> ▾</button>
+              <button class="comm-admin-btn btn-block-user">${autoMsg_5bd80c8ada} ▾</button>
               <div class="comm-admin-dropdown-menu">
-                <button onclick="doBulkCommentAction('blockUser')"><spring:message code="community.detail.comments.block.user"/></button>
-                <button onclick="doBulkCommentAction('blockIp')"><spring:message code="community.detail.comments.block.ip"/></button>
-                <button onclick="doBulkCommentAction('blockBoth')"><spring:message code="community.detail.comments.block.both"/></button>
+                <button onclick="doBulkCommentAction('blockUser')">${autoMsg_6c78210daf}</button>
+                <button onclick="doBulkCommentAction('blockIp')">${autoMsg_219c39e727}</button>
+                <button onclick="doBulkCommentAction('blockBoth')">${autoMsg_abb4754fe2}</button>
               </div>
             </div>
             <div class="comm-admin-dropdown">
-              <button class="comm-admin-btn btn-block-delete"><spring:message code="community.detail.comments.blockDelete"/> ▾</button>
+              <button class="comm-admin-btn btn-block-delete">${autoMsg_c020ad3077} ▾</button>
               <div class="comm-admin-dropdown-menu">
-                <button onclick="doBulkCommentAction('blockUserAndDelete')"><spring:message code="community.detail.comments.blockDelete.user"/></button>
-                <button onclick="doBulkCommentAction('blockIpAndDelete')"><spring:message code="community.detail.comments.blockDelete.ip"/></button>
-                <button onclick="doBulkCommentAction('blockAndDelete')"><spring:message code="community.detail.comments.blockDelete.both"/></button>
+                <button onclick="doBulkCommentAction('blockUserAndDelete')">${autoMsg_30f22c3a42}</button>
+                <button onclick="doBulkCommentAction('blockIpAndDelete')">${autoMsg_8cc2a999ee}</button>
+                <button onclick="doBulkCommentAction('blockAndDelete')">${autoMsg_71d052342e}</button>
               </div>
             </div>
           </div>
@@ -308,7 +406,7 @@
         <div class="comment-list">
           <c:choose>
             <c:when test="${empty commentList}">
-              <div class="comment-empty"><spring:message code="community.detail.comments.empty"/></div>
+              <div class="comment-empty">${autoMsg_5cc10d97df}</div>
             </c:when>
             <c:otherwise>
               <c:forEach var="comment" items="${commentList}">
@@ -344,36 +442,36 @@
                                 <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne comment.userIdx}">
                                   <c:choose>
                                     <c:when test="${comment.accountStatus eq 'BLOCKED'}">
-                                      <button class="block-btn unblock" onclick="unblockUser(${comment.userIdx})"><spring:message code="community.detail.user.unblock"/></button>
+                                      <button class="block-btn unblock" onclick="unblockUser(${comment.userIdx})">${autoMsg_7fdfe423a5}</button>
                                     </c:when>
                                     <c:otherwise>
-                                      <button class="block-btn" onclick="blockUser(${comment.userIdx})"><spring:message code="community.detail.user.block"/></button>
+                                      <button class="block-btn" onclick="blockUser(${comment.userIdx})">${autoMsg_3ce7c05fe1}</button>
                                     </c:otherwise>
                                   </c:choose>
                                   <c:choose>
                                     <c:when test="${comment.commentStatus eq 'BLOCKED'}">
-                                      <button class="block-btn unblock" onclick="unblockComment(${comment.commentId})"><spring:message code="community.detail.comment.unblock"/></button>
+                                      <button class="block-btn unblock" onclick="unblockComment(${comment.commentId})">${autoMsg_9e64595082}</button>
                                     </c:when>
                                     <c:otherwise>
-                                      <button class="block-btn" onclick="blockComment(${comment.commentId})"><spring:message code="community.detail.comment.block"/></button>
+                                      <button class="block-btn" onclick="blockComment(${comment.commentId})">${autoMsg_0c942b773f}</button>
                                     </c:otherwise>
                                   </c:choose>
                                 </c:if>
                                 <c:if test="${comment.commentId eq acceptedCommentId}">
-                                  <span class="accepted-badge"><spring:message code="community.detail.comment.accepted"/></span>
+                                  <span class="accepted-badge">${autoMsg_c06f5a4c15}</span>
                                 </c:if>
                                 <span class="comment-date">
                                   <fmt:formatDate value="${comment.createdAtDate}" pattern="yyyy-MM-dd"/>
                                 </span>
                                 <c:if test="${isOwner and post.postType eq 'question' and not isSolved and comment.commentId ne acceptedCommentId}">
-                                  <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})"><spring:message code="community.detail.comment.accept"/></button>
+                                  <button class="accept-btn" onclick="acceptComment(${post.postId}, ${comment.commentId})">${autoMsg_ee75a23ef6}</button>
                                 </c:if>
                                 <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne comment.userIdx and not isAdminMode}">
-                                  <span class="comment-author-link rpt-user-link" data-user-idx="${comment.userIdx}" data-source-type="comment" data-source-id="${comment.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
-                                  <button class="report-btn" data-comment-id="${comment.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))"><spring:message code="community.detail.report"/></button>
+                                  <span class="comment-author-link rpt-user-link" data-user-idx="${comment.userIdx}" data-source-type="comment" data-source-id="${comment.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;">${autoMsg_e2a87fe724}</span>
+                                  <button class="report-btn" data-comment-id="${comment.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">${autoMsg_47eb681bd5}</button>
                                 </c:if>
                                 <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq comment.userIdx or isAdminMode)}">
-                                  <button class="comment-delete-btn" onclick="deleteComment(${comment.commentId})"><spring:message code="community.detail.comment.delete"/></button>
+                                  <button class="comment-delete-btn" onclick="deleteComment(${comment.commentId})">${autoMsg_6434ace69d}</button>
                                 </c:if>
                               </div>
                               <div class="comment-text"><c:out value="${comment.content}"/></div>
@@ -381,16 +479,16 @@
                               <c:if test="${isAdminMode and (comment.commentStatus eq 'BLOCKED' or comment.accountStatus eq 'BLOCKED' or comment.reportCount >= reportThreshold or comment.aiFlagged)}">
                                 <c:choose>
                                   <c:when test="${comment.aiFlagged}">
-                                    <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                    <span class="blocked-badge">${autoMsg_b4cc513024}</span>
                                   </c:when>
                                   <c:when test="${comment.commentStatus eq 'ACTIVE' and comment.reportCount >= reportThreshold}">
-                                    <span class="blocked-badge"><spring:message code="community.detail.report.blocked"/></span>
+                                    <span class="blocked-badge">${autoMsg_c4b3d53639}</span>
                                   </c:when>
                                   <c:when test="${comment.commentStatus eq 'BLOCKED'}">
-                                    <span class="blocked-badge"><spring:message code="community.detail.badge.comment.blocked"/></span>
+                                    <span class="blocked-badge">${autoMsg_619141f877}</span>
                                   </c:when>
                                   <c:when test="${comment.accountStatus eq 'BLOCKED'}">
-                                    <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
+                                    <span class="blocked-badge">${autoMsg_02581992de}</span>
                                   </c:when>
                                 </c:choose>
                               </c:if>
@@ -401,7 +499,7 @@
                                             onclick="toggleCommentLike(${comment.commentId}, this)">
                                       &#10084; <span id="commentLikeCount_${comment.commentId}">${comment.likeCount}</span>
                                     </button>
-                                    <button class="reply-btn" onclick="toggleReplyInput(${comment.commentId})"><spring:message code="community.detail.reply"/></button>
+                                    <button class="reply-btn" onclick="toggleReplyInput(${comment.commentId})">${autoMsg_74f25ad5f0}</button>
                                   </c:when>
                                   <c:otherwise>
                                     <button class="comment-like-btn"
@@ -414,11 +512,11 @@
                               <c:if test="${not empty sessionScope.loginUser}">
                                 <div class="reply-input-wrap hidden" id="replyInput_${comment.commentId}">
                                   <textarea class="reply-textarea" id="replyText_${comment.commentId}"
-                                            placeholder="<spring:message code='community.detail.reply.placeholder'/>" rows="2"
+                                            placeholder="${autoMsg_c9df7cca98}" rows="2"
                                             onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); submitReply(${post.postId}, ${comment.commentId});}"></textarea>
                                   <div class="reply-input-actions">
-                                    <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.commentId})"><spring:message code="community.detail.cancel"/></button>
-                                    <button class="reply-submit-btn" onclick="submitReply(${post.postId}, ${comment.commentId})"><spring:message code="community.detail.submit"/></button>
+                                    <button class="reply-cancel-btn" onclick="toggleReplyInput(${comment.commentId})">${autoMsg_9445210307}</button>
+                                    <button class="reply-submit-btn" onclick="submitReply(${post.postId}, ${comment.commentId})">${autoMsg_26437bfd6a}</button>
                                   </div>
                                 </div>
                               </c:if>
@@ -427,8 +525,8 @@
                             <c:if test="${cmtBlurred}">
                               <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
                                 <c:choose>
-                                  <c:when test="${comment.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
-                                  <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                  <c:when test="${comment.aiFlagged}">${autoMsg_63d33e34be}</c:when>
+                                  <c:otherwise>${autoMsg_c5285ade9f}</c:otherwise>
                                 </c:choose>
                               </div>
                             </c:if>
@@ -475,18 +573,18 @@
                                           <c:if test="${isAdminMode and sessionScope.loginUser.userIdx ne reply.userIdx}">
                                             <c:choose>
                                               <c:when test="${reply.accountStatus eq 'BLOCKED'}">
-                                                <button class="block-btn unblock" onclick="unblockUser(${reply.userIdx})"><spring:message code="community.detail.user.unblock"/></button>
+                                                <button class="block-btn unblock" onclick="unblockUser(${reply.userIdx})">${autoMsg_7fdfe423a5}</button>
                                               </c:when>
                                               <c:otherwise>
-                                                <button class="block-btn" onclick="blockUser(${reply.userIdx})"><spring:message code="community.detail.user.block"/></button>
+                                                <button class="block-btn" onclick="blockUser(${reply.userIdx})">${autoMsg_3ce7c05fe1}</button>
                                               </c:otherwise>
                                             </c:choose>
                                             <c:choose>
                                               <c:when test="${reply.commentStatus eq 'BLOCKED'}">
-                                                <button class="block-btn unblock" onclick="unblockComment(${reply.commentId})"><spring:message code="community.detail.comment.unblock"/></button>
+                                                <button class="block-btn unblock" onclick="unblockComment(${reply.commentId})">${autoMsg_9e64595082}</button>
                                               </c:when>
                                               <c:otherwise>
-                                                <button class="block-btn" onclick="blockComment(${reply.commentId})"><spring:message code="community.detail.comment.block"/></button>
+                                                <button class="block-btn" onclick="blockComment(${reply.commentId})">${autoMsg_0c942b773f}</button>
                                               </c:otherwise>
                                             </c:choose>
                                           </c:if>
@@ -494,11 +592,11 @@
                                             <fmt:formatDate value="${reply.createdAtDate}" pattern="yyyy-MM-dd"/>
                                           </span>
                                           <c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userIdx ne reply.userIdx and not isAdminMode}">
-                                            <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;"><spring:message code="community.detail.userReport"/></span>
-                                            <button class="report-btn" data-comment-id="${reply.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))"><spring:message code="community.detail.report"/></button>
+                                            <span class="comment-author-link rpt-user-link" data-user-idx="${reply.userIdx}" data-source-type="comment" data-source-id="${reply.commentId}" style="font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;margin-right:2px;">${autoMsg_e2a87fe724}</span>
+                                            <button class="report-btn" data-comment-id="${reply.commentId}" onclick="openReportModal('comment', this.getAttribute('data-comment-id'))">${autoMsg_47eb681bd5}</button>
                                           </c:if>
                                           <c:if test="${not empty sessionScope.loginUser and (sessionScope.loginUser.userIdx eq reply.userIdx or isAdminMode)}">
-                                            <button class="comment-delete-btn" onclick="deleteComment(${reply.commentId})"><spring:message code="community.detail.comment.delete"/></button>
+                                            <button class="comment-delete-btn" onclick="deleteComment(${reply.commentId})">${autoMsg_6434ace69d}</button>
                                         </c:if>
                                       </div>
                                       <div class="comment-text"><c:out value="${reply.content}"/></div>
@@ -506,16 +604,16 @@
                                       <c:if test="${isAdminMode and (reply.commentStatus eq 'BLOCKED' or reply.accountStatus eq 'BLOCKED' or reply.reportCount >= reportThreshold or reply.aiFlagged)}">
                                         <c:choose>
                                           <c:when test="${reply.aiFlagged}">
-                                            <span class="blocked-badge"><spring:message code="community.badge.ai"/></span>
+                                            <span class="blocked-badge">${autoMsg_b4cc513024}</span>
                                           </c:when>
                                           <c:when test="${reply.commentStatus eq 'ACTIVE' and reply.reportCount >= reportThreshold}">
-                                            <span class="blocked-badge"><spring:message code="community.detail.report.blocked"/></span>
+                                            <span class="blocked-badge">${autoMsg_c4b3d53639}</span>
                                           </c:when>
                                           <c:when test="${reply.commentStatus eq 'BLOCKED'}">
-                                            <span class="blocked-badge"><spring:message code="community.detail.badge.comment.blocked"/></span>
+                                            <span class="blocked-badge">${autoMsg_619141f877}</span>
                                           </c:when>
                                           <c:when test="${reply.accountStatus eq 'BLOCKED'}">
-                                            <span class="blocked-badge"><spring:message code="community.badge.user"/></span>
+                                            <span class="blocked-badge">${autoMsg_02581992de}</span>
                                           </c:when>
                                         </c:choose>
                                       </c:if>
@@ -540,8 +638,8 @@
                                     <c:if test="${rplBlurred}">
                                       <div class="report-blurred-overlay" onclick="removeReportBlurComment(this)">
                                         <c:choose>
-                                          <c:when test="${reply.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
-                                          <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                                          <c:when test="${reply.aiFlagged}">${autoMsg_63d33e34be}</c:when>
+                                          <c:otherwise>${autoMsg_c5285ade9f}</c:otherwise>
                                         </c:choose>
                                       </div>
                                     </c:if>
@@ -577,17 +675,17 @@
       <%-- 댓글 하단 툴바 --%>
       <div class="comm-comment-toolbar comm-comment-toolbar-bottom" id="commentToolbarBottom">
         <div class="comm-toolbar-left">
-          <span class="comm-comment-total"><spring:message code="community.detail.comments.total" arguments="${post.commentCount}"/></span>
+          <span class="comm-comment-total">${autoMsg_6d4e50fb66}</span>
           <div class="comm-sort-btns">
-            <button class="comm-sort-btn active" data-sort="created" onclick="sortComments('created')"><spring:message code="community.detail.comments.sort.created"/></button>
-            <button class="comm-sort-btn" data-sort="latest" onclick="sortComments('latest')"><spring:message code="community.detail.comments.sort.latest"/></button>
-            <button class="comm-sort-btn" data-sort="replies" onclick="sortComments('replies')"><spring:message code="community.detail.comments.sort.replies"/></button>
+            <button class="comm-sort-btn active" data-sort="created" onclick="sortComments('created')">${autoMsg_e9a16e8b8d}</button>
+            <button class="comm-sort-btn" data-sort="latest" onclick="sortComments('latest')">${autoMsg_7287455907}</button>
+            <button class="comm-sort-btn" data-sort="replies" onclick="sortComments('replies')">${autoMsg_715606ec81}</button>
           </div>
         </div>
         <div class="comm-toolbar-right">
-          <button class="comm-tool-btn" onclick="scrollToPost()"><spring:message code="community.detail.comments.viewPost"/></button>
-          <button class="comm-tool-btn" id="commToggleBtnBottom" onclick="toggleCommentSection()"><spring:message code="community.detail.comments.close"/></button>
-          <button class="comm-tool-btn" onclick="refreshComments()"><spring:message code="community.detail.comments.refresh"/></button>
+          <button class="comm-tool-btn" onclick="scrollToPost()">${autoMsg_17511e6c54}</button>
+          <button class="comm-tool-btn" id="commToggleBtnBottom" onclick="toggleCommentSection()">${autoMsg_32f38cd4d0}</button>
+          <button class="comm-tool-btn" onclick="refreshComments()">${autoMsg_9a1d8799a8}</button>
         </div>
       </div>
 
@@ -597,15 +695,15 @@
           <c:when test="${not empty sessionScope.loginUser}">
             <div class="comment-input-box">
               <textarea class="comment-textarea" id="commentText"
-                        placeholder="<spring:message code='community.detail.comment.placeholder'/>" rows="3"
+                        placeholder="${autoMsg_2494e57e57}" rows="3"
                         onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); submitComment(${post.postId});}"></textarea>
-              <button class="comment-submit-btn" onclick="submitComment(${post.postId})"><spring:message code="community.detail.submit"/></button>
+              <button class="comment-submit-btn" onclick="submitComment(${post.postId})">${autoMsg_26437bfd6a}</button>
             </div>
           </c:when>
           <c:otherwise>
             <div class="comment-login-notice">
-              <p><spring:message code="community.detail.comment.loginRequiredPrefix"/>
-                <a href="${pageContext.request.contextPath}/auth/login" class="login-link"><spring:message code="community.detail.comment.loginLink"/></a><spring:message code="community.detail.comment.loginRequiredSuffix"/>
+              <p>${autoMsg_b72bc391c0}
+                <a href="${pageContext.request.contextPath}/auth/login" class="login-link">${autoMsg_2bb083c5f9}</a>${autoMsg_90e3ca39d9}
               </p>
             </div>
           </c:otherwise>
@@ -616,29 +714,29 @@
   <%-- 추천 여행 이야기 --%>
   <c:if test="${not empty relatedList}">
     <div class="detail-bottom-section">
-      <h3 class="detail-bottom-title"><spring:message code="community.detail.related.title"/></h3>
+      <h3 class="detail-bottom-title">${autoMsg_afb553ff1d}</h3>
       <c:if test="${isAdminMode}">
         <div class="comm-admin-toolbar" id="adminRelatedToolbar">
           <label class="comm-admin-chk-all">
-            <input type="checkbox" id="chkAllRelated"> <spring:message code="community.admin.selectAll"/>
+            <input type="checkbox" id="chkAllRelated"> ${autoMsg_de189e6eb1}
           </label>
           <span class="comm-admin-selected-count" id="selectedRelatedCount">${communitySelectedZeroLabel}</span>
           <div class="comm-admin-actions">
-            <button class="comm-admin-btn btn-delete" onclick="doBulkPostAction('related','delete')"><spring:message code="community.admin.delete"/></button>
+            <button class="comm-admin-btn btn-delete" onclick="doBulkPostAction('related','delete')">${autoMsg_f9efcfed06}</button>
             <div class="comm-admin-dropdown">
-              <button class="comm-admin-btn btn-block-user"><spring:message code="community.detail.comments.block"/> ▾</button>
+              <button class="comm-admin-btn btn-block-user">${autoMsg_5bd80c8ada} ▾</button>
               <div class="comm-admin-dropdown-menu">
-                <button onclick="doBulkPostAction('related','blockUser')"><spring:message code="community.detail.comments.block.user"/></button>
-                <button onclick="doBulkPostAction('related','blockIp')"><spring:message code="community.detail.comments.block.ip"/></button>
-                <button onclick="doBulkPostAction('related','blockBoth')"><spring:message code="community.detail.comments.block.both"/></button>
+                <button onclick="doBulkPostAction('related','blockUser')">${autoMsg_6c78210daf}</button>
+                <button onclick="doBulkPostAction('related','blockIp')">${autoMsg_219c39e727}</button>
+                <button onclick="doBulkPostAction('related','blockBoth')">${autoMsg_abb4754fe2}</button>
               </div>
             </div>
             <div class="comm-admin-dropdown">
-              <button class="comm-admin-btn btn-block-delete"><spring:message code="community.detail.comments.blockDelete"/> ▾</button>
+              <button class="comm-admin-btn btn-block-delete">${autoMsg_c020ad3077} ▾</button>
               <div class="comm-admin-dropdown-menu">
-                <button onclick="doBulkPostAction('related','blockUserAndDelete')"><spring:message code="community.detail.comments.blockDelete.user"/></button>
-                <button onclick="doBulkPostAction('related','blockIpAndDelete')"><spring:message code="community.detail.comments.blockDelete.ip"/></button>
-                <button onclick="doBulkPostAction('related','blockAndDelete')"><spring:message code="community.detail.comments.blockDelete.both"/></button>
+                <button onclick="doBulkPostAction('related','blockUserAndDelete')">${autoMsg_30f22c3a42}</button>
+                <button onclick="doBulkPostAction('related','blockIpAndDelete')">${autoMsg_8cc2a999ee}</button>
+                <button onclick="doBulkPostAction('related','blockAndDelete')">${autoMsg_71d052342e}</button>
               </div>
             </div>
           </div>
@@ -671,10 +769,10 @@
                 </c:choose>
                 <span class="post-type-badge type-${r.postType}">
                   <c:choose>
-                    <c:when test="${r.postType eq 'review'}"><spring:message code="community.type.review"/></c:when>
-                    <c:when test="${r.postType eq 'photo'}"><spring:message code="community.type.photo"/></c:when>
-                    <c:when test="${r.postType eq 'tip'}"><spring:message code="community.type.tip"/></c:when>
-                    <c:when test="${r.postType eq 'question'}"><spring:message code="community.type.question"/></c:when>
+                    <c:when test="${r.postType eq 'review'}">${autoMsg_3cf7258dd5}</c:when>
+                    <c:when test="${r.postType eq 'photo'}">${autoMsg_8a8067743c}</c:when>
+                    <c:when test="${r.postType eq 'tip'}">${autoMsg_7167639b99}</c:when>
+                    <c:when test="${r.postType eq 'question'}">${autoMsg_923efc922c}</c:when>
                   </c:choose>
                 </span>
               </div>
@@ -704,8 +802,8 @@
             <c:if test="${isBlurred}">
               <div class="report-blurred-overlay">
                 <c:choose>
-                  <c:when test="${r.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
-                  <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                  <c:when test="${r.aiFlagged}">${autoMsg_63d33e34be}</c:when>
+                  <c:otherwise>${autoMsg_c5285ade9f}</c:otherwise>
                 </c:choose>
               </div>
             </c:if>
@@ -717,29 +815,29 @@
 
   <%-- 최신글 목록 --%>
   <div class="detail-bottom-section">
-    <h3 class="detail-bottom-title"><spring:message code="community.latest.title"/></h3>
+    <h3 class="detail-bottom-title">${autoMsg_fd3b4f043b}</h3>
     <c:if test="${isAdminMode}">
       <div class="comm-admin-toolbar" id="adminLatestToolbar">
         <label class="comm-admin-chk-all">
-          <input type="checkbox" id="chkAllLatest"> <spring:message code="community.admin.selectAll"/>
+          <input type="checkbox" id="chkAllLatest"> ${autoMsg_de189e6eb1}
         </label>
         <span class="comm-admin-selected-count" id="selectedLatestCount">${communitySelectedZeroLabel}</span>
         <div class="comm-admin-actions">
-          <button class="comm-admin-btn btn-delete" onclick="doBulkPostAction('latest','delete')"><spring:message code="community.admin.delete"/></button>
+          <button class="comm-admin-btn btn-delete" onclick="doBulkPostAction('latest','delete')">${autoMsg_f9efcfed06}</button>
           <div class="comm-admin-dropdown">
-            <button class="comm-admin-btn btn-block-user"><spring:message code="community.detail.comments.block"/> ▾</button>
+            <button class="comm-admin-btn btn-block-user">${autoMsg_5bd80c8ada} ▾</button>
             <div class="comm-admin-dropdown-menu">
-              <button onclick="doBulkPostAction('latest','blockUser')"><spring:message code="community.detail.comments.block.user"/></button>
-              <button onclick="doBulkPostAction('latest','blockIp')"><spring:message code="community.detail.comments.block.ip"/></button>
-              <button onclick="doBulkPostAction('latest','blockBoth')"><spring:message code="community.detail.comments.block.both"/></button>
+              <button onclick="doBulkPostAction('latest','blockUser')">${autoMsg_6c78210daf}</button>
+              <button onclick="doBulkPostAction('latest','blockIp')">${autoMsg_219c39e727}</button>
+              <button onclick="doBulkPostAction('latest','blockBoth')">${autoMsg_abb4754fe2}</button>
             </div>
           </div>
           <div class="comm-admin-dropdown">
-            <button class="comm-admin-btn btn-block-delete"><spring:message code="community.detail.comments.blockDelete"/> ▾</button>
+            <button class="comm-admin-btn btn-block-delete">${autoMsg_c020ad3077} ▾</button>
             <div class="comm-admin-dropdown-menu">
-              <button onclick="doBulkPostAction('latest','blockUserAndDelete')"><spring:message code="community.detail.comments.blockDelete.user"/></button>
-              <button onclick="doBulkPostAction('latest','blockIpAndDelete')"><spring:message code="community.detail.comments.blockDelete.ip"/></button>
-              <button onclick="doBulkPostAction('latest','blockAndDelete')"><spring:message code="community.detail.comments.blockDelete.both"/></button>
+              <button onclick="doBulkPostAction('latest','blockUserAndDelete')">${autoMsg_30f22c3a42}</button>
+              <button onclick="doBulkPostAction('latest','blockIpAndDelete')">${autoMsg_8cc2a999ee}</button>
+              <button onclick="doBulkPostAction('latest','blockAndDelete')">${autoMsg_71d052342e}</button>
             </div>
           </div>
         </div>
@@ -747,7 +845,7 @@
     </c:if>
     <c:choose>
       <c:when test="${empty latestList}">
-        <div style="text-align:center;padding:24px;font-size:13px;color:var(--gray-400);"><spring:message code="community.latest.empty"/></div>
+        <div style="text-align:center;padding:24px;font-size:13px;color:var(--gray-400);">${autoMsg_9f801f8ebd}</div>
       </c:when>
       <c:otherwise>
         <div class="detail-post-list">
@@ -777,10 +875,10 @@
                   </c:choose>
                   <span class="post-type-badge type-${l.postType}">
                     <c:choose>
-                      <c:when test="${l.postType eq 'review'}"><spring:message code="community.type.review"/></c:when>
-                      <c:when test="${l.postType eq 'photo'}"><spring:message code="community.type.photo"/></c:when>
-                      <c:when test="${l.postType eq 'tip'}"><spring:message code="community.type.tip"/></c:when>
-                      <c:when test="${l.postType eq 'question'}"><spring:message code="community.type.question"/></c:when>
+                      <c:when test="${l.postType eq 'review'}">${autoMsg_3cf7258dd5}</c:when>
+                      <c:when test="${l.postType eq 'photo'}">${autoMsg_8a8067743c}</c:when>
+                      <c:when test="${l.postType eq 'tip'}">${autoMsg_7167639b99}</c:when>
+                      <c:when test="${l.postType eq 'question'}">${autoMsg_923efc922c}</c:when>
                     </c:choose>
                   </span>
                 </div>
@@ -810,8 +908,8 @@
               <c:if test="${isBlurred}">
                 <div class="report-blurred-overlay">
                   <c:choose>
-                    <c:when test="${l.aiFlagged}"><spring:message code="community.blocked.ai"/></c:when>
-                    <c:otherwise><spring:message code="community.blocked.report"/></c:otherwise>
+                    <c:when test="${l.aiFlagged}">${autoMsg_63d33e34be}</c:when>
+                    <c:otherwise>${autoMsg_c5285ade9f}</c:otherwise>
                   </c:choose>
                 </div>
               </c:if>
@@ -845,16 +943,16 @@
     <form action="${pageContext.request.contextPath}/community/list" method="get">
       <div class="detail-search-box">
         <select name="searchType" class="detail-search-select">
-          <option value="all"><spring:message code="community.search.all"/></option>
-          <option value="title"><spring:message code="community.search.title"/></option>
-          <option value="content"><spring:message code="community.search.content"/></option>
-          <option value="tag"><spring:message code="community.search.tag"/></option>
-          <option value="author"><spring:message code="community.search.author"/></option>
-          <option value="comment"><spring:message code="community.search.comment"/></option>
+          <option value="all">${autoMsg_fc6257a564}</option>
+          <option value="title">${autoMsg_43b7158f66}</option>
+          <option value="content">${autoMsg_9d7259d01e}</option>
+          <option value="tag">${autoMsg_dfcfefc0d1}</option>
+          <option value="author">${autoMsg_fe79a8a777}</option>
+          <option value="comment">${autoMsg_94406afbba}</option>
         </select>
         <span class="detail-search-divider"></span>
         <input type="text" name="keyword" class="detail-search-input"
-               placeholder="<spring:message code='community.search.placeholder'/>">
+               placeholder="${autoMsg_23b57e0d30}">
         <button type="submit" class="detail-search-btn">&#128269;</button>
       </div>
     </form>
@@ -864,17 +962,17 @@
 
 <script>
 var CTX = '${pageContext.request.contextPath}';
-var COMMENT_CLOSE_LABEL = '<spring:message code="community.detail.comments.close" javaScriptEscape="true"/>';
-var COMMENT_OPEN_LABEL = '<spring:message code="community.detail.comments.open" javaScriptEscape="true"/>';
-var COMMUNITY_SELECTED_TEMPLATE = '<spring:message code="community.admin.selected" javaScriptEscape="true"/>';
+var COMMENT_CLOSE_LABEL = '${autoMsg_063c60af9c}';
+var COMMENT_OPEN_LABEL = '${autoMsg_5693ea868b}';
+var COMMUNITY_SELECTED_TEMPLATE = '${autoMsg_1dd92f03a4}';
 var COMMUNITY_ACTION_LABELS = {
-  delete: '<spring:message code="community.admin.delete" javaScriptEscape="true"/>',
-  blockUser: '<spring:message code="community.detail.comments.block.user" javaScriptEscape="true"/>',
-  blockIp: '<spring:message code="community.detail.comments.block.ip" javaScriptEscape="true"/>',
-  blockBoth: '<spring:message code="community.detail.comments.block.both" javaScriptEscape="true"/>',
-  blockUserAndDelete: '<spring:message code="community.detail.comments.blockDelete.user" javaScriptEscape="true"/>',
-  blockIpAndDelete: '<spring:message code="community.detail.comments.blockDelete.ip" javaScriptEscape="true"/>',
-  blockAndDelete: '<spring:message code="community.detail.comments.blockDelete.both" javaScriptEscape="true"/>'
+  delete: '${autoMsg_8631a3a17f}',
+  blockUser: '${autoMsg_f6f9917438}',
+  blockIp: '${autoMsg_8d18b11091}',
+  blockBoth: '${autoMsg_f1e5401960}',
+  blockUserAndDelete: '${autoMsg_5a6f235bae}',
+  blockIpAndDelete: '${autoMsg_5d68a9ba55}',
+  blockAndDelete: '${autoMsg_f9729b7a6b}'
 };
 
 function formatCommunityMessage(template) {
@@ -1209,7 +1307,7 @@ function adminDeletePost(event, postId) {
     method: 'DELETE', headers: {'X-Requested-With': 'XMLHttpRequest'}
   }).then(function(res) {
     if (res.ok) location.reload();
-    else alert('<spring:message code="community.admin.delete.fail" javaScriptEscape="true"/>');
+    else alert('${autoMsg_4f2d9101e4}');
   });
 }
 
@@ -1269,27 +1367,27 @@ function adminDeleteComment(event, commentId) {
 
 function adminClearPostBlur(event, postId) {
   event.stopPropagation();
-  if (!confirm('<spring:message code="community.admin.clearBlur.confirm" javaScriptEscape="true"/>')) return;
+  if (!confirm('${autoMsg_83df01f46f}')) return;
   fetch(CTX + '/community/' + postId + '/clear-blur', {
     method: 'POST',
     headers: { 'X-Requested-With': 'XMLHttpRequest' }
   })
   .then(function(res) {
     if (res.ok) location.reload();
-    else alert('<spring:message code="community.admin.clearBlur.fail" javaScriptEscape="true"/>');
+    else alert('${autoMsg_9df1634059}');
   });
 }
 
 function adminClearCommentBlur(event, commentId) {
   event.stopPropagation();
-  if (!confirm('<spring:message code="community.admin.clearBlur.confirm" javaScriptEscape="true"/>')) return;
+  if (!confirm('${autoMsg_83df01f46f}')) return;
   fetch(CTX + '/community/comment/' + commentId + '/clear-blur', {
     method: 'POST',
     headers: { 'X-Requested-With': 'XMLHttpRequest' }
   })
   .then(function(res) {
     if (res.ok) location.reload();
-    else alert('<spring:message code="community.admin.clearBlur.fail" javaScriptEscape="true"/>');
+    else alert('${autoMsg_9df1634059}');
   });
 }
 
@@ -1433,34 +1531,34 @@ document.addEventListener('DOMContentLoaded', function () {
      ============================================= --%>
 <div id="rpt-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
-    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;"><spring:message code="community.detail.report.title"/></div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:20px;">${autoMsg_c7407047d9}</div>
     <input type="hidden" id="rptTargetType" value="">
     <input type="hidden" id="rptTargetId"   value="">
 
     <div style="margin-bottom:16px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;"><spring:message code="community.detail.report.reason"/> <span style="color:#ef4444;">*</span></label>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">${autoMsg_7884295f58} <span style="color:#ef4444;">*</span></label>
       <select id="rptReason" style="width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;">
-        <option value=""><spring:message code="community.detail.report.reason.choose"/></option>
-        <option value="spam"><spring:message code="community.detail.report.reason.spam"/></option>
-        <option value="abuse"><spring:message code="community.detail.report.reason.abuse"/></option>
-        <option value="privacy"><spring:message code="community.detail.report.reason.privacy"/></option>
-        <option value="adult"><spring:message code="community.detail.report.reason.adult"/></option>
-        <option value="illegal"><spring:message code="community.detail.report.reason.illegal"/></option>
-        <option value="other"><spring:message code="community.detail.report.reason.other"/></option>
+        <option value="">${autoMsg_371c0a977e}</option>
+        <option value="spam">${autoMsg_d354a18112}</option>
+        <option value="abuse">${autoMsg_4f1b16c8e9}</option>
+        <option value="privacy">${autoMsg_344c841afe}</option>
+        <option value="adult">${autoMsg_94a2ad5830}</option>
+        <option value="illegal">${autoMsg_715ebce729}</option>
+        <option value="other">${autoMsg_60f0bab9c8}</option>
       </select>
       <div id="rptReasonMsg" style="font-size:12px;min-height:16px;margin-top:4px;"></div>
     </div>
 
     <div style="margin-bottom:20px;">
-      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;"><spring:message code="community.detail.report.description"/></label>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">${autoMsg_f54c635454}</label>
       <textarea id="rptDescription" rows="4"
-                placeholder="<spring:message code='community.detail.report.description.placeholder'/>"
+                placeholder="${autoMsg_1df989b8ce}"
                 style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;"></textarea>
     </div>
 
     <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button id="rptCancelBtn" style="padding:9px 20px;border-radius:8px;background:var(--gray-100);color:var(--gray-600);border:none;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;"><spring:message code="community.detail.cancel"/></button>
-      <button id="rptSubmitBtn" style="padding:9px 20px;border-radius:8px;background:#ef4444;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;"><spring:message code="community.detail.report.submit"/></button>
+      <button id="rptCancelBtn" style="padding:9px 20px;border-radius:8px;background:var(--gray-100);color:var(--gray-600);border:none;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;">${autoMsg_9445210307}</button>
+      <button id="rptSubmitBtn" style="padding:9px 20px;border-radius:8px;background:#ef4444;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">${autoMsg_fdf3d05d7b}</button>
     </div>
   </div>
 </div>
@@ -1470,22 +1568,22 @@ document.addEventListener('DOMContentLoaded', function () {
      ============================================= --%>
 <div id="rpt-user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);">
-    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;"><spring:message code="community.detail.userReport.title"/></div>
-    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;"><spring:message code="community.detail.userReport.description"/></div>
+    <div style="font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:8px;">${autoMsg_57d9adce02}</div>
+    <div style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">${autoMsg_3494a8f28d}</div>
     <input type="hidden" id="rptUserTargetIdx"  value="">
     <input type="hidden" id="rptUserSourceType" value="">
     <input type="hidden" id="rptUserSourceId"   value="">
 
     <div style="margin-bottom:20px;">
       <textarea id="rptUserDescription" rows="5"
-                placeholder="<spring:message code='community.detail.userReport.placeholder'/>"
+                placeholder="${autoMsg_1b11f968dd}"
                 style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-family:inherit;font-size:14px;color:var(--gray-800);outline:none;resize:vertical;"></textarea>
       <div id="rptUserDescMsg" style="font-size:12px;min-height:16px;margin-top:4px;"></div>
     </div>
 
     <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button id="rptUserCancelBtn" style="padding:9px 20px;border-radius:8px;background:var(--gray-100);color:var(--gray-600);border:none;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;"><spring:message code="community.detail.cancel"/></button>
-      <button id="rptUserSubmitBtn" style="padding:9px 20px;border-radius:8px;background:#ef4444;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;"><spring:message code="community.detail.report.submit"/></button>
+      <button id="rptUserCancelBtn" style="padding:9px 20px;border-radius:8px;background:var(--gray-100);color:var(--gray-600);border:none;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;">${autoMsg_9445210307}</button>
+      <button id="rptUserSubmitBtn" style="padding:9px 20px;border-radius:8px;background:#ef4444;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">${autoMsg_fdf3d05d7b}</button>
     </div>
   </div>
 </div>

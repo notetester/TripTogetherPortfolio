@@ -17,4 +17,9 @@ public class ChatCommentVO {
     private String content;
     private Integer comment_order;
     private Date created_at;
+
+    public java.util.Date getCreated_atDate() {
+        return created_at;
+    }
+
 }

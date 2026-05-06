@@ -17,4 +17,9 @@ public class LoginRiskDecisionVO {
     private String userMessage;
     private Integer remainingAttempts;
     private LocalDateTime blockedUntil;
+
+    public java.util.Date getBlockedUntilDate() {
+        return blockedUntil == null ? null : java.util.Date.from(blockedUntil.atZone(java.time.ZoneId.systemDefault()).toInstant());
+    }
+
 }

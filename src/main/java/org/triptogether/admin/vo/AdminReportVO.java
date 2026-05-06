@@ -51,4 +51,8 @@ public class AdminReportVO {
         return createdAt;
     }
 
+    public java.util.Date getResolvedAtDate() {
+        return resolvedAt;
+    }
+
 }

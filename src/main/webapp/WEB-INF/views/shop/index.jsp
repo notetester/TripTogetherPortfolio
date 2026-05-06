@@ -2,6 +2,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_35820e276a" code="shop.hero.eyebrow"/>
+<spring:message var="autoMsg_55a1963de8" code="shop.title"/>
+<spring:message var="autoMsg_bc817bc067" code="shop.subtitle"/>
+<spring:message var="autoMsg_9c16a873b3" code="shop.myPoint"/>
+<spring:message var="autoMsg_d50604ff81" code="shop.preview.kicker"/>
+<spring:message var="autoMsg_54e4067ef9" code="shop.preview.title"/>
+<spring:message var="autoMsg_5c107b7a0f" code="${section.titleMessageCode}"/>
+<spring:message var="autoMsg_cec3d77786" code="${section.descriptionMessageCode}"/>
+<spring:message var="autoMsg_fe86a0e94f" code="${item.itemTypeMessageCode}"/>
+<spring:message var="autoMsg_35528b2479" code="${item.nameMessageCode}"/>
+<spring:message var="autoMsg_e6023bb5a5" code="${item.descriptionMessageCode}"/>
 <!DOCTYPE html>
 <html lang="ko">
 <c:set var="pageCSS" value="shop/shop.css"/>
@@ -11,12 +22,12 @@
 <main class="shop-wrap">
     <section class="shop-hero">
         <div class="shop-hero__content">
-            <p class="shop-hero__eyebrow"><spring:message code="shop.hero.eyebrow"/></p>
-            <h1><spring:message code="shop.title"/></h1>
-            <p class="shop-hero__desc"><spring:message code="shop.subtitle"/></p>
+            <p class="shop-hero__eyebrow">${autoMsg_35820e276a}</p>
+            <h1>${autoMsg_55a1963de8}</h1>
+            <p class="shop-hero__desc">${autoMsg_bc817bc067}</p>
 
             <div class="shop-point-panel">
-                <span><spring:message code="shop.myPoint"/></span>
+                <span>${autoMsg_9c16a873b3}</span>
                 <strong>
                     <c:choose>
                         <c:when test="${not empty user}">
@@ -41,8 +52,8 @@
 
         <div class="shop-section-head">
             <div>
-                <p class="shop-section-kicker"><spring:message code="shop.preview.kicker"/></p>
-                <h2><spring:message code="shop.preview.title"/></h2>
+                <p class="shop-section-kicker">${autoMsg_d50604ff81}</p>
+                <h2>${autoMsg_54e4067ef9}</h2>
             </div>
         </div>
 
@@ -52,8 +63,8 @@
                     <div class="shop-product-section__head">
                         <div class="shop-card-icon">${section.iconText}</div>
                         <div>
-                            <h3><spring:message code="${section.titleMessageCode}"/></h3>
-                            <p><spring:message code="${section.descriptionMessageCode}"/></p>
+                            <h3>${autoMsg_5c107b7a0f}</h3>
+                            <p>${autoMsg_cec3d77786}</p>
                         </div>
                     </div>
 
@@ -64,9 +75,9 @@
                                     <span>${item.previewText}</span>
                                 </div>
                                 <div class="shop-product-meta">
-                                    <span class="shop-product-type"><spring:message code="${item.itemTypeMessageCode}"/></span>
-                                    <strong><spring:message code="${item.nameMessageCode}"/></strong>
-                                    <p><spring:message code="${item.descriptionMessageCode}"/></p>
+                                    <span class="shop-product-type">${autoMsg_fe86a0e94f}</span>
+                                    <strong>${autoMsg_35528b2479}</strong>
+                                    <p>${autoMsg_e6023bb5a5}</p>
                                 </div>
                                 <div class="shop-product-footer">
                                     <span class="shop-product-price">

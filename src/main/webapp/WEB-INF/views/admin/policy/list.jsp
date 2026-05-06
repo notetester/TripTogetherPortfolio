@@ -3,6 +3,33 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_2b7e9665a3" code="admin.policy.centerTitle"/>
+<spring:message var="autoMsg_d9a61d0f3b" code="admin.common.status"/>
+<spring:message var="autoMsg_d605bc4363" code="admin.common.active"/>
+<spring:message var="autoMsg_8cb595780c" code="admin.common.inactive"/>
+<spring:message var="autoMsg_a559d47630" code="admin.policy.nextExecute"/>
+<spring:message var="autoMsg_ff70885faa" code="admin.policy.unscheduled"/>
+<spring:message var="autoMsg_8d27d22a26" code="admin.policy.lastExecute"/>
+<spring:message var="autoMsg_39a0a4444d" code="admin.policy.noExecution"/>
+<spring:message var="autoMsg_49ca482802" code="admin.policy.runNow"/>
+<spring:message var="autoMsg_2b844175d1" code="admin.policy.inactiveDays"/>
+<spring:message var="autoMsg_4d73e027fb" code="admin.policy.levelScope"/>
+<spring:message var="autoMsg_3040876dc3" code="admin.policy.scheduleType"/>
+<spring:message var="autoMsg_6183be25b5" code="admin.policy.schedule.daily"/>
+<spring:message var="autoMsg_77ab4262bd" code="admin.policy.schedule.interval"/>
+<spring:message var="autoMsg_e3aa6cfd44" code="admin.policy.schedule.monthly"/>
+<spring:message var="autoMsg_bf3f8f0fc3" code="admin.policy.schedule.manual"/>
+<spring:message var="autoMsg_c1ceb4f471" code="admin.policy.intervalHours"/>
+<spring:message var="autoMsg_cae778a61a" code="admin.policy.dayOfMonth"/>
+<spring:message var="autoMsg_38d6ec399a" code="admin.policy.scheduleTime"/>
+<spring:message var="autoMsg_0c6cd44770" code="admin.policy.policyEnabled"/>
+<spring:message var="autoMsg_1ef9fca8bc" code="admin.policy.lastMessage"/>
+<spring:message var="autoMsg_e2a3551eba" code="admin.policy.save"/>
+<spring:message var="autoMsg_ee488d9e99" code="admin.policy.historyTitle"/>
+<spring:message var="autoMsg_f3c93e6d93" code="admin.policy.operator"/>
+<spring:message var="autoMsg_f1578ecc10" code="admin.common.system"/>
+<spring:message var="autoMsg_aa951923c8" code="admin.common.result"/>
+<spring:message var="autoMsg_55b28c5ddb" code="admin.policy.noHistory"/>
 <c:set var="activeMenu" value="policies"/>
 <spring:message code="admin.policy.pageTitle" var="adminPolicyPageTitle"/>
 <c:set var="pageTitle" value="${adminPolicyPageTitle}"/>
@@ -11,7 +38,7 @@
 <div class="adm-content">
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.policy.centerTitle"/></div>
+            <div class="adm-card-title">${autoMsg_2b7e9665a3}</div>
         </div>
         <div class="adm-card-body">
             <div class="policy-overview-grid">
@@ -20,25 +47,25 @@
                         <div class="policy-overview-eyebrow">${policy.policyGroup}</div>
                         <div class="policy-overview-title">${policy.policyName}</div>
                         <div class="policy-overview-meta">
-                            <spring:message code="admin.common.status"/>:
+                            ${autoMsg_d9a61d0f3b}:
                             <span class="status-badge ${policy.active ? 'ACTIVE' : 'DORMANT'}">
                                 <c:choose>
-                                    <c:when test="${policy.active}"><spring:message code="admin.common.active"/></c:when>
-                                    <c:otherwise><spring:message code="admin.common.inactive"/></c:otherwise>
+                                    <c:when test="${policy.active}">${autoMsg_d605bc4363}</c:when>
+                                    <c:otherwise>${autoMsg_8cb595780c}</c:otherwise>
                                 </c:choose>
                             </span>
                         </div>
                         <div class="policy-overview-meta">
-                            <spring:message code="admin.policy.nextExecute"/>:
+                            ${autoMsg_a559d47630}:
                             <c:choose>
                                 <c:when test="${not empty policy.nextExecuteAtDate}">
                                     <fmt:formatDate value="${policy.nextExecuteAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                                 </c:when>
-                                <c:otherwise><spring:message code="admin.policy.unscheduled"/></c:otherwise>
+                                <c:otherwise>${autoMsg_ff70885faa}</c:otherwise>
                             </c:choose>
                         </div>
                         <div class="policy-overview-meta">
-                            <spring:message code="admin.policy.lastExecute"/>:
+                            ${autoMsg_8d27d22a26}:
                             <c:choose>
                                 <c:when test="${not empty policy.lastExecutedAtDate}">
                                     <fmt:formatDate value="${policy.lastExecutedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
@@ -46,7 +73,7 @@
                                         / ${policy.lastExecutionStatus}
                                     </c:if>
                                 </c:when>
-                                <c:otherwise><spring:message code="admin.policy.noExecution"/></c:otherwise>
+                                <c:otherwise>${autoMsg_39a0a4444d}</c:otherwise>
                             </c:choose>
                         </div>
                     </div>
@@ -73,49 +100,49 @@
                         <div class="policy-card-head-actions">
                             <span class="status-badge ${policy.active ? 'ACTIVE' : 'DORMANT'}">
                                 <c:choose>
-                                    <c:when test="${policy.active}"><spring:message code="admin.common.active"/></c:when>
-                                    <c:otherwise><spring:message code="admin.common.inactive"/></c:otherwise>
+                                    <c:when test="${policy.active}">${autoMsg_d605bc4363}</c:when>
+                                    <c:otherwise>${autoMsg_8cb595780c}</c:otherwise>
                                 </c:choose>
                             </span>
-                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('${policy.policyCode}', this)"><spring:message code="admin.policy.runNow"/></button>
+                            <button type="button" class="adm-btn adm-btn-ghost" onclick="runPolicyNow('${policy.policyCode}', this)">${autoMsg_49ca482802}</button>
                         </div>
                     </div>
                     <div class="adm-card-body">
                         <div class="policy-form-grid">
                             <div class="policy-config-dormant" style="display:none;">
-                                <div class="adm-filter-label"><spring:message code="admin.policy.inactiveDays"/></div>
+                                <div class="adm-filter-label">${autoMsg_2b844175d1}</div>
                                 <input class="adm-input js-policy-inactive-days" type="number" min="30" step="1">
                             </div>
                             <div class="policy-config-level" style="display:none;">
-                                <div class="adm-filter-label"><spring:message code="admin.policy.levelScope"/></div>
+                                <div class="adm-filter-label">${autoMsg_4d73e027fb}</div>
                                 <label class="policy-inline-check">
                                     <input class="js-policy-only-active" type="checkbox">
                                     <spring:message code="admin.policy.onlyActiveMembers"/>
                                 </label>
                             </div>
                             <div>
-                                <div class="adm-filter-label"><spring:message code="admin.policy.scheduleType"/></div>
+                                <div class="adm-filter-label">${autoMsg_3040876dc3}</div>
                                 <select class="adm-select js-policy-schedule-type" style="width:100%;">
-                                    <option value="DAILY_TIME"><spring:message code="admin.policy.schedule.daily"/></option>
-                                    <option value="INTERVAL_HOURS"><spring:message code="admin.policy.schedule.interval"/></option>
-                                    <option value="MONTHLY_DAY_TIME"><spring:message code="admin.policy.schedule.monthly"/></option>
-                                    <option value="MANUAL"><spring:message code="admin.policy.schedule.manual"/></option>
+                                    <option value="DAILY_TIME">${autoMsg_6183be25b5}</option>
+                                    <option value="INTERVAL_HOURS">${autoMsg_77ab4262bd}</option>
+                                    <option value="MONTHLY_DAY_TIME">${autoMsg_e3aa6cfd44}</option>
+                                    <option value="MANUAL">${autoMsg_bf3f8f0fc3}</option>
                                 </select>
                             </div>
                             <div class="js-policy-interval-wrap">
-                                <div class="adm-filter-label"><spring:message code="admin.policy.intervalHours"/></div>
+                                <div class="adm-filter-label">${autoMsg_c1ceb4f471}</div>
                                 <input class="adm-input js-policy-interval" type="number" min="1" step="1">
                             </div>
                             <div class="js-policy-day-wrap">
-                                <div class="adm-filter-label"><spring:message code="admin.policy.dayOfMonth"/></div>
+                                <div class="adm-filter-label">${autoMsg_cae778a61a}</div>
                                 <input class="adm-input js-policy-day" type="number" min="1" max="28" step="1">
                             </div>
                             <div class="js-policy-time-wrap">
-                                <div class="adm-filter-label"><spring:message code="admin.policy.scheduleTime"/></div>
+                                <div class="adm-filter-label">${autoMsg_38d6ec399a}</div>
                                 <input class="adm-input js-policy-time" type="time">
                             </div>
                             <div>
-                                <div class="adm-filter-label"><spring:message code="admin.policy.policyEnabled"/></div>
+                                <div class="adm-filter-label">${autoMsg_0c6cd44770}</div>
                                 <label class="policy-inline-check">
                                     <input class="js-policy-active" type="checkbox" ${policy.active ? 'checked' : ''}>
                                     <spring:message code="admin.policy.autoExecution"/>
@@ -124,7 +151,7 @@
                         </div>
                         <div class="policy-card-foot">
                             <div class="policy-card-foot-note">
-                                <spring:message code="admin.policy.lastMessage"/>:
+                                ${autoMsg_1ef9fca8bc}:
                                 <span class="policy-card-foot-value">
                                     <c:choose>
                                         <c:when test="${empty policy.lastExecutionMessage}">
@@ -135,7 +162,7 @@
                                 </span>
                             </div>
                             <div style="display:flex;gap:8px;">
-                                <button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('${policy.policyCode}', this)"><spring:message code="admin.policy.save"/></button>
+                                <button type="button" class="adm-btn adm-btn-primary" onclick="savePolicy('${policy.policyCode}', this)">${autoMsg_e2a3551eba}</button>
                             </div>
                         </div>
                     </div>
@@ -145,7 +172,7 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="admin.policy.historyTitle"/></div>
+                <div class="adm-card-title">${autoMsg_ee488d9e99}</div>
             </div>
             <div class="adm-card-body policy-history-column">
                 <c:forEach items="${policies}" var="policy">
@@ -162,17 +189,17 @@
                                         </div>
                                     </div>
                                     <div class="policy-history-item-meta">
-                                        <spring:message code="admin.policy.operator"/>:
+                                        ${autoMsg_f3c93e6d93}:
                                         <span class="policy-history-item-value">
                                             <c:choose>
-                                                <c:when test="${empty history.changedByNickname}"><spring:message code="admin.common.system"/></c:when>
+                                                <c:when test="${empty history.changedByNickname}">${autoMsg_f1578ecc10}</c:when>
                                                 <c:otherwise>${history.changedByNickname}</c:otherwise>
                                             </c:choose>
                                         </span>
                                     </div>
                                     <c:if test="${not empty history.executionStatus or not empty history.executionMessage}">
                                         <div class="policy-history-item-meta">
-                                            <spring:message code="admin.common.result"/>:
+                                            ${autoMsg_aa951923c8}:
                                             <span class="policy-history-item-value">${empty history.executionStatus ? '-' : history.executionStatus}</span>
                                             <c:if test="${not empty history.executionMessage}">
                                                 / ${history.executionMessage}
@@ -182,7 +209,7 @@
                                 </div>
                             </c:forEach>
                             <c:if test="${empty policyHistories[policy.policyCode]}">
-                                <div class="policy-history-empty"><spring:message code="admin.policy.noHistory"/></div>
+                                <div class="policy-history-empty">${autoMsg_55b28c5ddb}</div>
                             </c:if>
                         </div>
                     </div>

@@ -138,4 +138,9 @@ public class BlockRuleCacheService {
             return (ipRules == null || ipRules.isEmpty()) && (userRules == null || userRules.isEmpty());
         }
     }
+
+    public java.util.Date getLoadedAtDate() {
+        return loadedAt == null ? null : java.util.Date.from(loadedAt.atZone(java.time.ZoneId.systemDefault()).toInstant());
+    }
+
 }

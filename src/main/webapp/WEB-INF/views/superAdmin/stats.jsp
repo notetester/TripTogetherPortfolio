@@ -2,6 +2,23 @@
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_76a6ec04a9" code="superAdmin.stats.kpi.totalAdmins"/>
+<spring:message var="autoMsg_99906cc99e" code="superAdmin.stats.kpi.departments"/>
+<spring:message var="autoMsg_2492fdca31" code="superAdmin.stats.kpi.permissions"/>
+<spring:message var="autoMsg_c5504dad2a" code="superAdmin.stats.kpi.positions"/>
+<spring:message var="autoMsg_ef1ae5db2a" code="superAdmin.stats.card.positionDistribution"/>
+<spring:message var="autoMsg_1e92d9efc4" code="superAdmin.stats.card.permissionDistribution"/>
+<spring:message var="autoMsg_0b2add40fe" code="superAdmin.stats.card.tierDistribution"/>
+<spring:message var="autoMsg_411f8fc5bb" code="superAdmin.stats.card.departmentDistribution"/>
+<spring:message var="autoMsg_4874dd5e2a" code="superAdmin.stats.card.dormantAdmins"/>
+<spring:message var="autoMsg_db4c0e9886" code="superAdmin.stats.suffix.days90"/>
+<spring:message var="autoMsg_908fd975b1" code="superAdmin.stats.empty"/>
+<spring:message var="autoMsg_33de62ed44" code="superAdmin.stats.table.nickname"/>
+<spring:message var="autoMsg_632bc53444" code="superAdmin.stats.table.department"/>
+<spring:message var="autoMsg_b2953c8a6f" code="superAdmin.stats.table.lastLogin"/>
+<spring:message var="autoMsg_93788ad07e" code="superAdmin.stats.card.noPermissionAdmins"/>
+<spring:message var="autoMsg_49e55ccef5" code="superAdmin.stats.table.title"/>
+<spring:message var="autoMsg_19514e69b9" code="superAdmin.stats.card.withoutManagerAdmins"/>
 <c:set var="activeMenu" value="stats"/>
 <spring:message code="superAdmin.stats.pageTitle" var="pageTitle"/>
 <spring:message code="superAdmin.stats.recentLogin.none" var="recentLoginNone"/>
@@ -13,19 +30,19 @@
     <div class="sa-stats-summary">
         <div class="sa-stats-kpi">
             <div class="sa-stats-kpi-value">${totalAdmins}</div>
-            <div class="sa-stats-kpi-label"><spring:message code="superAdmin.stats.kpi.totalAdmins"/></div>
+            <div class="sa-stats-kpi-label">${autoMsg_76a6ec04a9}</div>
         </div>
         <div class="sa-stats-kpi">
             <div class="sa-stats-kpi-value">${fn:length(byDepartment)}</div>
-            <div class="sa-stats-kpi-label"><spring:message code="superAdmin.stats.kpi.departments"/></div>
+            <div class="sa-stats-kpi-label">${autoMsg_99906cc99e}</div>
         </div>
         <div class="sa-stats-kpi">
             <div class="sa-stats-kpi-value">${fn:length(byPermissionCode)}</div>
-            <div class="sa-stats-kpi-label"><spring:message code="superAdmin.stats.kpi.permissions"/></div>
+            <div class="sa-stats-kpi-label">${autoMsg_2492fdca31}</div>
         </div>
         <div class="sa-stats-kpi">
             <div class="sa-stats-kpi-value">${fn:length(byPosition)}</div>
-            <div class="sa-stats-kpi-label"><spring:message code="superAdmin.stats.kpi.positions"/></div>
+            <div class="sa-stats-kpi-label">${autoMsg_c5504dad2a}</div>
         </div>
     </div>
 
@@ -34,7 +51,7 @@
 
         <div class="adm-card sa-stats-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.positionDistribution"/></div>
+                <div class="adm-card-title">${autoMsg_ef1ae5db2a}</div>
             </div>
             <div class="adm-card-body sa-chart-body">
                 <canvas id="chartPosition"></canvas>
@@ -43,7 +60,7 @@
 
         <div class="adm-card sa-stats-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.permissionDistribution"/></div>
+                <div class="adm-card-title">${autoMsg_1e92d9efc4}</div>
             </div>
             <div class="adm-card-body sa-chart-body">
                 <canvas id="chartPermCode"></canvas>
@@ -52,7 +69,7 @@
 
         <div class="adm-card sa-stats-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.tierDistribution"/></div>
+                <div class="adm-card-title">${autoMsg_0b2add40fe}</div>
             </div>
             <div class="adm-card-body sa-chart-body">
                 <canvas id="chartTier"></canvas>
@@ -61,7 +78,7 @@
 
         <div class="adm-card sa-stats-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.departmentDistribution"/></div>
+                <div class="adm-card-title">${autoMsg_411f8fc5bb}</div>
             </div>
             <div class="adm-card-body sa-chart-body">
                 <canvas id="chartDept"></canvas>
@@ -75,16 +92,16 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.dormantAdmins"/> <span class="sa-exception-count">(<spring:message code="superAdmin.stats.suffix.days90"/>)</span></div>
+                <div class="adm-card-title">${autoMsg_4874dd5e2a} <span class="sa-exception-count">(${autoMsg_db4c0e9886})</span></div>
             </div>
             <div class="adm-card-body" style="padding:0;overflow-x:auto;">
                 <c:choose>
                     <c:when test="${empty dormantAdmins}">
-                        <div class="sa-exception-empty"><spring:message code="superAdmin.stats.empty"/></div>
+                        <div class="sa-exception-empty">${autoMsg_908fd975b1}</div>
                     </c:when>
                     <c:otherwise>
                         <table class="sa-exception-table">
-                            <thead><tr><th><spring:message code="superAdmin.stats.table.nickname"/></th><th><spring:message code="superAdmin.stats.table.department"/></th><th><spring:message code="superAdmin.stats.table.lastLogin"/></th></tr></thead>
+                            <thead><tr><th>${autoMsg_33de62ed44}</th><th>${autoMsg_632bc53444}</th><th>${autoMsg_b2953c8a6f}</th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${dormantAdmins}">
                                 <tr>
@@ -102,16 +119,16 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.noPermissionAdmins"/></div>
+                <div class="adm-card-title">${autoMsg_93788ad07e}</div>
             </div>
             <div class="adm-card-body" style="padding:0;overflow-x:auto;">
                 <c:choose>
                     <c:when test="${empty adminsWithoutPermissions}">
-                        <div class="sa-exception-empty"><spring:message code="superAdmin.stats.empty"/></div>
+                        <div class="sa-exception-empty">${autoMsg_908fd975b1}</div>
                     </c:when>
                     <c:otherwise>
                         <table class="sa-exception-table">
-                            <thead><tr><th><spring:message code="superAdmin.stats.table.nickname"/></th><th><spring:message code="superAdmin.stats.table.department"/></th><th><spring:message code="superAdmin.stats.table.title"/></th></tr></thead>
+                            <thead><tr><th>${autoMsg_33de62ed44}</th><th>${autoMsg_632bc53444}</th><th>${autoMsg_49e55ccef5}</th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${adminsWithoutPermissions}">
                                 <tr>
@@ -129,16 +146,16 @@
 
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="superAdmin.stats.card.withoutManagerAdmins"/></div>
+                <div class="adm-card-title">${autoMsg_19514e69b9}</div>
             </div>
             <div class="adm-card-body" style="padding:0;overflow-x:auto;">
                 <c:choose>
                     <c:when test="${empty adminsWithoutManager}">
-                        <div class="sa-exception-empty"><spring:message code="superAdmin.stats.empty"/></div>
+                        <div class="sa-exception-empty">${autoMsg_908fd975b1}</div>
                     </c:when>
                     <c:otherwise>
                         <table class="sa-exception-table">
-                            <thead><tr><th><spring:message code="superAdmin.stats.table.nickname"/></th><th><spring:message code="superAdmin.stats.table.department"/></th><th><spring:message code="superAdmin.stats.table.title"/></th></tr></thead>
+                            <thead><tr><th>${autoMsg_33de62ed44}</th><th>${autoMsg_632bc53444}</th><th>${autoMsg_49e55ccef5}</th></tr></thead>
                             <tbody>
                             <c:forEach var="m" items="${adminsWithoutManager}">
                                 <tr>

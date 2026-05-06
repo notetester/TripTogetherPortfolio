@@ -2,11 +2,21 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_4aab537781" code="course.main.windowTitle"/>
+<spring:message var="autoMsg_e18ca1cafe" code="course.main.badge"/>
+<spring:message var="autoMsg_a591aa6ece" code="course.main.title"/>
+<spring:message var="autoMsg_754dcd6187" code="course.main.desc"/>
+<spring:message var="autoMsg_41d0328dfa" code="course.main.my.label"/>
+<spring:message var="autoMsg_d663ee8045" code="course.main.my.title"/>
+<spring:message var="autoMsg_8776f61111" code="course.main.my.desc"/>
+<spring:message var="autoMsg_a8ba9b24ad" code="course.main.public.label"/>
+<spring:message var="autoMsg_90e1b0a4ab" code="course.main.public.title"/>
+<spring:message var="autoMsg_4e1de5f9b6" code="course.main.public.desc"/>
 <!DOCTYPE html>
 <html lang="${pageContext.response.locale.language}">
 <head>
   <meta charset="UTF-8">
-  <title><spring:message code="course.main.windowTitle"/></title>
+  <title>${autoMsg_4aab537781}</title>
   <style>
     * {
       box-sizing: border-box;
@@ -198,9 +208,9 @@
 
 <div class="courses-main-wrap">
   <section class="hero-section">
-    <div class="hero-badge"><spring:message code="course.main.badge"/></div>
-    <h1 class="hero-title"><spring:message code="course.main.title"/></h1>
-    <p class="hero-desc"><spring:message code="course.main.desc"/></p>
+    <div class="hero-badge">${autoMsg_e18ca1cafe}</div>
+    <h1 class="hero-title">${autoMsg_a591aa6ece}</h1>
+    <p class="hero-desc">${autoMsg_754dcd6187}</p>
 
     <div class="hero-btn-group">
       <a href="${pageContext.request.contextPath}/courses/write" class="hero-btn primary">
@@ -214,15 +224,15 @@
 
   <section class="menu-grid">
     <a href="${pageContext.request.contextPath}/courses/my" class="menu-card">
-      <div class="menu-label"><spring:message code="course.main.my.label"/></div>
-      <h2 class="menu-title"><spring:message code="course.main.my.title"/></h2>
-      <p class="menu-desc"><spring:message code="course.main.my.desc"/></p>
+      <div class="menu-label">${autoMsg_41d0328dfa}</div>
+      <h2 class="menu-title">${autoMsg_d663ee8045}</h2>
+      <p class="menu-desc">${autoMsg_8776f61111}</p>
     </a>
 
     <a href="${pageContext.request.contextPath}/courses/public" class="menu-card">
-      <div class="menu-label"><spring:message code="course.main.public.label"/></div>
-      <h2 class="menu-title"><spring:message code="course.main.public.title"/></h2>
-      <p class="menu-desc"><spring:message code="course.main.public.desc"/></p>
+      <div class="menu-label">${autoMsg_a8ba9b24ad}</div>
+      <h2 class="menu-title">${autoMsg_90e1b0a4ab}</h2>
+      <p class="menu-desc">${autoMsg_4e1de5f9b6}</p>
     </a>
   </section>
 </div>

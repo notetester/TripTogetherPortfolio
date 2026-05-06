@@ -3,6 +3,191 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_b044513d01" code="admin.aiHelper.chatbot.kpi.totalConversations"/>
+<spring:message var="autoMsg_c5ed12cd73" code="admin.aiHelper.chatbot.kpi.todayConversations"/>
+<spring:message var="autoMsg_38fc999f60" code="admin.aiHelper.chatbot.kpi.inappropriate"/>
+<spring:message var="autoMsg_a2c9244ccd" code="admin.aiHelper.chatbot.kpi.activeBlocks"/>
+<spring:message var="autoMsg_e65b057767" code="admin.aiHelper.assistant.section.sessions"/>
+<spring:message var="autoMsg_88ad3487c3" code="admin.aiHelper.chatbot.searchPlaceholder"/>
+<spring:message var="autoMsg_a92d9b539d" code="admin.common.search"/>
+<spring:message var="autoMsg_1b193ad4dc" code="admin.common.reset"/>
+<spring:message var="autoMsg_ddcd0ecda1" code="admin.common.totalCountFormat"/>
+<spring:message var="autoMsg_2f75dca1b5" code="admin.aiHelper.chatbot.table.id"/>
+<spring:message var="autoMsg_27a7f3036c" code="admin.aiHelper.chatbot.table.title"/>
+<spring:message var="autoMsg_a45db7c223" code="admin.aiHelper.chatbot.table.user"/>
+<spring:message var="autoMsg_cfd18e97f4" code="admin.aiHelper.chatbot.table.ip"/>
+<spring:message var="autoMsg_96ba24dba9" code="admin.aiHelper.chatbot.table.messageCount"/>
+<spring:message var="autoMsg_91e2e03333" code="admin.aiHelper.chatbot.table.lastActive"/>
+<spring:message var="autoMsg_de2c9c4fa1" code="admin.aiHelper.chatbot.table.status"/>
+<spring:message var="autoMsg_41bbb6a01d" code="admin.aiHelper.chatbot.table.actions"/>
+<spring:message var="autoMsg_3e959557b8" code="admin.aiHelper.chatbot.action.blockUser"/>
+<spring:message var="autoMsg_06cab51800" code="admin.aiHelper.chatbot.action.blockIp"/>
+<spring:message var="autoMsg_048e7770e2" code="admin.aiHelper.chatbot.empty.conversations"/>
+<spring:message var="autoMsg_2545d16e5e" code="admin.aiHelper.assistant.userPrefix"/>
+<spring:message var="autoMsg_f5a85deeca" code="admin.aiHelper.chatbot.guest"/>
+<spring:message var="autoMsg_d0a646007a" code="admin.aiHelper.chatbot.status.deleted"/>
+<spring:message var="autoMsg_a0911576a4" code="admin.aiHelper.chatbot.status.active"/>
+<spring:message var="autoMsg_efe9a9c736" code="admin.aiHelper.chatbot.action.view"/>
+<spring:message var="autoMsg_4cf560b97d" code="admin.aiHelper.chatbot.table.content"/>
+<spring:message var="autoMsg_8ec7cce7ae" code="admin.common.time"/>
+<spring:message var="autoMsg_3d169ad991" code="admin.aiHelper.chatbot.empty.inappropriate"/>
+<spring:message var="autoMsg_fc6d23c55c" code="admin.aiHelper.chatbot.action.viewConversation"/>
+<spring:message var="autoMsg_ce1899fbd6" code="admin.aiHelper.chatbot.table.type"/>
+<spring:message var="autoMsg_e1ac1bc532" code="admin.aiHelper.chatbot.type.ip"/>
+<spring:message var="autoMsg_bb65e972fc" code="admin.aiHelper.chatbot.type.user"/>
+<spring:message var="autoMsg_97c89b9bce" code="admin.aiHelper.chatbot.table.value"/>
+<spring:message var="autoMsg_268d704cb2" code="admin.aiHelper.chatbot.valuePlaceholder"/>
+<spring:message var="autoMsg_77dec33b00" code="admin.aiHelper.chatbot.table.reason"/>
+<spring:message var="autoMsg_f5f3920815" code="admin.aiHelper.chatbot.reasonPlaceholder"/>
+<spring:message var="autoMsg_e54e759a71" code="admin.aiHelper.chatbot.action.createBlock"/>
+<spring:message var="autoMsg_b6fd656a80" code="admin.aiHelper.chatbot.table.blockedBy"/>
+<spring:message var="autoMsg_bde0c1c278" code="admin.aiHelper.chatbot.table.blockedAt"/>
+<spring:message var="autoMsg_1522384987" code="admin.aiHelper.chatbot.table.expiresAt"/>
+<spring:message var="autoMsg_a2e4e48369" code="admin.aiHelper.chatbot.empty.blocks"/>
+<spring:message var="autoMsg_c03aa9eb82" code="admin.aiHelper.chatbot.value.permanent"/>
+<spring:message var="autoMsg_a151681abe" code="admin.aiHelper.chatbot.status.released"/>
+<spring:message var="autoMsg_8287c856a5" code="admin.aiHelper.chatbot.action.release"/>
+<spring:message var="autoMsg_046c3e678c" code="admin.aiHelper.chatbot.description.quota"/>
+<spring:message var="autoMsg_831e51c6fe" code="admin.aiHelper.chatbot.modal.title"/>
+<spring:message var="autoMsg_50d441663e" code="admin.common.close"/>
+<spring:message var="autoMsg_04764e4869" code="admin.aiHelper.chatbot.modal.title" javaScriptEscape="true"/>
+<spring:message var="autoMsg_f536dc3c59" code="admin.aiHelper.assistant.role.user" javaScriptEscape="true"/>
+<spring:message var="autoMsg_961118a74b" code="admin.aiHelper.assistant.role.ai" javaScriptEscape="true"/>
+<spring:message var="autoMsg_3228f27f7a" code="admin.aiHelper.chatbot.empty.messages" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9aa8803fb0" code="admin.aiHelper.chatbot.message.viewFailed" javaScriptEscape="true"/>
+<spring:message var="autoMsg_365ca60365" code="admin.aiHelper.chatbot.message.viewError" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7c06265311" code="admin.aiHelper.chatbot.message.valueRequired" javaScriptEscape="true"/>
+<spring:message var="autoMsg_edfbe8928b" code="admin.aiHelper.chatbot.message.createBlockSuccess" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9464caeb8a" code="admin.aiHelper.chatbot.message.createBlockFailed" javaScriptEscape="true"/>
+<spring:message var="autoMsg_d83196636c" code="admin.aiHelper.chatbot.message.deactivateConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_46b714f717" code="admin.aiHelper.chatbot.message.deactivateFailed" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2327f380b3" code="admin.aiHelper.chatbot.message.blockUserConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2c79dc3b8a" code="admin.aiHelper.chatbot.message.blockIpConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_a3e8d92b76" code="admin.aiHelper.chatbot.message.quickBlockReason" javaScriptEscape="true"/>
+<spring:message var="autoMsg_8586d711f7" code="admin.aiHelper.chatbot.message.quotaSaved" javaScriptEscape="true"/>
+<spring:message var="autoMsg_a004debca5" code="admin.aiHelper.chatbot.message.quotaSaveFailed" javaScriptEscape="true"/>
+<spring:message var="autoMsg_c7ce1590d8" code="admin.aiHelper.chatbot.table.conversationId" javaScriptEscape="true"/>
+<spring:message var="autoMsg_a0fa54dfff" code="admin.context.memberTitle"/>
+<spring:message var="autoMsg_09faf2e48e" code="admin.common.loading"/>
+<spring:message var="autoMsg_5c5d79cf47" code="admin.members.blockModalTitle"/>
+<spring:message var="autoMsg_27cc41fba0" code="admin.context.action.blockType"/>
+<spring:message var="autoMsg_c5d8fd6f42" code="admin.context.blockType.userOnly"/>
+<spring:message var="autoMsg_8c64fa27a2" code="admin.context.blockType.ipOnly"/>
+<spring:message var="autoMsg_15769734ac" code="admin.context.blockType.userIp"/>
+<spring:message var="autoMsg_4a078a00e9" code="admin.members.blockedIpLabel"/>
+<spring:message var="autoMsg_8538ef80a7" code="admin.context.action.blockIpPlaceholder"/>
+<spring:message var="autoMsg_7ea641a2a0" code="admin.members.blockExpiresLabel"/>
+<spring:message var="autoMsg_c2b02781fd" code="admin.members.blockReasonLabel"/>
+<spring:message var="autoMsg_36a6ef4ecb" code="admin.context.action.reasonPlaceholder"/>
+<spring:message var="autoMsg_2c0d0b5043" code="admin.context.action.applyBlock"/>
+<spring:message var="autoMsg_d9a8845f7d" code="admin.common.loading" javaScriptEscape="true"/>
+<spring:message var="autoMsg_ec7c0f9d97" code="admin.common.close" javaScriptEscape="true"/>
+<spring:message var="autoMsg_d9f3d85eb5" code="admin.common.error" javaScriptEscape="true"/>
+<spring:message var="autoMsg_1c3acc66fa" code="admin.common.yes" javaScriptEscape="true"/>
+<spring:message var="autoMsg_0bb250d188" code="admin.common.no" javaScriptEscape="true"/>
+<spring:message var="autoMsg_532f36149c" code="admin.members.none" javaScriptEscape="true"/>
+<spring:message var="autoMsg_1d08ca9bfd" code="admin.members.noLinkedProvider" javaScriptEscape="true"/>
+<spring:message var="autoMsg_d160f6da3f" code="admin.members.verifiedMember" javaScriptEscape="true"/>
+<spring:message var="autoMsg_cc023e58ed" code="admin.members.unverifiedMember" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7d951366ce" code="admin.status.ACTIVE" javaScriptEscape="true"/>
+<spring:message var="autoMsg_bf1d1a6d55" code="admin.status.DORMANT" javaScriptEscape="true"/>
+<spring:message var="autoMsg_e407db387a" code="admin.status.BLOCKED" javaScriptEscape="true"/>
+<spring:message var="autoMsg_cdb6a62812" code="admin.status.DELETED" javaScriptEscape="true"/>
+<spring:message var="autoMsg_6a7f4ef6b7" code="admin.members.blockModalTitleSuffix" javaScriptEscape="true"/>
+<spring:message var="autoMsg_44d04f3037" code="admin.members.blockResponseParseError" javaScriptEscape="true"/>
+<spring:message var="autoMsg_c3401fc82b" code="admin.members.statusResponseParseError" javaScriptEscape="true"/>
+<spring:message var="autoMsg_8d6d415aab" code="admin.members.roleResponseParseError" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2e105310c8" code="admin.members.blockTargetMissing" javaScriptEscape="true"/>
+<spring:message var="autoMsg_71a3efcf07" code="admin.common.applying" javaScriptEscape="true"/>
+<spring:message var="autoMsg_35eb4519fe" code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9803cc470d" code="admin.context.memberTitle" javaScriptEscape="true"/>
+<spring:message var="autoMsg_aedb01b12d" code="admin.members.detailTitleSuffix" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2bc04885f9" code="admin.context.tab.info" javaScriptEscape="true"/>
+<spring:message var="autoMsg_6799adb9a7" code="admin.context.tab.logins" javaScriptEscape="true"/>
+<spring:message var="autoMsg_65987a83f0" code="admin.context.tab.security" javaScriptEscape="true"/>
+<spring:message var="autoMsg_a950657a16" code="admin.members.emailHistoryTab" javaScriptEscape="true"/>
+<spring:message var="autoMsg_36cd735886" code="admin.context.tab.activity" javaScriptEscape="true"/>
+<spring:message var="autoMsg_8f31c1b947" code="admin.context.tab.blocks" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7a816126e9" code="admin.context.tab.actions" javaScriptEscape="true"/>
+<spring:message var="autoMsg_0a2f46973a" code="admin.role.USER" javaScriptEscape="true"/>
+<spring:message var="autoMsg_f34987690b" code="admin.role.BUSINESS" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7cef6bcd99" code="admin.role.PARTNER" javaScriptEscape="true"/>
+<spring:message var="autoMsg_0023796b3f" code="admin.role.BOT" javaScriptEscape="true"/>
+<spring:message var="autoMsg_1fd3c9991d" code="admin.role.ADMIN" javaScriptEscape="true"/>
+<spring:message var="autoMsg_f6d02ce1b2" code="admin.role.SUPERADMIN" javaScriptEscape="true"/>
+<spring:message var="autoMsg_51197b6b62" code="admin.role.SYSTEM" javaScriptEscape="true"/>
+<spring:message var="autoMsg_d519188fd7" code="admin.social.kakao" javaScriptEscape="true"/>
+<spring:message var="autoMsg_039f2a034c" code="admin.social.naver" javaScriptEscape="true"/>
+<spring:message var="autoMsg_329f00473b" code="admin.social.google" javaScriptEscape="true"/>
+<spring:message var="autoMsg_c1757340af" code="admin.context.requireBlockedIp" javaScriptEscape="true"/>
+<spring:message var="autoMsg_93595248e5" code="admin.context.toast.saveBlockFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_82e1a33bf4" code="admin.context.toast.saveBlockError" javaScriptEscape="true"/>
+<spring:message var="autoMsg_28f618a732" code="admin.members.confirmStatusChangePrefix" javaScriptEscape="true"/>
+<spring:message var="autoMsg_582b10f8bb" code="admin.members.confirmStatusChangeSuffix" javaScriptEscape="true"/>
+<spring:message var="autoMsg_19cf8eca7c" code="admin.context.toast.saveStatusSuccess" javaScriptEscape="true"/>
+<spring:message var="autoMsg_623997efab" code="admin.context.toast.saveStatusFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_22215b2645" code="admin.members.roleContextMissing" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4e2604dfa0" code="admin.members.roleAlreadySelected" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9b4937693e" code="admin.context.requireRoleReason" javaScriptEscape="true"/>
+<spring:message var="autoMsg_fb4f5cdfe4" code="admin.members.confirmRoleChangeSuffix" javaScriptEscape="true"/>
+<spring:message var="autoMsg_0205181e85" code="admin.context.toast.saveRoleSuccess" javaScriptEscape="true"/>
+<spring:message var="autoMsg_81f079f9b9" code="admin.context.toast.saveRoleFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_09a531507e" code="admin.context.inputValue" javaScriptEscape="true"/>
+<spring:message var="autoMsg_df50ec273f" code="admin.context.targetEmail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_655a03dee1" code="admin.context.empty.security" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9986173463" code="admin.context.requestEmail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_df8ae7b5a1" code="admin.context.empty.emailRequests" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9f0d4a80ab" code="admin.context.used" javaScriptEscape="true"/>
+<spring:message var="autoMsg_ed5dbcfe96" code="admin.context.unused" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b67170d46b" code="admin.context.empty.emailTokens" javaScriptEscape="true"/>
+<spring:message var="autoMsg_90d8ab0701" code="admin.context.uri" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4074aa5a05" code="admin.context.empty.activity" javaScriptEscape="true"/>
+<spring:message var="autoMsg_5b658ed241" code="admin.common.reason" javaScriptEscape="true"/>
+<spring:message var="autoMsg_53d8c44942" code="admin.context.empty.blocks" javaScriptEscape="true"/>
+<spring:message var="autoMsg_3bea6f4cea" code="admin.context.action.profileTitle" javaScriptEscape="true"/>
+<spring:message var="autoMsg_49d89a08e9" code="admin.context.nickname" javaScriptEscape="true"/>
+<spring:message var="autoMsg_e1ee8c64a7" code="admin.context.nationality" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2da7e47509" code="admin.context.preferredLanguage" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2fa1ea1062" code="admin.context.action.saveProfile" javaScriptEscape="true"/>
+<spring:message var="autoMsg_dfd54827df" code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7f77d7a7de" code="admin.members.accountStatus" javaScriptEscape="true"/>
+<spring:message var="autoMsg_84f506fa9a" code="admin.common.apply" javaScriptEscape="true"/>
+<spring:message var="autoMsg_59e66372dd" code="admin.common.role" javaScriptEscape="true"/>
+<spring:message var="autoMsg_cfa3e4044d" code="admin.context.action.roleReason" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2c82f9503e" code="admin.context.action.roleReasonPlaceholder" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7a77afbd32" code="admin.context.action.changeRole" javaScriptEscape="true"/>
+<spring:message var="autoMsg_569502d33a" code="admin.context.action.quickBlockTitle" javaScriptEscape="true"/>
+<spring:message var="autoMsg_657bacf516" code="admin.context.action.blockType" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b165aefc9e" code="admin.context.blockType.userOnly" javaScriptEscape="true"/>
+<spring:message var="autoMsg_297ccdc718" code="admin.context.blockType.ipOnly" javaScriptEscape="true"/>
+<spring:message var="autoMsg_e67eb06ea0" code="admin.context.blockType.userIp" javaScriptEscape="true"/>
+<spring:message var="autoMsg_66a711eccb" code="admin.context.blockedIp" javaScriptEscape="true"/>
+<spring:message var="autoMsg_777c217ebc" code="admin.context.action.blockIpPlaceholder" javaScriptEscape="true"/>
+<spring:message var="autoMsg_de9550f28e" code="admin.context.action.blockExpires" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2be055d6af" code="admin.context.action.applyBlock" javaScriptEscape="true"/>
+<spring:message var="autoMsg_8fd5232912" code="admin.context.tab.emailRequests" javaScriptEscape="true"/>
+<spring:message var="autoMsg_8b8f445762" code="admin.context.tab.emailTokens" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2ff6f831e8" code="admin.context.memberNo" javaScriptEscape="true"/>
+<spring:message var="autoMsg_901942cda3" code="admin.context.userId" javaScriptEscape="true"/>
+<spring:message var="autoMsg_413c58e514" code="admin.context.email" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b7eb2dfc5d" code="admin.members.emailVerified" javaScriptEscape="true"/>
+<spring:message var="autoMsg_f1ff1384e2" code="admin.members.emailLoginEnabled" javaScriptEscape="true"/>
+<spring:message var="autoMsg_e7d9e4c5c4" code="admin.members.passwordLoginEnabled" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4ecfd939f8" code="admin.context.createdAt" javaScriptEscape="true"/>
+<spring:message var="autoMsg_836ad37ce3" code="admin.members.socialLinked" javaScriptEscape="true"/>
+<spring:message var="autoMsg_d8bf5f56e9" code="admin.members.loginSuccess" javaScriptEscape="true"/>
+<spring:message var="autoMsg_1ce445ab81" code="admin.members.loginFailure" javaScriptEscape="true"/>
+<spring:message var="autoMsg_21e9a18ffb" code="admin.context.lastLogin" javaScriptEscape="true"/>
+<spring:message var="autoMsg_fe788d3d39" code="admin.context.empty.logins" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b9b4f87535" code="admin.logs.success" javaScriptEscape="true"/>
+<spring:message var="autoMsg_005440f954" code="admin.logs.failure" javaScriptEscape="true"/>
+<spring:message var="autoMsg_10c248e065" code="admin.common.time" javaScriptEscape="true"/>
+<spring:message var="autoMsg_e5becd39c3" code="admin.logs.provider" javaScriptEscape="true"/>
+<spring:message var="autoMsg_ef83b25be6" code="admin.logs.failReason" javaScriptEscape="true"/>
+<spring:message var="autoMsg_761b84a10b" code="admin.common.ip" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7cb96542d5" code="admin.context.toast.saveProfileSuccess" javaScriptEscape="true"/>
+<spring:message var="autoMsg_69eae2cf3d" code="admin.context.toast.saveProfileFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_d969ca6ccb" code="admin.context.toast.saveProfileError" javaScriptEscape="true"/>
 <c:set var="activeMenu" value="aiHelper"/>
 <spring:message code="admin.aiHelper.chatbot.pageTitle" var="pageTitle"/>
 <%@ include file="../layout.jsp" %>
@@ -44,54 +229,54 @@
     <c:if test="${tab == 'dashboard'}">
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
             <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">💬 <spring:message code="admin.aiHelper.chatbot.kpi.totalConversations"/></div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">💬 ${autoMsg_b044513d01}</div>
                 <div style="font-size:24px;font-weight:700;color:#38bdf8;">${totalConversations}</div>
             </div>
             <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">📅 <spring:message code="admin.aiHelper.chatbot.kpi.todayConversations"/></div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">📅 ${autoMsg_c5ed12cd73}</div>
                 <div style="font-size:24px;font-weight:700;color:#10b981;">${todayConversations}</div>
             </div>
             <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">⚠️ <spring:message code="admin.aiHelper.chatbot.kpi.inappropriate"/></div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">⚠️ ${autoMsg_38fc999f60}</div>
                 <div style="font-size:24px;font-weight:700;color:#fb923c;">${inappropriateCount}</div>
             </div>
             <div class="adm-card" style="padding:20px;">
-                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">⛔ <spring:message code="admin.aiHelper.chatbot.kpi.activeBlocks"/></div>
+                <div style="font-size:12px;color:#64748b;margin-bottom:6px;">⛔ ${autoMsg_a2c9244ccd}</div>
                 <div style="font-size:24px;font-weight:700;color:#ef4444;">${activeBlockCount}</div>
             </div>
         </div>
 
         <%-- ── 대화 세션 목록 (대시보드 내 통합) ── --%>
-        <div style="font-size:14px;font-weight:700;margin:8px 0 12px;"><spring:message code="admin.aiHelper.assistant.section.sessions"/></div>
+        <div style="font-size:14px;font-weight:700;margin:8px 0 12px;">${autoMsg_e65b057767}</div>
 
         <div class="adm-card" style="padding:16px;margin-bottom:16px;">
             <form method="get" action="${pageContext.request.contextPath}/admin/ai-helper/chatbot" style="display:flex;gap:8px;">
                 <input type="hidden" name="tab" value="dashboard"/>
-                <input type="text" name="keyword" value="${keyword}" placeholder="<spring:message code='admin.aiHelper.chatbot.searchPlaceholder'/>" class="adm-input" style="flex:1;"/>
-                <button type="submit" class="adm-btn"><spring:message code="admin.common.search"/></button>
+                <input type="text" name="keyword" value="${keyword}" placeholder="${autoMsg_88ad3487c3}" class="adm-input" style="flex:1;"/>
+                <button type="submit" class="adm-btn">${autoMsg_a92d9b539d}</button>
                 <c:if test="${not empty keyword}">
-                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot" class="adm-btn adm-btn-ghost"><spring:message code="admin.common.reset"/></a>
+                    <a href="${pageContext.request.contextPath}/admin/ai-helper/chatbot" class="adm-btn adm-btn-ghost">${autoMsg_1b193ad4dc}</a>
                 </c:if>
             </form>
-            <div style="font-size:12px;color:#64748b;margin-top:8px;"><spring:message code="admin.common.totalCountFormat" arguments="${total}"/></div>
+            <div style="font-size:12px;color:#64748b;margin-top:8px;">${autoMsg_ddcd0ecda1}</div>
         </div>
 
         <div class="adm-card" style="padding:0;overflow-x:auto;">
             <table class="adm-table" style="width:100%;">
                 <thead>
                     <tr>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.id"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.title"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.user"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.ip"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.messageCount"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.lastActive"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.status"/></th>
+                        <th>${autoMsg_2f75dca1b5}</th>
+                        <th>${autoMsg_27a7f3036c}</th>
+                        <th>${autoMsg_a45db7c223}</th>
+                        <th>${autoMsg_cfd18e97f4}</th>
+                        <th>${autoMsg_96ba24dba9}</th>
+                        <th>${autoMsg_91e2e03333}</th>
+                        <th>${autoMsg_de2c9c4fa1}</th>
                         <th style="width:200px;">
                             <div style="display:flex;gap:4px;justify-content:flex-end;">
-                                <span style="font-size:11px;padding:3px 8px;"><spring:message code="admin.aiHelper.chatbot.table.actions"/></span>
-                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;"><spring:message code="admin.aiHelper.chatbot.action.blockUser"/></span>
-                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;"><spring:message code="admin.aiHelper.chatbot.action.blockIp"/></span>
+                                <span style="font-size:11px;padding:3px 8px;">${autoMsg_41bbb6a01d}</span>
+                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;">${autoMsg_3e959557b8}</span>
+                                <span style="font-size:11px;padding:3px 8px;visibility:hidden;">${autoMsg_06cab51800}</span>
                             </div>
                         </th>
                     </tr>
@@ -99,7 +284,7 @@
                 <tbody>
                     <c:choose>
                         <c:when test="${empty conversations}">
-                            <tr><td colspan="8" style="text-align:center;padding:40px;color:#94a3b8;"><spring:message code="admin.aiHelper.chatbot.empty.conversations"/></td></tr>
+                            <tr><td colspan="8" style="text-align:center;padding:40px;color:#94a3b8;">${autoMsg_048e7770e2}</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="c" items="${conversations}">
@@ -122,10 +307,10 @@
                                                 <button type="button"
                                                         class="adm-inline-link js-open-member-context"
                                                         data-user-idx="${c.userIdx}">
-                                                    <spring:message code="admin.aiHelper.assistant.userPrefix"/> #${c.userIdx}
+                                                    ${autoMsg_2545d16e5e} #${c.userIdx}
                                                 </button>
                                             </c:when>
-                                            <c:otherwise><span style="color:#94a3b8;"><spring:message code="admin.aiHelper.chatbot.guest"/></span></c:otherwise>
+                                            <c:otherwise><span style="color:#94a3b8;">${autoMsg_f5a85deeca}</span></c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td>
@@ -153,14 +338,14 @@
                                                         class="adm-cell-link adm-cell-link--inline"
                                                         data-conv-id="${c.conversationId}"
                                                         onclick="viewMessages(this.dataset.convId)"
-                                                        style="color:#ef4444;"><spring:message code="admin.aiHelper.chatbot.status.deleted"/></button>
+                                                        style="color:#ef4444;">${autoMsg_d0a646007a}</button>
                                             </c:when>
                                             <c:otherwise>
                                                 <button type="button"
                                                         class="adm-cell-link adm-cell-link--inline"
                                                         data-conv-id="${c.conversationId}"
                                                         onclick="viewMessages(this.dataset.convId)"
-                                                        style="color:#10b981;"><spring:message code="admin.aiHelper.chatbot.status.active"/></button>
+                                                        style="color:#10b981;">${autoMsg_a0911576a4}</button>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -169,7 +354,7 @@
                                             <button type="button"
                                                     class="adm-row-btn detail"
                                                     data-conv-id="${c.conversationId}"
-                                                    onclick="viewMessages(this.dataset.convId)"><spring:message code="admin.aiHelper.chatbot.action.view"/></button>
+                                                    onclick="viewMessages(this.dataset.convId)">${autoMsg_efe9a9c736}</button>
                                             <div class="action-menu-wrap">
                                                 <button type="button"
                                                         class="adm-row-btn detail adm-row-btn-more"
@@ -179,12 +364,12 @@
                                                         <button type="button"
                                                                 class="action-menu-item"
                                                                 data-block-value="${c.userIdx}"
-                                                                onclick="blockUser(this.dataset.blockValue)"><spring:message code="admin.aiHelper.chatbot.action.blockUser"/></button>
+                                                                onclick="blockUser(this.dataset.blockValue)">${autoMsg_3e959557b8}</button>
                                                     </c:if>
                                                     <button type="button"
                                                             class="action-menu-item"
                                                             data-block-value="${c.ipAddress}"
-                                                            onclick="blockIp(this.dataset.blockValue)"><spring:message code="admin.aiHelper.chatbot.action.blockIp"/></button>
+                                                            onclick="blockIp(this.dataset.blockValue)">${autoMsg_06cab51800}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -313,17 +498,17 @@
             <table class="adm-table" style="width:100%;">
                 <thead>
                     <tr>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.id"/></th>
+                        <th>${autoMsg_2f75dca1b5}</th>
                         <th>작성자</th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.content"/></th>
-                        <th><spring:message code="admin.common.time"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.actions"/></th>
+                        <th>${autoMsg_4cf560b97d}</th>
+                        <th>${autoMsg_8ec7cce7ae}</th>
+                        <th>${autoMsg_41bbb6a01d}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:choose>
                         <c:when test="${empty messages}">
-                            <tr><td colspan="5" style="text-align:center;padding:40px;color:#94a3b8;"><spring:message code="admin.aiHelper.chatbot.empty.inappropriate"/></td></tr>
+                            <tr><td colspan="5" style="text-align:center;padding:40px;color:#94a3b8;">${autoMsg_3d169ad991}</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="m" items="${messages}">
@@ -352,7 +537,7 @@
                                             <button type="button"
                                                     class="adm-row-btn detail"
                                                     data-conv-id="${m.conversationId}"
-                                                    onclick="viewMessages(this.dataset.convId)"><spring:message code="admin.aiHelper.chatbot.action.viewConversation"/></button>
+                                                    onclick="viewMessages(this.dataset.convId)">${autoMsg_fc6d23c55c}</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -378,21 +563,21 @@
         <div class="adm-card" style="padding:16px;margin-bottom:16px;">
             <div style="display:flex;gap:8px;align-items:end;">
                 <div style="flex:1;">
-                    <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;"><spring:message code="admin.aiHelper.chatbot.table.type"/></label>
+                    <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">${autoMsg_ce1899fbd6}</label>
                     <select id="newBlockType" class="adm-input">
-                        <option value="IP"><spring:message code="admin.aiHelper.chatbot.type.ip"/></option>
-                        <option value="USER"><spring:message code="admin.aiHelper.chatbot.type.user"/></option>
+                        <option value="IP">${autoMsg_e1ac1bc532}</option>
+                        <option value="USER">${autoMsg_bb65e972fc}</option>
                     </select>
                 </div>
                 <div style="flex:2;">
-                    <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;"><spring:message code="admin.aiHelper.chatbot.table.value"/></label>
-                    <input type="text" id="newBlockValue" class="adm-input" placeholder="<spring:message code='admin.aiHelper.chatbot.valuePlaceholder'/>"/>
+                    <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">${autoMsg_97c89b9bce}</label>
+                    <input type="text" id="newBlockValue" class="adm-input" placeholder="${autoMsg_268d704cb2}"/>
                 </div>
                 <div style="flex:2;">
-                    <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;"><spring:message code="admin.aiHelper.chatbot.table.reason"/></label>
-                    <input type="text" id="newBlockReason" class="adm-input" placeholder="<spring:message code='admin.aiHelper.chatbot.reasonPlaceholder'/>"/>
+                    <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">${autoMsg_77dec33b00}</label>
+                    <input type="text" id="newBlockReason" class="adm-input" placeholder="${autoMsg_f5f3920815}"/>
                 </div>
-                <button type="button" class="adm-btn adm-btn-primary" onclick="createBlock()"><spring:message code="admin.aiHelper.chatbot.action.createBlock"/></button>
+                <button type="button" class="adm-btn adm-btn-primary" onclick="createBlock()">${autoMsg_e54e759a71}</button>
             </div>
         </div>
 
@@ -400,21 +585,21 @@
             <table class="adm-table" style="width:100%;">
                 <thead>
                     <tr>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.id"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.type"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.value"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.reason"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.blockedBy"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.blockedAt"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.expiresAt"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.status"/></th>
-                        <th><spring:message code="admin.aiHelper.chatbot.table.actions"/></th>
+                        <th>${autoMsg_2f75dca1b5}</th>
+                        <th>${autoMsg_ce1899fbd6}</th>
+                        <th>${autoMsg_97c89b9bce}</th>
+                        <th>${autoMsg_77dec33b00}</th>
+                        <th>${autoMsg_b6fd656a80}</th>
+                        <th>${autoMsg_bde0c1c278}</th>
+                        <th>${autoMsg_1522384987}</th>
+                        <th>${autoMsg_de2c9c4fa1}</th>
+                        <th>${autoMsg_41bbb6a01d}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:choose>
                         <c:when test="${empty blocks}">
-                            <tr><td colspan="9" style="text-align:center;padding:40px;color:#94a3b8;"><spring:message code="admin.aiHelper.chatbot.empty.blocks"/></td></tr>
+                            <tr><td colspan="9" style="text-align:center;padding:40px;color:#94a3b8;">${autoMsg_a2e4e48369}</td></tr>
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="b" items="${blocks}">
@@ -462,7 +647,7 @@
                                                 onclick="deactivateBlock(this.dataset.blockId)">
                                         <c:choose>
                                             <c:when test="${b.expiresAt != null}">${fn:replace(fn:substring(b.expiresAt, 0, 16), 'T', ' ')}</c:when>
-                                            <c:otherwise><spring:message code="admin.aiHelper.chatbot.value.permanent"/></c:otherwise>
+                                            <c:otherwise>${autoMsg_c03aa9eb82}</c:otherwise>
                                         </c:choose>
                                         </button>
                                     </td>
@@ -472,8 +657,8 @@
                                                 data-block-id="${b.blockId}"
                                                 onclick="deactivateBlock(this.dataset.blockId)">
                                         <c:choose>
-                                            <c:when test="${b.isActive}"><span style="color:#ef4444;"><spring:message code="admin.aiHelper.chatbot.status.active"/></span></c:when>
-                                            <c:otherwise><span style="color:#94a3b8;"><spring:message code="admin.aiHelper.chatbot.status.released"/></span></c:otherwise>
+                                            <c:when test="${b.isActive}"><span style="color:#ef4444;">${autoMsg_a0911576a4}</span></c:when>
+                                            <c:otherwise><span style="color:#94a3b8;">${autoMsg_a151681abe}</span></c:otherwise>
                                         </c:choose>
                                         </button>
                                     </td>
@@ -483,7 +668,7 @@
                                                 <button type="button"
                                                         class="adm-row-btn danger"
                                                         data-block-id="${b.blockId}"
-                                                        onclick="deactivateBlock(this.dataset.blockId)"><spring:message code="admin.aiHelper.chatbot.action.release"/></button>
+                                                        onclick="deactivateBlock(this.dataset.blockId)">${autoMsg_8287c856a5}</button>
                                             </div>
                                         </c:if>
                                     </td>
@@ -506,7 +691,7 @@
         </style>
         <div class="adm-card" style="padding:16px;margin-bottom:16px;">
             <div style="font-size:13px;color:#475569;line-height:1.6;">
-                <spring:message code="admin.aiHelper.chatbot.description.quota"/><br>
+                ${autoMsg_046c3e678c}<br>
                 <spring:message code="admin.aiHelper.chatbot.description.quotaSub"/>
             </div>
         </div>
@@ -608,8 +793,8 @@
 <div id="msgModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
     <div style="background:#fff;width:700px;max-width:90vw;max-height:80vh;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
         <div style="padding:16px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
-            <h3 id="msgModalTitle" style="margin:0;font-size:16px;"><spring:message code="admin.aiHelper.chatbot.modal.title"/></h3>
-            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('msgModal').style.display='none'"><spring:message code="admin.common.close"/></button>
+            <h3 id="msgModalTitle" style="margin:0;font-size:16px;">${autoMsg_831e51c6fe}</h3>
+            <button type="button" class="adm-btn adm-btn-ghost" onclick="document.getElementById('msgModal').style.display='none'">${autoMsg_50d441663e}</button>
         </div>
         <div id="msgModalBody" style="padding:16px;overflow-y:auto;flex:1;"></div>
     </div>
@@ -619,23 +804,23 @@
 (function () {
     const ctx = '${pageContext.request.contextPath}';
     const chatbotMessages = {
-        modalTitle: '<spring:message code="admin.aiHelper.chatbot.modal.title" javaScriptEscape="true"/>',
-        roleUser: '<spring:message code="admin.aiHelper.assistant.role.user" javaScriptEscape="true"/>',
-        roleAi: '<spring:message code="admin.aiHelper.assistant.role.ai" javaScriptEscape="true"/>',
-        emptyMessages: '<spring:message code="admin.aiHelper.chatbot.empty.messages" javaScriptEscape="true"/>',
-        viewFailed: '<spring:message code="admin.aiHelper.chatbot.message.viewFailed" javaScriptEscape="true"/>',
-        viewError: '<spring:message code="admin.aiHelper.chatbot.message.viewError" javaScriptEscape="true"/>',
-        valueRequired: '<spring:message code="admin.aiHelper.chatbot.message.valueRequired" javaScriptEscape="true"/>',
-        createBlockSuccess: '<spring:message code="admin.aiHelper.chatbot.message.createBlockSuccess" javaScriptEscape="true"/>',
-        createBlockFailed: '<spring:message code="admin.aiHelper.chatbot.message.createBlockFailed" javaScriptEscape="true"/>',
-        deactivateConfirm: '<spring:message code="admin.aiHelper.chatbot.message.deactivateConfirm" javaScriptEscape="true"/>',
-        deactivateFailed: '<spring:message code="admin.aiHelper.chatbot.message.deactivateFailed" javaScriptEscape="true"/>',
-        blockUserConfirm: '<spring:message code="admin.aiHelper.chatbot.message.blockUserConfirm" javaScriptEscape="true"/>',
-        blockIpConfirm: '<spring:message code="admin.aiHelper.chatbot.message.blockIpConfirm" javaScriptEscape="true"/>',
-        quickBlockReason: '<spring:message code="admin.aiHelper.chatbot.message.quickBlockReason" javaScriptEscape="true"/>',
-        quotaSaved: '<spring:message code="admin.aiHelper.chatbot.message.quotaSaved" javaScriptEscape="true"/>',
-        quotaSaveFailed: '<spring:message code="admin.aiHelper.chatbot.message.quotaSaveFailed" javaScriptEscape="true"/>',
-        conversationLabel: '<spring:message code="admin.aiHelper.chatbot.table.conversationId" javaScriptEscape="true"/>'
+        modalTitle: '${autoMsg_04764e4869}',
+        roleUser: '${autoMsg_f536dc3c59}',
+        roleAi: '${autoMsg_961118a74b}',
+        emptyMessages: '${autoMsg_3228f27f7a}',
+        viewFailed: '${autoMsg_9aa8803fb0}',
+        viewError: '${autoMsg_365ca60365}',
+        valueRequired: '${autoMsg_7c06265311}',
+        createBlockSuccess: '${autoMsg_edfbe8928b}',
+        createBlockFailed: '${autoMsg_9464caeb8a}',
+        deactivateConfirm: '${autoMsg_d83196636c}',
+        deactivateFailed: '${autoMsg_46b714f717}',
+        blockUserConfirm: '${autoMsg_2327f380b3}',
+        blockIpConfirm: '${autoMsg_2c79dc3b8a}',
+        quickBlockReason: '${autoMsg_a3e8d92b76}',
+        quotaSaved: '${autoMsg_8586d711f7}',
+        quotaSaveFailed: '${autoMsg_a004debca5}',
+        conversationLabel: '${autoMsg_c7ce1590d8}'
     };
 
     window.viewMessages = async function (convId) {
@@ -935,14 +1120,14 @@
 <div class="adm-modal-overlay" id="detailModal">
     <div class="adm-modal">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="modalTitle"><spring:message code="admin.context.memberTitle"/></div>
+            <div class="adm-modal-title" id="modalTitle">${autoMsg_a0fa54dfff}</div>
             <button class="adm-modal-close" onclick="closeDetail()">✕</button>
         </div>
         <div class="adm-modal-body" id="modalBody">
-            <div style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.loading"/></div>
+            <div style="text-align:center;padding:40px;color:#475569;">${autoMsg_09faf2e48e}</div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeDetail()"><spring:message code="admin.common.close"/></button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeDetail()">${autoMsg_50d441663e}</button>
         </div>
     </div>
 </div>
@@ -951,35 +1136,35 @@
 <div class="adm-modal-overlay" id="blockModal">
     <div class="adm-modal" style="max-width:520px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title" id="blockModalTitle"><spring:message code="admin.members.blockModalTitle"/></div>
+            <div class="adm-modal-title" id="blockModalTitle">${autoMsg_5c5d79cf47}</div>
             <button class="adm-modal-close" onclick="closeBlockModal()">✕</button>
         </div>
         <div class="adm-modal-body">
             <input type="hidden" id="blockUserIdx">
             <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label"><spring:message code="admin.context.action.blockType"/></label>
+                <label class="form-label">${autoMsg_27cc41fba0}</label>
                 <select id="blockType" class="adm-select" style="width:100%;" onchange="handleBlockTypeChange()">
-                    <option value="USER_ONLY"><spring:message code="admin.context.blockType.userOnly"/></option>
-                    <option value="IP_ONLY"><spring:message code="admin.context.blockType.ipOnly"/></option>
-                    <option value="USER_IP"><spring:message code="admin.context.blockType.userIp"/></option>
+                    <option value="USER_ONLY">${autoMsg_c5d8fd6f42}</option>
+                    <option value="IP_ONLY">${autoMsg_8c64fa27a2}</option>
+                    <option value="USER_IP">${autoMsg_15769734ac}</option>
                 </select>
             </div>
             <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label"><spring:message code="admin.members.blockedIpLabel"/></label>
-                <input id="blockedIp" class="adm-input" type="text" placeholder="<spring:message code='admin.context.action.blockIpPlaceholder'/>">
+                <label class="form-label">${autoMsg_4a078a00e9}</label>
+                <input id="blockedIp" class="adm-input" type="text" placeholder="${autoMsg_8538ef80a7}">
             </div>
             <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label"><spring:message code="admin.members.blockExpiresLabel"/></label>
+                <label class="form-label">${autoMsg_7ea641a2a0}</label>
                 <input id="blockedUntil" class="adm-input" type="datetime-local">
             </div>
             <div class="form-group">
-                <label class="form-label"><spring:message code="admin.members.blockReasonLabel"/></label>
-                <textarea id="blockedReason" class="adm-input" style="min-height:90px;resize:vertical;" placeholder="<spring:message code='admin.context.action.reasonPlaceholder'/>"></textarea>
+                <label class="form-label">${autoMsg_c2b02781fd}</label>
+                <textarea id="blockedReason" class="adm-input" style="min-height:90px;resize:vertical;" placeholder="${autoMsg_36a6ef4ecb}"></textarea>
             </div>
         </div>
         <div class="adm-modal-foot">
-            <button class="adm-btn adm-btn-ghost" onclick="closeBlockModal()"><spring:message code="admin.common.close"/></button>
-            <button id="blockSubmitBtn" class="adm-btn adm-btn-primary" type="button" onclick="submitBlock()"><spring:message code="admin.context.action.applyBlock"/></button>
+            <button class="adm-btn adm-btn-ghost" onclick="closeBlockModal()">${autoMsg_50d441663e}</button>
+            <button id="blockSubmitBtn" class="adm-btn adm-btn-primary" type="button" onclick="submitBlock()">${autoMsg_2c0d0b5043}</button>
         </div>
     </div>
 </div>
@@ -988,35 +1173,35 @@
 const ctx = '${pageContext.request.contextPath}';
 const ADMIN_MEMBER_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
 const ADMIN_MEMBER_MSG = {
-    loading: '<spring:message code="admin.common.loading" javaScriptEscape="true"/>',
-    close: '<spring:message code="admin.common.close" javaScriptEscape="true"/>',
-    error: '<spring:message code="admin.common.error" javaScriptEscape="true"/>',
-    yes: '<spring:message code="admin.common.yes" javaScriptEscape="true"/>',
-    no: '<spring:message code="admin.common.no" javaScriptEscape="true"/>',
-    none: '<spring:message code="admin.members.none" javaScriptEscape="true"/>',
-    noLinkedProvider: '<spring:message code="admin.members.noLinkedProvider" javaScriptEscape="true"/>',
-    verifiedMember: '<spring:message code="admin.members.verifiedMember" javaScriptEscape="true"/>',
-    unverifiedMember: '<spring:message code="admin.members.unverifiedMember" javaScriptEscape="true"/>',
-    statusActive: '<spring:message code="admin.status.ACTIVE" javaScriptEscape="true"/>',
-    statusDormant: '<spring:message code="admin.status.DORMANT" javaScriptEscape="true"/>',
-    statusBlocked: '<spring:message code="admin.status.BLOCKED" javaScriptEscape="true"/>',
-    statusDeleted: '<spring:message code="admin.status.DELETED" javaScriptEscape="true"/>',
-    blockModalTitleSuffix: '<spring:message code="admin.members.blockModalTitleSuffix" javaScriptEscape="true"/>',
-    parsingBlockResponse: '<spring:message code="admin.members.blockResponseParseError" javaScriptEscape="true"/>',
-    parsingStatusResponse: '<spring:message code="admin.members.statusResponseParseError" javaScriptEscape="true"/>',
-    parsingRoleResponse: '<spring:message code="admin.members.roleResponseParseError" javaScriptEscape="true"/>',
-    missingBlockTarget: '<spring:message code="admin.members.blockTargetMissing" javaScriptEscape="true"/>',
-    applying: '<spring:message code="admin.common.applying" javaScriptEscape="true"/>',
-    blockApplied: '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>',
-    memberDetailsTitle: '<spring:message code="admin.context.memberTitle" javaScriptEscape="true"/>',
-    memberDetailsSuffix: '<spring:message code="admin.members.detailTitleSuffix" javaScriptEscape="true"/>',
-    infoTab: '<spring:message code="admin.context.tab.info" javaScriptEscape="true"/>',
-    loginTab: '<spring:message code="admin.context.tab.logins" javaScriptEscape="true"/>',
-    securityTab: '<spring:message code="admin.context.tab.security" javaScriptEscape="true"/>',
-    emailHistoryTab: '<spring:message code="admin.members.emailHistoryTab" javaScriptEscape="true"/>',
-    activityTab: '<spring:message code="admin.context.tab.activity" javaScriptEscape="true"/>',
-    blockTab: '<spring:message code="admin.context.tab.blocks" javaScriptEscape="true"/>',
-    actionsTab: '<spring:message code="admin.context.tab.actions" javaScriptEscape="true"/>'
+    loading: '${autoMsg_d9a8845f7d}',
+    close: '${autoMsg_ec7c0f9d97}',
+    error: '${autoMsg_d9f3d85eb5}',
+    yes: '${autoMsg_1c3acc66fa}',
+    no: '${autoMsg_0bb250d188}',
+    none: '${autoMsg_532f36149c}',
+    noLinkedProvider: '${autoMsg_1d08ca9bfd}',
+    verifiedMember: '${autoMsg_d160f6da3f}',
+    unverifiedMember: '${autoMsg_cc023e58ed}',
+    statusActive: '${autoMsg_7d951366ce}',
+    statusDormant: '${autoMsg_bf1d1a6d55}',
+    statusBlocked: '${autoMsg_e407db387a}',
+    statusDeleted: '${autoMsg_cdb6a62812}',
+    blockModalTitleSuffix: '${autoMsg_6a7f4ef6b7}',
+    parsingBlockResponse: '${autoMsg_44d04f3037}',
+    parsingStatusResponse: '${autoMsg_c3401fc82b}',
+    parsingRoleResponse: '${autoMsg_8d6d415aab}',
+    missingBlockTarget: '${autoMsg_2e105310c8}',
+    applying: '${autoMsg_71a3efcf07}',
+    blockApplied: '${autoMsg_35eb4519fe}',
+    memberDetailsTitle: '${autoMsg_9803cc470d}',
+    memberDetailsSuffix: '${autoMsg_aedb01b12d}',
+    infoTab: '${autoMsg_2bc04885f9}',
+    loginTab: '${autoMsg_6799adb9a7}',
+    securityTab: '${autoMsg_65987a83f0}',
+    emailHistoryTab: '${autoMsg_a950657a16}',
+    activityTab: '${autoMsg_36cd735886}',
+    blockTab: '${autoMsg_8f31c1b947}',
+    actionsTab: '${autoMsg_7a816126e9}'
 };
 
 function escapeHtml(value) {
@@ -1082,13 +1267,13 @@ function buildRoleBadge(role) {
 
 function roleLabel(role) {
     const labels = {
-        USER: '<spring:message code="admin.role.USER" javaScriptEscape="true"/>',
-        BUSINESS: '<spring:message code="admin.role.BUSINESS" javaScriptEscape="true"/>',
-        PARTNER: '<spring:message code="admin.role.PARTNER" javaScriptEscape="true"/>',
-        BOT: '<spring:message code="admin.role.BOT" javaScriptEscape="true"/>',
-        ADMIN: '<spring:message code="admin.role.ADMIN" javaScriptEscape="true"/>',
-        SUPERADMIN: '<spring:message code="admin.role.SUPERADMIN" javaScriptEscape="true"/>',
-        SYSTEM: '<spring:message code="admin.role.SYSTEM" javaScriptEscape="true"/>'
+        USER: '${autoMsg_0a2f46973a}',
+        BUSINESS: '${autoMsg_f34987690b}',
+        PARTNER: '${autoMsg_7cef6bcd99}',
+        BOT: '${autoMsg_0023796b3f}',
+        ADMIN: '${autoMsg_1fd3c9991d}',
+        SUPERADMIN: '${autoMsg_f6d02ce1b2}',
+        SYSTEM: '${autoMsg_51197b6b62}'
     };
     return labels[role] || role || '—';
 }
@@ -1100,17 +1285,17 @@ function buildSocialHtml(linkedProviders) {
 
     const providerMap = {
         KAKAO: {
-            label: '<spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
+            label: '${autoMsg_d519188fd7}',
             className: 'kakao',
             icon: '<span class="adm-social-icon kakao-mark">k</span>'
         },
         NAVER: {
-            label: '<spring:message code="admin.social.naver" javaScriptEscape="true"/>',
+            label: '${autoMsg_039f2a034c}',
             className: 'naver',
             icon: '<span class="adm-social-icon naver-mark">N</span>'
         },
         GOOGLE: {
-            label: '<spring:message code="admin.social.google" javaScriptEscape="true"/>',
+            label: '${autoMsg_329f00473b}',
             className: 'google',
             icon: '<span class="adm-social-icon google-mark"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>'
         }
@@ -1204,7 +1389,7 @@ async function submitBlock() {
         return;
     }
     if ((blockType === 'IP_ONLY' || blockType === 'USER_IP') && !blockedIp) {
-        adm_toast('<spring:message code="admin.context.requireBlockedIp" javaScriptEscape="true"/>', 'error');
+        adm_toast('${autoMsg_c1757340af}', 'error');
         document.getElementById('blockedIp').focus();
         return;
     }
@@ -1231,14 +1416,14 @@ async function submitBlock() {
 
         if (res.ok && data && data.success) {
             closeBlockModal();
-            adm_toast(ADMIN_MEMBER_MSG.blockApplied || '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>');
+            adm_toast(ADMIN_MEMBER_MSG.blockApplied || '${autoMsg_35eb4519fe}');
             setTimeout(() => location.reload(), 800);
         } else {
-            adm_toast((data && data.message) || '<spring:message code="admin.context.toast.saveBlockFail" javaScriptEscape="true"/>', 'error');
+            adm_toast((data && data.message) || '${autoMsg_93595248e5}', 'error');
         }
     } catch (e) {
         console.error(e);
-        adm_toast(e.message || '<spring:message code="admin.context.toast.saveBlockError" javaScriptEscape="true"/>', 'error');
+        adm_toast(e.message || '${autoMsg_82e1a33bf4}', 'error');
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
@@ -1253,7 +1438,7 @@ async function changeStatus(userIdx, status, el) {
         BLOCKED: ADMIN_MEMBER_MSG.statusBlocked,
         DELETED: ADMIN_MEMBER_MSG.statusDeleted
     };
-    if (!confirm('<spring:message code="admin.members.confirmStatusChangePrefix" javaScriptEscape="true"/>' + ' "' + (labels[status] || status) + '" ' + '<spring:message code="admin.members.confirmStatusChangeSuffix" javaScriptEscape="true"/>')) return;
+    if (!confirm('${autoMsg_28f618a732}' + ' "' + (labels[status] || status) + '" ' + '${autoMsg_582b10f8bb}')) return;
 
     const menu = el.closest('.action-menu');
     if (menu) menu.classList.remove('open');
@@ -1273,10 +1458,10 @@ async function changeStatus(userIdx, status, el) {
     }
 
     if (res.ok && data.success) {
-        adm_toast(data.message || '<spring:message code="admin.context.toast.saveStatusSuccess" javaScriptEscape="true"/>');
+        adm_toast(data.message || '${autoMsg_19cf8eca7c}');
         setTimeout(() => location.reload(), 800);
     } else {
-        adm_toast(data.message || '<spring:message code="admin.context.toast.saveStatusFail" javaScriptEscape="true"/>', 'error');
+        adm_toast(data.message || '${autoMsg_623997efab}', 'error');
     }
 }
 
@@ -1293,15 +1478,15 @@ function changeRoleFromMenu(button) {
     const reason = reasonInput ? reasonInput.value.trim() : '';
 
     if (!role || !userIdx) {
-        adm_toast('<spring:message code="admin.members.roleContextMissing" javaScriptEscape="true"/>', 'error');
+        adm_toast('${autoMsg_22215b2645}', 'error');
         return;
     }
     if (role === currentRole) {
-        adm_toast('<spring:message code="admin.members.roleAlreadySelected" javaScriptEscape="true"/>', 'error');
+        adm_toast('${autoMsg_4e2604dfa0}', 'error');
         return;
     }
     if (!reason) {
-        adm_toast('<spring:message code="admin.context.requireRoleReason" javaScriptEscape="true"/>', 'error');
+        adm_toast('${autoMsg_9b4937693e}', 'error');
         if (reasonInput) reasonInput.focus();
         return;
     }
@@ -1310,7 +1495,7 @@ function changeRoleFromMenu(button) {
 }
 
 async function changeRole(userIdx, role, reason, el) {
-    if (!confirm('"' + roleLabel(role) + '" ' + '<spring:message code="admin.members.confirmRoleChangeSuffix" javaScriptEscape="true"/>')) return;
+    if (!confirm('"' + roleLabel(role) + '" ' + '${autoMsg_fb4f5cdfe4}')) return;
 
     const menu = el.closest('.action-menu');
     if (menu) menu.classList.remove('open');
@@ -1330,10 +1515,10 @@ async function changeRole(userIdx, role, reason, el) {
     }
 
     if (res.ok && data.success) {
-        adm_toast(data.message || '<spring:message code="admin.context.toast.saveRoleSuccess" javaScriptEscape="true"/>');
+        adm_toast(data.message || '${autoMsg_0205181e85}');
         setTimeout(() => location.reload(), 800);
     } else {
-        adm_toast(data.message || '<spring:message code="admin.context.toast.saveRoleFail" javaScriptEscape="true"/>', 'error');
+        adm_toast(data.message || '${autoMsg_81f079f9b9}', 'error');
     }
 }
 
@@ -1352,10 +1537,10 @@ function buildSecurityRows(items) {
             + '<div><strong>' + escapeHtml(item.eventType || '-') + '</strong> / ' + escapeHtml(item.eventStage || '-') + '</div>'
             + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.occurredAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;"><spring:message code="admin.context.inputValue" javaScriptEscape="true"/>: ' + escapeHtml(item.inputIdentifier || '-') + '</div>'
-            + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;"><spring:message code="admin.context.targetEmail" javaScriptEscape="true"/>: ' + escapeHtml(item.targetEmail || '-') + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${autoMsg_09a531507e}: ' + escapeHtml(item.inputIdentifier || '-') + '</div>'
+            + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">${autoMsg_df50ec273f}: ' + escapeHtml(item.targetEmail || '-') + '</div>'
             + '</div>';
-    }, '<spring:message code="admin.context.empty.security" javaScriptEscape="true"/>');
+    }, '${autoMsg_655a03dee1}');
 }
 
 function buildEmailRequestRows(items) {
@@ -1366,9 +1551,9 @@ function buildEmailRequestRows(items) {
             + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.status || '-') + '</div>'
             + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.requestedAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;"><spring:message code="admin.context.requestEmail" javaScriptEscape="true"/>: ' + escapeHtml(item.pendingEmail || '-') + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${autoMsg_9986173463}: ' + escapeHtml(item.pendingEmail || '-') + '</div>'
             + '</div>';
-    }, '<spring:message code="admin.context.empty.emailRequests" javaScriptEscape="true"/>');
+    }, '${autoMsg_df8ae7b5a1}');
 }
 
 function buildEmailTokenRows(items) {
@@ -1376,12 +1561,12 @@ function buildEmailTokenRows(items) {
         return ''
             + '<div class="adm-context-record">'
             + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
-            + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.used ? '<spring:message code="admin.context.used" javaScriptEscape="true"/>' : '<spring:message code="admin.context.unused" javaScriptEscape="true"/>') + '</div>'
+            + '<div><strong>' + escapeHtml(item.purpose || '-') + '</strong> / ' + escapeHtml(item.used ? '${autoMsg_9f0d4a80ab}' : '${autoMsg_ed5dbcfe96}') + '</div>'
             + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;"><spring:message code="admin.context.targetEmail" javaScriptEscape="true"/>: ' + escapeHtml(item.email || '-') + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${autoMsg_df50ec273f}: ' + escapeHtml(item.email || '-') + '</div>'
             + '</div>';
-    }, '<spring:message code="admin.context.empty.emailTokens" javaScriptEscape="true"/>');
+    }, '${autoMsg_b67170d46b}');
 }
 
 function buildActivityRows(items) {
@@ -1392,9 +1577,9 @@ function buildActivityRows(items) {
             + '<div><strong>' + escapeHtml(item.activityCode || '-') + '</strong> / ' + escapeHtml(item.activityDomain || item.activityType || '-') + '</div>'
             + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.createdAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;"><spring:message code="admin.context.uri" javaScriptEscape="true"/>: ' + escapeHtml(item.requestUri || '-') + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${autoMsg_90d8ab0701}: ' + escapeHtml(item.requestUri || '-') + '</div>'
             + '</div>';
-    }, '<spring:message code="admin.context.empty.activity" javaScriptEscape="true"/>');
+    }, '${autoMsg_4074aa5a05}');
 }
 
 function buildBlockRows(items) {
@@ -1405,10 +1590,10 @@ function buildBlockRows(items) {
             + '<div><strong>' + escapeHtml(item.blockType || '-') + '</strong> / ' + escapeHtml(item.active ? 'ACTIVE' : 'INACTIVE') + '</div>'
             + '<div style="font-size:12px;color:#94a3b8;">' + escapeHtml(formatHistoryDateTime(item.blockedAt)) + '</div>'
             + '</div>'
-            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;"><spring:message code="admin.common.reason" javaScriptEscape="true"/>: ' + escapeHtml(item.reason || '-') + '</div>'
+            + '<div style="margin-top:6px;font-size:12px;color:#cbd5e1;">${autoMsg_5b658ed241}: ' + escapeHtml(item.reason || '-') + '</div>'
             + '<div style="margin-top:4px;font-size:12px;color:#94a3b8;">IP: ' + escapeHtml(item.blockedIp || '-') + '</div>'
             + '</div>';
-    }, '<spring:message code="admin.context.empty.blocks" javaScriptEscape="true"/>');
+    }, '${autoMsg_53d8c44942}');
 }
 
 function buildChatbotLinkClickRows(items) {
@@ -1434,29 +1619,29 @@ function buildActionTab(m) {
     return ''
         + '<div class="adm-context-actions-grid">'
         + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.profileTitle" javaScriptEscape="true"/>' + '</div>'
-        + '<div class="detail-label">' + '<spring:message code="admin.context.nickname" javaScriptEscape="true"/>' + '</div><input id="memberProfileNickname" class="adm-input" type="text" value="' + escapeHtml(m.nickname || '') + '">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.nationality" javaScriptEscape="true"/>' + '</div><input id="memberProfileNationality" class="adm-input" type="text" value="' + escapeHtml(m.nationality || '') + '">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.preferredLanguage" javaScriptEscape="true"/>' + '</div><input id="memberProfileLang" class="adm-input" type="text" value="' + escapeHtml(m.preferredLang || '') + '">'
-        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberProfile(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.saveProfile" javaScriptEscape="true"/>' + '</button>'
+        + '<div style="font-weight:700;margin-bottom:10px;">' + '${autoMsg_3bea6f4cea}' + '</div>'
+        + '<div class="detail-label">' + '${autoMsg_49d89a08e9}' + '</div><input id="memberProfileNickname" class="adm-input" type="text" value="' + escapeHtml(m.nickname || '') + '">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_e1ee8c64a7}' + '</div><input id="memberProfileNationality" class="adm-input" type="text" value="' + escapeHtml(m.nationality || '') + '">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_2da7e47509}' + '</div><input id="memberProfileLang" class="adm-input" type="text" value="' + escapeHtml(m.preferredLang || '') + '">'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="saveMemberProfile(' + escapeHtml(m.userIdx) + ', this)">' + '${autoMsg_2fa1ea1062}' + '</button>'
         + '</div>'
         + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.statusRoleTitle" javaScriptEscape="true"/>' + '</div>'
-        + '<div class="detail-label">' + '<spring:message code="admin.members.accountStatus" javaScriptEscape="true"/>' + '</div>'
-        + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE"><spring:message code="admin.status.ACTIVE" javaScriptEscape="true"/></option><option value="DORMANT"><spring:message code="admin.status.DORMANT" javaScriptEscape="true"/></option><option value="BLOCKED"><spring:message code="admin.status.BLOCKED" javaScriptEscape="true"/></option><option value="DELETED"><spring:message code="admin.status.DELETED" javaScriptEscape="true"/></option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.common.apply" javaScriptEscape="true"/>' + '</button></div>'
-        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.common.role" javaScriptEscape="true"/>' + '</div>'
-        + '<select id="memberRoleSelect" class="adm-select" style="width:100%;"><option value="USER"><spring:message code="admin.role.USER" javaScriptEscape="true"/></option><option value="BUSINESS"><spring:message code="admin.role.BUSINESS" javaScriptEscape="true"/></option><option value="PARTNER"><spring:message code="admin.role.PARTNER" javaScriptEscape="true"/></option><option value="BOT"><spring:message code="admin.role.BOT" javaScriptEscape="true"/></option><option value="ADMIN"><spring:message code="admin.role.ADMIN" javaScriptEscape="true"/></option></select>'
-        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.action.roleReason" javaScriptEscape="true"/>' + '</div>'
-        + '<input id="memberRoleReason" class="adm-input" type="text" maxlength="500" placeholder="' + '<spring:message code="admin.context.action.roleReasonPlaceholder" javaScriptEscape="true"/>' + '">'
-        + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.changeRole" javaScriptEscape="true"/>' + '</button>'
+        + '<div style="font-weight:700;margin-bottom:10px;">' + '${autoMsg_dfd54827df}' + '</div>'
+        + '<div class="detail-label">' + '${autoMsg_7f77d7a7de}' + '</div>'
+        + '<div style="display:flex;gap:8px;"><select id="memberStatusSelect" class="adm-select" style="width:100%;"><option value="ACTIVE">${autoMsg_7d951366ce}</option><option value="DORMANT">${autoMsg_bf1d1a6d55}</option><option value="BLOCKED">${autoMsg_e407db387a}</option><option value="DELETED">${autoMsg_cdb6a62812}</option></select><button type="button" class="adm-btn adm-btn-ghost" onclick="applyStatusFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '${autoMsg_84f506fa9a}' + '</button></div>'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_59e66372dd}' + '</div>'
+        + '<select id="memberRoleSelect" class="adm-select" style="width:100%;"><option value="USER">${autoMsg_0a2f46973a}</option><option value="BUSINESS">${autoMsg_f34987690b}</option><option value="PARTNER">${autoMsg_7cef6bcd99}</option><option value="BOT">${autoMsg_0023796b3f}</option><option value="ADMIN">${autoMsg_1fd3c9991d}</option></select>'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_cfa3e4044d}' + '</div>'
+        + '<input id="memberRoleReason" class="adm-input" type="text" maxlength="500" placeholder="' + '${autoMsg_2c82f9503e}' + '">'
+        + '<button type="button" class="adm-btn adm-btn-ghost" style="margin-top:12px;" onclick="applyRoleFromDetail(' + escapeHtml(m.userIdx) + ', this)">' + '${autoMsg_7a77afbd32}' + '</button>'
         + '</div>'
         + '<div class="adm-context-panel">'
-        + '<div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.action.quickBlockTitle" javaScriptEscape="true"/>' + '</div>'
-        + '<div class="detail-label">' + '<spring:message code="admin.context.action.blockType" javaScriptEscape="true"/>' + '</div><select id="detailBlockType" class="adm-select" style="width:100%;"><option value="USER_ONLY">' + '<spring:message code="admin.context.blockType.userOnly" javaScriptEscape="true"/>' + '</option><option value="IP_ONLY">' + '<spring:message code="admin.context.blockType.ipOnly" javaScriptEscape="true"/>' + '</option><option value="USER_IP">' + '<spring:message code="admin.context.blockType.userIp" javaScriptEscape="true"/>' + '</option></select>'
-        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.blockedIp" javaScriptEscape="true"/>' + '</div><input id="detailBlockedIp" class="adm-input" type="text" placeholder="' + '<spring:message code="admin.context.action.blockIpPlaceholder" javaScriptEscape="true"/>' + '">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.context.action.blockExpires" javaScriptEscape="true"/>' + '</div><input id="detailBlockedUntil" class="adm-input" type="datetime-local">'
-        + '<div class="detail-label" style="margin-top:10px;">' + '<spring:message code="admin.common.reason" javaScriptEscape="true"/>' + '</div><textarea id="detailBlockedReason" class="adm-input" style="min-height:88px;resize:vertical;"></textarea>'
-        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="submitDetailBlock(' + escapeHtml(m.userIdx) + ', this)">' + '<spring:message code="admin.context.action.applyBlock" javaScriptEscape="true"/>' + '</button>'
+        + '<div style="font-weight:700;margin-bottom:10px;">' + '${autoMsg_569502d33a}' + '</div>'
+        + '<div class="detail-label">' + '${autoMsg_657bacf516}' + '</div><select id="detailBlockType" class="adm-select" style="width:100%;"><option value="USER_ONLY">' + '${autoMsg_b165aefc9e}' + '</option><option value="IP_ONLY">' + '${autoMsg_297ccdc718}' + '</option><option value="USER_IP">' + '${autoMsg_e67eb06ea0}' + '</option></select>'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_66a711eccb}' + '</div><input id="detailBlockedIp" class="adm-input" type="text" placeholder="' + '${autoMsg_777c217ebc}' + '">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_de9550f28e}' + '</div><input id="detailBlockedUntil" class="adm-input" type="datetime-local">'
+        + '<div class="detail-label" style="margin-top:10px;">' + '${autoMsg_5b658ed241}' + '</div><textarea id="detailBlockedReason" class="adm-input" style="min-height:88px;resize:vertical;"></textarea>'
+        + '<button type="button" class="adm-btn adm-btn-primary" style="margin-top:12px;" onclick="submitDetailBlock(' + escapeHtml(m.userIdx) + ', this)">' + '${autoMsg_2be055d6af}' + '</button>'
         + '</div>'
         + '</div>';
 }
@@ -1520,8 +1705,8 @@ async function openDetail(userIdx, defaultTab) {
     document.getElementById('tab-security').innerHTML = buildSecurityRows(securityAudits);
     document.getElementById('tab-emails').innerHTML = ''
         + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">'
-        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.tab.emailRequests" javaScriptEscape="true"/>' + '</div>' + buildEmailRequestRows(emailRequests) + '</div>'
-        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '<spring:message code="admin.context.tab.emailTokens" javaScriptEscape="true"/>' + '</div>' + buildEmailTokenRows(emailTokens) + '</div>'
+        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '${autoMsg_8fd5232912}' + '</div>' + buildEmailRequestRows(emailRequests) + '</div>'
+        + '<div><div style="font-weight:700;margin-bottom:10px;">' + '${autoMsg_8b8f445762}' + '</div>' + buildEmailTokenRows(emailTokens) + '</div>'
         + '</div>';
     document.getElementById('tab-activity').innerHTML = buildActivityRows(activityLogs);
     document.getElementById('tab-blocks').innerHTML = buildBlockRows(recentBlocks);
@@ -1541,34 +1726,34 @@ function buildInfoTab(m) {
 
     return ''
         + '<div class="detail-grid">'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.memberNo" javaScriptEscape="true"/>' + '</div><div class="detail-value">#' + escapeHtml(m.userIdx) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.userId" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatNullable(m.userId) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.nickname" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatNullable(m.nickname) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.email" javaScriptEscape="true"/>' + '</div><div class="detail-value" style="font-size:12px;">' + formatNullable(m.userEmail) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.members.accountStatus" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + statusBadge + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.common.role" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + roleBadge + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.nationality" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatNullable(m.nationality) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.preferredLanguage" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatNullable(m.preferredLang) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.members.emailVerified" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailVerified) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.members.emailLoginEnabled" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailLoginEnabled) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.members.passwordLoginEnabled" javaScriptEscape="true"/>' + '</div><div class="detail-value">' + formatBooleanBadge(m.passwordEnabled) + '</div></div>'
-        + '<div class="detail-item"><div class="detail-label">' + '<spring:message code="admin.context.createdAt" javaScriptEscape="true"/>' + '</div><div class="detail-value" style="font-size:12px;">' + formatDateTime(m.createdAt) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_2ff6f831e8}' + '</div><div class="detail-value">#' + escapeHtml(m.userIdx) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_901942cda3}' + '</div><div class="detail-value">' + formatNullable(m.userId) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_49d89a08e9}' + '</div><div class="detail-value">' + formatNullable(m.nickname) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_413c58e514}' + '</div><div class="detail-value" style="font-size:12px;">' + formatNullable(m.userEmail) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_7f77d7a7de}' + '</div><div class="detail-value">' + statusBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_59e66372dd}' + '</div><div class="detail-value">' + roleBadge + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_e1ee8c64a7}' + '</div><div class="detail-value">' + formatNullable(m.nationality) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_2da7e47509}' + '</div><div class="detail-value">' + formatNullable(m.preferredLang) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_b7eb2dfc5d}' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailVerified) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_f1ff1384e2}' + '</div><div class="detail-value">' + formatBooleanBadge(m.emailLoginEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_e7d9e4c5c4}' + '</div><div class="detail-value">' + formatBooleanBadge(m.passwordEnabled) + '</div></div>'
+        + '<div class="detail-item"><div class="detail-label">' + '${autoMsg_4ecfd939f8}' + '</div><div class="detail-value" style="font-size:12px;">' + formatDateTime(m.createdAt) + '</div></div>'
         + '</div>'
         + '<div class="detail-item" style="margin-top:12px;">'
-        + '<div class="detail-label">' + '<spring:message code="admin.members.socialLinked" javaScriptEscape="true"/>' + '</div>'
+        + '<div class="detail-label">' + '${autoMsg_836ad37ce3}' + '</div>'
         + '<div class="detail-value" style="margin-top:4px;">' + socialHtml + '</div>'
         + '</div>'
         + '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">'
         + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '<spring:message code="admin.members.loginSuccess" javaScriptEscape="true"/>' + '</div>'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${autoMsg_d8bf5f56e9}' + '</div>'
         + '<div style="font-size:20px;font-weight:700;color:#4ade80;margin-top:4px;">' + escapeHtml(m.loginSuccessCount ?? 0) + '</div>'
         + '</div>'
         + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '<spring:message code="admin.members.loginFailure" javaScriptEscape="true"/>' + '</div>'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${autoMsg_1ce445ab81}' + '</div>'
         + '<div style="font-size:20px;font-weight:700;color:#f87171;margin-top:4px;">' + escapeHtml(m.loginFailCount ?? 0) + '</div>'
         + '</div>'
         + '<div style="background:#1a2030;border-radius:8px;padding:10px 16px;flex:1;min-width:120px;text-align:center;">'
-        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '<spring:message code="admin.context.lastLogin" javaScriptEscape="true"/>' + '</div>'
+        + '<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;">' + '${autoMsg_21e9a18ffb}' + '</div>'
         + '<div style="font-size:12px;font-weight:600;color:#94a3b8;margin-top:4px;">' + escapeHtml(lastLoginText) + '</div>'
         + '</div>'
         + '</div>';
@@ -1576,15 +1761,15 @@ function buildInfoTab(m) {
 
 function buildHistTab(history) {
     if (!history.length) {
-        return '<div style="text-align:center;padding:32px;color:#475569;">' + '<spring:message code="admin.context.empty.logins" javaScriptEscape="true"/>' + '</div>';
+        return '<div style="text-align:center;padding:32px;color:#475569;">' + '${autoMsg_fe788d3d39}' + '</div>';
     }
 
     const methodMap = {
-        ID: '<spring:message code="admin.context.userId" javaScriptEscape="true"/>',
-        EMAIL: '<spring:message code="admin.context.email" javaScriptEscape="true"/>',
-        KAKAO: '<spring:message code="admin.social.kakao" javaScriptEscape="true"/>',
-        NAVER: '<spring:message code="admin.social.naver" javaScriptEscape="true"/>',
-        GOOGLE: '<spring:message code="admin.social.google" javaScriptEscape="true"/>'
+        ID: '${autoMsg_901942cda3}',
+        EMAIL: '${autoMsg_413c58e514}',
+        KAKAO: '${autoMsg_d519188fd7}',
+        NAVER: '${autoMsg_039f2a034c}',
+        GOOGLE: '${autoMsg_329f00473b}'
     };
 
     let rows = '';
@@ -1594,7 +1779,7 @@ function buildHistTab(history) {
             + '<tr>'
             + '<td>' + escapeHtml(formatHistoryDateTime(item.loginAt)) + '</td>'
             + '<td>' + escapeHtml(methodMap[item.loginMethod] || item.loginMethod || '—') + '</td>'
-            + '<td class="' + (ok ? 'h-success' : 'h-fail') + '">' + (ok ? '✅ ' + '<spring:message code="admin.logs.success" javaScriptEscape="true"/>' : '❌ ' + '<spring:message code="admin.logs.failure" javaScriptEscape="true"/>') + '</td>'
+            + '<td class="' + (ok ? 'h-success' : 'h-fail') + '">' + (ok ? '✅ ' + '${autoMsg_b9b4f87535}' : '❌ ' + '${autoMsg_005440f954}') + '</td>'
             + '<td>' + escapeHtml(item.failReason || '—') + '</td>'
             + '<td style="font-size:11px;color:#475569;">' + escapeHtml(item.ipAddress || '—') + '</td>'
             + '</tr>';
@@ -1603,7 +1788,7 @@ function buildHistTab(history) {
     return ''
         + '<div style="overflow-x:auto;max-height:340px;overflow-y:auto;">'
         + '<table class="history-table">'
-        + '<thead><tr><th>' + '<spring:message code="admin.common.time" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.provider" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.success" javaScriptEscape="true"/>' + '</th><th>' + '<spring:message code="admin.logs.failReason" javaScriptEscape="true"/>' + '</th><th><spring:message code="admin.common.ip" javaScriptEscape="true"/></th></tr></thead>'
+        + '<thead><tr><th>' + '${autoMsg_10c248e065}' + '</th><th>' + '${autoMsg_e5becd39c3}' + '</th><th>' + '${autoMsg_b9b4f87535}' + '</th><th>' + '${autoMsg_ef83b25be6}' + '</th><th>${autoMsg_761b84a10b}</th></tr></thead>'
         + '<tbody>' + rows + '</tbody>'
         + '</table>'
         + '</div>';
@@ -1632,14 +1817,14 @@ async function saveMemberProfile(userIdx, button) {
         });
         const data = await res.json();
         if (res.ok && data.success) {
-            adm_toast(data.message || '<spring:message code="admin.context.toast.saveProfileSuccess" javaScriptEscape="true"/>');
+            adm_toast(data.message || '${autoMsg_7cb96542d5}');
             setTimeout(() => location.reload(), 700);
         } else {
-            adm_toast(data.message || '<spring:message code="admin.context.toast.saveProfileFail" javaScriptEscape="true"/>', 'error');
+            adm_toast(data.message || '${autoMsg_69eae2cf3d}', 'error');
         }
     } catch (e) {
         console.error(e);
-        adm_toast('<spring:message code="admin.context.toast.saveProfileError" javaScriptEscape="true"/>', 'error');
+        adm_toast('${autoMsg_d969ca6ccb}', 'error');
     } finally {
         button.disabled = false;
     }
@@ -1654,7 +1839,7 @@ function applyRoleFromDetail(userIdx, button) {
     const role = document.getElementById('memberRoleSelect').value;
     const reason = document.getElementById('memberRoleReason').value.trim();
     if (!reason) {
-        adm_toast('<spring:message code="admin.context.requireRoleReason" javaScriptEscape="true"/>', 'error');
+        adm_toast('${autoMsg_9b4937693e}', 'error');
         return;
     }
     changeRole(userIdx, role, reason, button);
@@ -1667,7 +1852,7 @@ async function submitDetailBlock(userIdx, button) {
     const reason = document.getElementById('detailBlockedReason').value.trim();
 
     if ((blockType === 'IP_ONLY' || blockType === 'USER_IP') && !blockedIp) {
-        adm_toast('<spring:message code="admin.context.requireBlockedIp" javaScriptEscape="true"/>', 'error');
+        adm_toast('${autoMsg_c1757340af}', 'error');
         return;
     }
 
@@ -1680,14 +1865,14 @@ async function submitDetailBlock(userIdx, button) {
         });
         const data = await res.json();
         if (res.ok && data.success) {
-            adm_toast(data.message || '<spring:message code="admin.context.toast.saveBlockSuccess" javaScriptEscape="true"/>');
+            adm_toast(data.message || '${autoMsg_35eb4519fe}');
             setTimeout(() => location.reload(), 700);
         } else {
-            adm_toast(data.message || '<spring:message code="admin.context.toast.saveBlockFail" javaScriptEscape="true"/>', 'error');
+            adm_toast(data.message || '${autoMsg_93595248e5}', 'error');
         }
     } catch (e) {
         console.error(e);
-        adm_toast('<spring:message code="admin.context.toast.saveBlockError" javaScriptEscape="true"/>', 'error');
+        adm_toast('${autoMsg_82e1a33bf4}', 'error');
     } finally {
         button.disabled = false;
     }

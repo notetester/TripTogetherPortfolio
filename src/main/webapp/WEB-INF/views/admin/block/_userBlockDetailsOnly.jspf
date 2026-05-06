@@ -1,3 +1,4 @@
+<spring:message var="adminUserBlockReasonLabel" code="admin.translation.label.userBlockReason"/>
 <c:forEach var="b" items="${userBlocks}">
     <template id="detail-user-${b.blockIdx}">
         <div class="detail-grid">
@@ -24,7 +25,7 @@
         <div class="detail-item" style="margin-top:14px;"><div class="detail-label">상세 판단 근거</div><div class="detail-value">${empty b.detailMessage ? '-' : fn:escapeXml(b.detailMessage)}</div></div>
         <c:if test="${not empty b.reason}">
             <div class="adm-tr-inline js-admin-translation-widget"
-                 data-label="<spring:message code='admin.translation.label.userBlockReason'/>"
+                 data-label="${adminUserBlockReasonLabel}"
                  data-source-type="USER_BLOCK"
                  data-source-idx="${b.blockIdx}"
                  data-field-name="reason"

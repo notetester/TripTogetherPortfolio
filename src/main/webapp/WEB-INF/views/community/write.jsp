@@ -2,6 +2,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_53d4d05c34" code="community.write.back"/>
+<spring:message var="autoMsg_887a25c15a" code="community.write.title.edit"/>
+<spring:message var="autoMsg_35d49b9823" code="community.write.title.reset"/>
+<spring:message var="autoMsg_2093e43ac1" code="community.write.title.label"/>
+<spring:message var="autoMsg_a455b55c1b" code="community.write.tag.autoRegion"/>
+<spring:message var="autoMsg_8c1b6d8827" code="community.write.content.label"/>
+<spring:message var="autoMsg_889ced27c5" code="community.write.cancel"/>
+<spring:message var="autoMsg_fee59e9cd4" code="community.write.submit.edit"/>
+<spring:message var="autoMsg_9cb7feed81" code="community.write.submit.create"/>
+<spring:message var="autoMsg_bcd01d4a63" code="community.write.type.label"/>
+<spring:message var="autoMsg_b3040d013e" code="community.write.region.label"/>
+<spring:message var="autoMsg_cc9b8983bc" code="community.write.guide.label"/>
+<spring:message var="autoMsg_badac37075" code="community.write.guide.default.1"/>
+<spring:message var="autoMsg_c6a2b6a83f" code="community.write.guide.default.2"/>
+<spring:message var="autoMsg_7d7213c9eb" code="community.write.guide.default.3"/>
+<spring:message var="autoMsg_adbc6087f0" code="community.write.guide.default.4"/>
 <%--
   커뮤니티 글쓰기/수정 페이지
   글쓰기: GET /community/write      → model에 post 없음
@@ -74,11 +90,11 @@
 <div class="write-wrap">
 
   <div class="write-top-bar">
-    <button class="back-btn" onclick="cancelWrite()">&#8592; <spring:message code="community.write.back"/></button>
+    <button class="back-btn" onclick="cancelWrite()">&#8592; ${autoMsg_53d4d05c34}</button>
     <h2 class="write-page-title" id="writePageTitle">
       <c:choose>
-        <c:when test="${isEdit}"><spring:message code="community.write.title.edit"/></c:when>
-        <c:otherwise><span class="write-title-reset" onclick="resetWrite()"><spring:message code="community.write.title.reset"/></span></c:otherwise>
+        <c:when test="${isEdit}">${autoMsg_887a25c15a}</c:when>
+        <c:otherwise><span class="write-title-reset" onclick="resetWrite()">${autoMsg_35d49b9823}</span></c:otherwise>
       </c:choose>
     </h2>
   </div>
@@ -97,7 +113,7 @@
         <%-- 제목 --%>
         <div class="write-section">
           <label class="section-label" for="writeTitle">
-            <spring:message code="community.write.title.label"/> <span class="required">*</span>
+            ${autoMsg_2093e43ac1} <span class="required">*</span>
           </label>
           <input type="text" id="writeTitle" name="title" class="write-input"
                  placeholder="${communityWriteTitlePlaceholder}" maxlength="100"
@@ -112,7 +128,7 @@
         <div class="write-section">
           <label class="section-label">
             <spring:message code="community.write.tag.label"/>
-            <span class="section-label-sub">(<spring:message code="community.write.tag.autoRegion"/>)</span>
+            <span class="section-label-sub">(${autoMsg_a455b55c1b})</span>
           </label>
           <div class="tag-input-wrap" id="tagInputWrap">
             <div class="tag-list" id="tagList"></div>
@@ -130,7 +146,7 @@
         <%-- 본문 --%>
         <div class="write-section">
           <label class="section-label" for="writeContent">
-            <spring:message code="community.write.content.label"/> <span class="required">*</span>
+            ${autoMsg_8c1b6d8827} <span class="required">*</span>
           </label>
           <div id="photoCountBadge" class="photo-count-badge is-short" hidden>
             <span class="photo-count-icon">&#128247;</span>
@@ -142,11 +158,11 @@
             <span id="contentCount">0</span>/3000
           </div>
           <div class="write-bottom-actions">
-            <button type="button" class="btn-cancel" onclick="cancelWrite()"><spring:message code="community.write.cancel"/></button>
+            <button type="button" class="btn-cancel" onclick="cancelWrite()">${autoMsg_889ced27c5}</button>
             <button type="button" class="btn-submit" onclick="submitWrite()">
               <c:choose>
-                <c:when test="${isEdit}"><spring:message code="community.write.submit.edit"/></c:when>
-                <c:otherwise><spring:message code="community.write.submit.create"/></c:otherwise>
+                <c:when test="${isEdit}">${autoMsg_fee59e9cd4}</c:when>
+                <c:otherwise>${autoMsg_9cb7feed81}</c:otherwise>
               </c:choose>
             </button>
           </div>
@@ -159,7 +175,7 @@
 
         <%-- 게시글 유형 --%>
         <div class="aside-card">
-          <div class="aside-card-title"><spring:message code="community.write.type.label"/> <span class="required">*</span></div>
+          <div class="aside-card-title">${autoMsg_bcd01d4a63} <span class="required">*</span></div>
           <input type="hidden" id="postType" name="postType"
                  value="${isEdit ? post.postType : 'review'}">
           <div class="type-select-grid">
@@ -188,7 +204,7 @@
 
         <%-- 지역 선택 --%>
         <div class="aside-card">
-          <div class="aside-card-title"><spring:message code="community.write.region.label"/> <span class="required">*</span></div>
+          <div class="aside-card-title">${autoMsg_b3040d013e} <span class="required">*</span></div>
           <input type="hidden" id="regionInput" name="region"
                  value="${isEdit ? post.region : 'asia'}">
           <div class="region-select-list">
@@ -211,12 +227,12 @@
 
         <%-- 작성 가이드 --%>
         <div class="aside-card guide-card">
-          <div class="aside-card-title">&#128221; <spring:message code="community.write.guide.label"/></div>
+          <div class="aside-card-title">&#128221; ${autoMsg_cc9b8983bc}</div>
           <ul class="guide-list" id="guideList">
-            <li><spring:message code="community.write.guide.default.1"/></li>
-            <li><spring:message code="community.write.guide.default.2"/></li>
-            <li><spring:message code="community.write.guide.default.3"/></li>
-            <li><spring:message code="community.write.guide.default.4"/></li>
+            <li>${autoMsg_badac37075}</li>
+            <li>${autoMsg_c6a2b6a83f}</li>
+            <li>${autoMsg_7d7213c9eb}</li>
+            <li>${autoMsg_adbc6087f0}</li>
           </ul>
         </div>
 

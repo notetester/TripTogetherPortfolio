@@ -3,6 +3,31 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<spring:message var="autoMsg_622906cbfc" code="security.admin.securityReviews.title"/>
+<spring:message var="autoMsg_4a53abd70c" code="security.admin.securityReviews.desc"/>
+<spring:message var="autoMsg_9d436c7be7" code="security.admin.nav.securityAssessments"/>
+<spring:message var="autoMsg_dd20c165d6" code="security.admin.nav.providerConfigs"/>
+<spring:message var="autoMsg_a392750e5f" code="security.admin.common.status"/>
+<spring:message var="autoMsg_096fdb2c2c" code="security.admin.common.all"/>
+<spring:message var="autoMsg_8070375470" code="security.admin.common.severity"/>
+<spring:message var="autoMsg_e7a7811e2a" code="security.admin.common.type"/>
+<spring:message var="autoMsg_0347db419f" code="security.admin.common.search"/>
+<spring:message var="autoMsg_1e2880b15e" code="security.admin.common.reviewType"/>
+<spring:message var="autoMsg_10f7d3e276" code="security.admin.common.target"/>
+<spring:message var="autoMsg_953b54680a" code="security.admin.common.summaryEvidence"/>
+<spring:message var="autoMsg_680cf08f42" code="security.admin.common.createdAt"/>
+<spring:message var="autoMsg_06065633ac" code="security.admin.common.action"/>
+<spring:message var="autoMsg_e371dd530e" code="security.admin.common.reviewComment"/>
+<spring:message var="autoMsg_eedcab46d8" code="security.admin.common.approve"/>
+<spring:message var="autoMsg_a1f4823328" code="security.admin.common.hold"/>
+<spring:message var="autoMsg_c072140f4a" code="security.admin.common.reject"/>
+<spring:message var="autoMsg_84171bf077" code="security.admin.securityReviews.detailTitle"/>
+<spring:message var="autoMsg_d5deb324de" code="security.admin.common.close"/>
+<spring:message var="autoMsg_f6738b9c0e" code="security.admin.common.user"/>
+<spring:message var="autoMsg_1cf181ab95" code="security.admin.common.ipAddress"/>
+<spring:message var="autoMsg_832dcf6ad5" code="security.admin.common.reviewedBy"/>
+<spring:message var="autoMsg_7c826b6060" code="security.admin.common.detailMessage"/>
+<spring:message var="autoMsg_e733b539a8" code="security.admin.empty.reviews"/>
 <c:set var="activeMenu" value="securityReviews"/>
 <spring:message var="pageTitle" code="security.admin.securityReviews.title"/>
 <spring:message var="keywordPlaceholder" code="security.admin.placeholder.accountIpSummary"/>
@@ -47,12 +72,12 @@
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1><spring:message code="security.admin.securityReviews.title"/></h1>
-            <p class="adm-page-desc"><spring:message code="security.admin.securityReviews.desc"/></p>
+            <h1>${autoMsg_622906cbfc}</h1>
+            <p class="adm-page-desc">${autoMsg_4a53abd70c}</p>
         </div>
         <div class="adm-actions">
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments"><spring:message code="security.admin.nav.securityAssessments"/></a>
-            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs"><spring:message code="security.admin.nav.providerConfigs"/></a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/security-assessments">${autoMsg_9d436c7be7}</a>
+            <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">${autoMsg_dd20c165d6}</a>
         </div>
     </div>
 
@@ -62,32 +87,32 @@
 
     <form method="get" class="adm-card" style="margin-bottom:16px;">
         <div class="adm-form-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;">
-            <label><spring:message code="security.admin.common.status"/>
+            <label>${autoMsg_a392750e5f}
                 <select class="adm-input" name="status">
-                    <option value=""><spring:message code="security.admin.common.all"/></option>
+                    <option value="">${autoMsg_096fdb2c2c}</option>
                     <option value="PENDING" ${status == 'PENDING' ? 'selected' : ''}>PENDING</option>
                     <option value="HOLD" ${status == 'HOLD' ? 'selected' : ''}>HOLD</option>
                     <option value="APPROVED" ${status == 'APPROVED' ? 'selected' : ''}>APPROVED</option>
                     <option value="REJECTED" ${status == 'REJECTED' ? 'selected' : ''}>REJECTED</option>
                 </select>
             </label>
-            <label><spring:message code="security.admin.common.severity"/>
+            <label>${autoMsg_8070375470}
                 <select class="adm-input" name="severity">
-                    <option value=""><spring:message code="security.admin.common.all"/></option>
+                    <option value="">${autoMsg_096fdb2c2c}</option>
                     <option value="CRITICAL" ${severity == 'CRITICAL' ? 'selected' : ''}>CRITICAL</option>
                     <option value="HIGH" ${severity == 'HIGH' ? 'selected' : ''}>HIGH</option>
                     <option value="MEDIUM" ${severity == 'MEDIUM' ? 'selected' : ''}>MEDIUM</option>
                     <option value="LOW" ${severity == 'LOW' ? 'selected' : ''}>LOW</option>
                 </select>
             </label>
-            <label><spring:message code="security.admin.common.type"/>
+            <label>${autoMsg_e7a7811e2a}
                 <input class="adm-input" type="text" name="reviewType" value="${fn:escapeXml(reviewType)}" placeholder="${reviewTypePlaceholder}">
             </label>
-            <label><spring:message code="security.admin.common.search"/>
+            <label>${autoMsg_0347db419f}
                 <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(keyword)}" placeholder="${keywordPlaceholder}">
             </label>
             <div style="align-self:end;">
-                <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.search"/></button>
+                <button class="adm-btn primary" type="submit">${autoMsg_0347db419f}</button>
             </div>
         </div>
     </form>
@@ -96,13 +121,13 @@
         <table class="adm-table">
             <thead>
             <tr>
-                <th><spring:message code="security.admin.common.status"/></th>
-                <th><spring:message code="security.admin.common.severity"/></th>
-                <th><spring:message code="security.admin.common.reviewType"/></th>
-                <th><spring:message code="security.admin.common.target"/></th>
-                <th><spring:message code="security.admin.common.summaryEvidence"/></th>
-                <th><spring:message code="security.admin.common.createdAt"/></th>
-                <th><spring:message code="security.admin.common.action"/></th>
+                <th>${autoMsg_a392750e5f}</th>
+                <th>${autoMsg_8070375470}</th>
+                <th>${autoMsg_1e2880b15e}</th>
+                <th>${autoMsg_10f7d3e276}</th>
+                <th>${autoMsg_953b54680a}</th>
+                <th>${autoMsg_680cf08f42}</th>
+                <th>${autoMsg_06065633ac}</th>
             </tr>
             </thead>
             <tbody>
@@ -119,7 +144,7 @@
                         <strong><c:out value="${r.summary}"/></strong><br>
                         <small><c:out value="${r.detailMessage}"/></small>
                         <c:if test="${not empty r.reviewComment}">
-                            <br><small><spring:message code="security.admin.common.reviewComment"/>: <c:out value="${r.reviewComment}"/></small>
+                            <br><small>${autoMsg_e371dd530e}: <c:out value="${r.reviewComment}"/></small>
                         </c:if>
                     </td>
                     <td><fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></td>
@@ -130,15 +155,15 @@
                         <c:if test="${r.reviewStatus == 'PENDING' || r.reviewStatus == 'HOLD'}">
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-reviews/${r.reviewIdx}/approve" style="display:inline;">
                                 <input type="hidden" name="comment" value="${fn:escapeXml(securityReviewApproveComment)}">
-                                <button class="adm-btn primary" type="submit"><spring:message code="security.admin.common.approve"/></button>
+                                <button class="adm-btn primary" type="submit">${autoMsg_eedcab46d8}</button>
                             </form>
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-reviews/${r.reviewIdx}/hold" style="display:inline;">
                                 <input type="hidden" name="comment" value="${fn:escapeXml(securityReviewHoldComment)}">
-                                <button class="adm-btn" type="submit"><spring:message code="security.admin.common.hold"/></button>
+                                <button class="adm-btn" type="submit">${autoMsg_a1f4823328}</button>
                             </form>
                             <form method="post" action="${pageContext.request.contextPath}/admin/login-risk/security-reviews/${r.reviewIdx}/reject" style="display:inline;">
                                 <input type="hidden" name="comment" value="${fn:escapeXml(securityReviewRejectComment)}">
-                                <button class="adm-btn danger" type="submit"><spring:message code="security.admin.common.reject"/></button>
+                                <button class="adm-btn danger" type="submit">${autoMsg_c072140f4a}</button>
                             </form>
                         </c:if>
                         <c:if test="${r.reviewStatus != 'PENDING' && r.reviewStatus != 'HOLD'}">
@@ -151,47 +176,47 @@
                         <div class="review-detail-card" role="dialog" aria-modal="true" aria-labelledby="securityReviewTitle${r.reviewIdx}">
                             <div class="adm-card-header" style="padding:0 0 14px;border-bottom:1px solid #e2e8f0;">
                                 <div>
-                                    <h2 id="securityReviewTitle${r.reviewIdx}" style="margin:0;"><spring:message code="security.admin.securityReviews.detailTitle"/></h2>
+                                    <h2 id="securityReviewTitle${r.reviewIdx}" style="margin:0;">${autoMsg_84171bf077}</h2>
                                     <div class="adm-muted">#<c:out value="${r.reviewIdx}"/> · <c:out value="${r.reviewStatus}"/> · <c:out value="${r.severity}"/></div>
                                 </div>
-                                <button class="adm-btn" type="button" onclick="closeSecurityReviewDetail('securityReviewDetail${r.reviewIdx}')"><spring:message code="security.admin.common.close"/></button>
+                                <button class="adm-btn" type="button" onclick="closeSecurityReviewDetail('securityReviewDetail${r.reviewIdx}')">${autoMsg_d5deb324de}</button>
                             </div>
                             <div class="review-detail-grid">
                                 <div class="review-detail-item">
-                                    <strong><spring:message code="security.admin.common.reviewType"/></strong>
+                                    <strong>${autoMsg_1e2880b15e}</strong>
                                     <div><c:out value="${r.reviewType}" default="-"/> / <c:out value="${r.assessmentScope}" default="-"/></div>
                                 </div>
                                 <div class="review-detail-item">
-                                    <strong><spring:message code="security.admin.common.target"/></strong>
+                                    <strong>${autoMsg_10f7d3e276}</strong>
                                     <div><c:out value="${r.subjectType}" default="-"/>: <c:out value="${r.subjectKey}" default="-"/></div>
                                 </div>
                                 <div class="review-detail-item">
-                                    <strong><spring:message code="security.admin.common.user"/></strong>
+                                    <strong>${autoMsg_f6738b9c0e}</strong>
                                     <div><c:out value="${r.userId}" default="-"/> / <c:out value="${r.nickname}" default="-"/></div>
                                 </div>
                                 <div class="review-detail-item">
-                                    <strong><spring:message code="security.admin.common.ipAddress"/></strong>
+                                    <strong>${autoMsg_1cf181ab95}</strong>
                                     <div><c:out value="${r.ipAddress}" default="-"/></div>
                                 </div>
                                 <div class="review-detail-item">
-                                    <strong><spring:message code="security.admin.common.createdAt"/></strong>
+                                    <strong>${autoMsg_680cf08f42}</strong>
                                     <div><fmt:formatDate value="${r.createdAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
                                 </div>
                                 <div class="review-detail-item">
-                                    <strong><spring:message code="security.admin.common.reviewedBy"/></strong>
+                                    <strong>${autoMsg_832dcf6ad5}</strong>
                                     <div><c:out value="${r.reviewedByUserId}" default="-"/> / <fmt:formatDate value="${r.reviewedAtDate}" pattern="yyyy-MM-dd HH:mm"/></div>
                                 </div>
                             </div>
                             <div class="review-detail-item" style="margin-top:12px;">
-                                <strong><spring:message code="security.admin.common.summaryEvidence"/></strong>
+                                <strong>${autoMsg_953b54680a}</strong>
                                 <div class="review-detail-pre"><c:out value="${r.summary}" default="-"/></div>
                             </div>
                             <div class="review-detail-item" style="margin-top:12px;">
-                                <strong><spring:message code="security.admin.common.detailMessage"/></strong>
+                                <strong>${autoMsg_7c826b6060}</strong>
                                 <div class="review-detail-pre"><c:out value="${r.detailMessage}" default="-"/></div>
                             </div>
                             <div class="review-detail-item" style="margin-top:12px;">
-                                <strong><spring:message code="security.admin.common.reviewComment"/></strong>
+                                <strong>${autoMsg_e371dd530e}</strong>
                                 <div class="review-detail-pre"><c:out value="${r.reviewComment}" default="-"/></div>
                             </div>
                         </div>
@@ -200,7 +225,7 @@
 
             </c:forEach>
             <c:if test="${empty reviews}">
-                <tr><td colspan="7" class="adm-empty"><spring:message code="security.admin.empty.reviews"/></td></tr>
+                <tr><td colspan="7" class="adm-empty">${autoMsg_e733b539a8}</td></tr>
             </c:if>
             </tbody>
         </table>

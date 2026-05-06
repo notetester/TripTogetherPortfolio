@@ -2,6 +2,26 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<spring:message var="autoMsg_a9e2195892" code="auth.login.title"/>
+<spring:message var="autoMsg_145495e759" code="auth.login.subtitle"/>
+<spring:message var="autoMsg_525a50f8c7" code="auth.login.or"/>
+<spring:message var="autoMsg_7a9e6475a3" code="auth.login.identifier"/>
+<spring:message var="autoMsg_5df5b5bf63" code="auth.login.identifier.placeholder"/>
+<spring:message var="autoMsg_741c35e6fc" code="auth.login.password"/>
+<spring:message var="autoMsg_572be388bf" code="auth.login.password.placeholder"/>
+<spring:message var="autoMsg_c435127d4c" code="auth.login.password.title"/>
+<spring:message var="autoMsg_8ceb86248c" code="auth.login.remember"/>
+<spring:message var="autoMsg_609efc40e7" code="auth.login.findId"/>
+<spring:message var="autoMsg_a9add67e2d" code="auth.login.findPw"/>
+<spring:message var="autoMsg_3eacb1afa6" code="header.auth.login"/>
+<spring:message var="autoMsg_2dde5ceb5f" code="auth.login.register"/>
+<spring:message var="autoMsg_9ec5453749" code="auth.login.error.required" javaScriptEscape="true"/>
+<spring:message var="autoMsg_ea523b68ce" code="auth.login.dormant.confirmDefault" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2549d23c53" code="auth.login.dormant.confirmGuide" javaScriptEscape="true"/>
+<spring:message var="autoMsg_cc003b970c" code="auth.login.dormant.required" javaScriptEscape="true"/>
+<spring:message var="autoMsg_de45129d30" code="auth.login.dormant.error" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4003854027" code="auth.login.error.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_18414c1e66" code="auth.login.error.server" javaScriptEscape="true"/>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
 <html lang="${pageContext.response.locale.language}">
@@ -14,8 +34,8 @@
       <span class="auth-logo-text">TripTogether</span>
     </div>
 
-    <h1 class="auth-title"><spring:message code="auth.login.title"/></h1>
-    <p class="auth-sub"><spring:message code="auth.login.subtitle"/></p>
+    <h1 class="auth-title">${autoMsg_a9e2195892}</h1>
+    <p class="auth-sub">${autoMsg_145495e759}</p>
 
     <c:if test="${not empty errorMsg}">
       <div class="auth-error-banner show">⚠️ ${errorMsg}</div>
@@ -44,42 +64,42 @@
       </a>
     </div>
 
-    <div class="auth-divider"><spring:message code="auth.login.or"/></div>
+    <div class="auth-divider">${autoMsg_525a50f8c7}</div>
 
     <form id="loginForm" onsubmit="return false;">
       <input type="hidden" id="redirect" value="${redirect}">
 
       <div class="form-group">
-        <label class="form-label" for="identifier"><spring:message code="auth.login.identifier"/></label>
+        <label class="form-label" for="identifier">${autoMsg_7a9e6475a3}</label>
         <input class="form-input" type="text" id="identifier" name="identifier"
-               placeholder="<spring:message code="auth.login.identifier.placeholder"/>" autocomplete="username" required>
+               placeholder="${autoMsg_5df5b5bf63}" autocomplete="username" required>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password"><spring:message code="auth.login.password"/></label>
+        <label class="form-label" for="password">${autoMsg_741c35e6fc}</label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="password" name="password"
-                 placeholder="<spring:message code="auth.login.password.placeholder"/>" autocomplete="current-password" required>
-          <button type="button" class="pw-toggle" id="pwToggle" title="<spring:message code="auth.login.password.title"/>">👁</button>
+                 placeholder="${autoMsg_572be388bf}" autocomplete="current-password" required>
+          <button type="button" class="pw-toggle" id="pwToggle" title="${autoMsg_c435127d4c}">👁</button>
         </div>
       </div>
 
       <div class="auth-row">
         <label class="checkbox-label">
-          <input type="checkbox" id="rememberMe"> <spring:message code="auth.login.remember"/>
+          <input type="checkbox" id="rememberMe"> ${autoMsg_8ceb86248c}
         </label>
         <div style="display:flex; gap:10px; align-items:center;">
-          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-id"><spring:message code="auth.login.findId"/></a>
-          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-pw"><spring:message code="auth.login.findPw"/></a>
+          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-id">${autoMsg_609efc40e7}</a>
+          <a class="auth-link" href="${pageContext.request.contextPath}/auth/find-pw">${autoMsg_a9add67e2d}</a>
         </div>
       </div>
 
-      <button type="submit" class="btn-submit" id="loginBtn"><spring:message code="header.auth.login"/></button>
+      <button type="submit" class="btn-submit" id="loginBtn">${autoMsg_3eacb1afa6}</button>
     </form>
 
     <div class="auth-footer">
       <spring:message code="auth.login.noAccount"/>
-      <a href="${pageContext.request.contextPath}/auth/register"><spring:message code="auth.login.register"/></a>
+      <a href="${pageContext.request.contextPath}/auth/register">${autoMsg_2dde5ceb5f}</a>
     </div>
 
   </div>
@@ -104,7 +124,7 @@
     const errorBanner = document.getElementById('loginError');
 
     if (!identifier || !password) {
-      showError('<spring:message code="auth.login.error.required" javaScriptEscape="true"/>');
+      showError('${autoMsg_9ec5453749}');
       return;
     }
 
@@ -123,10 +143,10 @@
       if (data.success) {
         location.href = data.redirect;
       } else if (data.dormantReleaseRequired) {
-        const dormantMessage = data.message || '<spring:message code="auth.login.dormant.confirmDefault" javaScriptEscape="true"/>';
-        const ok = confirm(dormantMessage + '\n\n' + '<spring:message code="auth.login.dormant.confirmGuide" javaScriptEscape="true"/>');
+        const dormantMessage = data.message || '${autoMsg_ea523b68ce}';
+        const ok = confirm(dormantMessage + '\n\n' + '${autoMsg_2549d23c53}');
         if (!ok) {
-          showError(data.message || '<spring:message code="auth.login.dormant.required" javaScriptEscape="true"/>');
+          showError(data.message || '${autoMsg_cc003b970c}');
           return;
         }
         const releaseRes = await fetch(ctx + '/auth/dormant/release', {
@@ -138,13 +158,13 @@
         if (releaseData.success) {
           location.href = releaseData.redirect;
         } else {
-          showError(releaseData.message || '<spring:message code="auth.login.dormant.error" javaScriptEscape="true"/>');
+          showError(releaseData.message || '${autoMsg_de45129d30}');
         }
       } else {
-        showError(data.message || '<spring:message code="auth.login.error.fail" javaScriptEscape="true"/>');
+        showError(data.message || '${autoMsg_4003854027}');
       }
     } catch (e) {
-      showError('<spring:message code="auth.login.error.server" javaScriptEscape="true"/>');
+      showError('${autoMsg_18414c1e66}');
     } finally {
       btn.classList.remove('loading');
       btn.disabled = false;

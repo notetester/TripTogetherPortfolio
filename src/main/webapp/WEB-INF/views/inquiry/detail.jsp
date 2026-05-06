@@ -1,7 +1,84 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_f66ac392b7" code="inquiry.category.service"/>
+<spring:message var="autoMsg_087b6adf17" code="inquiry.category.payment"/>
+<spring:message var="autoMsg_948e4bbf4f" code="inquiry.category.account"/>
+<spring:message var="autoMsg_b4c6a42f84" code="inquiry.category.bug"/>
+<spring:message var="autoMsg_e4257c5261" code="inquiry.category.etc"/>
+<spring:message var="autoMsg_4a46ee4489" code="inquiry.status.pending"/>
+<spring:message var="autoMsg_66ba3d2b69" code="inquiry.status.inProgress"/>
+<spring:message var="autoMsg_195cec174e" code="inquiry.status.answerDone"/>
+<spring:message var="autoMsg_b31cbd48b6" code="inquiry.status.cancelled"/>
+<spring:message var="autoMsg_26b87902f6" code="inquiry.status.userCompleted"/>
+<spring:message var="autoMsg_e66bd731a0" code="inquiry.status.deleteRequested"/>
+<spring:message var="autoMsg_0641e3dcae" code="inquiry.status.privateRequested"/>
+<spring:message var="autoMsg_1161fd4649" code="inquiry.status.publicRequested"/>
+<spring:message var="autoMsg_5bc5d8f4ce" code="inquiry.detail.admin.deleteApprove"/>
+<spring:message var="autoMsg_b0bfb8f91a" code="inquiry.detail.admin.publicApprove"/>
+<spring:message var="autoMsg_372b9f587d" code="inquiry.detail.admin.privateApprove"/>
+<spring:message var="autoMsg_9e4f2c4d6c" code="inquiry.write.cancel"/>
+<spring:message var="autoMsg_f566f47cbe" code="inquiry.write.type"/>
+<spring:message var="autoMsg_3acdbfaa02" code="inquiry.write.type.service"/>
+<spring:message var="autoMsg_5cd1ef46dc" code="inquiry.write.type.payment"/>
+<spring:message var="autoMsg_11a10966a2" code="inquiry.write.type.account"/>
+<spring:message var="autoMsg_1964074e27" code="inquiry.write.type.bug"/>
+<spring:message var="autoMsg_7313eacbaa" code="inquiry.write.type.etc"/>
+<spring:message var="autoMsg_1b3af5bf07" code="inquiry.write.subject"/>
+<spring:message var="autoMsg_1e2f127ba5" code="inquiry.write.content"/>
+<spring:message var="autoMsg_c18609d689" code="inquiry.write.private"/>
+<spring:message var="autoMsg_567ce4e195" code="inquiry.detail.attachAdd"/>
+<spring:message var="autoMsg_8bbf087251" code="inquiry.admin.clearBlur.confirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_640c557f02" code="inquiry.admin.clearBlur.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_fb65c78523" code="inquiry.write.server" javaScriptEscape="true"/>
+<spring:message var="autoMsg_ecd768bbdd" code="inquiry.detail.requestFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_55ef90a42e" code="inquiry.detail.admin.status.pendingConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9c17844ec7" code="inquiry.detail.admin.status.inProgressConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_03c923dc23" code="inquiry.detail.admin.status.completedConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_989f250f27" code="inquiry.detail.admin.status.changeFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_5f3440035a" code="inquiry.detail.admin.aiDraft.loading" javaScriptEscape="true"/>
+<spring:message var="autoMsg_9807968c33" code="inquiry.detail.admin.aiDraft.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_7c23f114d1" code="inquiry.detail.admin.answerRequired" javaScriptEscape="true"/>
+<spring:message var="autoMsg_cbe9ca0c7a" code="inquiry.detail.admin.answerRegisterFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_0a5111066c" code="inquiry.detail.admin.answerCompleteFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_cd53c8847e" code="inquiry.detail.admin.deleteApproveConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_6f8f4376a7" code="inquiry.detail.admin.deleteApproveFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_dad571c603" code="inquiry.detail.admin.publicApproveConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_078b2759ce" code="inquiry.detail.admin.publicApproveFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_08ce40b07c" code="inquiry.detail.admin.privateApproveConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_90c95d20d1" code="inquiry.detail.admin.privateApproveFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_09c1b5834c" code="inquiry.detail.admin.answerEdit.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_caaa0a16c5" code="inquiry.detail.edit" javaScriptEscape="true"/>
+<spring:message var="autoMsg_6377605aa3" code="inquiry.write.cancel" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4d6aacccd2" code="inquiry.detail.edit.fail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_040fbd9aa9" code="inquiry.detail.attachDeleteConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_14cb5fe71c" code="inquiry.detail.attachDeleteFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4e05c3c6f5" code="inquiry.detail.deleteConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_a701e9f616" code="inquiry.detail.deleteFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_f86d86a604" code="inquiry.detail.user.completeConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_baa787db19" code="inquiry.detail.user.completeFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_86296b1444" code="inquiry.detail.user.cancelConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_59a922144d" code="inquiry.detail.user.cancelFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_ab80e3cb72" code="inquiry.detail.user.deleteRequestConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_8ff7ddf557" code="inquiry.detail.user.deleteRequestFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_48080de817" code="inquiry.detail.user.deleteCancelConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b10373c6b1" code="inquiry.detail.user.deleteCancelFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_35ed20e941" code="inquiry.detail.user.privateRequestConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_13da52dcc3" code="inquiry.detail.user.privateRequestFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2e360091cb" code="inquiry.detail.user.publicRequestConfirm" javaScriptEscape="true"/>
+<spring:message var="autoMsg_e3e773edcb" code="inquiry.detail.user.publicRequestFail" javaScriptEscape="true"/>
+<spring:message var="autoMsg_17e3e8d3d9" code="inquiry.write.error.title" javaScriptEscape="true"/>
+<spring:message var="autoMsg_79e918e8cd" code="inquiry.write.error.content" javaScriptEscape="true"/>
+<spring:message var="autoMsg_32ed14734b" code="inquiry.answer.history.toggle" javaScriptEscape="true"/>
+<spring:message var="autoMsg_22e420c2db" code="inquiry.answer.history.title" javaScriptEscape="true"/>
+<spring:message var="autoMsg_84c462e8bf" code="inquiry.answer.history.empty" javaScriptEscape="true"/>
+<spring:message var="autoMsg_de2d442ef6" code="inquiry.answer.history.type.UPDATE" javaScriptEscape="true"/>
+<spring:message var="autoMsg_4ef17367fc" code="inquiry.answer.history.type.DELETE" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b2c5a1fb3c" code="inquiry.answer.history.changedBy" javaScriptEscape="true"/>
+<spring:message var="autoMsg_641e4dac86" code="inquiry.answer.history.prevContent" javaScriptEscape="true"/>
+<spring:message var="autoMsg_6075b371ad" code="inquiry.answer.history.loadFail" javaScriptEscape="true"/>
 <%--
   =============================================
   문의 게시판 상세 페이지
@@ -81,25 +158,25 @@
           <%-- 카테고리 태그 --%>
           <span class="inq-category-tag">
             <c:choose>
-              <c:when test="${inquiry.category eq 'service'}"><spring:message code="inquiry.category.service"/></c:when>
-              <c:when test="${inquiry.category eq 'payment'}"><spring:message code="inquiry.category.payment"/></c:when>
-              <c:when test="${inquiry.category eq 'account'}"><spring:message code="inquiry.category.account"/></c:when>
-              <c:when test="${inquiry.category eq 'bug'}"><spring:message code="inquiry.category.bug"/></c:when>
-              <c:otherwise><spring:message code="inquiry.category.etc"/></c:otherwise>
+              <c:when test="${inquiry.category eq 'service'}">${autoMsg_f66ac392b7}</c:when>
+              <c:when test="${inquiry.category eq 'payment'}">${autoMsg_087b6adf17}</c:when>
+              <c:when test="${inquiry.category eq 'account'}">${autoMsg_948e4bbf4f}</c:when>
+              <c:when test="${inquiry.category eq 'bug'}">${autoMsg_b4c6a42f84}</c:when>
+              <c:otherwise>${autoMsg_e4257c5261}</c:otherwise>
             </c:choose>
           </span>
 
           <%-- 상태 뱃지: CSS 클래스명이 status 값과 일치 (PENDING/IN_PROGRESS/COMPLETED) --%>
           <span class="inq-status-badge ${inquiry.status}">
             <c:choose>
-              <c:when test="${inquiry.status eq 'PENDING'}"><spring:message code="inquiry.status.pending"/></c:when>
-              <c:when test="${inquiry.status eq 'IN_PROGRESS'}"><spring:message code="inquiry.status.inProgress"/></c:when>
-              <c:when test="${inquiry.status eq 'COMPLETED'}"><spring:message code="inquiry.status.answerDone"/></c:when>
-              <c:when test="${inquiry.status eq 'CANCELLED'}"><spring:message code="inquiry.status.cancelled"/></c:when>
-              <c:when test="${inquiry.status eq 'USER_COMPLETED'}"><spring:message code="inquiry.status.userCompleted"/></c:when>
-              <c:when test="${inquiry.status eq 'DELETE_REQUESTED'}"><spring:message code="inquiry.status.deleteRequested"/></c:when>
-              <c:when test="${inquiry.status eq 'PRIVATE_REQUESTED'}"><spring:message code="inquiry.status.privateRequested"/></c:when>
-              <c:when test="${inquiry.status eq 'PUBLIC_REQUESTED'}"><spring:message code="inquiry.status.publicRequested"/></c:when>
+              <c:when test="${inquiry.status eq 'PENDING'}">${autoMsg_4a46ee4489}</c:when>
+              <c:when test="${inquiry.status eq 'IN_PROGRESS'}">${autoMsg_66ba3d2b69}</c:when>
+              <c:when test="${inquiry.status eq 'COMPLETED'}">${autoMsg_195cec174e}</c:when>
+              <c:when test="${inquiry.status eq 'CANCELLED'}">${autoMsg_b31cbd48b6}</c:when>
+              <c:when test="${inquiry.status eq 'USER_COMPLETED'}">${autoMsg_26b87902f6}</c:when>
+              <c:when test="${inquiry.status eq 'DELETE_REQUESTED'}">${autoMsg_e66bd731a0}</c:when>
+              <c:when test="${inquiry.status eq 'PRIVATE_REQUESTED'}">${autoMsg_0641e3dcae}</c:when>
+              <c:when test="${inquiry.status eq 'PUBLIC_REQUESTED'}">${autoMsg_1161fd4649}</c:when>
             </c:choose>
           </span>
 
@@ -230,9 +307,9 @@
         <%-- 상태 변경 버튼 영역 --%>
         <div class="inq-admin-status-bar">
           <span class="inq-admin-status-label">${inquiryAdminStatusLabel}</span>
-          <button class="inq-btn-status inq-btn-status-pending" id="btnStatusPending">🔔 <spring:message code="inquiry.status.pending"/></button>
-          <button class="inq-btn-status" id="btnStatusInProgress">🔄 <spring:message code="inquiry.status.inProgress"/></button>
-          <button class="inq-btn-status inq-btn-status-complete" id="btnStatusCompleted">✅ <spring:message code="inquiry.status.answerDone"/></button>
+          <button class="inq-btn-status inq-btn-status-pending" id="btnStatusPending">🔔 ${autoMsg_4a46ee4489}</button>
+          <button class="inq-btn-status" id="btnStatusInProgress">🔄 ${autoMsg_66ba3d2b69}</button>
+          <button class="inq-btn-status inq-btn-status-complete" id="btnStatusCompleted">✅ ${autoMsg_195cec174e}</button>
         </div>
 
         <%-- 삭제 요청 수락 버튼 (DELETE_REQUESTED 상태일 때만 표시) --%>
@@ -240,7 +317,7 @@
           <div class="inq-admin-status-bar">
             <span class="inq-admin-status-label">${inquiryAdminDeleteWaitingLabel}</span>
             <button class="inq-btn-submit" id="btnApproveDelete"
-                    style="background:#ef4444;"><spring:message code="inquiry.detail.admin.deleteApprove"/></button>
+                    style="background:#ef4444;">${autoMsg_5bc5d8f4ce}</button>
           </div>
         </c:if>
 
@@ -248,13 +325,13 @@
         <c:if test="${inquiry.status eq 'PUBLIC_REQUESTED'}">
           <div class="inq-admin-status-bar">
             <span class="inq-admin-status-label">${inquiryAdminPublicWaitingLabel}</span>
-            <button class="inq-btn-submit" id="btnApprovePublic"><spring:message code="inquiry.detail.admin.publicApprove"/></button>
+            <button class="inq-btn-submit" id="btnApprovePublic">${autoMsg_b0bfb8f91a}</button>
           </div>
         </c:if>
         <c:if test="${inquiry.status eq 'PRIVATE_REQUESTED'}">
           <div class="inq-admin-status-bar">
             <span class="inq-admin-status-label">${inquiryAdminPrivateWaitingLabel}</span>
-            <button class="inq-btn-submit" id="btnApprovePrivate"><spring:message code="inquiry.detail.admin.privateApprove"/></button>
+            <button class="inq-btn-submit" id="btnApprovePrivate">${autoMsg_372b9f587d}</button>
           </div>
         </c:if>
 
@@ -269,7 +346,7 @@
             <c:when test="${not empty answer}">
               <button class="inq-btn-cancel" id="answerEditToggleBtn">${inquiryAdminAnswerEditLabel}</button>
               <button class="inq-btn-submit" id="answerEditSaveBtn" style="display:none;">${inquirySaveLabel}</button>
-              <button class="inq-btn-cancel" id="answerEditCancelBtn" style="display:none;"><spring:message code="inquiry.write.cancel"/></button>
+              <button class="inq-btn-cancel" id="answerEditCancelBtn" style="display:none;">${autoMsg_9e4f2c4d6c}</button>
             </c:when>
             <%-- 답변 없을 때: AI 초안 / 등록 / 답변+완료 동시처리 버튼 --%>
             <c:otherwise>
@@ -292,23 +369,23 @@
         <div class="inq-write-card">
           <%-- 문의 유형 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label"><spring:message code="inquiry.write.type"/></label>
+            <label class="inq-form-label">${autoMsg_f566f47cbe}</label>
             <select class="inq-form-select" id="editCategory">
-              <option value="service" ${inquiry.category eq 'service' ? 'selected' : ''}><spring:message code="inquiry.write.type.service"/></option>
-              <option value="payment" ${inquiry.category eq 'payment' ? 'selected' : ''}><spring:message code="inquiry.write.type.payment"/></option>
-              <option value="account" ${inquiry.category eq 'account' ? 'selected' : ''}><spring:message code="inquiry.write.type.account"/></option>
-              <option value="bug"     ${inquiry.category eq 'bug'     ? 'selected' : ''}><spring:message code="inquiry.write.type.bug"/></option>
-              <option value="etc"     ${inquiry.category eq 'etc'     ? 'selected' : ''}><spring:message code="inquiry.write.type.etc"/></option>
+              <option value="service" ${inquiry.category eq 'service' ? 'selected' : ''}>${autoMsg_3acdbfaa02}</option>
+              <option value="payment" ${inquiry.category eq 'payment' ? 'selected' : ''}>${autoMsg_5cd1ef46dc}</option>
+              <option value="account" ${inquiry.category eq 'account' ? 'selected' : ''}>${autoMsg_11a10966a2}</option>
+              <option value="bug"     ${inquiry.category eq 'bug'     ? 'selected' : ''}>${autoMsg_1964074e27}</option>
+              <option value="etc"     ${inquiry.category eq 'etc'     ? 'selected' : ''}>${autoMsg_7313eacbaa}</option>
             </select>
           </div>
           <%-- 제목 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label"><spring:message code="inquiry.write.subject"/></label>
-            <input class="inq-form-input" type="text" id="editTitle" value="<c:out value='${inquiry.title}'/>">
+            <label class="inq-form-label">${autoMsg_1b3af5bf07}</label>
+            <input class="inq-form-input" type="text" id="editTitle" value="${fn:escapeXml(inquiry.title)}">
           </div>
           <%-- 내용 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label"><spring:message code="inquiry.write.content"/></label>
+            <label class="inq-form-label">${autoMsg_1e2f127ba5}</label>
             <textarea class="inq-form-textarea" id="editContent" rows="10"><c:out value="${inquiry.content}"/></textarea>
           </div>
           <%-- 비공개 여부 --%>
@@ -316,12 +393,12 @@
             <label class="inq-private-toggle">
               <input type="checkbox" id="editIsPrivate" ${inquiry.isPrivate == 1 ? 'checked' : ''}>
               <span class="inq-toggle-slider"></span>
-              <span class="inq-toggle-label"><spring:message code="inquiry.write.private"/></span>
+              <span class="inq-toggle-label">${autoMsg_c18609d689}</span>
             </label>
           </div>
           <%-- 첨부파일 업로드 --%>
           <div class="inq-form-group">
-            <label class="inq-form-label"><spring:message code="inquiry.detail.attachAdd"/></label>
+            <label class="inq-form-label">${autoMsg_567ce4e195}</label>
             <input type="file" class="inq-form-input" id="editAttachFile" multiple
                    accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.zip">
             <c:if test="${not empty attachmentList}">
@@ -338,7 +415,7 @@
           </div>
           <%-- 취소 / 저장 버튼 --%>
           <div class="inq-write-actions">
-            <button class="inq-btn-cancel" id="editCancelBtn"><spring:message code="inquiry.write.cancel"/></button>
+            <button class="inq-btn-cancel" id="editCancelBtn">${autoMsg_9e4f2c4d6c}</button>
             <button class="inq-btn-submit" id="editSaveBtn">${inquirySaveLabel}</button>
           </div>
         </div>
@@ -444,55 +521,55 @@ function goBackToList() {
   var ctx = '${pageContext.request.contextPath}';
   var inquiryId = ${inquiry.inquiryId};
   var inquiryMessages = {
-    clearBlurConfirm: '<spring:message code="inquiry.admin.clearBlur.confirm" javaScriptEscape="true"/>',
-    clearBlurFail: '<spring:message code="inquiry.admin.clearBlur.fail" javaScriptEscape="true"/>',
-    genericError: '<spring:message code="inquiry.write.server" javaScriptEscape="true"/>',
-    requestFail: '<spring:message code="inquiry.detail.requestFail" javaScriptEscape="true"/>',
-    statusPendingConfirm: '<spring:message code="inquiry.detail.admin.status.pendingConfirm" javaScriptEscape="true"/>',
-    statusInProgressConfirm: '<spring:message code="inquiry.detail.admin.status.inProgressConfirm" javaScriptEscape="true"/>',
-    statusCompletedConfirm: '<spring:message code="inquiry.detail.admin.status.completedConfirm" javaScriptEscape="true"/>',
-    statusChangeFail: '<spring:message code="inquiry.detail.admin.status.changeFail" javaScriptEscape="true"/>',
-    aiDraftLoading: '<spring:message code="inquiry.detail.admin.aiDraft.loading" javaScriptEscape="true"/>',
-    aiDraftFail: '<spring:message code="inquiry.detail.admin.aiDraft.fail" javaScriptEscape="true"/>',
-    answerRequired: '<spring:message code="inquiry.detail.admin.answerRequired" javaScriptEscape="true"/>',
-    answerRegisterFail: '<spring:message code="inquiry.detail.admin.answerRegisterFail" javaScriptEscape="true"/>',
-    answerCompleteFail: '<spring:message code="inquiry.detail.admin.answerCompleteFail" javaScriptEscape="true"/>',
-    deleteApproveConfirm: '<spring:message code="inquiry.detail.admin.deleteApproveConfirm" javaScriptEscape="true"/>',
-    deleteApproveFail: '<spring:message code="inquiry.detail.admin.deleteApproveFail" javaScriptEscape="true"/>',
-    publicApproveConfirm: '<spring:message code="inquiry.detail.admin.publicApproveConfirm" javaScriptEscape="true"/>',
-    publicApproveFail: '<spring:message code="inquiry.detail.admin.publicApproveFail" javaScriptEscape="true"/>',
-    privateApproveConfirm: '<spring:message code="inquiry.detail.admin.privateApproveConfirm" javaScriptEscape="true"/>',
-    privateApproveFail: '<spring:message code="inquiry.detail.admin.privateApproveFail" javaScriptEscape="true"/>',
-    answerEditFail: '<spring:message code="inquiry.detail.admin.answerEdit.fail" javaScriptEscape="true"/>',
-    editOpen: '<spring:message code="inquiry.detail.edit" javaScriptEscape="true"/>',
-    editClose: '<spring:message code="inquiry.write.cancel" javaScriptEscape="true"/>',
-    editFail: '<spring:message code="inquiry.detail.edit.fail" javaScriptEscape="true"/>',
-    attachmentDeleteConfirm: '<spring:message code="inquiry.detail.attachDeleteConfirm" javaScriptEscape="true"/>',
-    attachmentDeleteFail: '<spring:message code="inquiry.detail.attachDeleteFail" javaScriptEscape="true"/>',
-    deleteConfirm: '<spring:message code="inquiry.detail.deleteConfirm" javaScriptEscape="true"/>',
-    deleteFail: '<spring:message code="inquiry.detail.deleteFail" javaScriptEscape="true"/>',
-    userCompleteConfirm: '<spring:message code="inquiry.detail.user.completeConfirm" javaScriptEscape="true"/>',
-    userCompleteFail: '<spring:message code="inquiry.detail.user.completeFail" javaScriptEscape="true"/>',
-    cancelConfirm: '<spring:message code="inquiry.detail.user.cancelConfirm" javaScriptEscape="true"/>',
-    cancelFail: '<spring:message code="inquiry.detail.user.cancelFail" javaScriptEscape="true"/>',
-    deleteRequestConfirm: '<spring:message code="inquiry.detail.user.deleteRequestConfirm" javaScriptEscape="true"/>',
-    deleteRequestFail: '<spring:message code="inquiry.detail.user.deleteRequestFail" javaScriptEscape="true"/>',
-    deleteCancelConfirm: '<spring:message code="inquiry.detail.user.deleteCancelConfirm" javaScriptEscape="true"/>',
-    deleteCancelFail: '<spring:message code="inquiry.detail.user.deleteCancelFail" javaScriptEscape="true"/>',
-    privateRequestConfirm: '<spring:message code="inquiry.detail.user.privateRequestConfirm" javaScriptEscape="true"/>',
-    privateRequestFail: '<spring:message code="inquiry.detail.user.privateRequestFail" javaScriptEscape="true"/>',
-    publicRequestConfirm: '<spring:message code="inquiry.detail.user.publicRequestConfirm" javaScriptEscape="true"/>',
-    publicRequestFail: '<spring:message code="inquiry.detail.user.publicRequestFail" javaScriptEscape="true"/>',
-    titleRequired: '<spring:message code="inquiry.write.error.title" javaScriptEscape="true"/>',
-    contentRequired: '<spring:message code="inquiry.write.error.content" javaScriptEscape="true"/>',
-    historyToggle: '<spring:message code="inquiry.answer.history.toggle" javaScriptEscape="true"/>',
-    historyTitle: '<spring:message code="inquiry.answer.history.title" javaScriptEscape="true"/>',
-    historyEmpty: '<spring:message code="inquiry.answer.history.empty" javaScriptEscape="true"/>',
-    historyTypeUpdate: '<spring:message code="inquiry.answer.history.type.UPDATE" javaScriptEscape="true"/>',
-    historyTypeDelete: '<spring:message code="inquiry.answer.history.type.DELETE" javaScriptEscape="true"/>',
-    historyChangedBy: '<spring:message code="inquiry.answer.history.changedBy" javaScriptEscape="true"/>',
-    historyPrevContent: '<spring:message code="inquiry.answer.history.prevContent" javaScriptEscape="true"/>',
-    historyLoadFail: '<spring:message code="inquiry.answer.history.loadFail" javaScriptEscape="true"/>'
+    clearBlurConfirm: '${autoMsg_8bbf087251}',
+    clearBlurFail: '${autoMsg_640c557f02}',
+    genericError: '${autoMsg_fb65c78523}',
+    requestFail: '${autoMsg_ecd768bbdd}',
+    statusPendingConfirm: '${autoMsg_55ef90a42e}',
+    statusInProgressConfirm: '${autoMsg_9c17844ec7}',
+    statusCompletedConfirm: '${autoMsg_03c923dc23}',
+    statusChangeFail: '${autoMsg_989f250f27}',
+    aiDraftLoading: '${autoMsg_5f3440035a}',
+    aiDraftFail: '${autoMsg_9807968c33}',
+    answerRequired: '${autoMsg_7c23f114d1}',
+    answerRegisterFail: '${autoMsg_cbe9ca0c7a}',
+    answerCompleteFail: '${autoMsg_0a5111066c}',
+    deleteApproveConfirm: '${autoMsg_cd53c8847e}',
+    deleteApproveFail: '${autoMsg_6f8f4376a7}',
+    publicApproveConfirm: '${autoMsg_dad571c603}',
+    publicApproveFail: '${autoMsg_078b2759ce}',
+    privateApproveConfirm: '${autoMsg_08ce40b07c}',
+    privateApproveFail: '${autoMsg_90c95d20d1}',
+    answerEditFail: '${autoMsg_09c1b5834c}',
+    editOpen: '${autoMsg_caaa0a16c5}',
+    editClose: '${autoMsg_6377605aa3}',
+    editFail: '${autoMsg_4d6aacccd2}',
+    attachmentDeleteConfirm: '${autoMsg_040fbd9aa9}',
+    attachmentDeleteFail: '${autoMsg_14cb5fe71c}',
+    deleteConfirm: '${autoMsg_4e05c3c6f5}',
+    deleteFail: '${autoMsg_a701e9f616}',
+    userCompleteConfirm: '${autoMsg_f86d86a604}',
+    userCompleteFail: '${autoMsg_baa787db19}',
+    cancelConfirm: '${autoMsg_86296b1444}',
+    cancelFail: '${autoMsg_59a922144d}',
+    deleteRequestConfirm: '${autoMsg_ab80e3cb72}',
+    deleteRequestFail: '${autoMsg_8ff7ddf557}',
+    deleteCancelConfirm: '${autoMsg_48080de817}',
+    deleteCancelFail: '${autoMsg_b10373c6b1}',
+    privateRequestConfirm: '${autoMsg_35ed20e941}',
+    privateRequestFail: '${autoMsg_13da52dcc3}',
+    publicRequestConfirm: '${autoMsg_2e360091cb}',
+    publicRequestFail: '${autoMsg_e3e773edcb}',
+    titleRequired: '${autoMsg_17e3e8d3d9}',
+    contentRequired: '${autoMsg_79e918e8cd}',
+    historyToggle: '${autoMsg_32ed14734b}',
+    historyTitle: '${autoMsg_22e420c2db}',
+    historyEmpty: '${autoMsg_84c462e8bf}',
+    historyTypeUpdate: '${autoMsg_de2d442ef6}',
+    historyTypeDelete: '${autoMsg_4ef17367fc}',
+    historyChangedBy: '${autoMsg_b2c5a1fb3c}',
+    historyPrevContent: '${autoMsg_641e4dac86}',
+    historyLoadFail: '${autoMsg_6075b371ad}'
   };
 
   /* =============================================

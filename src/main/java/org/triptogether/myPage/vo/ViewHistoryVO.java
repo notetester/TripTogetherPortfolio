@@ -10,4 +10,9 @@ public class ViewHistoryVO {
     private String contentType;
     private Long   contentId;
     private Date   viewedAt;
+
+    public java.util.Date getViewedAtDate() {
+        return viewedAt;
+    }
+
 }

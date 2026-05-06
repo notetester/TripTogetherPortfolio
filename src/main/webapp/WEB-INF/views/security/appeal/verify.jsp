@@ -2,12 +2,21 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<spring:message var="autoMsg_8bf17897c9" code="security.appeal.verify.pageTitle"/>
+<spring:message var="autoMsg_5f7d04ad05" code="security.appeal.verify.title"/>
+<spring:message var="autoMsg_ad5033e2fd" code="security.appeal.verify.lead"/>
+<spring:message var="autoMsg_50ab15cb76" code="security.appeal.form.requestId"/>
+<spring:message var="autoMsg_6bc43f372a" code="security.appeal.form.blockType"/>
+<spring:message var="autoMsg_a5b4fae64e" code="security.appeal.form.email"/>
+<spring:message var="autoMsg_7ca32fcfbe" code="security.appeal.verify.submit"/>
+<spring:message var="autoMsg_804c0a63bc" code="security.appeal.verify.notice"/>
+<spring:message var="autoMsg_389b78a14c" code="security.appeal.result.lookupLink"/>
 <spring:message var="emailPlaceholder" code="security.appeal.form.email.placeholder"/>
 <!DOCTYPE html>
 <html lang="${pageLang}">
 <head>
     <meta charset="UTF-8">
-    <title><spring:message code="security.appeal.verify.pageTitle"/></title>
+    <title>${autoMsg_8bf17897c9}</title>
     <style>
         body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f8fafc; font-family:Arial,'Noto Sans KR',sans-serif; color:#0f172a; }
         .card { width:min(680px, calc(100vw - 32px)); background:#fff; border:1px solid #e2e8f0; border-radius:22px; padding:34px; box-shadow:0 24px 70px rgba(15,23,42,.12); }
@@ -27,8 +36,8 @@
 </head>
 <body>
 <main class="card">
-    <h1><spring:message code="security.appeal.verify.title"/></h1>
-    <p><spring:message code="security.appeal.verify.lead"/></p>
+    <h1>${autoMsg_5f7d04ad05}</h1>
+    <p>${autoMsg_ad5033e2fd}</p>
 
     <c:if test="${not empty form.errorMessage}">
         <div class="error"><c:out value="${form.errorMessage}"/></div>
@@ -36,20 +45,20 @@
 
     <c:if test="${form.valid}">
         <div class="info">
-            <div><strong><spring:message code="security.appeal.form.requestId"/></strong>: <c:out value="${form.requestId}" default="-"/></div>
-            <div><strong><spring:message code="security.appeal.form.blockType"/></strong>: <c:out value="${form.blockKind}" default="-"/> / <c:out value="${form.blockMatchType}" default="-"/></div>
+            <div><strong>${autoMsg_50ab15cb76}</strong>: <c:out value="${form.requestId}" default="-"/></div>
+            <div><strong>${autoMsg_6bc43f372a}</strong>: <c:out value="${form.blockKind}" default="-"/> / <c:out value="${form.blockMatchType}" default="-"/></div>
         </div>
         <form method="post" action="${pageContext.request.contextPath}/security/appeal/verify">
             <input type="hidden" name="requestId" value="${fn:escapeXml(requestId)}"/>
             <input type="hidden" name="lang" value="${fn:escapeXml(pageLang)}"/>
-            <label><spring:message code="security.appeal.form.email"/>
+            <label>${autoMsg_a5b4fae64e}
                 <input type="email" name="submitterEmail" required maxlength="320" placeholder="${emailPlaceholder}">
             </label>
-            <button type="submit"><spring:message code="security.appeal.verify.submit"/></button>
+            <button type="submit">${autoMsg_7ca32fcfbe}</button>
         </form>
-        <p class="note"><spring:message code="security.appeal.verify.notice"/></p>
+        <p class="note">${autoMsg_804c0a63bc}</p>
     </c:if>
-    <a class="btn" href="${pageContext.request.contextPath}/security/appeal/result?lang=${fn:escapeXml(pageLang)}"><spring:message code="security.appeal.result.lookupLink"/></a>
+    <a class="btn" href="${pageContext.request.contextPath}/security/appeal/result?lang=${fn:escapeXml(pageLang)}">${autoMsg_389b78a14c}</a>
 </main>
 </body>
 </html>

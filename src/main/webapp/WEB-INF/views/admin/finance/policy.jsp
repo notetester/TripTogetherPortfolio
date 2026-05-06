@@ -2,8 +2,41 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_baca51856f" code="admin.finance.policy.title"/>
+<spring:message var="autoMsg_b6ed905fae" code="admin.finance.policy.tab.limit"/>
+<spring:message var="autoMsg_0754281340" code="admin.finance.policy.tab.reward"/>
+<spring:message var="autoMsg_fd9a6d5198" code="admin.finance.policy.limit.col.grade"/>
+<spring:message var="autoMsg_224800c8bd" code="admin.finance.policy.limit.col.single"/>
+<spring:message var="autoMsg_ac1ff7cdf2" code="admin.finance.policy.limit.col.daily"/>
+<spring:message var="autoMsg_087030b060" code="admin.finance.policy.limit.col.monthly"/>
+<spring:message var="autoMsg_97f7a5ecc7" code="admin.finance.policy.limit.col.active"/>
+<spring:message var="autoMsg_be27555dc9" code="admin.finance.policy.limit.col.action"/>
+<spring:message var="autoMsg_5175cd04a8" code="admin.finance.grade.${g}"/>
+<spring:message var="autoMsg_fbfbe44323" code="admin.finance.policy.limit.placeholder.unlimited"/>
+<spring:message var="autoMsg_90b8e67db1" code="admin.finance.policy.limit.toggle.on"/>
+<spring:message var="autoMsg_d8f9021c0f" code="admin.finance.policy.limit.note.title"/>
+<spring:message var="autoMsg_52b280cae2" code="admin.finance.policy.limit.note.empty"/>
+<spring:message var="autoMsg_f2e68f0d11" code="admin.finance.policy.limit.note.failopen"/>
+<spring:message var="autoMsg_9a2e0a94e1" code="admin.finance.policy.limit.note.aop"/>
+<spring:message var="autoMsg_ec1a151900" code="admin.finance.policy.reward.col.event"/>
+<spring:message var="autoMsg_af2378fc95" code="admin.finance.policy.reward.col.grade"/>
+<spring:message var="autoMsg_5828d4a02a" code="admin.finance.policy.reward.col.rewardType"/>
+<spring:message var="autoMsg_17ec8c8c51" code="admin.finance.policy.reward.col.rate"/>
+<spring:message var="autoMsg_6084832356" code="admin.finance.policy.reward.col.fixed"/>
+<spring:message var="autoMsg_576700237b" code="admin.finance.policy.reward.col.description"/>
+<spring:message var="autoMsg_5621f4f628" code="admin.finance.policy.reward.col.active"/>
+<spring:message var="autoMsg_278b562f9c" code="admin.finance.grade.${r.memberGrade}"/>
+<spring:message var="autoMsg_9eed3c560a" code="admin.finance.rewardType.${r.rewardType}"/>
+<spring:message var="autoMsg_4cfeb7a5e0" code="admin.finance.policy.reward.active.on"/>
+<spring:message var="autoMsg_599d28a3d6" code="admin.finance.policy.reward.active.off"/>
+<spring:message var="autoMsg_fb5446158b" code="admin.finance.policy.reward.upsert.title"/>
+<spring:message var="autoMsg_5c449f46e5" code="admin.finance.rewardType.${t}"/>
+<spring:message var="autoMsg_3634030521" code="admin.finance.policy.reward.note.title"/>
+<spring:message var="autoMsg_10cb921296" code="admin.finance.policy.reward.note.either"/>
+<spring:message var="autoMsg_80e1e8953a" code="admin.finance.policy.reward.note.fallback"/>
+<spring:message var="autoMsg_5ce0c9695a" code="admin.finance.policy.reward.note.phased"/>
 <c:set var="activeMenu" value="finance"/>
-<c:set var="pageTitle"><spring:message code="admin.finance.policy.title"/></c:set>
+<c:set var="pageTitle">${autoMsg_baca51856f}</c:set>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
@@ -30,13 +63,13 @@
                     id="adm-fin-tab-limit"
                     style="border:0;border-radius:0;padding:12px 20px;border-bottom:2px solid transparent;"
                     onclick="admFinSwitchPolicyTab('limit')">
-                💰 <spring:message code="admin.finance.policy.tab.limit"/>
+                💰 ${autoMsg_b6ed905fae}
             </button>
             <button type="button" class="adm-btn adm-btn-ghost adm-fin-policy-tab"
                     id="adm-fin-tab-reward"
                     style="border:0;border-radius:0;padding:12px 20px;border-bottom:2px solid transparent;"
                     onclick="admFinSwitchPolicyTab('reward')">
-                ✨ <spring:message code="admin.finance.policy.tab.reward"/>
+                ✨ ${autoMsg_0754281340}
             </button>
         </div>
     </div>
@@ -52,12 +85,12 @@
             <table class="adm-table" style="width:100%;">
                 <thead>
                 <tr>
-                    <th style="width:120px;"><spring:message code="admin.finance.policy.limit.col.grade"/></th>
-                    <th style="width:160px;text-align:right;"><spring:message code="admin.finance.policy.limit.col.single"/></th>
-                    <th style="width:160px;text-align:right;"><spring:message code="admin.finance.policy.limit.col.daily"/></th>
-                    <th style="width:160px;text-align:right;"><spring:message code="admin.finance.policy.limit.col.monthly"/></th>
-                    <th style="width:90px;"><spring:message code="admin.finance.policy.limit.col.active"/></th>
-                    <th style="width:120px;"><spring:message code="admin.finance.policy.limit.col.action"/></th>
+                    <th style="width:120px;">${autoMsg_fd9a6d5198}</th>
+                    <th style="width:160px;text-align:right;">${autoMsg_224800c8bd}</th>
+                    <th style="width:160px;text-align:right;">${autoMsg_ac1ff7cdf2}</th>
+                    <th style="width:160px;text-align:right;">${autoMsg_087030b060}</th>
+                    <th style="width:90px;">${autoMsg_97f7a5ecc7}</th>
+                    <th style="width:120px;">${autoMsg_be27555dc9}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -70,31 +103,31 @@
                         <form method="post" action="${pageContext.request.contextPath}/admin/finance/policy/limit">
                             <td>
                                 <input type="hidden" name="memberGrade" value="${g}"/>
-                                <span class="adm-badge"><spring:message code="admin.finance.grade.${g}"/></span>
+                                <span class="adm-badge">${autoMsg_5175cd04a8}</span>
                             </td>
                             <td style="text-align:right;">
                                 <input type="number" name="singleLimit" min="0" step="1"
                                        value="${row != null ? row.singleLimit : ''}"
-                                       placeholder="<spring:message code='admin.finance.policy.limit.placeholder.unlimited'/>"
+                                       placeholder="${autoMsg_fbfbe44323}"
                                        class="adm-input" style="width:140px;text-align:right;padding:6px 8px;font-size:13px;"/>
                             </td>
                             <td style="text-align:right;">
                                 <input type="number" name="dailyLimit" min="0" step="1"
                                        value="${row != null ? row.dailyLimit : ''}"
-                                       placeholder="<spring:message code='admin.finance.policy.limit.placeholder.unlimited'/>"
+                                       placeholder="${autoMsg_fbfbe44323}"
                                        class="adm-input" style="width:140px;text-align:right;padding:6px 8px;font-size:13px;"/>
                             </td>
                             <td style="text-align:right;">
                                 <input type="number" name="monthlyLimit" min="0" step="1"
                                        value="${row != null ? row.monthlyLimit : ''}"
-                                       placeholder="<spring:message code='admin.finance.policy.limit.placeholder.unlimited'/>"
+                                       placeholder="${autoMsg_fbfbe44323}"
                                        class="adm-input" style="width:140px;text-align:right;padding:6px 8px;font-size:13px;"/>
                             </td>
                             <td>
                                 <label style="display:inline-flex;align-items:center;gap:6px;">
                                     <input type="checkbox" name="isActive" value="true"
                                            ${row == null or row.isActive ? 'checked' : ''}/>
-                                    <span style="font-size:12px;"><spring:message code="admin.finance.policy.limit.toggle.on"/></span>
+                                    <span style="font-size:12px;">${autoMsg_90b8e67db1}</span>
                                 </label>
                             </td>
                             <td>
@@ -110,10 +143,10 @@
         </div>
 
         <div style="font-size:12px;color:#94a3b8;padding:12px 4px;line-height:1.6;">
-            <strong>※ <spring:message code="admin.finance.policy.limit.note.title"/></strong><br/>
-            - <spring:message code="admin.finance.policy.limit.note.empty"/><br/>
-            - <spring:message code="admin.finance.policy.limit.note.failopen"/><br/>
-            - <spring:message code="admin.finance.policy.limit.note.aop"/>
+            <strong>※ ${autoMsg_d8f9021c0f}</strong><br/>
+            - ${autoMsg_52b280cae2}<br/>
+            - ${autoMsg_f2e68f0d11}<br/>
+            - ${autoMsg_9a2e0a94e1}
         </div>
     </section>
 
@@ -128,13 +161,13 @@
             <table class="adm-table" style="width:100%;">
                 <thead>
                 <tr>
-                    <th style="width:200px;white-space:nowrap;"><spring:message code="admin.finance.policy.reward.col.event"/></th>
-                    <th style="width:90px;"><spring:message code="admin.finance.policy.reward.col.grade"/></th>
-                    <th style="width:90px;"><spring:message code="admin.finance.policy.reward.col.rewardType"/></th>
-                    <th style="width:110px;text-align:right;"><spring:message code="admin.finance.policy.reward.col.rate"/></th>
-                    <th style="width:110px;text-align:right;"><spring:message code="admin.finance.policy.reward.col.fixed"/></th>
-                    <th><spring:message code="admin.finance.policy.reward.col.description"/></th>
-                    <th style="width:70px;"><spring:message code="admin.finance.policy.reward.col.active"/></th>
+                    <th style="width:200px;white-space:nowrap;">${autoMsg_ec1a151900}</th>
+                    <th style="width:90px;">${autoMsg_af2378fc95}</th>
+                    <th style="width:90px;">${autoMsg_5828d4a02a}</th>
+                    <th style="width:110px;text-align:right;">${autoMsg_17ec8c8c51}</th>
+                    <th style="width:110px;text-align:right;">${autoMsg_6084832356}</th>
+                    <th>${autoMsg_576700237b}</th>
+                    <th style="width:70px;">${autoMsg_5621f4f628}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -153,8 +186,8 @@
                                     </span>
                                     <div style="font-size:10px;color:#94a3b8;font-family:monospace;">${r.eventType}</div>
                                 </td>
-                                <td><span class="adm-badge"><spring:message code="admin.finance.grade.${r.memberGrade}" text="${r.memberGrade}"/></span></td>
-                                <td><spring:message code="admin.finance.rewardType.${r.rewardType}" text="${r.rewardType}"/></td>
+                                <td><span class="adm-badge">${autoMsg_278b562f9c}</span></td>
+                                <td>${autoMsg_9eed3c560a}</td>
                                 <td style="text-align:right;">
                                     <c:if test="${r.rewardRate != null}"><fmt:formatNumber value="${r.rewardRate}" pattern="#,##0.00"/>%</c:if>
                                 </td>
@@ -164,8 +197,8 @@
                                 <td style="font-size:12px;color:#94a3b8;"><c:out value="${r.description}"/></td>
                                 <td>
                                     <c:choose>
-                                        <c:when test="${r.isActive}"><span class="adm-badge adm-badge-green"><spring:message code="admin.finance.policy.reward.active.on"/></span></c:when>
-                                        <c:otherwise><span class="adm-badge"><spring:message code="admin.finance.policy.reward.active.off"/></span></c:otherwise>
+                                        <c:when test="${r.isActive}"><span class="adm-badge adm-badge-green">${autoMsg_4cfeb7a5e0}</span></c:when>
+                                        <c:otherwise><span class="adm-badge">${autoMsg_599d28a3d6}</span></c:otherwise>
                                     </c:choose>
                                 </td>
                             </tr>
@@ -178,38 +211,38 @@
 
         <%-- 신규 등록 / 갱신 폼 --%>
         <div class="adm-card" style="padding:16px 18px;">
-            <h4 style="margin:0 0 12px 0;font-size:14px;"><spring:message code="admin.finance.policy.reward.upsert.title"/></h4>
+            <h4 style="margin:0 0 12px 0;font-size:14px;">${autoMsg_fb5446158b}</h4>
             <form method="post" action="${pageContext.request.contextPath}/admin/finance/policy/reward"
                   style="display:grid;grid-template-columns:repeat(6, 1fr);gap:10px;align-items:end;">
                 <div>
-                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.event"/></label>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;">${autoMsg_ec1a151900}</label>
                     <input type="text" name="eventType" required maxlength="50"
                            class="adm-input" placeholder="CASH_CHARGE_BONUS"
                            style="width:100%;padding:6px 8px;font-size:12px;"/>
                 </div>
                 <div>
-                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.grade"/></label>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;">${autoMsg_af2378fc95}</label>
                     <select name="memberGrade" class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;">
                         <c:forEach var="g" items="${['ALL','BRONZE','SILVER','GOLD','DIAMOND','PLATINUM']}">
-                            <option value="${g}"><spring:message code="admin.finance.grade.${g}"/></option>
+                            <option value="${g}">${autoMsg_5175cd04a8}</option>
                         </c:forEach>
                     </select>
                 </div>
                 <div>
-                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.rewardType"/></label>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;">${autoMsg_5828d4a02a}</label>
                     <select name="rewardType" required class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;">
                         <c:forEach var="t" items="${['MILEAGE','POINT']}">
-                            <option value="${t}"><spring:message code="admin.finance.rewardType.${t}"/></option>
+                            <option value="${t}">${autoMsg_5c449f46e5}</option>
                         </c:forEach>
                     </select>
                 </div>
                 <div>
-                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.rate"/> (%)</label>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;">${autoMsg_17ec8c8c51} (%)</label>
                     <input type="number" name="rewardRate" step="0.01" min="0" max="100"
                            class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;text-align:right;"/>
                 </div>
                 <div>
-                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.fixed"/></label>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;">${autoMsg_6084832356}</label>
                     <input type="number" name="rewardFixed" step="1" min="0"
                            class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;text-align:right;"/>
                 </div>
@@ -223,7 +256,7 @@
                     </button>
                 </div>
                 <div style="grid-column:1/-1;">
-                    <label style="font-size:11px;display:block;margin-bottom:4px;"><spring:message code="admin.finance.policy.reward.col.description"/></label>
+                    <label style="font-size:11px;display:block;margin-bottom:4px;">${autoMsg_576700237b}</label>
                     <input type="text" name="description" maxlength="255"
                            class="adm-input" style="width:100%;padding:6px 8px;font-size:12px;"/>
                 </div>
@@ -231,10 +264,10 @@
         </div>
 
         <div style="font-size:12px;color:#94a3b8;padding:12px 4px;line-height:1.6;">
-            <strong>※ <spring:message code="admin.finance.policy.reward.note.title"/></strong><br/>
-            - <spring:message code="admin.finance.policy.reward.note.either"/><br/>
-            - <spring:message code="admin.finance.policy.reward.note.fallback"/><br/>
-            - <spring:message code="admin.finance.policy.reward.note.phased"/>
+            <strong>※ ${autoMsg_3634030521}</strong><br/>
+            - ${autoMsg_10cb921296}<br/>
+            - ${autoMsg_80e1e8953a}<br/>
+            - ${autoMsg_5ce0c9695a}
         </div>
     </section>
 

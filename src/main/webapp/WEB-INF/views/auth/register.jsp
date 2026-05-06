@@ -2,6 +2,36 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<spring:message var="autoMsg_55c1122309" code="auth.register.title1"/>
+<spring:message var="autoMsg_08a6d39547" code="auth.register.subtitle1"/>
+<spring:message var="autoMsg_9c7461bce3" code="auth.register.or"/>
+<spring:message var="autoMsg_9ca15c133a" code="auth.register.userId"/>
+<spring:message var="autoMsg_22e6a3af39" code="auth.register.email"/>
+<spring:message var="autoMsg_55a0f3c52f" code="auth.register.optional"/>
+<spring:message var="autoMsg_4c5bf1ffa7" code="auth.register.password"/>
+<spring:message var="autoMsg_b475f24734" code="auth.register.passwordConfirm"/>
+<spring:message var="autoMsg_7c6301e3ca" code="auth.register.title2"/>
+<spring:message var="autoMsg_109a0053f3" code="auth.register.subtitle2"/>
+<spring:message var="autoMsg_6f503761d8" code="auth.register.nickname"/>
+<spring:message var="autoMsg_7bcc4d7f27" code="auth.register.nationality"/>
+<spring:message var="autoMsg_5d0be3367b" code="auth.register.nationality.placeholder"/>
+<spring:message var="autoMsg_ecf653ffd0" code="auth.register.nationality.option.kr"/>
+<spring:message var="autoMsg_840a6795d0" code="auth.register.nationality.option.us"/>
+<spring:message var="autoMsg_6d6319e7eb" code="auth.register.nationality.option.jp"/>
+<spring:message var="autoMsg_30ee0fc97b" code="auth.register.nationality.option.cn"/>
+<spring:message var="autoMsg_8359c8ea97" code="auth.register.nationality.option.gb"/>
+<spring:message var="autoMsg_d6c3cec2b8" code="auth.register.nationality.option.fr"/>
+<spring:message var="autoMsg_d540dc5504" code="auth.register.nationality.option.de"/>
+<spring:message var="autoMsg_f2373f90a5" code="auth.register.nationality.option.au"/>
+<spring:message var="autoMsg_2daa7fb621" code="auth.register.nationality.option.ca"/>
+<spring:message var="autoMsg_127b2d0d30" code="auth.register.nationality.option.other"/>
+<spring:message var="autoMsg_e384f49f02" code="auth.register.language"/>
+<spring:message var="autoMsg_648e068248" code="auth.register.language.placeholder"/>
+<spring:message var="autoMsg_9fe54ae3e9" code="auth.register.language.option.ko"/>
+<spring:message var="autoMsg_3a25dcd3de" code="auth.register.language.option.en"/>
+<spring:message var="autoMsg_f5074acbc7" code="auth.register.language.option.ja"/>
+<spring:message var="autoMsg_c02e48323d" code="auth.register.language.option.zh"/>
+<spring:message var="autoMsg_53b348dcf5" code="header.auth.login"/>
 <c:set var="pageCSS" value="auth/auth.css"/>
 <%@ include file="../common/header.jsp" %>
 <spring:message code="auth.register.email.placeholder" var="authRegisterEmailPlaceholder"/>
@@ -28,8 +58,8 @@
 
     <!-- ═══ STEP 1 ═══ -->
     <div id="step1">
-      <h1 class="auth-title"><spring:message code="auth.register.title1"/></h1>
-      <p class="auth-sub"><spring:message code="auth.register.subtitle1"/></p>
+      <h1 class="auth-title">${autoMsg_55c1122309}</h1>
+      <p class="auth-sub">${autoMsg_08a6d39547}</p>
 
       <!-- 소셜 가입 -->
       <div class="social-btns">
@@ -54,24 +84,24 @@
         </a>
       </div>
 
-      <div class="auth-divider"><spring:message code="auth.register.or"/></div>
+      <div class="auth-divider">${autoMsg_9c7461bce3}</div>
 
       <div class="form-group">
-        <label class="form-label" for="userId"><spring:message code="auth.register.userId"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="userId">${autoMsg_9ca15c133a} <span style="color:#ef4444">*</span></label>
         <input class="form-input" type="text" id="userId" name="userId"
                placeholder="${authRegisterUserIdPlaceholder}" maxlength="20" autocomplete="username">
         <div class="field-msg" id="userIdMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="userEmail"><spring:message code="auth.register.email"/> <span style="color:var(--gray-400);font-weight:400"><spring:message code="auth.register.optional"/></span></label>
+        <label class="form-label" for="userEmail">${autoMsg_22e6a3af39} <span style="color:var(--gray-400);font-weight:400">${autoMsg_55a0f3c52f}</span></label>
         <input class="form-input" type="email" id="userEmail" name="userEmail"
                placeholder="${authRegisterEmailPlaceholder}" autocomplete="email">
         <div class="field-msg" id="emailMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password"><spring:message code="auth.register.password"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="password">${autoMsg_4c5bf1ffa7} <span style="color:#ef4444">*</span></label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="password" name="password"
                  placeholder="${authRegisterPasswordPlaceholder}" maxlength="64" autocomplete="new-password">
@@ -86,7 +116,7 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="passwordConfirm"><spring:message code="auth.register.passwordConfirm"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="passwordConfirm">${autoMsg_b475f24734} <span style="color:#ef4444">*</span></label>
         <div class="pw-wrap">
           <input class="form-input" type="password" id="passwordConfirm"
                  placeholder="${authRegisterPasswordConfirmPlaceholder}" maxlength="64" autocomplete="new-password">
@@ -102,42 +132,42 @@
 
     <!-- ═══ STEP 2 ═══ -->
     <div id="step2" style="display:none">
-      <h1 class="auth-title"><spring:message code="auth.register.title2"/></h1>
-      <p class="auth-sub"><spring:message code="auth.register.subtitle2"/></p>
+      <h1 class="auth-title">${autoMsg_7c6301e3ca}</h1>
+      <p class="auth-sub">${autoMsg_109a0053f3}</p>
 
       <div class="form-group">
-        <label class="form-label" for="nickname"><spring:message code="auth.register.nickname"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="nickname">${autoMsg_6f503761d8} <span style="color:#ef4444">*</span></label>
         <input class="form-input" type="text" id="nickname" name="nickname"
                placeholder="${authRegisterNicknamePlaceholder}" maxlength="20">
         <div class="field-msg" id="nicknameMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="nationality"><spring:message code="auth.register.nationality"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="nationality">${autoMsg_7bcc4d7f27} <span style="color:#ef4444">*</span></label>
         <select class="form-select" id="nationality" name="nationality">
-          <option value=""><spring:message code="auth.register.nationality.placeholder"/></option>
-          <option value="KR">🇰🇷 <spring:message code="auth.register.nationality.option.kr"/></option>
-          <option value="US">🇺🇸 <spring:message code="auth.register.nationality.option.us"/></option>
-          <option value="JP">🇯🇵 <spring:message code="auth.register.nationality.option.jp"/></option>
-          <option value="CN">🇨🇳 <spring:message code="auth.register.nationality.option.cn"/></option>
-          <option value="GB">🇬🇧 <spring:message code="auth.register.nationality.option.gb"/></option>
-          <option value="FR">🇫🇷 <spring:message code="auth.register.nationality.option.fr"/></option>
-          <option value="DE">🇩🇪 <spring:message code="auth.register.nationality.option.de"/></option>
-          <option value="AU">🇦🇺 <spring:message code="auth.register.nationality.option.au"/></option>
-          <option value="CA">🇨🇦 <spring:message code="auth.register.nationality.option.ca"/></option>
-          <option value="OTHER">🌍 <spring:message code="auth.register.nationality.option.other"/></option>
+          <option value="">${autoMsg_5d0be3367b}</option>
+          <option value="KR">🇰🇷 ${autoMsg_ecf653ffd0}</option>
+          <option value="US">🇺🇸 ${autoMsg_840a6795d0}</option>
+          <option value="JP">🇯🇵 ${autoMsg_6d6319e7eb}</option>
+          <option value="CN">🇨🇳 ${autoMsg_30ee0fc97b}</option>
+          <option value="GB">🇬🇧 ${autoMsg_8359c8ea97}</option>
+          <option value="FR">🇫🇷 ${autoMsg_d6c3cec2b8}</option>
+          <option value="DE">🇩🇪 ${autoMsg_d540dc5504}</option>
+          <option value="AU">🇦🇺 ${autoMsg_f2373f90a5}</option>
+          <option value="CA">🇨🇦 ${autoMsg_2daa7fb621}</option>
+          <option value="OTHER">🌍 ${autoMsg_127b2d0d30}</option>
         </select>
         <div class="field-msg" id="nationalityMsg"></div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="preferredLang"><spring:message code="auth.register.language"/> <span style="color:#ef4444">*</span></label>
+        <label class="form-label" for="preferredLang">${autoMsg_e384f49f02} <span style="color:#ef4444">*</span></label>
         <select class="form-select" id="preferredLang" name="preferredLang">
-          <option value=""><spring:message code="auth.register.language.placeholder"/></option>
-          <option value="ko">🇰🇷 <spring:message code="auth.register.language.option.ko"/></option>
-          <option value="en">🇺🇸 <spring:message code="auth.register.language.option.en"/></option>
-          <option value="ja">🇯🇵 <spring:message code="auth.register.language.option.ja"/></option>
-          <option value="zh">🇨🇳 <spring:message code="auth.register.language.option.zh"/></option>
+          <option value="">${autoMsg_648e068248}</option>
+          <option value="ko">🇰🇷 ${autoMsg_9fe54ae3e9}</option>
+          <option value="en">🇺🇸 ${autoMsg_3a25dcd3de}</option>
+          <option value="ja">🇯🇵 ${autoMsg_f5074acbc7}</option>
+          <option value="zh">🇨🇳 ${autoMsg_c02e48323d}</option>
         </select>
         <div class="field-msg" id="langMsg"></div>
       </div>
@@ -158,7 +188,7 @@
 
     <div class="auth-footer">
       <spring:message code="auth.register.hasAccount"/>
-      <a href="${pageContext.request.contextPath}/auth/login"><spring:message code="header.auth.login"/></a>
+      <a href="${pageContext.request.contextPath}/auth/login">${autoMsg_53b348dcf5}</a>
     </div>
 
   </div>

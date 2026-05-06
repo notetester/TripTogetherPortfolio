@@ -2,6 +2,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_a1b9f87efb" code="course.public.title"/>
+<spring:message var="autoMsg_03946a99c2" code="course.public.desc"/>
+<spring:message var="autoMsg_4cc09bdb60" code="course.action.myPlans"/>
+<spring:message var="autoMsg_9a7644920e" code="course.action.manualCreate"/>
+<spring:message var="autoMsg_b834ffded8" code="course.common.destinationEmpty"/>
+<spring:message var="autoMsg_95b8d38e4d" code="course.badge.public"/>
+<spring:message var="autoMsg_1b8d5c067a" code="course.badge.ai"/>
+<spring:message var="autoMsg_da5d6db3af" code="course.badge.manual"/>
+<spring:message var="autoMsg_69035d97bb" code="course.badge.mine"/>
+<spring:message var="autoMsg_c712d6a6a6" code="course.common.travelPeriod"/>
+<spring:message var="autoMsg_801c6695ad" code="course.public.empty.title"/>
+<spring:message var="autoMsg_d0932885c3" code="course.public.empty.desc"/>
+<spring:message var="autoMsg_ecba125743" code="course.public.home"/>
 <fmt:setLocale value="${pageContext.response.locale}"/>
 
 <%@ include file="../common/header.jsp" %>
@@ -442,13 +455,13 @@
 <div class="page-wrap">
     <div class="page-header">
         <div>
-            <h1 class="page-title"><spring:message code="course.public.title"/></h1>
-            <p class="page-desc"><spring:message code="course.public.desc"/></p>
+            <h1 class="page-title">${autoMsg_a1b9f87efb}</h1>
+            <p class="page-desc">${autoMsg_03946a99c2}</p>
         </div>
 
         <div class="top-btn-group">
-            <a href="${pageContext.request.contextPath}/courses/my" class="top-btn secondary"><spring:message code="course.action.myPlans"/></a>
-            <a href="${pageContext.request.contextPath}/courses/write" class="top-btn primary"><spring:message code="course.action.manualCreate"/></a>
+            <a href="${pageContext.request.contextPath}/courses/my" class="top-btn secondary">${autoMsg_4cc09bdb60}</a>
+            <a href="${pageContext.request.contextPath}/courses/write" class="top-btn primary">${autoMsg_9a7644920e}</a>
         </div>
     </div>
 
@@ -500,7 +513,7 @@
                                 <h2 class="plan-name">${plan.title}</h2>
                                 <c:choose>
                                     <c:when test="${empty plan.destination}">
-                                        <p class="plan-destination"><spring:message code="course.common.destinationEmpty"/></p>
+                                        <p class="plan-destination">${autoMsg_b834ffded8}</p>
                                     </c:when>
                                     <c:otherwise>
                                         <p class="plan-destination">${plan.destination}</p>
@@ -519,26 +532,26 @@
                             </div>
 
                             <div class="badge-group">
-                                <span class="badge public"><spring:message code="course.badge.public"/></span>
+                                <span class="badge public">${autoMsg_95b8d38e4d}</span>
 
                                 <c:choose>
                                     <c:when test="${plan.plan_source eq 'AI'}">
-                                        <span class="badge ai"><spring:message code="course.badge.ai"/></span>
+                                        <span class="badge ai">${autoMsg_1b8d5c067a}</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge manual"><spring:message code="course.badge.manual"/></span>
+                                        <span class="badge manual">${autoMsg_da5d6db3af}</span>
                                     </c:otherwise>
                                 </c:choose>
 
                                 <c:if test="${loginUserIdx eq plan.user_idx}">
-                                    <span class="badge mine"><spring:message code="course.badge.mine"/></span>
+                                    <span class="badge mine">${autoMsg_69035d97bb}</span>
                                 </c:if>
                             </div>
                         </div>
 
                         <div class="plan-info">
                             <div class="info-row">
-                                <span class="info-label"><spring:message code="course.common.travelPeriod"/></span>
+                                <span class="info-label">${autoMsg_c712d6a6a6}</span>
                                 <span class="info-value">
                                     <fmt:formatDate value="${plan.start_date}" pattern="yyyy-MM-dd"/>
                                     ~
@@ -568,9 +581,9 @@
 
         <c:otherwise>
             <div class="empty-box">
-                <h2 class="empty-title"><spring:message code="course.public.empty.title"/></h2>
-                <p class="empty-desc"><spring:message code="course.public.empty.desc"/></p>
-                <a href="${pageContext.request.contextPath}/courses" class="empty-btn"><spring:message code="course.public.home"/></a>
+                <h2 class="empty-title">${autoMsg_801c6695ad}</h2>
+                <p class="empty-desc">${autoMsg_d0932885c3}</p>
+                <a href="${pageContext.request.contextPath}/courses" class="empty-btn">${autoMsg_ecba125743}</a>
             </div>
         </c:otherwise>
     </c:choose>

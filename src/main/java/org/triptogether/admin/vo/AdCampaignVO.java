@@ -41,4 +41,12 @@ public class AdCampaignVO {
         return updatedAt;
     }
 
+    public java.util.Date getStartAtDate() {
+        return startAt;
+    }
+
+    public java.util.Date getEndAtDate() {
+        return endAt;
+    }
+
 }

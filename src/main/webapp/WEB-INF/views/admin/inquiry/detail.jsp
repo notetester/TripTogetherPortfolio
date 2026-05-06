@@ -3,6 +3,28 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_be85c35d67" code="admin.inquiry.detail.title"/>
+<spring:message var="autoMsg_758e7ff4ac" code="admin.inquiry.status.pending"/>
+<spring:message var="autoMsg_bf75ee1a3d" code="admin.inquiry.status.inProgress"/>
+<spring:message var="autoMsg_dae12236cd" code="admin.inquiry.status.completed"/>
+<spring:message var="autoMsg_4322c34604" code="admin.inquiry.status.userCompleted"/>
+<spring:message var="autoMsg_3e30ff2017" code="admin.inquiry.status.cancelled"/>
+<spring:message var="autoMsg_19ec19336e" code="admin.inquiry.status.deleteRequested"/>
+<spring:message var="autoMsg_d3b6f673e1" code="admin.inquiry.category.service"/>
+<spring:message var="autoMsg_27c681f5b0" code="admin.inquiry.category.payment"/>
+<spring:message var="autoMsg_9a6aed0964" code="admin.inquiry.category.account"/>
+<spring:message var="autoMsg_fb3b4ccd83" code="admin.inquiry.category.bug"/>
+<spring:message var="autoMsg_975e93b422" code="admin.inquiry.category.etc"/>
+<spring:message var="autoMsg_cc61021232" code="admin.inquiry.privateFlag"/>
+<spring:message var="autoMsg_91f14f3495" code="admin.translation.label.inquiryTitle"/>
+<spring:message var="autoMsg_bd3f49875a" code="admin.translation.label.inquiryContent"/>
+<spring:message var="autoMsg_47b75128e5" code="admin.inquiry.viewCount"/>
+<spring:message var="autoMsg_1fe05b3983" code="admin.translation.label.inquiryAnswer"/>
+<spring:message var="autoMsg_6cac9d0ac0" code="admin.common.nickname"/>
+<spring:message var="autoMsg_280bcc700d" code="admin.inquiry.detail.confirmChangeStatus" javaScriptEscape="true"/>
+<spring:message var="autoMsg_92acdd1b19" code="admin.inquiry.status.pending" javaScriptEscape="true"/>
+<spring:message var="autoMsg_6dd6a5b369" code="admin.inquiry.status.inProgress" javaScriptEscape="true"/>
+<spring:message var="autoMsg_f4ed6656d7" code="admin.inquiry.status.completed" javaScriptEscape="true"/>
 <c:set var="activeMenu" value="inquiries"/>
 <spring:message code="admin.inquiry.detail.pageTitle" var="adminInquiryDetailPageTitle"/>
 <spring:message code="admin.inquiry.detail.backToList" var="adminInquiryDetailBackToList"/>
@@ -44,16 +66,16 @@
             <%-- 문의 내용 카드 --%>
             <div class="adm-card" style="margin-bottom:20px;">
                 <div class="adm-card-head">
-                    <div class="adm-card-title"><spring:message code="admin.inquiry.detail.title" arguments="${inquiry.inquiryId}"/></div>
+                    <div class="adm-card-title">${autoMsg_be85c35d67}</div>
                     <div style="display:flex;gap:8px;align-items:center;">
                         <span class="status-badge ${inquiry.status}">
                             <c:choose>
-                                <c:when test="${inquiry.status eq 'PENDING'}"><spring:message code="admin.inquiry.status.pending"/></c:when>
-                                <c:when test="${inquiry.status eq 'IN_PROGRESS'}"><spring:message code="admin.inquiry.status.inProgress"/></c:when>
-                                <c:when test="${inquiry.status eq 'COMPLETED'}"><spring:message code="admin.inquiry.status.completed"/></c:when>
-                                <c:when test="${inquiry.status eq 'USER_COMPLETED'}"><spring:message code="admin.inquiry.status.userCompleted"/></c:when>
-                                <c:when test="${inquiry.status eq 'CANCELLED'}"><spring:message code="admin.inquiry.status.cancelled"/></c:when>
-                                <c:when test="${inquiry.status eq 'DELETE_REQUESTED'}"><spring:message code="admin.inquiry.status.deleteRequested"/></c:when>
+                                <c:when test="${inquiry.status eq 'PENDING'}">${autoMsg_758e7ff4ac}</c:when>
+                                <c:when test="${inquiry.status eq 'IN_PROGRESS'}">${autoMsg_bf75ee1a3d}</c:when>
+                                <c:when test="${inquiry.status eq 'COMPLETED'}">${autoMsg_dae12236cd}</c:when>
+                                <c:when test="${inquiry.status eq 'USER_COMPLETED'}">${autoMsg_4322c34604}</c:when>
+                                <c:when test="${inquiry.status eq 'CANCELLED'}">${autoMsg_3e30ff2017}</c:when>
+                                <c:when test="${inquiry.status eq 'DELETE_REQUESTED'}">${autoMsg_19ec19336e}</c:when>
                                 <c:otherwise>${inquiry.status}</c:otherwise>
                             </c:choose>
                         </span>
@@ -67,11 +89,11 @@
                     <div style="margin-bottom:10px;">
                         <span class="adm-post-type-badge">
                             <c:choose>
-                                <c:when test="${inquiry.category eq 'service'}"><spring:message code="admin.inquiry.category.service"/></c:when>
-                                <c:when test="${inquiry.category eq 'payment'}"><spring:message code="admin.inquiry.category.payment"/></c:when>
-                                <c:when test="${inquiry.category eq 'account'}"><spring:message code="admin.inquiry.category.account"/></c:when>
-                                <c:when test="${inquiry.category eq 'bug'}"><spring:message code="admin.inquiry.category.bug"/></c:when>
-                                <c:otherwise><spring:message code="admin.inquiry.category.etc"/></c:otherwise>
+                                <c:when test="${inquiry.category eq 'service'}">${autoMsg_d3b6f673e1}</c:when>
+                                <c:when test="${inquiry.category eq 'payment'}">${autoMsg_27c681f5b0}</c:when>
+                                <c:when test="${inquiry.category eq 'account'}">${autoMsg_9a6aed0964}</c:when>
+                                <c:when test="${inquiry.category eq 'bug'}">${autoMsg_fb3b4ccd83}</c:when>
+                                <c:otherwise>${autoMsg_975e93b422}</c:otherwise>
                             </c:choose>
                         </span>
                         <button type="button"
@@ -81,12 +103,12 @@
                             <spring:message code="admin.common.sameCategory"/>
                         </button>
                         <c:if test="${inquiry.privateFlag}">
-                            <span style="font-size:11px;color:#94a3b8;">🔒 <spring:message code="admin.inquiry.privateFlag"/></span>
+                            <span style="font-size:11px;color:#94a3b8;">🔒 ${autoMsg_cc61021232}</span>
                         </c:if>
                     </div>
                     <h3 class="adm-detail-title">${inquiry.title}</h3>
                     <div class="adm-tr-inline js-admin-translation-widget"
-                         data-label="<spring:message code='admin.translation.label.inquiryTitle'/>"
+                         data-label="${autoMsg_91f14f3495}"
                          data-source-type="INQUIRY_POST"
                          data-source-idx="${inquiry.inquiryId}"
                          data-field-name="title"
@@ -94,7 +116,7 @@
                          data-source-text="${fn:escapeXml(inquiry.title)}"></div>
                     <div class="adm-detail-body">${inquiry.content}</div>
                     <div class="adm-tr-inline js-admin-translation-widget"
-                         data-label="<spring:message code='admin.translation.label.inquiryContent'/>"
+                         data-label="${autoMsg_bd3f49875a}"
                          data-source-type="INQUIRY_POST"
                          data-source-idx="${inquiry.inquiryId}"
                          data-field-name="content"
@@ -102,7 +124,7 @@
                          data-source-text="${fn:escapeXml(inquiry.content)}"></div>
                     <div style="margin-top:16px;padding-top:12px;border-top:1px solid #1e2736;
                                 display:flex;gap:20px;font-size:12px;color:#64748b;">
-                        <span><spring:message code="admin.inquiry.viewCount" arguments="${inquiry.viewCount}"/></span>
+                        <span>${autoMsg_47b75128e5}</span>
                         <span><fmt:formatDate value="${inquiry.createdAtDate}" type="both" dateStyle="short" timeStyle="short"/></span>
                     </div>
                 </div>
@@ -126,7 +148,7 @@
                         <div id="answerView">
                             <div class="adm-inquiry-answer" id="answerText">${inquiry.answerContent}</div>
                             <div class="adm-tr-inline js-admin-translation-widget"
-                                 data-label="<spring:message code='admin.translation.label.inquiryAnswer'/>"
+                                 data-label="${autoMsg_1fe05b3983}"
                                  data-source-type="INQUIRY_ANSWER"
                                  data-source-idx="${inquiry.answerId}"
                                  data-field-name="content"
@@ -185,7 +207,7 @@
                             <div style="font-size:14px;font-weight:600;">${inquiry.userId}</div>
                         </div>
                         <div>
-                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;"><spring:message code="admin.common.nickname"/></div>
+                            <div style="font-size:11px;color:#64748b;margin-bottom:2px;">${autoMsg_6cac9d0ac0}</div>
                             <div style="font-size:14px;font-weight:600;">${inquiry.nickname}</div>
                         </div>
 
@@ -232,15 +254,15 @@
                                 <button class="adm-btn adm-btn-ghost"
                                         style="font-size:11px;padding:4px 10px;color:#fbbf24;border-color:#fbbf24;"
                                         data-status="PENDING"
-                                        onclick="changeStatus(this.getAttribute('data-status'))"><spring:message code="admin.inquiry.status.pending"/></button>
+                                        onclick="changeStatus(this.getAttribute('data-status'))">${autoMsg_758e7ff4ac}</button>
                                 <button class="adm-btn adm-btn-ghost"
                                         style="font-size:11px;padding:4px 10px;color:#fb923c;border-color:#fb923c;"
                                         data-status="IN_PROGRESS"
-                                        onclick="changeStatus(this.getAttribute('data-status'))"><spring:message code="admin.inquiry.status.inProgress"/></button>
+                                        onclick="changeStatus(this.getAttribute('data-status'))">${autoMsg_bf75ee1a3d}</button>
                                 <button class="adm-btn adm-btn-ghost"
                                         style="font-size:11px;padding:4px 10px;color:#34d399;border-color:#34d399;"
                                         data-status="COMPLETED"
-                                        onclick="changeStatus(this.getAttribute('data-status'))"><spring:message code="admin.inquiry.status.completed"/></button>
+                                        onclick="changeStatus(this.getAttribute('data-status'))">${autoMsg_dae12236cd}</button>
                             </div>
                         </div>
 
@@ -286,10 +308,10 @@ var INQUIRY_DETAIL_MSG = {
     confirmDeleteInquiry: '${fn:escapeXml(adminInquiryDetailConfirmDeleteInquiry)}',
     confirmApproveDeleteRequest: '${fn:escapeXml(adminInquiryDetailConfirmApproveDeleteRequest)}',
     confirmRejectDeleteRequest: '${fn:escapeXml(adminInquiryDetailConfirmRejectDeleteRequest)}',
-    confirmChangeStatus: '<spring:message code="admin.inquiry.detail.confirmChangeStatus" arguments="__status__" javaScriptEscape="true"/>',
-    statusPending: '<spring:message code="admin.inquiry.status.pending" javaScriptEscape="true"/>',
-    statusInProgress: '<spring:message code="admin.inquiry.status.inProgress" javaScriptEscape="true"/>',
-    statusCompleted: '<spring:message code="admin.inquiry.status.completed" javaScriptEscape="true"/>'
+    confirmChangeStatus: '${autoMsg_280bcc700d}',
+    statusPending: '${autoMsg_92acdd1b19}',
+    statusInProgress: '${autoMsg_6dd6a5b369}',
+    statusCompleted: '${autoMsg_f4ed6656d7}'
 };
 
 

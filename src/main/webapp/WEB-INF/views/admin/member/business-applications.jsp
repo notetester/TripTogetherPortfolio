@@ -3,6 +3,46 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_16af579649" code="admin.business.pageTitle"/>
+<spring:message var="autoMsg_2eb70374a7" code="admin.business.pageSubtitle"/>
+<spring:message var="autoMsg_70104e0814" code="admin.common.search"/>
+<spring:message var="autoMsg_8f3c8aa535" code="admin.common.all"/>
+<spring:message var="autoMsg_70aa03bd7f" code="admin.business.column.applicant"/>
+<spring:message var="autoMsg_71a3285057" code="admin.business.column.companyInfo"/>
+<spring:message var="autoMsg_73a5bc5b24" code="admin.business.managerSearch"/>
+<spring:message var="autoMsg_4e2610b507" code="admin.business.businessNumberSearch"/>
+<spring:message var="autoMsg_baf8a9caf8" code="admin.business.filter.status"/>
+<spring:message var="autoMsg_cab2d9fe33" code="admin.business.status.pending"/>
+<spring:message var="autoMsg_185bd76167" code="admin.business.status.approved"/>
+<spring:message var="autoMsg_ce9bcdb179" code="admin.business.status.rejected"/>
+<spring:message var="autoMsg_724e783009" code="admin.business.column.requestedRole"/>
+<spring:message var="autoMsg_40237d6631" code="admin.business.role.business"/>
+<spring:message var="autoMsg_f0e6fc650e" code="admin.business.role.partner"/>
+<spring:message var="autoMsg_7b44677f84" code="admin.business.column.appliedAt"/>
+<spring:message var="autoMsg_ab90a6e07c" code="admin.common.searchButton"/>
+<spring:message var="autoMsg_871a5d2852" code="admin.common.reset"/>
+<spring:message var="autoMsg_e35f294052" code="admin.common.export"/>
+<spring:message var="autoMsg_8b2a9e9a9f" code="admin.common.exportAll"/>
+<spring:message var="autoMsg_f75de738d9" code="admin.common.exportFiltered"/>
+<spring:message var="autoMsg_efe2dcc95c" code="admin.common.exportSelected"/>
+<spring:message var="autoMsg_e48adf43d8" code="admin.blocks.mode.label"/>
+<spring:message var="autoMsg_afe095e6ce" code="admin.blocks.mode.tipClient"/>
+<spring:message var="autoMsg_f935be5eea" code="admin.blocks.mode.client"/>
+<spring:message var="autoMsg_0d5b6d1d55" code="admin.blocks.mode.tipServer"/>
+<spring:message var="autoMsg_c4faf36202" code="admin.blocks.mode.server"/>
+<spring:message var="autoMsg_c77a4d64e5" code="admin.common.pageSize"/>
+<spring:message var="autoMsg_d62fefdd10" code="admin.common.selectedCount"/>
+<spring:message var="autoMsg_ccde0de3bf" code="admin.business.rejectReasonPlaceholder"/>
+<spring:message var="autoMsg_e9b1a92c17" code="admin.common.clearSelection"/>
+<spring:message var="autoMsg_f7ed844e00" code="admin.common.status"/>
+<spring:message var="autoMsg_19a797248a" code="admin.business.column.review"/>
+<spring:message var="autoMsg_005f1c3518" code="admin.common.prev"/>
+<spring:message var="autoMsg_3bd4078056" code="admin.common.next"/>
+<spring:message var="autoMsg_c5b5e0fdf8" code="admin.common.close"/>
+<spring:message var="autoMsg_a3756e975b" code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>
+<spring:message var="autoMsg_a968042925" code="admin.common.exportSelected" javaScriptEscape="true"/>
+<spring:message var="autoMsg_a778883f6f" code="admin.business.rejectReasonPlaceholder" javaScriptEscape="true"/>
+<spring:message var="autoMsg_2c274d3fb4" code="admin.business.noResults" javaScriptEscape="true"/>
 <c:set var="activeMenu" value="businessApplications"/>
 <spring:message code="admin.business.pageTitle" var="adminBusinessPageTitle"/>
 <c:set var="pageTitle"  value="${adminBusinessPageTitle}"/>
@@ -11,8 +51,8 @@
 <div class="adm-content">
     <div class="adm-page-head">
         <div>
-            <h1><spring:message code="admin.business.pageTitle"/></h1>
-            <p><spring:message code="admin.business.pageSubtitle"/></p>
+            <h1>${autoMsg_16af579649}</h1>
+            <p>${autoMsg_2eb70374a7}</p>
         </div>
     </div>
 
@@ -28,43 +68,43 @@
             <form id="businessSearchForm" method="get" action="${pageContext.request.contextPath}/admin/business-applications">
                 <div class="adm-filter-bar">
                     <div style="flex:1;min-width:240px;">
-                        <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
+                        <div class="adm-filter-label">${autoMsg_70104e0814}</div>
                         <div style="display:flex;gap:6px;">
                             <select class="adm-select" name="searchType" style="width:132px;">
-                                <option value="all" ${search.searchType eq 'all' ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
-                                <option value="applicant" ${search.searchType eq 'applicant' ? 'selected' : ''}><spring:message code="admin.business.column.applicant"/></option>
-                                <option value="company" ${search.searchType eq 'company' ? 'selected' : ''}><spring:message code="admin.business.column.companyInfo"/></option>
-                                <option value="manager" ${search.searchType eq 'manager' ? 'selected' : ''}><spring:message code="admin.business.managerSearch" text="담당자"/></option>
-                                <option value="businessNumber" ${search.searchType eq 'businessNumber' ? 'selected' : ''}><spring:message code="admin.business.businessNumberSearch" text="사업자번호"/></option>
+                                <option value="all" ${search.searchType eq 'all' ? 'selected' : ''}>${autoMsg_8f3c8aa535}</option>
+                                <option value="applicant" ${search.searchType eq 'applicant' ? 'selected' : ''}>${autoMsg_70aa03bd7f}</option>
+                                <option value="company" ${search.searchType eq 'company' ? 'selected' : ''}>${autoMsg_71a3285057}</option>
+                                <option value="manager" ${search.searchType eq 'manager' ? 'selected' : ''}>${autoMsg_73a5bc5b24}</option>
+                                <option value="businessNumber" ${search.searchType eq 'businessNumber' ? 'selected' : ''}>${autoMsg_4e2610b507}</option>
                             </select>
                             <div class="adm-search-box" style="flex:1;">
                                 <span class="adm-search-ico">🔍</span>
-                                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="<spring:message code='admin.common.search'/>">
+                                <input class="adm-input" type="text" name="keyword" value="${fn:escapeXml(search.keyword)}" placeholder="${autoMsg_70104e0814}">
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.business.filter.status"/></div>
+                        <div class="adm-filter-label">${autoMsg_baf8a9caf8}</div>
                         <select class="adm-select" name="status">
-                            <option value="ALL" ${search.status eq 'ALL' ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
-                            <option value="PENDING" ${search.status eq 'PENDING' ? 'selected' : ''}><spring:message code="admin.business.status.pending"/></option>
-                            <option value="APPROVED" ${search.status eq 'APPROVED' ? 'selected' : ''}><spring:message code="admin.business.status.approved"/></option>
-                            <option value="REJECTED" ${search.status eq 'REJECTED' ? 'selected' : ''}><spring:message code="admin.business.status.rejected"/></option>
+                            <option value="ALL" ${search.status eq 'ALL' ? 'selected' : ''}>${autoMsg_8f3c8aa535}</option>
+                            <option value="PENDING" ${search.status eq 'PENDING' ? 'selected' : ''}>${autoMsg_cab2d9fe33}</option>
+                            <option value="APPROVED" ${search.status eq 'APPROVED' ? 'selected' : ''}>${autoMsg_185bd76167}</option>
+                            <option value="REJECTED" ${search.status eq 'REJECTED' ? 'selected' : ''}>${autoMsg_ce9bcdb179}</option>
                         </select>
                     </div>
 
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.business.column.requestedRole"/></div>
+                        <div class="adm-filter-label">${autoMsg_724e783009}</div>
                         <select class="adm-select" name="requestedRole">
-                            <option value="ALL" ${search.requestedRole eq 'ALL' ? 'selected' : ''}><spring:message code="admin.common.all"/></option>
-                            <option value="BUSINESS" ${search.requestedRole eq 'BUSINESS' ? 'selected' : ''}><spring:message code="admin.business.role.business"/></option>
-                            <option value="PARTNER" ${search.requestedRole eq 'PARTNER' ? 'selected' : ''}><spring:message code="admin.business.role.partner"/></option>
+                            <option value="ALL" ${search.requestedRole eq 'ALL' ? 'selected' : ''}>${autoMsg_8f3c8aa535}</option>
+                            <option value="BUSINESS" ${search.requestedRole eq 'BUSINESS' ? 'selected' : ''}>${autoMsg_40237d6631}</option>
+                            <option value="PARTNER" ${search.requestedRole eq 'PARTNER' ? 'selected' : ''}>${autoMsg_f0e6fc650e}</option>
                         </select>
                     </div>
 
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.business.column.appliedAt"/></div>
+                        <div class="adm-filter-label">${autoMsg_7b44677f84}</div>
                         <div style="display:flex;gap:4px;align-items:center;">
                             <input class="adm-input" type="date" name="dateFrom" value="${search.dateFrom}" style="width:130px;">
                             <span style="color:#475569;font-size:12px;">~</span>
@@ -73,8 +113,8 @@
                     </div>
 
                     <div style="display:flex;gap:6px;align-items:flex-end;">
-                        <button type="submit" class="adm-btn adm-btn-primary">🔍 <spring:message code="admin.common.searchButton"/></button>
-                        <button type="button" class="adm-btn adm-btn-ghost" onclick="resetBusinessFilters()"><spring:message code="admin.common.reset"/></button>
+                        <button type="submit" class="adm-btn adm-btn-primary">🔍 ${autoMsg_ab90a6e07c}</button>
+                        <button type="button" class="adm-btn adm-btn-ghost" onclick="resetBusinessFilters()">${autoMsg_871a5d2852}</button>
                     </div>
 
                     <input type="hidden" name="page" value="${paging.currentPage}">
@@ -89,7 +129,7 @@
     <div class="adm-card js-business-section-card adm-managed-section-card" data-section="businessApplications" data-enhanced="true" style="overflow:visible;">
         <div class="adm-card-head">
             <div class="adm-card-title">
-                🏢 <spring:message code="admin.business.pageTitle"/>
+                🏢 ${autoMsg_16af579649}
                 <span id="businessTotalLabel" style="font-size:12px;font-weight:400;color:#475569;">총 ${total}건</span>
             </div>
             <div style="position:relative;display:flex;align-items:center;gap:8px;">
@@ -97,11 +137,11 @@
                     <option value="csv">CSV</option>
                     <option value="excel">Excel</option>
                 </select>
-                <button type="button" class="adm-btn adm-btn-ghost js-business-export-toggle"><spring:message code="admin.common.export"/> ▾</button>
+                <button type="button" class="adm-btn adm-btn-ghost js-business-export-toggle">${autoMsg_e35f294052} ▾</button>
                 <div id="businessExportDropdown" class="adm-export-dropdown">
-                    <button type="button" class="adm-export-item" onclick="exportBusinessData('all')"><spring:message code="admin.common.exportAll"/></button>
-                    <button type="button" class="adm-export-item" onclick="exportBusinessData('search')"><spring:message code="admin.common.exportFiltered"/></button>
-                    <button type="button" class="adm-export-item" id="businessExportSelectedBtn" disabled onclick="exportBusinessData('selected')"><spring:message code="admin.common.exportSelected"/> (0)</button>
+                    <button type="button" class="adm-export-item" onclick="exportBusinessData('all')">${autoMsg_8b2a9e9a9f}</button>
+                    <button type="button" class="adm-export-item" onclick="exportBusinessData('search')">${autoMsg_f75de738d9}</button>
+                    <button type="button" class="adm-export-item" id="businessExportSelectedBtn" disabled onclick="exportBusinessData('selected')">${autoMsg_efe2dcc95c} (0)</button>
                 </div>
             </div>
         </div>
@@ -109,25 +149,25 @@
         <div class="adm-local-toolbar adm-managed-local-toolbar">
             <div class="adm-local-toolbar-group adm-managed-toolbar-actions">
                 <button type="button" class="adm-dash-sort-reset js-business-sort-reset" style="display:none;" onclick="resetBusinessSort()"></button>
-                <select class="adm-select" id="businessModeSelect" title="<spring:message code='admin.blocks.mode.label'/>">
-                    <option value="client" title="<spring:message code='admin.blocks.mode.tipClient'/>"><spring:message code="admin.blocks.mode.client"/></option>
-                    <option value="server" title="<spring:message code='admin.blocks.mode.tipServer'/>"><spring:message code="admin.blocks.mode.server"/></option>
+                <select class="adm-select" id="businessModeSelect" title="${autoMsg_e48adf43d8}">
+                    <option value="client" title="${autoMsg_afe095e6ce}">${autoMsg_f935be5eea}</option>
+                    <option value="server" title="${autoMsg_0d5b6d1d55}">${autoMsg_c4faf36202}</option>
                 </select>
                 <select class="adm-select" id="businessSizeSelect" style="width:90px;" onchange="changeBusinessSize(this.value)">
-                    <option value="10"  ${search.size==10  ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="10"/></option>
-                    <option value="20"  ${search.size==20  ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="20"/></option>
-                    <option value="50"  ${search.size==50  ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="50"/></option>
-                    <option value="100" ${search.size==100 ? 'selected' : ''}><spring:message code="admin.common.pageSize" arguments="100"/></option>
+                    <option value="10"  ${search.size==10  ? 'selected' : ''}>${autoMsg_c77a4d64e5}</option>
+                    <option value="20"  ${search.size==20  ? 'selected' : ''}>${autoMsg_c77a4d64e5}</option>
+                    <option value="50"  ${search.size==50  ? 'selected' : ''}>${autoMsg_c77a4d64e5}</option>
+                    <option value="100" ${search.size==100 ? 'selected' : ''}>${autoMsg_c77a4d64e5}</option>
                 </select>
             </div>
         </div>
 
         <div id="businessBulkBar" style="display:none;background:#1a3354;border:1px solid #2d6a9f;border-radius:8px;padding:10px 16px;margin:0 0 12px;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><strong id="businessBulkCount">0</strong><spring:message code="admin.common.selectedCount"/></span>
-            <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="bulkApproveBusiness()"><spring:message code="admin.business.status.approved"/></button>
-            <input class="adm-input" id="businessBulkRejectReason" maxlength="500" style="max-width:260px;" placeholder="<spring:message code='admin.business.rejectReasonPlaceholder'/>">
-            <button type="button" class="adm-btn adm-btn-danger" style="font-size:12px;" onclick="bulkRejectBusiness()"><spring:message code="admin.business.status.rejected"/></button>
-            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;margin-left:auto;" onclick="clearBusinessSelection()"><spring:message code="admin.common.clearSelection"/></button>
+            <span style="color:#93c5fd;font-size:13px;font-weight:600;"><strong id="businessBulkCount">0</strong>${autoMsg_d62fefdd10}</span>
+            <button type="button" class="adm-btn adm-btn-primary" style="font-size:12px;" onclick="bulkApproveBusiness()">${autoMsg_185bd76167}</button>
+            <input class="adm-input" id="businessBulkRejectReason" maxlength="500" style="max-width:260px;" placeholder="${autoMsg_ccde0de3bf}">
+            <button type="button" class="adm-btn adm-btn-danger" style="font-size:12px;" onclick="bulkRejectBusiness()">${autoMsg_ce9bcdb179}</button>
+            <button type="button" class="adm-btn adm-btn-ghost" style="font-size:12px;margin-left:auto;" onclick="clearBusinessSelection()">${autoMsg_e9b1a92c17}</button>
         </div>
 
         <div class="adm-table-wrap" style="overflow:visible;">
@@ -135,12 +175,12 @@
                 <thead>
                 <tr>
                     <th style="width:40px;text-align:center;"><input type="checkbox" id="businessCheckAll" class="adm-check" onchange="toggleAllBusiness(this)"></th>
-                    <th class="js-business-sort" data-sort="applicant" onclick="businessSortBy('applicant')" style="cursor:pointer;user-select:none;"><spring:message code="admin.business.column.applicant"/></th>
-                    <th class="js-business-sort" data-sort="requestedRole" onclick="businessSortBy('requestedRole')" style="cursor:pointer;user-select:none;"><spring:message code="admin.business.column.requestedRole"/></th>
-                    <th class="js-business-sort" data-sort="company" onclick="businessSortBy('company')" style="cursor:pointer;user-select:none;"><spring:message code="admin.business.column.companyInfo"/></th>
-                    <th class="js-business-sort" data-sort="status" onclick="businessSortBy('status')" style="cursor:pointer;user-select:none;"><spring:message code="admin.common.status"/></th>
-                    <th class="js-business-sort" data-sort="createdAt" onclick="businessSortBy('createdAt')" style="cursor:pointer;user-select:none;"><spring:message code="admin.business.column.appliedAt"/></th>
-                    <th><spring:message code="admin.business.column.review"/></th>
+                    <th class="js-business-sort" data-sort="applicant" onclick="businessSortBy('applicant')" style="cursor:pointer;user-select:none;">${autoMsg_70aa03bd7f}</th>
+                    <th class="js-business-sort" data-sort="requestedRole" onclick="businessSortBy('requestedRole')" style="cursor:pointer;user-select:none;">${autoMsg_724e783009}</th>
+                    <th class="js-business-sort" data-sort="company" onclick="businessSortBy('company')" style="cursor:pointer;user-select:none;">${autoMsg_71a3285057}</th>
+                    <th class="js-business-sort" data-sort="status" onclick="businessSortBy('status')" style="cursor:pointer;user-select:none;">${autoMsg_f7ed844e00}</th>
+                    <th class="js-business-sort" data-sort="createdAt" onclick="businessSortBy('createdAt')" style="cursor:pointer;user-select:none;">${autoMsg_7b44677f84}</th>
+                    <th>${autoMsg_19a797248a}</th>
                 </tr>
                 </thead>
                 <tbody id="businessRowsBody">
@@ -152,9 +192,9 @@
         <div class="adm-local-pagination" data-section="businessApplications" id="businessPaging">
             <div class="adm-local-page-info js-business-page-info" data-section="businessApplications">총 ${total}건 / 현재 ${fn:length(applicationList)}건</div>
             <div class="adm-local-page-actions">
-                <button type="button" class="adm-btn adm-btn-ghost js-business-prev" onclick="goBusinessPage(businessSectionState.page - 1)"><spring:message code="admin.common.prev"/></button>
+                <button type="button" class="adm-btn adm-btn-ghost js-business-prev" onclick="goBusinessPage(businessSectionState.page - 1)">${autoMsg_005f1c3518}</button>
                 <span class="js-business-page-state" data-section="businessApplications">${paging.currentPage} / ${paging.totalPage}</span>
-                <button type="button" class="adm-btn adm-btn-ghost js-business-next" onclick="goBusinessPage(businessSectionState.page + 1)"><spring:message code="admin.common.next"/></button>
+                <button type="button" class="adm-btn adm-btn-ghost js-business-next" onclick="goBusinessPage(businessSectionState.page + 1)">${autoMsg_3bd4078056}</button>
             </div>
         </div>
     </div>
@@ -171,7 +211,7 @@
         <div class="adm-modal-foot" style="gap:8px;justify-content:flex-end;">
             <button class="adm-btn adm-btn-ghost" type="button" id="businessApplicationDetailMemberBtn">회원 설정</button>
             <button class="adm-btn adm-btn-primary" type="button" id="businessApplicationDetailReviewBtn">검토 위치로 이동</button>
-            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeBusinessApplicationDetailModal()"><spring:message code="admin.common.close"/></button>
+            <button class="adm-btn adm-btn-ghost" type="button" onclick="closeBusinessApplicationDetailModal()">${autoMsg_c5b5e0fdf8}</button>
         </div>
     </div>
 </div>
@@ -180,11 +220,11 @@
 const BUSINESS_CTX = '${pageContext.request.contextPath}';
 const BUSINESS_LOCALE = '${fn:escapeXml(pageContext.response.locale.toLanguageTag())}';
 const BUSINESS_MSG = {
-    sortReset: '<spring:message code="admin.blocks.js.dashSortReset" javaScriptEscape="true"/>',
-    exportSelected: '<spring:message code="admin.common.exportSelected" javaScriptEscape="true"/>',
+    sortReset: '${autoMsg_a3756e975b}',
+    exportSelected: '${autoMsg_a968042925}',
     selectedMissing: '선택된 항목이 없습니다.',
-    rejectReasonMissing: '<spring:message code="admin.business.rejectReasonPlaceholder" javaScriptEscape="true"/>',
-    noResults: '<spring:message code="admin.business.noResults" javaScriptEscape="true"/>'
+    rejectReasonMissing: '${autoMsg_a778883f6f}',
+    noResults: '${autoMsg_2c274d3fb4}'
 };
 const businessSectionState = {
     mode: 'SERVER',

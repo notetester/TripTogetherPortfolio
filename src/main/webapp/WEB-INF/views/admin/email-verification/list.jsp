@@ -3,6 +3,40 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_a2f5c5ab35" code="admin.common.search"/>
+<spring:message var="autoMsg_a22208483c" code="admin.emailRequests.searchPlaceholder"/>
+<spring:message var="autoMsg_ccff41e706" code="admin.emailRequests.purpose"/>
+<spring:message var="autoMsg_3632b98ad4" code="admin.common.all"/>
+<spring:message var="autoMsg_194f4c73a6" code="admin.emailRequests.purpose.profileEmail"/>
+<spring:message var="autoMsg_4dc0671620" code="admin.emailRequests.purpose.findId"/>
+<spring:message var="autoMsg_ada0fde9fd" code="admin.emailRequests.purpose.resetPw"/>
+<spring:message var="autoMsg_907209bab9" code="admin.emailRequests.purpose.verify"/>
+<spring:message var="autoMsg_da67a6473d" code="admin.common.status"/>
+<spring:message var="autoMsg_e894ead4f4" code="admin.emailRequests.status.requested"/>
+<spring:message var="autoMsg_85827f86c1" code="admin.emailRequests.status.verified"/>
+<spring:message var="autoMsg_9d2db72e75" code="admin.emailRequests.status.applied"/>
+<spring:message var="autoMsg_83c6d27440" code="admin.emailRequests.status.expired"/>
+<spring:message var="autoMsg_b5098ff9c0" code="admin.emailRequests.status.cancelled"/>
+<spring:message var="autoMsg_8db61b7eec" code="admin.common.searchButton"/>
+<spring:message var="autoMsg_509ab4470c" code="admin.common.reset"/>
+<spring:message var="autoMsg_ae847fda2c" code="admin.emailRequests.historyTitle"/>
+<spring:message var="autoMsg_da413d3280" code="admin.common.totalCount"/>
+<spring:message var="autoMsg_993b398649" code="admin.emailRequests.requestedAt"/>
+<spring:message var="autoMsg_e7842b3e88" code="admin.common.member"/>
+<spring:message var="autoMsg_8ece2719e2" code="admin.context.requestEmail"/>
+<spring:message var="autoMsg_472f3f6555" code="admin.emailRequests.verifiedAt"/>
+<spring:message var="autoMsg_ca0232122e" code="admin.emailRequests.appliedAt"/>
+<spring:message var="autoMsg_61d3c126ed" code="admin.context.expiresAt"/>
+<spring:message var="autoMsg_3d653816d3" code="admin.common.ip"/>
+<spring:message var="autoMsg_a069dca5bf" code="admin.context.requestId"/>
+<spring:message var="autoMsg_903e88c9dd" code="admin.common.sameDate"/>
+<spring:message var="autoMsg_e99f68c7db" code="admin.emailRequests.unknownRequest"/>
+<spring:message var="autoMsg_f77a805140" code="admin.common.sameValue"/>
+<spring:message var="autoMsg_cd8d8b4c4f" code="admin.common.sameEmail"/>
+<spring:message var="autoMsg_328d6f9bec" code="admin.common.sameIp"/>
+<spring:message var="autoMsg_02ef6dfc54" code="admin.common.trace"/>
+<spring:message var="autoMsg_97c8d67e97" code="admin.common.noResults"/>
+<spring:message var="autoMsg_62aa1ae2c7" code="admin.common.pageStatus"/>
 <c:set var="activeMenu" value="emailVerifications"/>
 <spring:message code="admin.emailRequests.pageTitle" var="adminEmailRequestsPageTitle"/>
 <c:set var="pageTitle" value="${adminEmailRequestsPageTitle}"/>
@@ -14,34 +48,34 @@
             <form method="get" action="${pageContext.request.contextPath}/admin/email-verifications">
                 <div class="adm-filter-bar">
                     <div class="adm-search-box" style="flex:1;min-width:220px;">
-                        <div class="adm-filter-label"><spring:message code="admin.common.search"/></div>
+                        <div class="adm-filter-label">${autoMsg_a2f5c5ab35}</div>
                         <span class="adm-search-ico">🔍</span>
-                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="<spring:message code='admin.emailRequests.searchPlaceholder'/>">
+                        <input class="adm-input" type="text" name="keyword" value="${search.keyword}" placeholder="${autoMsg_a22208483c}">
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.emailRequests.purpose"/></div>
+                        <div class="adm-filter-label">${autoMsg_ccff41e706}</div>
                         <select class="adm-select" name="purpose">
-                            <option value="ALL" ${search.purpose=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="PROFILE_EMAIL" ${search.purpose=='PROFILE_EMAIL'?'selected':''}><spring:message code="admin.emailRequests.purpose.profileEmail"/></option>
-                            <option value="FIND_ID" ${search.purpose=='FIND_ID'?'selected':''}><spring:message code="admin.emailRequests.purpose.findId"/></option>
-                            <option value="RESET_PW" ${search.purpose=='RESET_PW'?'selected':''}><spring:message code="admin.emailRequests.purpose.resetPw"/></option>
-                            <option value="VERIFY" ${search.purpose=='VERIFY'?'selected':''}><spring:message code="admin.emailRequests.purpose.verify"/></option>
+                            <option value="ALL" ${search.purpose=='ALL'?'selected':''}>${autoMsg_3632b98ad4}</option>
+                            <option value="PROFILE_EMAIL" ${search.purpose=='PROFILE_EMAIL'?'selected':''}>${autoMsg_194f4c73a6}</option>
+                            <option value="FIND_ID" ${search.purpose=='FIND_ID'?'selected':''}>${autoMsg_4dc0671620}</option>
+                            <option value="RESET_PW" ${search.purpose=='RESET_PW'?'selected':''}>${autoMsg_ada0fde9fd}</option>
+                            <option value="VERIFY" ${search.purpose=='VERIFY'?'selected':''}>${autoMsg_907209bab9}</option>
                         </select>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.common.status"/></div>
+                        <div class="adm-filter-label">${autoMsg_da67a6473d}</div>
                         <select class="adm-select" name="status">
-                            <option value="ALL" ${search.status=='ALL'?'selected':''}><spring:message code="admin.common.all"/></option>
-                            <option value="REQUESTED" ${search.status=='REQUESTED'?'selected':''}><spring:message code="admin.emailRequests.status.requested"/></option>
-                            <option value="VERIFIED" ${search.status=='VERIFIED'?'selected':''}><spring:message code="admin.emailRequests.status.verified"/></option>
-                            <option value="APPLIED" ${search.status=='APPLIED'?'selected':''}><spring:message code="admin.emailRequests.status.applied"/></option>
-                            <option value="EXPIRED" ${search.status=='EXPIRED'?'selected':''}><spring:message code="admin.emailRequests.status.expired"/></option>
-                            <option value="CANCELLED" ${search.status=='CANCELLED'?'selected':''}><spring:message code="admin.emailRequests.status.cancelled"/></option>
+                            <option value="ALL" ${search.status=='ALL'?'selected':''}>${autoMsg_3632b98ad4}</option>
+                            <option value="REQUESTED" ${search.status=='REQUESTED'?'selected':''}>${autoMsg_e894ead4f4}</option>
+                            <option value="VERIFIED" ${search.status=='VERIFIED'?'selected':''}>${autoMsg_85827f86c1}</option>
+                            <option value="APPLIED" ${search.status=='APPLIED'?'selected':''}>${autoMsg_9d2db72e75}</option>
+                            <option value="EXPIRED" ${search.status=='EXPIRED'?'selected':''}>${autoMsg_83c6d27440}</option>
+                            <option value="CANCELLED" ${search.status=='CANCELLED'?'selected':''}>${autoMsg_b5098ff9c0}</option>
                         </select>
                     </div>
                     <div style="display:flex;align-items:flex-end;gap:8px;">
-                        <button class="adm-btn adm-btn-primary" type="submit"><spring:message code="admin.common.searchButton"/></button>
-                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/email-verifications"><spring:message code="admin.common.reset"/></a>
+                        <button class="adm-btn adm-btn-primary" type="submit">${autoMsg_8db61b7eec}</button>
+                        <a class="adm-btn adm-btn-ghost" href="${pageContext.request.contextPath}/admin/email-verifications">${autoMsg_509ab4470c}</a>
                     </div>
                 </div>
             </form>
@@ -50,23 +84,23 @@
 
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.emailRequests.historyTitle"/></div>
-            <div style="font-size:12px;color:#64748b;"><spring:message code="admin.common.totalCount" arguments="${total}"/></div>
+            <div class="adm-card-title">${autoMsg_ae847fda2c}</div>
+            <div style="font-size:12px;color:#64748b;">${autoMsg_da413d3280}</div>
         </div>
         <div class="adm-table-wrap">
             <table class="adm-table">
                 <thead>
                 <tr>
-                    <th data-sort="time" onclick="sortBy('time')"><spring:message code="admin.emailRequests.requestedAt"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="member" onclick="sortBy('member')"><spring:message code="admin.common.member"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="purpose" onclick="sortBy('purpose')"><spring:message code="admin.emailRequests.purpose"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="requestEmail" onclick="sortBy('requestEmail')"><spring:message code="admin.context.requestEmail"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="status" onclick="sortBy('status')"><spring:message code="admin.common.status"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="verifiedAt" onclick="sortBy('verifiedAt')"><spring:message code="admin.emailRequests.verifiedAt"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="appliedAt" onclick="sortBy('appliedAt')"><spring:message code="admin.emailRequests.appliedAt"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="expiresAt" onclick="sortBy('expiresAt')"><spring:message code="admin.context.expiresAt"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="ip" onclick="sortBy('ip')"><spring:message code="admin.common.ip"/><span class="sort-ico">▼</span></th>
-                    <th data-sort="requestId" onclick="sortBy('requestId')"><spring:message code="admin.context.requestId"/><span class="sort-ico">▼</span></th>
+                    <th data-sort="time" onclick="sortBy('time')">${autoMsg_993b398649}<span class="sort-ico">▼</span></th>
+                    <th data-sort="member" onclick="sortBy('member')">${autoMsg_e7842b3e88}<span class="sort-ico">▼</span></th>
+                    <th data-sort="purpose" onclick="sortBy('purpose')">${autoMsg_ccff41e706}<span class="sort-ico">▼</span></th>
+                    <th data-sort="requestEmail" onclick="sortBy('requestEmail')">${autoMsg_8ece2719e2}<span class="sort-ico">▼</span></th>
+                    <th data-sort="status" onclick="sortBy('status')">${autoMsg_da67a6473d}<span class="sort-ico">▼</span></th>
+                    <th data-sort="verifiedAt" onclick="sortBy('verifiedAt')">${autoMsg_472f3f6555}<span class="sort-ico">▼</span></th>
+                    <th data-sort="appliedAt" onclick="sortBy('appliedAt')">${autoMsg_ca0232122e}<span class="sort-ico">▼</span></th>
+                    <th data-sort="expiresAt" onclick="sortBy('expiresAt')">${autoMsg_61d3c126ed}<span class="sort-ico">▼</span></th>
+                    <th data-sort="ip" onclick="sortBy('ip')">${autoMsg_3d653816d3}<span class="sort-ico">▼</span></th>
+                    <th data-sort="requestId" onclick="sortBy('requestId')">${autoMsg_a069dca5bf}<span class="sort-ico">▼</span></th>
                     <th></th>
                 </tr>
                 </thead>
@@ -86,7 +120,7 @@
                                     data-date="${itemDateFilter}"
                                     onclick="filterByDate(this.dataset.date)">
                                 <span>${itemTimeDisplay}</span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                                <span class="adm-cell-link-note">${autoMsg_903e88c9dd}</span>
                             </button>
                         </td>
                         <td>
@@ -106,7 +140,7 @@
                                     </div>
                                 </c:when>
                                 <c:otherwise>
-                                    <div class="mem-name"><spring:message code="admin.emailRequests.unknownRequest"/></div>
+                                    <div class="mem-name">${autoMsg_e99f68c7db}</div>
                                     <div class="mem-uid">-</div>
                                 </c:otherwise>
                             </c:choose>
@@ -114,30 +148,30 @@
                         <td>
                             <button type="button" class="adm-cell-link" data-param-name="purpose" data-param-value="${item.purpose}" onclick="applySelectFilter(this)">
                                 <span><c:choose>
-                                    <c:when test="${item.purpose == 'PROFILE_EMAIL'}"><spring:message code="admin.emailRequests.purpose.profileEmail"/></c:when>
-                                    <c:when test="${item.purpose == 'FIND_ID'}"><spring:message code="admin.emailRequests.purpose.findId"/></c:when>
-                                    <c:when test="${item.purpose == 'RESET_PW'}"><spring:message code="admin.emailRequests.purpose.resetPw"/></c:when>
-                                    <c:when test="${item.purpose == 'VERIFY'}"><spring:message code="admin.emailRequests.purpose.verify"/></c:when>
+                                    <c:when test="${item.purpose == 'PROFILE_EMAIL'}">${autoMsg_194f4c73a6}</c:when>
+                                    <c:when test="${item.purpose == 'FIND_ID'}">${autoMsg_4dc0671620}</c:when>
+                                    <c:when test="${item.purpose == 'RESET_PW'}">${autoMsg_ada0fde9fd}</c:when>
+                                    <c:when test="${item.purpose == 'VERIFY'}">${autoMsg_907209bab9}</c:when>
                                     <c:otherwise><c:out value="${item.purpose}"/></c:otherwise>
                                 </c:choose></span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameValue"/></span>
+                                <span class="adm-cell-link-note">${autoMsg_f77a805140}</span>
                             </button>
                         </td>
                         <td>
                             <button type="button" class="adm-cell-link" data-keyword="${item.pendingEmail}" onclick="applyKeywordFilter(this)">
                                 <span><c:out value="${item.pendingEmail}"/></span>
-                                <span class="adm-cell-link-note"><spring:message code="admin.common.sameEmail"/></span>
+                                <span class="adm-cell-link-note">${autoMsg_cd8d8b4c4f}</span>
                             </button>
                         </td>
                         <td>
                             <button type="button" class="adm-cell-link" data-param-name="status" data-param-value="${item.status}" onclick="applySelectFilter(this)">
                                 <span class="status-badge ${item.status}">
                                     <c:choose>
-                                        <c:when test="${item.status == 'REQUESTED'}"><spring:message code="admin.emailRequests.status.requested"/></c:when>
-                                        <c:when test="${item.status == 'VERIFIED'}"><spring:message code="admin.emailRequests.status.verified"/></c:when>
-                                        <c:when test="${item.status == 'APPLIED'}"><spring:message code="admin.emailRequests.status.applied"/></c:when>
-                                        <c:when test="${item.status == 'EXPIRED'}"><spring:message code="admin.emailRequests.status.expired"/></c:when>
-                                        <c:when test="${item.status == 'CANCELLED'}"><spring:message code="admin.emailRequests.status.cancelled"/></c:when>
+                                        <c:when test="${item.status == 'REQUESTED'}">${autoMsg_e894ead4f4}</c:when>
+                                        <c:when test="${item.status == 'VERIFIED'}">${autoMsg_85827f86c1}</c:when>
+                                        <c:when test="${item.status == 'APPLIED'}">${autoMsg_9d2db72e75}</c:when>
+                                        <c:when test="${item.status == 'EXPIRED'}">${autoMsg_83c6d27440}</c:when>
+                                        <c:when test="${item.status == 'CANCELLED'}">${autoMsg_b5098ff9c0}</c:when>
                                         <c:otherwise><c:out value="${item.status}"/></c:otherwise>
                                     </c:choose>
                                 </span>
@@ -150,7 +184,7 @@
                                             data-date="${itemVerifiedAtFilter}"
                                             onclick="filterByDate(this.dataset.date)">
                                         <span>${itemVerifiedAtDisplay}</span>
-                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                                        <span class="adm-cell-link-note">${autoMsg_903e88c9dd}</span>
                                     </button>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
@@ -163,7 +197,7 @@
                                             data-date="${itemAppliedAtFilter}"
                                             onclick="filterByDate(this.dataset.date)">
                                         <span>${itemAppliedAtDisplay}</span>
-                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                                        <span class="adm-cell-link-note">${autoMsg_903e88c9dd}</span>
                                     </button>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
@@ -176,7 +210,7 @@
                                             data-date="${itemExpiredAtFilter}"
                                             onclick="filterByDate(this.dataset.date)">
                                         <span>${itemExpiredAtDisplay}</span>
-                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameDate"/></span>
+                                        <span class="adm-cell-link-note">${autoMsg_903e88c9dd}</span>
                                     </button>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
@@ -190,7 +224,7 @@
                                             data-ip-address="${item.ipAddress}"
                                             data-default-tab="emailRequests">
                                         <span style="color:#93c5fd;"><c:out value="${item.ipAddress}"/></span>
-                                        <span class="adm-cell-link-note"><spring:message code="admin.common.sameIp"/></span>
+                                        <span class="adm-cell-link-note">${autoMsg_328d6f9bec}</span>
                                     </button>
                                 </c:when>
                                 <c:otherwise>-</c:otherwise>
@@ -203,7 +237,7 @@
                                     onclick="openRelatedHistory('email-tokens', this)">
                                 <span style="font-size:12px;color:#64748b;"><c:out value="${item.requestId}"/></span>
                                 <c:if test="${not empty item.flowTraceId}">
-                                    <span class="adm-cell-link-note"><spring:message code="admin.common.trace"/>: <c:out value="${item.flowTraceId}"/></span>
+                                    <span class="adm-cell-link-note">${autoMsg_02ef6dfc54}: <c:out value="${item.flowTraceId}"/></span>
                                 </c:if>
                             </button>
                         </td>
@@ -227,7 +261,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty list}">
-                    <tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;"><spring:message code="admin.common.noResults"/></td></tr>
+                    <tr><td colspan="11" style="text-align:center;padding:40px;color:#475569;">${autoMsg_97c8d67e97}</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -240,7 +274,7 @@
                     <button class="adm-page-btn ${p == paging.currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>
                 </c:forEach>
                 <c:if test="${paging.next}"><button class="adm-page-btn" onclick="goPage(${paging.endPage + 1})">›</button></c:if>
-                <span class="adm-page-info"><spring:message code="admin.common.pageStatus" arguments="${paging.currentPage},${paging.totalPage}"/></span>
+                <span class="adm-page-info">${autoMsg_62aa1ae2c7}</span>
             </div>
         </c:if>
     </div>
@@ -310,7 +344,7 @@ function openRelatedHistory(path, button) {
 }
 function openVerificationDetail(btn) {
     var d = btn.dataset;
-    showRowDetail('<spring:message code="admin.emailRequests.historyTitle"/>', [
+    showRowDetail('${autoMsg_ae847fda2c}', [
         ['요청 시각', d.time],
         ['회원', d.user],
         ['목적', d.purpose],

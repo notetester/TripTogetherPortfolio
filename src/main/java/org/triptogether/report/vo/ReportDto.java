@@ -73,4 +73,8 @@ public class ReportDto {
         return updatedAt;
     }
 
+    public java.util.Date getResolvedAtDate() {
+        return resolvedAt;
+    }
+
 }

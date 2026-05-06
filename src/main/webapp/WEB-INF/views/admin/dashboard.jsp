@@ -2,6 +2,60 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_75fe028347" code="admin.dashboard.totalMembers"/>
+<spring:message var="autoMsg_e8f487437b" code="admin.dashboard.todayNewMembers"/>
+<spring:message var="autoMsg_db36e3bfd6" code="admin.layout.menu.members"/>
+<spring:message var="autoMsg_4a59b95a40" code="admin.dashboard.activeMembers"/>
+<spring:message var="autoMsg_70a9075187" code="admin.dashboard.activeMembersSub"/>
+<spring:message var="autoMsg_9e3aac1f01" code="admin.dashboard.dormantMembers"/>
+<spring:message var="autoMsg_d8cab736bf" code="admin.dashboard.dormantMembersSub"/>
+<spring:message var="autoMsg_1a4dd37c24" code="admin.dashboard.todayFailedLogins"/>
+<spring:message var="autoMsg_7d09e61749" code="admin.dashboard.loginLogoutSummary"/>
+<spring:message var="autoMsg_0d7f4d3eaf" code="admin.dashboard.viewFailedLogins"/>
+<spring:message var="autoMsg_e9347c2201" code="admin.dashboard.socialLinked"/>
+<spring:message var="autoMsg_f9bf1b4902" code="admin.dashboard.socialLinkedSub"/>
+<spring:message var="autoMsg_c40b9f1074" code="admin.dashboard.pendingInquiries"/>
+<spring:message var="autoMsg_a2c0636f7b" code="admin.dashboard.totalInquiries"/>
+<spring:message var="autoMsg_ed29f3849a" code="admin.dashboard.viewPendingInquiries"/>
+<spring:message var="autoMsg_8aca1d0a8d" code="admin.dashboard.chart.newMembersTitle"/>
+<spring:message var="autoMsg_7e673d9b5b" code="admin.dashboard.chart.loginTitle"/>
+<spring:message var="autoMsg_cb27191a58" code="admin.dashboard.sales.title"/>
+<spring:message var="autoMsg_4995ecaf20" code="admin.dashboard.serviceOverview"/>
+<spring:message var="autoMsg_0651332266" code="admin.dashboard.communityPosts"/>
+<spring:message var="autoMsg_7e284bae06" code="admin.dashboard.activePosts"/>
+<spring:message var="autoMsg_b284f9582b" code="admin.layout.menu.community"/>
+<spring:message var="autoMsg_5b74ebb2ba" code="admin.dashboard.activeReports"/>
+<spring:message var="autoMsg_53a7adefbb" code="admin.dashboard.activeReportsSub"/>
+<spring:message var="autoMsg_b068fac5d5" code="admin.layout.menu.reports"/>
+<spring:message var="autoMsg_e0a998712b" code="admin.dashboard.completedInquiries"/>
+<spring:message var="autoMsg_f53015263d" code="admin.dashboard.completedInquiriesSub"/>
+<spring:message var="autoMsg_5514390ee4" code="admin.layout.menu.inquiries"/>
+<spring:message var="autoMsg_f5c3740b43" code="admin.dashboard.todayLogouts"/>
+<spring:message var="autoMsg_a5bd3e9f5a" code="admin.dashboard.logoutProviderSummary"/>
+<spring:message var="autoMsg_c4d3ae5131" code="admin.dashboard.viewLogoutHistory"/>
+<spring:message var="autoMsg_8175aed12e" code="admin.dashboard.socialOverview"/>
+<spring:message var="autoMsg_803ccf9d87" code="admin.logs.provider.kakao"/>
+<spring:message var="autoMsg_02ed0535ea" code="admin.logs.provider.naver"/>
+<spring:message var="autoMsg_b917597ee1" code="admin.logs.provider.google"/>
+<spring:message var="autoMsg_9a1f6df9fa" code="admin.dashboard.quickLinks"/>
+<spring:message var="autoMsg_3a5f2e1b2c" code="admin.layout.menu.policies"/>
+<spring:message var="autoMsg_0f0f973aa4" code="admin.dashboard.sales.pageTitle"/>
+<spring:message var="autoMsg_106b026def" code="admin.dashboard.sales.sub"/>
+<spring:message var="autoMsg_cffcc54b72" code="admin.dashboard.sales.loading"/>
+<spring:message var="autoMsg_573ff27268" code="admin.dashboard.sales.noData"/>
+<spring:message var="autoMsg_7939516936" code="admin.dashboard.sales.chart.gross"/>
+<spring:message var="autoMsg_4207e3fdab" code="admin.dashboard.sales.chart.cash"/>
+<spring:message var="autoMsg_b1aef82658" code="admin.dashboard.sales.chart.mileage"/>
+<spring:message var="autoMsg_88f81c67e4" code="admin.dashboard.sales.chart.cancel"/>
+<spring:message var="autoMsg_db4eeccd3c" code="admin.dashboard.sales.chart.net"/>
+<spring:message var="autoMsg_29b1a5398e" code="admin.dashboard.sales.chart.flightCount"/>
+<spring:message var="autoMsg_d0766cf205" code="admin.dashboard.sales.chart.packageCount"/>
+<spring:message var="autoMsg_f0f11e4836" code="admin.dashboard.sales.chart.cancelCount"/>
+<spring:message var="autoMsg_f545c35d81" code="admin.dashboard.sales.table.grossSales"/>
+<spring:message var="autoMsg_22fdf944e5" code="admin.dashboard.sales.table.totalSummary"/>
+<spring:message var="autoMsg_7ad64f7e24" code="admin.dashboard.sales.table.cashSales"/>
+<spring:message var="autoMsg_33a281704d" code="admin.dashboard.sales.table.mileageUsed"/>
+<spring:message var="autoMsg_5340f1a853" code="admin.dashboard.sales.table.netSales"/>
 <c:set var="activeMenu" value="dashboard"/>
 <spring:message code="admin.dashboard.pageTitle" var="adminDashboardPageTitle"/>
 <c:set var="pageTitle" value="${adminDashboardPageTitle}"/>
@@ -13,50 +67,50 @@
 <div class="adm-content">
     <div class="stat-grid">
         <div class="stat-card blue">
-            <div class="stat-label"><spring:message code="admin.dashboard.totalMembers"/></div>
+            <div class="stat-label">${autoMsg_75fe028347}</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.totalMembers}" pattern="#,###"/></div>
-            <div class="stat-sub"><spring:message code="admin.dashboard.todayNewMembers" arguments="${stats.todayNewMembers}"/></div>
+            <div class="stat-sub">${autoMsg_e8f487437b}</div>
             <div class="adm-inline-actions" style="margin-top:12px;">
-                <a href="${pageContext.request.contextPath}/admin/members" class="adm-inline-chip"><spring:message code="admin.layout.menu.members"/></a>
+                <a href="${pageContext.request.contextPath}/admin/members" class="adm-inline-chip">${autoMsg_db36e3bfd6}</a>
             </div>
             <div class="stat-icon">👥</div>
         </div>
         <div class="stat-card green">
-            <div class="stat-label"><spring:message code="admin.dashboard.activeMembers"/></div>
+            <div class="stat-label">${autoMsg_4a59b95a40}</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.activeMembers}" pattern="#,###"/></div>
-            <div class="stat-sub"><spring:message code="admin.dashboard.activeMembersSub"/></div>
+            <div class="stat-sub">${autoMsg_70a9075187}</div>
             <div class="stat-icon">✅</div>
         </div>
         <div class="stat-card yellow">
-            <div class="stat-label"><spring:message code="admin.dashboard.dormantMembers"/></div>
+            <div class="stat-label">${autoMsg_9e3aac1f01}</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.dormantMembers}" pattern="#,###"/></div>
-            <div class="stat-sub"><spring:message code="admin.dashboard.dormantMembersSub"/></div>
+            <div class="stat-sub">${autoMsg_d8cab736bf}</div>
             <div class="stat-icon">😴</div>
         </div>
         <div class="stat-card red">
-            <div class="stat-label"><spring:message code="admin.dashboard.todayFailedLogins"/></div>
+            <div class="stat-label">${autoMsg_1a4dd37c24}</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.todayFailedLogins}" pattern="#,###"/></div>
-            <div class="stat-sub"><spring:message code="admin.dashboard.loginLogoutSummary" arguments="${stats.todayLogins},${stats.todayLogouts}"/></div>
+            <div class="stat-sub">${autoMsg_7d09e61749}</div>
             <div class="adm-inline-actions" style="margin-top:12px;">
-                <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGIN&amp;success=FAIL" class="adm-inline-chip"><spring:message code="admin.dashboard.viewFailedLogins"/></a>
+                <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGIN&amp;success=FAIL" class="adm-inline-chip">${autoMsg_0d7f4d3eaf}</a>
             </div>
             <div class="stat-icon">🚨</div>
         </div>
         <div class="stat-card purple">
-            <div class="stat-label"><spring:message code="admin.dashboard.socialLinked"/></div>
+            <div class="stat-label">${autoMsg_e9347c2201}</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.kakaoLinked + stats.naverLinked + stats.googleLinked}" pattern="#,###"/></div>
-            <div class="stat-sub"><spring:message code="admin.dashboard.socialLinkedSub"/></div>
+            <div class="stat-sub">${autoMsg_f9bf1b4902}</div>
             <div class="adm-inline-actions" style="margin-top:12px;">
-                <a href="${pageContext.request.contextPath}/admin/members" class="adm-inline-chip"><spring:message code="admin.layout.menu.members"/></a>
+                <a href="${pageContext.request.contextPath}/admin/members" class="adm-inline-chip">${autoMsg_db36e3bfd6}</a>
             </div>
             <div class="stat-icon">🔗</div>
         </div>
         <div class="stat-card blue">
-            <div class="stat-label"><spring:message code="admin.dashboard.pendingInquiries"/></div>
+            <div class="stat-label">${autoMsg_c40b9f1074}</div>
             <div class="stat-value"><fmt:formatNumber value="${stats.pendingInquiries}" pattern="#,###"/></div>
-            <div class="stat-sub"><spring:message code="admin.dashboard.totalInquiries" arguments="${stats.totalInquiries}"/></div>
+            <div class="stat-sub">${autoMsg_a2c0636f7b}</div>
             <div class="adm-inline-actions" style="margin-top:12px;">
-                <a href="${pageContext.request.contextPath}/admin/inquiries?status=PENDING" class="adm-inline-chip"><spring:message code="admin.dashboard.viewPendingInquiries"/></a>
+                <a href="${pageContext.request.contextPath}/admin/inquiries?status=PENDING" class="adm-inline-chip">${autoMsg_ed29f3849a}</a>
             </div>
             <div class="stat-icon">📩</div>
         </div>
@@ -65,7 +119,7 @@
     <div class="adm-chart-grid">
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="admin.dashboard.chart.newMembersTitle"/></div>
+                <div class="adm-card-title">${autoMsg_8aca1d0a8d}</div>
             </div>
             <div class="adm-card-body">
                 <div class="adm-chart-box"><canvas id="chartNewMembers"></canvas></div>
@@ -73,7 +127,7 @@
         </div>
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="admin.dashboard.chart.loginTitle"/></div>
+                <div class="adm-card-title">${autoMsg_7e673d9b5b}</div>
             </div>
             <div class="adm-card-body">
                 <div class="adm-chart-box"><canvas id="chartLogin"></canvas></div>
@@ -84,7 +138,7 @@
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-head" style="justify-content:space-between;gap:12px;align-items:flex-start;">
             <div>
-                <div class="adm-card-title"><spring:message code="admin.dashboard.sales.title"/></div>
+                <div class="adm-card-title">${autoMsg_cb27191a58}</div>
                 <div style="margin-top:6px;font-size:12px;color:#64748b;">
                     <spring:message code="admin.dashboard.sales.sub" arguments="30"/>
                 </div>
@@ -110,40 +164,40 @@
 
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.dashboard.serviceOverview"/></div>
+            <div class="adm-card-title">${autoMsg_4995ecaf20}</div>
         </div>
         <div class="adm-card-body">
             <div class="stat-grid" style="margin-bottom:0;">
                 <div class="stat-card">
-                    <div class="stat-label"><spring:message code="admin.dashboard.communityPosts"/></div>
+                    <div class="stat-label">${autoMsg_0651332266}</div>
                     <div class="stat-value"><fmt:formatNumber value="${stats.totalCommunityPosts}" pattern="#,###"/></div>
-                    <div class="stat-sub"><spring:message code="admin.dashboard.activePosts" arguments="${stats.activeCommunityPosts}"/></div>
+                    <div class="stat-sub">${autoMsg_7e284bae06}</div>
                     <div class="adm-inline-actions" style="margin-top:12px;">
-                        <a href="${pageContext.request.contextPath}/admin/community" class="adm-inline-chip"><spring:message code="admin.layout.menu.community"/></a>
+                        <a href="${pageContext.request.contextPath}/admin/community" class="adm-inline-chip">${autoMsg_b284f9582b}</a>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label"><spring:message code="admin.dashboard.activeReports"/></div>
+                    <div class="stat-label">${autoMsg_5b74ebb2ba}</div>
                     <div class="stat-value"><fmt:formatNumber value="${stats.activeReports}" pattern="#,###"/></div>
-                    <div class="stat-sub"><spring:message code="admin.dashboard.activeReportsSub"/></div>
+                    <div class="stat-sub">${autoMsg_53a7adefbb}</div>
                     <div class="adm-inline-actions" style="margin-top:12px;">
-                        <a href="${pageContext.request.contextPath}/admin/reports?status=IN_REVIEW" class="adm-inline-chip"><spring:message code="admin.layout.menu.reports"/></a>
+                        <a href="${pageContext.request.contextPath}/admin/reports?status=IN_REVIEW" class="adm-inline-chip">${autoMsg_b068fac5d5}</a>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label"><spring:message code="admin.dashboard.completedInquiries"/></div>
+                    <div class="stat-label">${autoMsg_e0a998712b}</div>
                     <div class="stat-value"><fmt:formatNumber value="${stats.completedInquiries}" pattern="#,###"/></div>
-                    <div class="stat-sub"><spring:message code="admin.dashboard.completedInquiriesSub"/></div>
+                    <div class="stat-sub">${autoMsg_f53015263d}</div>
                     <div class="adm-inline-actions" style="margin-top:12px;">
-                        <a href="${pageContext.request.contextPath}/admin/inquiries?status=COMPLETED" class="adm-inline-chip"><spring:message code="admin.layout.menu.inquiries"/></a>
+                        <a href="${pageContext.request.contextPath}/admin/inquiries?status=COMPLETED" class="adm-inline-chip">${autoMsg_5514390ee4}</a>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label"><spring:message code="admin.dashboard.todayLogouts"/></div>
+                    <div class="stat-label">${autoMsg_f5c3740b43}</div>
                     <div class="stat-value"><fmt:formatNumber value="${stats.todayLogouts}" pattern="#,###"/></div>
-                    <div class="stat-sub"><spring:message code="admin.dashboard.logoutProviderSummary" arguments="${stats.todayLocalLogouts},${stats.todayKakaoLogouts},${stats.todayNaverLogouts},${stats.todayGoogleLogouts}"/></div>
+                    <div class="stat-sub">${autoMsg_a5bd3e9f5a}</div>
                     <div class="adm-inline-actions" style="margin-top:12px;">
-                        <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGOUT" class="adm-inline-chip"><spring:message code="admin.dashboard.viewLogoutHistory"/></a>
+                        <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGOUT" class="adm-inline-chip">${autoMsg_c4d3ae5131}</a>
                     </div>
                 </div>
             </div>
@@ -152,28 +206,28 @@
 
     <div class="adm-card" style="margin-bottom:20px;">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.dashboard.socialOverview"/></div>
+            <div class="adm-card-title">${autoMsg_8175aed12e}</div>
         </div>
         <div class="adm-card-body">
             <div class="adm-social-summary-grid">
                 <div class="social-card adm-social-summary-card">
                     <div class="adm-social-summary-head">
                         <span class="adm-social-icon adm-social-summary-icon kakao-mark">k</span>
-                        <span class="adm-social-summary-label"><spring:message code="admin.logs.provider.kakao"/></span>
+                        <span class="adm-social-summary-label">${autoMsg_803ccf9d87}</span>
                     </div>
                     <div class="social-card-value adm-social-summary-value"><fmt:formatNumber value="${stats.kakaoLinked}" pattern="#,###"/></div>
                     <div class="adm-inline-actions" style="margin-top:12px;">
-                        <a href="${pageContext.request.contextPath}/admin/members?provider=KAKAO" class="adm-inline-chip"><spring:message code="admin.layout.menu.members"/></a>
+                        <a href="${pageContext.request.contextPath}/admin/members?provider=KAKAO" class="adm-inline-chip">${autoMsg_db36e3bfd6}</a>
                     </div>
                 </div>
                 <div class="social-card adm-social-summary-card">
                     <div class="adm-social-summary-head">
                         <span class="adm-social-icon adm-social-summary-icon naver-mark">N</span>
-                        <span class="adm-social-summary-label"><spring:message code="admin.logs.provider.naver"/></span>
+                        <span class="adm-social-summary-label">${autoMsg_02ed0535ea}</span>
                     </div>
                     <div class="social-card-value adm-social-summary-value"><fmt:formatNumber value="${stats.naverLinked}" pattern="#,###"/></div>
                     <div class="adm-inline-actions" style="margin-top:12px;">
-                        <a href="${pageContext.request.contextPath}/admin/members?provider=NAVER" class="adm-inline-chip"><spring:message code="admin.layout.menu.members"/></a>
+                        <a href="${pageContext.request.contextPath}/admin/members?provider=NAVER" class="adm-inline-chip">${autoMsg_db36e3bfd6}</a>
                     </div>
                 </div>
                 <div class="social-card adm-social-summary-card">
@@ -186,11 +240,11 @@
                                 <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
                             </svg>
                         </span>
-                        <span class="adm-social-summary-label"><spring:message code="admin.logs.provider.google"/></span>
+                        <span class="adm-social-summary-label">${autoMsg_b917597ee1}</span>
                     </div>
                     <div class="social-card-value adm-social-summary-value"><fmt:formatNumber value="${stats.googleLinked}" pattern="#,###"/></div>
                     <div class="adm-inline-actions" style="margin-top:12px;">
-                        <a href="${pageContext.request.contextPath}/admin/members?provider=GOOGLE" class="adm-inline-chip"><spring:message code="admin.layout.menu.members"/></a>
+                        <a href="${pageContext.request.contextPath}/admin/members?provider=GOOGLE" class="adm-inline-chip">${autoMsg_db36e3bfd6}</a>
                     </div>
                 </div>
             </div>
@@ -199,14 +253,14 @@
 
     <div class="adm-card">
         <div class="adm-card-head">
-            <div class="adm-card-title"><spring:message code="admin.dashboard.quickLinks"/></div>
+            <div class="adm-card-title">${autoMsg_9a1f6df9fa}</div>
         </div>
         <div class="adm-card-body" style="display:flex;gap:12px;flex-wrap:wrap;">
-            <a href="${pageContext.request.contextPath}/admin/members" class="adm-btn adm-btn-primary">👥 <spring:message code="admin.layout.menu.members"/></a>
-            <a href="${pageContext.request.contextPath}/admin/policies" class="adm-btn adm-btn-ghost">⚙️ <spring:message code="admin.layout.menu.policies"/></a>
-            <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGIN&amp;success=FAIL" class="adm-btn adm-btn-ghost">🔐 <spring:message code="admin.dashboard.viewFailedLogins"/></a>
-            <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGOUT" class="adm-btn adm-btn-ghost">↩️ <spring:message code="admin.dashboard.viewLogoutHistory"/></a>
-            <a href="${pageContext.request.contextPath}/admin/inquiries?status=PENDING" class="adm-btn adm-btn-ghost">📩 <spring:message code="admin.dashboard.viewPendingInquiries"/></a>
+            <a href="${pageContext.request.contextPath}/admin/members" class="adm-btn adm-btn-primary">👥 ${autoMsg_db36e3bfd6}</a>
+            <a href="${pageContext.request.contextPath}/admin/policies" class="adm-btn adm-btn-ghost">⚙️ ${autoMsg_3a5f2e1b2c}</a>
+            <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGIN&amp;success=FAIL" class="adm-btn adm-btn-ghost">🔐 ${autoMsg_0d7f4d3eaf}</a>
+            <a href="${pageContext.request.contextPath}/admin/logins?eventType=LOGOUT" class="adm-btn adm-btn-ghost">↩️ ${autoMsg_c4d3ae5131}</a>
+            <a href="${pageContext.request.contextPath}/admin/inquiries?status=PENDING" class="adm-btn adm-btn-ghost">📩 ${autoMsg_ed29f3849a}</a>
         </div>
     </div>
 </div>
@@ -214,7 +268,7 @@
 <div class="adm-modal-overlay" id="salesDetailModal">
     <div class="adm-modal" style="max-width:920px;">
         <div class="adm-modal-head">
-            <div class="adm-modal-title"><spring:message code="admin.dashboard.sales.pageTitle"/></div>
+            <div class="adm-modal-title">${autoMsg_0f0f973aa4}</div>
             <button class="adm-modal-close" type="button" onclick="closeSalesDetailModal()">✕</button>
         </div>
         <div class="adm-modal-body">
@@ -267,18 +321,18 @@
         </c:forEach>
     ];
     var SALES_DAYS = 30;
-    var SALES_SUB_TEMPLATE = '<spring:message code="admin.dashboard.sales.sub" arguments="__DAYS__"/>';
-    var SALES_LOADING_TEXT = '<spring:message code="admin.dashboard.sales.loading"/>';
-    var SALES_NO_DATA_TEXT = '<spring:message code="admin.dashboard.sales.noData"/>';
+    var SALES_SUB_TEMPLATE = '${autoMsg_106b026def}';
+    var SALES_LOADING_TEXT = '${autoMsg_cffcc54b72}';
+    var SALES_NO_DATA_TEXT = '${autoMsg_573ff27268}';
     var SALES_CHART_LABELS = {
-        gross: '<spring:message code="admin.dashboard.sales.chart.gross"/>',
-        cash: '<spring:message code="admin.dashboard.sales.chart.cash"/>',
-        mileage: '<spring:message code="admin.dashboard.sales.chart.mileage"/>',
-        cancel: '<spring:message code="admin.dashboard.sales.chart.cancel"/>',
-        net: '<spring:message code="admin.dashboard.sales.chart.net"/>',
-        flightCount: '<spring:message code="admin.dashboard.sales.chart.flightCount"/>',
-        packageCount: '<spring:message code="admin.dashboard.sales.chart.packageCount"/>',
-        cancelCount: '<spring:message code="admin.dashboard.sales.chart.cancelCount"/>'
+        gross: '${autoMsg_7939516936}',
+        cash: '${autoMsg_4207e3fdab}',
+        mileage: '${autoMsg_b1aef82658}',
+        cancel: '${autoMsg_88f81c67e4}',
+        net: '${autoMsg_db4eeccd3c}',
+        flightCount: '${autoMsg_29b1a5398e}',
+        packageCount: '${autoMsg_d0766cf205}',
+        cancelCount: '${autoMsg_f0f11e4836}'
     };
 
     function isLight() { return document.body.classList.contains('sa-light'); }
@@ -335,24 +389,24 @@
 
         summary.innerHTML =
             '<div class="adm-card adm-summary-card">' +
-                '<div class="adm-summary-label"><spring:message code="admin.dashboard.sales.table.grossSales"/></div>' +
+                '<div class="adm-summary-label">${autoMsg_f545c35d81}</div>' +
                 '<div class="adm-summary-value is-primary">' + formatNumber(sumField(rows, 'grossSales')) + '</div>' +
-                '<div class="adm-summary-sub"><spring:message code="admin.dashboard.sales.table.totalSummary"/></div>' +
+                '<div class="adm-summary-sub">${autoMsg_22fdf944e5}</div>' +
             '</div>' +
             '<div class="adm-card adm-summary-card">' +
-                '<div class="adm-summary-label"><spring:message code="admin.dashboard.sales.table.cashSales"/></div>' +
+                '<div class="adm-summary-label">${autoMsg_7ad64f7e24}</div>' +
                 '<div class="adm-summary-value is-success">' + formatNumber(sumField(rows, 'cashSales')) + '</div>' +
-                '<div class="adm-summary-sub"><spring:message code="admin.dashboard.sales.table.totalSummary"/></div>' +
+                '<div class="adm-summary-sub">${autoMsg_22fdf944e5}</div>' +
             '</div>' +
             '<div class="adm-card adm-summary-card">' +
-                '<div class="adm-summary-label"><spring:message code="admin.dashboard.sales.table.mileageUsed"/></div>' +
+                '<div class="adm-summary-label">${autoMsg_33a281704d}</div>' +
                 '<div class="adm-summary-value is-warning">' + formatNumber(sumField(rows, 'mileageUsed')) + '</div>' +
-                '<div class="adm-summary-sub"><spring:message code="admin.dashboard.sales.table.totalSummary"/></div>' +
+                '<div class="adm-summary-sub">${autoMsg_22fdf944e5}</div>' +
             '</div>' +
             '<div class="adm-card adm-summary-card">' +
-                '<div class="adm-summary-label"><spring:message code="admin.dashboard.sales.table.netSales"/></div>' +
+                '<div class="adm-summary-label">${autoMsg_5340f1a853}</div>' +
                 '<div class="adm-summary-value is-danger">' + formatNumber(sumField(rows, 'netSales')) + '</div>' +
-                '<div class="adm-summary-sub"><spring:message code="admin.dashboard.sales.table.totalSummary"/></div>' +
+                '<div class="adm-summary-sub">${autoMsg_22fdf944e5}</div>' +
             '</div>';
     }
 

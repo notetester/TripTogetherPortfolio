@@ -1,3 +1,4 @@
+<spring:message var="adminCommonReasonLabel" code="admin.common.reason"/>
 <c:forEach var="b" items="${userBlocks}">
     <fmt:formatDate var="userBlockBlockedAtText" value="${b.blockedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
     <c:set var="userBlockLastHistoryText" value="-"/>
@@ -102,7 +103,7 @@
             </button>
             <c:if test="${not empty b.reason}">
                 <div class="adm-tr-inline js-admin-translation-widget"
-                     data-label="<spring:message code='admin.common.reason'/>"
+                     data-label="${adminCommonReasonLabel}"
                      data-source-type="USER_BLOCK"
                      data-source-idx="${b.blockIdx}"
                      data-field-name="reason"

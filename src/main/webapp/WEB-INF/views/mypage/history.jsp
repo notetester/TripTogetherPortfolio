@@ -3,6 +3,13 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_1ad9508f94" code="mypage.history.clearAll"/>
+<spring:message var="autoMsg_f273bac016" code="mypage.history.deleted"/>
+<spring:message var="autoMsg_8a8c6d8fe5" code="mypage.history.relative.justNow" javaScriptEscape="true"/>
+<spring:message var="autoMsg_c37f06beed" code="mypage.history.relative.minutes" javaScriptEscape="true"/>
+<spring:message var="autoMsg_340a4363cc" code="mypage.history.relative.hours" javaScriptEscape="true"/>
+<spring:message var="autoMsg_1c123bf67e" code="mypage.history.relative.yesterday" javaScriptEscape="true"/>
+<spring:message var="autoMsg_db3748532b" code="mypage.history.relative.days" javaScriptEscape="true"/>
 <%--
   마이페이지 - 최근 조회 내역 전체 보기
   Controller : GET /mypage/history
@@ -34,7 +41,7 @@
                 </div>
                 <c:if test="${not empty historyList}">
                     <button type="button" class="mp-history-clear-btn" id="mpHistoryClearBtn">
-                        🗑 <spring:message code="mypage.history.clearAll"/>
+                        🗑 ${autoMsg_1ad9508f94}
                     </button>
                 </c:if>
             </div>
@@ -68,7 +75,7 @@
                                         <div class="mp-list-title">
                                             <c:choose>
                                                 <c:when test="${h.available and not empty h.title}">${h.title}</c:when>
-                                                <c:otherwise><spring:message code="mypage.history.deleted"/></c:otherwise>
+                                                <c:otherwise>${autoMsg_f273bac016}</c:otherwise>
                                             </c:choose>
                                         </div>
                                         <div class="mp-list-meta">
@@ -106,11 +113,11 @@
 (function () {
     var CTX = '${pageContext.request.contextPath}';
     var LABELS = {
-        justNow:   '<spring:message code="mypage.history.relative.justNow"   javaScriptEscape="true"/>',
-        minutes:   '<spring:message code="mypage.history.relative.minutes"   javaScriptEscape="true"/>',
-        hours:     '<spring:message code="mypage.history.relative.hours"     javaScriptEscape="true"/>',
-        yesterday: '<spring:message code="mypage.history.relative.yesterday" javaScriptEscape="true"/>',
-        days:      '<spring:message code="mypage.history.relative.days"      javaScriptEscape="true"/>'
+        justNow:   '${autoMsg_8a8c6d8fe5}',
+        minutes:   '${autoMsg_c37f06beed}',
+        hours:     '${autoMsg_340a4363cc}',
+        yesterday: '${autoMsg_1c123bf67e}',
+        days:      '${autoMsg_db3748532b}'
     };
     function relTime(ts) {
         var now = Date.now();

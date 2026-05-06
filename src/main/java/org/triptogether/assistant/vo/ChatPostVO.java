@@ -14,4 +14,9 @@ public class ChatPostVO {
     private Long user_idx;
     private String title;
     private Date created_at;
+
+    public java.util.Date getCreated_atDate() {
+        return created_at;
+    }
+
 }

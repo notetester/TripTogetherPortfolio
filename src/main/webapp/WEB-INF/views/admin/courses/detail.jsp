@@ -3,13 +3,41 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:message var="autoMsg_49e143a0c3" code="admin.courses.detail.backToList"/>
+<spring:message var="autoMsg_522d88bf1d" code="admin.common.active"/>
+<spring:message var="autoMsg_98c1417ea2" code="admin.courses.status.deleted"/>
+<spring:message var="autoMsg_83f4f2911c" code="admin.common.delete"/>
+<spring:message var="autoMsg_5fe2e11d09" code="admin.common.restore"/>
+<spring:message var="autoMsg_e4ae7a8f73" code="admin.courses.detail.field.author"/>
+<spring:message var="autoMsg_4fe47c2c1b" code="admin.courses.detail.accountBlocked"/>
+<spring:message var="autoMsg_2dccf54b28" code="admin.courses.detail.field.destination"/>
+<spring:message var="autoMsg_79b60138a7" code="admin.common.dash"/>
+<spring:message var="autoMsg_320cd09d9d" code="admin.courses.detail.field.period"/>
+<spring:message var="autoMsg_9f5bc5a093" code="admin.courses.detail.field.spotCount"/>
+<spring:message var="autoMsg_b0c331f1c7" code="admin.common.countSuffix"/>
+<spring:message var="autoMsg_45272a9119" code="admin.courses.detail.field.source"/>
+<spring:message var="autoMsg_f25fa26e4c" code="admin.courses.detail.source.aiGenerated"/>
+<spring:message var="autoMsg_fdd0202b89" code="admin.courses.detail.source.manualCreated"/>
+<spring:message var="autoMsg_b28fc1bdf9" code="admin.courses.detail.field.visibility"/>
+<spring:message var="autoMsg_0e7c426335" code="admin.courses.visibility.public"/>
+<spring:message var="autoMsg_6c76ab0510" code="admin.courses.visibility.private"/>
+<spring:message var="autoMsg_7571899b26" code="admin.courses.detail.field.createdAt"/>
+<spring:message var="autoMsg_e3501c9b55" code="admin.courses.detail.field.updatedAt"/>
+<spring:message var="autoMsg_5b0c4b0a08" code="admin.courses.detail.spots.title"/>
+<spring:message var="autoMsg_38ce291a23" code="admin.courses.detail.spots.total"/>
+<spring:message var="autoMsg_2466273637" code="admin.courses.detail.spots.empty"/>
+<spring:message var="autoMsg_85cfca7bef" code="admin.courses.detail.spots.noName"/>
+<spring:message var="autoMsg_44d69b97f7" code="admin.common.delete" javaScriptEscape="true"/>
+<spring:message var="autoMsg_b923334623" code="admin.common.restore" javaScriptEscape="true"/>
+<spring:message var="autoMsg_be3a9a734d" code="admin.courses.detail.js.confirmAction" javaScriptEscape="true"/>
+<spring:message var="autoMsg_6b58a881c7" code="admin.common.processError" javaScriptEscape="true"/>
 <c:set var="activeMenu" value="courses"/>
 <spring:message code="admin.courses.detail.pageTitle" var="pageTitle"/>
 <%@ include file="../layout.jsp" %>
 
 <div class="adm-content">
     <div style="margin-bottom:16px;">
-        <a href="${pageContext.request.contextPath}/admin/courses" class="adm-back-link"><spring:message code="admin.courses.detail.backToList"/></a>
+        <a href="${pageContext.request.contextPath}/admin/courses" class="adm-back-link">${autoMsg_49e143a0c3}</a>
     </div>
 
     <c:if test="${empty plan}">
@@ -27,10 +55,10 @@
                     <span class="adm-card-title" style="font-size:16px;">#${plan.planId} · ${plan.title}</span>
                     <c:choose>
                         <c:when test="${plan.isDeleted == 0}">
-                            <span class="status-badge ACTIVE"><spring:message code="admin.common.active"/></span>
+                            <span class="status-badge ACTIVE">${autoMsg_522d88bf1d}</span>
                         </c:when>
                         <c:otherwise>
-                            <span class="status-badge DELETED"><spring:message code="admin.courses.status.deleted"/></span>
+                            <span class="status-badge DELETED">${autoMsg_98c1417ea2}</span>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -39,12 +67,12 @@
                         <c:when test="${plan.isDeleted == 0}">
                             <button class="adm-btn adm-btn-ghost"
                                     style="color:#f87171;border-color:#f87171;"
-                                    onclick="actionPlan('delete')"><spring:message code="admin.common.delete"/></button>
+                                    onclick="actionPlan('delete')">${autoMsg_83f4f2911c}</button>
                         </c:when>
                         <c:otherwise>
                             <button class="adm-btn adm-btn-ghost"
                                     style="color:#34d399;border-color:#34d399;"
-                                    onclick="actionPlan('restore')"><spring:message code="admin.common.restore"/></button>
+                                    onclick="actionPlan('restore')">${autoMsg_5fe2e11d09}</button>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -52,75 +80,75 @@
             <div class="adm-card-body">
                 <div style="display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:14px;">
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.detail.field.author"/></div>
+                        <div class="adm-filter-label">${autoMsg_e4ae7a8f73}</div>
                         <div style="font-weight:600;color:#7dd3fc;">${plan.nickname}</div>
                         <div style="font-size:11px;color:#64748b;">${plan.userId}</div>
                         <c:if test="${plan.accountStatus == 'BLOCKED'}">
-                            <span class="adm-inline-danger"><spring:message code="admin.courses.detail.accountBlocked"/></span>
+                            <span class="adm-inline-danger">${autoMsg_4fe47c2c1b}</span>
                         </c:if>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.detail.field.destination"/></div>
+                        <div class="adm-filter-label">${autoMsg_2dccf54b28}</div>
                         <div style="font-size:13px;color:#cbd5e1;">
                             <c:choose>
                                 <c:when test="${not empty plan.destination}">${plan.destination}</c:when>
-                                <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
+                                <c:otherwise><span style="color:#475569;">${autoMsg_79b60138a7}</span></c:otherwise>
                             </c:choose>
                         </div>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.detail.field.period"/></div>
+                        <div class="adm-filter-label">${autoMsg_320cd09d9d}</div>
                         <div style="font-size:12px;color:#94a3b8;">
                             <c:choose>
                                 <c:when test="${not empty plan.startDate}">
                                     <fmt:formatDate value="${plan.startDate}" pattern="yyyy.MM.dd"/>
                                     ~ <fmt:formatDate value="${plan.endDate}" pattern="yyyy.MM.dd"/>
                                 </c:when>
-                                <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
+                                <c:otherwise><span style="color:#475569;">${autoMsg_79b60138a7}</span></c:otherwise>
                             </c:choose>
                         </div>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.detail.field.spotCount"/></div>
-                        <div style="color:#7dd3fc;font-weight:600;">${plan.spotCount}<spring:message code="admin.common.countSuffix"/></div>
+                        <div class="adm-filter-label">${autoMsg_9f5bc5a093}</div>
+                        <div style="color:#7dd3fc;font-weight:600;">${plan.spotCount}${autoMsg_b0c331f1c7}</div>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.detail.field.source"/></div>
+                        <div class="adm-filter-label">${autoMsg_45272a9119}</div>
                         <div style="font-size:13px;">
                             <c:choose>
                                 <c:when test="${plan.planSource == 'AI'}">
-                                    <span style="color:#a78bfa;font-weight:600;"><spring:message code="admin.courses.detail.source.aiGenerated"/></span>
+                                    <span style="color:#a78bfa;font-weight:600;">${autoMsg_f25fa26e4c}</span>
                                 </c:when>
                                 <c:when test="${plan.planSource == 'MANUAL'}">
-                                    <span style="color:#94a3b8;"><spring:message code="admin.courses.detail.source.manualCreated"/></span>
+                                    <span style="color:#94a3b8;">${autoMsg_fdd0202b89}</span>
                                 </c:when>
                                 <c:otherwise>${plan.planSource}</c:otherwise>
                             </c:choose>
                         </div>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.detail.field.visibility"/></div>
+                        <div class="adm-filter-label">${autoMsg_b28fc1bdf9}</div>
                         <div style="font-size:13px;">
                             <c:choose>
-                                <c:when test="${plan.isPublic == 1}"><span style="color:#34d399;"><spring:message code="admin.courses.visibility.public"/></span></c:when>
-                                <c:otherwise><span style="color:#64748b;"><spring:message code="admin.courses.visibility.private"/></span></c:otherwise>
+                                <c:when test="${plan.isPublic == 1}"><span style="color:#34d399;">${autoMsg_0e7c426335}</span></c:when>
+                                <c:otherwise><span style="color:#64748b;">${autoMsg_6c76ab0510}</span></c:otherwise>
                             </c:choose>
                         </div>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.detail.field.createdAt"/></div>
+                        <div class="adm-filter-label">${autoMsg_7571899b26}</div>
                         <div style="font-size:12px;color:#94a3b8;">
                             <fmt:formatDate value="${plan.createdAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                         </div>
                     </div>
                     <div>
-                        <div class="adm-filter-label"><spring:message code="admin.courses.detail.field.updatedAt"/></div>
+                        <div class="adm-filter-label">${autoMsg_e3501c9b55}</div>
                         <div style="font-size:12px;color:#94a3b8;">
                             <c:choose>
                                 <c:when test="${not empty plan.updatedAt}">
                                     <fmt:formatDate value="${plan.updatedAtDate}" pattern="yyyy.MM.dd HH:mm"/>
                                 </c:when>
-                                <c:otherwise><span style="color:#475569;"><spring:message code="admin.common.dash"/></span></c:otherwise>
+                                <c:otherwise><span style="color:#475569;">${autoMsg_79b60138a7}</span></c:otherwise>
                             </c:choose>
                         </div>
                     </div>
@@ -131,12 +159,12 @@
         <%-- ── 스팟 목록 ── --%>
         <div class="adm-card">
             <div class="adm-card-head">
-                <div class="adm-card-title"><spring:message code="admin.courses.detail.spots.title"/></div>
-                <div class="adm-muted-note"><spring:message code="admin.courses.detail.spots.total"/> ${fn:length(spots)}<spring:message code="admin.common.countSuffix"/></div>
+                <div class="adm-card-title">${autoMsg_5b0c4b0a08}</div>
+                <div class="adm-muted-note">${autoMsg_38ce291a23} ${fn:length(spots)}${autoMsg_b0c331f1c7}</div>
             </div>
 
             <c:if test="${empty spots}">
-                <div style="padding:40px;text-align:center;color:#475569;"><spring:message code="admin.courses.detail.spots.empty"/></div>
+                <div style="padding:40px;text-align:center;color:#475569;">${autoMsg_2466273637}</div>
             </c:if>
 
             <c:if test="${not empty spots}">
@@ -163,7 +191,7 @@
                                     <c:choose>
                                         <c:when test="${not empty s.placeName}">${s.placeName}</c:when>
                                         <c:when test="${not empty s.spotName}">${s.spotName}</c:when>
-                                        <c:otherwise><span style="color:#64748b;"><spring:message code="admin.courses.detail.spots.noName"/></span></c:otherwise>
+                                        <c:otherwise><span style="color:#64748b;">${autoMsg_85cfca7bef}</span></c:otherwise>
                                     </c:choose>
                                 </div>
                                 <div style="font-size:11px;color:#64748b;margin-top:2px;">
@@ -185,10 +213,10 @@
 var ctx = '${pageContext.request.contextPath}';
 var PLAN_ID = '${plan.planId}';
 var COURSE_DETAIL_MESSAGES = {
-    actionDelete: '<spring:message code="admin.common.delete" javaScriptEscape="true"/>',
-    actionRestore: '<spring:message code="admin.common.restore" javaScriptEscape="true"/>',
-    confirmAction: '<spring:message code="admin.courses.detail.js.confirmAction" javaScriptEscape="true"/>',
-    error: '<spring:message code="admin.common.processError" javaScriptEscape="true"/>'
+    actionDelete: '${autoMsg_44d69b97f7}',
+    actionRestore: '${autoMsg_b923334623}',
+    confirmAction: '${autoMsg_be3a9a734d}',
+    error: '${autoMsg_6b58a881c7}'
 };
 
 function formatCourseDetailMessage(template) {

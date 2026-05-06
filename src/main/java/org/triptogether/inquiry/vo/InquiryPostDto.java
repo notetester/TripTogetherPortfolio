@@ -74,4 +74,20 @@ public class InquiryPostDto {
         return updatedAt;
     }
 
+    public java.util.Date getInProgressAtDate() {
+        return inProgressAt;
+    }
+
+    public java.util.Date getCompletedAtDate() {
+        return completedAt;
+    }
+
+    public java.util.Date getDeleteRequestedAtDate() {
+        return deleteRequestedAt;
+    }
+
+    public java.util.Date getVisibilityRequestedAtDate() {
+        return visibilityRequestedAt;
+    }
+
 }
