@@ -150,3 +150,19 @@
 - 모달은 닫기 버튼, 바깥 클릭, Escape 키 닫기를 지원한다.
 - 재시도/승인 같은 destructive 또는 상태 변경 액션은 상세 정보 확인 후 수행할 수 있게 배치한다.
 - 상세 모달에서 사용자/외부 입력값은 반드시 escape한다.
+
+
+## 초기설정 export/import 원칙
+
+- 설정 이관은 PK가 아니라 `settingKey`, `providerCode`, `policyCode` 같은 안정적인 업무 키 기준으로 수행한다.
+- import 시 현재 DB에 없는 업무 키는 생성/강제 삽입하지 않고 skipped 경고로 남긴다.
+- export/import 대상에는 Runtime Setting, Provider Config, Login Risk Policy, Security Appeal Policy, System Policy를 포함한다.
+- 가져오기 작업도 각 정책/설정 도메인의 기존 history 기록 경로를 사용해야 한다.
+
+
+## Provider 헬스체크 이력 원칙
+
+- Provider 상태 점검은 현재 상태 갱신뿐 아니라 별도 이력 테이블에 남긴다.
+- 수동 점검은 actor_user_idx와 `MANUAL` source를 남긴다.
+- 스케줄러 점검은 actor_user_idx를 NULL로 두고 `SCHEDULED` source를 남긴다.
+- 헬스체크 상세 메시지는 운영자가 원인을 추적할 수 있게 보존하되, 화면에서는 escape한다.

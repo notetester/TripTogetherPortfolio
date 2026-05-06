@@ -10,6 +10,7 @@ import org.triptogether.auth.vo.LoginRiskExternalAssessmentVO;
 import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigHistoryVO;
+import org.triptogether.auth.vo.ProviderHealthCheckHistoryVO;
 import org.triptogether.auth.vo.SecurityReviewVO;
 import org.triptogether.auth.vo.SecurityWafSyncQueueVO;
 import org.triptogether.auth.vo.SecurityAppealVO;
@@ -231,6 +232,7 @@ public interface LoginRiskPolicyMapper {
     List<SecurityAssessmentProviderConfigVO> findProviderConfigs();
 
     SecurityAssessmentProviderConfigVO findProviderConfigByIdx(@Param("providerIdx") Long providerIdx);
+    SecurityAssessmentProviderConfigVO findProviderConfigByCode(@Param("providerCode") String providerCode);
 
     void updateProviderConfig(SecurityAssessmentProviderConfigVO config);
     void insertProviderConfigHistory(@Param("providerIdx") Long providerIdx,
@@ -242,6 +244,17 @@ public interface LoginRiskPolicyMapper {
                                      @Param("afterConfigJson") String afterConfigJson);
     List<SecurityAssessmentProviderConfigHistoryVO> findProviderConfigHistory(@Param("providerCode") String providerCode,
                                                                               @Param("limit") int limit);
+
+    void insertProviderHealthCheckHistory(@Param("providerIdx") Long providerIdx,
+                                          @Param("providerCode") String providerCode,
+                                          @Param("providerKind") String providerKind,
+                                          @Param("checkSource") String checkSource,
+                                          @Param("statusBefore") String statusBefore,
+                                          @Param("statusAfter") String statusAfter,
+                                          @Param("actorUserIdx") Long actorUserIdx,
+                                          @Param("detailMessage") String detailMessage);
+    List<ProviderHealthCheckHistoryVO> findProviderHealthCheckHistories(@Param("providerCode") String providerCode,
+                                                                        @Param("limit") int limit);
 
     void insertSecurityActionAudit(@Param("actionType") String actionType,
                                    @Param("actorUserIdx") Long actorUserIdx,

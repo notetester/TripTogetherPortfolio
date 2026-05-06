@@ -255,6 +255,19 @@ public class AdminLoginRiskPolicyController {
         return "redirect:/admin/login-risk/provider-configs";
     }
 
+
+    @GetMapping("/provider-health-history")
+    public String providerHealthHistory(@RequestParam(value = "providerCode", required = false) String providerCode,
+                                        @RequestParam(value = "limit", required = false, defaultValue = "100") int limit,
+                                        Model model) {
+        model.addAttribute("histories", loginRiskPolicyService.getProviderHealthCheckHistories(providerCode, limit));
+        model.addAttribute("providerCode", providerCode);
+        model.addAttribute("limit", Math.max(1, Math.min(limit, 200)));
+        model.addAttribute("activeMenu", "providerHealthHistory");
+        model.addAttribute("pageTitleCode", "security.admin.providerHealth.title");
+        return "admin/login-risk/provider-health-history";
+    }
+
     @GetMapping("/waf-sync")
     public String wafSyncQueue(@RequestParam(value = "status", required = false) String status,
                                @RequestParam(value = "targetType", required = false) String targetType,

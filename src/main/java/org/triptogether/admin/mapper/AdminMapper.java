@@ -185,6 +185,9 @@ public interface AdminMapper {
                                     @Param("message") String message);
     void insertSystemPolicyHistory(AdminSystemPolicyHistoryVO history);
 
+    // ===== 관리자 조치 감사 =====
+    void insertAdminActionAudit(AdminActionAuditVO audit);
+
     // ===== 통합 정책 이력 =====
     List<UnifiedPolicyHistoryVO> findUnifiedPolicyHistories(@Param("sourceType") String sourceType,
                                                             @Param("keyword") String keyword,

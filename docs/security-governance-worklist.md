@@ -93,6 +93,11 @@
 - 보안 검토 큐 상세 모달 실제 markup/바깥 클릭 닫기 보강
 - WAF 동기화 큐 상세 모달 및 재시도 판단 보조 UI
 - Provider 설정 상세 모달 및 통합 정책 이력 연결
+- 코드로 가능한 잔여 작업 종료 감사 문서화
+- Provider 수동/스케줄러 헬스체크 이력 저장
+- Provider 헬스체크 전용 이력 테이블/화면
+- 정책 snapshot diff UI `/admin/policy-history`
+- 초기설정 export/import 화면 `/admin/initial-settings`
 
 ## 남은 작업
 
@@ -114,7 +119,6 @@
 
 ### UI/운영 고도화
 
-- Provider 헬스체크 전용 상세 이력 테이블/화면 검토
 - CAPTCHA/Turnstile Provider 연동 검토
 
 ### 검증
@@ -153,3 +157,4 @@
 - `docs/application-runtime-settings.md`
 - `docs/unified-policy-history.md`
 - `docs/remaining-work-audit.md`
+- `docs/code-only-remaining-work-closure.md`

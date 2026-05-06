@@ -108,6 +108,9 @@
                     <a class="adm-nav-item ${activeMenu=='runtimeSettings'?'active':''}" href="${pageContext.request.contextPath}/admin/runtime-settings">
                         <span class="adm-nav-icon">🧩</span> <spring:message code="admin.layout.menu.runtimeSettings"/>
                     </a>
+                    <a class="adm-nav-item ${activeMenu=='initialSettings'?'active':''}" href="${pageContext.request.contextPath}/admin/initial-settings">
+                        <span class="adm-nav-icon">📦</span> <spring:message code="admin.layout.menu.initialSettings"/>
+                    </a>
                     <a class="adm-nav-item ${activeMenu=='policyHistory'?'active':''}" href="${pageContext.request.contextPath}/admin/policy-history">
                         <span class="adm-nav-icon">🧾</span> <spring:message code="admin.layout.menu.policyHistory"/>
                     </a>
@@ -125,6 +128,9 @@
                     </a>
                     <a class="adm-nav-item ${activeMenu=='securityProviderConfigs'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/provider-configs">
                         <span class="adm-nav-icon">🔌</span> <spring:message code="security.admin.nav.providerConfigs"/>
+                    </a>
+                    <a class="adm-nav-item ${activeMenu=='providerHealthHistory'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/provider-health-history">
+                        <span class="adm-nav-icon">🩺</span> <spring:message code="security.admin.nav.providerHealth"/>
                     </a>
                     <a class="adm-nav-item ${activeMenu=='securityWafSync'?'active':''}" href="${pageContext.request.contextPath}/admin/login-risk/waf-sync">
                         <span class="adm-nav-icon">🌐</span> <spring:message code="security.admin.nav.wafSync"/>

@@ -14,6 +14,46 @@
             <h1><spring:message code="admin.policyHistory.title"/></h1>
             <p class="adm-page-desc"><spring:message code="admin.policyHistory.desc"/></p>
         </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const text = {
+        empty: '<spring:message code="admin.policyHistory.diffEmpty"/>',
+        invalid: '<spring:message code="admin.policyHistory.diffInvalidJson"/>'
+    };
+    const parseJson = function (value) {
+        if (!value || !value.trim()) return {};
+        return JSON.parse(value);
+    };
+    const stringify = function (value) {
+        if (value === undefined) return '';
+        if (value === null) return 'null';
+        if (typeof value === 'object') return JSON.stringify(value);
+        return String(value);
+    };
+    document.querySelectorAll('.js-policy-diff-run').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const root = button.closest('details');
+            const output = root.querySelector('.js-policy-diff');
+            try {
+                const before = parseJson(root.querySelector('.js-policy-before').textContent);
+                const after = parseJson(root.querySelector('.js-policy-after').textContent);
+                const keys = Array.from(new Set(Object.keys(before).concat(Object.keys(after)))).sort();
+                const lines = [];
+                keys.forEach(function (key) {
+                    const b = stringify(before[key]);
+                    const a = stringify(after[key]);
+                    if (b !== a) lines.push(key + ': ' + b + ' -> ' + a);
+                });
+                output.textContent = lines.length ? lines.join('\\n') : text.empty;
+            } catch (e) {
+                output.textContent = text.invalid;
+            }
+        });
+    });
+});
+</script>
+
         <div class="adm-actions">
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/runtime-settings"><spring:message code="admin.layout.menu.runtimeSettings"/></a>
             <a class="adm-btn" href="${pageContext.request.contextPath}/admin/login-risk/policies"><spring:message code="security.admin.nav.policies"/></a>
@@ -79,12 +119,16 @@
                                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
                                         <div>
                                             <div class="adm-muted"><spring:message code="admin.policyHistory.before"/></div>
-                                            <pre style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.beforeConfigJson}"/></pre>
+                                            <pre class="js-policy-before" style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.beforeConfigJson}"/></pre>
                                         </div>
                                         <div>
                                             <div class="adm-muted"><spring:message code="admin.policyHistory.after"/></div>
-                                            <pre style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.afterConfigJson}"/></pre>
+                                            <pre class="js-policy-after" style="white-space:pre-wrap;max-height:220px;overflow:auto;"><c:out value="${h.afterConfigJson}"/></pre>
                                         </div>
+                                    </div>
+                                    <div style="margin-top:10px;">
+                                        <button type="button" class="adm-btn js-policy-diff-run"><spring:message code="admin.policyHistory.diff"/></button>
+                                        <pre class="js-policy-diff" style="white-space:pre-wrap;max-height:220px;overflow:auto;margin-top:8px;"></pre>
                                     </div>
                                 </details>
                             </td>

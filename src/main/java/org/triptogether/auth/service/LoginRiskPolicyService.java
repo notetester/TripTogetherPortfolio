@@ -19,6 +19,7 @@ import org.triptogether.auth.vo.LoginRiskPolicyVO;
 import org.triptogether.auth.vo.LoginRiskReviewVO;
 import org.triptogether.auth.vo.SecurityRiskAssessmentVO;
 import org.triptogether.auth.vo.SecurityAssessmentProviderConfigVO;
+import org.triptogether.auth.vo.ProviderHealthCheckHistoryVO;
 import org.triptogether.auth.vo.SecurityReviewVO;
 import org.triptogether.auth.vo.SecurityWafSyncQueueVO;
 import org.triptogether.auth.vo.SecurityAppealVO;
@@ -459,13 +460,30 @@ public class LoginRiskPolicyService {
     }
 
 
+
+    public List<ProviderHealthCheckHistoryVO> getProviderHealthCheckHistories(String providerCode, int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 200));
+        return loginRiskPolicyMapper.findProviderHealthCheckHistories(emptyToNull(providerCode), safeLimit);
+    }
+
     @Scheduled(fixedDelayString = "${security.provider.healthcheck.fixed-delay-ms:300000}")
     @Transactional
     public void runProviderHealthCheckOnce() {
         List<SecurityAssessmentProviderConfigVO> providers = loginRiskPolicyMapper.findProviderConfigsForHealthCheck();
         for (SecurityAssessmentProviderConfigVO provider : providers) {
+            String beforeStatus = provider.getStatus();
             ProviderHealth health = evaluateProviderHealth(provider);
             loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), health.status(), health.description());
+            loginRiskPolicyMapper.insertProviderHealthCheckHistory(
+                    provider.getProviderIdx(),
+                    provider.getProviderCode(),
+                    provider.getProviderKind(),
+                    "SCHEDULED",
+                    beforeStatus,
+                    health.status(),
+                    null,
+                    health.description()
+            );
         }
     }
 
@@ -476,8 +494,19 @@ public class LoginRiskPolicyService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(msg("ko", "security.provider.notFound")));
 
+        String beforeStatus = provider.getStatus();
         ProviderHealth health = evaluateProviderHealth(provider);
         loginRiskPolicyMapper.updateProviderHealth(provider.getProviderIdx(), health.status(), health.description());
+        loginRiskPolicyMapper.insertProviderHealthCheckHistory(
+                provider.getProviderIdx(),
+                provider.getProviderCode(),
+                provider.getProviderKind(),
+                "MANUAL",
+                beforeStatus,
+                health.status(),
+                actorUserIdx,
+                health.description()
+        );
         loginRiskPolicyMapper.insertSecurityActionAuditWithReason(
                 "PROVIDER_HEALTH_CHECK",
                 actorUserIdx,

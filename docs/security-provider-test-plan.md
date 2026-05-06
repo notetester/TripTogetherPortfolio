@@ -265,3 +265,37 @@ DB 구조 변경 없이 코드/설정/운영 플로우를 검증하기 위한 �
 | security review detail button click | 보안 검토 상세 모달이 열린다 |
 | security review outside click | 보안 검토 상세 모달이 닫힌다 |
 | detail fields | 모든 사용자/외부 입력값은 `c:out`으로 escape 처리된다 |
+
+
+## 24. Initial Settings Export/Import 테스트
+
+| Case | Expected |
+|---|---|
+| `/admin/initial-settings` open | export/import 화면이 표시된다 |
+| export click | JSON 파일이 다운로드된다 |
+| exported JSON contains runtimeSettings | APPLICATION_RUNTIME_SETTING 목록이 포함된다 |
+| exported JSON contains providerConfigs | SECURITY_ASSESSMENT_PROVIDER_CONFIG 목록이 포함된다 |
+| exported JSON contains loginRiskPolicies | LOGIN_RISK_POLICY 목록이 포함된다 |
+| exported JSON contains securityAppealPolicy | SECURITY_APPEAL_POLICY가 포함된다 |
+| exported JSON contains systemPolicies | SYSTEM_POLICY 목록이 포함된다 |
+| import same JSON | policyCode/providerCode/settingKey 기준으로 갱신된다 |
+| import missing target | skipped 경고가 표시된다 |
+| import invalid JSON | 오류 메시지가 표시된다 |
+
+## 25. Provider Health Check History 테스트
+
+| Case | Expected |
+|---|---|
+| manual provider check | SECURITY_PROVIDER_HEALTH_CHECK_HISTORY에 MANUAL 이력 생성 |
+| scheduled provider check | SECURITY_PROVIDER_HEALTH_CHECK_HISTORY에 SCHEDULED 이력 생성 |
+| `/admin/login-risk/provider-health-history` open | 헬스체크 이력이 최신순으로 표시된다 |
+| providerCode filter | 특정 providerCode 이력만 표시된다 |
+| detailMessage output | `c:out`으로 escape 처리된다 |
+
+## 26. Policy Snapshot Diff 테스트
+
+| Case | Expected |
+|---|---|
+| diff button click | before/after JSON의 변경된 key가 표시된다 |
+| no changed key | 변경 없음 메시지가 표시된다 |
+| invalid JSON snapshot | JSON 해석 오류 메시지가 표시된다 |

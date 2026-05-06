@@ -2441,4 +2441,13 @@
     </select>
 
 
+
+    <insert id="insertAdminActionAudit" parameterType="org.triptogether.admin.vo.AdminActionAuditVO" useGeneratedKeys="true" keyProperty="adminActionAuditIdx">
+        INSERT INTO ADMIN_ACTION_AUDIT
+        (action_type, action_domain, actor_user_idx, target_type, target_id, reason_code, reason_args, detail_summary, created_at)
+        VALUES
+        (#{actionType}, #{actionDomain}, #{actorUserIdx}, #{targetType}, #{targetId}, #{reasonCode}, #{reasonArgs}, #{detailSummary}, NOW())
+    </insert>
+
+
 </mapper>
